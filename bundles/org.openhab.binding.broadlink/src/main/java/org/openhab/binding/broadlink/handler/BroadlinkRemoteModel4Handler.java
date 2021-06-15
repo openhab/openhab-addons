@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ public class BroadlinkRemoteModel4Handler extends BroadlinkRemoteHandler {
             byte message[] = buildMessage((byte) 0x6a, payload);
             byte response[] = sendAndReceiveDatagram(message, "RM4 device status");
             if (response == null) {
-                thingLogger.logWarn("response from RM4 device was null");
+                logger.warn("response from RM4 device was null");
                 return false;
             }
             byte decodedPayload[] = decodeDevicePacket(response);
@@ -63,7 +63,7 @@ public class BroadlinkRemoteModel4Handler extends BroadlinkRemoteHandler {
             updateState("humidity", new DecimalType(humidity));
             return true;
         } catch (Exception e) {
-            thingLogger.logError("Could not get status: ", e);
+            logger.error("Could not get status: ", e);
             return false;
         }
     }
@@ -85,7 +85,7 @@ public class BroadlinkRemoteModel4Handler extends BroadlinkRemoteHandler {
             byte[] message = buildMessage((byte) 0x6a, padded);
             sendAndReceiveDatagram(message, "remote code");
         } catch (IOException e) {
-            thingLogger.logError("Exception while sending code", e);
+            logger.error("Exception while sending code", e);
         }
     }
 }

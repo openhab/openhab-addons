@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,9 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.openhab.binding.broadlink.BroadlinkBindingConstants;
+import org.slf4j.Logger;
 
 /**
  * Tests that each Thing Type maps to the right model number.
@@ -26,50 +28,53 @@ import org.openhab.binding.broadlink.BroadlinkBindingConstants;
  */
 @NonNullByDefault
 public class ModelMapperTest {
+
+    private Logger mockLogger = Mockito.mock(Logger.class);
+
     @Test
     public void mapsSpMini2ASp2() {
-        assertEquals(BroadlinkBindingConstants.THING_TYPE_SP2, ModelMapper.getThingType(0x7539));
+        assertEquals(BroadlinkBindingConstants.THING_TYPE_SP2, ModelMapper.getThingType(0x7539, mockLogger));
     }
 
     @Test
     public void mapsRmMini3AsRm3() {
-        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM3, ModelMapper.getThingType(0x27c2));
+        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM3, ModelMapper.getThingType(0x27c2, mockLogger));
     }
 
     @Test
     public void mapsRm35f36AsRm3Q() {
-        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM3Q, ModelMapper.getThingType(0x5f36));
+        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM3Q, ModelMapper.getThingType(0x5f36, mockLogger));
     }
 
     @Test
     public void mapsRm4bAsRm4() {
-        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4, ModelMapper.getThingType(0x51da));
+        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4, ModelMapper.getThingType(0x51da, mockLogger));
     }
 
     @Test
     public void mapsRm4ProAsRm4() {
-        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4, ModelMapper.getThingType(0x61a2));
+        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4, ModelMapper.getThingType(0x61a2, mockLogger));
     }
 
     @Test
     public void mapsRm462bcAsRm4() {
-        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4, ModelMapper.getThingType(0x62bc));
+        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4, ModelMapper.getThingType(0x62bc, mockLogger));
     }
 
     @Test
     public void mapsRm4Model6026AsRm4() {
-        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4, ModelMapper.getThingType(0x6026));
+        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4, ModelMapper.getThingType(0x6026, mockLogger));
     }
 
     @Test
     public void mapsRm4Model24846AsRm4() {
-        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4, ModelMapper.getThingType(24846));
+        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4, ModelMapper.getThingType(24846, mockLogger));
     }
 
     @Test
     public void throwsOnUnrecognisedDeviceModel() {
         try {
-            ModelMapper.getThingType(0x6666);
+            ModelMapper.getThingType(0x6666, mockLogger);
             Assert.fail("Should have thrown on unmapped device model");
         } catch (Exception e) {
             assertEquals(

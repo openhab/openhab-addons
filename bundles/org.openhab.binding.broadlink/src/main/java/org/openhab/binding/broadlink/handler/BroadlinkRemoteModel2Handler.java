@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.broadlink.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Thing;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -40,7 +40,7 @@ public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler {
             byte message[] = buildMessage((byte) 0x6a, payload);
             byte response[] = sendAndReceiveDatagram(message, "RM2 device status");
             if (response == null) {
-                thingLogger.logWarn("response from RM2 device was null");
+                logger.warn("response from RM2 device was null");
                 return false;
             }
             byte decodedPayload[] = decodeDevicePacket(response);
@@ -48,7 +48,7 @@ public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler {
             updateState("temperature", new DecimalType(temperature));
             return true;
         } catch (Exception e) {
-            thingLogger.logError("Could not get status: ", e);
+            logger.error("Could not get status: ", e);
             return false;
         }
     }

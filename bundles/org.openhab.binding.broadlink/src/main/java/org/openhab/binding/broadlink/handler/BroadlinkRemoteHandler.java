@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,14 +64,14 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             byte[] message = buildMessage((byte) 0x6a, padded);
             sendAndReceiveDatagram(message, "remote code");
         } catch (IOException e) {
-            thingLogger.logError("Exception while sending code", e);
+            logger.error("Exception while sending code", e);
         }
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (!Utils.isOnline(getThing())) {
-            thingLogger.logDebug("Can't handle command " + command + " because handler for thing "
-                    + getThing().getLabel() + " is not ONLINE");
+            logger.debug("Can't handle command {} because handler for thing {} is not ONLINE", command,
+                    getThing().getLabel());
             return;
         }
         if (command instanceof RefreshType) {
@@ -80,24 +80,23 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         }
         Channel channel = thing.getChannel(channelUID.getId());
         if (channel == null) {
-            thingLogger.logError("Unexpected null channel while handling command " + command.toFullString());
+            logger.error("Unexpected null channel while handling command {}", command.toFullString());
             return;
         }
         ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
         if (channelTypeUID == null) {
-            thingLogger.logError("Unexpected null channelTypeUID while handling command " + command.toFullString());
+            logger.error("Unexpected null channelTypeUID while handling command {}", command.toFullString());
             return;
         }
         if (channelTypeUID.getId().equals("command")) {
-            thingLogger.logDebug(String.format("Handling ir/rf command '%s' on channel %s of thing %s", command,
-                    channelUID.getId(), getThing().getLabel()));
+            logger.debug("Handling ir/rf command '{}' on channel {} of thing {}", command, channelUID.getId(),
+                    getThing().getLabel());
             byte code[] = lookupCode(command, channelUID);
             if (code != null) {
                 sendCode(code);
             }
         } else {
-            thingLogger
-                    .logDebug("Thing " + getThing().getLabel() + " has unknown channel type " + channelTypeUID.getId());
+            logger.debug("Thing {} has unknown channel type '{}'", getThing().getLabel(), channelTypeUID.getId());
         }
     }
 
@@ -108,8 +107,8 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             BundleContext bundleContext = FrameworkUtil.getBundle(BroadlinkRemoteHandler.class).getBundleContext();
             transformService = TransformationHelper.getTransformationService(bundleContext, "MAP");
             if (transformService == null) {
-                thingLogger.logError("Failed to get MAP transformation service for thing " + getThing().getLabel()
-                        + "; is bundle installed?");
+                logger.error("Failed to get MAP transformation service for thing {}; is bundle installed?",
+                        getThing().getLabel());
             }
         }
         return transformService;
@@ -117,12 +116,12 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
 
     private byte @Nullable [] lookupCode(Command command, ChannelUID channelUID) {
         if (command.toString() == null) {
-            thingLogger.logDebug("Unable to perform transform on null command string");
+            logger.debug("Unable to perform transform on null command string");
             return null;
         }
         String mapFile = (String) thing.getConfiguration().get("mapFilename");
         if (mapFile == null || mapFile.isEmpty()) {
-            thingLogger.logDebug("MAP file is not defined in configuration of thing " + getThing().getLabel());
+            logger.debug("MAP file is not defined in configuration of thing {}", getThing().getLabel());
             return null;
         }
 
@@ -132,20 +131,20 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             value = getTransformService().transform(mapFile, command.toString());
 
             if (value == null || value.isEmpty()) {
-                thingLogger.logError(String.format("No entry for command '%s' in map file '%s' for thing %s", command,
-                        mapFile, getThing().getLabel()));
+                logger.error("No entry for command '{}' in map file '{}' for thing {}", command, mapFile,
+                        getThing().getLabel());
                 return null;
             }
 
             code = HexUtils.hexToBytes(value);
         } catch (TransformationException e) {
-            thingLogger.logError(String.format("Failed to transform command '%s' for thing %s using map file '%s'",
-                    command, getThing().getLabel(), mapFile), e);
+            logger.error("Failed to transform command '{}' for thing {} using map file '{}'", command,
+                    getThing().getLabel(), mapFile, e);
             return null;
         }
 
-        thingLogger.logDebug(String.format("Transformed command '%s' for thing %s with map file '%s'", command,
-                getThing().getLabel(), mapFile));
+        logger.debug("Transformed command '{}' for thing {} with map file '{}'", command, getThing().getLabel(),
+                mapFile);
         return code;
     }
 }

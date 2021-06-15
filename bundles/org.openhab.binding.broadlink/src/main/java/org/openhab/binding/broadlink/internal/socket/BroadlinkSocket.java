@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.broadlink.internal.ModelMapper;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Threaded socket implementation
@@ -42,7 +41,6 @@ public class BroadlinkSocket {
     @Nullable
     private static Thread socketReceiveThread;
     private static List<BroadlinkSocketListener> listeners = new ArrayList<BroadlinkSocketListener>();
-    private static final Logger LOGGER = LoggerFactory.getLogger(BroadlinkSocket.class);
 
     static {
         buffer = new byte[1024];
@@ -51,7 +49,7 @@ public class BroadlinkSocket {
 
     public static String decodeMAC(byte mac[]) {
         if (mac.length < 6) {
-            throw new RuntimeException("Insufficient MAC bytes provided, cannot decode it");
+            throw new IllegalArgumentException("Insufficient MAC bytes provided, cannot decode it");
         }
 
         StringBuilder sb = new StringBuilder(18);
@@ -67,6 +65,7 @@ public class BroadlinkSocket {
 
     @NonNullByDefault
     private static class ReceiverThread extends Thread {
+        private Logger logger;
 
         public void run() {
             receiveData(BroadlinkSocket.socket, BroadlinkSocket.datagramPacket);
@@ -88,70 +87,72 @@ public class BroadlinkSocket {
                         byte receivedPacket[] = dgram.getData();
                         remoteMAC = Arrays.copyOfRange(receivedPacket, 58, 64);
                         model = Byte.toUnsignedInt(receivedPacket[52]) | Byte.toUnsignedInt(receivedPacket[53]) << 8;
-                        deviceType = ModelMapper.getThingType(model);
+                        deviceType = ModelMapper.getThingType(model, logger);
                     }
 
                 }
             } catch (IOException e) {
-                if (!isInterrupted())
-                    LOGGER.error("Error while receiving", e);
+                if (!isInterrupted()) {
+                    logger.error("Error while receiving", e);
+                }
             }
-            BroadlinkSocket.LOGGER.info("Receiver thread ended");
+            logger.info("Receiver thread ended");
         }
 
-        private ReceiverThread() {
+        private ReceiverThread(Logger logger) {
+            this.logger = logger;
         }
     }
 
-    public static void registerListener(BroadlinkSocketListener listener) {
+    public static void registerListener(BroadlinkSocketListener listener, Logger logger) {
         listeners.add(listener);
         if (socket == null) {
-            setupSocket();
+            setupSocket(logger);
         }
     }
 
-    public static void unregisterListener(BroadlinkSocketListener listener) {
+    public static void unregisterListener(BroadlinkSocketListener listener, Logger logger) {
         listeners.remove(listener);
         if (listeners.isEmpty() && socket != null) {
-            closeSocket();
+            closeSocket(logger);
         }
     }
 
-    private static void setupSocket() {
+    private static void setupSocket(Logger logger) {
         synchronized (BroadlinkSocket.class) {
             try {
                 socket = new MulticastSocket();
             } catch (IOException e) {
-                LOGGER.error("Setup socket error '{}'.", e.getMessage());
+                logger.error("Setup socket error '{}'.", e.getMessage());
             }
-            socketReceiveThread = new ReceiverThread();
+            socketReceiveThread = new ReceiverThread(logger);
             socketReceiveThread.start();
         }
     }
 
-    private static void closeSocket() {
+    private static void closeSocket(Logger logger) {
         synchronized (BroadlinkSocket.class) {
             if (socketReceiveThread != null) {
                 socketReceiveThread.interrupt();
             }
             if (socket != null) {
-                LOGGER.info("Socket closed");
+                logger.info("Socket closed");
                 socket.close();
                 socket = null;
             }
         }
     }
 
-    public static void sendMessage(byte message[]) {
-        sendMessage(message, "255.255.255.255", 80);
+    public static void sendMessage(byte message[], Logger logger) {
+        sendMessage(message, "255.255.255.255", 80, logger);
     }
 
-    public static void sendMessage(byte message[], String host, int port) {
+    public static void sendMessage(byte message[], String host, int port, Logger logger) {
         try {
             DatagramPacket sendPacket = new DatagramPacket(message, message.length, InetAddress.getByName(host), port);
             socket.send(sendPacket);
         } catch (IOException e) {
-            LOGGER.error("IO Error sending message: '{}'", e.getMessage());
+            logger.error("IO Error sending message: '{}'", e.getMessage());
         }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,6 @@ import javax.crypto.spec.IvParameterSpec;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Static methods for working with the Broadlink network prototcol.
@@ -33,10 +32,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BroadlinkProtocol {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BroadlinkProtocol.class);
-
     public static byte[] buildMessage(byte command, byte[] payload, int count, byte[] mac, byte[] deviceId, byte[] iv,
-            byte[] key, int deviceType) {
+            byte[] key, int deviceType, Logger logger) {
         byte packet[] = new byte[0x38];
         packet[0x00] = 0x5a;
         packet[0x01] = (byte) 0xa5; // https://stackoverflow.com/questions/20026942/type-mismatch-cannot-convert-int-to-byte
@@ -81,7 +78,7 @@ public class BroadlinkProtocol {
             outputStream.write(packet);
             outputStream.write(Utils.encrypt(key, new IvParameterSpec(iv), payload));
         } catch (IOException e) {
-            LOGGER.error("IOException while building message", e);
+            logger.error("IOException while building message", e);
             return packet;
         }
         byte data[] = outputStream.toByteArray();
@@ -134,9 +131,9 @@ public class BroadlinkProtocol {
         String localAddress[] = null;
         localAddress = host.toString().split("\\.");
         int ipAddress[] = new int[4];
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++) {
             ipAddress[i] = Integer.parseInt(localAddress[i]);
-
+        }
         Calendar calendar = Calendar.getInstance();
         calendar.setFirstDayOfWeek(2);
         TimeZone timeZone = TimeZone.getDefault();

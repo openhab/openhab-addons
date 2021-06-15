@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,9 @@ import static org.junit.Assert.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.openhab.core.util.HexUtils;
+import org.slf4j.Logger;
 
 /**
  * Tests the Broadlink protocol.
@@ -25,6 +27,8 @@ import org.openhab.core.util.HexUtils;
  */
 @NonNullByDefault
 public class BroadlinkProtocolTest {
+
+    private final Logger mockLogger = Mockito.mock(Logger.class);
 
     byte[] mac = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, };
 
@@ -37,7 +41,8 @@ public class BroadlinkProtocolTest {
     @Test
     public void canBuildMessageWithCorrectChecksums() {
         byte[] payload = {};
-        byte[] result = BroadlinkProtocol.buildMessage((byte) 0x0, payload, 0, mac, deviceId, iv, deviceKey, 1234);
+        byte[] result = BroadlinkProtocol.buildMessage((byte) 0x0, payload, 0, mac, deviceId, iv, deviceKey, 1234,
+                mockLogger);
 
         assertEquals(56, result.length);
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,9 +19,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 
 /**
  * Utilities for working with the Broadlink devices.
@@ -30,9 +29,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Utils {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
-
     public static boolean isOnline(Thing thing) {
         return thing.getStatus().equals(ThingStatus.ONLINE);
     }
@@ -80,7 +76,6 @@ public class Utils {
             cipher.init(1, secretKey, ivSpec);
             return cipher.doFinal(data);
         } catch (Exception e) {
-            LOGGER.error("Exception while encrypting", e);
             throw new IOException(e);
         }
     }
@@ -92,7 +87,6 @@ public class Utils {
             cipher.init(2, secretKey, ivSpec);
             return cipher.doFinal(data);
         } catch (Exception e) {
-            LOGGER.error("Exception while decrypting", e);
             throw new IOException(e);
         }
     }

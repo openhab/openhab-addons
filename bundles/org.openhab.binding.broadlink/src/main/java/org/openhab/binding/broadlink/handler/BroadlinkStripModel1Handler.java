@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,6 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
                 break;
             default:
                 break;
-
         }
     }
 
@@ -67,7 +66,7 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
                 setStatusOnDevice((byte) sid, (byte) 0);
             }
         } catch (IOException e) {
-            thingLogger.logError("Couldn't interpret command for strip device", e);
+            logger.error("Couldn't interpret command for strip device", e);
         }
     }
 
@@ -79,18 +78,20 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
         payload[3] = -91;
         payload[4] = 90;
         payload[5] = 90;
-        if (state == 1)
+        if (state == 1) {
             payload[6] = (byte) (178 + (sidMask << 1));
-        else
+        } else {
             payload[6] = (byte) (byte) (178 + sidMask);
+        }
         payload[7] = -64;
         payload[8] = 2;
         payload[10] = 3;
         payload[13] = (byte) sidMask;
-        if (state == 1)
+        if (state == 1) {
             payload[14] = (byte) sidMask;
-        else
+        } else {
             payload[14] = 0;
+        }
         byte message[] = buildMessage((byte) 106, payload);
         sendAndReceiveDatagram(message, "Setting MPx status");
     }
@@ -109,7 +110,7 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
             byte message[] = buildMessage((byte) 106, payload);
             byte response[] = sendAndReceiveDatagram(message, "status for strip");
             if (response == null) {
-                thingLogger.logWarn("response from strip device was null");
+                logger.warn("response from strip device was null");
                 return false;
             }
             byte decodedPayload[] = decodeDevicePacket(response);
@@ -120,7 +121,7 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
             this.updateState("s3powerOn", (status & 4) == 4 ? OnOffType.ON : OnOffType.OFF);
             this.updateState("s4powerOn", (status & 8) == 8 ? OnOffType.ON : OnOffType.OFF);
         } catch (Exception ex) {
-            thingLogger.logError("Exception while getting status from device", ex);
+            logger.error("Exception while getting status from device", ex);
             return false;
         }
         return true;

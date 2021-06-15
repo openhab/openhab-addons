@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.broadlink.internal.discovery;
 
-import java.net.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
@@ -20,7 +21,6 @@ import org.openhab.binding.broadlink.internal.NetworkUtils;
 import org.openhab.binding.broadlink.internal.socket.BroadlinkSocket;
 import org.openhab.binding.broadlink.internal.socket.BroadlinkSocketListener;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author John Marshall - Initial contribution
@@ -28,58 +28,58 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DiscoveryProtocol {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DiscoveryProtocol.class);
-
     @NonNullByDefault
     private static class AsyncDiscoveryThread extends Thread {
         private final BroadlinkSocketListener listener;
         private final long timeoutMillis;
         private final DiscoveryFinishedListener finishedListener;
+        private final Logger logger;
 
         AsyncDiscoveryThread(BroadlinkSocketListener listener, long timeoutMillis,
-                DiscoveryFinishedListener finishedListener) {
+                DiscoveryFinishedListener finishedListener, Logger logger) {
             this.listener = listener;
             this.timeoutMillis = timeoutMillis;
             this.finishedListener = finishedListener;
+            this.logger = logger;
         }
 
         public void run() {
-            BroadlinkSocket.registerListener(listener);
-            DiscoveryProtocol.discoverDevices();
-            DiscoveryProtocol.waitUntilEnded(timeoutMillis);
-            LOGGER.warn("Ended Broadlink device scan...");
-            BroadlinkSocket.unregisterListener(listener);
+            BroadlinkSocket.registerListener(listener, logger);
+            DiscoveryProtocol.discoverDevices(logger);
+            DiscoveryProtocol.waitUntilEnded(timeoutMillis, logger);
+            logger.warn("Ended Broadlink device scan...");
+            BroadlinkSocket.unregisterListener(listener, logger);
             finishedListener.onDiscoveryFinished();
         }
     }
 
     public static void beginAsync(BroadlinkSocketListener listener, long discoveryTimeoutMillis,
-            DiscoveryFinishedListener discoveryFinishedListener) {
-        LOGGER.warn("Beginning async Broadlink device scan; will wait {} ms for responses", discoveryTimeoutMillis);
-        AsyncDiscoveryThread adt = new AsyncDiscoveryThread(listener, discoveryTimeoutMillis,
-                discoveryFinishedListener);
+            DiscoveryFinishedListener discoveryFinishedListener, Logger logger) {
+        logger.warn("Beginning async Broadlink device scan; will wait {} ms for responses", discoveryTimeoutMillis);
+        AsyncDiscoveryThread adt = new AsyncDiscoveryThread(listener, discoveryTimeoutMillis, discoveryFinishedListener,
+                logger);
         adt.start();
     }
 
-    public static void discoverDevices() {
+    public static void discoverDevices(Logger logger) {
         try {
             InetAddress localAddress = NetworkUtils.getLocalHostLANAddress();
             int localPort = NetworkUtils.nextFreePort(localAddress, 1024, 3000);
             byte message[] = BroadlinkProtocol.buildDiscoveryPacket(localAddress.getHostAddress(), localPort);
-            BroadlinkSocket.sendMessage(message, "255.255.255.255", 80);
+            BroadlinkSocket.sendMessage(message, "255.255.255.255", 80, logger);
         } catch (UnknownHostException e) {
-            LOGGER.error("Failed to initiate discovery", e);
+            logger.error("Failed to initiate discovery", e);
         }
     }
 
-    private static void waitUntilEnded(long discoveryTimeoutMillis) {
+    private static void waitUntilEnded(long discoveryTimeoutMillis, Logger logger) {
         try {
-            LOGGER.warn("Broadlink device scan waiting for {} ms to complete ...", discoveryTimeoutMillis);
+            logger.warn("Broadlink device scan waiting for {} ms to complete ...", discoveryTimeoutMillis);
             Thread.sleep(discoveryTimeoutMillis);
-            LOGGER.warn("Device scan: wait complete ...");
+            logger.warn("Device scan: wait complete ...");
 
         } catch (InterruptedException e) {
-            LOGGER.error("problem {}", e.getMessage());
+            logger.error("problem {}", e.getMessage());
         }
     }
 }

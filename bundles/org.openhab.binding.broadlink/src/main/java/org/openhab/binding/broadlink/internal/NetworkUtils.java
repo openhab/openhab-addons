@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,14 +13,17 @@
 package org.openhab.binding.broadlink.internal;
 
 import java.io.IOException;
-import java.net.*;
-import java.util.*;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.ServerSocket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utilities for working with the local network.
@@ -30,18 +33,16 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NetworkUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NetworkUtils.class);
-
-    public static boolean hostAvailabilityCheck(@Nullable String host, int timeout) {
+    public static boolean hostAvailabilityCheck(@Nullable String host, int timeout, Logger logger) {
         if (host == null) {
-            LOGGER.warn("Can't check availability of a null host");
+            logger.warn("Can't check availability of a null host");
             return false;
         }
         try {
             InetAddress address = InetAddress.getByName(host);
             return address.isReachable(timeout);
         } catch (Exception e) {
-            LOGGER.error("Exception while trying to determine reachability of {}", host, e);
+            logger.error("Exception while trying to determine reachability of {}", host, e);
         }
         return false;
     }
@@ -70,14 +71,15 @@ public class NetworkUtils {
         try {
             InetAddress candidateAddress = findNonLoopbackAddress();
 
-            if (candidateAddress != null)
+            if (candidateAddress != null) {
                 return candidateAddress;
-
+            }
             InetAddress jdkSuppliedAddress = InetAddress.getLocalHost();
-            if (jdkSuppliedAddress == null)
+            if (jdkSuppliedAddress == null) {
                 throw new UnknownHostException("The JDK InetAddress.getLocalHost() method unexpectedly returned null.");
-            else
+            } else {
                 return jdkSuppliedAddress;
+            }
         } catch (Exception e) {
             UnknownHostException unknownHostException = new UnknownHostException(
                     (new StringBuilder("Failed to determine LAN address: ")).append(e).toString());
@@ -89,8 +91,9 @@ public class NetworkUtils {
     public static int nextFreePort(InetAddress host, int from, int to) {
         int port = randInt(from, to);
         do {
-            if (isLocalPortFree(host, port))
+            if (isLocalPortFree(host, port)) {
                 return port;
+            }
             port = ThreadLocalRandom.current().nextInt(from, to);
         } while (true);
     }

@@ -30,7 +30,7 @@
 		<channels>
 			<channel id="powerOn" typeId="powerOn"/>
 			<channel id="nightLight" typeId="powerOn">
-				<label>Nightlight power</label>
+				<label>Night Light Power</label>
 			</channel>
 		</channels>
 

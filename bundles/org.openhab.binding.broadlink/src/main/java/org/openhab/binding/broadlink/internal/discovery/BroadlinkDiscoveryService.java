@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,10 +31,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Broadlink discovery implementation.
  *
- * @author John Marshall/Cato Sognen - Initial contribution
+ * @author Cato Sognen - Initial contribution
+ * @author John Marshall - Rewrite for V2 and V3
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.broadlink")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.broadlink")
 public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         implements BroadlinkSocketListener, DiscoveryFinishedListener {
 
@@ -49,7 +50,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
     public void startScan() {
         foundCount = 0;
         logger.warn("BroadlinkDiscoveryService - Beginning Broadlink device scan...");
-        DiscoveryProtocol.beginAsync(this, 10000L, this);
+        DiscoveryProtocol.beginAsync(this, 10000L, this, logger);
     }
 
     public void onDiscoveryFinished() {
@@ -63,7 +64,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
 
     public void onDataReceived(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID,
             int model) {
-        logger.info("Data received during Broadlink device discovery: from {}:{} [{}]", remoteAddress, remotePort,
+        logger.trace("Data received during Broadlink device discovery: from {}:{} [{}]", remoteAddress, remotePort,
                 remoteMAC);
         foundCount++;
         discoveryResultSubmission(remoteAddress, remotePort, remoteMAC, thingTypeUID, model);
@@ -89,7 +90,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         if (BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.containsKey(thingTypeUID)) {
             notifyThingDiscovered(thingTypeUID, thingUID, remoteAddress, properties);
         } else {
-            logger.error("Discovered a {} but do not know how to support it at this time :-(", thingTypeUID);
+            logger.info("Discovered a {} but do not know how to support it at this time :-(", thingTypeUID);
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ public class DeviceRediscoveryAgent implements BroadlinkSocketListener, Discover
     public void attemptRediscovery() {
         logger.warn("DeviceRediscoveryAgent - Beginning Broadlink device scan for missing {}",
                 missingThingConfig.toString());
-        DiscoveryProtocol.beginAsync(this, 5000L, this);
+        DiscoveryProtocol.beginAsync(this, 5000L, this, logger);
     }
 
     public void onDataReceived(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID,

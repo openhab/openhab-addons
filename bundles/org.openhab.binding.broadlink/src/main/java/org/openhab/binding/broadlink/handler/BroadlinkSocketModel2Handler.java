@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,8 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,19 +83,19 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
                 setStatusOnDevice(mergeOnOffBits(powerStatus, command));
             }
         } catch (IOException e) {
-            thingLogger.logError("Could not send command to socket device", e);
+            logger.error("Could not send command to socket device", e);
         }
     }
 
     protected boolean getStatusFromDevice() {
         try {
-            thingLogger.logInfo("SP2/SP3 getting status...");
+            logger.info("SP2/SP3 getting status...");
             byte[] statusByte = getStatusByteFromDevice();
             updateState("powerOn", derivePowerStateFromStatusByte(statusByte));
             updateState("nightLight", deriveNightLightStateFromStatusByte(statusByte));
             return true;
         } catch (Exception ex) {
-            thingLogger.logError("Exception while getting status from device", ex);
+            logger.error("Exception while getting status from device", ex);
             return false;
         }
     }

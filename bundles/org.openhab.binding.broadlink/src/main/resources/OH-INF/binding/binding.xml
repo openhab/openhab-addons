@@ -5,5 +5,4 @@
 
 	<name>Broadlink Binding</name>
 	<description>This is the binding for Broadlink devices.</description>
-	<author>John Marshall/Cato Sognen</author>
 </binding:binding>

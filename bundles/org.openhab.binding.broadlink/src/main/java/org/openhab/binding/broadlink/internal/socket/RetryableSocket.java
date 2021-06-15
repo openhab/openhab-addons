@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,26 +13,31 @@
 package org.openhab.binding.broadlink.internal.socket;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketTimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
-import org.openhab.binding.broadlink.internal.ThingLogger;
+import org.slf4j.Logger;
 
 /**
  * @author John Marshall - Initial contribution
  */
 @NonNullByDefault
 public class RetryableSocket {
-    @Nullable
-    private DatagramSocket socket = null;
-    private final ThingLogger thingLogger;
-    private final BroadlinkDeviceConfiguration thingConfig;
 
-    public RetryableSocket(BroadlinkDeviceConfiguration thingConfig, ThingLogger thingLogger) {
+    private final BroadlinkDeviceConfiguration thingConfig;
+    private final Logger logger;
+
+    private @Nullable DatagramSocket socket = null;
+
+    public RetryableSocket(BroadlinkDeviceConfiguration thingConfig, Logger logger) {
         this.thingConfig = thingConfig;
-        this.thingLogger = thingLogger;
+        this.logger = logger;
     }
 
     /**
@@ -48,7 +53,7 @@ public class RetryableSocket {
         }
 
         if (thingConfig.getRetries() > 0) {
-            thingLogger.logTrace("Retrying sendAndReceive (for " + purpose + ") ONE time before giving up...");
+            logger.trace("Retrying sendAndReceive (for {}) ONE time before giving up...", purpose);
             return sendAndReceiveOneTime(message, purpose);
         }
 
@@ -72,10 +77,9 @@ public class RetryableSocket {
 
     private boolean sendDatagram(byte message[], String purpose) {
         try {
-            thingLogger
-                    .logTrace("Sending " + purpose + " to " + thingConfig.getIpAddress() + ":" + thingConfig.getPort());
+            logger.trace("Sending {} to {}:{}", purpose, thingConfig.getIpAddress(), thingConfig.getPort());
             if (socket == null || socket.isClosed()) {
-                thingLogger.logTrace("No existing socket ... creating");
+                logger.trace("No existing socket ... creating");
                 socket = new DatagramSocket();
                 socket.setBroadcast(true);
                 socket.setReuseAddress(true);
@@ -85,29 +89,29 @@ public class RetryableSocket {
             int port = thingConfig.getPort();
             DatagramPacket sendPacket = new DatagramPacket(message, message.length, new InetSocketAddress(host, port));
             socket.send(sendPacket);
-            thingLogger.logTrace("Sending " + purpose + " complete");
+            logger.trace("Sending {} complete", purpose);
             return true;
         } catch (IOException e) {
-            thingLogger.logError("IO error during UDP command sending " + purpose + " +: ", e);
+            logger.error("IO error during UDP command sending {}:", purpose, e);
             return false;
         }
     }
 
     private @Nullable DatagramPacket receiveDatagram(String purpose, DatagramPacket receivePacket) {
-        thingLogger.logTrace("Awaiting " + purpose + " response");
+        logger.trace("Awaiting {} response", purpose);
 
         try {
             if (socket == null) {
-                thingLogger.logError("receiveDatagram " + purpose + " for socket was unexpectedly null");
+                logger.error("receiveDatagram {} for socket was unexpectedly null", purpose);
             } else {
                 socket.receive(receivePacket);
-                thingLogger.logTrace("Received " + purpose + " (" + receivePacket.getLength() + " bytes)");
+                logger.trace("Received {} ({}} bytes)", purpose, receivePacket.getLength());
                 return receivePacket;
             }
         } catch (SocketTimeoutException ste) {
-            thingLogger.logDebug("No further " + purpose + " response received for device");
+            logger.debug("No further {} response received for device", purpose);
         } catch (Exception e) {
-            thingLogger.logError("While " + purpose, e);
+            logger.error("While {}", purpose, e);
         }
 
         return null;
