@@ -89,7 +89,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
 
     protected boolean getStatusFromDevice() {
         try {
-            logger.info("SP2/SP3 getting status...");
+            logger.debug("SP2/SP3 getting status...");
             byte[] statusByte = getStatusByteFromDevice();
             updateState("powerOn", derivePowerStateFromStatusByte(statusByte));
             updateState("nightLight", deriveNightLightStateFromStatusByte(statusByte));
