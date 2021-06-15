@@ -37,9 +37,6 @@ public class RemoteopenhabStreamingRequestFilter implements ClientRequestFilter 
 
     private final ConcurrentHashMap<String, String> credentialTokens = new ConcurrentHashMap<>();
 
-    public RemoteopenhabStreamingRequestFilter() {
-    }
-
     @Override
     public void filter(@Nullable ClientRequestContext requestContext) throws IOException {
         if (requestContext != null) {
