@@ -596,7 +596,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         State value = cache.getValue(channelId);
         String lastAlarm = value != UnDefType.NULL ? value.toString() : "";
 
-        if ((force || !lastAlarm.equals(alarm)) && now() > (stats.lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC)) {
+        if (force || !lastAlarm.equals(alarm)
+                || (lastAlarm.equals(alarm) && now() > stats.lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC)) {
             if (alarm.isEmpty() || alarm.equals(ALARM_TYPE_NONE)) {
                 cache.updateChannel(channelId, getStringType(alarm));
             } else {
