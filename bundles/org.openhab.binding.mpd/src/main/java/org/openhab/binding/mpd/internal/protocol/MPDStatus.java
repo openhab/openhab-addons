@@ -13,10 +13,9 @@
 package org.openhab.binding.mpd.internal.protocol;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class for representing the status of a Music Player Daemon.
@@ -32,15 +31,15 @@ public class MPDStatus {
         STOP
     }
 
-    private final Logger logger = LoggerFactory.getLogger(MPDStatus.class);
-
     private final State state;
     private final int volume;
+    private final Optional<Float> elapsed;
 
     public MPDStatus(MPDResponse response) {
         Map<String, String> values = MPDResponseParser.responseToMap(response);
         state = parseState(values.getOrDefault("state", ""));
-        volume = parseVolume(values.getOrDefault("volume", "0"));
+        volume = MPDResponseParser.parseInteger(values.getOrDefault("volume", "0"), 0);
+        elapsed = MPDResponseParser.parseFloat(values.get("elapsed"));
     }
 
     public State getState() {
@@ -49,6 +48,10 @@ public class MPDStatus {
 
     public int getVolume() {
         return volume;
+    }
+
+    public Optional<Float> getElapsed() {
+        return elapsed;
     }
 
     private State parseState(String value) {
@@ -62,14 +65,5 @@ public class MPDStatus {
         }
 
         return State.STOP;
-    }
-
-    private int parseVolume(String value) {
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            logger.debug("parseVolume of {} failed", value);
-        }
-        return 0;
     }
 }

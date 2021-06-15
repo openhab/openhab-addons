@@ -17,6 +17,8 @@
 			<channel id="currentsongid" typeId="currentsongid"/>
 			<channel id="currenttitle" typeId="system.media-title"/>
 			<channel id="currenttrack" typeId="currenttrack"/>
+			<channel id="currentduration" typeId="currentduration"/>
+			<channel id="currentelapsed" typeId="currentelapsed"/>
 			<channel id="stop" typeId="stop"/>
 		</channels>
 
@@ -85,5 +87,20 @@
 		<label>Stop</label>
 		<description>Stop the Music Player Daemon. ON if the player is stopped.</description>
 	</channel-type>
+
+	<channel-type id="currentduration">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<description>Duration of currently playing track.</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="currentelapsed">
+		<item-type>Number:Time</item-type>
+		<label>Elapsed Time</label>
+		<description>Elapsed time of the currently playing track.</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
 
 </thing:thing-descriptions>

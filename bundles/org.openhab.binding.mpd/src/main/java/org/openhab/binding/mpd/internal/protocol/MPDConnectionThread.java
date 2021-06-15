@@ -191,7 +191,6 @@ public class MPDConnectionThread extends Thread {
 
     private void processPendingCommands() throws IOException, MPDException {
         MPDCommand currentCommand;
-
         while (!disposed.get()) {
             synchronized (pendingCommands) {
                 if (!pendingCommands.isEmpty()) {

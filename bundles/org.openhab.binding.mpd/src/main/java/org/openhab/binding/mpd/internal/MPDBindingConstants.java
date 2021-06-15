@@ -38,6 +38,8 @@ public class MPDBindingConstants {
     public static final String CHANNEL_CURRENT_SONG_ID = "currentsongid";
     public static final String CHANNEL_CURRENT_TITLE = "currenttitle";
     public static final String CHANNEL_CURRENT_TRACK = "currenttrack";
+    public static final String CHANNEL_CURRENT_DURATION = "currentduration";
+    public static final String CHANNEL_CURRENT_ELAPSED = "currentelapsed";
     public static final String CHANNEL_STOP = "stop";
     public static final String CHANNEL_VOLUME = "volume";
 
