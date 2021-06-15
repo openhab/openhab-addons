@@ -273,21 +273,47 @@ public class RemoteopenhabRestClient {
 
     private SseEventSource createEventSource(String restSseUrl) {
         String credentialToken = restSseUrl.startsWith("https:") || authenticateAnyway ? this.credentialToken : "";
+
+        RemoteopenhabStreamingRequestFilter filter;
+        boolean filterRegistered = clientBuilder.getConfiguration()
+                .isRegistered(RemoteopenhabStreamingRequestFilter.class);
+        if (filterRegistered) {
+            filter = clientBuilder.getConfiguration().getInstances().stream()
+                    .filter(instance -> instance instanceof RemoteopenhabStreamingRequestFilter)
+                    .map(instance -> (RemoteopenhabStreamingRequestFilter) instance).findAny().orElseThrow();
+        } else {
+            filter = new RemoteopenhabStreamingRequestFilter();
+        }
+        filter.setCredentialToken(restSseUrl, credentialToken);
+
         Client client;
         // Avoid a timeout exception after 1 minute by setting the read timeout to 0 (infinite)
         if (trustedCertificate) {
-            client = clientBuilder.sslContext(httpClient.getSslContextFactory().getSslContext())
-                    .hostnameVerifier(new HostnameVerifier() {
-                        @Override
-                        public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
-                            return true;
-                        }
-                    }).readTimeout(0, TimeUnit.SECONDS)
-                    .register(new RemoteopenhabStreamingRequestFilter(credentialToken)).build();
+            if (filterRegistered) {
+                client = clientBuilder.sslContext(httpClient.getSslContextFactory().getSslContext())
+                        .hostnameVerifier(new HostnameVerifier() {
+                            @Override
+                            public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
+                                return true;
+                            }
+                        }).readTimeout(0, TimeUnit.SECONDS).build();
+            } else {
+                client = clientBuilder.sslContext(httpClient.getSslContextFactory().getSslContext())
+                        .hostnameVerifier(new HostnameVerifier() {
+                            @Override
+                            public boolean verify(@Nullable String hostname, @Nullable SSLSession session) {
+                                return true;
+                            }
+                        }).readTimeout(0, TimeUnit.SECONDS).register(filter).build();
+            }
         } else {
-            client = clientBuilder.readTimeout(0, TimeUnit.SECONDS)
-                    .register(new RemoteopenhabStreamingRequestFilter(credentialToken)).build();
+            if (filterRegistered) {
+                client = clientBuilder.readTimeout(0, TimeUnit.SECONDS).build();
+            } else {
+                client = clientBuilder.readTimeout(0, TimeUnit.SECONDS).register(filter).build();
+            }
         }
+
         SseEventSource eventSource = eventSourceFactory.newSource(client.target(restSseUrl));
         eventSource.register(this::onEvent, this::onError, this::onComplete);
         return eventSource;
