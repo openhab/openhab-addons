@@ -27,8 +27,7 @@ public class BroadlinkDeviceConfiguration {
     private int port;
     private String macAddress;
     private int pollingInterval;
-    @Nullable
-    private String mapFilename;
+    private @Nullable String mapFilename;
     private int retries = 1;
     private boolean ignoreFailedUpdates = false;
     private int deviceType;
