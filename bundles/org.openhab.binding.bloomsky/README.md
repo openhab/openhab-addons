@@ -59,33 +59,88 @@ The bridge does not have any channels.
 
 **SKY Device Information Group Channels**
 
-| Channel Type ID       | Item Type | Description                                                        | Read Write |
-|:----------------------|:----------|:-------------------------------------------------------------------|:----------:|
-| alt                   | Number    | Weather station altitude in decimal format                         | R          |
-| boundedPoint          | String    | Indoor device setting (Obsolete)                                   | R          |
-| cityName              | String    | Weather observation city location                                  | R          |
-| deviceID              | String    | SKY Device unique identifier                                       | R          |
-| dst                   | Number    | Daylight savings time on (1) or off (0)                            | R          |
-| fullAddress           | String    | Weather observation full address                                   | R          |
-| lat                   | Number    | Weather station latitude in decimal format                         | R          |
-| location              | String    | Device location combined longitude, latittude                      | R          |
-| lon                   | Number    | Weather station longitude in decimal format                        | R          |
-| numOfFollowers        | Number    | Number of followers this PWS has as a favorite                     | R          |
-| previewImageList      | String    | Array list - URLs to last 5 image snapshots for timelapse video    | R          |
-| searchable            | String    | Public can find this weather station on Bloomsky map               | R          |
-| streetName            | String    | Weather observation street name                                    | R          |
-| videoList             | String    | Array list - URLs to last 5 days mp4 timelapse's in Fahrenheit     | R          |
-| videoListC            | String    | Array list - URLs to last 5 days mp4 timelapse's in Celsius        | R          |
-| utc                   | Number    | Weather observation UTC offset                                     | R          |
+| Channel Type ID   | Item Type | Description                                                        | Read Write |
+|:------------------|:----------|:-------------------------------------------------------------------|:----------:|
+| alt               | Number    | Weather station altitude in decimal format                         | R          |
+| boundedPoint      | String    | Indoor device setting (Obsolete)                                   | R          |
+| cityName          | String    | Weather observation city location                                  | R          |
+| deviceID          | String    | SKY Device unique identifier                                       | R          |
+| dst               | Number    | Daylight savings time on (1) or off (0)                            | R          |
+| fullAddress       | String    | Weather observation full address                                   | R          |
+| lat               | Number    | Weather station latitude in decimal format                         | R          |
+| location          | String    | Device location combined longitude, latittude                      | R          |
+| lon               | Number    | Weather station longitude in decimal format                        | R          |
+| numOfFollowers    | Number    | Number of followers this PWS has as a favorite                     | R          |
+| previewImageList  | String    | Array list - URLs to last 5 image snapshots for timelapse video    | R          |
+| searchable        | String    | Public can find this weather station on Bloomsky map               | R          |
+| streetName        | String    | Weather observation street name                                    | R          |
+| videoList         | String    | Array list - URLs to last 5 days mp4 timelapse's in Fahrenheit     | R          |
+| videoListC        | String    | Array list - URLs to last 5 days mp4 timelapse's in Celsius        | R          |
+| utc               | Number    | Weather observation UTC offset                                     | R          |
 
 **SKY Device Weather Observations Group Channels**
 
-| Channel Type ID       | Item Type | Description                                                        | Read Write |
-|:----------------------|:----------|:-------------------------------------------------------------------|:----------:|
-| deviceType            | String    | Device type (model) SKY1 or SKY2                                   | R          |
+| Channel Type ID   | Item Type | Description                                                        | Read Write |
+|:------------------|:----------|:-------------------------------------------------------------------|:----------:|
+| currentSkyImage   | Image     | Snapshot image from the Sky camera taken at Image timestamp        | R          |
+| deviceType        | String    | Device type (model) SKY1 or SKY2                                   | R          |
+| humidity          | Number    | Relative humidity given as a percentage                            | R          |
+| imageTS           | DateTime  | Current image time stamp in epoch format (Unix time stamp)         | R          |
+| imageURL          | String    | URL to jpg snapshot image from Sky camera taken at Image timestamp | R          |
+| luminance         | Number    | Luminance (brightness) given in candelas per square meter cd/m2    | R          |
+| night             | String    | Night detected after sunset/before sunrise                         | R          |
+| pressure          | Number    | Barometric pressure inHG or mbar                                   | R          |
+| rain              | String    | Rain detected true or false (is it raining)                        | R          |
+| skyUVIndex        | String    | UV index                                                           | R          |
+| temperature       | Number    | Outside temperature in Fahrenheit or Celsius                       | R          |
+| tS                | DateTime  | Observation time stamp in epoch format (Unix time stamp)           | R          |
+| voltage           | Number    | Battery voltage to indicate charge level 100% = 2600+ mv           | R          |
 
+**SKY Video List F&#176; Group Channels**
 
+| Channel Type ID | Item Type | Description                                                              | Read Write |
+|:----------------|:----------|:-------------------------------------------------------------------------|:----------:|
+| videoDay1       | String    | Day long time-lapse mp4 video URL from yesterday (today - 1 day) F&#176; | R          |
+| videoDay2       | String    | Day long time-lapse mp4 video URL from (today - 2 days) F&#176;          | R          |
+| videoDay3       | String    | Day long time-lapse mp4 video URL from (today - 3 days) F&#176;          | R          |
+| videoDay4       | String    | Day long time-lapse mp4 video URL from (today - 4 days) F&#176;          | R          |
+| videoDay5       | String    | Day long time-lapse mp4 video URL from (today - 5 days) F&#176;          | R          |
 
+**SKY Video List C&#176; Group Channels**
+
+| Channel Type ID | Item Type | Description                                                              | Read Write |
+|:----------------|:----------|:-------------------------------------------------------------------------|:----------:|
+| videoCDay1      | String    | Day long time-lapse mp4 video URL from yesterday (today - 1 day) C&#176; | R          |
+| videoCDay2      | String    | Day long time-lapse mp4 video URL from (today - 2 days) C&#176;          | R          |
+| videoCDay3      | String    | Day long time-lapse mp4 video URL from (today - 3 days) C&#176;          | R          |
+| videoCDay4      | String    | Day long time-lapse mp4 video URL from (today - 4 days) C&#176;          | R          |
+| videoCDay5      | String    | Day long time-lapse mp4 video URL from (today - 5 days) C&#176;          | R          |
+
+**SKY Video Preview Image List Group Channels**
+
+| Channel Type ID | Item Type | Description                                                              | Read Write |
+|:----------------|:----------|:-------------------------------------------------------------------------|:----------:|
+| previewImage1   | Image     | Time lapse video preview image snapshot from yesterday (today - 1 day)   | R          |
+| previewImage2   | Image     | Time lapse video preview image snapshot from (today - 2 days)            | R          |
+| previewImage3   | Image     | Time lapse video preview image snapshot from (today - 3 days)            | R          |
+| previewImage4   | Image     | Time lapse video preview image snapshot from (today - 4 days)            | R          |
+| previewImage5   | Image     | Time lapse video preview image snapshot from (today - 5 days)            | R          |
+
+### STORM Channels 
+
+**STORM Weather Observation Group Channels**
+
+| Channel Type ID    | Item Type | Description                                                        | Read Write |
+|:-------------------|:----------|:-------------------------------------------------------------------|:----------:|
+| rain24h            | Number    | Precipitation last last 24 hours                                   | R          |
+| rainDaily          | Number    | Precipitation total current day                                    | R          |
+| rainRate           | String    | Precipitation rate                                                 | R          |
+| stormTimeStamp     | DateTime  | Storm update - date and time when observations were last updated   | R          |
+| stormUVIndex       | String    | UV index (overrides the SKY value)                                 | R          |
+| sustainedWindSpeed | Number    | Sustained Wind Speed                                               | R          |
+| windChill          | Number    | Wind chill in Fahrenheit or Celsius                                | R          |
+| windDirection      | String    | Wind direction                                                     | R          |
+| windGust           | Number    | Wind Gust                                                          | R          |
 
 ## Full Example
 
