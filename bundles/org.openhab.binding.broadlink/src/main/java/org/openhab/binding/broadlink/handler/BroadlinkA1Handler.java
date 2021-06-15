@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,9 @@
 package org.openhab.binding.broadlink.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.broadlink.internal.*;
+import org.openhab.binding.broadlink.internal.ModelMapper;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Thing;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -31,7 +31,7 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
     }
 
     protected boolean getStatusFromDevice() {
-        thingLogger.logTrace("A1 getStatusFromDevice");
+        logger.trace("A1 getStatusFromDevice");
         byte payload[];
         payload = new byte[16];
         payload[0] = 1;
@@ -41,12 +41,12 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
 
             byte[] response = sendAndReceiveDatagram(message, "A1 device status");
             if (response == null) {
-                thingLogger.logError("Got nothing back while getting device status");
+                logger.error("Got nothing back while getting device status");
                 return false;
             }
             byte decryptResponse[] = decodeDevicePacket(response);
             float temperature = (float) ((double) (decryptResponse[4] * 10 + decryptResponse[5]) / 10D);
-            thingLogger.logTrace("A1 getStatusFromDevice got temperature " + temperature);
+            logger.trace("A1 getStatusFromDevice got temperature {}", temperature);
 
             updateState("temperature", new DecimalType(temperature));
             updateState("humidity", new DecimalType((double) (decryptResponse[6] * 10 + decryptResponse[7]) / 10D));
@@ -55,7 +55,7 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
             updateState("noise", ModelMapper.getNoiseValue(decryptResponse[12]));
             return true;
         } catch (Exception ex) {
-            thingLogger.logError("Failed while getting device status", ex);
+            logger.error("Failed while getting device status", ex);
             return false;
         }
     }

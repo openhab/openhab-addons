@@ -32,12 +32,12 @@
 	</channel-type>
 	<channel-type id="powerOn">
 		<item-type>Switch</item-type>
-		<label>Socket power</label>
+		<label>Socket Power</label>
 		<category>PowerOutlet</category>
 	</channel-type>
 	<channel-type id="powerConsumption" advanced="true">
 		<item-type>Number</item-type>
-		<label>Power consumption</label>
+		<label>Power Consumption</label>
 		<state pattern="%.2f" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="light">
@@ -48,13 +48,13 @@
 	</channel-type>
 	<channel-type id="noise">
 		<item-type>String</item-type>
-		<label>Background noise</label>
+		<label>Background Noise</label>
 		<description>Noise conditions</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="air">
 		<item-type>String</item-type>
-		<label>Air quality</label>
+		<label>Air Quality</label>
 		<description>Air quality conditions</description>
 		<state readOnly="true"></state>
 	</channel-type>
