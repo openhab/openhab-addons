@@ -51,6 +51,7 @@
 			<channel typeId="dst" id="dst"></channel>
 			<channel typeId="boundedPoint" id="boundedPoint"></channel>
 			<channel typeId="lon" id="lon"></channel>
+			<channel typeId="location" id="location"></channel>
 			<channel typeId="videoList" id="videoList"></channel>
 			<channel typeId="videoListC" id="videoListC"></channel>
 			<channel typeId="deviceID" id="deviceID"></channel>
@@ -169,7 +170,7 @@
 	<channel-type id="boundedPoint" advanced="true">
 		<item-type>String</item-type>
 		<label>Bounded Point (Obsolete)</label>
-		<description>Weather observation city location</description>
+		<description>Indoor device setting (Obsolete)</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
@@ -218,7 +219,7 @@
 	<channel-type id="alt" advanced="true">
 		<item-type>Number</item-type>
 		<label>Altitude</label>
-		<description>Weather station altitude longitude in decimal format</description>
+		<description>Weather station altitude in decimal format</description>
 		<state readOnly="true" pattern="%.2f"></state>
 	</channel-type>
 
@@ -227,6 +228,13 @@
 		<label>Observation Location Address</label>
 		<description>Weather observation full address</description>
 		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="location">
+		<item-type>Location</item-type>
+		<label>Device Location Latitude, Longitude</label>
+		<description>Latitude and longitude of weather station</description>
+		<state readOnly="true" pattern="%2$s°N, %3$s°W"></state>
 	</channel-type>
 
 	<channel-type id="streetName">

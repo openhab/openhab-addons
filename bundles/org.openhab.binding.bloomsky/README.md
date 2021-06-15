@@ -17,7 +17,7 @@ The following thing types are supported:
 
 | Thing | ID | Description |
 | --- | --- | --- |
-|![Account](./doc/location_details.png) | bridge | Represents the connection to the Owners BloomSky device account through the API key for accessing the weather station details and sensor readings |
+|![Account](./doc/location_details.png) | bridge | Represents the connection to the owners BloomSky device account through the API key for accessing the weather station details and sensor readings |
 | ![BloomSky SKY1/SKY2](./doc/Sky_Weather_Stations.png) | sky | Provides station details for a specific location, weather sensor data and camera images captured for the most recent 5-minute interval by the _SKY1 or SKY2_ weather station:  <br> &#9726; City, Street Name <br> &#9726; Device Id, Name <br> &#9726; Latitude, Longitude, Altitude <br> &#9726; Number of Followers <br> &#9726; UTC, Daylight Savings Time <br> &#9726; Device Type (SKY1 or SKY2)  <br> &#9726; Temperature, Humidity, Barometric Pressure  <br> &#9726; UV Index, Luminance <br> &#9726; Battery Voltage, Rain, Night Indicator <br> &#9726; Image - URL & Time Stamp <br> &#9726; Video List Fahrenheit, Celsius   |
 |![BloomSKY STORM](./doc/bloomsky_storm_weather_station.png) | storm | Provides weather sensor data captured for the most recent 5-minute interval by the _STORM_ weather station: <br> &#9726; UV Index <br> &#9726; Wind Speed, Direction, Gust <br> &#9726; Rain Rate, Daily & Rolling 24-Hour Accumulation |
 
@@ -40,7 +40,7 @@ The binding has no configuration options, all configuration is done at Thing and
 The **bridge** thing has three (3) configuration parameters:
 
 | Parameter | Parameter ID | Required/Optional |Description |
-| :---: | :--- | --- | --- |
+| :---      | :---         | ---               | ---        |
 | API Key | apiKey | Required | API key to access the BloomSky personal weather station API service.  Obtain this key from the BloomSky Device Owners page. |
 | Refresh Interval | refreshInterval | Required | Default (minimumn) value is 5 minutes. This is based on the API which updates on 5 minute intervals. |
 | Measurement Display Units | units | Required | Observations can be displayed in either Imperial (US) or Metric (SI) units.  Default is set to system locale. |  
@@ -51,13 +51,41 @@ The refresh request for either the sky or storm things will also pull its associ
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+### Bridge (Account) Channels
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The bridge does not have any channels.
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+### SKY Channels 
+
+**SKY Device Information Group Channels**
+
+| Channel Type ID       | Item Type | Description                                                        | Read Write |
+|:----------------------|:----------|:-------------------------------------------------------------------|:----------:|
+| alt                   | Number    | Weather station altitude in decimal format                         | R          |
+| boundedPoint          | String    | Indoor device setting (Obsolete)                                   | R          |
+| cityName              | String    | Weather observation city location                                  | R          |
+| deviceID              | String    | SKY Device unique identifier                                       | R          |
+| dst                   | Number    | Daylight savings time on (1) or off (0)                            | R          |
+| fullAddress           | String    | Weather observation full address                                   | R          |
+| lat                   | Number    | Weather station latitude in decimal format                         | R          |
+| location              | String    | Device location combined longitude, latittude                      | R          |
+| lon                   | Number    | Weather station longitude in decimal format                        | R          |
+| numOfFollowers        | Number    | Number of followers this PWS has as a favorite                     | R          |
+| previewImageList      | String    | Array list - URLs to last 5 image snapshots for timelapse video    | R          |
+| searchable            | String    | Public can find this weather station on Bloomsky map               | R          |
+| streetName            | String    | Weather observation street name                                    | R          |
+| videoList             | String    | Array list - URLs to last 5 days mp4 timelapse's in Fahrenheit     | R          |
+| videoListC            | String    | Array list - URLs to last 5 days mp4 timelapse's in Celsius        | R          |
+| utc                   | Number    | Weather observation UTC offset                                     | R          |
+
+**SKY Device Weather Observations Group Channels**
+
+| Channel Type ID       | Item Type | Description                                                        | Read Write |
+|:----------------------|:----------|:-------------------------------------------------------------------|:----------:|
+| deviceType            | String    | Device type (model) SKY1 or SKY2                                   | R          |
+
+
+
 
 ## Full Example
 
