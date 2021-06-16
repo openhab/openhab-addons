@@ -72,7 +72,7 @@ public class RevolutionHandler extends ServerHandler {
             }
             internalPoll();
         } catch (FreeboxException e) {
-            logger.debug("Error while handling command {} from channel {}", command, channelUID.getId(), e);
+            logger.warn("Error while handling command {} from channel {}", command, channelUID.getId(), e);
         }
     }
 
@@ -91,7 +91,7 @@ public class RevolutionHandler extends ServerHandler {
             config.setOrientation(((DecimalType) command).intValue());
             lcdManager.setConfig(config);
         } else {
-            logger.debug("Invalid command {} from channel {}", command, LCD_ORIENTATION);
+            logger.warn("Invalid command {} from channel {}", command, LCD_ORIENTATION);
         }
     }
 
@@ -101,7 +101,7 @@ public class RevolutionHandler extends ServerHandler {
             config.setOrientationForced(TRUE_COMMANDS.contains(command));
             lcdManager.setConfig(config);
         } else {
-            logger.debug("Invalid command {} from channel {}", command, LCD_FORCED);
+            logger.warn("Invalid command {} from channel {}", command, LCD_FORCED);
         }
     }
 
@@ -114,7 +114,7 @@ public class RevolutionHandler extends ServerHandler {
         } else if (command instanceof DecimalType || command instanceof PercentType) {
             changeLcdBrightness(() -> ((DecimalType) command).intValue());
         } else {
-            logger.debug("Invalid command {} from channel {}", command, LCD_BRIGHTNESS);
+            logger.warn("Invalid command {} from channel {}", command, LCD_BRIGHTNESS);
         }
     }
 

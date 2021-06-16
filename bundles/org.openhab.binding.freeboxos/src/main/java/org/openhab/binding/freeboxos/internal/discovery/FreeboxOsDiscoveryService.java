@@ -123,7 +123,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                     discoverHosts(lanHosts);
                 }
             } catch (FreeboxException e) {
-                logger.warn("Error while requesting data for things discovery : {}", e.getMessage());
+                logger.warn("Error while requesting data for things discovery : {}", e);
             }
         }
     }
@@ -136,7 +136,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
         ThingUID thingUID = new ThingUID(
                 config.getBoardName().contains(FBX_DELTA_GW) ? THING_TYPE_DELTA : THING_TYPE_REVOLUTION, bridgeUID,
                 config.getSerial());
-        logger.trace("Adding new Freebox Server {} to inbox", thingUID);
+        logger.debug("Adding new Freebox Server {} to inbox", thingUID);
         Map<String, Object> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.getSerial());
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, config.getBoardName());
@@ -153,7 +153,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
         if (phoneManager != null) {
             PhoneStatus config = phoneManager.getStatus();
             ThingUID thingUID = new ThingUID(THING_TYPE_LANDLINE, bridgeUID, Long.toString(config.getId()));
-            logger.trace("Adding new Freebox Phone {} to inbox", thingUID);
+            logger.debug("Adding new Freebox Phone {} to inbox", thingUID);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                     .withLabel(config.getType().name()).build();
             thingDiscovered(discoveryResult);
@@ -232,7 +232,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                 lanHosts.remove(vm.getMac());
 
                 ThingUID thingUID = new ThingUID(THING_TYPE_VM, bridgeUID, macToUid(mac));
-                logger.trace("Adding new VM Device {} to inbox", thingUID);
+                logger.debug("Adding new VM Device {} to inbox", thingUID);
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                         .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac)
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS)
@@ -266,7 +266,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
 
                 ThingUID thingUID = new ThingUID(wifiMacs.contains(mac) ? THING_TYPE_WIFI_HOST : THING_TYPE_HOST,
                         bridgeUID, macToUid(mac));
-                logger.trace("Adding new Freebox Network Host {} to inbox", thingUID);
+                logger.debug("Adding new Freebox Network Host {} to inbox", thingUID);
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                         .withProperties(properties).withTTL(300).withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS)
                         .withLabel(lanHost.getPrimaryNameOrElse(String.format("Freebox Network Device %s", mac)));

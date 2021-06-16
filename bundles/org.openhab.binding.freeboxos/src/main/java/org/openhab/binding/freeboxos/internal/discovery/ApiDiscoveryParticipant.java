@@ -65,7 +65,7 @@ public class ApiDiscoveryParticipant implements MDNSDiscoveryParticipant {
             properties.put(HTTPS_AVAILABLE, "1".equals(service.getPropertyString("https_available")));
             properties.put(API_DOMAIN, service.getPropertyString("api_domain"));
 
-            logger.info("Created a DiscoveryResult for Freebox Api Bridge {}.", thingUID);
+            logger.debug("Created a DiscoveryResult for Freebox Api Bridge {}.", thingUID);
             return DiscoveryResultBuilder.create(thingUID).withLabel("Bridge Freebox OS").withProperties(properties)
                     .withRepresentationProperty(API_DOMAIN).build();
         }

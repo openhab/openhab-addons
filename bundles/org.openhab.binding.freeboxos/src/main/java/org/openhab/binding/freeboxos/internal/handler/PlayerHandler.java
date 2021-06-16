@@ -207,7 +207,7 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
                     bridgeHandler.getAirMediaManager().sendToReceiver(playerName, getPassword(), MediaAction.STOP,
                             MediaType.VIDEO);
                 } catch (FreeboxException e) {
-                    logger.warn("Exception while stopping audio stream playback: {}", e.getMessage());
+                    logger.warn("Exception while stopping audio stream playback: {}", e);
                 }
             } else {
                 String url = null;
@@ -232,10 +232,10 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
                         bridgeHandler.getAirMediaManager().sendToReceiver(playerName, getPassword(), MediaAction.START,
                                 MediaType.VIDEO, url);
                     } catch (FreeboxException e) {
-                        logger.warn("Audio stream playback failed: {}", e.getMessage());
+                        logger.warn("Audio stream playback failed: {}", e);
                     }
                 } catch (IOException e) {
-                    logger.debug("Exception while closing audioStream", e);
+                    logger.warn("Exception while closing audioStream", e);
                 }
             }
         }
@@ -276,7 +276,7 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
             try {
                 bridgeHandler.get(urlBuilder.toString(), null, false);
             } catch (FreeboxException e) {
-                logger.warn("Error calling Player url : {}", e.getMessage());
+                logger.warn("Error calling Player url : {}", e);
             }
         } else {
             logger.info("Key '{}' is not a valid key expression", key);

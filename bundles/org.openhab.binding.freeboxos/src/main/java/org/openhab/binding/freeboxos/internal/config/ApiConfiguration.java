@@ -33,7 +33,7 @@ public class ApiConfiguration {
     public int httpsPort = 15682;
     public boolean discoverNetDevice;
     public boolean httpsAvailable;
-    public String apiVersion = "5.0";
+    private String apiVersion = "5.0";
     public String baseUrl = "/api/";
     public String appToken = "";
 

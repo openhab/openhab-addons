@@ -34,9 +34,9 @@ public class BaseResponse {
         INVALID_TOKEN;
     }
 
-    public boolean success;
+    private boolean success;
     private ErrorCode errorCode = ErrorCode.NONE;
-    public @Nullable String msg;
+    private @Nullable String msg;
     private @Nullable String missingRight;
 
     protected @Nullable String internalEvaluate() {

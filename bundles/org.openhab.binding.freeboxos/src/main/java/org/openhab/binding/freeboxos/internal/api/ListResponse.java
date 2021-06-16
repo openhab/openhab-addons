@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.freeboxos.internal.api;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Defines an API result that returns a list of objects
@@ -24,9 +24,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ListResponse<T> extends BaseResponse {
-    protected List<T> result = new ArrayList<>();
+    private @Nullable List<T> result;
 
     public List<T> getResult() {
-        return result;
+        List<T> localList = result;
+        return localList == null ? List.of() : localList;
     }
 }

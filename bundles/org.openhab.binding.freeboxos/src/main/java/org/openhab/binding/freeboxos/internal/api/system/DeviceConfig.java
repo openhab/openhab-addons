@@ -27,8 +27,8 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class DeviceConfig {
-    public class ModelInfo {
-        protected @NonNullByDefault({}) String prettyName;
+    private class ModelInfo {
+        private @NonNullByDefault({}) String prettyName;
     }
 
     private @NonNullByDefault({}) ModelInfo modelInfo;

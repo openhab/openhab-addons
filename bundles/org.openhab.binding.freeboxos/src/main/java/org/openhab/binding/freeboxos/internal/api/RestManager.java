@@ -13,7 +13,6 @@
 package org.openhab.binding.freeboxos.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
 import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 
 /**
@@ -23,9 +22,9 @@ import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
  */
 @NonNullByDefault
 public class RestManager {
-    public static Permission associatedPermission() {
-        return Permission.SETTINGS;
-    }
+    // public static Permission associatedPermission() {
+    // return Permission.SETTINGS;
+    // }
 
     protected final ApiHandler apiHandler;
 

@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public abstract class Response<T> extends BaseResponse {
 
-    protected T result;
+    private T result;
 
     public T getResult() {
         return result;

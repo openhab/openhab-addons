@@ -59,7 +59,7 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ApiConsumerHandler.class);
 
-    protected final ZoneId zoneId;
+    private final ZoneId zoneId;
     private @NonNullByDefault({}) ScheduledFuture<?> globalJob;
     protected @NonNullByDefault({}) ApiHandler bridgeHandler;
 
@@ -91,7 +91,7 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
                         internalPoll();
                         updateStatus(ThingStatus.ONLINE);
                     } catch (FreeboxException e) {
-                        logger.warn("Error polling thing {} : {}", this.getThing().getUID(), e.getMessage());
+                        logger.warn("Error polling thing {} : {}", getThing().getUID(), e);
                         updateStatus(ThingStatus.OFFLINE);
                     }
                 }
@@ -110,10 +110,10 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
         }
         try {
             if (bridgeHandler == null || !internalHandleCommand(channelUID, command)) {
-                logger.debug("Unexpected command {} from channel {}", command, channelUID.getId());
+                logger.warn("Unexpected command {} on channel {}", command, channelUID.getId());
             }
         } catch (FreeboxException e) {
-            logger.warn("Error handling command : {}", e.getMessage());
+            logger.warn("Error handling command : {}", e);
         }
     }
 

@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class FreeDeviceHandler extends HostHandler {
     private final Logger logger = LoggerFactory.getLogger(FreeDeviceHandler.class);
-    protected long uptime = -1;
+    private long uptime = -1;
 
     public FreeDeviceHandler(Thing thing, ZoneId zoneId) {
         super(thing, zoneId);
@@ -60,7 +60,7 @@ public abstract class FreeDeviceHandler extends HostHandler {
             }
             initializeChannels();
         } catch (InterruptedException e) {
-            logger.info("Interrupted during initialization", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -95,7 +95,7 @@ public abstract class FreeDeviceHandler extends HostHandler {
             });
             updateThing(editThing().withChannels(channels).build());
         } catch (FreeboxException e) {
-            logger.info("Error getting list of optional channels : {}", e.getMessage());
+            logger.warn("Error getting list of optional channels : {}", e);
         }
     }
 
@@ -112,7 +112,7 @@ public abstract class FreeDeviceHandler extends HostHandler {
                     updateChannelQuantity(PROPERTY_SENSORS, sensor.getId(), sensor.getValue(), SIUnits.CELSIUS);
                     break;
                 case UNKNOWN:
-                    logger.info("Unknown sensor kind : {}", sensor);
+                    logger.warn("Unknown sensor kind : {}", sensor);
                     break;
             }
         });
@@ -139,7 +139,7 @@ public abstract class FreeDeviceHandler extends HostHandler {
             stopRefreshJob();
             scheduler.schedule(this::initialize, 2, TimeUnit.MINUTES);
         } catch (FreeboxException e) {
-            logger.debug("Error rebooting device : {}", e.getMessage());
+            logger.warn("Error rebooting device : {}", e);
         }
     }
 }

@@ -34,7 +34,7 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tec.uom.se.unit.Units;
+import tech.units.indriya.unit.Units;
 
 /**
  * The {@link LandlineHandler} is responsible for handling everything associated to

@@ -89,8 +89,6 @@ public class FreeboxOsBindingConstants {
     public static final String RATE_DOWN = "rate-down";
     public static final String BYTES_UP = "bytes-up";
     public static final String BYTES_DOWN = "bytes-down";
-    public static final String BW_UP = "bandwidth-up";
-    public static final String BW_DOWN = "bandwidth-down";
     public static final String PCT_BW_UP = "bandwidth-usage-up";
     public static final String PCT_BW_DOWN = "bandwidth-usage-down";
     public static final String ONHOOK = "onhook";
