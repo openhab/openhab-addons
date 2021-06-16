@@ -13,8 +13,6 @@
 package org.openhab.binding.neato.internal;
 
 import static org.openhab.binding.neato.internal.classes.Category.*;
-import static org.openhab.binding.neato.internal.classes.Mode.TURBO;
-import static org.openhab.binding.neato.internal.classes.NavigationMode.DEEP;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -146,21 +144,13 @@ public class NeatoRobot {
 
                 request.addParam("mode", this.state.getCleaning().getModeValue());
                 request.addParam("category", HOUSE.getCategory());
-
-                Integer navigationMode = this.state.getCleaning().getNavigationModeValue();
-                if (Integer.valueOf(TURBO.getMode()).equals(this.state.getCleaning().getModeValue())) {
-                    // From the Neato API Docs...
-                    // Note that navigationMode can only be set to 3 if mode is 2,
-                    // otherwise an error will be returned.
-                    navigationMode = DEEP.getNavigationMode();
-                }
-                request.addParam("navigationMode", navigationMode);
+                request.addParam("navigationMode", this.state.getCleaning().getNavigationModeValue());
             }
         } else if ("cleanWithMap".equalsIgnoreCase(command)) {
             request.setCmd("startCleaning");
             request.addParam("category", MAP.getCategory());
-            request.addParam("mode", TURBO.getMode());
-            request.addParam("navigationMode", DEEP.getNavigationMode());
+            request.addParam("mode", this.state.getCleaning().getModeValue());
+            request.addParam("navigationMode", this.state.getCleaning().getNavigationModeValue());
         } else if ("pause".equalsIgnoreCase(command)) {
             request.setCmd("pauseCleaning");
         } else if ("stop".equalsIgnoreCase(command)) {

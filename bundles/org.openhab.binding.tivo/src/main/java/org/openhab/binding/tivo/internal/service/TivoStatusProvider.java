@@ -84,6 +84,13 @@ public class TivoStatusProvider {
             logger.debug(" statusRefresh '{}' - EXISTING status data - '{}'", tivoConfigData.getCfgIdentifier(),
                     tivoStatusData.toString());
         }
+
+        // this will close the connection and re-open every 12 hours
+        if (tivoConfigData.isKeepConnActive()) {
+            connTivoDisconnect();
+            doNappTime();
+        }
+
         connTivoConnect();
         doNappTime();
         if (!tivoConfigData.isKeepConnActive()) {

@@ -18,8 +18,12 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Quantity;
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -28,6 +32,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.openwebnet4j.OpenGateway;
 import org.openwebnet4j.communication.OWNException;
 import org.openwebnet4j.communication.Response;
@@ -219,6 +225,17 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
             sc.cancel(true);
         }
         super.dispose();
+    }
+
+    /**
+     * Helper method to return a Quantity from a Number value or UnDefType.NULL if value is null
+     *
+     * @param value to be used
+     * @param unit to be used
+     * @return Quantity
+     */
+    protected <U extends Quantity<U>> State getAsQuantityTypeOrNull(@Nullable Number value, Unit<U> unit) {
+        return value == null ? UnDefType.NULL : new QuantityType<>(value, unit);
     }
 
     /**
