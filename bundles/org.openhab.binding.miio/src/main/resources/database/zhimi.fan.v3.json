@@ -174,7 +174,7 @@
 				"friendlyName": "Temperature",
 				"channel": "temp_dec",
 				"type": "Number",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"refresh": true,
 				"transformation": "/10",
 				"ChannelGroup": "Status",
