@@ -242,7 +242,10 @@
 				"type": "Number:Time",
 				"unit": "hour",
 				"stateDescription": {
-					"pattern": "%.1f %unit%",
+					"minimum": 0,
+					"maximum": 300,
+					"step": 1,
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -254,9 +257,13 @@
 				"piid": 2,
 				"friendlyName": "Main Cleaning Brush-Brush Life Level",
 				"channel": "BrushLifeLevel",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
 				"stateDescription": {
-					"pattern": "%.0f",
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -268,9 +275,13 @@
 				"piid": 1,
 				"friendlyName": "Filter - Filter Life Level",
 				"channel": "FilterLifeLevel",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
 				"stateDescription": {
-					"pattern": "%.0f",
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -312,9 +323,13 @@
 				"piid": 2,
 				"friendlyName": "Side Cleaning Brush-Brush Life Level",
 				"channel": "BrushLifeLevel1",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
 				"stateDescription": {
-					"pattern": "%.0f",
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -328,7 +343,10 @@
 				"channel": "WorkMode",
 				"type": "Number",
 				"stateDescription": {
-					"pattern": "%.1f",
+					"minimum": 0,
+					"maximum": 17,
+					"step": 1,
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -355,7 +373,6 @@
 				"piid": 5,
 				"friendlyName": "clean-timer",
 				"channel": "Timer",
-				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
 				"actions": [
@@ -506,7 +523,6 @@
 				"piid": 1,
 				"friendlyName": "Consumable - Life Sieve",
 				"channel": "LifeSieve",
-				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
 				"actions": [
@@ -612,7 +628,10 @@
 				"channel": "Volume",
 				"type": "Number",
 				"stateDescription": {
-					"pattern": "%.1f"
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f"
 				},
 				"refresh": true,
 				"actions": [
@@ -652,6 +671,6 @@
 			}
 		],
 		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"battery-start-charge\",\"siid\":2,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-start-sweep\",\"siid\":3,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"vacuum-stop-sweeping\",\"siid\":3,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"brush-cleaner-reset-brush-life\",\"siid\":26,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"filter-reset-filter-life\",\"siid\":27,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"brush-cleaner-reset-brush-life\",\"siid\":28,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"clean-start-clean\",\"siid\":18,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"clean-stop-clean\",\"siid\":18,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"remote-start-remote\",\"siid\":21,\"aiid\":1,\"in\":[1.0, 2.0]}`\u003cbr /\u003e`action{\"did\":\"remote-stop-remote\",\"siid\":21,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"remote-exit-remote\",\"siid\":21,\"aiid\":3,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"map-map-req\",\"siid\":23,\"aiid\":1,\"in\":[2.0]}`\u003cbr /\u003e`action{\"did\":\"audio-position\",\"siid\":24,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"audio-set-voice\",\"siid\":24,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"audio-play-sound\",\"siid\":24,\"aiid\":3,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",
-		"experimental": true
+		"experimental": false
 	}
 }
