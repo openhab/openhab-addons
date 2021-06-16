@@ -37,35 +37,6 @@ public class IRobotBindingConstants {
     // Something goes wrong...
     public static final String UNKNOWN = "UNKNOWN";
 
-    // Model definitions
-    public enum Models {
-        BRAAVA_M_SERIES("Braava-M"),
-        ROOMBA_9_SERIES("Roomba-9"),
-        ROOMBA_E_SERIES("Roomba-E"),
-        ROOMBA_I_SERIES("Roomba-I"),
-        ROOMBA_S_SERIES("Roomba-S");
-
-        private String model;
-
-        Models(final String model) {
-            this.model = model;
-        }
-
-        @Override
-        public String toString() {
-            return model;
-        }
-
-        public static Models fromString(final String name) {
-            for (final Models model : Models.values()) {
-                if (model.model.equalsIgnoreCase(name.trim())) {
-                    return model;
-                }
-            }
-            throw new IllegalArgumentException("Can not find iRobot model " + name);
-        }
-    }
-
     // List of all Channel ids
     public static final String CHANNEL_COMMAND = "command";
     public static final String CHANNEL_CYCLE = "cycle";

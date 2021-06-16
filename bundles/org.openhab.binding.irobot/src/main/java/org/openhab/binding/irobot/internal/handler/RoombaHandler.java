@@ -52,8 +52,6 @@ import static org.openhab.core.thing.ThingStatus.UNINITIALIZED;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Hashtable;
@@ -137,14 +135,6 @@ public class RoombaHandler extends BaseThingHandler {
     public void initialize() {
         IRobotConfiguration config = getConfigAs(IRobotConfiguration.class);
 
-        try {
-            InetAddress.getByName(config.getAddress());
-        } catch (UnknownHostException exception) {
-            final String message = "Error connecting to host " + exception.toString();
-            updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
-            return;
-        }
-
         if (UNKNOWN.equals(config.getPassword()) || UNKNOWN.equals(config.getBlid())) {
             final String message = "Robot authentication is required";
             updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
@@ -211,7 +201,6 @@ public class RoombaHandler extends BaseThingHandler {
                     MQTTProtocol.Request request = new MQTTProtocol.CommandRequest(cmd);
                     connection.send(request.getTopic(), gson.toJson(request));
                 }
-
             }
         } else if (ch.startsWith(CHANNEL_SCHED_SWITCH_PREFIX)) {
             MQTTProtocol.Schedule schedule = lastSchedule;
@@ -281,7 +270,7 @@ public class RoombaHandler extends BaseThingHandler {
                 @Nullable
                 String blid = null;
                 try {
-                    blid = LoginRequester.getBlid(config.getAddress());
+                    blid = LoginRequester.getBlid(config.getIpAddress());
                 } catch (IOException exception) {
                     updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, exception.toString());
                 }
@@ -297,7 +286,7 @@ public class RoombaHandler extends BaseThingHandler {
                 @Nullable
                 String password = null;
                 try {
-                    password = LoginRequester.getPassword(config.getAddress());
+                    password = LoginRequester.getPassword(config.getIpAddress());
                 } catch (KeyManagementException | NoSuchAlgorithmException exception) {
                     updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, exception.toString());
                     return; // This is internal system error, no retry
@@ -325,7 +314,7 @@ public class RoombaHandler extends BaseThingHandler {
     // and disconnect() are never running concurrently, so they are synchronized
     private synchronized void connect() {
         IRobotConfiguration config = getConfigAs(IRobotConfiguration.class);
-        final String address = config.getAddress();
+        final String address = config.getIpAddress();
         logger.debug("Connecting to {}", address);
 
         final String blid = config.getBlid();
@@ -355,8 +344,7 @@ public class RoombaHandler extends BaseThingHandler {
             JsonReader jsonReader = new JsonReader(new StringReader(json));
             msg = gson.fromJson(jsonReader, MQTTProtocol.StateMessage.class);
         } catch (JsonParseException exception) {
-            IRobotConfiguration config = getConfigAs(IRobotConfiguration.class);
-            logger.warn("Failed to parse JSON message from {}: {}", config.getAddress(), exception.toString());
+            logger.warn("Failed to parse JSON message for {}: {}", thing.getLabel(), exception.toString());
             logger.warn("Raw contents: {}", json);
             return;
         }
@@ -374,7 +362,7 @@ public class RoombaHandler extends BaseThingHandler {
             String phase = reported.cleanMissionStatus.phase;
             String command;
 
-            if (cycle.equals("none")) {
+            if ("none".equals(cycle)) {
                 command = CMD_STOP;
             } else {
                 switch (phase) {

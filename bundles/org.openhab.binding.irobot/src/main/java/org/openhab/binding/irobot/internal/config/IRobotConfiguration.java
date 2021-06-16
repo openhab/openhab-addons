@@ -15,7 +15,6 @@ package org.openhab.binding.irobot.internal.config;
 import static org.openhab.binding.irobot.internal.IRobotBindingConstants.UNKNOWN;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.irobot.internal.IRobotBindingConstants.Models;
 
 /**
  * The {@link IRobotConfiguration} is a class for IRobot thing configuration
@@ -25,17 +24,16 @@ import org.openhab.binding.irobot.internal.IRobotBindingConstants.Models;
  */
 @NonNullByDefault
 public class IRobotConfiguration {
-    private String address = UNKNOWN;
+    private String ipaddress = UNKNOWN;
     private String password = UNKNOWN;
-    private String family = UNKNOWN;
     private String blid = UNKNOWN;
 
-    public String getAddress() {
-        return address;
+    public String getIpAddress() {
+        return ipaddress;
     }
 
-    public void setAddress(final String address) {
-        this.address = address.trim();
+    public void setIpAddress(final String ipaddress) {
+        this.ipaddress = ipaddress.trim();
     }
 
     public String getPassword() {
@@ -44,14 +42,6 @@ public class IRobotConfiguration {
 
     public void setPassword(final String password) {
         this.password = password;
-    }
-
-    public Models getFamily() {
-        return Models.fromString(family);
-    }
-
-    public void setFamily(final Models family) {
-        this.family = family.toString();
     }
 
     public String getBlid() {

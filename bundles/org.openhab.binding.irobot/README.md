@@ -26,21 +26,11 @@ not known, however, whether the password is eternal or can change during factory
 
 | Parameter | Type    | Required  | Default  | Description       |
 | --------- | :-----: | :-------: | :------: | ----------------- |
-| address   | String  | Yes       |          | Robot IP address  |
-| family    | String  | Yes       |          | Robot family      |
+| ipaddress | String  | Yes       |          | Robot IP address  |
 | blid      | String  | No        |          | Robot ID          |
 | password  | String  | No        |          | Robot Password    |
 
-All parameters will be autodiscovered. If using textual configuration, then `address` and `family` shall be specified.
-The table below provides valid values for `family`:
-
-| Robot                  | Parameter  | 
-| ---------------------- | ---------- | 
-| iRobot Braava M-Series | "Braava-M" |
-| iRobot Roomba 9-Series | "Roomba-9" |
-| iRobot Roomba I-Series | "Roomba-E" |
-| iRobot Roomba E-Series | "Roomba-I" |
-| iRobot Roomba S-Series | "Roomba-S" |
+All parameters will be autodiscovered. If using textual configuration, then `ipaddress` shall be specified.
 
 ## Channels
 
@@ -154,11 +144,13 @@ Error codes. Data type is string in order to be able to utilize mapping to human
 | 76    | Hardware problem detected |
 
 ## Cleaning specific regions
+
 You can clean one or many specific regions of a given map by sending the following String to the command channel:
 
 ```
  cleanRegions:<pmapId>;<region_id1>,<region_id2>,..
 ```
+
 The easiest way to determine the pmapId and region_ids is to monitor the last_command channel while starting a new mission for the specific region with the iRobot-App.
 
 ## Known Problems / Caveats

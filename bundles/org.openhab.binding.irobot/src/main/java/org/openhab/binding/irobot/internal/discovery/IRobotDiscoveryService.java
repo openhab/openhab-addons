@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.irobot.internal.IRobotBindingConstants.Models;
 import org.openhab.binding.irobot.internal.dto.MQTTProtocol.DiscoveryResponse;
 import org.openhab.binding.irobot.internal.utils.LoginRequester;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -138,21 +137,7 @@ public class IRobotDiscoveryService extends AbstractDiscoveryService {
                         ThingUID thingUID = new ThingUID(THING_TYPE_ROOMBA, mac.replace(":", ""));
                         DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID);
                         builder = builder.withProperty("mac", mac).withRepresentationProperty("mac");
-
-                        Models model = null;
-                        if (sku.regionMatches(true, 0, "M", 0, 1)) {
-                            model = Models.BRAAVA_M_SERIES;
-                        } else if (sku.regionMatches(true, 0, "E", 0, 1)) {
-                            model = Models.ROOMBA_E_SERIES;
-                        } else if (sku.regionMatches(true, 0, "I", 0, 1)) {
-                            model = Models.ROOMBA_I_SERIES;
-                        } else if (sku.regionMatches(true, 0, "R", 0, 1)) {
-                            model = Models.ROOMBA_9_SERIES;
-                        } else if (sku.regionMatches(true, 0, "S", 0, 1)) {
-                            model = Models.ROOMBA_S_SERIES;
-                        }
-                        builder = builder.withProperty("family", model != null ? model.toString() : UNKNOWN);
-                        builder = builder.withProperty("address", address);
+                        builder = builder.withProperty("ipaddress", address);
 
                         String name = msg.robotname;
                         builder = builder.withLabel("iRobot " + (!name.isEmpty() ? name : UNKNOWN));

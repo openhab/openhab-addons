@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.gson.JsonElement;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * iRobot MQTT protocol messages
@@ -32,22 +33,24 @@ public class MQTTProtocol {
 
     public static class CleanRoomsRequest extends CommandRequest {
         public int ordered;
-        public String pmap_id;
+        @SerializedName("pmap_id")
+        public String pmapId;
         public List<Region> regions;
 
         public CleanRoomsRequest(String cmd, String mapId, String[] regions) {
             super(cmd);
             ordered = 1;
-            pmap_id = mapId;
+            pmapId = mapId;
             this.regions = Arrays.stream(regions).map(i -> new Region(i)).collect(Collectors.toList());
         }
 
         public static class Region {
-            public String region_id;
+            @SerializedName("region_id")
+            public String regionId;
             public String type;
 
             public Region(String id) {
-                this.region_id = id;
+                this.regionId = id;
                 this.type = "rid";
             }
         }

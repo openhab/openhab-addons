@@ -50,6 +50,8 @@ import com.google.gson.stream.JsonReader;
  */
 @NonNullByDefault
 public class LoginRequester {
+    private static final Gson GSON = new Gson();
+
     public static @Nullable String getBlid(final String ip) throws IOException {
         DatagramSocket socket = new DatagramSocket();
         socket.setSoTimeout(1000); // One second
@@ -64,16 +66,13 @@ public class LoginRequester {
             DatagramPacket packet = new DatagramPacket(reply, reply.length);
             socket.receive(packet);
             reply = Arrays.copyOfRange(packet.getData(), packet.getOffset(), packet.getLength());
-        } catch (IOException exception) {
         } finally {
             socket.close();
         }
 
-        Gson gson = new Gson();
-
         final String json = new String(reply, 0, reply.length, StandardCharsets.UTF_8);
         JsonReader jsonReader = new JsonReader(new StringReader(json));
-        BlidResponse msg = gson.fromJson(jsonReader, BlidResponse.class);
+        BlidResponse msg = GSON.fromJson(jsonReader, BlidResponse.class);
 
         @Nullable
         String blid = msg.robotid;
