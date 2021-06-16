@@ -121,11 +121,7 @@ public class MiIoBasicChannel {
     }
 
     public boolean isMiOt() {
-        if (piid != null && siid != null && (getPiid() != 0 || getSiid() != 0)) {
-            return true;
-        } else {
-            return false;
-        }
+        return (piid != null && siid != null && (getPiid() != 0 || getSiid() != 0));
     }
 
     public String getFriendlyName() {
