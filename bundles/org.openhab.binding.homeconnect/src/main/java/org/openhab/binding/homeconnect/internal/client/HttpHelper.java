@@ -60,6 +60,8 @@ public class HttpHelper {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final JsonParser JSON_PARSER = new JsonParser();
     private static final Map<String, Bucket> BUCKET_MAP = new HashMap<>();
+    private static final Object AUTHORIZATION_HEADER_MONITOR = new Object();
+    private static final Object BUCKET_MONITOR = new Object();
 
     private static @Nullable String lastAccessToken = null;
 
@@ -90,7 +92,7 @@ public class HttpHelper {
 
     public static String getAuthorizationHeader(OAuthClientService oAuthClientService)
             throws AuthorizationException, CommunicationException {
-        synchronized ("authorizationHeader") {
+        synchronized (AUTHORIZATION_HEADER_MONITOR) {
             try {
                 AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
                 // refresh the token if it's about to expire
@@ -133,20 +135,22 @@ public class HttpHelper {
         return JSON_PARSER.parse(json);
     }
 
-    private static synchronized Bucket getBucket(String clientId) {
-        Bucket bucket = null;
-        if (BUCKET_MAP.containsKey(clientId)) {
-            bucket = BUCKET_MAP.get(clientId);
-        }
+    private static Bucket getBucket(String clientId) {
+        synchronized (BUCKET_MONITOR) {
+            Bucket bucket = null;
+            if (BUCKET_MAP.containsKey(clientId)) {
+                bucket = BUCKET_MAP.get(clientId);
+            }
 
-        if (bucket == null) {
-            bucket = Bucket4j.builder()
-                    // allows 50 tokens per minute (added 10 second buffer)
-                    .addLimit(classic(50, intervally(50, Duration.ofSeconds(70))).withInitialTokens(40))
-                    // but not often then 50 tokens per second
-                    .addLimit(classic(10, intervally(10, Duration.ofSeconds(1)))).build();
-            BUCKET_MAP.put(clientId, bucket);
+            if (bucket == null) {
+                bucket = Bucket4j.builder()
+                        // allows 50 tokens per minute (added 10 second buffer)
+                        .addLimit(classic(50, intervally(50, Duration.ofSeconds(70))).withInitialTokens(40))
+                        // but not often then 50 tokens per second
+                        .addLimit(classic(10, intervally(10, Duration.ofSeconds(1)))).build();
+                BUCKET_MAP.put(clientId, bucket);
+            }
+            return bucket;
         }
-        return bucket;
     }
 }
