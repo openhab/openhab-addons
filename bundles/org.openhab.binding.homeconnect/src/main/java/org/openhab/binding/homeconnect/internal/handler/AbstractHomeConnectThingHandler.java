@@ -799,16 +799,16 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             getThingChannel(CHANNEL_OPERATION_STATE).ifPresent(channel -> updateState(channel.getUID(),
                     value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
 
-            if (STATE_OPERATION_FINISHED.equals(event.getValue())) {
+            if (STATE_OPERATION_FINISHED.equals(value)) {
                 getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
                         .ifPresent(c -> updateState(c.getUID(), new QuantityType<>(100, PERCENT)));
                 getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE)
                         .ifPresent(c -> updateState(c.getUID(), new QuantityType<>(0, SECOND)));
-            } else if (STATE_OPERATION_RUN.equals(event.getValue())) {
+            } else if (STATE_OPERATION_RUN.equals(value)) {
                 getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
                         .ifPresent(c -> updateState(c.getUID(), new QuantityType<>(0, PERCENT)));
                 getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateChannel(c.getUID()));
-            } else if (STATE_OPERATION_READY.equals(event.getValue())) {
+            } else if (STATE_OPERATION_READY.equals(value)) {
                 resetProgramStateChannels(false);
             }
         };
@@ -819,8 +819,33 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             String value = event.getValue();
             getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(channel -> updateState(channel.getUID(),
                     value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
-            if (event.getValue() == null) {
+            if (value == null) {
                 resetProgramStateChannels(false);
+            }
+        };
+    }
+
+    protected EventHandler updateProgramOptionsAndActiveProgramStateEventHandler() {
+        return event -> {
+            String value = event.getValue();
+            getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(channel -> updateState(channel.getUID(),
+                    value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
+            if (value == null) {
+                resetProgramStateChannels(false);
+            } else {
+                try {
+                    Optional<HomeConnectApiClient> apiClient = getApiClient();
+                    if (apiClient.isPresent() && isChannelLinkedToProgramOptionNotFullySupportedByApi()
+                            && apiClient.get().isRemoteControlActive(getThingHaId())) {
+                        // update channels linked to program options
+                        Program program = apiClient.get().getSelectedProgram(getThingHaId());
+                        if (program != null) {
+                            processProgramOptions(program.getOptions());
+                        }
+                    }
+                } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
+                    logger.debug("Could not update program options. {}", e.getMessage());
+                }
             }
         };
     }
@@ -897,7 +922,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         return event -> {
             defaultSelectedProgramStateEventHandler().handle(event);
 
-            // update available program options
             try {
                 Optional<HomeConnectApiClient> apiClient = getApiClient();
                 String programKey = event.getValue();
@@ -908,7 +932,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                                     ? apiClient.get().isRemoteControlActive(getThingHaId())
                                     : false;
 
-                    // Delay the update if options are not yet cached and remote control is disabled
+                    // Delay the update of available program options if options are not yet cached and remote control is
+                    // disabled
                     if (availableProgramOptionsCache.get(programKey) == null && !remoteControl) {
                         logger.debug("Delay update of options for program {}", programKey);
                         programOptionsDelayedUpdate = programKey;
@@ -917,6 +942,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                     }
 
                     if (isChannelLinkedToProgramOptionNotFullySupportedByApi() && remoteControl) {
+                        // update channels linked to program options
                         Program program = apiClient.get().getSelectedProgram(getThingHaId());
                         if (program != null) {
                             processProgramOptions(program.getOptions());
