@@ -153,6 +153,7 @@ public class SendDispatcherRunnable implements Runnable {
             DatagramChannel channel = DatagramChannel.open();
             sender = channel.socket();
             sender.setReuseAddress(true);
+            sender.setBroadcast(true);
 
             InetSocketAddress sa = new InetSocketAddress(230);
             sender.bind(sa);
