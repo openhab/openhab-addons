@@ -51,7 +51,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     public final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String INITIAL_DEVICE_ID = "00000000";
 
-    protected BroadlinkDeviceConfiguration thingConfig;
+    protected BroadlinkDeviceConfiguration thingConfig = new BroadlinkDeviceConfiguration();
 
     private @Nullable RetryableSocket socket;
 
@@ -67,15 +67,10 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
 
     public BroadlinkBaseThingHandler(Thing thing, Logger logger) {
         super(thing);
-        this.thingConfig = getConfigAs(BroadlinkDeviceConfiguration.class);
-        count = (new Random()).nextInt(65535);
-
         logger.debug("constructed: resetting deviceKey to '{}', length {}",
                 BroadlinkBindingConstants.BROADLINK_AUTH_KEY, BroadlinkBindingConstants.BROADLINK_AUTH_KEY.length());
         this.deviceId = HexUtils.hexToBytes(INITIAL_DEVICE_ID);
         this.deviceKey = HexUtils.hexToBytes(BroadlinkBindingConstants.BROADLINK_AUTH_KEY);
-
-        this.socket = new RetryableSocket(thingConfig, logger);
     }
 
     // For test purposes
@@ -94,6 +89,11 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     public void initialize() {
         logger.debug("initializing polling");
 
+        this.thingConfig = getConfigAs(BroadlinkDeviceConfiguration.class);
+        count = (new Random()).nextInt(65535);
+
+        this.socket = new RetryableSocket(thingConfig, logger);
+
         updateItemStatus();
 
         if (thingConfig.getPollingInterval() != 0) {
@@ -104,12 +104,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
                 }
             }, 1L, thingConfig.getPollingInterval(), TimeUnit.SECONDS);
         }
-    }
-
-    public void thingUpdated(Thing thing) {
-        forceOffline(ThingStatusDetail.CONFIGURATION_PENDING, "Thing has been updated, will reconnect soon");
-        // Refetch the config NOW before we come back up again...
-        this.thingConfig = getConfigAs(BroadlinkDeviceConfiguration.class);
     }
 
     public void dispose() {

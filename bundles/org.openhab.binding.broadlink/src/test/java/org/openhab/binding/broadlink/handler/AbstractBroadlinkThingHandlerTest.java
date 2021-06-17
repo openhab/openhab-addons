@@ -53,6 +53,7 @@ public abstract class AbstractBroadlinkThingHandlerTest {
     }
 
     protected void setMocksForTesting(BroadlinkBaseThingHandler handler) {
+        handler.initialize();
         handler.setSocket(mockSocket);
         handler.setNetworkTrafficObserver(trafficObserver);
         handler.setCallback(mockCallback);

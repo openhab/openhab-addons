@@ -21,6 +21,8 @@ import org.openhab.binding.broadlink.internal.Utils;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.transform.TransformationException;
 import org.openhab.core.transform.TransformationHelper;
@@ -119,11 +121,7 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             logger.debug("Unable to perform transform on null command string");
             return null;
         }
-        String mapFile = (String) thing.getConfiguration().get("mapFilename");
-        if (mapFile == null || mapFile.isEmpty()) {
-            logger.debug("MAP file is not defined in configuration of thing {}", getThing().getLabel());
-            return null;
-        }
+        String mapFile = thingConfig.getMapFilename();
 
         byte code[] = null;
         String value;
@@ -131,15 +129,15 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             value = getTransformService().transform(mapFile, command.toString());
 
             if (value == null || value.isEmpty()) {
-                logger.error("No entry for command '{}' in map file '{}' for thing {}", command, mapFile,
-                        getThing().getLabel());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "No entries found for command in map file, or the file is missing.");
                 return null;
             }
 
             code = HexUtils.hexToBytes(value);
         } catch (TransformationException e) {
-            logger.error("Failed to transform command '{}' for thing {} using map file '{}'", command,
-                    getThing().getLabel(), mapFile, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Unable to transform command in map file.");
             return null;
         }
 
