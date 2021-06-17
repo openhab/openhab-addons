@@ -265,7 +265,7 @@ A BBQ Temperature device
 
 ### blinds1 - RFXCOM Blinds1 Actuator
 
-A Blinds1 device
+A Blinds1 device. Not all blinds support all commands.
 
 #### Channels
 
@@ -291,11 +291,22 @@ A Blinds1 device
         *   T2 - A-OK RF01
         *   T3 - A-OK AC114/AC123
         *   T4 - Raex YR1326
-        *   T5 - Media Mount
-        *   T6 - DC106/Rohrmotor24-RMF/Yooda
+        *   T5 - Media Mount (warning - directions reversed)
+        *   T6 - DC106/Rohrmotor24-RMF/Yooda/Dooya/ESMO/Brel/Quitidom
         *   T7 - Forest
         *   T8 - Chamberlain CS4330CN
+        *   T9 - Sunpery/BTX
+        *   T10 - Dolat DLM-1, Topstar
         *   T11 - ASP
+        *   T12 - Confexx CNF24-2435
+        *   T13 - Screenline
+        *   T14 - Hualite
+        *   T15 - Motostar
+        *   T16 - Zemismart
+        *   T17 - Gaposa
+        *   T18 - Cherubini
+        *   T19 - Louvolite One Touch Vogue motor
+        *   T20 - OZRoll
 
 ### chime - RFXCOM Chime
 
