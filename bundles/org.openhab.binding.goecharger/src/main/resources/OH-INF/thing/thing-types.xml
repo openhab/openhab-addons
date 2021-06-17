@@ -10,6 +10,7 @@
 
 		<channels>
 			<channel id="maxCurrent" typeId="current"/>
+			<channel id="maxCurrTemp" typeId="amx"/>
 			<channel id="pwmSignal" typeId="pwm"/>
 			<channel id="error" typeId="err"/>
 			<channel id="voltageL1" typeId="vl1"/>
@@ -65,6 +66,12 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Maximum Current</label>
 		<description>Maximum current per phase allowed to use for charging</description>
+		<state pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="amx">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Maximum Current Temporary</label>
+		<description>Maximum current per phase not stored in EEPROM</description>
 		<state pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="pwm">

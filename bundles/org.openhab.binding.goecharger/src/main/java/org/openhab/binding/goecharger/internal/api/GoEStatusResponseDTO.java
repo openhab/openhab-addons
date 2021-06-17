@@ -30,8 +30,11 @@ public class GoEStatusResponseDTO {
     @SerializedName("ast")
     public Integer accessConfiguration;
 
-    @SerializedName("amx")
+    @SerializedName("amp")
     public Integer maxCurrent;
+
+    @SerializedName("amx")
+    public Integer maxCurrTemp;
 
     @SerializedName("nrg")
     public Integer[] energy;
