@@ -35,12 +35,16 @@ import org.openhab.core.thing.Thing;
  *
  * @author Stefan Kästle - Initial contribution
  * @author Christian Oeing - Use service instead of custom logic
+ * @author Christian Oeing - Add smoke detector service
  */
 @NonNullByDefault
 public class TwinguardHandler extends AbstractBatteryPoweredDeviceHandler {
 
+    private SmokeDetectorService smokeDetectorService;
+
     public TwinguardHandler(Thing thing) {
         super(thing);
+        this.smokeDetectorService = new SmokeDetectorService();
     }
 
     @Override
@@ -50,6 +54,18 @@ public class TwinguardHandler extends AbstractBatteryPoweredDeviceHandler {
         this.createService(AirQualityLevelService::new, this::updateChannels,
                 List.of(CHANNEL_TEMPERATURE, CHANNEL_TEMPERATURE_RATING, CHANNEL_HUMIDITY, CHANNEL_HUMIDITY_RATING,
                         CHANNEL_PURITY, CHANNEL_PURITY_RATING, CHANNEL_AIR_DESCRIPTION, CHANNEL_COMBINED_RATING));
+        this.registerService(this.smokeDetectorService, this::updateChannels, List.of(CHANNEL_SMOKE_CHECK));
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        super.handleCommand(channelUID, command);
+
+        switch (channelUID.getId()) {
+            case CHANNEL_SMOKE_CHECK:
+                this.handleServiceCommand(this.smokeDetectorService, command);
+                break;
+        }
     }
 
     private void updateChannels(AirQualityLevelServiceState state) {
@@ -61,5 +77,9 @@ public class TwinguardHandler extends AbstractBatteryPoweredDeviceHandler {
         updateState(CHANNEL_PURITY_RATING, new StringType(state.purityRating));
         updateState(CHANNEL_AIR_DESCRIPTION, new StringType(state.description));
         updateState(CHANNEL_COMBINED_RATING, new StringType(state.combinedRating));
+    }
+
+    private void updateChannels(SmokeDetectorServiceState state) {
+        updateState(CHANNEL_SMOKE_CHECK, new StringType(state.value.toString()));
     }
 }
