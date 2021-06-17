@@ -13,7 +13,6 @@
 package org.openhab.binding.broadlink.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Device configuration for the supported Broadlink devices.
@@ -27,16 +26,19 @@ public class BroadlinkDeviceConfiguration {
     private int port;
     private String macAddress;
     private int pollingInterval;
-    private @Nullable String mapFilename;
-    private int retries = 1;
-    private boolean ignoreFailedUpdates = false;
+    private String mapFilename;
+    private int retries;
+    private boolean ignoreFailedUpdates;
     private int deviceType;
 
     public BroadlinkDeviceConfiguration() {
         ipAddress = "";
+        staticIp = true;
         macAddress = "";
         pollingInterval = 30;
-        staticIp = true;
+        retries = 1;
+        mapFilename = "broadlink.map";
+        ignoreFailedUpdates = false;
     }
 
     public String getIpAddress() {
@@ -90,7 +92,7 @@ public class BroadlinkDeviceConfiguration {
         this.pollingInterval = pollingInterval;
     }
 
-    public @Nullable String getMapFilename() {
+    public String getMapFilename() {
         return mapFilename;
     }
 
