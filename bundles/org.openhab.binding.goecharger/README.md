@@ -22,6 +22,7 @@ Currently available channels are
 | Channel ID               | Item Type                | Description                                                   |
 |--------------------------|--------------------------|---------------------------------------------------------------|
 | maxCurrent               | Number:ElectricCurrent   | Maximum current allowed to use for charging                   |
+| maxCurrTemp              | Number:ElectricCurrent   | Maximum current temporary (not written to EEPROM)             |
 | pwmSignal                | String                   | Signal status for PWM signal                                  |
 | error                    | String                   | Error code of charger                                         |
 | voltageL1                | Number:ElectricPotential | Voltage on L1                                                 |
@@ -33,15 +34,18 @@ Currently available channels are
 | powerL1                  | Number:Power             | Power on L1                                                   |
 | powerL2                  | Number:Power             | Power on L2                                                   |
 | powerL3                  | Number:Power             | Power on L2                                                   |
+| powerAll                 | Number:Power             | Power over all three phases                                   |
 | phases                   | Number                   | Amount of phases currently used for charging                  |
 | sessionChargeEnergyLimit | Number:Energy            | Wallbox stops charging after defined value, disable with 0    |
 | sessionChargedEnergy     | Number:Energy            | Amount of energy that has been charged in this session        |
 | totalChargedEnergy       | Number:Energy            | Amount of energy that has been charged since installation     |
 | allowCharging            | Switch                   | If `ON` charging is allowed                                   |
 | cableCurrent             | Number:ElectricCurrent   | Specifies the max current that can be charged with that cable |
-| temperature              | Number:Temperature       | Temperature of the Go-eCharger                                |
+| temptma1                 | Number:Temperature       | Temperature 1 of the Go-eCharger                              |
+| temptma1                 | Number:Temperature       | Temperature 2 of the Go-eCharger                              |
 | firmware                 | String                   | Firmware Version                                              |
 | accessConfiguration      | String                   | Access configuration, for example OPEN, RFID ...              |
+
 
 ## Full Example
 
@@ -55,6 +59,7 @@ demo.items
 
 ```
 Number:ElectricCurrent     GoEChargerMaxCurrent                 "Maximum current"                       {channel="goecharger:goe:garage:maxCurrent"}
+Number:ElectricCurrent     GoEChargerMaxCurrTemp                "Maximum current temporary"                       {channel="goecharger:goe:garage:maxCurrentTemp"}
 String                     GoEChargerPwmSignal                  "Pwm signal status"                     {channel="goecharger:goe:garage:pwmSignal"}
 String                     GoEChargerError                      "Error code"                            {channel="goecharger:goe:garage:error"}
 Number:ElectricPotential   GoEChargerVoltageL1                  "Voltage l1"                            {channel="goecharger:goe:garage:voltageL1"}
@@ -78,12 +83,6 @@ Number:Temperature         GoEChargertemptma1                   "Temperature_tma
 String                     GoEChargerFirmware                   "Firmware"                              {channel="goecharger:goe:garage:firmware"}
 String                     GoEChargerAccessConfiguration        "Access configuration"                  {channel="goecharger:goe:garage:accessConfiguration"}
 ```
-Changes 13.06.21:
-Temperature is not supported any more, GO-E added two temperatures tma1 and tma2.
-
-Added channel "Power over all" showing the combinde power of all three phases
-
-
 ## Setting charge current of Go-eCharger based on photovoltaik output
 
 You can easily define rules to charge with PV power alone.
@@ -95,9 +94,16 @@ when
     Item availablePVCurrent received update
 then
     logInfo("Amps available: ", receivedCommand.state)
-    MaxAmpere.sendCommand(receivedCommand.state)
+    MaxCurrTemp.sendCommand(receivedCommand.state)
 end
 ```
 You can also define more advanced rules if you have multiple cars that charge with a different amount of phases.
 For example if your car charges on one phase only, you can set maxAmps to output of PV power, if your car charges on two phases you can set maxAmps to `pv output / 2`, and for 3 phases `pv output / 3`.
 In general the calculation would be ´maxAmps = pvOutput / phases`.
+
+Changes 06.21 (chilobo):
+Since V3 of the GO-E-Charger Temperature is not supported any more, GO-E added two temperatures tma1 and tma2.
+Added channel "Power over all" showing the combined power of all three phases
+Added channel "Maximum current temporary": This changes the current. But this value is not written to the EEPROM.
+
+Beware: Because of changes in V3 this binding is working for V1 and V2, but not for V3.
