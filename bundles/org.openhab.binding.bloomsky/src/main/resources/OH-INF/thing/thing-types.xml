@@ -360,7 +360,7 @@
 		<item-type>String</item-type>
 		<label>UV Index</label>
 		<description>UV index</description>
-		<state readOnly="true" pattern="%.s"></state>
+		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="videoDay1">
@@ -509,7 +509,7 @@
 		<item-type>String</item-type>
 		<label>UV Index</label>
 		<description>UV index</description>
-		<state readOnly="true" pattern="%.s"></state>
+		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="rainRate">
