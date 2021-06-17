@@ -21,6 +21,7 @@ import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.ERROR;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.FIRMWARE;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.MAX_CURRENT;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.MAX_CURR_TEMP;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.PHASES;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_ALL;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L1;
@@ -110,6 +111,13 @@ public class GoEChargerHandler extends BaseThingHandler {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.maxCurrent, Units.AMPERE);
+            case MAX_CURR_TEMP:
+                if (goeResponse.maxCurrTemp == null) {
+                    return UnDefType.UNDEF;
+                }
+                logger.debug("MAX_CURR_TEMP, amx ?", goeResponse.maxCurrTemp);
+
+                return new QuantityType<>(goeResponse.maxCurrTemp, Units.AMPERE);
             case PWM_SIGNAL:
                 if (goeResponse.pwmSignal == null) {
                     return UnDefType.UNDEF;
@@ -283,7 +291,7 @@ public class GoEChargerHandler extends BaseThingHandler {
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.energy[11] * 100, Units.WATT);
+                return new QuantityType<>(goeResponse.energy[11] * 10, Units.WATT);
         }
         return UnDefType.UNDEF;
     }
@@ -300,6 +308,14 @@ public class GoEChargerHandler extends BaseThingHandler {
         String value = null;
         switch (channelUID.getId()) {
             case MAX_CURRENT:
+                key = "amp";
+                if (command instanceof DecimalType) {
+                    value = String.valueOf(((DecimalType) command).intValue());
+                } else if (command instanceof QuantityType<?>) {
+                    value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(Units.AMPERE).intValue());
+                }
+                break;
+            case MAX_CURR_TEMP:
                 key = "amx";
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue());
@@ -345,6 +361,7 @@ public class GoEChargerHandler extends BaseThingHandler {
             default:
         }
         if (key != null && value != null) {
+            logger.debug("sendData: ", key, value);
             sendData(key, value);
         } else {
             logger.warn("Could not update channel {} with key {} and value {}", channelUID.getId(), key, value);
