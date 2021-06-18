@@ -55,8 +55,7 @@ public class SoulissGatewayJobHealthy extends Thread {
     private void sendHealthyRequest() {
         // sending healthy packet
         if (ipAddressOnLAN.length() > 0 && this.gwHandler != null) {
-            soulissCommands.sendHealthyRequestFrame(this.gwHandler.getUdpSocket(), ipAddressOnLAN, nodeIndex, userIndex,
-                    this.gwHandler.getNodes());
+            soulissCommands.sendHealthyRequestFrame(ipAddressOnLAN, nodeIndex, userIndex, this.gwHandler.getNodes());
             // healthy packet sent
         }
     }

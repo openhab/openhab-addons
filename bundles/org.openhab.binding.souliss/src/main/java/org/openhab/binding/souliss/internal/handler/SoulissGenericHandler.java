@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.souliss.internal.handler;
 
-import java.net.DatagramSocket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -107,23 +106,23 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
      * @param command
      */
     public void commandSEND(byte command) {
-        soulissCommands.sendFORCEFrame(getDatagramSocket(), getGatewayIP(), getGatewayNodeIndex(),
-                getGatewayUserIndex(), this.getNode(), this.getSlot(), command);
+        soulissCommands.sendFORCEFrame(getGatewayIP(), getGatewayNodeIndex(), getGatewayUserIndex(), this.getNode(),
+                this.getSlot(), command);
     }
 
     public void commandSendRgb(byte command, byte r, byte g, byte b) {
-        soulissCommands.sendFORCEFrame(getDatagramSocket(), getGatewayIP(), getGatewayNodeIndex(),
-                getGatewayUserIndex(), this.getNode(), this.getSlot(), command, r, g, b);
+        soulissCommands.sendFORCEFrame(getGatewayIP(), getGatewayNodeIndex(), getGatewayUserIndex(), this.getNode(),
+                this.getSlot(), command, r, g, b);
     }
 
     public void commandSEND(byte command, byte b1, byte b2) {
-        soulissCommands.sendFORCEFrameT31SetPoint(getDatagramSocket(), getGatewayIP(), getGatewayNodeIndex(),
-                getGatewayUserIndex(), this.getNode(), this.getSlot(), command, b1, b2);
+        soulissCommands.sendFORCEFrameT31SetPoint(getGatewayIP(), getGatewayNodeIndex(), getGatewayUserIndex(),
+                this.getNode(), this.getSlot(), command, b1, b2);
     }
 
     public void commandSEND(byte b1, byte b2) {
-        soulissCommands.sendFORCEFrameT61SetPoint(getDatagramSocket(), getGatewayIP(), getGatewayNodeIndex(),
-                getGatewayUserIndex(), this.getNode(), this.getSlot(), b1, b2);
+        soulissCommands.sendFORCEFrameT61SetPoint(getGatewayIP(), getGatewayNodeIndex(), getGatewayUserIndex(),
+                this.getNode(), this.getSlot(), b1, b2);
     }
 
     /**
@@ -190,18 +189,6 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
             }
         }
         return 0;
-    }
-
-    @Nullable
-    public DatagramSocket getDatagramSocket() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            SoulissGatewayHandler soulissgwHandler = (SoulissGatewayHandler) bridge.getHandler();
-            if (soulissgwHandler != null) {
-                return soulissgwHandler.getUdpSocket();
-            }
-        }
-        return null;
     }
 
     public void setHealthy(byte shHealthy) {

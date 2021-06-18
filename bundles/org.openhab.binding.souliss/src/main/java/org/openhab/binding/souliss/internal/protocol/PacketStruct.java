@@ -13,10 +13,8 @@
 package org.openhab.binding.souliss.internal.protocol;
 
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Data Structure for class SendDispatcherThread
@@ -25,16 +23,12 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
-public class SocketAndPacketStruct {
-    @Nullable
-    public DatagramSocket socket;
-
+public class PacketStruct {
     public DatagramPacket packet;
     public boolean sent;
     public long time = 0;
 
-    public SocketAndPacketStruct(@Nullable DatagramSocket socketPar, DatagramPacket packetPar) {
-        socket = socketPar;
+    public PacketStruct(DatagramPacket packetPar) {
         packet = packetPar;
     }
 

@@ -129,12 +129,8 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
         // create discovery class
         if (soulissDiscoverRunnableClass == null) {
-            if (this.bridgeHandler.getUdpSocket() != null) {
-                soulissDiscoverRunnableClass = new SoulissDiscoverJob(this.bridgeHandler.getUdpSocket(), this);
-            }
-        }
-        // create discovery job, that run discovery class
-        if (soulissDiscoverRunnableClass != null) {
+            soulissDiscoverRunnableClass = new SoulissDiscoverJob();
+
             discoveryJob = scheduler.scheduleWithFixedDelay(soulissDiscoverRunnableClass, 100,
                     SoulissBindingConstants.DISCOVERY_RESEND_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS);
             logger.debug("Start Discovery Job");

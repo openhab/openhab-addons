@@ -45,7 +45,7 @@ public class SendDispatcherRunnable implements Runnable {
     @Nullable
     private SoulissGatewayHandler gwHandler;
     static boolean bPopSuspend = false;
-    protected static ArrayList<SocketAndPacketStruct> packetsList = new ArrayList<>();
+    protected static ArrayList<PacketStruct> packetsList = new ArrayList<>();
     private long startTime = System.currentTimeMillis();
     static String ipAddressOnLAN = "";
     static int iDelay = 0; // equal to 0 if array is empty
@@ -66,7 +66,7 @@ public class SendDispatcherRunnable implements Runnable {
     /**
      * Put packet to send in ArrayList PacketList
      */
-    public static synchronized void put(@Nullable DatagramSocket socket, DatagramPacket packetToPUT, Logger logger) {
+    public static synchronized void put(DatagramPacket packetToPUT, Logger logger) {
         bPopSuspend = true;
         boolean bPacchettoGestito = false;
         // estraggo il nodo indirizzato dal pacchetto in ingresso
@@ -131,7 +131,7 @@ public class SendDispatcherRunnable implements Runnable {
                             packetsList.remove(i);
                             // inserisce il nuovo
                             logger.debug("Optimizer. Add frame: {}", macacoToString(packetToPUT.getData()));
-                            packetsList.add(new SocketAndPacketStruct(socket, packetToPUT));
+                            packetsList.add(new PacketStruct(packetToPUT));
                         }
                     }
                 }
@@ -140,7 +140,7 @@ public class SendDispatcherRunnable implements Runnable {
 
         if (!bPacchettoGestito) {
             logger.debug("Add packet: {}", macacoToString(packetToPUT.getData()));
-            packetsList.add(new SocketAndPacketStruct(socket, packetToPUT));
+            packetsList.add(new PacketStruct(packetToPUT));
         }
         bPopSuspend = false;
     }
@@ -159,7 +159,7 @@ public class SendDispatcherRunnable implements Runnable {
             sender.bind(sa);
 
             if (checkTime()) {
-                SocketAndPacketStruct sp = pop();
+                PacketStruct sp = pop();
                 if (sp != null) {
                     logger.debug(
                             "SendDispatcherJob - Functional Code 0x{} - Packet: {} - Elementi rimanenti in lista: {}",
@@ -387,7 +387,7 @@ public class SendDispatcherRunnable implements Runnable {
      * Pop SocketAndPacket from ArrayList PacketList
      */
     @Nullable
-    private synchronized SocketAndPacketStruct pop() {
+    private synchronized PacketStruct pop() {
         synchronized (this) {
             @Nullable
             SoulissGatewayHandler localGwHandler = this.gwHandler;
@@ -431,7 +431,7 @@ public class SendDispatcherRunnable implements Runnable {
                         tPrec = System.currentTimeMillis();
 
                         // estratto il primo elemento della lista
-                        SocketAndPacketStruct sp = packetsList.get(iPacket);
+                        PacketStruct sp = packetsList.get(iPacket);
 
                         // GESTIONE PACCHETTO: eliminato dalla lista oppure
                         // contrassegnato come inviato se è un FORCE
