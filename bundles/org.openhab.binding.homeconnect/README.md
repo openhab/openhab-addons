@@ -62,7 +62,7 @@ After the bridge has been added and authorized, devices are discovered automatic
 | laundry_care_washer_idos2 | Switch | true | This status indicates whether i-Dos 2 is activated for a washer program of the home appliance. (If appliance supports i-Dos) | washer | 
 | laundry_care_washer_vario_perfect | String | true | This status defines the vario perfect mode of a washer program of the home appliance. | washer, washerdryer | 
 | laundry_care_washer_less_ironing | Switch | true | This status indicates whether less ironing is activated for a washer program of the home appliance. | washer, washerdryer | 
-| laundry_care_washer_pre_wash | Switch | true | TThis status indicates whether the pre-wash is activated for a washer program of the home appliance. | washer, washerdryer | 
+| laundry_care_washer_pre_wash | Switch | true | This status indicates whether the pre-wash is activated for a washer program of the home appliance. | washer, washerdryer | 
 | laundry_care_washer_rinse_plus | String | true | This status defines the number of additional rinses of a washer program of the home appliance. | washer, washerdryer | 
 | laundry_care_washer_soak | Switch | true | This status indicates whether the soaking is activated for a washer program of the home appliance. | washer, washerdryer | 
 | program_energy | Number:Dimensionless | true | This channel provides the estimated energy required in percentage for a program of the home appliance. | washer, washerdryer | 
