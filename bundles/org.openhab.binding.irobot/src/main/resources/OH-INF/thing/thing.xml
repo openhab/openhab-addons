@@ -7,6 +7,7 @@
 	<thing-type id="roomba">
 		<label>Roomba</label>
 		<description>A Roomba vacuum robot</description>
+		<category>CleaningRobot</category>
 
 		<channels>
 			<channel id="command" typeId="command"/>
@@ -53,17 +54,9 @@
 			<channel id="clean_passes" typeId="clean_passes"/>
 			<channel id="map_upload" typeId="map_upload"/>
 		</channels>
-		<config-description>
-			<parameter name="ipaddress" type="text">
-				<label>IP Address</label>
-				<description>IP Address or host name of your Roomba</description>
-				<context>network-address</context>
-			</parameter>
-			<parameter name="password" type="text">
-				<label>Password</label>
-			</parameter>
 
-		</config-description>
+		<representation-property>mac</representation-property>
+		<config-description-ref uri="thing-type:irobot:thing"/>
 	</thing-type>
 
 	<channel-type id="command">
