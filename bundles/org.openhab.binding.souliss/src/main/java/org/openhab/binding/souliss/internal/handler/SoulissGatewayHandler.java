@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
-import org.openhab.binding.souliss.internal.SoulissDatagramSocketFactory;
 import org.openhab.binding.souliss.internal.SoulissUDPConstants;
 import org.openhab.binding.souliss.internal.discovery.SoulissGatewayDiscovery;
 import org.openhab.binding.souliss.internal.protocol.CommonCommands;
@@ -186,35 +185,25 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             logger.debug("Get send timeout to requeue: {}", sendTimeoutToRequeue);
         }
 
-        // START SERVER ON DEFAULT PORT - Used for topics
         if (udpServerDefaultPortRunnableClass == null) {
             logger.debug("Starting UDP server on Souliss Default Port for Topics (Publish&Subcribe)");
-            udpSocket = SoulissDatagramSocketFactory.getSocketDatagram(24000, this.logger);
 
-            // check if there is a socket
-            // no.. create new and set to soulissparms class
             // new runnable udp listener
             udpServerDefaultPortRunnableClass = new UDPListenDiscoverRunnable(NetworkParameters.discoverResult);
-            // exec thread
-            // scheduler.scheduleWithFixedDelay(udpServerDefaultPortRunnableClass, 100,
-            // SoulissBindingConstants.SERVER_CICLE_IN_MILLIS, TimeUnit.MILLISECONDS);
-
+            // and exec on thread
             this.udpExecutorService.execute(udpServerDefaultPortRunnableClass);
 
-            // sender socket init
-            // this.socket = SoulissDatagramSocketFactory.getSocketDatagram(logger);
-
-            // START JOB PING
-
+            // JOB PING
             SoulissGatewayJobPing soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(bridge);
             scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2,
                     soulissGatewayJobPingRunnable.getPingRefreshInterval(), TimeUnit.SECONDS);
-
+            // JOB SUBSCRIPTION
             SoulissGatewayJobSubscription soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(
                     bridge);
             scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 0,
                     soulissGatewayJobSubscriptionRunnable.getSubscriptionRefreshInterval(), TimeUnit.MINUTES);
 
+            // JOB HEALTH OF NODES
             SoulissGatewayJobHealthy soulissGatewayJobHealthyRunnable = new SoulissGatewayJobHealthy(bridge);
             scheduler.scheduleWithFixedDelay(soulissGatewayJobHealthyRunnable, 5,
                     soulissGatewayJobHealthyRunnable.gethealthRefreshInterval(), TimeUnit.SECONDS);
@@ -246,7 +235,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     }
 
     public void dbStructAnswerReceived() {
-        soulissCommands.sendTypicalRequestFrame(this.udpSocket, ipAddressOnLAN, nodeIndex, userIndex, nodes);
+        soulissCommands.sendTypicalRequestFrame(ipAddressOnLAN, nodeIndex, userIndex, nodes);
     }
 
     public void setNodes(int nodes) {
@@ -307,7 +296,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     public void sendSubscription() {
         if (ipAddressOnLAN.length() > 0) {
-            soulissCommands.sendSUBSCRIPTIONframe(this.udpSocket, ipAddressOnLAN, nodeIndex, userIndex, getNodes());
+            soulissCommands.sendSUBSCRIPTIONframe(ipAddressOnLAN, nodeIndex, userIndex, getNodes());
         }
         logger.debug("Sent subscription packet");
     }
@@ -319,10 +308,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     public void resetThereIsAThingDetection() {
         thereIsAThingDetection = false;
     }
-
-    // public @Nullable DatagramSocket getReceiverSocket() {
-    // return receiverSocket;
-    // }
 
     public void setDiscoveryService(SoulissGatewayDiscovery discoveryService) {
         this.discoveryService = discoveryService;

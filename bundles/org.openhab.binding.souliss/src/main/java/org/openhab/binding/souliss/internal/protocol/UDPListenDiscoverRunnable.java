@@ -77,7 +77,7 @@ public class UDPListenDiscoverRunnable implements Runnable {
                 byte[] buf = new byte[200];
                 // receive request
                 final DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                socket.setSoTimeout(100000);
+                socket.setSoTimeout(60000);
                 socket.receive(packet);
                 buf = packet.getData();
 
