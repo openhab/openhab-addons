@@ -112,4 +112,15 @@ public class RFXComInterfaceMessageTest {
         testStatus("1401000102530C0800270001031C04524658434F4D", TransceiverType._433_92MHZ_TRANSCEIVER,
                 FirmwareType.EXT2, 1012);
     }
+
+    @Test
+    public void testStatus_Unknown_Ext2_1012() throws RFXComException {
+        testStatus("1401000102AA0C0800270001031C04524658434F4D", TransceiverType._UNKNOWN, FirmwareType.EXT2, 1012);
+    }
+
+    @Test
+    public void testStatus_Rfxtrx433_Unknown_1012() throws RFXComException {
+        testStatus("1401000102530C0800270001031CAA524658434F4D", TransceiverType._433_92MHZ_TRANSCEIVER,
+                FirmwareType.UNKNOWN, 1012);
+    }
 }
