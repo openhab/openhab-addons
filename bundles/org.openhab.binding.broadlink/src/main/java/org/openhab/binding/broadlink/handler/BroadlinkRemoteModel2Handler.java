@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.broadlink.handler;
 
+import static org.openhab.binding.broadlink.BroadlinkBindingConstants.CHANNEL_TEMPERATURE;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Thing;
-import org.slf4j.LoggerFactory;
 
 /**
  * Remote blaster handler
@@ -25,8 +27,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler {
 
-    public BroadlinkRemoteModel2Handler(Thing thing) {
-        super(thing, LoggerFactory.getLogger(BroadlinkRemoteModel2Handler.class));
+    public BroadlinkRemoteModel2Handler(Thing thing,
+            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider) {
+        super(thing, commandDescriptionProvider);
     }
 
     protected boolean onBroadlinkDeviceBecomingReachable() {
@@ -45,7 +48,7 @@ public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler {
             }
             byte decodedPayload[] = decodeDevicePacket(response);
             float temperature = (float) ((double) (decodedPayload[4] * 10 + decodedPayload[5]) / 10D);
-            updateState("temperature", new DecimalType(temperature));
+            updateState(CHANNEL_TEMPERATURE, new DecimalType(temperature));
             return true;
         } catch (Exception e) {
             logger.error("Could not get status: ", e);

@@ -17,7 +17,9 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.mockito.Mockito;
+import org.openhab.binding.broadlink.AbstractBroadlinkTest;
 import org.openhab.binding.broadlink.BroadlinkBindingConstants;
+import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.binding.broadlink.internal.socket.NetworkTrafficObserver;
 import org.openhab.binding.broadlink.internal.socket.RetryableSocket;
 import org.openhab.core.config.core.Configuration;
@@ -32,7 +34,7 @@ import org.openhab.core.thing.internal.ThingImpl;
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 @NonNullByDefault
-public abstract class AbstractBroadlinkThingHandlerTest {
+public abstract class AbstractBroadlinkThingHandlerTest extends AbstractBroadlinkTest {
 
     protected Map<String, Object> properties = new HashMap<>();
     protected Configuration config = new Configuration();
@@ -40,6 +42,8 @@ public abstract class AbstractBroadlinkThingHandlerTest {
     protected RetryableSocket mockSocket = Mockito.mock(RetryableSocket.class);
     protected NetworkTrafficObserver trafficObserver = Mockito.mock(NetworkTrafficObserver.class);
     protected ThingHandlerCallback mockCallback = Mockito.mock(ThingHandlerCallback.class);
+    protected BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider = Mockito
+            .mock(BroadlinkRemoteDynamicCommandDescriptionProvider.class);
 
     protected void configureUnderlyingThing(ThingTypeUID thingTypeUID, String thingId) {
         properties = new HashMap<>();
@@ -53,9 +57,9 @@ public abstract class AbstractBroadlinkThingHandlerTest {
     }
 
     protected void setMocksForTesting(BroadlinkBaseThingHandler handler) {
-        handler.initialize();
         handler.setSocket(mockSocket);
         handler.setNetworkTrafficObserver(trafficObserver);
         handler.setCallback(mockCallback);
+        handler.initialize();
     }
 }

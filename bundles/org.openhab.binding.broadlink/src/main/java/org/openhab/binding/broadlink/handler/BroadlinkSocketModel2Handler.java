@@ -19,8 +19,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Smart power socket handler with (optional) nightlight
@@ -31,11 +29,7 @@ import org.slf4j.LoggerFactory;
 public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
 
     public BroadlinkSocketModel2Handler(Thing thing) {
-        super(thing, LoggerFactory.getLogger(BroadlinkSocketModel2Handler.class));
-    }
-
-    public BroadlinkSocketModel2Handler(Thing thing, Logger logger) {
-        super(thing, logger);
+        super(thing);
     }
 
     protected void setStatusOnDevice(int status) throws IOException {

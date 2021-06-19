@@ -13,7 +13,9 @@
 package org.openhab.binding.broadlink.handler;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.openhab.binding.broadlink.BroadlinkBindingConstants.CHANNEL_TEMPERATURE;
 import static org.openhab.binding.broadlink.handler.BroadlinkSocketModel2Handler.*;
 
 import java.io.IOException;
@@ -137,8 +139,9 @@ public class BroadlinkRemoteModel2HandlerTest extends AbstractBroadlinkThingHand
     public void sendsExpectedBytesWhenGettingDeviceStatus() {
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteArrayCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing);
+        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing, commandDescriptionProvider);
         setMocksForTesting(model2);
+        reset(trafficObserver);
         model2.getStatusFromDevice();
 
         verify(trafficObserver).onCommandSent(commandCaptor.capture());
@@ -162,8 +165,10 @@ public class BroadlinkRemoteModel2HandlerTest extends AbstractBroadlinkThingHand
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                 0x00, 0x00, 0x00, };
         Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
-        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing);
+        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing, commandDescriptionProvider);
         setMocksForTesting(model2);
+
+        reset(mockCallback);
 
         model2.getStatusFromDevice();
 
@@ -171,10 +176,10 @@ public class BroadlinkRemoteModel2HandlerTest extends AbstractBroadlinkThingHand
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
         verify(mockCallback).stateUpdated(channelCaptor.capture(), stateCaptor.capture());
 
-        ChannelUID expectedTemperatureChannel = new ChannelUID(thing.getUID(), "temperature");
+        ChannelUID expectedTemperatureChannel = new ChannelUID(thing.getUID(), CHANNEL_TEMPERATURE);
         assertEquals(expectedTemperatureChannel, channelCaptor.getValue());
 
-        DecimalType expectedTemperature = new DecimalType(106.0);
+        DecimalType expectedTemperature = new DecimalType(89.30000305175781);
         assertEquals(expectedTemperature, stateCaptor.getValue());
     }
 
@@ -182,10 +187,12 @@ public class BroadlinkRemoteModel2HandlerTest extends AbstractBroadlinkThingHand
     public void sendsExpectedBytesWhenSendingCode() throws IOException {
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing);
+        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing, commandDescriptionProvider);
         setMocksForTesting(model2);
         // Note the length is 12 so as to not require padding
         byte[] code = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
+
+        reset(trafficObserver);
         model2.sendCode(code);
 
         verify(trafficObserver).onCommandSent(commandCaptor.capture());
@@ -214,11 +221,12 @@ public class BroadlinkRemoteModel2HandlerTest extends AbstractBroadlinkThingHand
     public void sendsExpectedBytesWhenSendingCodeIncludingPadding() throws IOException {
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing);
+        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing, commandDescriptionProvider);
         setMocksForTesting(model2);
         // Note the length is such that padding up to the next multiple of 16 will be needed
         byte[] code = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10,
                 0x11 };
+        reset(trafficObserver);
         model2.sendCode(code);
 
         verify(trafficObserver).onCommandSent(commandCaptor.capture());

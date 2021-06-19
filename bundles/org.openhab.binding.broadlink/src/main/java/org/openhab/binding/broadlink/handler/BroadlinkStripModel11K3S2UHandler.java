@@ -20,7 +20,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.slf4j.LoggerFactory;
 
 /**
  * Multiple power socket plus USB strip device - 3 AC outlets and 2 USB outlets
@@ -31,7 +30,7 @@ import org.slf4j.LoggerFactory;
 public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler {
 
     public BroadlinkStripModel11K3S2UHandler(Thing thing) {
-        super(thing, LoggerFactory.getLogger(BroadlinkStripModel11K3S2UHandler.class));
+        super(thing);
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {

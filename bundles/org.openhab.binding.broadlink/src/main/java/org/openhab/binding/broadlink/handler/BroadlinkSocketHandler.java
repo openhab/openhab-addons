@@ -19,8 +19,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract superclass for power socket devices
@@ -31,11 +29,7 @@ import org.slf4j.LoggerFactory;
 public abstract class BroadlinkSocketHandler extends BroadlinkBaseThingHandler {
 
     public BroadlinkSocketHandler(Thing thing) {
-        super(thing, LoggerFactory.getLogger(BroadlinkSocketHandler.class));
-    }
-
-    public BroadlinkSocketHandler(Thing thing, Logger logger) {
-        super(thing, logger);
+        super(thing);
     }
 
     protected abstract void setStatusOnDevice(int state) throws IOException;

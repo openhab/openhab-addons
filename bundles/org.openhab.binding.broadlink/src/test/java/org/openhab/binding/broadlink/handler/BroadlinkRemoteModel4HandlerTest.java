@@ -13,8 +13,9 @@
 package org.openhab.binding.broadlink.handler;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
+import static org.openhab.binding.broadlink.BroadlinkBindingConstants.CHANNEL_HUMIDITY;
+import static org.openhab.binding.broadlink.BroadlinkBindingConstants.CHANNEL_TEMPERATURE;
 
 import java.io.IOException;
 import java.util.List;
@@ -58,8 +59,9 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
 
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing, commandDescriptionProvider);
         setMocksForTesting(model4);
+        reset(trafficObserver);
         model4.getStatusFromDevice();
 
         verify(trafficObserver).onCommandSent(commandCaptor.capture());
@@ -79,10 +81,12 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
     public void sendsExpectedBytesWhenSendingCode() throws IOException {
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing, commandDescriptionProvider);
         setMocksForTesting(model4);
         // Note the length is 10 so as to not require padding (6 byte preamble)
         byte[] code = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
+
+        reset(trafficObserver);
         model4.sendCode(code);
 
         verify(trafficObserver).onCommandSent(commandCaptor.capture());
@@ -114,10 +118,11 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
     public void sendsExpectedBytesWhenSendingCodeIncludingPadding() throws IOException {
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing, commandDescriptionProvider);
         setMocksForTesting(model4);
         // Note the length is such that padding up to the next multiple of 16 will be needed
         byte[] code = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b };
+        reset(trafficObserver);
         model4.sendCode(code);
 
         verify(trafficObserver).onCommandSent(commandCaptor.capture());
@@ -158,8 +163,9 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                 0x00, 0x00, 0x00, };
         Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing, commandDescriptionProvider);
         setMocksForTesting(model4);
+        reset(mockCallback);
 
         model4.getStatusFromDevice();
 
@@ -170,16 +176,16 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
         List<ChannelUID> channelCaptures = channelCaptor.getAllValues();
         List<State> stateCaptures = stateCaptor.getAllValues();
 
-        ChannelUID expectedTemperatureChannel = new ChannelUID(thing.getUID(), "temperature");
+        ChannelUID expectedTemperatureChannel = new ChannelUID(thing.getUID(), CHANNEL_TEMPERATURE);
         assertEquals(expectedTemperatureChannel, channelCaptures.get(0));
 
-        DecimalType expectedTemperature = new DecimalType(84.16999816894531D);
+        DecimalType expectedTemperature = new DecimalType(4.880000114440918);
         assertEquals(expectedTemperature, stateCaptures.get(0));
 
-        ChannelUID expectedHumidityChannel = new ChannelUID(thing.getUID(), "humidity");
+        ChannelUID expectedHumidityChannel = new ChannelUID(thing.getUID(), CHANNEL_HUMIDITY);
         assertEquals(expectedHumidityChannel, channelCaptures.get(1));
 
-        DecimalType expectedHumidity = new DecimalType(-85.81999969482422D);
+        DecimalType expectedHumidity = new DecimalType(51.29999923706055);
         assertEquals(expectedHumidity, stateCaptures.get(1));
     }
 }

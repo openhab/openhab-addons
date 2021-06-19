@@ -14,7 +14,6 @@ package org.openhab.binding.broadlink.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
-import org.slf4j.LoggerFactory;
 
 /**
  * Smart power socket handler
@@ -25,6 +24,6 @@ import org.slf4j.LoggerFactory;
 public class BroadlinkSocketModel3Handler extends BroadlinkSocketModel2Handler {
 
     public BroadlinkSocketModel3Handler(Thing thing) {
-        super(thing, LoggerFactory.getLogger(BroadlinkSocketModel3Handler.class));
+        super(thing);
     }
 }
