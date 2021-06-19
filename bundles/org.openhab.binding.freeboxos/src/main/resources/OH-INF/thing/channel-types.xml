@@ -46,21 +46,6 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wifi-quality">
-		<item-type>Number</item-type>
-		<label>Wifi Quality</label>
-		<category>QualityOfService</category>
-		<state readOnly="true">
-			<options>
-				<option value="4">Excellent</option>
-				<option value="3">Good</option>
-				<option value="2">Fair</option>
-				<option value="1">Weak</option>
-				<option value="0">No signal</option>
-			</options>
-		</state>
-	</channel-type>
-
 	<channel-type id="lcd-forced" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Forced Orientation</label>
@@ -112,7 +97,7 @@
 
 	<channel-type id="bandwidth-usage">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Bandwidth usage</label>
+		<label>Bandwidth Usage</label>
 		<description>Current bandwidth usage</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -126,7 +111,7 @@
 
 	<channel-type id="transfer-bytes" advanced="true">
 		<item-type>Number:DataAmount</item-type>
-		<label>Transfered bytes</label>
+		<label>Transfered Bytes</label>
 		<description>Total data transfered since last connection</description>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -197,7 +182,7 @@
 
 	<channel-type id="onhook">
 		<item-type>Switch</item-type>
-		<label>On-hook</label>
+		<label>On Hook</label>
 		<description>Indicates whether the phone is on hook</description>
 		<category>Switch</category>
 		<state readOnly="true"/>
@@ -260,13 +245,13 @@
 
 	<channel-type id="box-event">
 		<kind>trigger</kind>
-		<label>Server event</label>
+		<label>Server Event</label>
 		<description>Triggers when an event related to the Freebox server has been detected</description>
 	</channel-type>
 
 	<channel-type id="phone-event">
 		<kind>trigger</kind>
-		<label>Phone event</label>
+		<label>Phone Event</label>
 		<description>Triggers when an event related to the phone has been detected</description>
 	</channel-type>
 

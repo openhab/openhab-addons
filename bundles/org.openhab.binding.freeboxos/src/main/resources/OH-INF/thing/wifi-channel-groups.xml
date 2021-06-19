@@ -8,7 +8,7 @@
 		<label>Wifi related informations</label>
 		<channels>
 			<channel id="rssi" typeId="rssi"/>
-			<channel id="wifi-quality" typeId="wifi-quality"/>
+			<channel id="wifi-quality" typeId="system.signal-strength"/>
 			<channel id="ssid" typeId="ssid"/>
 			<channel id="wifi-host" typeId="wifi-host"/>
 		</channels>
