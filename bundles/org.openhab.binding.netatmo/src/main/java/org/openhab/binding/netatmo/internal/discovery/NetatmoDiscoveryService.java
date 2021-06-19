@@ -97,9 +97,6 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                                             .filter(module -> foundDevice.getId().equalsIgnoreCase(module.getBridge()))
                                             .forEach(foundChild -> {
                                                 ModuleType childType = foundChild.getType();
-                                                if (childType == ModuleType.NRV) {
-                                                    int a = 1;
-                                                }
                                                 createDiscoveredThing(
                                                         childType.getBridgeType() == ModuleType.NAHome ? homeUID
                                                                 : bridgeUID,

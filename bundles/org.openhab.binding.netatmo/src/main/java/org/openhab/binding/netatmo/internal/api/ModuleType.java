@@ -233,5 +233,4 @@ public enum ModuleType {
     public FeatureArea getFeatures() {
         return features;
     }
-
 }

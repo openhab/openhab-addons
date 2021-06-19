@@ -97,5 +97,4 @@ public class RoomHandler extends NetatmoDeviceHandler {
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(RoomActions.class);
     }
-
 }

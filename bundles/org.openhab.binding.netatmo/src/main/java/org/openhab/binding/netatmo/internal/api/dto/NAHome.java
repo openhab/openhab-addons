@@ -102,5 +102,4 @@ public class NAHome extends NADevice {
     public NAObjectMap<NAWelcome> getCameras() {
         return cameras;
     }
-
 }

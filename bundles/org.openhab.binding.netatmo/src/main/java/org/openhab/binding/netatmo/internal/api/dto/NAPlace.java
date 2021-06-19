@@ -54,5 +54,4 @@ public class NAPlace {
         }
         return null;
     }
-
 }

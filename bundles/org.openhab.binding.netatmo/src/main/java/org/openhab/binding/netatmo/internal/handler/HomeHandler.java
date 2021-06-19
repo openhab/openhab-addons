@@ -266,5 +266,4 @@ public class HomeHandler extends NetatmoEventDeviceHandler {
         // super.setEvent(event);
         // }
     }
-
 }

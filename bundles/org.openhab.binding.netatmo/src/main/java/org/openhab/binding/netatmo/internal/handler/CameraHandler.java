@@ -154,5 +154,4 @@ public class CameraHandler extends NetatmoEventDeviceHandler {
             return null;
         }
     }
-
 }
