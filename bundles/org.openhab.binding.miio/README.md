@@ -208,7 +208,7 @@ Currently the miio binding supports more than 290 different models.
 | Mi Smart Standing Fan 1C     | miio:basic       | [dmaker.fan.p8](#dmaker-fan-p8) | Yes       | Identified manual actions for execution<br />`action{"did":"fan-toggle","siid":2,"aiid":1,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Smart Tower Fan           | miio:basic       | [dmaker.fan.p9](#dmaker-fan-p9) | Yes       |            |
 | Mi Smart Standing Fan 2      | miio:basic       | [dmaker.fan.p10](#dmaker-fan-p10) | Yes       |            |
-| Mi Smart Standing Fan Pro    | miio:basic       | [dmaker.fan.p15](#dmaker-fan-p15) | Yes       | Identified manual actions for execution<br />`action{"did":"off-delay-time-toggle","siid":3,"aiid":1,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Standing Fan Pro    | miio:basic       | [dmaker.fan.p15](#dmaker-fan-p15) | Yes       | Identified manual actions for execution<br />`action{"did":"off-delay-time-toggle","siid":3,"aiid":1,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel. |
 | Mi Robot Vacuum Mop 1C STYTJ01ZHM | miio:basic       | [dreame.vacuum.mc1808](#dreame-vacuum-mc1808) | Yes       | Identified manual actions for execution<br />`action{"did":"battery-start-charge","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-start-sweep","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":3,"aiid":2,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":26,"aiid":1,"in":[]}`<br />`action{"did":"filter-reset-filter-life","siid":27,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":28,"aiid":1,"in":[]}`<br />`action{"did":"clean-start-clean","siid":18,"aiid":1,"in":[]}`<br />`action{"did":"clean-stop-clean","siid":18,"aiid":2,"in":[]}`<br />`action{"did":"remote-start-remote","siid":21,"aiid":1,"in":[1.0, 2.0]}`<br />`action{"did":"remote-stop-remote","siid":21,"aiid":2,"in":[]}`<br />`action{"did":"remote-exit-remote","siid":21,"aiid":3,"in":[]}`<br />`action{"did":"map-map-req","siid":23,"aiid":1,"in":[2.0]}`<br />`action{"did":"audio-position","siid":24,"aiid":1,"in":[]}`<br />`action{"did":"audio-set-voice","siid":24,"aiid":2,"in":[]}`<br />`action{"did":"audio-play-sound","siid":24,"aiid":3,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Dreame Robot Vacuum-Mop F9   | miio:basic       | [dreame.vacuum.p2008](#dreame-vacuum-p2008) | Yes       | Identified manual actions for execution<br />`action{"did":"vacuum-start-sweep","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":2,"aiid":2,"in":[]}`<br />`action{"did":"battery-start-charge","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":9,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":10,"aiid":1,"in":[]}`<br />`action{"did":"filter-reset-filter-life","siid":11,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-extend-start-clean","siid":4,"aiid":1,"in":[10.0]}`<br />`action{"did":"vacuum-extend-stop-clean","siid":4,"aiid":2,"in":[]}`<br />`action{"did":"map-map-req","siid":6,"aiid":1,"in":[2.0]}`<br />`action{"did":"map-update-map","siid":6,"aiid":2,"in":[4.0]}`<br />`action{"did":"audio-position","siid":7,"aiid":1,"in":[]}`<br />`action{"did":"audio-play-sound","siid":7,"aiid":2,"in":[]}`<br />`action{"did":"time-delete-timer","siid":8,"aiid":1,"in":[3.0]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Dreame Robot Vacuum D9       | miio:basic       | [dreame.vacuum.p2009](#dreame-vacuum-p2009) | Yes       | Identified manual actions for execution not linked in the database >`action{"did":"vacuum-extend-start-clean","siid":4,"aiid":1,"in":[10.0]}`<br />`action{"did":"vacuum-extend-stop-clean","siid":4,"aiid":2,"in":[]}`<br />`action{"did":"map-map-req","siid":6,"aiid":1,"in":[2.0]}`<br />`action{"did":"map-update-map","siid":6,"aiid":2,"in":[4.0]}`<br />`action{"did":"audio-position","siid":7,"aiid":1,"in":[]}`<br />`action{"did":"audio-play-sound","siid":7,"aiid":2,"in":[]}`<br />`action{"did":"time-delete-timer","siid":8,"aiid":1,"in":[3.0]}`<br /> |
@@ -4618,16 +4618,16 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power                | Switch               | Power                                    |            |
 | angleEnable          | Switch               | Rotation                                 |            |
 | usedhours            | Number:Time          | Run Time                                 |            |
-| angle                | Number               | Angle                                    |            |
-| poweroffTime         | Number               | Timer                                    |            |
+| angle                | Number:Angle         | Angle                                    | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
+| poweroffTime         | Number:Time          | Power-Off Timer                          |            |
 | buzzer               | Switch               | Buzzer                                   |            |
-| led_b                | Number               | LED                                      |            |
+| led_b                | Number               | LED                                      | Value mapping `["0"="Bright","1"="Dimmed","2"="Off"]` |
 | child_lock           | Switch               | Child Lock                               |            |
-| speedLevel           | Number               | Speed Level                              |            |
+| speedLevel           | Dimmer               | Speed Level                              |            |
 | speed                | Number               | Speed                                    |            |
-| naturalLevel         | Number               | Natural Level                            |            |
+| naturalLevel         | Dimmer               | Natural Level                            |            |
 | acPower              | Switch               | AC Power                                 |            |
-| move                 | String               | Move Direction                           |            |
+| move                 | String               | Move Direction                           | Value mapping `[""="None","left"="Left","right"="Right"]` |
 
 ### Mi Smart Fan (<a name="zhimi-fan-v1">zhimi.fan.v1</a>) Channels
 
@@ -4636,20 +4636,20 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power                | Switch               | Power                                    |            |
 | angleEnable          | Switch               | Rotation                                 |            |
 | usedhours            | Number:Time          | Run Time                                 |            |
-| angle                | Number               | Angle                                    |            |
-| poweroffTime         | Number               | Timer                                    |            |
+| angle                | Number:Angle         | Angle                                    | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
+| poweroffTime         | Number:Time          | Power-Off Timer                          |            |
 | buzzer               | Switch               | Buzzer                                   |            |
-| led_b                | Number               | LED                                      |            |
+| led_b                | Number               | LED                                      | Value mapping `["0"="Bright","1"="Dimmed","2"="Off"]` |
 | child_lock           | Switch               | Child Lock                               |            |
-| speedLevel           | Number               | Speed Level                              |            |
+| speedLevel           | Dimmer               | Speed Level                              |            |
 | speed                | Number               | Speed                                    |            |
-| naturalLevel         | Number               | Natural Level                            |            |
+| naturalLevel         | Dimmer               | Natural Level                            |            |
 | temp_dec             | Number               | Temperature                              |            |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
-| acPower              | String               | AC Power                                 |            |
+| acPower              | Switch               | AC Power                                 |            |
 | mode                 | String               | Battery Charge                           |            |
 | battery              | Number               | Battery                                  |            |
-| move                 | String               | Move Direction                           |            |
+| move                 | String               | Move Direction                           | Value mapping `[""="None","left"="Left","right"="Right"]` |
 
 ### Smartmi DC Pedestal Fan (<a name="zhimi-fan-v2">zhimi.fan.v2</a>) Channels
 
@@ -4658,20 +4658,20 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power                | Switch               | Power                                    |            |
 | angleEnable          | Switch               | Rotation                                 |            |
 | usedhours            | Number:Time          | Run Time                                 |            |
-| angle                | Number               | Angle                                    |            |
-| poweroffTime         | Number               | Timer                                    |            |
+| angle                | Number:Angle         | Angle                                    | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
+| poweroffTime         | Number:Time          | Power-Off Timer                          |            |
 | buzzer               | Switch               | Buzzer                                   |            |
-| led_b                | Number               | LED                                      |            |
+| led_b                | Number               | LED                                      | Value mapping `["0"="Bright","1"="Dimmed","2"="Off"]` |
 | child_lock           | Switch               | Child Lock                               |            |
-| speedLevel           | Number               | Speed Level                              |            |
+| speedLevel           | Dimmer               | Speed Level                              |            |
 | speed                | Number               | Speed                                    |            |
-| naturalLevel         | Number               | Natural Level                            |            |
+| naturalLevel         | Dimmer               | Natural Level                            |            |
 | temp_dec             | Number               | Temperature                              |            |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
-| acPower              | String               | AC Power                                 |            |
+| acPower              | Switch               | AC Power                                 |            |
 | mode                 | String               | Battery Charge                           |            |
 | battery              | Number               | Battery                                  |            |
-| move                 | String               | Move Direction                           |            |
+| move                 | String               | Move Direction                           | Value mapping `[""="None","left"="Left","right"="Right"]` |
 
 ### Smartmi DC Pedestal Fan (<a name="zhimi-fan-v3">zhimi.fan.v3</a>) Channels
 
@@ -4680,20 +4680,20 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power                | Switch               | Power                                    |            |
 | angleEnable          | Switch               | Rotation                                 |            |
 | usedhours            | Number:Time          | Run Time                                 |            |
-| angle                | Number               | Angle                                    |            |
-| poweroffTime         | Number               | Timer                                    |            |
+| angle                | Number:Angle         | Angle                                    | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
+| poweroffTime         | Number:Time          | Power-Off Timer                          |            |
 | buzzer               | Switch               | Buzzer                                   |            |
-| led_b                | Number               | LED                                      |            |
+| led_b                | Number               | LED                                      | Value mapping `["0"="Bright","1"="Dimmed","2"="Off"]` |
 | child_lock           | Switch               | Child Lock                               |            |
-| speedLevel           | Number               | Speed Level                              |            |
+| speedLevel           | Dimmer               | Speed Level                              |            |
 | speed                | Number               | Speed                                    |            |
-| naturalLevel         | Number               | Natural Level                            |            |
+| naturalLevel         | Dimmer               | Natural Level                            |            |
 | temp_dec             | Number               | Temperature                              |            |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
-| acPower              | String               | AC Power                                 |            |
+| acPower              | Switch               | AC Power                                 |            |
 | mode                 | String               | Battery Charge                           |            |
 | battery              | Number               | Battery                                  |            |
-| move                 | String               | Move Direction                           |            |
+| move                 | String               | Move Direction                           | Value mapping `[""="None","left"="Left","right"="Right"]` |
 
 ### Smartmi Inverter Pedestal Fan (<a name="zhimi-fan-za1">zhimi.fan.za1</a>) Channels
 
@@ -4702,16 +4702,16 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | power                | Switch               | Power                                    |            |
 | angleEnable          | Switch               | Rotation                                 |            |
 | usedhours            | Number:Time          | Run Time                                 |            |
-| angle                | Number               | Angle                                    |            |
-| poweroffTime         | Number               | Timer                                    |            |
+| angle                | Number:Angle         | Angle                                    | Value mapping `["30"="30","60"="60","90"="90","120"="120"]` |
+| poweroffTime         | Number:Time          | Power-Off Timer                          |            |
 | buzzer               | Switch               | Buzzer                                   |            |
-| led_b                | Number               | LED                                      |            |
+| led_b                | Number               | LED                                      | Value mapping `["0"="Bright","1"="Dimmed","2"="Off"]` |
 | child_lock           | Switch               | Child Lock                               |            |
-| speedLevel           | Number               | Speed Level                              |            |
+| speedLevel           | Dimmer               | Speed Level                              |            |
 | speed                | Number               | Speed                                    |            |
-| naturalLevel         | Number               | Natural Level                            |            |
+| naturalLevel         | Dimmer               | Natural Level                            |            |
 | acPower              | Switch               | AC Power                                 |            |
-| move                 | String               | Move Direction                           |            |
+| move                 | String               | Move Direction                           | Value mapping `[""="None","left"="Left","right"="Right"]` |
 
 ### Smartmi Standing Fan 2 (<a name="zhimi-fan-za3">zhimi.fan.za3</a>) Channels
 
@@ -9906,14 +9906,14 @@ Group G_fan "Mi Standing Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
 Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
-Number angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
-Number poweroffTime "Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
+Number:Angle angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
+Number:Time poweroffTime "Power-Off Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Buzzer" (G_fan) {channel="miio:basic:fan:buzzer"}
 Number led_b "LED" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
-Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
+Dimmer speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
 Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
-Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
+Dimmer naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
 Switch acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 ```
@@ -9927,17 +9927,17 @@ Group G_fan "Mi Smart Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
 Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
-Number angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
-Number poweroffTime "Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
+Number:Angle angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
+Number:Time poweroffTime "Power-Off Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Buzzer" (G_fan) {channel="miio:basic:fan:buzzer"}
 Number led_b "LED" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
-Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
+Dimmer speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
 Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
-Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
+Dimmer naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
 Number temp_dec "Temperature" (G_fan) {channel="miio:basic:fan:temp_dec"}
 Number:Dimensionless humidity "Humidity" (G_fan) {channel="miio:basic:fan:humidity"}
-String acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
+Switch acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
 String mode "Battery Charge" (G_fan) {channel="miio:basic:fan:mode"}
 Number battery "Battery" (G_fan) {channel="miio:basic:fan:battery"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
@@ -9952,17 +9952,17 @@ Group G_fan "Smartmi DC Pedestal Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
 Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
-Number angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
-Number poweroffTime "Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
+Number:Angle angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
+Number:Time poweroffTime "Power-Off Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Buzzer" (G_fan) {channel="miio:basic:fan:buzzer"}
 Number led_b "LED" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
-Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
+Dimmer speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
 Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
-Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
+Dimmer naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
 Number temp_dec "Temperature" (G_fan) {channel="miio:basic:fan:temp_dec"}
 Number:Dimensionless humidity "Humidity" (G_fan) {channel="miio:basic:fan:humidity"}
-String acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
+Switch acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
 String mode "Battery Charge" (G_fan) {channel="miio:basic:fan:mode"}
 Number battery "Battery" (G_fan) {channel="miio:basic:fan:battery"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
@@ -9977,17 +9977,17 @@ Group G_fan "Smartmi DC Pedestal Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
 Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
-Number angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
-Number poweroffTime "Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
+Number:Angle angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
+Number:Time poweroffTime "Power-Off Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Buzzer" (G_fan) {channel="miio:basic:fan:buzzer"}
 Number led_b "LED" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
-Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
+Dimmer speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
 Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
-Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
+Dimmer naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
 Number temp_dec "Temperature" (G_fan) {channel="miio:basic:fan:temp_dec"}
 Number:Dimensionless humidity "Humidity" (G_fan) {channel="miio:basic:fan:humidity"}
-String acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
+Switch acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
 String mode "Battery Charge" (G_fan) {channel="miio:basic:fan:mode"}
 Number battery "Battery" (G_fan) {channel="miio:basic:fan:battery"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
@@ -10002,14 +10002,14 @@ Group G_fan "Smartmi Inverter Pedestal Fan" <status>
 Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
 Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
 Number:Time usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
-Number angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
-Number poweroffTime "Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
+Number:Angle angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
+Number:Time poweroffTime "Power-Off Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Buzzer" (G_fan) {channel="miio:basic:fan:buzzer"}
 Number led_b "LED" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
-Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
+Dimmer speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
 Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
-Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
+Dimmer naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
 Switch acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 ```
