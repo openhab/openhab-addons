@@ -18,7 +18,10 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.core.types.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * RFXCOM data class for interface message.
@@ -27,6 +30,8 @@ import org.openhab.core.types.Type;
  * @author Ivan Martinez - Older firmware support (OH1)
  */
 public class RFXComInterfaceMessage extends RFXComBaseMessage {
+
+    private final Logger logger = LoggerFactory.getLogger(RFXComInterfaceMessage.class);
 
     public enum SubType implements ByteEnumWrapper {
         UNKNOWN_COMMAND(-1),
@@ -89,7 +94,8 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
         _868_95MHZ_FSK(0x5B, "RFXtrx868X operating at 868.95MHz"),
         _433_92MHZ_IOT(0x5C, "RFXtrxIOT operating at 433.92MHz"),
         _868_00MHZ_IOT(0x5D, "RFXtrxIOT operating at 868MHz"),
-        _434_50MHZ(0x5F, "RFXtrx433 operating at 434.50MHz");
+        _434_50MHZ(0x5F, "RFXtrx433 operating at 434.50MHz"),
+        _UNKNOWN(0xFF, "Unknown");
 
         private final int type;
         private final String name;
@@ -118,7 +124,9 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
         EXT2(0x04, "Ext2"),
         PRO1(0x05, "Pro1"),
         PRO2(0x06, "Pro2"),
-        PROXL1(0x10, "ProXL 1");
+        PROXL1(0x10, "ProXL1"),
+        PROXL2(0x12, "ProXL2"), // Discovered in the wild (not from RFXtrx SDK)
+        UNKNOWN(0xFF, "Unknown");
 
         private final int type;
         private final String name;
@@ -257,7 +265,14 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
 
     private void encodeResponseMessage(byte[] data) throws RFXComException {
         command = fromByte(Commands.class, data[4]);
-        transceiverType = fromByte(TransceiverType.class, data[5]);
+        try {
+            transceiverType = fromByte(TransceiverType.class, data[5]);
+        } catch (RFXComUnsupportedValueException e) {
+            transceiverType = TransceiverType._UNKNOWN;
+            logger.warn(
+                    "The transceiver type reported ({}) isn't known to the RFXCom binding. Please raise an issue at https://github.com/openhab/openhab-addons/ to have it included.",
+                    data[5]);
+        }
 
         hardwareVersion1 = data[11];
         hardwareVersion2 = data[12];
@@ -279,7 +294,14 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
          */
         if (data.length > 14) {
             firmwareVersion = Byte.toUnsignedInt(data[6]) + 1000;
-            firmwareType = fromByte(FirmwareType.class, data[14]);
+            try {
+                firmwareType = fromByte(FirmwareType.class, data[14]);
+            } catch (RFXComUnsupportedValueException e) {
+                firmwareType = FirmwareType.UNKNOWN;
+                logger.warn(
+                        "The firmware type reported ({}) isn't known to the RFXCom binding. Please raise an issue at https://github.com/openhab/openhab-addons/ to have it included.",
+                        data[14]);
+            }
         } else {
             firmwareVersion = Byte.toUnsignedInt(data[6]);
 
