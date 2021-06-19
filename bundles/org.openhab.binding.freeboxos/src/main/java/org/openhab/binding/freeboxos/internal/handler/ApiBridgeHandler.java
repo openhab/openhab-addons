@@ -94,5 +94,4 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, detail, string);
         }
     }
-
 }
