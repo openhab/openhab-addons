@@ -20,7 +20,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.slf4j.LoggerFactory;
 
 /**
  * Multiple power socket strip device
@@ -31,7 +30,7 @@ import org.slf4j.LoggerFactory;
 public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
 
     public BroadlinkStripModel1Handler(Thing thing) {
-        super(thing, LoggerFactory.getLogger(BroadlinkStripModel1Handler.class));
+        super(thing);
     }
 
     public void handleCommand(ChannelUID channelUID, Command command) {

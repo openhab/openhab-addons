@@ -61,6 +61,10 @@ public class BroadlinkBindingConstants {
     public static final String BROADLINK_AUTH_KEY = "097628343fe99e23765c1513accf8b02";
     public static final String BROADLINK_IV = "562e17996d093d28ddb3ba695a2e6f58";
 
+    public static final String COMMAND_CHANNEL = "command";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_HUMIDITY = "humidity";
+
     public static final Map<ThingTypeUID, String> SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP = new HashMap<ThingTypeUID, String>();
 
     static {

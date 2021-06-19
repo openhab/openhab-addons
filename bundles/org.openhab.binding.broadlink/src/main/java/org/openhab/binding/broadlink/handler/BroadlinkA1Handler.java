@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.broadlink.handler;
 
+import static org.openhab.binding.broadlink.BroadlinkBindingConstants.CHANNEL_HUMIDITY;
+import static org.openhab.binding.broadlink.BroadlinkBindingConstants.CHANNEL_TEMPERATURE;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.broadlink.internal.ModelMapper;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Thing;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handles the A1 environmental sensor.
@@ -27,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
 
     public BroadlinkA1Handler(Thing thing) {
-        super(thing, LoggerFactory.getLogger(BroadlinkA1Handler.class));
+        super(thing);
     }
 
     protected boolean getStatusFromDevice() {
@@ -48,8 +50,9 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
             float temperature = (float) ((double) (decryptResponse[4] * 10 + decryptResponse[5]) / 10D);
             logger.trace("A1 getStatusFromDevice got temperature {}", temperature);
 
-            updateState("temperature", new DecimalType(temperature));
-            updateState("humidity", new DecimalType((double) (decryptResponse[6] * 10 + decryptResponse[7]) / 10D));
+            updateState(CHANNEL_TEMPERATURE, new DecimalType(temperature));
+            updateState(CHANNEL_HUMIDITY,
+                    new DecimalType((double) (decryptResponse[6] * 10 + decryptResponse[7]) / 10D));
             updateState("light", ModelMapper.getLightValue(decryptResponse[8]));
             updateState("air", ModelMapper.getAirValue(decryptResponse[10]));
             updateState("noise", ModelMapper.getNoiseValue(decryptResponse[12]));

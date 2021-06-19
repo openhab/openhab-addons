@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.broadlink.handler;
 
+import static org.openhab.binding.broadlink.BroadlinkBindingConstants.CHANNEL_HUMIDITY;
+import static org.openhab.binding.broadlink.BroadlinkBindingConstants.CHANNEL_TEMPERATURE;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.binding.broadlink.internal.Utils;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Thing;
-import org.slf4j.LoggerFactory;
 
 /**
  * Remote blaster handler, "generation" 4
@@ -29,8 +32,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BroadlinkRemoteModel4Handler extends BroadlinkRemoteHandler {
 
-    public BroadlinkRemoteModel4Handler(Thing thing) {
-        super(thing, LoggerFactory.getLogger(BroadlinkRemoteModel4Handler.class));
+    public BroadlinkRemoteModel4Handler(Thing thing,
+            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider) {
+        super(thing, commandDescriptionProvider);
     }
 
     protected boolean onBroadlinkDeviceBecomingReachable() {
@@ -58,9 +62,9 @@ public class BroadlinkRemoteModel4Handler extends BroadlinkRemoteHandler {
             // Temperature and Humidity response fields are 2 bytes further into the response,
             // mirroring the request
             float temperature = (float) ((double) (decodedPayload[6] * 100 + decodedPayload[7]) / 100D);
-            updateState("temperature", new DecimalType(temperature));
+            updateState(CHANNEL_TEMPERATURE, new DecimalType(temperature));
             float humidity = (float) ((double) (decodedPayload[8] * 100 + decodedPayload[9]) / 100D);
-            updateState("humidity", new DecimalType(humidity));
+            updateState(CHANNEL_HUMIDITY, new DecimalType(humidity));
             return true;
         } catch (Exception e) {
             logger.error("Could not get status: ", e);

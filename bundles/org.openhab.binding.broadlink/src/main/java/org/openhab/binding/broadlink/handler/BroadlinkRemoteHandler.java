@@ -17,6 +17,9 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.broadlink.BroadlinkBindingConstants;
+import org.openhab.binding.broadlink.internal.BroadlinkMappingService;
+import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.binding.broadlink.internal.Utils;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -24,34 +27,29 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeUID;
-import org.openhab.core.transform.TransformationException;
-import org.openhab.core.transform.TransformationHelper;
-import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.util.HexUtils;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Remote blaster handler
  *
- * @author John Marshall/Cato Sognen - Initial contribution
+ * @author Cato Sognen - Initial contribution
+ * @author John Marshall - V3 rewrite with state description provider
  */
 @NonNullByDefault
 public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
+    private final BroadlinkMappingService mappingService;
 
-    @Nullable
-    private TransformationService transformService;
-
-    public BroadlinkRemoteHandler(Thing thing) {
-        super(thing, LoggerFactory.getLogger(BroadlinkRemoteHandler.class));
+    public BroadlinkRemoteHandler(Thing thing,
+            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider) {
+        super(thing);
+        this.mappingService = new BroadlinkMappingService(thingConfig.getMapFilename(), commandDescriptionProvider,
+                new ChannelUID(thing.getUID(), BroadlinkBindingConstants.COMMAND_CHANNEL));
     }
 
-    public BroadlinkRemoteHandler(Thing thing, Logger logger) {
-        super(thing, logger);
+    public void dispose() {
+        this.mappingService.dispose();
     }
 
     protected void sendCode(byte code[]) {
@@ -90,7 +88,7 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             logger.error("Unexpected null channelTypeUID while handling command {}", command.toFullString());
             return;
         }
-        if (channelTypeUID.getId().equals("command")) {
+        if (channelTypeUID.getId().equals(BroadlinkBindingConstants.COMMAND_CHANNEL)) {
             logger.debug("Handling ir/rf command '{}' on channel {} of thing {}", command, channelUID.getId(),
                     getThing().getLabel());
             byte code[] = lookupCode(command, channelUID);
@@ -102,47 +100,24 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         }
     }
 
-    @Nullable
-    private TransformationService getTransformService() {
-        // Lazy-load it
-        if (transformService == null) {
-            BundleContext bundleContext = FrameworkUtil.getBundle(BroadlinkRemoteHandler.class).getBundleContext();
-            transformService = TransformationHelper.getTransformationService(bundleContext, "MAP");
-            if (transformService == null) {
-                logger.error("Failed to get MAP transformation service for thing {}; is bundle installed?",
-                        getThing().getLabel());
-            }
-        }
-        return transformService;
-    }
-
     private byte @Nullable [] lookupCode(Command command, ChannelUID channelUID) {
         if (command.toString() == null) {
             logger.debug("Unable to perform transform on null command string");
             return null;
         }
-        String mapFile = thingConfig.getMapFilename();
 
         byte code[] = null;
-        String value;
-        try {
-            value = getTransformService().transform(mapFile, command.toString());
+        String value = this.mappingService.lookup(command.toString());
 
-            if (value == null || value.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "No entries found for command in map file, or the file is missing.");
-                return null;
-            }
-
-            code = HexUtils.hexToBytes(value);
-        } catch (TransformationException e) {
+        if (value == null || value.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unable to transform command in map file.");
+                    "No entries found for command in map file, or the file is missing.");
             return null;
         }
 
-        logger.debug("Transformed command '{}' for thing {} with map file '{}'", command, getThing().getLabel(),
-                mapFile);
+        code = HexUtils.hexToBytes(value);
+
+        logger.debug("Transformed command '{}' for thing {}", command, getThing().getLabel());
         return code;
     }
 }

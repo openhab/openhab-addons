@@ -14,7 +14,6 @@ package org.openhab.binding.broadlink.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
-import org.slf4j.LoggerFactory;
 
 /**
  * Multiple power socket strip device
@@ -25,6 +24,6 @@ import org.slf4j.LoggerFactory;
 public class BroadlinkStripModel2Handler extends BroadlinkSocketModel2Handler {
 
     public BroadlinkStripModel2Handler(Thing thing) {
-        super(thing, LoggerFactory.getLogger(BroadlinkStripModel2Handler.class));
+        super(thing);
     }
 }

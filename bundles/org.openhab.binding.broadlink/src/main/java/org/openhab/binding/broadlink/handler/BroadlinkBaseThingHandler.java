@@ -65,7 +65,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     private byte[] deviceId;
     private byte[] deviceKey;
 
-    public BroadlinkBaseThingHandler(Thing thing, Logger logger) {
+    public BroadlinkBaseThingHandler(Thing thing) {
         super(thing);
         logger.debug("constructed: resetting deviceKey to '{}', length {}",
                 BroadlinkBindingConstants.BROADLINK_AUTH_KEY, BroadlinkBindingConstants.BROADLINK_AUTH_KEY.length());
@@ -92,7 +92,9 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         this.thingConfig = getConfigAs(BroadlinkDeviceConfiguration.class);
         count = (new Random()).nextInt(65535);
 
-        this.socket = new RetryableSocket(thingConfig, logger);
+        if (this.socket == null) {
+            this.socket = new RetryableSocket(thingConfig, logger);
+        }
 
         updateItemStatus();
 
@@ -115,6 +117,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         }
         if (socket != null) {
             socket.close();
+            socket = null;
         }
         super.dispose();
     }
