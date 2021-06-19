@@ -7,11 +7,10 @@
 	<!-- BloomSky Binding -->
 	<bridge-type id="bridge-api">
 		<label>BloomSky Bridge</label>
-		<description>Provides access to the BloomSky API.</description>
-
+		<description>Provides access to the BloomSky API for the SKY and STORM weather stations</description>
+		<category>WebService</category>
 		<representation-property>apikey</representation-property>
-
-		<config-description-ref uri="bridge-type:bloomsky:bridge-api"/>
+		<config-description-ref uri="bridge-type:bloomsky:bridge-api" />
 	</bridge-type>
 
 </thing:thing-descriptions>
