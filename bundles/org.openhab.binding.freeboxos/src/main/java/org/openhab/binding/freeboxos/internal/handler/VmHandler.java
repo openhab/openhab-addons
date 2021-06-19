@@ -47,7 +47,7 @@ public class VmHandler extends HostHandler {
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
         logger.debug("Polling Virtual machine status");
-        VmManager vmManager = bridgeHandler.getVmManager();
+        VmManager vmManager = getApi().getVmManager();
         if (vmManager != null) {
             VirtualMachine vm = vmManager.getVM(getConfigAs(ClientConfiguration.class).id);
             updateChannelOnOff(VM_STATUS, STATUS, vm.getStatus() == Status.RUNNING);
@@ -58,7 +58,7 @@ public class VmHandler extends HostHandler {
 
     @Override
     protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
-        VmManager vmManager = bridgeHandler.getVmManager();
+        VmManager vmManager = getApi().getVmManager();
         if (vmManager != null) {
             if (STATUS.equals(channelUID.getIdWithoutGroup()) && command instanceof OnOffType) {
                 vmManager.power(getConfigAs(ClientConfiguration.class).id, command == OnOffType.ON);

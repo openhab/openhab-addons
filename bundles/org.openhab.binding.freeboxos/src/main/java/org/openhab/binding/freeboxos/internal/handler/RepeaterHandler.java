@@ -45,7 +45,7 @@ public class RepeaterHandler extends HostHandler {
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
         logger.debug("Polling Repeater status");
-        RepeaterManager repeaterManager = bridgeHandler.getRepeaterManager();
+        RepeaterManager repeaterManager = getApi().getRepeaterManager();
 
         ClientConfiguration config = getConfigAs(ClientConfiguration.class);
         List<LanHost> hosts = repeaterManager.getRepeaterHosts(config.id);

@@ -17,14 +17,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.UriBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 import org.openhab.binding.freeboxos.internal.api.lan.LanHost;
-import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 
 /**
  * The {@link RepeaterManager} is the Java class used to handle api requests
@@ -34,22 +36,24 @@ import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
  */
 @NonNullByDefault
 public class RepeaterManager extends RestManager {
-    private static String REPEATER_URL = "repeater/";
+    private static String REPEATER_URL = "repeater";
     private List<Repeater> repeaters = new ArrayList<>();
 
     public RepeaterManager(ApiHandler apiHandler) {
-        super(apiHandler);
+        super(apiHandler, REPEATER_URL);
     }
 
     public synchronized List<Repeater> getRepeaters() throws FreeboxException {
         if (repeaters.isEmpty()) {
-            repeaters.addAll(apiHandler.getList(REPEATER_URL, RepeatersResponse.class, true));
+            repeaters.addAll(getList(RepeatersResponse.class, true));
         }
         return repeaters;
     }
 
     public List<LanHost> getRepeaterHosts(int id) throws FreeboxException {
-        return apiHandler.getList(String.format(REPEATER_URL + "%d/host", id), AccessPointHostsResponse.class, true);
+        UriBuilder myBuilder = getUriBuilder();
+        myBuilder.path(Integer.toString(id)).path("host");
+        return getList(myBuilder.build(), AccessPointHostsResponse.class, true);
     }
 
     private synchronized List<LanHost> getHosts() throws FreeboxException {
@@ -73,7 +77,7 @@ public class RepeaterManager extends RestManager {
     }
 
     public Repeater getRepeater(int id) throws FreeboxException {
-        return apiHandler.get(String.format(REPEATER_URL + "%d", id), RepeaterResponse.class, true);
+        return get(String.format("%d", id), RepeaterResponse.class, true);
     }
 
     // Response classes and validity evaluations

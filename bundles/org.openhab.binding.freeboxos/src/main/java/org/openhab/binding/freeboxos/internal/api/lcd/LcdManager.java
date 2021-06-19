@@ -13,10 +13,10 @@
 package org.openhab.binding.freeboxos.internal.api.lcd;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
-import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 
 /**
  * The {@link LcdManager} is the Java class used to handle api requests
@@ -29,15 +29,15 @@ import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 public class LcdManager extends RestManager {
 
     public LcdManager(ApiHandler apiHandler) {
-        super(apiHandler);
+        super(apiHandler, "lcd/config");
     }
 
     public LcdConfig getConfig() throws FreeboxException {
-        return apiHandler.get("lcd/config/", LcdConfigResponse.class, true);
+        return get(null, LcdConfigResponse.class, true);
     }
 
     public LcdConfig setConfig(LcdConfig config) throws FreeboxException {
-        return apiHandler.put("lcd/config/", config, LcdConfigResponse.class);
+        return put(null, config, LcdConfigResponse.class);
     }
 
     // Response classes and validity evaluations

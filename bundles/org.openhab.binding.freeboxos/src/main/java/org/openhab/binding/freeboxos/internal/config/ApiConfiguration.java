@@ -34,8 +34,8 @@ public class ApiConfiguration {
     public boolean discoverNetDevice;
     public boolean httpsAvailable;
     private String apiVersion = "5.0";
-    public String baseUrl = "/api/";
     public String appToken = "";
+    public int websocketidletimeout = 900;
 
     public String apiMajorVersion() {
         String[] elements = apiVersion.split("\\.");

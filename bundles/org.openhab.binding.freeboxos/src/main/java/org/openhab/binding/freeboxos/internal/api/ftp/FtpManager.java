@@ -13,10 +13,10 @@
 package org.openhab.binding.freeboxos.internal.api.ftp;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
-import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 
 /**
  * The {@link FtpManager} is the Java class used to handle api requests
@@ -27,10 +27,9 @@ import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
  */
 @NonNullByDefault
 public class FtpManager extends RestManager {
-    private static String FTP_URL = "ftp/config/";
 
     public FtpManager(ApiHandler apiHandler) {
-        super(apiHandler);
+        super(apiHandler, "ftp");
     }
 
     public boolean getFtpStatus() throws FreeboxException {
@@ -40,11 +39,11 @@ public class FtpManager extends RestManager {
     public boolean changeFtpStatus(boolean enable) throws FreeboxException {
         FtpConfig config = getFtpConfig();
         config.setEnabled(enable);
-        return apiHandler.put(FTP_URL, config, FtpConfigResponse.class).isEnabled();
+        return put("config", config, FtpConfigResponse.class).isEnabled();
     }
 
     private FtpConfig getFtpConfig() throws FreeboxException {
-        return apiHandler.get(FTP_URL, FtpConfigResponse.class, true);
+        return get("config", FtpConfigResponse.class, true);
     }
 
     // Response classes and validity evaluations

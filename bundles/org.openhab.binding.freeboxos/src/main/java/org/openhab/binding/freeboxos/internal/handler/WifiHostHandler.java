@@ -45,7 +45,7 @@ public class WifiHostHandler extends HostHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
-        Optional<AccessPointHost> host = bridgeHandler.getWifiManager().getHost(getMac());
+        Optional<AccessPointHost> host = getApi().getWifiManager().getHost(getMac());
         if (host.isPresent()) {
             AccessPointHost wifiHost = host.get();
             int rssi = wifiHost.getSignal();
@@ -53,7 +53,7 @@ public class WifiHostHandler extends HostHandler {
             return;
         }
 
-        Map<String, @Nullable LanHost> map = bridgeHandler.getRepeaterManager().getHostsMap();
+        Map<String, @Nullable LanHost> map = getApi().getRepeaterManager().getHostsMap();
         LanHost wifiHost = map.get(getMac());
         if (wifiHost != null) {
             LanAccessPoint accessPoint = wifiHost.getAccessPoint();

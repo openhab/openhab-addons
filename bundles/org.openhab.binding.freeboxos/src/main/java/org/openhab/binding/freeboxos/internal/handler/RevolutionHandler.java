@@ -51,7 +51,7 @@ public class RevolutionHandler extends ServerHandler {
     @Override
     public void initialize() {
         super.initialize();
-        lcdManager = bridgeHandler.getLcdManager();
+        lcdManager = getApi().getLcdManager();
     }
 
     @Override

@@ -23,6 +23,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.config.ApiConsumerConfiguration;
 import org.openhab.core.library.types.DateTimeType;
@@ -61,11 +62,15 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
 
     private final ZoneId zoneId;
     private @NonNullByDefault({}) ScheduledFuture<?> globalJob;
-    protected @NonNullByDefault({}) ApiHandler bridgeHandler;
+    protected @NonNullByDefault({}) ApiBridgeHandler bridgeHandler;
 
     ApiConsumerHandler(Thing thing, ZoneId zoneId) {
         super(thing);
         this.zoneId = zoneId;
+    }
+
+    public ApiHandler getApi() {
+        return bridgeHandler.getApi();
     }
 
     @Override
@@ -121,9 +126,9 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
-            if (handler != null) {
+            if (handler instanceof ApiBridgeHandler) {
                 if (handler.getThing().getStatus() == ThingStatus.ONLINE) {
-                    bridgeHandler = (ApiHandler) handler;
+                    bridgeHandler = (ApiBridgeHandler) handler;
                     updateStatus(ThingStatus.ONLINE);
                     return true;
                 }

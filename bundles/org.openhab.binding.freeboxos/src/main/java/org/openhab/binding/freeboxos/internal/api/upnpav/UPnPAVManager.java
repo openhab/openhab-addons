@@ -13,10 +13,10 @@
 package org.openhab.binding.freeboxos.internal.api.upnpav;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
-import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 
 /**
  * The {@link UPnPAVManager} is the Java class used to handle api requests
@@ -29,17 +29,17 @@ public class UPnPAVManager extends RestManager {
     private static String UPNPAV_URL = "upnpav/config";
 
     public UPnPAVManager(ApiHandler apiHandler) {
-        super(apiHandler);
+        super(apiHandler, UPNPAV_URL);
     }
 
     public boolean getStatus() throws FreeboxException {
-        return apiHandler.get(UPNPAV_URL, UPnPAVConfigResponse.class, true).isEnabled();
+        return get(null, UPnPAVConfigResponse.class, true).isEnabled();
     }
 
     public boolean changeStatus(boolean enable) throws FreeboxException {
         UPnPAVConfig config = new UPnPAVConfig();
         config.setEnabled(enable);
-        return apiHandler.put(UPNPAV_URL, config, UPnPAVConfigResponse.class).isEnabled();
+        return put(null, config, UPnPAVConfigResponse.class).isEnabled();
     }
 
     // Response classes and validity evaluations

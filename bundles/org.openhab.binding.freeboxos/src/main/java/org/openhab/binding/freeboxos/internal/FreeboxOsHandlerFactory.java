@@ -18,7 +18,8 @@ import java.time.ZoneId;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.freeboxos.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.freeboxos.internal.handler.HostHandler;
 import org.openhab.binding.freeboxos.internal.handler.LandlineHandler;
 import org.openhab.binding.freeboxos.internal.handler.PlayerHandler;
@@ -29,6 +30,7 @@ import org.openhab.binding.freeboxos.internal.handler.VmHandler;
 import org.openhab.binding.freeboxos.internal.handler.WifiHostHandler;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -53,15 +55,18 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
     private final AudioHTTPServer audioHTTPServer;
     private final NetworkAddressService networkAddressService;
     private final ZoneId zoneId;
+    private final HttpClient httpClient;
 
     @Activate
     public FreeboxOsHandlerFactory(final @Reference AudioHTTPServer audioHTTPServer,
             final @Reference NetworkAddressService networkAddressService,
-            final @Reference TimeZoneProvider timeZoneProvider, ComponentContext componentContext) {
+            final @Reference TimeZoneProvider timeZoneProvider, @Reference HttpClientFactory httpClientFactory,
+            ComponentContext componentContext) {
         super.activate(componentContext);
         this.audioHTTPServer = audioHTTPServer;
         this.networkAddressService = networkAddressService;
         this.zoneId = timeZoneProvider.getTimeZone();
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -73,7 +78,7 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(BRIDGE_TYPE_API)) {
-            return new ApiHandler((Bridge) thing);
+            return new ApiBridgeHandler((Bridge) thing, httpClient);
         } else if (thingTypeUID.equals(THING_TYPE_REVOLUTION)) {
             return new RevolutionHandler(thing, zoneId);
         } else if (thingTypeUID.equals(THING_TYPE_DELTA)) {

@@ -15,13 +15,13 @@ package org.openhab.binding.freeboxos.internal.api.player;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
 import org.openhab.binding.freeboxos.internal.api.system.DeviceConfig;
-import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 
 /**
  * The {@link PlayerManager} is the Java class used to handle api requests
@@ -31,7 +31,7 @@ import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
  */
 @NonNullByDefault
 public class PlayerManager extends RestManager {
-    private static String PLAYER_URL = "player/";
+    private static String PLAYER_URL = "player";
 
     public static Permission associatedPermission() {
         return Permission.PLAYER;
@@ -41,29 +41,29 @@ public class PlayerManager extends RestManager {
     private final String apiVersion;
 
     public PlayerManager(ApiHandler apiHandler, String baseUrl, String apiVersion) {
-        super(apiHandler);
+        super(apiHandler, PLAYER_URL);
         this.baseUrl = baseUrl;
         this.apiVersion = apiVersion;
     }
 
     private String buildSubPath(int playerId, String path) {
-        return String.format(PLAYER_URL + "%d%sv%s/%s", playerId, baseUrl, apiVersion, path);
+        return String.format("%d%sv%s/%s", playerId, baseUrl, apiVersion, path);
     }
 
     public List<Player> getPlayers() throws FreeboxException {
-        return apiHandler.getList(PLAYER_URL, PlayersResponse.class, true);
+        return getList(PlayersResponse.class, true);
     }
 
     public PlayerStatus getPlayerStatus(int id) throws FreeboxException {
-        return apiHandler.get(buildSubPath(id, "status"), PlayerResponse.class, true);
+        return get(buildSubPath(id, "status"), PlayerResponse.class, true);
     }
 
     public DeviceConfig getConfig(int id) throws FreeboxException {
-        return apiHandler.get(buildSubPath(id, "system"), PlayerConfigurationResponse.class, true);
+        return get(buildSubPath(id, "system"), PlayerConfigurationResponse.class, true);
     }
 
     public void reboot(int id) throws FreeboxException {
-        apiHandler.post(buildSubPath(id, "system/reboot"), null);
+        post(buildSubPath(id, "system/reboot"), null);
     }
 
     // Response classes and validity evaluations

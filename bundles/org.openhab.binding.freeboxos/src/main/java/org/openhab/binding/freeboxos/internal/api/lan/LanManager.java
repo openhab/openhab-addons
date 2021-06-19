@@ -17,14 +17,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.UriBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 import org.openhab.binding.freeboxos.internal.api.lan.LanConfig.NetworkMode;
-import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +42,11 @@ public class LanManager extends RestManager {
     private final Logger logger = LoggerFactory.getLogger(LanManager.class);
     private final List<LanInterface> interfaces = new ArrayList<>();
     private @NonNullByDefault({}) NetworkMode networkMode;
+    private final UriBuilder browserBuilder;
 
     public LanManager(ApiHandler apiHandler) {
-        super(apiHandler);
+        super(apiHandler, "lan");
+        browserBuilder = getUriBuilder().path("browser");
     }
 
     public NetworkMode getNetworkMode() throws FreeboxException {
@@ -53,7 +57,7 @@ public class LanManager extends RestManager {
     }
 
     public LanConfig getLanConfig() throws FreeboxException {
-        return apiHandler.get("lan/config/", LanConfigResponse.class, true);
+        return get("config", LanConfigResponse.class, true);
     }
 
     /*
@@ -61,13 +65,15 @@ public class LanManager extends RestManager {
      */
     private synchronized List<LanInterface> getLanInterfaces() throws FreeboxException {
         if (interfaces.isEmpty()) {
-            interfaces.addAll(apiHandler.getList("lan/browser/interfaces/", LanInterfacesResponse.class, true));
+            UriBuilder myBuilder = browserBuilder.clone().path("interfaces");
+            interfaces.addAll(getList(myBuilder.build(), LanInterfacesResponse.class, true));
         }
         return interfaces;
     }
 
     private List<LanHost> getInterfaceHosts(String lanInterface) throws FreeboxException {
-        return apiHandler.getList(String.format("lan/browser/%s/", lanInterface), LanHostsConfigResponse.class, true);
+        UriBuilder myBuilder = browserBuilder.clone().path(lanInterface);
+        return getList(myBuilder.build(), LanHostsConfigResponse.class, true);
     }
 
     private synchronized List<LanHost> getHosts() throws FreeboxException {
@@ -99,7 +105,7 @@ public class LanManager extends RestManager {
 
     public void wakeOnLan(String host) throws FreeboxException {
         WakeOnLineData wol = new WakeOnLineData(host);
-        apiHandler.post("lan/wol/" + host + "/", wol);
+        post("wol/" + host, wol);
     }
 
     // Response classes and validity evaluations

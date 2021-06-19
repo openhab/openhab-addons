@@ -26,8 +26,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.ws.rs.core.UriBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.freeboxos.internal.action.PlayerActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaActionData.MediaAction;
@@ -146,7 +149,7 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
 
     private void fetchPlayerStatus() throws FreeboxException {
         PlayerConfiguration config = getConfigAs(PlayerConfiguration.class);
-        PlayerManager playerManager = bridgeHandler.getPlayerManager();
+        PlayerManager playerManager = getApi().getPlayerManager();
         if (playerManager != null) {
             PlayerStatus status = playerManager.getPlayerStatus(config.id);
             updateChannelString(PLAYER_STATUS, PLAYER_STATUS, status.getPowerState().name());
@@ -155,8 +158,8 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
 
     private void fetchAirMediaStatus() throws FreeboxException {
         Boolean airMediaStatus = false;
-        if (bridgeHandler.getLanManager().getNetworkMode() != NetworkMode.BRIDGE) {
-            AirMediaConfig response = bridgeHandler.getAirMediaManager().getConfig();
+        if (getApi().getLanManager().getNetworkMode() != NetworkMode.BRIDGE) {
+            AirMediaConfig response = getApi().getAirMediaManager().getConfig();
             airMediaStatus = response.isEnabled();
         }
         updateChannelOnOff(PLAYER_ACTIONS, AIRMEDIA_STATUS, airMediaStatus);
@@ -165,7 +168,7 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
     @Override
     protected DeviceConfig getDeviceConfig() throws FreeboxException {
         PlayerConfiguration config = getConfigAs(PlayerConfiguration.class);
-        PlayerManager playerManager = bridgeHandler.getPlayerManager();
+        PlayerManager playerManager = getApi().getPlayerManager();
         if (playerManager != null) {
             return playerManager.getConfig(config.id);
         }
@@ -175,7 +178,7 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
     @Override
     protected void internalCallReboot() throws FreeboxException {
         PlayerConfiguration config = getConfigAs(PlayerConfiguration.class);
-        PlayerManager playerManager = bridgeHandler.getPlayerManager();
+        PlayerManager playerManager = getApi().getPlayerManager();
         if (playerManager != null) {
             playerManager.reboot(config.id);
         }
@@ -204,7 +207,7 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
         if (getThing().getStatus() == ThingStatus.ONLINE && playerName != null) {
             if (audioStream == null) {
                 try {
-                    bridgeHandler.getAirMediaManager().sendToReceiver(playerName, getPassword(), MediaAction.STOP,
+                    getApi().getAirMediaManager().sendToReceiver(playerName, getPassword(), MediaAction.STOP,
                             MediaType.VIDEO);
                 } catch (FreeboxException e) {
                     logger.warn("Exception while stopping audio stream playback: {}", e);
@@ -229,7 +232,7 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
                     audioStream.close();
                     try {
                         logger.debug("AirPlay audio sink: process url {}", url);
-                        bridgeHandler.getAirMediaManager().sendToReceiver(playerName, getPassword(), MediaAction.START,
+                        getApi().getAirMediaManager().sendToReceiver(playerName, getPassword(), MediaAction.START,
                                 MediaType.VIDEO, url);
                     } catch (FreeboxException e) {
                         logger.warn("Audio stream playback failed: {}", e);
@@ -242,9 +245,9 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
     }
 
     private boolean enableAirMedia(boolean enable) throws FreeboxException {
-        AirMediaConfig config = bridgeHandler.getAirMediaManager().getConfig();
+        AirMediaConfig config = getApi().getAirMediaManager().getConfig();
         config.setEnable(enable);
-        config = bridgeHandler.getAirMediaManager().setConfig(config);
+        config = getApi().getAirMediaManager().setConfig(config);
         return config.isEnabled();
     }
 
@@ -265,18 +268,23 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
         String aKey = key.toLowerCase();
         if (VALID_REMOTE_KEYS.contains(aKey)) {
             String remoteCode = (String) getConfig().get(PlayerConfiguration.REMOTE_CODE);
-            StringBuilder urlBuilder = new StringBuilder(
-                    String.format("http://%s/pub/remote_control?code=%s&key=%s", getIpAddress(), remoteCode, aKey));
-            if (longPress) {
-                urlBuilder.append("&long=true");
-            }
-            if (count > 1) {
-                urlBuilder.append(String.format("&repeat=%d", count));
-            }
-            try {
-                bridgeHandler.get(urlBuilder.toString(), null, false);
-            } catch (FreeboxException e) {
-                logger.warn("Error calling Player url : {}", e);
+            if (remoteCode != null) {
+                UriBuilder uriBuilder = UriBuilder.fromPath("pub").scheme("http").host(getIpAddress())
+                        .path("remote_control");
+                uriBuilder.queryParam("code", remoteCode).queryParam("key", aKey);
+                if (longPress) {
+                    uriBuilder.queryParam("long", true);
+                }
+                if (count > 1) {
+                    uriBuilder.queryParam("repeat", count);
+                }
+                try {
+                    getApi().execute(uriBuilder.build(), HttpMethod.GET, null, null, false);
+                } catch (FreeboxException e) {
+                    logger.warn("Error calling Player url : {}", e);
+                }
+            } else {
+                logger.warn("A remote code must be configured in the on the player thing.");
             }
         } else {
             logger.info("Key '{}' is not a valid key expression", key);
@@ -287,7 +295,6 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
         String[] keyChain = keys.split(",");
         Arrays.stream(keyChain).forEach(key -> {
             sendKey(key, false, 1);
-            // TODO : introduce a small delay between each key
         });
     }
 

@@ -75,7 +75,6 @@ The *landline* thing requires the following configuration parameters:
 | Parameter Label  | Parameter ID    | Description                                                            | Required | Default |
 |------------------|-----------------|------------------------------------------------------------------------|----------|---------|
 | Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll for phone state. | No       | 2       |
-| Phone Number     | phoneNumber     | The landline phone number of your server.                              | Yes      |         |
 
 ### Network devices : Host and WifiHost
 

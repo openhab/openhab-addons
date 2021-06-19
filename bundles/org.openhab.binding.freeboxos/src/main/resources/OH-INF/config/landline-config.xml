@@ -11,10 +11,6 @@
 			<description>The refresh interval in seconds which is used to poll for phone state.</description>
 			<default>2</default>
 		</parameter>
-		<parameter name="phoneNumber" type="text" required="true">
-			<label>Phone Number</label>
-			<description>The landline phone number of your server.</description>
-		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

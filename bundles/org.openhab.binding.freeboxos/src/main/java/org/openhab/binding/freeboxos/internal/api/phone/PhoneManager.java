@@ -12,16 +12,14 @@
  */
 package org.openhab.binding.freeboxos.internal.api.phone;
 
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
-import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 
 /**
  * The {@link PhoneManager} is the Java class used to handle api requests
@@ -36,39 +34,31 @@ public class PhoneManager extends RestManager {
     }
 
     public PhoneManager(ApiHandler apiHandler) {
-        super(apiHandler);
+        super(apiHandler, "phone");
     }
 
     public PhoneStatus getStatus() throws FreeboxException {
-        return apiHandler.getList("phone/", PhoneStatusResponse.class, true).get(0);
+        return getList(PhoneStatusResponse.class, true).get(0);
     }
 
     public PhoneConfig getConfig() throws FreeboxException {
-        return apiHandler.get("phone/config", PhoneConfigResponse.class, true);
-    }
-
-    public List<CallEntry> getCallEntries(long startTime) throws FreeboxException {
-        return apiHandler.getList(String.format("call/log/?_dc=%d", startTime), CallEntriesResponse.class, true);
+        return get("config", PhoneConfigResponse.class, true);
     }
 
     public void ring(boolean startIt) throws FreeboxException {
-        apiHandler.post(String.format("phone/fxs_ring_%s", (startIt ? "start" : "stop")), null);
+        post(String.format("fxs_ring_%s", (startIt ? "start" : "stop")), null);
     }
 
     public void activateDect(boolean status) throws FreeboxException {
         PhoneConfig config = getConfig();
         config.setDectEnabled(status);
-        apiHandler.put("phone/config", config, PhoneConfigResponse.class);
+        put("config", config, PhoneConfigResponse.class);
     }
 
     public void alternateRing(boolean status) throws FreeboxException {
         PhoneConfig config = getConfig();
         config.setDectRingOnOff(status);
-        apiHandler.put("phone/config", config, PhoneConfigResponse.class);
-    }
-
-    // Response classes and validity evaluations
-    private class CallEntriesResponse extends ListResponse<CallEntry> {
+        put("config", config, PhoneConfigResponse.class);
     }
 
     private class PhoneConfigResponse extends Response<PhoneConfig> {

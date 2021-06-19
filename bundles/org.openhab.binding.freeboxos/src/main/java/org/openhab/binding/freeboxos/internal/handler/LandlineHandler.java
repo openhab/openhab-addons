@@ -19,15 +19,14 @@ import java.util.Comparator;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.phone.CallEntry;
-import org.openhab.binding.freeboxos.internal.api.phone.CallEntry.CallType;
+import org.openhab.binding.freeboxos.internal.api.call.CallEntry;
+import org.openhab.binding.freeboxos.internal.api.call.CallEntry.CallType;
+import org.openhab.binding.freeboxos.internal.api.call.CallManager;
 import org.openhab.binding.freeboxos.internal.api.phone.PhoneConfig;
 import org.openhab.binding.freeboxos.internal.api.phone.PhoneManager;
 import org.openhab.binding.freeboxos.internal.api.phone.PhoneStatus;
-import org.openhab.binding.freeboxos.internal.config.LandlineConfiguration;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringListType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -47,7 +46,6 @@ public class LandlineHandler extends ApiConsumerHandler {
     private final static String LAST_CALL_TIMESTAMP = "last-call-timestamp";
     private final Logger logger = LoggerFactory.getLogger(LandlineHandler.class);
     private long lastCallTimestamp;
-    private @NonNullByDefault({}) String localPN;
 
     public LandlineHandler(Thing thing, ZoneId zoneId) {
         super(thing, zoneId);
@@ -58,26 +56,20 @@ public class LandlineHandler extends ApiConsumerHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-        Configuration test = getConfig();
-        localPN = (String) test.get(LandlineConfiguration.PHONE_NUMBER);
-    }
-
-    @Override
     protected void internalPoll() throws FreeboxException {
-        PhoneManager phoneManager = bridgeHandler.getPhoneManager();
+        PhoneManager phoneManager = getApi().getPhoneManager();
+        CallManager callManager = getApi().getCallManager();
         if (phoneManager != null) {
             pollStatus(phoneManager);
-            pollCalls(phoneManager);
+            pollCalls(callManager);
             pollConfig(phoneManager);
         }
     }
 
-    private void pollCalls(PhoneManager phoneManager) throws FreeboxException {
+    private void pollCalls(CallManager callManager) throws FreeboxException {
         logger.debug("Polling phone calls since last...");
 
-        phoneManager.getCallEntries(lastCallTimestamp).stream().sorted(Comparator.comparingLong(CallEntry::getDatetime))
+        callManager.getCallEntries(lastCallTimestamp).stream().sorted(Comparator.comparingLong(CallEntry::getDatetime))
                 .filter(c -> c.getDatetime() > lastCallTimestamp).forEach(call -> {
                     if (call.getType() == CallType.INCOMING) {
                         triggerChannel(new ChannelUID(getThing().getUID(), STATE, PHONE_EVENT),
@@ -111,13 +103,7 @@ public class LandlineHandler extends ApiConsumerHandler {
         String phoneNumber = call.getNumber();
 
         ChannelUID id = new ChannelUID(getThing().getUID(), group, CALL_INFO);
-        StringListType callType;
-        if (call.getType() == CallType.OUTGOING) {
-            callType = new StringListType(localPN, call.getNumber());
-        } else {
-            callType = new StringListType(call.getNumber(), localPN);
-        }
-        updateState(id, callType);
+        updateState(id, new StringType(call.getNumber()));
         updateChannelDateTimeState(group, CALL_TIMESTAMP, call.getDatetime());
         if (call.getType() != CallType.MISSED) { // Missed call have no duration by definition
             updateChannelQuantity(group, CALL_DURATION, call.getDuration(), Units.SECOND);
@@ -129,7 +115,7 @@ public class LandlineHandler extends ApiConsumerHandler {
 
     @Override
     protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
-        PhoneManager phoneManager = bridgeHandler.getPhoneManager();
+        PhoneManager phoneManager = getApi().getPhoneManager();
         String target = channelUID.getIdWithoutGroup();
         if (command instanceof OnOffType && phoneManager != null) {
             boolean status = (OnOffType) command == OnOffType.ON;

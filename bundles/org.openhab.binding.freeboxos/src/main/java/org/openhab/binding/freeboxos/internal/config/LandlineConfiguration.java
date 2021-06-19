@@ -22,9 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class LandlineConfiguration extends ApiConsumerConfiguration {
-    public static String PHONE_NUMBER = "phoneNumber";
-    public String phoneNumber = "";
-
     LandlineConfiguration() {
         refreshInterval = 2;
     }

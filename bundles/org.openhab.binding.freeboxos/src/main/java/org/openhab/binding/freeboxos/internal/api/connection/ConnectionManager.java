@@ -13,10 +13,10 @@
 package org.openhab.binding.freeboxos.internal.api.connection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
-import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 
 /**
  * The {@link ConnectionManager} is the Java class used to handle api requests
@@ -29,11 +29,11 @@ import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 public class ConnectionManager extends RestManager {
 
     public ConnectionManager(ApiHandler apiHandler) {
-        super(apiHandler);
+        super(apiHandler, "connection");
     }
 
     public ConnectionStatus getStatus() throws FreeboxException {
-        return apiHandler.get("connection/", ConnectionStatusResponse.class, true);
+        return get(null, ConnectionStatusResponse.class, true);
     }
 
     // Response classes and validity evaluations

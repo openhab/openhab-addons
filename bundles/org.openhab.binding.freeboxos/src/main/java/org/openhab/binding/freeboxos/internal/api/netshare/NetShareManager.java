@@ -13,10 +13,10 @@
 package org.openhab.binding.freeboxos.internal.api.netshare;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
-import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 
 /**
  * The {@link NetShareManager} is the Java class used to handle api requests
@@ -28,15 +28,15 @@ import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 public class NetShareManager extends RestManager {
 
     public NetShareManager(ApiHandler apiHandler) {
-        super(apiHandler);
+        super(apiHandler, "netshare/samba");
     }
 
     public SambaConfig getSambaConfig() throws FreeboxException {
-        return apiHandler.get("netshare/samba/", SambaConfigResponse.class, true);
+        return get(null, SambaConfigResponse.class, true);
     }
 
     public SambaConfig setSambaConfig(SambaConfig config) throws FreeboxException {
-        return apiHandler.put("netshare/samba/", config, SambaConfigResponse.class);
+        return put(null, config, SambaConfigResponse.class);
     }
 
     // Response classes and validity evaluations

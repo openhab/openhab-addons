@@ -10,50 +10,42 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeboxos.internal.api.vm;
+package org.openhab.binding.freeboxos.internal.api.call;
 
 import java.util.List;
+
+import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.ListResponse;
-import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
 
 /**
- * The {@link VmManager} is the Java class used to handle api requests
- * related to virtual machines
+ * The {@link CallManager} is the Java class used to handle api requests
+ * related to phone and calls
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class VmManager extends RestManager {
+public class CallManager extends RestManager {
     public static Permission associatedPermission() {
-        return Permission.VM;
+        return Permission.CALLS;
     }
 
-    public VmManager(ApiHandler apiHandler) {
-        super(apiHandler, "vm");
+    public CallManager(ApiHandler apiHandler) {
+        super(apiHandler, "call");
     }
 
-    public VirtualMachine getVM(int vmId) throws FreeboxException {
-        return get(String.format("%d", vmId), VirtualMachineResponse.class, true);
-    }
-
-    public void power(int vmId, boolean startIt) throws FreeboxException {
-        post(String.format("%d/%s", vmId, startIt ? "start" : "powerbutton"), null);
-    }
-
-    public List<VirtualMachine> getVms() throws FreeboxException {
-        return getList(VirtualMachinesResponse.class, true);
+    public List<CallEntry> getCallEntries(long startTime) throws FreeboxException {
+        UriBuilder myBuilder = getUriBuilder();
+        myBuilder.path("log/").queryParam("_dc", startTime);
+        return getList(myBuilder.build(), CallEntriesResponse.class, true);
     }
 
     // Response classes and validity evaluations
-    private class VirtualMachineResponse extends Response<VirtualMachine> {
-    }
-
-    private class VirtualMachinesResponse extends ListResponse<VirtualMachine> {
+    private class CallEntriesResponse extends ListResponse<CallEntry> {
     }
 }

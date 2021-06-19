@@ -18,13 +18,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.ws.rs.core.UriBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
-import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 
 /**
  * The {@link WifiManager} is the Java class used to handle api requests
@@ -35,29 +37,32 @@ import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 @NonNullByDefault
 public class WifiManager extends RestManager {
     private List<AccessPoint> accessPoints = new ArrayList<>();
+    private final UriBuilder apBuilder;
 
     public WifiManager(ApiHandler apiHandler) {
-        super(apiHandler);
+        super(apiHandler, "wifi");
+        apBuilder = getUriBuilder().path("ap");
     }
 
     public boolean getStatus() throws FreeboxException {
-        return apiHandler.get("wifi/config/", WifiGlobalConfigResponse.class, true).isEnabled();
+        return get("config", WifiGlobalConfigResponse.class, true).isEnabled();
     }
 
     public boolean setStatus(boolean enable) throws FreeboxException {
         WifiConfig config = new WifiConfig();
-        return apiHandler.put("wifi/config/", config, WifiGlobalConfigResponse.class).isEnabled();
+        return put("config", config, WifiGlobalConfigResponse.class).isEnabled();
     }
 
     private synchronized List<AccessPoint> getAccessPoints() throws FreeboxException {
         if (accessPoints.isEmpty()) {
-            accessPoints.addAll(apiHandler.getList("wifi/ap/", AccessPointsResponse.class, true));
+            accessPoints.addAll(getList(apBuilder.build(), AccessPointsResponse.class, true));
         }
         return accessPoints;
     }
 
     private @Nullable List<AccessPointHost> getAccessPointHosts(int apId) throws FreeboxException {
-        return apiHandler.getList(String.format("wifi/ap/%d/stations", apId), AccessPointHostsResponse.class, true);
+        UriBuilder myBuilder = apBuilder.clone().path(Integer.toString(apId)).path("stations");
+        return getList(myBuilder.build(), AccessPointHostsResponse.class, true);
     }
 
     public Map<String, @Nullable AccessPointHost> getHostsMap() throws FreeboxException {

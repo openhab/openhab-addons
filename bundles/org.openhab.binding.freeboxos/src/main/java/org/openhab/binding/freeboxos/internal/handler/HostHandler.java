@@ -58,7 +58,7 @@ public class HostHandler extends ApiConsumerHandler {
     }
 
     protected ConnectivityData fetchConnectivity() throws FreeboxException {
-        LanHost lanHost = bridgeHandler.getLanManager().getHostsMap().get(getMac());
+        LanHost lanHost = getApi().getLanManager().getHostsMap().get(getMac());
         if (lanHost != null) {
             return lanHost;
         }
@@ -71,7 +71,7 @@ public class HostHandler extends ApiConsumerHandler {
 
     public void wol() {
         try {
-            bridgeHandler.getLanManager().wakeOnLan(getMac());
+            getApi().getLanManager().wakeOnLan(getMac());
         } catch (FreeboxException e) {
             logger.warn("Error waking up host : {}", e);
         }

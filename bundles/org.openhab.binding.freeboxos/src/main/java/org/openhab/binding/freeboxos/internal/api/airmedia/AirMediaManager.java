@@ -12,18 +12,19 @@
  */
 package org.openhab.binding.freeboxos.internal.api.airmedia;
 
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaActionData.MediaAction;
 import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaActionData.MediaType;
-import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 
 /**
  * The {@link AirMediaManager} is the Java class used to handle api requests
@@ -34,20 +35,23 @@ import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 @NonNullByDefault
 public class AirMediaManager extends RestManager {
 
+    private final URI receiverURI;
+
     public AirMediaManager(ApiHandler apiHandler) {
-        super(apiHandler);
+        super(apiHandler, "airmedia");
+        this.receiverURI = getUriBuilder().path("receivers").build();
     }
 
     public List<AirMediaReceiver> getReceivers() throws FreeboxException {
-        return apiHandler.getList("airmedia/receivers/", AirMediaReceiversResponse.class, true);
+        return getList(receiverURI, AirMediaReceiversResponse.class, true);
     }
 
     public AirMediaConfig getConfig() throws FreeboxException {
-        return apiHandler.get("airmedia/config/", AirMediaConfigResponse.class, true);
+        return get("config", AirMediaConfigResponse.class, true);
     }
 
     public AirMediaConfig setConfig(AirMediaConfig config) throws FreeboxException {
-        return apiHandler.put("airmedia/config/", config, AirMediaConfigResponse.class);
+        return put("config", config, AirMediaConfigResponse.class);
     }
 
     public void sendToReceiver(String receiver, String password, MediaAction action, MediaType type)
@@ -62,7 +66,7 @@ public class AirMediaManager extends RestManager {
 
     private void sendToReceiver(String receiver, AirMediaActionData payload) throws FreeboxException {
         String encodedReceiver = URLEncoder.encode(receiver, StandardCharsets.UTF_8);
-        apiHandler.post(String.format("airmedia/receivers/%s/", encodedReceiver), payload);
+        post(String.format("receivers/%s/", encodedReceiver), payload);
     }
 
     // Response classes and validity evaluations

@@ -13,10 +13,10 @@
 package org.openhab.binding.freeboxos.internal.api.system;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
-import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 
 /**
  * The {@link SystemManager} is the Java class used to handle api requests
@@ -28,15 +28,15 @@ import org.openhab.binding.freeboxos.internal.handler.ApiHandler;
 public class SystemManager extends RestManager {
 
     public SystemManager(ApiHandler apiHandler) {
-        super(apiHandler);
+        super(apiHandler, "system");
     }
 
     public SystemConf getConfig() throws FreeboxException {
-        return apiHandler.get("system/", SystemConfigurationResponse.class, true);
+        return get(null, SystemConfigurationResponse.class, true);
     }
 
     public void reboot() throws FreeboxException {
-        apiHandler.post("system/reboot/", null);
+        post("reboot", null);
     }
 
     // Response classes and validity evaluations
