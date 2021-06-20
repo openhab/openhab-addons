@@ -108,8 +108,17 @@
 			<channel id="selected_program_state" typeId="selected_program_state"/>
 			<channel id="laundry_care_washer_temperature" typeId="laundry_care_washer_temperature"/>
 			<channel id="laundry_care_washer_spin_speed" typeId="laundry_care_washer_spin_speed"/>
+			<channel id="laundry_care_washer_idos1_level" typeId="laundry_care_washer_idos1_level"/>
+			<channel id="laundry_care_washer_idos2_level" typeId="laundry_care_washer_idos2_level"/>
 			<channel id="laundry_care_washer_idos1" typeId="laundry_care_washer_idos1"/>
 			<channel id="laundry_care_washer_idos2" typeId="laundry_care_washer_idos2"/>
+			<channel id="laundry_care_washer_vario_perfect" typeId="laundry_care_washer_vario_perfect"/>
+			<channel id="laundry_care_washer_less_ironing" typeId="laundry_care_washer_less_ironing"/>
+			<channel id="laundry_care_washer_pre_wash" typeId="laundry_care_washer_pre_wash"/>
+			<channel id="laundry_care_washer_rinse_plus" typeId="laundry_care_washer_rinse_plus"/>
+			<channel id="laundry_care_washer_soak" typeId="laundry_care_washer_soak"/>
+			<channel id="program_energy" typeId="program_energy"/>
+			<channel id="program_water" typeId="program_water"/>
 			<channel id="basic_actions_state" typeId="basic_actions_state"/>
 			<channel id="remaining_program_time_state" typeId="remaining_program_time_state"/>
 			<channel id="program_progress_state" typeId="program_progress_state"/>
@@ -140,6 +149,13 @@
 			<channel id="selected_program_state" typeId="selected_program_state"/>
 			<channel id="laundry_care_washer_temperature" typeId="laundry_care_washer_temperature"/>
 			<channel id="laundry_care_washer_spin_speed" typeId="laundry_care_washer_spin_speed"/>
+			<channel id="laundry_care_washer_vario_perfect" typeId="laundry_care_washer_vario_perfect"/>
+			<channel id="laundry_care_washer_less_ironing" typeId="laundry_care_washer_less_ironing"/>
+			<channel id="laundry_care_washer_pre_wash" typeId="laundry_care_washer_pre_wash"/>
+			<channel id="laundry_care_washer_rinse_plus" typeId="laundry_care_washer_rinse_plus"/>
+			<channel id="laundry_care_washer_soak" typeId="laundry_care_washer_soak"/>
+			<channel id="program_energy" typeId="program_energy"/>
+			<channel id="program_water" typeId="program_water"/>
 			<channel id="dryer_drying_target" typeId="dryer_drying_target"/>
 			<channel id="basic_actions_state" typeId="basic_actions_state"/>
 			<channel id="remaining_program_time_state" typeId="remaining_program_time_state"/>
@@ -451,7 +467,7 @@
 		</state>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="laundry_care_washer_idos1">
+	<channel-type id="laundry_care_washer_idos1_level">
 		<item-type>String</item-type>
 		<label>i-Dos 1 Dosing Level</label>
 		<description>This status defines the i-Dos dosing level of a washer program of the home appliance. (If appliance
@@ -466,7 +482,7 @@
 		</state>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="laundry_care_washer_idos2">
+	<channel-type id="laundry_care_washer_idos2_level">
 		<item-type>String</item-type>
 		<label>i-Dos 2 Dosing Level</label>
 		<description>This status defines the i-Dos dosing level of a washer program of the home appliance. (If appliance
@@ -480,6 +496,74 @@
 			</options>
 		</state>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="laundry_care_washer_idos1" advanced="true">
+		<item-type>Switch</item-type>
+		<label>i-Dos 1</label>
+		<description>This status indicates whether i-Dos 1 is activated for a washer program of the home appliance. (If
+			appliance supports i-Dos)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="laundry_care_washer_idos2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>i-Dos 2</label>
+		<description>This status indicates whether i-Dos 2 is activated for a washer program of the home appliance. (If
+			appliance supports i-Dos)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="laundry_care_washer_vario_perfect" advanced="true">
+		<item-type>String</item-type>
+		<label>Vario Perfect</label>
+		<description>This status defines the vario perfect mode of a washer program of the home appliance.</description>
+		<state readOnly="true">
+			<options>
+				<option value="LaundryCare.Common.EnumType.VarioPerfect.Off">Off</option>
+				<option value="LaundryCare.Common.EnumType.VarioPerfect.SpeedPerfect">Vario Speed</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="laundry_care_washer_less_ironing" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Less Ironing</label>
+		<description>This status indicates whether less ironing is activated for a washer program of the home appliance.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="laundry_care_washer_pre_wash" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Pre-Wash</label>
+		<description>This status indicates whether the pre-wash is activated for a washer program of the home appliance.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="laundry_care_washer_rinse_plus" advanced="true">
+		<item-type>String</item-type>
+		<label>Rinse Plus</label>
+		<description>This status defines the number of additional rinses of a washer program of the home appliance.</description>
+		<state readOnly="true">
+			<options>
+				<option value="LaundryCare.Washer.EnumType.RinsePlus.Off">None</option>
+				<option value="LaundryCare.Washer.EnumType.RinsePlus.Plus1">+1</option>
+				<option value="LaundryCare.Washer.EnumType.RinsePlus.Plus2">+2</option>
+				<option value="LaundryCare.Washer.EnumType.RinsePlus.Plus3">+3</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="laundry_care_washer_soak" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Soaking</label>
+		<description>This status indicates whether the soaking is activated for a washer program of the home appliance.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="program_energy" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Program Energy</label>
+		<description>This channel provides the estimated energy required in percentage for a program of the home appliance.</description>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="program_water" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Program Water</label>
+		<description>This channel provides the estimated water required in percentage for a program of the home appliance.</description>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="setpoint_temperature_refrigerator">
 		<item-type>Number:Temperature</item-type>

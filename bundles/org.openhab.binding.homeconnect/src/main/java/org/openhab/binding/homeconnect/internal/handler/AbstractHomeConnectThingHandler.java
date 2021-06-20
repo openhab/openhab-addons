@@ -485,6 +485,10 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      */
     protected abstract void configureEventHandlers(final Map<String, EventHandler> handlers);
 
+    protected boolean isChannelLinkedToProgramOptionNotFullySupportedByApi() {
+        return false;
+    }
+
     /**
      * Update all channels via API.
      *
@@ -795,16 +799,16 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             getThingChannel(CHANNEL_OPERATION_STATE).ifPresent(channel -> updateState(channel.getUID(),
                     value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
 
-            if (STATE_OPERATION_FINISHED.equals(event.getValue())) {
+            if (STATE_OPERATION_FINISHED.equals(value)) {
                 getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
                         .ifPresent(c -> updateState(c.getUID(), new QuantityType<>(100, PERCENT)));
                 getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE)
                         .ifPresent(c -> updateState(c.getUID(), new QuantityType<>(0, SECOND)));
-            } else if (STATE_OPERATION_RUN.equals(event.getValue())) {
+            } else if (STATE_OPERATION_RUN.equals(value)) {
                 getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
                         .ifPresent(c -> updateState(c.getUID(), new QuantityType<>(0, PERCENT)));
                 getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateChannel(c.getUID()));
-            } else if (STATE_OPERATION_READY.equals(event.getValue())) {
+            } else if (STATE_OPERATION_READY.equals(value)) {
                 resetProgramStateChannels(false);
             }
         };
@@ -815,8 +819,33 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             String value = event.getValue();
             getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(channel -> updateState(channel.getUID(),
                     value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
-            if (event.getValue() == null) {
+            if (value == null) {
                 resetProgramStateChannels(false);
+            }
+        };
+    }
+
+    protected EventHandler updateProgramOptionsAndActiveProgramStateEventHandler() {
+        return event -> {
+            String value = event.getValue();
+            getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(channel -> updateState(channel.getUID(),
+                    value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
+            if (value == null) {
+                resetProgramStateChannels(false);
+            } else {
+                try {
+                    Optional<HomeConnectApiClient> apiClient = getApiClient();
+                    if (apiClient.isPresent() && isChannelLinkedToProgramOptionNotFullySupportedByApi()
+                            && apiClient.get().isRemoteControlActive(getThingHaId())) {
+                        // update channels linked to program options
+                        Program program = apiClient.get().getSelectedProgram(getThingHaId());
+                        if (program != null) {
+                            processProgramOptions(program.getOptions());
+                        }
+                    }
+                } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
+                    logger.debug("Could not update program options. {}", e.getMessage());
+                }
             }
         };
     }
@@ -863,13 +892,25 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         return event -> {
             defaultBooleanEventHandler(CHANNEL_REMOTE_CONTROL_ACTIVE_STATE).handle(event);
 
-            // update available program options if update was previously delayed and remote control is enabled
             try {
-                String programKey = programOptionsDelayedUpdate;
-                if (programKey != null && Boolean.parseBoolean(event.getValue())) {
-                    logger.debug("Delayed update of options for program {}", programKey);
-                    updateProgramOptionsStateDescriptions(programKey);
-                    programOptionsDelayedUpdate = null;
+                if (Boolean.parseBoolean(event.getValue())) {
+                    // update available program options if update was previously delayed and remote control is enabled
+                    String programKey = programOptionsDelayedUpdate;
+                    if (programKey != null) {
+                        logger.debug("Delayed update of options for program {}", programKey);
+                        updateProgramOptionsStateDescriptions(programKey);
+                        programOptionsDelayedUpdate = null;
+                    }
+
+                    if (isChannelLinkedToProgramOptionNotFullySupportedByApi()) {
+                        Optional<HomeConnectApiClient> apiClient = getApiClient();
+                        if (apiClient.isPresent()) {
+                            Program program = apiClient.get().getSelectedProgram(getThingHaId());
+                            if (program != null) {
+                                processProgramOptions(program.getOptions());
+                            }
+                        }
+                    }
                 }
             } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
                 logger.debug("Could not update program options. {}", e.getMessage());
@@ -881,18 +922,31 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         return event -> {
             defaultSelectedProgramStateEventHandler().handle(event);
 
-            // update available program options
             try {
                 Optional<HomeConnectApiClient> apiClient = getApiClient();
                 String programKey = event.getValue();
+
                 if (apiClient.isPresent() && programKey != null) {
-                    // Delay the update if options are not yet cached and remote control is disabled
-                    if (availableProgramOptionsCache.get(programKey) == null
-                            && !apiClient.get().isRemoteControlActive(getThingHaId())) {
+                    Boolean remoteControl = (availableProgramOptionsCache.get(programKey) == null
+                            || isChannelLinkedToProgramOptionNotFullySupportedByApi())
+                                    ? apiClient.get().isRemoteControlActive(getThingHaId())
+                                    : false;
+
+                    // Delay the update of available program options if options are not yet cached and remote control is
+                    // disabled
+                    if (availableProgramOptionsCache.get(programKey) == null && !remoteControl) {
                         logger.debug("Delay update of options for program {}", programKey);
                         programOptionsDelayedUpdate = programKey;
                     } else {
                         updateProgramOptionsStateDescriptions(programKey);
+                    }
+
+                    if (isChannelLinkedToProgramOptionNotFullySupportedByApi() && remoteControl) {
+                        // update channels linked to program options
+                        Program program = apiClient.get().getSelectedProgram(getThingHaId());
+                        if (program != null) {
+                            processProgramOptions(program.getOptions());
+                        }
                     }
                 }
             } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
@@ -1288,11 +1342,11 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                                 .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
                         break;
                     case OPTION_WASHER_IDOS_1_DOSING_LEVEL:
-                        getThingChannel(CHANNEL_WASHER_IDOS1)
+                        getThingChannel(CHANNEL_WASHER_IDOS1_LEVEL)
                                 .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
                         break;
                     case OPTION_WASHER_IDOS_2_DOSING_LEVEL:
-                        getThingChannel(CHANNEL_WASHER_IDOS2)
+                        getThingChannel(CHANNEL_WASHER_IDOS2_LEVEL)
                                 .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
                         break;
                     case OPTION_DRYER_DRYING_TARGET:
@@ -1337,6 +1391,42 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                         getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
                                 .ifPresent(channel -> updateState(channel.getUID(),
                                         new QuantityType<>(option.getValueAsInt(), PERCENT)));
+                        break;
+                    case OPTION_WASHER_IDOS_1_ACTIVE:
+                        getThingChannel(CHANNEL_WASHER_IDOS1).ifPresent(
+                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
+                        break;
+                    case OPTION_WASHER_IDOS_2_ACTIVE:
+                        getThingChannel(CHANNEL_WASHER_IDOS2).ifPresent(
+                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
+                        break;
+                    case OPTION_WASHER_VARIO_PERFECT:
+                        getThingChannel(CHANNEL_WASHER_VARIO_PERFECT)
+                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
+                        break;
+                    case OPTION_WASHER_LESS_IRONING:
+                        getThingChannel(CHANNEL_WASHER_LESS_IRONING).ifPresent(
+                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
+                        break;
+                    case OPTION_WASHER_PRE_WASH:
+                        getThingChannel(CHANNEL_WASHER_PRE_WASH).ifPresent(
+                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
+                        break;
+                    case OPTION_WASHER_RINSE_PLUS:
+                        getThingChannel(CHANNEL_WASHER_RINSE_PLUS)
+                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
+                        break;
+                    case OPTION_WASHER_SOAK:
+                        getThingChannel(CHANNEL_WASHER_SOAK).ifPresent(
+                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
+                        break;
+                    case OPTION_WASHER_ENERGY_FORECAST:
+                        getThingChannel(CHANNEL_PROGRAM_ENERGY).ifPresent(channel -> updateState(channel.getUID(),
+                                new QuantityType<>(option.getValueAsInt(), PERCENT)));
+                        break;
+                    case OPTION_WASHER_WATER_FORECAST:
+                        getThingChannel(CHANNEL_PROGRAM_WATER).ifPresent(channel -> updateState(channel.getUID(),
+                                new QuantityType<>(option.getValueAsInt(), PERCENT)));
                         break;
                 }
             }
