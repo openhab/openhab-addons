@@ -14,7 +14,6 @@ package org.openhab.binding.omnilink.internal.handler;
 
 import static org.openhab.binding.omnilink.internal.OmnilinkBindingConstants.*;
 
-import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -84,9 +83,7 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
                 .builder(bridgeHandler, ObjectPropertyRequests.AUDIO_SOURCE, thingID, 0).selectNamed().build();
 
         for (AudioSourceProperties audioSourceProperties : objectPropertyRequest) {
-            Map<String, String> properties = editProperties();
-            properties.put(THING_PROPERTIES_NAME, audioSourceProperties.getName());
-            updateProperties(properties);
+            updateProperty(THING_PROPERTIES_NAME, audioSourceProperties.getName());
         }
     }
 
