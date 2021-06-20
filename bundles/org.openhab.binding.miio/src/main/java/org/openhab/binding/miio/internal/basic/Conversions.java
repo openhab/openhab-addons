@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.miio.internal.basic;
 
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,12 +28,13 @@ import com.google.gson.JsonPrimitive;
 public class Conversions {
     private static final Logger LOGGER = LoggerFactory.getLogger(Conversions.class);
 
-    public static JsonElement secondsToHours(JsonElement seconds) {
-        long hours = TimeUnit.SECONDS.toHours(seconds.getAsInt());
-        return new JsonPrimitive(hours);
+    public static JsonElement secondsToHours(JsonElement seconds) throws ClassCastException {
+        double value = seconds.getAsDouble() / 3600;
+        return new JsonPrimitive(value);
     }
 
-    public static JsonElement yeelightSceneConversion(JsonElement intValue) {
+    public static JsonElement yeelightSceneConversion(JsonElement intValue)
+            throws ClassCastException, IllegalStateException {
         switch (intValue.getAsInt()) {
             case 1:
                 return new JsonPrimitive("color");
@@ -54,17 +53,17 @@ public class Conversions {
         }
     }
 
-    public static JsonElement divideTen(JsonElement value10) {
+    public static JsonElement divideTen(JsonElement value10) throws ClassCastException, IllegalStateException {
         double value = value10.getAsDouble() / 10.0;
         return new JsonPrimitive(value);
     }
 
-    public static JsonElement divideHundred(JsonElement value10) {
+    public static JsonElement divideHundred(JsonElement value10) throws ClassCastException, IllegalStateException {
         double value = value10.getAsDouble() / 100.0;
         return new JsonPrimitive(value);
     }
 
-    public static JsonElement tankLevel(JsonElement value12) {
+    public static JsonElement tankLevel(JsonElement value12) throws ClassCastException, IllegalStateException {
         // 127 without water tank. 120 = 100% water
         if (value12.getAsInt() == 127) {
             return new JsonPrimitive(-1);
@@ -75,20 +74,25 @@ public class Conversions {
     }
 
     public static JsonElement execute(String transfortmation, JsonElement value) {
-        switch (transfortmation.toUpperCase()) {
-            case "YEELIGHTSCENEID":
-                return yeelightSceneConversion(value);
-            case "SECONDSTOHOURS":
-                return secondsToHours(value);
-            case "/10":
-                return divideTen(value);
-            case "/100":
-                return divideHundred(value);
-            case "TANKLEVEL":
-                return tankLevel(value);
-            default:
-                LOGGER.debug("Transformation {} not found. Returning '{}'", transfortmation, value.toString());
-                return value;
+        try {
+            switch (transfortmation.toUpperCase()) {
+                case "YEELIGHTSCENEID":
+                    return yeelightSceneConversion(value);
+                case "SECONDSTOHOURS":
+                    return secondsToHours(value);
+                case "/10":
+                    return divideTen(value);
+                case "/100":
+                    return divideHundred(value);
+                case "TANKLEVEL":
+                    return tankLevel(value);
+                default:
+                    LOGGER.debug("Transformation {} not found. Returning '{}'", transfortmation, value.toString());
+                    return value;
+            }
+        } catch (ClassCastException | IllegalStateException e) {
+            LOGGER.debug("Transformation {} failed. Returning '{}'", transfortmation, value.toString());
+            return value;
         }
     }
 }
