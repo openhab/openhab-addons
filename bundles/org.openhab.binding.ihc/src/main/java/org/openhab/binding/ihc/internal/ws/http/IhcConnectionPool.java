@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 public class IhcConnectionPool {
 
     private final Logger logger = LoggerFactory.getLogger(IhcConnectionPool.class);
+    private static final String DEFAULT_TLS_VER = "TLSv1";
 
     /**
      * Controller TLS certificate is self signed, which means that certificate
@@ -60,10 +61,10 @@ public class IhcConnectionPool {
 
     private HttpClientBuilder httpClientBuilder;
     private HttpClientContext localContext;
-    private String tlsVersion = "TLSv1";
+    private String tlsVersion = DEFAULT_TLS_VER;
 
     public IhcConnectionPool() throws IhcFatalExecption {
-        this("TLSv1");
+        this(DEFAULT_TLS_VER);
     }
 
     public IhcConnectionPool(String tlsVersion) throws IhcFatalExecption {
