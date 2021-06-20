@@ -20,6 +20,9 @@ import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.DatagramChannel;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,11 +53,17 @@ public class UDPListenDiscoverRunnable implements Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(UDPListenDiscoverRunnable.class);
 
+    private ThreadPoolExecutor threadExecutor;
+
     public UDPListenDiscoverRunnable(@Nullable DiscoverResult pDiscoverResult) {
         super();
         this.discoverResult = pDiscoverResult;
 
-        decoder = new UDPDecoder(discoverResult);
+        threadExecutor = new ThreadPoolExecutor(8 / 2, // core thread pool size
+                8, // maximum thread pool size
+                53, // time to wait before resizing pool
+                TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(8, true), new ThreadPoolExecutor.CallerRunsPolicy());
+        // decoder = new UDPDecoder(discoverResult);
 
     }
 
@@ -64,7 +73,7 @@ public class UDPListenDiscoverRunnable implements Runnable {
         while (true) {
             try {
                 // open socket for listening...
-                socket = new DatagramSocket(null);
+                // socket = new DatagramSocket(null);
                 DatagramChannel channel = DatagramChannel.open();
                 socket = channel.socket();
 
@@ -83,9 +92,15 @@ public class UDPListenDiscoverRunnable implements Runnable {
 
                 // **************** DECODER ********************
                 logger.debug("Packet received (port {}) {}", socket.getLocalPort(), macacoToString(buf));
-                if (this.decoder != null) {
-                    decoder.decodeVNetDatagram(packet);
-                }
+                threadExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        UDPDecoder decoder = new UDPDecoder(discoverResult);
+
+                        decoder.decodeVNetDatagram(packet);
+
+                    }
+                });
                 socket.close();
 
             } catch (BindException e) {
