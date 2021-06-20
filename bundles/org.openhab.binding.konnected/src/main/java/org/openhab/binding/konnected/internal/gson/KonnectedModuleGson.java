@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,10 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.konnected.internal.gson;
+
+import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*;
+
+import java.util.Arrays;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -24,6 +28,7 @@ import com.google.gson.annotations.SerializedName;
 public class KonnectedModuleGson {
 
     private Integer pin;
+    private String zone;
     private String temp;
     private String humi;
     private String state;
@@ -36,12 +41,50 @@ public class KonnectedModuleGson {
     private Integer pollInterval;
     private String addr;
 
-    public Integer getPin() {
-        return pin;
+    private Integer getPin() {
+
+        return Arrays.asList(PIN_TO_ZONE).indexOf(pin);
     }
 
-    public void setPin(Integer setPin) {
-        this.pin = setPin;
+    private void setPin(Integer setPin) {
+
+        this.pin = Arrays.asList(PIN_TO_ZONE).get(setPin);
+    }
+
+    private Integer getZone() {
+
+        switch (zone) {
+            case PRO_MODULE_ALARM1:
+                return Integer.decode("13");
+
+            case PRO_MODULE_OUT1:
+                return Integer.decode("14");
+
+            case PRO_MODULE_ALARM2_OUT2:
+                return Integer.decode("15");
+            default:
+                return Integer.decode(zone);
+        }
+    }
+
+    private void setZone(Integer setZone) {
+
+        switch (setZone) {
+            case 13:
+                this.zone = PRO_MODULE_ALARM1;
+                break;
+            case 14:
+                this.zone = PRO_MODULE_OUT1;
+                break;
+            case 15:
+                this.zone = PRO_MODULE_ALARM2_OUT2;
+                break;
+            default:
+                this.zone = Integer.toString(setZone);
+
+        }
+
+        ;
     }
 
     public Integer getPollInterval() {
@@ -110,5 +153,28 @@ public class KonnectedModuleGson {
 
     public void setAddr(String setAddr) {
         this.addr = setAddr;
+    }
+
+    public void setPinZone(String ThingID, Integer sentZone) {
+        switch (ThingID) {
+            case PRO_MODULE:
+                this.setZone(sentZone);
+                break;
+            case WIFI_MODULE:
+                this.setPin(sentZone);
+                break;
+        }
+    }
+
+    public Integer getPinZone(String ThingID) {
+
+        switch (ThingID) {
+            case PRO_MODULE:
+                return this.getZone();
+
+            default:
+                return this.getPin();
+
+        }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,8 @@ import static org.openhab.binding.konnected.internal.KonnectedBindingConstants.*
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 
@@ -48,7 +50,8 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.konnected", service = ThingHandlerFactory.class)
 public class KonnectedHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(KonnectedHandlerFactory.class);
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MODULE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_PROMODULE, THING_TYPE_WIFIMODULE).collect(Collectors.toSet()));
     private static final String alias = "/" + BINDING_ID;
 
     private HttpService httpService;
