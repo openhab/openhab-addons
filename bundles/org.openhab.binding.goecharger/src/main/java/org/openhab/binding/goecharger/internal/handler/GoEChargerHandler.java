@@ -389,7 +389,7 @@ public class GoEChargerHandler extends BaseThingHandler {
         logger.debug("POST URL = {}", urlStr);
 
         try {
-            ContentResponse contentResponse = httpClient.newRequest(urlStr).method(HttpMethod.POST)
+            ContentResponse contentResponse = httpClient.newRequest(urlStr).method(HttpMethod.GET)
                     .timeout(5, TimeUnit.SECONDS).send();
             String response = contentResponse.getContentAsString();
             logger.debug("POST Response: {}", response);
