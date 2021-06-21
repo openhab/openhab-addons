@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.miio.internal.basic;
 
+import java.awt.Color;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.PercentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +31,23 @@ import com.google.gson.JsonPrimitive;
 @NonNullByDefault
 public class Conversions {
     private static final Logger LOGGER = LoggerFactory.getLogger(Conversions.class);
+
+    /**
+     * Converts a RGB+brightness input to a HSV value.
+     * *
+     *
+     * @param RGB + brightness value (note brightness in the first byte)
+     * @return HSV
+     */
+    public static JsonElement bRGBtoHSV(JsonElement bRGB) throws ClassCastException {
+        if (bRGB.isJsonPrimitive() && bRGB.getAsJsonPrimitive().isNumber()) {
+            Color rgb = new Color(bRGB.getAsInt());
+            HSBType hsb = HSBType.fromRGB(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+            hsb = new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(bRGB.getAsInt() >>> 24));
+            return new JsonPrimitive(hsb.toFullString());
+        }
+        return bRGB;
+    }
 
     public static JsonElement secondsToHours(JsonElement seconds) throws ClassCastException {
         double value = seconds.getAsDouble() / 3600;
@@ -86,6 +107,8 @@ public class Conversions {
                     return divideHundred(value);
                 case "TANKLEVEL":
                     return tankLevel(value);
+                case "BRGBTOHSV":
+                    return bRGBtoHSV(value);
                 default:
                     LOGGER.debug("Transformation {} not found. Returning '{}'", transfortmation, value.toString());
                     return value;

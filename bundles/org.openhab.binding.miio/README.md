@@ -244,7 +244,8 @@ Currently the miio binding supports more than 290 different models.
 | Mi Air Purifier virtual      | miio:basic       | [lumi.gateway.mgl03](#lumi-gateway-mgl03) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi smart Home Gateway Hub v1 | miio:basic       | [lumi.gateway.v1](#lumi-gateway-v1) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi smart Home GatewayHub v2  | miio:basic       | [lumi.gateway.v2](#lumi-gateway-v2) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Mi mart Home Gateway Hub v3  | miio:basic       | [lumi.gateway.v3](#lumi-gateway-v3) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi smart Home Gateway Hub v3 | miio:basic       | [lumi.gateway.v3](#lumi-gateway-v3) | Yes       | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi smart Home Gateway Hub    | miio:basic       | [lumi.gateway.mieu01](#lumi-gateway-mieu01) | Yes       | Used to control the gateway itself. Controlling child devices currently only possible via rules |
 | Midea AC-i Youth             | miio:unsupported | midea.aircondition.v1  | No        |            |
 | Midea Air Conditioner v2     | miio:unsupported | midea.aircondition.v2  | No        |            |
 | Midea AC-Cool Golden         | miio:unsupported | midea.aircondition.xa1 | No        |            |
@@ -1333,7 +1334,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | alarmingVol          | Number               | Alarming Volume                          |            |
 | doorbellPush         | String               | Doorbell Push                            |            |
 
-### Mi mart Home Gateway Hub v3 (<a name="lumi-gateway-v3">lumi.gateway.v3</a>) Channels
+### Mi smart Home Gateway Hub v3 (<a name="lumi-gateway-v3">lumi.gateway.v3</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -1342,6 +1343,24 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | gatewayVol           | Number               | Gateway Volume                           |            |
 | alarmingVol          | Number               | Alarming Volume                          |            |
 | doorbellPush         | String               | Doorbell Push                            |            |
+
+### Mi smart Home Gateway Hub (<a name="lumi-gateway-mieu01">lumi.gateway.mieu01</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| guard                | Switch               | Guard                                    |            |
+| corridor             | Switch               | Automatic Night Light                    |            |
+| nightlight           | Color                | Night Light                              |            |
+| rgb                  | Color                | Colored Light                            |            |
+| doorbell_volume      | Number               | Doorbell Volume                          |            |
+| alarming_volume      | Number               | Alarming Volume                          |            |
+| gateway_volume       | Number               | Gateway Volume                           |            |
+| arming_time          | Number:Time          | Arming Time                              |            |
+| corridor_on_time     | Number:Time          | Corridor on time                         |            |
+| language             | String               | Voice prompt Language                    |            |
+| zigbee_channel       | String               | Zigbee Channel                           |            |
+| lumi_bind            | String               | Lumi_bind info                           |            |
+| doorbell_push        | String               | Doorbell Push                            |            |
 
 ### Mi Robot Vacuum-Mop Essential (<a name="mijia-vacuum-v2">mijia.vacuum.v2</a>) Channels
 
@@ -6058,17 +6077,38 @@ Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:al
 String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbellPush"}
 ```
 
-### Mi mart Home Gateway Hub v3 (lumi.gateway.v3) item file lines
+### Mi smart Home Gateway Hub v3 (lumi.gateway.v3) item file lines
 
 note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_gateway "Mi mart Home Gateway Hub v3" <status>
+Group G_gateway "Mi smart Home Gateway Hub v3" <status>
 Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:telnetEnable"}
 Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbellVol"}
 Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:basic:gateway:gatewayVol"}
 Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:alarmingVol"}
 String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbellPush"}
+```
+
+### Mi smart Home Gateway Hub (lumi.gateway.mieu01) item file lines
+
+note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_gateway "Mi smart Home Gateway Hub" <status>
+Switch guard "Guard" (G_gateway) {channel="miio:basic:gateway:guard"}
+Switch corridor "Automatic Night Light" (G_gateway) {channel="miio:basic:gateway:corridor"}
+Color nightlight "Night Light" (G_gateway) {channel="miio:basic:gateway:nightlight"}
+Color rgb "Colored Light" (G_gateway) {channel="miio:basic:gateway:rgb"}
+Number doorbell_volume "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbell_volume"}
+Number alarming_volume "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:alarming_volume"}
+Number gateway_volume "Gateway Volume" (G_gateway) {channel="miio:basic:gateway:gateway_volume"}
+Number:Time arming_time "Arming Time" (G_gateway) {channel="miio:basic:gateway:arming_time"}
+Number:Time corridor_on_time "Corridor on time" (G_gateway) {channel="miio:basic:gateway:corridor_on_time"}
+String language "Voice prompt Language" (G_gateway) {channel="miio:basic:gateway:language"}
+String zigbee_channel "Zigbee Channel" (G_gateway) {channel="miio:basic:gateway:zigbee_channel"}
+String lumi_bind "Lumi_bind info" (G_gateway) {channel="miio:basic:gateway:lumi_bind"}
+String doorbell_push "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbell_push"}
 ```
 
 ### Mi Robot Vacuum-Mop Essential (mijia.vacuum.v2) item file lines
