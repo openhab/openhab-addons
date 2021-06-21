@@ -184,10 +184,10 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
             int num = getConfigAs(PowermaxZoneConfiguration.class).zoneNumber.intValue();
 
             for (Value<?> value : state.getZone(num).getValues()) {
-                String v_channel = value.getChannel();
+                String vChannel = value.getChannel();
 
-                if (channel.equals(v_channel) && (value.getValue() != null)) {
-                    updateState(v_channel, value.getState());
+                if (channel.equals(vChannel) && (value.getValue() != null)) {
+                    updateState(vChannel, value.getState());
                 }
             }
         } else if (getThing().getThingTypeUID().equals(THING_TYPE_X10)) {
@@ -256,6 +256,9 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
                     updateStatus(ThingStatus.ONLINE);
                     logger.debug("Set handler status to ONLINE for thing {} (zone number {} paired)",
                             getThing().getUID(), config.zoneNumber);
+
+                    logger.debug("Using name '{}' for {}", getThing().getLabel(), getThing().getUID());
+                    zoneSettings.setName(getThing().getLabel());
                 }
             }
         }

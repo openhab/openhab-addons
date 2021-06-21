@@ -19,6 +19,8 @@ package org.openhab.binding.powermax.internal.state;
  */
 public class PowermaxZoneSettings {
 
+    // Note: PowermaxStatusMessage contains hardcoded references to some of these strings
+
     private static final String[] ZONE_TYPES = { "Non-Alarm", "Emergency", "Flood", "Gas", "Delay 1", "Delay 2",
             "Interior-Follow", "Perimeter", "Perimeter-Follow", "24 Hours Silent", "24 Hours Audible", "Fire",
             "Interior", "Home Delay", "Temperature", "Outdoor" };

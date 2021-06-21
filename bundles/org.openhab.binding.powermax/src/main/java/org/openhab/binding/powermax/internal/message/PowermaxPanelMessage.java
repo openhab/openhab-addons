@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.powermax.internal.message;
 
+import org.openhab.binding.powermax.internal.message.PowermaxMessageConstants.PowermaxSysEvent;
 import org.openhab.binding.powermax.internal.state.PowermaxState;
 
 /**
@@ -48,33 +49,37 @@ public class PowermaxPanelMessage extends PowermaxBaseMessage {
             byte eventZone = message[2 + 2 * i];
             byte logEvent = message[3 + 2 * i];
             int eventType = logEvent & 0x0000007F;
-            String logEventStr = PowermaxMessageConstants.getSystemEventString(eventType);
-            String logUserStr = PowermaxMessageConstants.getZoneOrUserString(eventZone & 0x000000FF);
-            updatedState.panelStatus.setValue(logEventStr + " (" + logUserStr + ")");
+            PowermaxSysEvent sysEvent = PowermaxMessageConstants.getSystemEvent(eventType);
+            String logEventStr = sysEvent.toString();
+            String logUserStr = commManager.getPanelSettings().getZoneOrUserName(eventZone & 0x000000FF);
 
             debug("Event " + i + " zone code", eventZone, logUserStr);
             debug("Event " + i + " event code", eventType, logEventStr);
 
-            String alarmStatus;
-            try {
-                PowermaxAlarmType alarmType = PowermaxAlarmType.fromCode(eventType);
-                alarmStatus = alarmType.getLabel();
-            } catch (IllegalArgumentException e) {
-                alarmStatus = "None";
+            if (sysEvent.isAlarm() || sysEvent.isSilentAlarm() || sysEvent.isAlert() || sysEvent.isPanic()
+                    || sysEvent.isTrouble()) {
+                updatedState.addActiveAlert(eventZone, eventType);
             }
-            updatedState.alarmType.setValue(alarmStatus);
 
-            String troubleStatus;
-            try {
-                PowermaxTroubleType troubleType = PowermaxTroubleType.fromCode(eventType);
-                troubleStatus = troubleType.getLabel();
-            } catch (IllegalArgumentException e) {
-                troubleStatus = "None";
+            if (sysEvent.isAlarm() || (sysEvent.isPanic() && !commManager.getPanelSettings().isSilentPanic())) {
+                updatedState.ringing.setValue(true);
+                updatedState.ringingSince.setValue(System.currentTimeMillis());
             }
-            updatedState.troubleType.setValue(troubleStatus);
 
-            if (eventType == 0x60) {
-                // System reset
+            if (sysEvent.isCancel() || sysEvent.isGeneralRestore() || sysEvent.isReset()) {
+                updatedState.ringing.setValue(false);
+            }
+
+            if (sysEvent.isRestore()) {
+                updatedState.clearActiveAlert(eventZone, sysEvent.getRestoreFor());
+            }
+
+            if (sysEvent.isGeneralRestore() || sysEvent.isReset()) {
+                updatedState.clearAllActiveAlerts();
+            }
+
+            if (sysEvent.isReset()) {
+                updatedState.clearAllActiveAlerts();
                 updatedState.downloadSetupRequired.setValue(true);
             }
         }
