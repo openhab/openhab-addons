@@ -400,6 +400,7 @@ public class UDPDecoder {
                 gateway = (SoulissGatewayHandler) bridge.getHandler();
             }
         } catch (Exception ex) {
+            logger.warn("Error at first decode State: {}", ex.getLocalizedMessage());
         }
 
         Iterator<Thing> thingsIterator;

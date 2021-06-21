@@ -13,9 +13,7 @@
 package org.openhab.binding.souliss.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -31,9 +29,8 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class SoulissT1AHandler extends SoulissGenericHandler {
-    @Nullable
-    Configuration gwConfigurationMap;
-    byte t1nRawState;
+    // private @NonNullByDefault({}) Configuration gwConfigurationMap; //unused for now
+    byte t1nRawState = 0xF;
 
     public SoulissT1AHandler(Thing thing) {
         super(thing);

@@ -14,7 +14,6 @@
 package org.openhab.binding.souliss.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
 import org.openhab.core.config.core.Configuration;
@@ -38,9 +37,8 @@ import org.openhab.core.types.RefreshType;
 @NonNullByDefault
 public class SoulissT41Handler extends SoulissGenericHandler {
 
-    @Nullable
-    Configuration gwConfigurationMap;
-    byte t4nRawState;
+    private @NonNullByDefault({}) Configuration gwConfigurationMap;
+    byte t4nRawState = 0xF;
 
     public SoulissT41Handler(Thing thing) {
         super(thing);
@@ -70,7 +68,6 @@ public class SoulissT41Handler extends SoulissGenericHandler {
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);

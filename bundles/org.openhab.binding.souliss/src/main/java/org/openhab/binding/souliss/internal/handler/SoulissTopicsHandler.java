@@ -31,7 +31,7 @@ import org.openhab.core.types.PrimitiveType;
 @NonNullByDefault
 public class SoulissTopicsHandler extends SoulissGenericActionMessage implements TypicalCommonMethods {
 
-    private float fSetPointValue;
+    private float fSetPointValue = 0xFFFF;
 
     public SoulissTopicsHandler(Thing pThing) {
         super(pThing);

@@ -16,7 +16,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -36,10 +35,8 @@ import org.openhab.core.types.RefreshType;
 @NonNullByDefault
 public class SoulissT14Handler extends SoulissGenericHandler {
 
-    @Nullable
-    Configuration gwConfigurationMap;
-    byte t1nRawState;
-    byte xSleepTime = 0;
+    private byte t1nRawState = 0xF;
+    // private byte xSleepTime = 0; // unused for now
 
     public SoulissT14Handler(Thing thing) {
         super(thing);

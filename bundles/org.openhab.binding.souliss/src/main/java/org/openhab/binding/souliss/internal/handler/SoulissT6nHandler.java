@@ -32,7 +32,7 @@ import org.openhab.core.types.PrimitiveType;
 @NonNullByDefault
 public class SoulissT6nHandler extends SoulissGenericHandler {
 
-    private float fSetPointValue;
+    private float fSetPointValue = 0xFFFF;
 
     public SoulissT6nHandler(Thing thing) {
         super(thing);

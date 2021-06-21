@@ -38,12 +38,10 @@ import org.openhab.core.types.RefreshType;
 @NonNullByDefault
 public class SoulissT18Handler extends SoulissGenericHandler {
 
-    byte t1nRawState;
-    @Nullable
-    Configuration gwConfigurationMap;
+    private @NonNullByDefault({}) Configuration gwConfigurationMap;
+    byte t1nRawState = 0xF;
     byte xSleepTime = 0;
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
