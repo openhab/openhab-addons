@@ -8,10 +8,44 @@
 		and Welcome Camera.</description>
 
 	<config-description>
-		<parameter name="backgroundDiscovery" type="boolean" required="false">
+		<parameter name="clientId" type="text" required="true">
+			<label>Client ID</label>
+			<description>Client ID provided for the application you created on http://dev.netatmo.com/createapp</description>
+		</parameter>
+
+		<parameter name="clientSecret" type="text" required="true">
+			<label>Client Secret</label>
+			<description>Client Secret provided for the application you created</description>
+			<context>password</context>
+		</parameter>
+
+		<parameter name="username" type="text" required="true">
+			<label>Username</label>
+			<description>Your Netatmo API username (email)</description>
+		</parameter>
+
+		<parameter name="password" type="text" required="true">
+			<label>Password</label>
+			<description>Your Netatmo API password</description>
+			<context>password</context>
+		</parameter>
+
+		<parameter name="webHookUrl" type="text">
+			<label>Webhook Address</label>
+			<description>Protocol, public IP and port to access OH2 server from Internet.</description>
+		</parameter>
+
+		<parameter name="reconnectInterval" type="integer" unit="s">
+			<label>Reconnect Interval</label>
+			<description>The reconnection interval to Netatmo API (in s).</description>
+			<default>5400</default>
+		</parameter>
+
+		<parameter name="backgroundDiscovery" type="boolean">
 			<label>Background Discovery</label>
 			<description>If set to true, the device and its associated modules are updated in the discovery inbox at each API
 				call run to refresh device data. Default is false.</description>
+			<required>false</required>
 			<default>false</default>
 		</parameter>
 	</config-description>

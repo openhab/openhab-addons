@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="signal">
+		<label>Signal</label>
+		<channels>
+			<channel id="value" typeId="rssi"/>
+			<channel id="strength" typeId="system.signal-strength"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="battery">
+		<label>Battery</label>
+		<channels>
+			<channel id="value" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="device">
+		<label>Device Info</label>
+		<channels>
+			<channel id="last-seen" typeId="timestamp">
+				<label>Last Seen</label>
+				<description>Last time this element has been seen</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="location">
+		<label>Location Data</label>
+		<channels>
+			<channel id="location" typeId="system.location"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

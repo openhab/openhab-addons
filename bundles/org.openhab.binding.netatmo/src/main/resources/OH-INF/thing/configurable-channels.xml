@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="sum-rain">
+		<item-type>Number:Length</item-type>
+		<label>Sum Rain</label>
+		<description>Quantity of water over a given period</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+		<config-description-ref uri="netatmo:sum-rain:config"/>
+	</channel-type>
+
+	<channel-type id="measure">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Measure</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+		<config-description-ref uri="netatmo:confMeasure:config"/>
+	</channel-type>
+
+	<channel-type id="measure-timestamp">
+		<item-type>DateTime</item-type>
+		<label>Measurement Time</label>
+		<description>Timestamp when data was measured</description>
+		<category>time</category>
+		<state readOnly="true"/>
+		<config-description-ref uri="netatmo:confMeasureTimestamp:config"/>
+	</channel-type>
+
+	<channel-type id="sum-boiler">
+		<item-type>Number:Time</item-type>
+		<label>Sum Boiler</label>
+		<description>History of the boiler data</description>
+		<category>time</category>
+		<state readOnly="true" pattern="%d %unit%"/>
+		<config-description-ref uri="netatmo:sum-boiler:config"/>
+	</channel-type>
+
+</thing:thing-descriptions>

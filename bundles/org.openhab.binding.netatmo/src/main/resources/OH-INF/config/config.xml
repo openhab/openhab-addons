@@ -5,123 +5,134 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:netatmo:bridge">
-		<parameter name="clientId" type="text" required="true">
-			<label>Client ID</label>
-			<description>Client ID provided for the application you created on http://dev.netatmo.com/createapp</description>
+	<config-description uri="netatmo:sum-boiler:config">
+		<parameter name="type" type="text">
+			<label>Type</label>
+			<description>Type of Measurement</description>
+			<options>
+				<option value="SUM_BOILER_ON">Sum Boiler On</option>
+				<option value="SUM_BOILER_OFF">Sum Boiler Off</option>
+			</options>
+			<default>SUM_BOILER_ON</default>
 		</parameter>
-
-		<parameter name="clientSecret" type="text" required="true">
-			<label>Client Secret</label>
-			<description>Client Secret provided for the application you created</description>
-			<context>password</context>
+		<parameter name="period" type="text">
+			<label>Period</label>
+			<description>Observation period</description>
+			<options>
+				<option value="ONE_DAY">This day</option>
+				<option value="ONE_WEEK">This week</option>
+				<option value="ONE_MONTH">This month</option>
+			</options>
+			<default>ONE_DAY</default>
 		</parameter>
-
-		<parameter name="username" type="text" required="true">
-			<label>Username</label>
-			<description>Your Netatmo API username (email)</description>
-		</parameter>
-
-		<parameter name="password" type="text" required="true">
-			<label>Password</label>
-			<description>Your Netatmo API password</description>
-			<context>password</context>
-		</parameter>
-
-		<parameter name="readStation" type="boolean">
-			<label>Access Weather Station</label>
-			<description>Read weather station's data.</description>
-			<default>true</default>
-		</parameter>
-
-		<parameter name="readHealthyHomeCoach" type="boolean">
-			<label>Access Healthy Home Coach</label>
-			<description>Read healthy home coach's data.</description>
-			<default>false</default>
-		</parameter>
-
-		<parameter name="readThermostat" type="boolean">
-			<label>Access Thermostat</label>
-			<description>Read and Write thermostat's data.</description>
-			<default>false</default>
-		</parameter>
-
-		<parameter name="readWelcome" type="boolean">
-			<label>Access Welcome Camera</label>
-			<description>Read and Access Welcome camera's data.</description>
-			<default>false</default>
-		</parameter>
-
-		<parameter name="readPresence" type="boolean">
-			<label>Access Presence Camera</label>
-			<description>Read and Access Presence camera's data.</description>
-			<default>false</default>
-		</parameter>
-
-		<parameter name="webHookUrl" type="text">
-			<label>Webhook Address</label>
-			<description>Protocol, public IP and port to access OH2 server from Internet.</description>
-			<advanced>true</advanced>
-		</parameter>
-
-		<parameter name="reconnectInterval" type="integer" unit="s">
-			<label>Reconnect Interval</label>
-			<description>The reconnection interval to Netatmo API (in s).</description>
-			<default>5400</default>
-			<advanced>true</advanced>
-		</parameter>
-
 	</config-description>
 
-	<config-description uri="thing-type:netatmo:station">
+	<config-description uri="netatmo:sum-rain:config">
+		<parameter name="type" type="text">
+			<label>Type</label>
+			<description>Type of Measurement</description>
+			<options>
+				<option value="SUM_RAIN">Sum Rain</option>
+				<option value="do_not_use">Empty</option>
+			</options>
+			<default>SUM_RAIN</default>
+		</parameter>
+		<parameter name="period" type="text">
+			<label>Period</label>
+			<description>Observation period</description>
+			<options>
+				<option value="ONE_WEEK">This week</option>
+				<option value="ONE_MONTH">This month</option>
+			</options>
+			<default>ONE_WEEK</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="netatmo:confMeasure:config">
+		<parameter name="limit" type="text">
+			<label>Limit</label>
+			<description>Terminal of the Measurement</description>
+			<options>
+				<option value="MIN">Minimum</option>
+				<option value="MAX">Maximum</option>
+			</options>
+			<default>MIN</default>
+		</parameter>
+		<parameter name="type" type="text">
+			<label>Type</label>
+			<description>Type of Measurement</description>
+			<options>
+				<option value="TEMP">Temperature</option>
+				<option value="HUM">Humidity</option>
+				<option value="CO2">CO2</option>
+				<option value="NOISE">Noise</option>
+				<option value="PRESSURE">Pressure</option>
+			</options>
+			<default>TEMP</default>
+		</parameter>
+		<parameter name="period" type="text">
+			<label>Period</label>
+			<description>Observation period</description>
+			<options>
+				<option value="ONE_DAY">This day</option>
+				<option value="ONE_WEEK">This week</option>
+				<option value="ONE_MONTH">This month</option>
+			</options>
+			<default>ONE_WEEK</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="netatmo:confMeasureTimestamp:config">
+		<parameter name="limit" type="text">
+			<label>Limit</label>
+			<description>Terminal of the Measurement</description>
+			<options>
+				<option value="DATE_MIN">Date Minimum</option>
+				<option value="DATE_MAX">Date Maximum</option>
+			</options>
+			<default>DATE_MIN</default>
+		</parameter>
+		<parameter name="type" type="text">
+			<label>Type</label>
+			<description>Type of Measurement</description>
+			<options>
+				<option value="TEMP">Temperature</option>
+				<option value="HUM">Humidity</option>
+				<option value="CO2">CO2</option>
+				<option value="NOISE">Noise</option>
+				<option value="PRESSURE">Pressure</option>
+			</options>
+			<default>TEMP</default>
+		</parameter>
+		<parameter name="period" type="text">
+			<label>Period</label>
+			<description>Observation period</description>
+			<options>
+				<option value="ONE_WEEK">This week</option>
+				<option value="ONE_MONTH">This month</option>
+			</options>
+			<default>ONE_WEEK</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="netatmo:device">
 		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
 			<label>Equipment ID</label>
 			<description>Id of the Device (mac address)</description>
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:netatmo:plug">
-		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
-			<label>Equipment ID</label>
-			<description>Id of the Device (mac address)</description>
-		</parameter>
-	</config-description>
-
-	<config-description uri="thing-type:netatmo:module">
-		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
-			<label>Module ID</label>
-			<description>Id of the Module</description>
-		</parameter>
-
-		<parameter name="parentId" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
-			<label>Device ID</label>
-			<description>Id of the main device</description>
-		</parameter>
-	</config-description>
-
-	<config-description uri="thing-type:netatmo:natherm1">
-		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
-			<label>Module ID</label>
-			<description>Id of the Module</description>
-		</parameter>
-
-		<parameter name="parentId" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
-			<label>Device ID</label>
-			<description>Id of the main device</description>
-		</parameter>
-
-		<parameter name="setpointDefaultDuration" type="integer">
-			<label>Setpoint Duration</label>
-			<description>Default duration of thermostat change when force to max or manual.</description>
-			<default>60</default>
-			<advanced>true</advanced>
-		</parameter>
-	</config-description>
-
-	<config-description uri="thing-type:netatmo:welcomehome">
+	<config-description uri="netatmo:virtual">
 		<parameter name="id" type="text" required="true">
-			<label>Home ID</label>
-			<description>UUID of the home</description>
+			<label>UUID</label>
+			<description>UUID of the thing</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="netatmo:configurable">
+		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
+			<label>Equipment ID</label>
+			<description>Id of the Device (mac address)</description>
 		</parameter>
 
 		<parameter name="refreshInterval" type="integer" min="2000" unit="ms">
@@ -132,28 +143,5 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:netatmo:camera">
-		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
-			<label>Camera ID</label>
-			<description>Camera MAC Address</description>
-		</parameter>
-
-		<parameter name="parentId" type="text" required="true">
-			<label>Home ID</label>
-			<description>UUID of the home hosting the camera</description>
-		</parameter>
-	</config-description>
-
-	<config-description uri="thing-type:netatmo:nawelcomeperson">
-		<parameter name="id" type="text" required="true">
-			<label>Person ID</label>
-			<description>UUID of the Person</description>
-		</parameter>
-
-		<parameter name="parentId" type="text" required="true">
-			<label>Home ID</label>
-			<description>UUID of the home</description>
-		</parameter>
-	</config-description>
 
 </config-description:config-descriptions>

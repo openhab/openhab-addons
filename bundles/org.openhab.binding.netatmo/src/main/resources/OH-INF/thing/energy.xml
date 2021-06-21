@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="plug">
+		<label>Thermostat Plug</label>
+		<channels>
+			<channel id="connected" typeId="connected"/>
+			<channel id="last-bilan" typeId="last-bilan"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="th-temperature">
+		<label>Temperature</label>
+		<channels>
+			<channel id="value" typeId="system.outdoor-temperature">
+				<label>Temperature</label>
+				<description>Temperature of the room</description>
+			</channel>
+			<channel id="timestamp" typeId="timestamp">
+				<label>Measurement Time</label>
+				<description>Timestamp when data was measured</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="room-temperature">
+		<label>Room temperature</label>
+		<channels>
+			<channel id="value" typeId="system.outdoor-temperature">
+				<label>Measured Temperature</label>
+				<description>Measured temperature of the room</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="room-properties">
+		<label>Room status</label>
+		<channels>
+			<channel id="window-open" typeId="switch-ro">
+				<label>Window Status</label>
+				<description>Indicates whether window open deteced or not</description>
+			</channel>
+			<channel id="anticipating" typeId="switch-ro">
+				<label>Anticipated heating</label>
+			</channel>
+			<channel id="heating-power-request" typeId="room-heating-percent">
+				<label>Current heating power</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="setpoint">
+		<label>Setpoint</label>
+		<channels>
+			<channel id="value" typeId="setpoint"/>
+			<channel id="mode" typeId="th-mode"/>
+			<channel id="start" typeId="timestamp">
+				<label>Setpoint Start</label>
+				<description>Timestamp a manual setpoint began</description>
+			</channel>
+			<channel id="end" typeId="timestamp">
+				<label>Setpoint End</label>
+				<description>Thermostat goes back to schedule after that timestamp.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="th-properties">
+		<label>Thermostat</label>
+		<channels>
+			<!-- channel id="temperature" typeId="system.outdoor-temperature"/ -->
+			<channel id="relay-status" typeId="switch-ro">
+				<label>Heating Status</label>
+				<description>Indicates whether the furnace is heating or not</description>
+			</channel>
+			<channel id="orientation" typeId="orientation"/>
+			<channel id="anticipating" typeId="switch-ro">
+				<label>Anticipated heating</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="energy">
+		<label>Home Energy</label>
+		<channels>
+			<channel id="setpoint-duration" typeId="setpoint-duration"/>
+			<channel id="planning" typeId="string-rw">
+				<label>Planning</label>
+				<description>Heat planning currently used</description>
+			</channel>
+			<channel id="mode" typeId="energy-mode">
+				<label>Mode</label>
+				<description>Current mode (eg. frost-guard or away)</description>
+			</channel>
+			<channel id="end" typeId="timestamp">
+				<label>Mode End</label>
+				<description>Timestamp until current mode is active</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="energy-battery">
+		<label>Battery</label>
+		<channels>
+			<channel id="status" typeId="string-ro">
+				<label>Status</label>
+				<description>Status of battery</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
