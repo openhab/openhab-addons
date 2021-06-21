@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.souliss.internal.discovery;
 
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.TreeMap;
@@ -53,11 +52,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
     @Nullable
     private SoulissDiscoverJob soulissDiscoverRunnableClass = null;
     @Nullable
-    private DatagramSocket datagramSocket;
-    @Nullable
     UDPListenDiscoverRunnable udpServerRunnableClass = null;
-
-    private final SoulissGatewayHandler bridgeHandler;
 
     @Override
     public void deactivate() {
@@ -71,8 +66,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
     public SoulissGatewayDiscovery(SoulissGatewayHandler bridgeHandler) {
         super(SoulissBindingConstants.SUPPORTED_THING_TYPES_UIDS, SoulissBindingConstants.DISCOVERY_TIMEOUT_IN_SECONDS,
                 false);
-
-        this.bridgeHandler = bridgeHandler;
 
         NetworkParameters.discoverResult = this;
         // open socket

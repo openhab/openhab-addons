@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.souliss.internal.protocol;
 
-import java.net.DatagramSocket;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -45,27 +44,7 @@ public class NetworkParameters {
     private static ConcurrentMap<String, Thing> hashTableTopics = new ConcurrentHashMap<>();
 
     @Nullable
-    private static DatagramSocket datagramSocket = null;
-    @Nullable
     public static DiscoverResult discoverResult = null;
-
-    @Nullable
-    public static DatagramSocket getDatagramSocket() {
-        return datagramSocket;
-    }
-
-    public static void closeDatagramSocket() {
-        @Nullable
-        DatagramSocket localDatagramSocket = datagramSocket;
-        if (localDatagramSocket != null) {
-            localDatagramSocket.close();
-        }
-        localDatagramSocket = null;
-    }
-
-    public static void setDatagramSocket(@Nullable DatagramSocket datagramSocket) {
-        NetworkParameters.datagramSocket = datagramSocket;
-    }
 
     public static void addGateway(byte lastByteGatewayIP, Thing thing) {
         hashTableGateways.put(lastByteGatewayIP, thing);

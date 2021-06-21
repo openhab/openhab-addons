@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.souliss.internal.discovery;
 
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentMap;
@@ -47,8 +46,6 @@ public class SoulissDiscoverJob implements Runnable {
 
         void thingDetectedActionMessages(String sTopicNumber, String sTopicVariant);
     }
-
-    private @Nullable DatagramSocket datagramSocket;
 
     @Nullable
     UDPListenDiscoverRunnable udpServerOnDefaultPort = null;

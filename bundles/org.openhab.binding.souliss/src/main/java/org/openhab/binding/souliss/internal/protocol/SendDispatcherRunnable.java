@@ -51,9 +51,6 @@ public class SendDispatcherRunnable implements Runnable {
     static int iDelay = 0; // equal to 0 if array is empty
     static int sendMinDelay = 0;
 
-    @Nullable
-    DatagramSocket sender;
-
     public SendDispatcherRunnable(Bridge bridge) {
         this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();
         @Nullable
@@ -148,15 +145,9 @@ public class SendDispatcherRunnable implements Runnable {
     @Override
     public void run() {
 
-        try {
-            sender = new DatagramSocket(null);
-            DatagramChannel channel = DatagramChannel.open();
-            sender = channel.socket();
-            sender.setReuseAddress(true);
-            sender.setBroadcast(true);
+        DatagramSocket sender = null;
 
-            InetSocketAddress sa = new InetSocketAddress(230);
-            sender.bind(sa);
+        try {
 
             if (checkTime()) {
                 PacketStruct sp = pop();
@@ -165,12 +156,16 @@ public class SendDispatcherRunnable implements Runnable {
                             "SendDispatcherJob - Functional Code 0x{} - Packet: {} - Elementi rimanenti in lista: {}",
                             Integer.toHexString(sp.packet.getData()[7]), macacoToString(sp.packet.getData()),
                             packetsList.size());
-                    // @Nullable
-                    // DatagramSocket localSocket = sp.socket;
 
-                    // DatagramSocket ds = this.gwHandler.getUdpSocket();
+                    DatagramChannel channel = DatagramChannel.open();
+                    sender = channel.socket();
+                    sender.setReuseAddress(true);
+                    sender.setBroadcast(true);
+
+                    InetSocketAddress sa = new InetSocketAddress(230);
+                    sender.bind(sa);
+
                     sender.send(sp.packet);
-
                 }
 
                 // confronta gli stati in memoria con i frame inviati. Se
