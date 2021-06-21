@@ -48,8 +48,8 @@ public class SoulissT11Handler extends SoulissGenericHandler {
 
     private @NonNullByDefault({}) Configuration gwConfigurationMap;
     private final Logger logger = LoggerFactory.getLogger(SoulissT11Handler.class);
-    byte t1nRawState;
-    byte xSleepTime = 0;
+    private byte t1nRawState = 0xF; // dummy value for first init
+    private byte xSleepTime = 0;
 
     public SoulissT11Handler(Thing thing) {
         super(thing);
@@ -125,7 +125,7 @@ public class SoulissT11Handler extends SoulissGenericHandler {
 
     void setState(@Nullable PrimitiveType state) {
         if (state != null) {
-            updateState(SoulissBindingConstants.SLEEP_CHANNEL, OnOffType.OFF);
+            this.updateState(SoulissBindingConstants.SLEEP_CHANNEL, OnOffType.OFF);
             this.updateState(SoulissBindingConstants.ONOFF_CHANNEL, (OnOffType) state);
         }
     }

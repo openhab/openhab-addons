@@ -15,7 +15,6 @@ package org.openhab.binding.souliss.internal.handler;
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
 import org.openhab.core.config.core.Configuration;
@@ -38,17 +37,15 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class SoulissT12Handler extends SoulissGenericHandler {
-    @Nullable
-    Configuration gwConfigurationMap;
+    private @NonNullByDefault({}) Configuration gwConfigurationMap;
 
-    byte t1nRawState;
-    byte xSleepTime = 0;
+    private byte t1nRawState = 0xF;
+    private byte xSleepTime = 0;
 
     public SoulissT12Handler(Thing thing) {
         super(thing);
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);

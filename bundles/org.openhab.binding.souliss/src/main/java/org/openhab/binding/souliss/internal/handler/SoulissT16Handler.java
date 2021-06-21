@@ -41,13 +41,12 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SoulissT16Handler extends SoulissGenericHandler {
-    @Nullable
-    Configuration gwConfigurationMap;
+    private @NonNullByDefault({}) Configuration gwConfigurationMap;
     private final Logger logger = LoggerFactory.getLogger(SoulissT16Handler.class);
-    byte t1nRawStateByte0;
-    byte t1nRawStateRedByte1;
-    byte t1nRawStateGreenByte2;
-    byte t1nRawStateBluByte3;
+    private byte t1nRawStateByte0 = 0xF;
+    private byte t1nRawStateRedByte1;
+    private byte t1nRawStateGreenByte2;
+    private byte t1nRawStateBluByte3;
 
     HSBType hsbState = HSBType.WHITE;
 
@@ -90,8 +89,7 @@ public class SoulissT16Handler extends SoulissGenericHandler {
                 case SoulissBindingConstants.WHITE_MODE_CHANNEL:
                     if (command instanceof OnOffType) {
                         hsbState = HSBType.fromRGB(255, 255, 255);
-                        commandSendRgb(SoulissProtocolConstants.SOULISS_T1N_SET, (byte) 255, (byte) 255,
-                                (byte) 255);
+                        commandSendRgb(SoulissProtocolConstants.SOULISS_T1N_SET, (byte) 255, (byte) 255, (byte) 255);
                         updateState(SoulissBindingConstants.LED_COLOR_CHANNEL, hsbState);
                     }
                     break;
@@ -145,7 +143,6 @@ public class SoulissT16Handler extends SoulissGenericHandler {
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);

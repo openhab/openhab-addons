@@ -31,7 +31,7 @@ import org.openhab.core.types.PrimitiveType;
 @NonNullByDefault
 public class SoulissT5nHandler extends SoulissGenericHandler {
 
-    float fVal;
+    private float fVal = 0xF;
 
     public SoulissT5nHandler(Thing thing) {
         super(thing);

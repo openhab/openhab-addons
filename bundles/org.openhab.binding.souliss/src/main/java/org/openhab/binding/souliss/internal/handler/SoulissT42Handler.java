@@ -35,9 +35,8 @@ import org.openhab.core.types.PrimitiveType;
 
 @NonNullByDefault
 public class SoulissT42Handler extends SoulissGenericHandler {
-    @Nullable
-    Configuration gwConfigurationMap;
-    byte t4nRawState;
+    private @NonNullByDefault({}) Configuration gwConfigurationMap;
+    byte t4nRawState = 0xF;
 
     public SoulissT42Handler(Thing thing) {
         super(thing);
@@ -56,7 +55,6 @@ public class SoulissT42Handler extends SoulissGenericHandler {
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);

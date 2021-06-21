@@ -41,10 +41,9 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public class SoulissT19Handler extends SoulissGenericHandler {
-    @Nullable
-    Configuration gwConfigurationMap;
+    private @NonNullByDefault({}) Configuration gwConfigurationMap;
     private final Logger logger = LoggerFactory.getLogger(SoulissT19Handler.class);
-    byte t1nRawStateByte0;
+    byte t1nRawStateByte0 = 0xF;
     byte t1nRawStateBrigthnessByte1;
 
     byte xSleepTime = 0;
@@ -108,7 +107,6 @@ public class SoulissT19Handler extends SoulissGenericHandler {
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
