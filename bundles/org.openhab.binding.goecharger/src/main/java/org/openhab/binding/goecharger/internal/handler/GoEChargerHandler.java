@@ -115,8 +115,6 @@ public class GoEChargerHandler extends BaseThingHandler {
                 if (goeResponse.maxCurrTemp == null) {
                     return UnDefType.UNDEF;
                 }
-                logger.debug("MAX_CURR_TEMP, amx ?", goeResponse.maxCurrTemp);
-
                 return new QuantityType<>(goeResponse.maxCurrTemp, Units.AMPERE);
             case PWM_SIGNAL:
                 if (goeResponse.pwmSignal == null) {
@@ -209,12 +207,12 @@ public class GoEChargerHandler extends BaseThingHandler {
                 }
                 return new DecimalType(count);
             case TEMP_TMA1:
-                if (goeResponse.temptma == null) {
+                if ((goeResponse.temptma == null) | (goeResponse.temptma.length == 0)) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.temptma[0], SIUnits.CELSIUS);
             case TEMP_TMA2:
-                if (goeResponse.temptma == null) {
+                if ((goeResponse.temptma == null) | (goeResponse.temptma.length <= 1)) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.temptma[1], SIUnits.CELSIUS);
@@ -361,7 +359,6 @@ public class GoEChargerHandler extends BaseThingHandler {
             default:
         }
         if (key != null && value != null) {
-            logger.debug("sendData: ", key, value);
             sendData(key, value);
         } else {
             logger.warn("Could not update channel {} with key {} and value {}", channelUID.getId(), key, value);
@@ -373,9 +370,7 @@ public class GoEChargerHandler extends BaseThingHandler {
         config = getConfigAs(GoEChargerConfiguration.class);
         allChannels = getThing().getChannels().stream().map(channel -> channel.getUID().getId())
                 .collect(Collectors.toList());
-
         updateStatus(ThingStatus.UNKNOWN);
-
         startAutomaticRefresh();
         logger.debug("Finished initializing!");
     }
@@ -386,13 +381,10 @@ public class GoEChargerHandler extends BaseThingHandler {
 
     private void sendData(String key, String value) {
         String urlStr = getUrl(GoEChargerBindingConstants.MQTT_URL).replace("%KEY%", key).replace("%VALUE%", value);
-        logger.debug("POST URL = {}", urlStr);
-
         try {
             ContentResponse contentResponse = httpClient.newRequest(urlStr).method(HttpMethod.GET)
                     .timeout(5, TimeUnit.SECONDS).send();
             String response = contentResponse.getContentAsString();
-            logger.debug("POST Response: {}", response);
             GoEStatusResponseDTO result = gson.fromJson(response, GoEStatusResponseDTO.class);
             updateChannelsAndStatus(result, null);
         } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
@@ -413,8 +405,6 @@ public class GoEChargerHandler extends BaseThingHandler {
     private GoEStatusResponseDTO getGoEData()
             throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
         String urlStr = getUrl(GoEChargerBindingConstants.API_URL);
-        logger.debug("GET URL = {}", urlStr);
-
         ContentResponse contentResponse = httpClient.newRequest(urlStr).method(HttpMethod.GET)
                 .timeout(5, TimeUnit.SECONDS).send();
 

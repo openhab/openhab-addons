@@ -100,10 +100,3 @@ end
 You can also define more advanced rules if you have multiple cars that charge with a different amount of phases.
 For example if your car charges on one phase only, you can set maxAmps to output of PV power, if your car charges on two phases you can set maxAmps to `pv output / 2`, and for 3 phases `pv output / 3`.
 In general the calculation would be ´maxAmps = pvOutput / phases`.
-
-Changes 06.21 (chilobo):
-Since V3 of the GO-E-Charger Temperature is not supported any more, GO-E added two temperatures tma1 and tma2.
-Added channel "Power over all" showing the combined power of all three phases
-Added channel "Maximum current temporary": This changes the current. But this value is not written to the EEPROM.
-
-Beware: Because of changes in V3 this binding is working for V1 and V2, but not for V3.
