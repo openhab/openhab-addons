@@ -68,7 +68,7 @@ public class MiIoBasicChannel {
     private @Nullable String channelCustomRefreshCommand;
     @SerializedName("transformation")
     @Expose
-    private @Nullable String transfortmation;
+    private @Nullable String transformation;
     @SerializedName("ChannelGroup")
     @Expose
     private @Nullable String channelGroup;
@@ -217,12 +217,12 @@ public class MiIoBasicChannel {
         this.miIoDeviceActions = miIoDeviceActions;
     }
 
-    public @Nullable String getTransfortmation() {
-        return transfortmation;
+    public @Nullable String getTransformation() {
+        return transformation;
     }
 
-    public void setTransfortmation(@Nullable String transfortmation) {
-        this.transfortmation = transfortmation;
+    public void setTransformation(@Nullable String transformation) {
+        this.transformation = transformation;
     }
 
     public @Nullable String getCategory() {
