@@ -558,7 +558,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             logger.debug("Channel not found for {}", param);
             return;
         }
-        final String transformation = basicChannel.getTransfortmation();
+        final String transformation = basicChannel.getTransformation();
         if (transformation != null) {
             JsonElement transformed = Conversions.execute(transformation, val);
             logger.debug("Transformed with '{}': {} {} -> {} ", transformation, basicChannel.getFriendlyName(), val,
@@ -663,7 +663,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         if (ch != null) {
                             if (response.getResult().isJsonArray()) {
                                 JsonArray cmdResponse = response.getResult().getAsJsonArray();
-                                final String transformation = ch.getTransfortmation();
+                                final String transformation = ch.getTransformation();
                                 if (transformation == null || transformation.isBlank()) {
                                     JsonElement response0 = cmdResponse.get(0);
                                     updateChannel(ch, ch.getChannel(), response0.isJsonPrimitive() ? response0
