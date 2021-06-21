@@ -31,7 +31,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
 @NonNullByDefault
 public class EnergyApi extends RestManager {
 
-    public class NAHomeStatusResponse extends ApiResponse<NAHomeStatus> {
+    private class NAHomeStatusResponse extends ApiResponse<NAHomeStatus> {
     }
 
     public EnergyApi(ApiBridge apiClient) {

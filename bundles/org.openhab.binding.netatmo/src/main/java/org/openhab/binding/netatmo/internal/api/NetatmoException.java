@@ -47,12 +47,7 @@ public class NetatmoException extends IOException {
     @Override
     public @Nullable String getMessage() {
         String message = super.getMessage();
-        return message == null ? null : "Rest call failed: statusCode=" + statusCode + ", message=" + message;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + ": statusCode=" + statusCode + ", message=" + super.getMessage()
-                + ", cause: " + getCause();
+        return message == null ? null
+                : String.format("Rest call failed: statusCode=%d, message=%s", statusCode, message);
     }
 }

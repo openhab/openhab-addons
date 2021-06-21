@@ -25,7 +25,6 @@ import org.openhab.binding.netatmo.internal.api.EventType;
 import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
-import org.openhab.binding.netatmo.internal.api.dto.NASnapshot;
 import org.openhab.binding.netatmo.internal.api.dto.NAWelcome;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
@@ -66,13 +65,6 @@ public class PersonHandler extends NetatmoEventDeviceHandler {
         });
     }
 
-    // @Override
-    // public void setNAThing(NAThing naModule) {
-    // super.setNAThing(naModule);
-    // getHomeHandler().ifPresent(h -> {
-    // });
-    // }
-
     public void setCameras(NAObjectMap<NAWelcome> cameras) {
         descriptionProvider.setStateOptions(
                 new ChannelUID(getThing().getUID(), GROUP_PERSON_EVENT, CHANNEL_EVENT_CAMERA_ID), cameras.values()
@@ -88,12 +80,11 @@ public class PersonHandler extends NetatmoEventDeviceHandler {
         updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_SUBTYPE,
                 event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL));
 
-        NASnapshot snapshot = event.getSnapshot();
-        if (snapshot != null) {
+        event.getSnapshot().ifPresent(snapshot -> {
             String url = snapshot.getUrl();
             updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_SNAPSHOT, toRawType(url));
             updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_SNAPSHOT_URL, toStringType(url));
-        }
+        });
 
         EventType eventType = event.getEventType();
         if (eventType.appliesOn(ModuleType.NAPerson)) {

@@ -16,9 +16,7 @@ import static org.openhab.core.library.unit.MetricPrefix.*;
 
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,14 +40,12 @@ public class NetatmoConstants {
     public static class Measure {
         public final double minValue;
         public final int maxValue;
-        public final double precision;
         public final int scale;
         public final Unit<?> unit;
 
         public Measure(double minValue, int maxValue, double precision, Unit<?> unit) {
             this.minValue = minValue;
             this.maxValue = maxValue;
-            this.precision = precision;
             this.unit = unit;
             String[] splitter = Double.valueOf(precision).toString().split("\\.");
             this.scale = splitter.length > 1 ? splitter[1].length() : 0;
@@ -57,29 +53,28 @@ public class NetatmoConstants {
     }
 
     public enum MeasureClass {
-        INTERIOR_TEMPERATURE,
-        EXTERIOR_TEMPERATURE,
-        PRESSURE,
-        CO2,
-        NOISE,
-        RAIN_QTTY,
-        RAIN_INTENSITY,
-        WIND_SPEED,
-        WIND_ANGLE,
-        HUMIDITY,
-        UNKNOWN;
-    }
+        INTERIOR_TEMPERATURE(new Measure(0, 50, 0.3, SIUnits.CELSIUS)),
+        EXTERIOR_TEMPERATURE(new Measure(-40, 65, 0.3, SIUnits.CELSIUS)),
+        PRESSURE(new Measure(260, 1260, 1, HECTO(SIUnits.PASCAL))),
+        CO2(new Measure(0, 5000, 50, Units.PARTS_PER_MILLION)),
+        NOISE(new Measure(35, 120, 1, Units.DECIBEL)),
+        RAIN_QTTY(new Measure(0.2, 150, 0.1, MILLI(SIUnits.METRE))),
+        RAIN_INTENSITY(new Measure(0.2, 150, 0.1, Units.MILLIMETRE_PER_HOUR)),
+        WIND_SPEED(new Measure(0, 160, 1.8, SIUnits.KILOMETRE_PER_HOUR)),
+        WIND_ANGLE(new Measure(0, 360, 5, Units.DEGREE_ANGLE)),
+        HUMIDITY(new Measure(0, 100, 3, Units.PERCENT)),
+        UNKNOWN(null);
 
-    public static final Map<MeasureClass, Measure> NA_MEASURES = Map.of(MeasureClass.INTERIOR_TEMPERATURE,
-            new Measure(0, 50, 0.3, SIUnits.CELSIUS), MeasureClass.EXTERIOR_TEMPERATURE,
-            new Measure(-40, 65, 0.3, SIUnits.CELSIUS), MeasureClass.PRESSURE,
-            new Measure(260, 1260, 1, HECTO(SIUnits.PASCAL)), MeasureClass.CO2,
-            new Measure(0, 5000, 50, Units.PARTS_PER_MILLION), MeasureClass.NOISE,
-            new Measure(35, 120, 1, Units.DECIBEL), MeasureClass.RAIN_QTTY,
-            new Measure(0.2, 150, 0.1, MILLI(SIUnits.METRE)), MeasureClass.RAIN_INTENSITY,
-            new Measure(0.2, 150, 0.1, Units.MILLIMETRE_PER_HOUR), MeasureClass.WIND_SPEED,
-            new Measure(0, 160, 1.8, SIUnits.KILOMETRE_PER_HOUR), MeasureClass.WIND_ANGLE,
-            new Measure(0, 360, 5, Units.DEGREE_ANGLE), MeasureClass.HUMIDITY, new Measure(0, 100, 3, Units.PERCENT));
+        private @Nullable Measure measure;
+
+        public @Nullable Measure getMeasureDefinition() {
+            return measure;
+        }
+
+        MeasureClass(@Nullable Measure measure) {
+            this.measure = measure;
+        }
+    }
 
     // Netatmo API urls
     public static final String URL_API = "https://api.netatmo.com/";
@@ -103,6 +98,7 @@ public class NetatmoConstants {
     public static final String SPATH_HOMESTATUS = "homestatus";
     public static final String SPATH_HOMECOACH = "gethomecoachsdata";
     public static final String SPATH_GETLASTEVENT = "getlasteventof";
+    public static final String SPATH_PING = "ping";
 
     public static final String PARM_DEVICEID = "device_id";
     public static final String PARM_MODULEID = "module_id";
@@ -155,8 +151,8 @@ public class NetatmoConstants {
         ONE_MONTH("1month"),
         UNKNOWN("");
 
-        private static Map<String, MeasureScale> stringMap = Arrays.stream(values())
-                .collect(Collectors.toMap(MeasureScale::getDescriptor, Function.identity()));
+        // private static Map<String, MeasureScale> stringMap = Arrays.stream(values())
+        // .collect(Collectors.toMap(MeasureScale::getDescriptor, Function.identity()));
 
         private final String apiDescriptor;
 
@@ -168,9 +164,9 @@ public class NetatmoConstants {
             return apiDescriptor;
         }
 
-        public static @Nullable MeasureScale from(String descriptor) {
-            return stringMap.get(descriptor);
-        }
+        // public static @Nullable MeasureScale from(String descriptor) {
+        // return stringMap.get(descriptor);
+        // }
     }
 
     // Token scopes

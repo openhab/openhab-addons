@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -61,7 +63,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NetatmoServlet extends HttpServlet {
     private static final long serialVersionUID = -354583910860541214L;
-    private static final String CHARSET = "utf-8";
 
     private final Logger logger = LoggerFactory.getLogger(NetatmoServlet.class);
     private final Map<String, NetatmoEventDeviceHandler> dataListeners = new ConcurrentHashMap<>();
@@ -134,16 +135,11 @@ public class NetatmoServlet extends HttpServlet {
                 List<String> tobeNotified = collectNotified(event);
                 dataListeners.keySet().stream().filter(tobeNotified::contains)
                         .forEach(id -> dataListeners.get(id).setEvent(event));
-                // intersect = tobeNotified.stream().distinct().filter(dataListeners.keySet().contains(tobeNotified))
-                // NetatmoEventDeviceHandler targetListener = dataListeners.get(event.getHomeId());
-                // if (targetListener != null) {
-                // targetListener.setEvent(event);
-                // }
             }
-            resp.setCharacterEncoding(CHARSET);
+            resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
             resp.setContentType(MediaType.APPLICATION_JSON);
             resp.setHeader("Access-Control-Allow-Origin", "*");
-            resp.setHeader("Access-Control-Allow-Methods", "POST");
+            resp.setHeader("Access-Control-Allow-Methods", HttpMethod.POST);
             resp.setHeader("Access-Control-Max-Age", "3600");
             resp.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             resp.getWriter().write("");

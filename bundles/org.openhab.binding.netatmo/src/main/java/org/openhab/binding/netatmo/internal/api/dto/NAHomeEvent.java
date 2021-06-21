@@ -81,8 +81,8 @@ public class NAHomeEvent extends NAEvent {
     }
 
     @Override
-    public @Nullable NASnapshot getSnapshot() {
-        return this.snapshot;
+    public Optional<NASnapshot> getSnapshot() {
+        return Optional.ofNullable(snapshot);
     }
 
     public void setTime(ZonedDateTime eventTime) {

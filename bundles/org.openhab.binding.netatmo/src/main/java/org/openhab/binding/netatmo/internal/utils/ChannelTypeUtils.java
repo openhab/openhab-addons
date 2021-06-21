@@ -20,7 +20,6 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Measure;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.core.io.net.http.HttpUtil;
@@ -44,7 +43,7 @@ import org.openhab.core.types.UnDefType;
 public class ChannelTypeUtils {
 
     public static @Nullable QuantityType<?> commandToQuantity(Command command, MeasureClass measureClass) {
-        Measure measureDef = NetatmoConstants.NA_MEASURES.get(measureClass);
+        Measure measureDef = measureClass.getMeasureDefinition();
         if (measureDef != null) {
             if (command instanceof QuantityType<?>) {
                 return ((QuantityType<?>) command).toUnit(measureDef.unit);
@@ -73,10 +72,11 @@ public class ChannelTypeUtils {
     public static State toQuantityType(@Nullable Double value, @Nullable MeasureClass measureClass) {
         if (value != null && !value.isNaN()) {
             if (measureClass != null) {
-                Measure measureDef = NetatmoConstants.NA_MEASURES.get(measureClass);
+                Measure measureDef = measureClass.getMeasureDefinition();
                 if (measureDef != null) {
-                    BigDecimal measure = new BigDecimal(Math.min(Math.max(measureDef.minValue, value), value))
-                            .setScale(measureDef.scale, RoundingMode.HALF_UP);
+                    BigDecimal measure = new BigDecimal(
+                            Math.min(measureDef.maxValue, Math.max(measureDef.minValue, value)))
+                                    .setScale(measureDef.scale, RoundingMode.HALF_UP);
                     return new QuantityType<>(measure, measureDef.unit);
                 }
             } else {

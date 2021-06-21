@@ -38,7 +38,7 @@ public class HomeApi extends RestManager {
         super(apiClient, FeatureArea.NONE);
     }
 
-    public class NAHomesDataResponse extends ApiResponse<ListBodyResponse<NAHome>> {
+    private class NAHomesDataResponse extends ApiResponse<ListBodyResponse<NAHome>> {
     }
 
     public Collection<NAHome> getHomeData(String homeId) throws NetatmoException {
@@ -76,7 +76,7 @@ public class HomeApi extends RestManager {
     }
 
     public String ping(String vpnUrl) throws NetatmoException {
-        UriBuilder uriBuilder = UriBuilder.fromUri(vpnUrl).path(PATH_COMMAND).path("ping");
+        UriBuilder uriBuilder = UriBuilder.fromUri(vpnUrl).path(PATH_COMMAND).path(SPATH_PING);
         NAPing response = get(uriBuilder, NAPing.class);
         return response.getStatus();
     }

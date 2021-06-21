@@ -17,7 +17,9 @@ import static org.mockito.Mockito.*;
 
 import java.time.ZoneId;
 import java.util.Hashtable;
+import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
@@ -62,8 +64,8 @@ public class NAObjectTest {
                 + "  \"message\": \"Boulogne Billan: Movement detected by Indoor Camera\","
                 + "  \"push_type\": \"NACamera-movement\"" + "}";
         NAWebhookEvent object = apiBridge.deserialize(NAWebhookEvent.class, event);
-        NASnapshot snap = object.getSnapshot();
-        assertEquals("5d19bxxxxxx6380342", snap.getId());
+        Optional<@NonNull NASnapshot> snap = object.getSnapshot();
+        snap.ifPresent(snaphot -> assertEquals("5d19bxxxxxx6380342", snaphot.getId()));
     }
 
     @Test

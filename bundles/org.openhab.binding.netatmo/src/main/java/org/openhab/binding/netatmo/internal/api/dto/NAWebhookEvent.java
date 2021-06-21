@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -64,12 +65,9 @@ public class NAWebhookEvent extends NAEvent {
     }
 
     @Override
-    public @Nullable NASnapshot getSnapshot() {
+    public Optional<NASnapshot> getSnapshot() {
         String sId = snapshotId;
         String key = snapshotKey;
-        if (sId != null && key != null) {
-            return new NASnapshot(sId, key);
-        }
-        return null;
+        return Optional.ofNullable(sId != null && key != null ? new NASnapshot(sId, key) : null);
     }
 }

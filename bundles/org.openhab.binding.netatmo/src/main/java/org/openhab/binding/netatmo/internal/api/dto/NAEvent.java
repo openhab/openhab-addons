@@ -50,7 +50,7 @@ public abstract class NAEvent extends NAObject {
 
     public abstract @Nullable String getPersonId();
 
-    public abstract @Nullable NASnapshot getSnapshot();
+    public abstract Optional<NASnapshot> getSnapshot();
 
     public Optional<EventSubType> getSubTypeDescription() {
         return Stream.of(EventSubType.values()).filter(v -> v.getType() == getEventType() && v.getSubType() == subType)

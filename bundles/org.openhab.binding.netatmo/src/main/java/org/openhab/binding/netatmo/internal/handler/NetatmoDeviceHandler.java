@@ -260,7 +260,7 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
         }
     }
 
-    public void expireData() {
+    private void expireData() {
         scheduler.schedule(() -> {
             RefreshStrategy strategy = refreshStrategy;
             if (strategy != null) {

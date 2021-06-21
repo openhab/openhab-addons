@@ -40,7 +40,7 @@ import org.openhab.core.thing.Bridge;
 @NonNullByDefault
 public abstract class NetatmoEventDeviceHandler extends NetatmoDeviceHandler {
 
-    protected class LastEventTimeHelper {
+    class LastEventTimeHelper {
         private @Nullable ZonedDateTime maxEventTime;
 
         protected ZonedDateTime get() {

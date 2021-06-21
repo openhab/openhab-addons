@@ -14,7 +14,6 @@ package org.openhab.binding.netatmo.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.deserialization.NADynamicObjectMap;
 
 /**
@@ -34,9 +33,9 @@ public class NADevice extends NAThing {
         return modules;
     }
 
-    public @Nullable NAThing getModule(String key) {
-        return modules.get(key);
-    }
+    // public @Nullable NAThing getModule(String key) {
+    // return modules.get(key);
+    // }
 
     public long getDateSetup() {
         return dateSetup;
@@ -58,7 +57,7 @@ public class NADevice extends NAThing {
         return co2Calibrating;
     }
 
-    public boolean containsModuleType(ModuleType searchedType) {
-        return modules.values().stream().anyMatch(module -> module.getType() == searchedType);
-    }
+    // public boolean containsModuleType(ModuleType searchedType) {
+    // return modules.values().stream().anyMatch(module -> module.getType() == searchedType);
+    // }
 }
