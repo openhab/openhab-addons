@@ -47,6 +47,8 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         FAN_SEAV(23, RFXComFanMessage.SubType.SEAV_TXS4),
         FAN_FT1211R(23, RFXComFanMessage.SubType.FT1211R),
         FAN_FALMEC(23, RFXComFanMessage.SubType.FALMEC),
+        FAN_ITHO_CVE_ECO_RFT(23, RFXComFanMessage.SubType.ITHO_CVE_ECO_RFT),
+        FAN_NOVY(23, RFXComFanMessage.SubType.NOVY),
         CURTAIN1(24),
         BLINDS1(25),
         RFY(26),

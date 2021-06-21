@@ -428,7 +428,7 @@ A DateTime device
 
 A group of fan devices
 
-#### Standard Fan
+#### fan - Standard Fan
 
 A Fan device
 
@@ -463,7 +463,7 @@ Switch item=FanLightSwitch label="Light" mappings=[ON="On"]
 Switch item=FanSpeedSwitch label="Speed" mappings=[LOW=Low, MED=Medium, HI=High]
 ```
 
-#### Falmec fan
+#### fan_falmec - Falmec fan
 
 A Falmec Fan device
 
@@ -485,7 +485,7 @@ A Falmec Fan device
     *   Specifies device sub type.
         *   FALMEC - Falmec
 
-#### Lucci Air DC fan
+#### fan_lucci_dc - Lucci Air DC fan
 
 A Lucci Air DC fan device
 
@@ -506,7 +506,7 @@ A Lucci Air DC fan device
     *   Specifies device sub type.
         *   LUCCI_AIR_DC - Lucci Air DC
 
-#### Lucci Air DC II fan
+#### fan_lucci_dc_ii - Lucci Air DC II fan
 
 A Lucci Air DC II fan device
 
@@ -527,6 +527,28 @@ A Lucci Air DC II fan device
 *   subType - Sub Type
     *   Specifies device sub type.
         *   LUCCI_AIR_DC_II - Lucci Air DC II
+        
+#### fan_novy - Novy extractor fan
+
+A Novy extractor fan.
+
+##### Channels
+
+| Name         | Channel Type                        | Item Type     | Remarks                  |
+|--------------|-------------------------------------|---------------|--------------------------|
+| command      | [command](#channels)                | Switch        |                          |
+| commandString| [commandString](#channels)          | String        | Options: POWER, UP, DOWN, LIGHT, LEARN, RESET_FILTER |
+| fanSpeed     | [fanspeedcontrol](#channels)        | RollerShutter | Options: UP / DOWN       |
+| fanLight     | [fanlight](#channels)               | Switch        |                          |
+| signalLevel  | [system.signal-strength](#channels) | Number        |                          |
+
+##### Configuration Options
+
+*   deviceId - Device Id
+    *   Device id, example 47360
+*   subType - Sub Type
+    *   Specifies device sub type.
+        *   NOVY - Novy extractor fan
 
 ### energy - RFXCOM Energy Sensor
 
