@@ -109,9 +109,10 @@ public class ColorItemConverter extends AbstractTransformingItemConverter {
             if (matcher.matches()) {
                 switch (channelConfig.colorMode) {
                     case RGB:
-                        int r = Integer.parseInt(matcher.group(0));
-                        int g = Integer.parseInt(matcher.group(1));
-                        int b = Integer.parseInt(matcher.group(2));
+                        String[] channels = matcher.group(0).split(",");
+                        int r = Integer.parseInt(channels[0]);
+                        int g = Integer.parseInt(channels[1]);
+                        int b = Integer.parseInt(channels[2]);
                         newState = HSBType.fromRGB(r, g, b);
                         break;
                     case HSB:
