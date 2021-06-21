@@ -380,7 +380,8 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
             try {
                 ThingHandler childHandler = childThing.getHandler();
                 if (childHandler != null) {
-                    childHandler.handleCommand(new ChannelUID(childThing.getUID(), "guid"), RefreshType.REFRESH);
+                    childHandler.handleCommand(new ChannelUID(childThing.getUID(), CHANNEL_TIMESTAMP.getChannelName()),
+                            RefreshType.REFRESH);
                 } else {
                     this.logger.warn("no handler found for thing/device {}",
                             childThing.getConfiguration().as(SolarwattThingConfiguration.class).guid);
