@@ -48,9 +48,6 @@ public class UDPListenDiscoverRunnable implements Runnable {
     @Nullable
     DiscoverResult discoverResult = null;
 
-    @Nullable
-    DatagramSocket socket;
-
     private final Logger logger = LoggerFactory.getLogger(UDPListenDiscoverRunnable.class);
 
     private ThreadPoolExecutor threadExecutor;
@@ -69,11 +66,13 @@ public class UDPListenDiscoverRunnable implements Runnable {
 
     @Override
     public void run() {
+        DatagramSocket socket = null;
 
         while (true) {
             try {
                 // open socket for listening...
                 // socket = new DatagramSocket(null);
+
                 DatagramChannel channel = DatagramChannel.open();
                 socket = channel.socket();
 
@@ -101,7 +100,6 @@ public class UDPListenDiscoverRunnable implements Runnable {
 
                     }
                 });
-                socket.close();
 
             } catch (BindException e) {
                 logger.error("***UDP Port busy, Souliss already listening? {} ", e.getMessage());
@@ -124,6 +122,8 @@ public class UDPListenDiscoverRunnable implements Runnable {
                 logger.error("***UDP unhandled error! {} of class {}", ee.getMessage(), ee.getClass());
                 socket.close();
                 Thread.currentThread().interrupt();
+            } finally {
+                socket.close();
             }
         }
 

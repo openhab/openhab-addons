@@ -215,6 +215,7 @@ public class CommonCommands {
 
         // Broadcast the message over all the network interfaces
         Enumeration<@Nullable NetworkInterface> interfaces;
+        DatagramSocket sender = null;
         try {
             interfaces = NetworkInterface.getNetworkInterfaces();
 
@@ -239,7 +240,6 @@ public class CommonCommands {
                                     DatagramPacket packet = new DatagramPacket(merd, merd.length, bc,
                                             SoulissUDPConstants.SOULISS_GATEWAY_DEFAULT_PORT);
                                     // Datagramsocket creation
-                                    DatagramSocket sender = new DatagramSocket(null);
                                     DatagramChannel channel = DatagramChannel.open();
                                     sender = channel.socket();
                                     sender.setReuseAddress(true);
@@ -249,14 +249,18 @@ public class CommonCommands {
                                     sender.bind(sa);
 
                                     sender.send(packet);
+                                    logger.debug("Request packet sent to: {} Interface: {}", bc.getHostAddress(),
+                                            networkInterface.getDisplayName());
 
                                 } catch (IOException e) {
                                     logger.debug("IO error: {}", e.getMessage());
                                 } catch (Exception e) {
                                     logger.debug("{}", e.getMessage(), e);
+                                } finally {
+                                    if ((sender != null) && (!sender.isClosed())) {
+                                        sender.close();
+                                    }
                                 }
-                                logger.debug("Request packet sent to: {} Interface: {}", bc.getHostAddress(),
-                                        networkInterface.getDisplayName());
                             }
                         }
                     }
