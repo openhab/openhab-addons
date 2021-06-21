@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="bloomsky" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
+
+	<name>BloomSky Binding</name>
+	<description>The BloomSky Binding utilizes the BloomSky Rest API to show the SKY and Storm personal weather station
+		data.</description>
+	<author>Dave J. Schoepel @TheSchoepel's</author>
+
+</binding:binding>
