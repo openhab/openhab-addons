@@ -42,7 +42,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Gateway Management   | `13`         | `bus_gateway`                       | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N, ...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F452, F453AV, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202 |
 | Lighting             | `1`          | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
 | Automation           | `2`          | `bus_automation`                    | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
-| Temperature Control  | `4`          | `bus_thermo_zone`, `bus_thermo_sensor` | Thermo zones management and temperature sensors (probes). NOTE Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details. | Successfully tested: H/LN4691; thermo sensors: L/N/NT4577 + 3455 |
+| Temperature Control  | `4`          | `bus_thermo_zone`, `bus_thermo_sensor` | Thermo zones management and temperature sensors (probes). NOTE Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details. | Successfully tested: H/LN4691, KG4691; thermo sensors: L/N/NT4577 + 3455 |
 | Energy Management    | `18`         | `bus_energy_meter`                  | Energy Management                                                | Successfully tested: F520, F521 |
 
 ### For ZigBee (Radio)
@@ -138,7 +138,7 @@ Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with 
 
 - the `where` config parameter (`OpenWebNet Device Address`):
   - example sensor `5` of external zone `00` --> `where="500"`
-  - example: slave sensor `3` of zone 2 --> `where="302"`
+  - example: slave sensor `3` of zone `2` --> `where="302"`
 
 #### NOTE
 
@@ -188,7 +188,7 @@ It's possible to enter a value manually or set `shutterRun=AUTO` (default) to ca
 
 BUS gateway and things configuration:
 
-```json
+```
 Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", passwd="abcde", port=20000, discoveryByActivation=false ] {
       bus_on_off_switch        LR_switch        "Living Room Light"      [ where="51" ]
       bus_dimmer               LR_dimmer        "Living Room Dimmer"     [ where="0311#4#01" ]
@@ -203,7 +203,7 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
 
 ZigBee USB Gateway and things configuration - for radio devices:
 
-```json
+```
 Bridge openwebnet:zb_gateway:myZBgateway  [ serialPort="COM3" ] {
     zb_dimmer          myZB_dimmer     [ where="765432101#9"]
     zb_on_off_switch   myZB_switch     [ where="765432201#9"]
@@ -217,7 +217,7 @@ Example items linked to BUS devices:
 
 NOTE: lights, blinds and zones (thermostat) can be handled  from personal assistants (Google Home, Alexa). In the following example `Google Assistant` was configured  (`ga="..."`) according to the [official documentation](https://www.openhab.org/docs/ecosystem/google-assistant).
 
-```json
+```
 Switch              iLR_switch            "Light"               (gLivingRoom) { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch", ga="Light" }
 Dimmer              iLR_dimmer            "Dimmer [%.0f %%]"    (gLivingRoom) { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness", ga="Light" }
 
@@ -244,7 +244,7 @@ Number:Temperature  iEXT_temp                   "Temperature [%.1f %unit%]"   (g
 
 Example items linked to OpenWebNet ZigBee devices:
 
-```json
+```
 Dimmer          iDimmer             "Dimmer [%.0f %%]"                  <DimmableLight>  (gKitchen)                   [ "Lighting" ]  { channel="openwebnet:zb_dimmer:myZBgateway:myZB_dimmer:brightness" }
 Switch          iSimpleSwitch       "Kitchen Switch"                    <light>          (gKitchen)                   [ "Lighting" ]  { channel="openwebnet:zb_on_off_switch:myZBgateway:myZB_switch:switch_01" }
 Switch          iSwitch_01          "2U first light"                    <light>          (gKitchen)                   [ "Lighting" ]  { channel="openwebnet:zb_on_off_switch2u:myZBgateway:myZB_2U_switch:switch_01" }
@@ -253,7 +253,7 @@ Switch          iSwitch_02          "2U second light"                   <light> 
 
 ### openwebnet.sitemap
 
-```json
+```
 sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
 {
     Frame label="Living Room"
