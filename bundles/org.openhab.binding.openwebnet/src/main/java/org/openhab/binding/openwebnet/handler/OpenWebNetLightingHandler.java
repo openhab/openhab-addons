@@ -72,8 +72,8 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     private static long lastAllDevicesRefreshTS = -1; // timestamp when the last request for all device refresh was sent
                                                       // for this handler
 
-    protected static final int ALL_DEVICES_REFRESH_INTERVAL_MSEC = 2000; // interval in msec before sending another all
-                                                                         // devices refresh request
+    protected static final int ALL_DEVICES_REFRESH_INTERVAL_MSEC = 60000; // interval in msec before sending another all
+                                                                          // devices refresh request
 
     private long lastBrightnessChangeSentTS = 0; // timestamp when last brightness change was sent to the device
 
