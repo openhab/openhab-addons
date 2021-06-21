@@ -147,10 +147,7 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
             logger.debug("Scheduling update channel thread in {} s", delay);
 
             updateChannels(false);
-            ScheduledFuture<?> job = refreshJob;
-            if (job != null) {
-                job.cancel(false);
-            }
+            freeRefreshJob();
             refreshJob = scheduler.schedule(() -> scheduleRefreshJob(), delay, TimeUnit.SECONDS);
         }
     }
@@ -186,12 +183,9 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
 
     protected void updateChildModules() {
         NAThing localNaThing = this.naThing;
-        if (localNaThing != null) {
-            if (localNaThing instanceof NADevice) {
-                NADevice localNaDevice = (NADevice) localNaThing;
-                localNaDevice.getModules().entrySet()
-                        .forEach(entry -> notifyListener(entry.getKey(), entry.getValue()));
-            }
+        if (localNaThing instanceof NADevice) {
+            NADevice localNaDevice = (NADevice) localNaThing;
+            localNaDevice.getModules().entrySet().forEach(entry -> notifyListener(entry.getKey(), entry.getValue()));
         }
     }
 
@@ -238,20 +232,17 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
         WeatherApi api = apiBridge.getRestManager(WeatherApi.class);
         if (api != null) {
             measures.keySet().forEach(measureDef -> {
-                Object result = null;
                 try {
-                    if (measureDef.limit == MeasureLimit.NONE) {
-                        result = api.getMeasurements(config.id, moduleId, measureDef.period, measureDef.type);
-                    } else {
-                        result = api.getMeasurements(config.id, moduleId, measureDef.period, measureDef.type,
-                                measureDef.limit);
+                    Object result = measureDef.limit == MeasureLimit.NONE
+                            ? api.getMeasurements(config.id, moduleId, measureDef.period, measureDef.type)
+                            : api.getMeasurements(config.id, moduleId, measureDef.period, measureDef.type,
+                                    measureDef.limit);
+                    if (result != null) {
+                        measures.put(measureDef, result);
                     }
                 } catch (NetatmoException e) {
                     logger.warn("Error getting measurement {} on period {} for module {} : {}", measureDef.type,
                             measureDef.period, moduleId, e.getMessage());
-                }
-                if (result != null) {
-                    measures.put(measureDef, result);
                 }
             });
         }
@@ -276,7 +267,6 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
                 strategy.expireData();
             }
             scheduleRefreshJob();
-
         }, 3, TimeUnit.SECONDS);
     }
 
@@ -295,11 +285,7 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
     }
 
     private void unregisterDataListener(NetatmoDeviceHandler dataListener) {
-        getDataListeners().entrySet().forEach(entry -> {
-            if (entry.getValue().equals(dataListener)) {
-                getDataListeners().remove(entry.getKey());
-            }
-        });
+        getDataListeners().entrySet().removeIf(entry -> entry.getValue().equals(dataListener));
     }
 
     protected void updateIfLinked(String group, String channelName, State state) {
@@ -321,13 +307,7 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
 
     private Optional<NetatmoDeviceHandler> getBridgeHandler() {
         Bridge bridge = getBridge();
-        return Optional.ofNullable(bridge != null && bridge.getHandler() instanceof NetatmoDeviceHandler /*
-                                                                                                          * && bridge.
-                                                                                                          * getStatus()
-                                                                                                          * ==
-                                                                                                          * ThingStatus.
-                                                                                                          * ONLINE
-                                                                                                          */
+        return Optional.ofNullable(bridge != null && bridge.getHandler() instanceof NetatmoDeviceHandler
                 ? (NetatmoDeviceHandler) bridge.getHandler()
                 : null);
     }
@@ -335,7 +315,6 @@ public class NetatmoDeviceHandler extends BaseBridgeHandler implements Connectio
     protected Optional<HomeHandler> getHomeHandler() {
         return Optional.ofNullable(
                 getBridgeHandler().filter(h -> h instanceof HomeHandler).map(HomeHandler.class::cast).orElse(null));
-        // return Optional.ofNullable(bridge instanceof HomeHandler ? (HomeHandler) bridge : null);
     }
 
     protected Map<String, NetatmoDeviceHandler> getDataListeners() {

@@ -26,7 +26,6 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAAccessTokenResponse;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +43,7 @@ class AuthenticationApi extends RestManager {
     private final NetatmoBindingConfiguration configuration;
     private final ScheduledExecutorService scheduler;
 
-    AuthenticationApi(ApiBridge apiClient, OAuthFactory oAuthFactory, NetatmoBindingConfiguration configuration,
+    AuthenticationApi(ApiBridge apiClient, NetatmoBindingConfiguration configuration,
             ScheduledExecutorService scheduler) {
         super(apiClient, FeatureArea.NONE);
         this.configuration = configuration;
@@ -67,7 +66,7 @@ class AuthenticationApi extends RestManager {
             try {
                 requestToken(getPayload(REFRESH_TOKEN, Map.of(REFRESH_TOKEN, answer.getRefreshToken())));
             } catch (NetatmoException e) {
-                logger.warn("Unable to refresh access token : {}, trying to reopen connection.", e.getMessage());
+                logger.warn("Unable to refresh access token : {}, trying to reopen connection.", e);
                 apiHandler.openConnection();
             }
         }, Math.round(answer.getExpiresIn() * 0.8), TimeUnit.SECONDS);

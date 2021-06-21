@@ -51,7 +51,6 @@ import org.openhab.binding.netatmo.internal.deserialization.NAPushType;
 import org.openhab.binding.netatmo.internal.deserialization.NAPushTypeDeserializer;
 import org.openhab.binding.netatmo.internal.deserialization.StrictEnumTypeAdapterFactory;
 import org.openhab.binding.netatmo.internal.utils.BindingUtils;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -73,8 +72,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link ApiBridge} allows the communication to the various Husqvarna rest apis like the
- * AutomowerConnectApi or the AuthenticationApi
+ * The {@link ApiBridge} allows the communication to the various Netatmo rest apis
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -98,11 +96,11 @@ public class ApiBridge {
     private List<Scope> grantedScopes = List.of();
 
     @Activate
-    public ApiBridge(@Reference OAuthFactory oAuthFactory, @Reference HttpClientFactory httpClientFactory,
-            @Reference TimeZoneProvider timeZoneProvider, ComponentContext componentContext) {
+    public ApiBridge(@Reference HttpClientFactory httpClientFactory, @Reference TimeZoneProvider timeZoneProvider,
+            ComponentContext componentContext) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.httpHeaders.put(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
-        this.connectApi = new AuthenticationApi(this, oAuthFactory, configuration, scheduler);
+        this.connectApi = new AuthenticationApi(this, configuration, scheduler);
 
         gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory())
@@ -150,7 +148,7 @@ public class ApiBridge {
     private void setConnectionStatus(ConnectionStatus status) {
         connectionStatus = status;
         if (!connectionStatus.isConnected()) {
-            onAccessTokenResponse("", List.of());
+            onAccessTokenResponse(null, List.of());
         }
         listeners.forEach(listener -> listener.notifyStatusChange(status));
     }
@@ -251,9 +249,13 @@ public class ApiBridge {
         }
     }
 
-    void onAccessTokenResponse(String accessToken, List<Scope> grantedScopes) {
+    void onAccessTokenResponse(@Nullable String accessToken, List<Scope> grantedScopes) {
         this.grantedScopes = grantedScopes;
-        httpHeaders.put(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+        if (accessToken != null) {
+            httpHeaders.put(HttpHeader.AUTHORIZATION, String.format("Bearer %s", accessToken));
+        } else {
+            httpHeaders.remove(HttpHeader.AUTHORIZATION);
+        }
     }
 
     public void addConnectionListener(ConnectionListener listener) {

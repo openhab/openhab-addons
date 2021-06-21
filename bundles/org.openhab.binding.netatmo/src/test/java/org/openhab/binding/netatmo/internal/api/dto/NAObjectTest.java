@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.TrendDescription;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.osgi.service.component.ComponentContext;
@@ -38,11 +37,10 @@ public class NAObjectTest {
     public static void init() {
         ComponentContext componentContext = mock(ComponentContext.class);
         when(componentContext.getProperties()).thenReturn(new Hashtable<>());
-        OAuthFactory oAuthFactory = mock(OAuthFactory.class);
         HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
         TimeZoneProvider timeZoneProvider = mock(TimeZoneProvider.class);
         when(timeZoneProvider.getTimeZone()).thenReturn(ZoneId.systemDefault());
-        apiBridge = new ApiBridge(oAuthFactory, httpClientFactory, timeZoneProvider, componentContext);
+        apiBridge = new ApiBridge(httpClientFactory, timeZoneProvider, componentContext);
     }
 
     @Test

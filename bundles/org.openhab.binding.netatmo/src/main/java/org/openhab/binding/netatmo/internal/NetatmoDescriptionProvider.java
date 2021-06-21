@@ -13,8 +13,10 @@
 package org.openhab.binding.netatmo.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -29,8 +31,12 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class NetatmoDescriptionProvider extends BaseDynamicStateDescriptionProvider {
     @Activate
-    public NetatmoDescriptionProvider(
-            @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+    public NetatmoDescriptionProvider(final @Reference EventPublisher eventPublisher,
+            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry,
+            final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+        // Implements PR #10884
+        // TODO : uncomment this.eventPublisher = eventPublisher;
+        // TODO : uncomment this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
     }
 }

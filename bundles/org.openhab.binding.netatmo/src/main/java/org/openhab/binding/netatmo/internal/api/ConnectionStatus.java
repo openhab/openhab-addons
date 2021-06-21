@@ -13,6 +13,8 @@
 package org.openhab.binding.netatmo.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -21,16 +23,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ConnectionStatus {
+    private final Logger logger = LoggerFactory.getLogger(ConnectionStatus.class);
     private final boolean isConnected;
     private final String message;
 
     private ConnectionStatus(boolean isConnected, String message) {
         this.isConnected = isConnected;
         this.message = message;
+        logger.debug(message);
     }
 
     static ConnectionStatus Success() {
-        return new ConnectionStatus(true, "Successfully connected");
+        return new ConnectionStatus(true, "Successfully connected to Netatmo API");
     }
 
     static ConnectionStatus Failed(String format, Exception e) {

@@ -52,13 +52,13 @@ public class DeviceActions implements ThingActions {
 
     @RuleAction(label = "@text/reconnectApiLabel", description = "@text/reconnectApiDesc")
     public void reconnectApi() {
-        NetatmoDeviceHandler roomHandler = handler;
-        if (roomHandler == null) {
+        NetatmoDeviceHandler localHandler = handler;
+        if (localHandler == null) {
             logger.debug("Handler not set for device thing actions.");
             return;
         }
 
-        roomHandler.reconnectApi();
+        localHandler.reconnectApi();
     }
 
     /**

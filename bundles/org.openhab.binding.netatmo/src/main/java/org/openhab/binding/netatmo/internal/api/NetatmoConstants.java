@@ -204,25 +204,11 @@ public class NetatmoConstants {
         UNKNOWN;
     }
 
-    // static final Set<Scope> WEATHER_SCOPES = ;
-
     private static final Set<Scope> SMOKE_SCOPES = Set.of(Scope.READ_SMOKEDETECTOR);
-
-    // static final Set<Scope> AIR_CARE_SCOPES = ;
-
-    // static final Set<Scope> ENERGY_SCOPES = ;
-
     private static final Set<Scope> WELCOME_SCOPES = Set.of(Scope.READ_CAMERA, Scope.WRITE_CAMERA, Scope.ACCESS_CAMERA);
-
     private static final Set<Scope> DOORBELL_SCOPES = Set.of(Scope.READ_DOORBELL, Scope.WRITE_DOORBELL,
             Scope.ACCESS_DOORBELL);
-
     private static final Set<Scope> PRESENCE_SCOPES = Set.of(Scope.READ_PRESENCE, Scope.ACCESS_PRESENCE);
-
-    // static final Set<Scope> SECURITY_SCOPES = ;
-
-    // static final Set<Scope> ALL_SCOPES = Stream.of(WEATHER_SCOPES, ENERGY_SCOPES, SECURITY_SCOPES, AIR_CARE_SCOPES)
-    // .flatMap(Set::stream).collect(Collectors.toSet());
 
     // Radio signal quality thresholds
     static final int[] WIFI_SIGNAL_LEVELS = new int[] { 99, 84, 69, 54 }; // Resp : bad, average, good, full
