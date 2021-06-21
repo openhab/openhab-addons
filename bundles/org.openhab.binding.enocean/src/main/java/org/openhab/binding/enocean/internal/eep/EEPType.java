@@ -108,6 +108,7 @@ import org.openhab.binding.enocean.internal.eep.A5_30.A5_30_03_ELTAKO;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Blinds;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Dimming;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Switching;
+import org.openhab.binding.enocean.internal.eep.A5_3F.A5_3F_7F_EltakoFRM;
 import org.openhab.binding.enocean.internal.eep.A5_3F.A5_3F_7F_EltakoFSB;
 import org.openhab.binding.enocean.internal.eep.Base.PTM200Message;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
@@ -387,6 +388,19 @@ public enum EEPType {
     // UniversalCommand(RORG._4BS, 0x3f, 0x7f, false, A5_3F_7F_Universal.class, THING_TYPE_UNIVERSALACTUATOR,
     // CHANNEL_GENERIC_ROLLERSHUTTER, CHANNEL_GENERIC_LIGHT_SWITCHING, CHANNEL_GENERIC_DIMMER, CHANNEL_TEACHINCMD),
     EltakoFSB(RORG._4BS, 0x3f, 0x7f, false, false, "EltakoFSB", 0, A5_3F_7F_EltakoFSB.class, THING_TYPE_ROLLERSHUTTER,
+            0, new Hashtable<String, Configuration>() {
+                private static final long serialVersionUID = 1L;
+                {
+                    put(CHANNEL_ROLLERSHUTTER, new Configuration());
+                    put(CHANNEL_TEACHINCMD, new Configuration() {
+                        {
+                            put(PARAMETER_CHANNEL_TeachInMSG, "fff80d80");
+                        }
+                    });
+                }
+            }),
+
+    EltakoFRM(RORG._4BS, 0x3f, 0x7f, false, false, "EltakoFRM", 0, A5_3F_7F_EltakoFRM.class, THING_TYPE_ROLLERSHUTTER,
             0, new Hashtable<String, Configuration>() {
                 private static final long serialVersionUID = 1L;
                 {
