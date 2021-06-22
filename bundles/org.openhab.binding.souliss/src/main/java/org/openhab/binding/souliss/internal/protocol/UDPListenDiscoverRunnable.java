@@ -61,8 +61,6 @@ public class UDPListenDiscoverRunnable implements Runnable {
         while (true) {
             try {
                 // open socket for listening...
-                // socket = new DatagramSocket(null);
-
                 DatagramChannel channel = DatagramChannel.open();
                 socket = channel.socket();
 
@@ -102,7 +100,7 @@ public class UDPListenDiscoverRunnable implements Runnable {
                     socket.close();
                 }
             } catch (Exception ee) {
-                logger.error("***UDP unhandled error! {} of class {}", ee.getMessage(), ee.getClass());
+                logger.error("***Exception receiving-decoding message! {} ", ee.getMessage());
                 if (socket != null && !socket.isClosed()) {
                     socket.close();
                 }

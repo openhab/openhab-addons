@@ -130,13 +130,13 @@ public class SoulissT19Handler extends SoulissGenericHandler {
 
     public void setRawStateDimmerValue(byte dimmerValue) {
         try {
-            if (dimmerValue != t1nRawStateByte0) {
+            if (dimmerValue != t1nRawStateByte0 && dimmerValue >= 0) {
                 logger.debug("T19, setting dimmer to {}", dimmerValue);
                 updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
                         PercentType.valueOf(String.valueOf(Math.round(((double) dimmerValue / 255) * 100))));
             }
-        } catch (IllegalStateException ex) {
-            logger.debug("UUID: {}, had an update dimmer state error:{}", this.getThing().getUID().getAsString(),
+        } catch (Exception ex) {
+            logger.warn("UUID: {}, had an update dimmer state error:{}", this.getThing().getUID().getAsString(),
                     ex.getMessage());
         }
     }
