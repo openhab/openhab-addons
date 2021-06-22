@@ -39,23 +39,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class SoulissGenericActionMessage extends BaseThingHandler {
 
-    /**
-     * Result callback interface.
-     */
-
-    /*
-     * public interface typicalCommonMethods {
-     *
-     * void setState(PrimitiveType state);
-     *
-     * // PrimitiveType getState();
-     *
-     * // DateTimeType getLastUpdateTime();
-     *
-     * // void setLastUpdateTime(String string);
-     * }
-     */
-
     Thing thingGenActMsg;
 
     private String sTopicNumber = "";

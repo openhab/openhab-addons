@@ -47,7 +47,6 @@ public class SendDispatcherRunnable implements Runnable {
     static boolean bPopSuspend = false;
     protected static ArrayList<PacketStruct> packetsList = new ArrayList<>();
     private long startTime = System.currentTimeMillis();
-    static String ipAddressOnLAN = "";
     static int iDelay = 0; // equal to 0 if array is empty
     static int sendMinDelay = 0;
 
@@ -55,9 +54,6 @@ public class SendDispatcherRunnable implements Runnable {
         this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();
         @Nullable
         SoulissGatewayHandler localGwHandler = this.gwHandler;
-        if (localGwHandler != null) {
-            SendDispatcherRunnable.ipAddressOnLAN = localGwHandler.ipAddressOnLAN;
-        }
     }
 
     /**
@@ -235,7 +231,7 @@ public class SendDispatcherRunnable implements Runnable {
                         // recupero tipico dalla memoria
                         @Nullable
                         SoulissGenericHandler localTyp = SendDispatcherRunnable.typ;
-                        localTyp = getHandler(ipAddressOnLAN, node, iSlot, this.logger);
+                        localTyp = getHandler(this.gwHandler.gwConfig.gatewayIpAddress, node, iSlot, this.logger);
 
                         if (localTyp == null) {
                             break;
@@ -305,8 +301,8 @@ public class SendDispatcherRunnable implements Runnable {
                     @Nullable
                     SoulissGatewayHandler localGwHandler = this.gwHandler;
                     if (localGwHandler != null) {
-                        if (localGwHandler.sendTimeoutToRequeue < time - packetsList.get(i).getTime()) {
-                            if (localGwHandler.sendTimeoutToRemovePacket < time - packetsList.get(i).getTime()) {
+                        if (localGwHandler.gwConfig.timeoutToRequeue < time - packetsList.get(i).getTime()) {
+                            if (localGwHandler.gwConfig.timeoutToRemovePacket < time - packetsList.get(i).getTime()) {
                                 logger.debug("Packet Execution timeout - Removed");
                                 packetsList.remove(i);
                             } else {
@@ -335,7 +331,8 @@ public class SendDispatcherRunnable implements Runnable {
         }
 
         Iterator<Thing> thingsIterator;
-        if (gateway != null && (byte) Integer.parseInt(gateway.ipAddressOnLAN.split("\\.")[3]) == lastByteGatewayIP) {
+        if (gateway != null
+                && (byte) Integer.parseInt(gateway.gwConfig.gatewayIpAddress.split("\\.")[3]) == lastByteGatewayIP) {
             thingsIterator = gateway.getThing().getThings().iterator();
             Thing typ = null;
             while (thingsIterator.hasNext()) {
@@ -398,7 +395,7 @@ public class SendDispatcherRunnable implements Runnable {
                     if (packetsList.size() <= 1) {
                         iDelay = sendMinDelay;
                     } else {
-                        iDelay = localGwHandler.sendRefreshInterval;
+                        iDelay = localGwHandler.gwConfig.sendInterval;
 
                     }
 
@@ -413,7 +410,7 @@ public class SendDispatcherRunnable implements Runnable {
                         }
                     }
 
-                    boolean tFlag = (t - tPrec) >= localGwHandler.sendRefreshInterval;
+                    boolean tFlag = (t - tPrec) >= localGwHandler.gwConfig.sendInterval;
 
                     // se siamo arrivati alla fine della lista e quindi tutti i
                     // pacchetti sono già  stati inviati allora pongo anche il tFlag

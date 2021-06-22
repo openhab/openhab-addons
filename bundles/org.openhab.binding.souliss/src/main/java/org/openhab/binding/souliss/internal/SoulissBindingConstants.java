@@ -186,16 +186,16 @@ public final class SoulissBindingConstants {
     public static final String VOLTAGE_CHANNEL = "voltage";
     public static final String POWER_CHANNEL = "power";
 
-    public static final String CONFIG_IP_ADDRESS = "gatewayIpAddress";
-    public static final String CONFIG_PORT = "gatewayPortNumber";
-    public static final String CONFIG_LOCAL_PORT = "preferredLocalPortNumber";
-    public static final String CONFIG_USER_INDEX = "userIndex"; // DEFAULT 70;
-    public static final String CONFIG_NODE_INDEX = "nodeIndex"; // DEFAULT 120; // 0..127
     public static final String CONFIG_ID = "ID";
-    public static final String CONFIG_PING_REFRESH = "pingInterval";
-    public static final String CONFIG_SUBSCRIPTION_REFRESH = "subscriptionInterval";
-    public static final String CONFIG_HEALTHY_REFRESH = "healthyInterval";
-    public static final String CONFIG_SEND_REFRESH = "sendInterval";
+    public static final String CONFIG_IP_ADDRESS = "gatewayIpAddress";
+    // public static final String CONFIG_PORT = "gatewayPortNumber";
+    // public static final String CONFIG_LOCAL_PORT = "preferredLocalPortNumber";
+    // public static final String CONFIG_USER_INDEX = "userIndex"; // DEFAULT 70;
+    // public static final String CONFIG_NODE_INDEX = "nodeIndex"; // DEFAULT 120; // 0..127
+    // public static final String CONFIG_PING_REFRESH = "pingInterval";
+    // public static final String CONFIG_SUBSCRIPTION_REFRESH = "subscriptionInterval";
+    // public static final String CONFIG_HEALTHY_REFRESH = "healthyInterval";
+    // public static final String CONFIG_SEND_REFRESH = "sendInterval";
 
     public static final String UUID_NODE_SLOT_SEPARATOR = "-";
 

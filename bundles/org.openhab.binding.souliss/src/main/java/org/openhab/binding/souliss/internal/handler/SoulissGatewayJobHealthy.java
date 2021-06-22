@@ -25,25 +25,14 @@ import org.openhab.core.thing.Bridge;
 @NonNullByDefault
 public class SoulissGatewayJobHealthy extends Thread {
 
-    private String ipAddressOnLAN = "";
-    private byte userIndex = 0;
-    private byte nodeIndex = 0;
-    private int healthRefreshInterval = 0;
-
     private final CommonCommands soulissCommands = new CommonCommands();
 
     @Nullable
     private SoulissGatewayHandler gwHandler;
 
-    @SuppressWarnings("null")
     public SoulissGatewayJobHealthy(Bridge bridge) {
         this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();
-        if (gwHandler != null) {
-            this.ipAddressOnLAN = gwHandler.ipAddressOnLAN;
-            this.userIndex = gwHandler.userIndex;
-            this.nodeIndex = gwHandler.nodeIndex;
-            this.sethealthRefreshInterval(gwHandler.healthRefreshInterval);
-        }
+
     }
 
     @Override
@@ -51,20 +40,17 @@ public class SoulissGatewayJobHealthy extends Thread {
         sendHealthyRequest();
     }
 
-    @SuppressWarnings("null")
     private void sendHealthyRequest() {
         // sending healthy packet
-        if (ipAddressOnLAN.length() > 0 && this.gwHandler != null) {
-            soulissCommands.sendHealthyRequestFrame(ipAddressOnLAN, nodeIndex, userIndex, this.gwHandler.getNodes());
+        if (this.gwHandler.gwConfig.gatewayIpAddress.length() > 0 && this.gwHandler != null) {
+            soulissCommands.sendHealthyRequestFrame(this.gwHandler.gwConfig.gatewayIpAddress,
+                    (byte) this.gwHandler.gwConfig.nodeIndex, (byte) this.gwHandler.gwConfig.userIndex,
+                    this.gwHandler.getNodes());
             // healthy packet sent
         }
     }
 
     public int gethealthRefreshInterval() {
-        return healthRefreshInterval;
-    }
-
-    public void sethealthRefreshInterval(int healthRefreshInterval) {
-        this.healthRefreshInterval = healthRefreshInterval;
+        return this.gwHandler.gwConfig.healthyInterval;
     }
 }

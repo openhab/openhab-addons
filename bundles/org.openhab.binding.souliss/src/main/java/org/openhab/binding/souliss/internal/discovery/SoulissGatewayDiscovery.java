@@ -31,10 +31,6 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 // @Component(service = DiscoveryService.class, configurationPid = "discovery.souliss")
-public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements DiscoverResult, ThingHandlerService {
+public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements DiscoverResult {
     private final Logger logger = LoggerFactory.getLogger(SoulissGatewayDiscovery.class);
     @Nullable
     private SoulissDiscoverJob soulissDiscoverRunnableClass = null;
@@ -66,26 +62,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
     public SoulissGatewayDiscovery(SoulissGatewayHandler bridgeHandler) {
         super(SoulissBindingConstants.SUPPORTED_THING_TYPES_UIDS, SoulissBindingConstants.DISCOVERY_TIMEOUT_IN_SECONDS,
                 false);
-
         NetworkParameters.discoverResult = this;
-        // open socket
-        String sSymbolicName = FrameworkUtil.getBundle(getClass()).getSymbolicName();
-        Version bindingVersion = FrameworkUtil.getBundle(getClass()).getVersion();
-
-        logger.debug("Starting: {} - Version: {}", sSymbolicName, bindingVersion.toString());
-        logger.debug("Starting Servers");
-
-        // datagramSocket = SoulissDatagramSocketFactory.getSocketDatagram(this.logger);
-        // datagramSocket = SoulissBindingNetworkParameters.getDatagramSocket();
-        // if (datagramSocket != null) {
-        // // SoulissBindingNetworkParameters.setDatagramSocket(datagramSocket);
-        //
-        // logger.debug("Starting UDP server on Preferred Local Port (random if it is zero)");
-        // udpServerRunnableClass = new SoulissBindingDiscoverUDPListenerJob(datagramSocket,
-        // SoulissBindingNetworkParameters.discoverResult);
-        // } else {
-        // logger.debug("Error - datagramSocket is null - Server not started");
-        // }
     }
 
     @Override
@@ -167,7 +144,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         if (bridge != null) {
             SoulissGatewayHandler gwHandler = (SoulissGatewayHandler) bridge.getHandler();
             if (gwHandler != null) {
-                if (lastByteGatewayIP == (byte) Integer.parseInt(gwHandler.ipAddressOnLAN.split("\\.")[3])) {
+                if (lastByteGatewayIP == (byte) Integer.parseInt(gwHandler.gwConfig.gatewayIpAddress.split("\\.")[3])) {
                     String sNodeId = node + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + slot;
 
                     ThingUID gatewayUID = gwHandler.getThing().getUID();
@@ -289,19 +266,5 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
                 }
             }
         }
-    }
-
-    @Override
-    public void setThingHandler(ThingHandler handler) {
-        // TODO Auto-generated method stub
-        logger.info("test");
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        // TODO Auto-generated method stub
-        logger.info("test");
-
-        return null;
     }
 }

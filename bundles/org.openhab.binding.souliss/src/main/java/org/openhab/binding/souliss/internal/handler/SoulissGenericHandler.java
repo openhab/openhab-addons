@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
+import org.openhab.binding.souliss.internal.config.GatewayConfig;
 import org.openhab.binding.souliss.internal.protocol.CommonCommands;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -30,7 +31,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,9 +156,12 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     public String getGatewayIP() {
         Bridge bridge = getBridge();
         if (bridge != null) {
-            BridgeHandler bridgeHandler = bridge.getHandler();
+            SoulissGatewayHandler bridgeHandler = (SoulissGatewayHandler) bridge.getHandler();
             if (bridgeHandler != null) {
-                return ((SoulissGatewayHandler) bridgeHandler).ipAddressOnLAN;
+                GatewayConfig gwConfig = bridgeHandler.gwConfig;
+                if (gwConfig.gatewayIpAddress != null) {
+                    return gwConfig.gatewayIpAddress;
+                }
             }
         }
         return null;
@@ -174,7 +177,8 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         if (bridge != null) {
             SoulissGatewayHandler soulissgwHandler = (SoulissGatewayHandler) bridge.getHandler();
             if (soulissgwHandler != null) {
-                return soulissgwHandler.userIndex;
+                return (byte) soulissgwHandler.gwConfig.userIndex;
+
             }
         }
         return 0;
@@ -185,7 +189,8 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         if (bridge != null) {
             SoulissGatewayHandler soulissgwHandler = (SoulissGatewayHandler) bridge.getHandler();
             if (soulissgwHandler != null) {
-                return soulissgwHandler.nodeIndex;
+                return (byte) soulissgwHandler.gwConfig.nodeIndex;
+
             }
         }
         return 0;
