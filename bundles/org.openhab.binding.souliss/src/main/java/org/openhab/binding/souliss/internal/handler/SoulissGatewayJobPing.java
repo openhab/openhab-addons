@@ -26,11 +26,6 @@ import org.openhab.core.thing.binding.BridgeHandler;
 @NonNullByDefault
 public class SoulissGatewayJobPing implements Runnable {
 
-    private String ipAddressOnLAN = "";
-    private byte userIndex;
-    private byte nodeIndex;
-    private int pingRefreshInterval;
-
     private final CommonCommands soulissCommands = new CommonCommands();
 
     @Nullable
@@ -41,10 +36,6 @@ public class SoulissGatewayJobPing implements Runnable {
         BridgeHandler bridgeHandler = bridge.getHandler();
         if (bridgeHandler != null) {
             gwHandler = (SoulissGatewayHandler) bridgeHandler;
-            this.ipAddressOnLAN = gwHandler.ipAddressOnLAN;
-            userIndex = gwHandler.userIndex;
-            nodeIndex = gwHandler.nodeIndex;
-            setPingRefreshInterval(gwHandler.pingRefreshInterval);
         }
     }
 
@@ -60,17 +51,19 @@ public class SoulissGatewayJobPing implements Runnable {
 
     private void sendPing() {
         // sending ping packet
-        if (ipAddressOnLAN.length() > 0) {
-            soulissCommands.sendPing(ipAddressOnLAN, nodeIndex, userIndex, (byte) 0, (byte) 0);
+
+        if (this.gwHandler != null && this.gwHandler.gwConfig.gatewayIpAddress != null
+                && this.gwHandler.gwConfig.gatewayIpAddress.length() > 0) {
+            soulissCommands.sendPing(this.gwHandler.gwConfig.gatewayIpAddress, (byte) this.gwHandler.gwConfig.nodeIndex,
+                    (byte) this.gwHandler.gwConfig.userIndex, (byte) 0, (byte) 0);
             // ping packet sent
         }
     }
 
     public int getPingRefreshInterval() {
-        return pingRefreshInterval;
-    }
-
-    public void setPingRefreshInterval(int pingRefreshInterval) {
-        this.pingRefreshInterval = pingRefreshInterval;
+        if (this.gwHandler != null) {
+            return this.gwHandler.gwConfig.pingInterval;
+        }
+        return -1;
     }
 }

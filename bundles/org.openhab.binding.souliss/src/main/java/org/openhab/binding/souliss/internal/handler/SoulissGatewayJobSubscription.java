@@ -24,17 +24,11 @@ import org.openhab.core.thing.Bridge;
 @NonNullByDefault
 public class SoulissGatewayJobSubscription extends Thread {
 
-    private int subscriptionRefreshInterval;
-
     @Nullable
     private SoulissGatewayHandler gwHandler;
 
     public SoulissGatewayJobSubscription(Bridge bridge) {
         this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();
-
-        if (this.gwHandler != null) {
-            setSubscriptionRefreshInterval(this.gwHandler.subscriptionRefreshInterval);
-        }
     }
 
     @Override
@@ -43,11 +37,7 @@ public class SoulissGatewayJobSubscription extends Thread {
     }
 
     public int getSubscriptionRefreshInterval() {
-        return subscriptionRefreshInterval;
-    }
-
-    public void setSubscriptionRefreshInterval(int subscriptionRefreshInterval) {
-        this.subscriptionRefreshInterval = subscriptionRefreshInterval;
+        return this.gwHandler.gwConfig.subscriptionInterval;
     }
 
     private void sendSubscription() {

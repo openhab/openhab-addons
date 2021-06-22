@@ -406,7 +406,7 @@ public class UDPDecoder {
 
         Iterator<Thing> thingsIterator;
         if (gateway != null /* && gateway.ipAddressOnLAN != null */
-                && ((byte) Integer.parseInt(gateway.ipAddressOnLAN.split("\\.")[3])) == lastByteGatewayIP) {
+                && ((byte) Integer.parseInt(gateway.gwConfig.gatewayIpAddress.split("\\.")[3])) == lastByteGatewayIP) {
             thingsIterator = gateway.getThing().getThings().iterator();
             boolean bFound = false;
             Thing typ = null;
