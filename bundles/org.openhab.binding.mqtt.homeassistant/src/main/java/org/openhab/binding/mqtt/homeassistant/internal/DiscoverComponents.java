@@ -57,7 +57,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
 
     private @Nullable ScheduledFuture<?> stopDiscoveryFuture;
     private WeakReference<@Nullable MqttBrokerConnection> connectionRef = new WeakReference<>(null);
-    protected @Nullable @NonNullByDefault({}) ComponentDiscovered discoveredListener;
+    protected @Nullable ComponentDiscovered discoveredListener;
     private int discoverTime;
     private Set<String> topics = new HashSet<>();
 
