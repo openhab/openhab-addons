@@ -112,7 +112,6 @@ public class ColorItemConverter extends AbstractTransformingItemConverter {
                         int r = Integer.parseInt(matcher.group(1));
                         int g = Integer.parseInt(matcher.group(2));
                         int b = Integer.parseInt(matcher.group(3));
-
                         newState = HSBType.fromRGB(r, g, b);
                         break;
                     case HSB:
