@@ -30,15 +30,10 @@ import org.openhab.core.thing.Thing;
  * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
-public class NetworkParameters {
+public final class NetworkParameters {
 
-    public static final Byte DEFAULT_NODE_INDEX = (byte) 130;
-    public static final Byte DEFAULT_USER_INDEX = (byte) 70;
-    public static final int PRESET_TIME = 1000;
-    public static final int SEND_DELAY = PRESET_TIME;
-    public static final int SEND_MIN_DELAY = PRESET_TIME;
-    public static final long SECURE_SEND_TIMEOUT_TO_REQUEUE = PRESET_TIME;
-    public static final long SECURE_SEND_TIMEOUT_TO_REMOVE_PACKET = PRESET_TIME;
+    public static final Byte DEFAULT_NODE_INDEX = (byte) 130; // dummy for discover - unused
+    public static final Byte DEFAULT_USER_INDEX = (byte) 75; // dummy for discover - unused
 
     private static ConcurrentMap<Byte, Thing> hashTableGateways = new ConcurrentHashMap<>();
     private static ConcurrentMap<String, Thing> hashTableTopics = new ConcurrentHashMap<>();
