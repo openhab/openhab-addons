@@ -21,7 +21,8 @@ import org.slf4j.Logger;
 /**
  * Mappings of internal values to user-visible ones.
  *
- * @author John Marshall/Cato Sognen - Initial contribution
+ * @author Cato Sognen - Initial contribution
+ * @author John Marshall - V2 and V3 updates
  */
 @NonNullByDefault
 public class ModelMapper {
@@ -31,13 +32,13 @@ public class ModelMapper {
         if (model == 0) {
             return BroadlinkBindingConstants.THING_TYPE_SP1;
         }
-        if (model == 0x2711) {
+        if (model == 0x2717) {
             return BroadlinkBindingConstants.THING_TYPE_SP2;
         }
         if (model == 0x2719 || model == 0x7919 || model == 0x271a || model == 0x791a) {
             return BroadlinkBindingConstants.THING_TYPE_SP2; // Honeywell SP2
         }
-        if (model == 0x2720) {
+        if (model == 0x2720 || model == 0x2728) {
             return BroadlinkBindingConstants.THING_TYPE_SP2; // SPMini
         }
         if (model == 0x753e) {
@@ -50,17 +51,17 @@ public class ModelMapper {
             return BroadlinkBindingConstants.THING_TYPE_SP3; // NB: this is ACTUALLY an SP3S - see
             // https://github.com/mjg59/python-broadlink/blob/master/broadlink/__init__.py
         }
-        if (model == 0x2728) {
-            return BroadlinkBindingConstants.THING_TYPE_SP2; // SPMini2
-        }
-        if (model == 0x2733 || model == 0x273e) {
+        if (model == 0x2733 || model == 0x2736 || model == 0x273e) {
             return BroadlinkBindingConstants.THING_TYPE_SP2; // OEM-branded SPMini
         }
-        if (model >= 0x7530 && model <= 0x7918) {
+        if (model >= 0x7530 && model <= 0x7547) {
             return BroadlinkBindingConstants.THING_TYPE_SP2; // OEM-branded SPMini2
         }
-        if (model == 0x2736) {
+        if (model >= 0x7918 && model <= 0x7d0d) {
             return BroadlinkBindingConstants.THING_TYPE_SP2; // SPMiniPlus
+        }
+        if (model == 0x2711 || model == 0x2716 || model == 0x271d || model == 0x2736) {
+            return BroadlinkBindingConstants.THING_TYPE_SP2; // SP2s and compatible
         }
         if (model == 0x2712) {
             return BroadlinkBindingConstants.THING_TYPE_RM2;
@@ -68,7 +69,10 @@ public class ModelMapper {
         if (model == 0x2737) {
             return BroadlinkBindingConstants.THING_TYPE_RM3; // RM Mini
         }
-        if (model == 0x27c2) {
+        if (model == 0x27c2 || model == 0x27c7 || model == 0x27cc || model == 0x27cd) {
+            return BroadlinkBindingConstants.THING_TYPE_RM3; // RM Mini 3, firmware rev v40
+        }
+        if (model >= 0x27d0 && model <= 0x27df) {
             return BroadlinkBindingConstants.THING_TYPE_RM3; // RM Mini 3, firmware rev v40
         }
         if (model == 0x5f36) {
