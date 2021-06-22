@@ -46,11 +46,16 @@ import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabChannelDescriptionChangedEvent;
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabChannelTriggerEvent;
+import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabCommandDescription;
+import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabCommandOptions;
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabEvent;
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabEventPayload;
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabItem;
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabRestApi;
+import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabStateDescription;
+import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabStateOptions;
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabStatusInfo;
 import org.openhab.binding.remoteopenhab.internal.data.RemoteopenhabThing;
 import org.openhab.binding.remoteopenhab.internal.exceptions.RemoteopenhabException;
@@ -321,8 +326,9 @@ public class RemoteopenhabRestClient {
 
         String url;
         try {
-            url = String.format("%s?topics=%s/items/*/*,%s/things/*/*,%s/channels/*/triggered", getRestApiUrl("events"),
-                    getTopicNamespace(), getTopicNamespace(), getTopicNamespace());
+            url = String.format(
+                    "%s?topics=%s/items/*/*,%s/things/*/*,%s/channels/*/triggered,openhab/channels/*/descriptionchanged",
+                    getRestApiUrl("events"), getTopicNamespace(), getTopicNamespace(), getTopicNamespace());
         } catch (RemoteopenhabException e) {
             logger.debug("{}", e.getMessage());
             return;
@@ -383,7 +389,7 @@ public class RemoteopenhabRestClient {
     private void onEvent(InboundSseEvent inboundEvent) {
         String name = inboundEvent.getName();
         String data = inboundEvent.readData();
-        logger.trace("Received event name {} date {}", name, data);
+        logger.trace("Received event name {} data {}", name, data);
 
         lastEventTimestamp = System.currentTimeMillis();
         if (!connected) {
@@ -467,6 +473,35 @@ public class RemoteopenhabRestClient {
                             RemoteopenhabChannelTriggerEvent.class);
                     thingsListeners
                             .forEach(listener -> listener.onChannelTriggered(triggerEvent.channel, triggerEvent.event));
+                    break;
+                case "ChannelDescriptionChangedEvent":
+                    RemoteopenhabStateDescription stateDescription = new RemoteopenhabStateDescription();
+                    RemoteopenhabCommandDescription commandDescription = new RemoteopenhabCommandDescription();
+                    RemoteopenhabChannelDescriptionChangedEvent descriptionChanged = Objects.requireNonNull(
+                            jsonParser.fromJson(event.payload, RemoteopenhabChannelDescriptionChangedEvent.class));
+                    switch (descriptionChanged.field) {
+                        case "STATE_OPTIONS":
+                            RemoteopenhabStateOptions stateOptions = Objects.requireNonNull(
+                                    jsonParser.fromJson(descriptionChanged.value, RemoteopenhabStateOptions.class));
+                            stateDescription.options = stateOptions.options;
+                            break;
+                        case "COMMAND_OPTIONS":
+                            RemoteopenhabCommandOptions commandOptions = Objects.requireNonNull(
+                                    jsonParser.fromJson(descriptionChanged.value, RemoteopenhabCommandOptions.class));
+                            commandDescription.commandOptions = commandOptions.options;
+                            break;
+                        default:
+                            break;
+                    }
+                    if (stateDescription.options != null || commandDescription.commandOptions != null) {
+                        descriptionChanged.linkedItemNames.forEach(linkedItemName -> {
+                            RemoteopenhabItem item1 = new RemoteopenhabItem();
+                            item1.name = linkedItemName;
+                            item1.stateDescription = stateDescription;
+                            item1.commandDescription = commandDescription;
+                            itemsListeners.forEach(listener -> listener.onItemOptionsUpdatedd(item1));
+                        });
+                    }
                     break;
                 case "ItemStatePredictedEvent":
                 case "ItemCommandEvent":
