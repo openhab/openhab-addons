@@ -9,6 +9,8 @@
 		<label>Gateway</label>
 		<description>Represents a Souliss Gateway.</description>
 
+        <representation-property>gatewayIpAddress</representation-property>
+
 		<config-description>
 			<parameter name="gatewayIpAddress" type="text" required="true" pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$">
 				<label>IPV4 address</label>

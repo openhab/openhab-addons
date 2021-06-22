@@ -60,19 +60,6 @@ public class SoulissDiscoverJob implements Runnable {
 
     @Override
     public void run() {
-        // logger.debug("Sending discovery packet nr.{}", resendCounter);
-        //
-        // try {
-        // // ===============================================================================
-        // // ===============================================================================
-        // soulissCommands.sendBroadcastGatewayDiscover();
-        // // ===============================================================================
-        // // ===============================================================================
-        // logger.debug("Sent discovery packet");
-        // } catch (Exception e) {
-        // logger.debug("Sending a discovery packet failed: {} ", e.getLocalizedMessage());
-        // }
-
         ConcurrentMap<Byte, Thing> gwMaps = NetworkParameters.getHashTableGateways();
         Collection<Thing> gwMapsCollection = gwMaps.values();
         for (Thing t : gwMapsCollection) {

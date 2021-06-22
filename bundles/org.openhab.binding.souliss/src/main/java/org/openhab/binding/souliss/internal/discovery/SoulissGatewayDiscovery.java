@@ -89,7 +89,8 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         ThingUID gatewayUID = new ThingUID(SoulissBindingConstants.GATEWAY_THING_TYPE,
                 Integer.toString((Byte.parseByte(id) & 0xFF)));
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(gatewayUID).withLabel(label)
-                .withProperties(properties).build();
+                .withRepresentationProperty(SoulissBindingConstants.CONFIG_IP_ADDRESS).withProperties(properties)
+                .build();
         thingDiscovered(discoveryResult);
     }
 
