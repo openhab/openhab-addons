@@ -108,16 +108,17 @@ public class UDPDecoder {
                 logger.debug("Received functional code: 0x{}- Ping answer", Integer.toHexString(functionalCode));
                 decodePing(lastByteGatewayIP, macacoPck);
                 break;
-            // case SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_DISCOVER_GW_NODE_BCAST_RESP:
-            // logger.debug("Received functional code: 0x{} - Discover a gateway node answer (broadcast)",
-            // Integer.toHexString(functionalCode));
-            // try {
-            // decodePingBroadcast(macacoPck);
-            // } catch (UnknownHostException e) {
-            // logger.debug("Error: {}", e.getLocalizedMessage());
-            // logger.error("Error:", e);
-            // }
-            // break;
+
+            case SoulissUDPConstants.SOULISS_UDP_FUNCTION_DISCOVER_GW_NODE_BCAST_RESP:
+                logger.debug("Received functional code: 0x{} - Discover a gateway node answer (broadcast)",
+                        Integer.toHexString(functionalCode));
+                try {
+                    decodePingBroadcast(macacoPck);
+                } catch (UnknownHostException e) {
+                    logger.debug("Error: {}", e.getLocalizedMessage());
+                    logger.error("Error:", e);
+                }
+                break;
 
             case SoulissUDPConstants.SOULISS_UDP_FUNCTION_SUBSCRIBE_RESP:
             case SoulissUDPConstants.SOULISS_UDP_FUNCTION_POLL_RESP:
