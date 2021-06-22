@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing for BUS Thermostat (BTicino xxx/xxx/...) -->
+	<thing-type id="bus_thermostat">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bus_gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Thermostat (stand-alone)</label>
+		<description>A OpenWebNet BUS/SCS zone stand-alone thermostat. BTicino models: LN4691.</description>
+
+		<channels>
+			<!-- read only -->
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="conditioningValve" typeId="conditioningValve"/>
+			<channel id="heatingValve" typeId="heatingValve"/>
+			<channel id="actuator" typeId="actuator"/>
+			<!-- read/write -->
+			<channel id="setpointTemperature" typeId="setpointTemperature"/>
+			<channel id="function" typeId="function"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="speedFanCoil" typeId="speedFanCoil"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTI-LN4691</property>
+			<property name="ownDeviceType">410/420/430</property>
+		</properties>
+
+		<representation-property>ownId</representation-property>
+
+		<config-description>
+			<parameter name="where" type="text" required="true">
+				<label>OpenWebNet Device Address</label>
+				<description>Example: Zone 2 --> where=2.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+</thing:thing-descriptions>

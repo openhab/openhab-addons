@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>openHAB - Miele Cloud Binding Configuration - Pairing</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/mielecloud/assets/img/favicon.ico">
+
+    <link rel="stylesheet" href="/mielecloud/assets/css/main.css">
+    <link rel="stylesheet" href="/mielecloud/assets/css/rtl.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="/mielecloud/assets/img/OpenHAB_logo.svg" width="330" />
+
+            <img src="/mielecloud/assets/img/miele.png" width="190" />
+        </div>
+
+
+        <h2>Cloud Binding Configuration</h2>
+
+        <ul class="statusbar">
+            <li>Overview</li>
+            <li class="active">Pairing</li>
+            <li>Status</li>
+        </ul>
+        <main role="main">
+            <section class="mt-4 mb-5">
+                <div id="pair-body">
+                    <p>
+                        Go to <a href="https://www.miele.com/f/com/en/register_api.aspx">the Miele developer portal</a> to obtain your
+                        client ID and client secret.
+                    </p>
+
+                    <!-- ERROR MESSAGE -->
+
+                    <form action="/mielecloud/forwardToLogin">
+                        <div class="form-group">
+                            <label for="clientId">Client ID:</label>
+                            <input type="text" class="form-control" id="clientId" name="clientId" placeholder="Enter your client ID" value="<!-- CLIENT ID -->" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="clientSecret">Client Secret:</label>
+                            <input type="text" class="form-control" id="clientSecret" name="clientSecret" placeholder="Enter your client secret" value="<!-- CLIENT SECRET -->" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="bridgeId">Bridge ID:</label>
+                            <input type="text" class="form-control" id="bridgeId" name="bridgeId" placeholder="Enter the bridge ID to use for pairing" required pattern="[A-Za-z0-9_-]*" />
+                        </div>
+                        <div class="form-group">
+                            <label for="email">E-mail address:</label>
+                            <input type="text" class="form-control" id="email" name="email" placeholder="Enter the e-mail address associated with your Miele Cloud Account" required pattern="[a-z0-9._%+-]{3,}@[a-z]{3,}([.]{1}[a-z]{2,}|[.]{1}[a-z]{2,}[.]{1}[a-z]{2,})" />
+                        </div>
+                        <button type="submit" class="btn btn-danger btn-lg">Pair Account</button>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+        <script src="/mielecloud/assets/js/main.js"></script>
+    </div>
+</body>
+
+</html>

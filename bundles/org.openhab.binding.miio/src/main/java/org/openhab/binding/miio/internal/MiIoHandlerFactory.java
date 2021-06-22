@@ -88,7 +88,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Deactivate
-    private void dispose() {
+    public void dispose() {
         final Future<Boolean> scheduledTask = this.scheduledTask;
         if (scheduledTask != null && !scheduledTask.isDone()) {
             scheduledTask.cancel(true);

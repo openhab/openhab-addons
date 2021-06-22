@@ -14,10 +14,6 @@
 
   <name>openHAB Add-ons :: Integration Tests :: MQTT HomeAssistant Tests</name>
 
-  <properties>
-    <netty.version>4.1.42.Final</netty.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>

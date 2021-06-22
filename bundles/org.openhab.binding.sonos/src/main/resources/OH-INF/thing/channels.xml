@@ -100,6 +100,13 @@
 		<description>Play the given favorite entry. The favorite entry has to be predefined in the Sonos Controller app</description>
 	</channel-type>
 
+	<channel-type id="heightlevel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Height Level</label>
+		<description>Set or get the height level adjustment</description>
+		<state min="-10" max="10" step="1" readOnly="false" pattern="%d"/>
+	</channel-type>
+
 	<channel-type id="led" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Led</label>

@@ -37,20 +37,21 @@ The following Things and OpenWebNet `WHOs` are supported:
 
 ### For BUS/SCS
 
-| Category             | WHO          | Thing Type IDs                               | Description                                                    | Status           |
-| -------------------- | :----------: | :------------------------------------------: | -------------------------------------------------------------- | ---------------- |
-| Gateway Management   | `13`        | `bus_gateway`                            | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N, ...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F452, F453AV, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202 |
-| Lighting             | `1`         | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers                                       | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
-| Automation           | `2`         | `bus_automation`                        | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
-| Energy Management    | `18`         | `bus_energy_meter`           | Energy Management  | Successfully tested: F520, F521 |
+| Category             | WHO          | Thing Type IDs                      | Description                                                      | Status           |
+| -------------------- | :----------: | :---------------------------------: | ---------------------------------------------------------------- | ---------------- |
+| Gateway Management   | `13`         | `bus_gateway`                       | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N, ...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F452, F453AV, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202 |
+| Lighting             | `1`          | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
+| Automation           | `2`          | `bus_automation`                    | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
+| Temperature Control  | `4`          | `bus_thermostat`, `bus_temp_sensor` | Zones room thermostats (stand-alone) and external wireless temperature sensors. Please note that Central Unit configurations (4 or 99 zones) are not yet supported. See [Channels - Thermo](#thermo-channels) for more details. | Successfully tested: H/LN4691; external sensors: L/N/NT4577 + 3455 |
+| Energy Management    | `18`         | `bus_energy_meter`                  | Energy Management                                                | Successfully tested: F520, F521 |
 
 ### For ZigBee (Radio)
 
 | Category             | WHO    | Thing Type IDs                    | Description                                                           | Status                               |
 | -------------------- | :----: | :-------------------------------: | :-------------------------------------------------------------------: | ------------------------------------ |
-| Gateway Management   | `13`  | `zb_gateway`                  | ZigBee USB Gateway (models: BTI-3578 / LG 088328)                      | Tested: BTI-3578 and LG 088328       |
-| Lighting             | `1`   | `zb_dimmer`, `zb_on_off_switch`, `zb_on_off_switch2u` | ZigBee dimmers, switches and 2-unit switches      | Tested: BTI-4591, BTI-3584, BTI-4585 |
-| Automation           | `2`   | `zb_automation`               | ZigBee roller shutters                                                |                                       |
+| Gateway Management   | `13`   | `zb_gateway`                      | ZigBee USB Gateway (models: BTI-3578 / LG 088328)                     | Tested: BTI-3578 and LG 088328       |
+| Lighting             | `1`    | `zb_dimmer`, `zb_on_off_switch`, `zb_on_off_switch2u` | ZigBee dimmers, switches and 2-unit switches      | Tested: BTI-4591, BTI-3584, BTI-4585 |
+| Automation           | `2`    | `zb_automation`                   | ZigBee roller shutters                                                |                                      |
 
 ## Discovery
 
@@ -121,18 +122,36 @@ For any manually added device, you must configure:
 - the `where` config parameter (`OpenWebNet Device Address`):
   - example for BUS/SCS device with WHERE address Point to Point `A=2 PL=4` --> `where="24"`
   - example for BUS/SCS device with WHERE address Point to Point `A=03 PL=11` on local bus --> `where="0311#4#01"`
+  - example for BUS/SCS thermo Zones: `Zone=1` --> `where="1"`; external sensor `5` --> `where="500"`
   - example for ZigBee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
 
-## Channels
+## Channels 
 
-Devices support some of the following channels:
+### Lighting, Automation and Power meter channels
 
-| Channel Type ID (channel ID)                   | Item Type     | Description                                             | Read/Write |
-|------------------------------------------------|---------------|---------------------------------------------------------|:----------:|
-| `switch` or `switch_01`/`02` for ZigBee | Switch        | To switch the device `ON` and `OFF`                   |    R/W     |
-| `brightness`                               | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`) |    R/W     |
-| `shutter`                                   | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
-| `power`                  | Number:Power        | The current active power usage from Energy Meter       |     R      |
+| Channel Type ID (channel ID)             | Applies to Thing Type IDs                                     | Item Type     | Description                                           | Read/Write |
+| ---------------------------------------- | ------------------------------------------------------------- | ------------- | ----------------------------------------------------- | :--------: |
+| `switch` or `switch_01`/`02` for ZigBee  | `bus_on_off_switch`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device `ON` and `OFF`                   |    R/W     |
+| `brightness`                             | `bus_dimmer`, `zb_dimmer`                                     | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`) |    R/W     |
+| `shutter`                                | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
+| `power`                                  | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter      |     R      |
+
+### Thermo channels
+
+Currently only stand-alone thermostats are supported (like  [LN4691](https://catalogo.bticino.it/BTI-LN4691-IT)) and the specific thing `bus_thermostat` was created to manage them.
+
+| Channel Type ID (channel ID) | Applies to Thing Type IDs           | Item Type          | Description                                       | Read/Write | Advanced |
+| ---------------------------- | ----------------------------------- | ------------------ | ------------------------------------------------- | :--------: | :------: |
+| `temperature`                | `bus_thermostat`, `bus_temp_sensor` | Number:Temperature | The zone currently sensed temperature       | R          | N        |
+| `setpointTemperature`        | `bus_thermostat`                    | Number:Temperature | The zone setpoint temperature           | R/W        | N        |
+| `function`                   | `bus_thermostat`                    | String             | The zone set thermo function: `COOLING`, `HEATING` or `GENERIC` (heating + cooling)  | R/W | N |
+| `mode`                       | `bus_thermostat`                    | String             | The zone set mode: `MANUAL`, `PROTECTION`, `OFF`  | R/W        | N        |
+| `speedFanCoil`               | `bus_thermostat`                    | String             | The zone fancoil speed: `AUTO`, `SPEED_1`, `SPEED_2`, `SPEED_3`    | R/W | N |
+| `actuator`                   | `bus_thermostat`                    | String             | The zone actuator(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3` | R | Y |
+| `heatingValve`               | `bus_thermostat`                    | String             | The zone heating valve(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3` | R | Y |
+| `conditioningValve`          | `bus_thermostat`                    | String             | The zone conditioning valve(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3`  | R | Y |
+
+
 ### Notes on channels
 
 #### `shutter` position
@@ -140,10 +159,10 @@ Devices support some of the following channels:
 For Percent commands and position feedback to work correctly, the `shutterRun` Thing config parameter must be configured equal to the time (in ms) to go from full UP to full DOWN.
 It's possible to enter a value manually or set `shutterRun=AUTO` (default) to calibrate `shutterRun` automatically: in this case a *UP >> DOWN >> Position%* cycle will be performed automatically the first time a Percent command is sent to the shutter.
 
-- if `shutterRun` is not set, or is set to AUTO but calibration has not been performed yet, then position estimation will remain `UNDEFINED`
-- if `shutterRun` is wrongly set higher than the actual runtime, then position estimation will remain `UNDEFINED`: try to reduce shutterRun until you find the right value
+- if `shutterRun` is not set, or is set to `AUTO` but calibration has not been performed yet, then position estimation will remain `UNDEF` (undefined)
+- if `shutterRun` is wrongly set higher than the actual runtime, then position estimation will remain `UNDEF`: try to reduce shutterRun until you find the right value
 - before adding/configuring roller shutter Things it is suggested to have all roller shutters `UP`, otherwise the Percent command won’t work until the roller shutter is fully rolled up
-- if the gateways gets disconnected the binding cannot estimate anymore the shutter positions: just roll the shutter all `UP` or `DOWN` and its position will be estimated again
+- if OH is restarted the binding does not know if a shutter position has changed in the meantime, so its position will be `UNDEF`. Move the shutter all `UP`/`DOWN` to synchronize again its position with the binding
 - the shutter position is estimated based on UP/DOWN timing: an error of ±2% is normal
 
 ## Full Example
@@ -154,11 +173,13 @@ BUS gateway and things configuration:
 
 ```xtend
 Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", passwd="abcde", port=20000, discoveryByActivation=false ] {
-      bus_on_off_switch        LR_switch        "Living Room Light"     [ where="51" ]
-      bus_dimmer               LR_dimmer        "Living Room Dimmer"    [ where="0311#4#01" ]
-      bus_automation           LR_shutter       "Living Room Shutter"   [ where="93", shutterRun="10050"]
-      bus_energy_meter         CENTRAL_Ta       "Energy Meter Ta"       [ where="51" ]
-      bus_energy_meter         CENTRAL_Tb       "Energy Meter Tb"       [ where="52" ]
+      bus_on_off_switch        LR_switch        "Living Room Light"      [ where="51" ]
+      bus_dimmer               LR_dimmer        "Living Room Dimmer"     [ where="0311#4#01" ]
+      bus_automation           LR_shutter       "Living Room Shutter"    [ where="93", shutterRun="10050"]      
+      bus_energy_meter         CENTRAL_Ta       "Energy Meter Ta"        [ where="51" ]	
+      bus_energy_meter         CENTRAL_Tb       "Energy Meter Tb"        [ where="52" ]	   
+      bus_thermostat           LR_thermostat    "Living Room Thermostat" [ where="2"]
+      bus_temp_sensor          EXT_tempsensor   "External Temperature"   [ where="500"]
 }
 ```
 
@@ -178,11 +199,18 @@ Bridge openwebnet:zb_gateway:myZBgateway  [ serialPort="COM3" ] {
 Example items linked to BUS devices:
 
 ```xtend
-Switch          iLR_switch          "Light"                             <light>          (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch" }
-Dimmer          iLR_dimmer          "Dimmer [%.0f %%]"                  <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness" }
-Rollershutter   iLR_shutter         "Shutter [%.0f %%]"                 <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
-Number:Power    iCENTRAL_Ta         "Power [%.0f %unit%]"               <energy>         { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:power" }
-Number:Power    iCENTRAL_Tb         "Power [%.0f %unit%]"               <energy>         { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:power" }
+Switch              iLR_switch                  "Light"                  <light>          (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch" }
+Dimmer              iLR_dimmer                  "Dimmer [%.0f %%]"       <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness" }
+Rollershutter       iLR_shutter                 "Shutter [%.0f %%]"      <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
+Number:Power        iCENTRAL_Ta                 "Power [%.0f %unit%]"    <energy>                                                      { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:power" }
+Number:Power        iCENTRAL_Tb                 "Power [%.0f %unit%]"    <energy>                                                      { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:power" }
+Number:Temperature  iLR_thermostat_temp         "Temperature"                             (gLivingRoom)                                { channel="openwebnet:bus_thermostat:mybridge:LR_thermostat:temperature" }
+Number:Temperature  iLR_thermostat_set          "SetPoint Temperature"                    (gLivingRoom)                                { channel="openwebnet:bus_thermostat:mybridge:LR_thermostat:setpointTemperature" }
+String              iLR_thermostat_setFanSpeed  "FanSpeed"                                (gLivingRoom)                                { channel="openwebnet:bus_thermostat:mybridge:LR_thermostat:speedFanCoil" }
+String              iLR_thermostat_setMode      "Mode"                                    (gLivingRoom)                                { channel="openwebnet:bus_thermostat:mybridge:LR_thermostat:mode" }
+String              iLR_thermostat_setFunc      "Function"                                (gLivingRoom)                                { channel="openwebnet:bus_thermostat:mybridge:LR_thermostat:function" }
+Number:Temperature  iEXT_temp                   "Temperature [%.1f °C]"  <temperature>    (gExternal)                                  { channel="openwebnet:bus_temp_sensor:mybridge:EXT_tempsensor:temperature" }
+
 
 ```
 
@@ -211,6 +239,15 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
     {
           Default item=iCENTRAL_Ta label="General"      icon="energy" valuecolor=[>3000="red"]
           Default item=iCENTRAL_Tb label="Ground Floor" icon="energy" valuecolor=[>3000="red"]
+    }
+
+    Frame label="Thermoregulation"
+    {
+          Default   item=iLR_thermostat_temp        label="Temperature" icon="fire" valuecolor=[<20="red"] 
+          Setpoint  item=iLR_thermostat_set         label="Setpoint [%.1f °C]" step=0.5 minValue=15 maxValue=30
+          Selection item=iLR_thermostat_setFanSpeed label="Fan Speed" icon="fan" mappings=[AUTO="AUTO", SPEED_1="Low", SPEED_2="Medium", SPEED_3="High"]
+          Switch    item=iLR_thermostat_setMode     label="Mode" icon="settings"
+          Selection item=iLR_thermostat_setFunc     label="Function" icon="heating" mappings=[HEATING="Heating", COOLING="Cooling", GENERIC="Heating/Cooling"]
     }
 }
 ```

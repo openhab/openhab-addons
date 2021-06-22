@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>openHAB - Miele Cloud Binding Configuration - Status</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/mielecloud/assets/img/favicon.ico">
+
+    <link rel="stylesheet" href="/mielecloud/assets/css/main.css">
+    <link rel="stylesheet" href="/mielecloud/assets/css/rtl.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="/mielecloud/assets/img/OpenHAB_logo.svg" width="330" />
+
+            <img src="/mielecloud/assets/img/miele.png" width="190" />
+        </div>
+
+
+        <h2>Cloud Binding Configuration</h2>
+
+        <ul class="statusbar">
+            <li>Overview</li>
+            <li>Pairing</li>
+            <li class="active">Status</li>
+        </ul>
+        <main role="main">
+            <section class="mt-4 mb-5">
+                <script type="text/javascript">
+                    window.onload = function() {
+                        var locale = document.getElementById("locale").value
+                        updateLocale(locale)
+                    }
+
+                    function onLocaleChanged(event) {
+                        var locale = event.target.value
+                        updateLocale(locale)
+                    }
+
+                    function updateLocale(locale) {
+                        var thingsTemplate = document.getElementById("things-template")
+                        thingsTemplate.innerHTML = thingsTemplate.innerHTML.replace(/locale=".."/g, "locale=\"" + locale + "\"")
+                    }
+                </script>
+                <div id="success-body">
+                    <div>
+                        <h3>Pairing successful!</h3>
+                        <!-- ERROR MESSAGE TEXT -->
+                        <p>You can now either let us automatically create and configure a bridge thing for you or configure it via a things-file.</p>
+                        <p>Please choose a locale to use for display purposes.</p>
+
+                        <form action="/mielecloud/createBridgeThing">
+                            <div class="form-group">
+                                <input type="hidden" name="bridgeUid" value="<!-- BRIDGE UID -->" />
+                                <input type="hidden" name="email" value="<!-- EMAIL -->" />
+                                <label for="locale">Locale:</label>
+                                <select class="form-control" id="locale" name="locale" onchange="onLocaleChanged(event);">
+                                    <!-- LOCALE OPTIONS -->
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-danger btn-lg">Create and Configure</button>
+                        </form>
+                    </div>
+
+                    <div class="things">
+                        <span class="legend">
+                            or use this .things-file template:
+                          </span>
+                        <div class="code-container">
+                            <a href="#" onclick="copyCodeToClipboard(event, this);" class="btn btn-outline-info btn-sm copy">Copy</a>
+                            <textarea id="things-template" readonly><!-- THINGS TEMPLATE CODE --></textarea>
+                        </div>
+                    </div>
+
+                    <div class="controls">
+                        <a href="/mielecloud" class="btn btn-info btn-lg">Back to overview</a>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+        <script src="/mielecloud/assets/js/main.js"></script>
+    </div>
+</body>
+
+</html>

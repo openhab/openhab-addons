@@ -93,6 +93,8 @@ To remove a saved state from your MQTT broker that causes an entry in your INBOX
 mosquitto_pub -u username -P password -p 1883 -t 'milight/states/0x0/rgb_cct/1' -n -r
 ```
 
+Note that the group 0 (or ALL group) is not autodiscovered as a thing and thus has to be added manually if needed (see section [Using the group 0](#using-the-group-0) for details on when and how to do this)
+
 ## Thing Configuration
 
 | Parameter | Description | Required | Default |
@@ -151,6 +153,21 @@ For example:
 | 0xB4CA    | 4        | 0xB4CA4  |
 | 0xB4CA    | 8        | 0xB4CA8  |
 | 0xB4CA    | 0        | 0xB4CA0  |
+
+## Using Group 0
+
+The group 0 (or ALL group) with the Group ID 0 can be used to control all bulbs that are paired with one specific remote at once.
+While this functionality can also be achieved by using openHAB groups with even greater flexibility, the group 0 must be setup if you want to capture physical remote control events for the ALL group, and keep physical devices synchronized to their openHAB representations.
+Milight remotes send all commands with the Group ID 0 after the master ON/OFF buttons have been used.
+If the group 0 has not been setup these events will be lost and your Item states will no longer be synchonized with the actual device states until you issue a command via openHAB.
+If you do not use a remote at all or you only control other bulbs than the ones controlled by openHAB you should not need to setup the ALL group.
+
+Since the group 0 is not needed in every case the autodiscovery feature will not detect this group as a Thing automatically.
+To create the group, use textual files or the openHAB UI to manually add a Thing with the correct Unique ID as described in section [Important for Textual Configuration](#important-for-textual-configuration).
+To create a Thing for the group 0, simply create a new Thing that has the same type as one of the auto discovered Things of the same remote and modify the ThingUID as described in section linked above.
+
+If you do not need separate group 0 controls in openHAB, but wish to have all the controls for the sub groups update when a physical remote is used, you only need to create the thing for group 0.
+Only if you want the controls do you need to link any channels and create the items, as creating the thing will subscribe the binding to the MQTT topic for group 0.
 
 ## Full Example
 

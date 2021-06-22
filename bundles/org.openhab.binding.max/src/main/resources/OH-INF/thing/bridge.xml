@@ -31,7 +31,7 @@
 				<description>Device parameter settings</description>
 				<advanced>true</advanced>
 			</parameter-group>
-			<!-- Trigger actions from habmin -->
+			<!-- Trigger actions -->
 			<parameter-group name="actions">
 				<context></context>
 				<label>Actions</label>
@@ -90,7 +90,7 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<!-- Trigger reset action from habmin menu -->
+			<!-- Trigger reset action -->
 			<parameter name="action-cubeReset" type="integer" groupName="actions">
 				<label>Reset Cube Configuration</label>
 				<description>Resets the MAX! Cube room and device information. Devices will
@@ -102,7 +102,7 @@
 				<default>-1</default>
 				<advanced>true</advanced>
 			</parameter>
-			<!-- Trigger reboot action from habmin menu -->
+			<!-- Trigger reboot action -->
 			<parameter name="action-cubeReboot" type="integer" groupName="actions">
 				<label>Restart Cube</label>
 				<description>Restarts the Cube.</description>

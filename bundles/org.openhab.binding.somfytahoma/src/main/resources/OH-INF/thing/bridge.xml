@@ -6,8 +6,8 @@
 
 	<!-- Bridge -->
 	<bridge-type id="bridge">
-		<label>Somfy Tahoma Bridge</label>
-		<description>Somfy Tahoma bridge enabling communication with Somfy devices</description>
+		<label>Bridge</label>
+		<description>Bridge enabling communication with devices through a cloud portal</description>
 
 		<config-description-ref uri="bridge-type:somfytahoma:bridge"/>
 	</bridge-type>

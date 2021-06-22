@@ -19,6 +19,7 @@ import java.util.concurrent.Executors;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
 import org.apache.commons.io.input.TailerListenerAdapter;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.logreader.internal.filereader.api.FileReaderException;
 import org.openhab.binding.logreader.internal.filereader.api.LogFileReader;
@@ -30,17 +31,21 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class FileTailer extends AbstractLogFileReader implements LogFileReader {
-
     private final Logger logger = LoggerFactory.getLogger(FileTailer.class);
 
-    private Tailer tailer;
-    private ExecutorService executor;
+    private @Nullable Tailer tailer;
+    private @Nullable ExecutorService executor;
 
     TailerListener logListener = new TailerListenerAdapter() {
 
         @Override
         public void handle(@Nullable String line) {
+            if (line == null) {
+                return;
+            }
+
             sendLineToListeners(line);
         }
 
@@ -51,6 +56,10 @@ public class FileTailer extends AbstractLogFileReader implements LogFileReader {
 
         @Override
         public void handle(@Nullable Exception e) {
+            if (e == null) {
+                return;
+            }
+
             sendExceptionToListeners(e);
         }
 
@@ -62,12 +71,13 @@ public class FileTailer extends AbstractLogFileReader implements LogFileReader {
 
     @Override
     public void start(String filePath, long refreshRate) throws FileReaderException {
-        tailer = new Tailer(new File(filePath), logListener, refreshRate, true, false, true);
+        Tailer localTailer = new Tailer(new File(filePath), logListener, refreshRate, true, false, true);
         executor = Executors.newSingleThreadExecutor();
         try {
             logger.debug("Start executor");
-            executor.execute(tailer);
+            executor.execute(localTailer);
             logger.debug("Executor started");
+            this.tailer = localTailer;
         } catch (Exception e) {
             throw new FileReaderException(e);
         }

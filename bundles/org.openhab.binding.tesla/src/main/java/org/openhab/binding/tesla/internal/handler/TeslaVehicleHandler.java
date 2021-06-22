@@ -560,7 +560,9 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                 }
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                eventClient.close();
+                if (eventClient != null) {
+                    eventClient.close();
+                }
             } else if ((System.currentTimeMillis() - apiIntervalTimestamp) > 1000
                     * TeslaAccountHandler.API_ERROR_INTERVAL_SECONDS) {
                 logger.trace("Resetting the error counter. ({} errors in the last interval)", apiIntervalErrors);

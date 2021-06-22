@@ -96,7 +96,8 @@ public class LightThingHandler extends DeconzBaseThingHandler {
      */
     private LightState lightStateCache = new LightState();
     private LightState lastCommand = new LightState();
-    private int onTime = 0; // in 0.1s
+    @Nullable
+    private Integer onTime = null; // in 0.1s
     private String colorMode = "";
 
     // set defaults, we can override them later if we receive better values

@@ -46,7 +46,7 @@
 				<description>Serial Port to Use for Connecting to the Epson Projector</description>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
-				<label>Polling interval</label>
+				<label>Polling Interval</label>
 				<description>Configures How Often to Poll the Projector for Updates (5-60; Default 10)</description>
 				<default>10</default>
 			</parameter>
@@ -104,7 +104,7 @@
 				<default>3629</default>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
-				<label>Polling interval</label>
+				<label>Polling Interval</label>
 				<description>Configures How Often to Poll the Projector for Updates (5-60; Default 10)</description>
 				<default>10</default>
 			</parameter>

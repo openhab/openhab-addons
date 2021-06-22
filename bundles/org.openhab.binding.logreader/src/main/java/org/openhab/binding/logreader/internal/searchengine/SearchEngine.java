@@ -18,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -25,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class SearchEngine {
 
     private List<Pattern> matchers;
@@ -39,7 +41,7 @@ public class SearchEngine {
      * @param blacklistingPatterns search patterns to bypass results which have found by the initial search patterns.
      *
      */
-    public SearchEngine(String patterns, String blacklistingPatterns) throws PatternSyntaxException {
+    public SearchEngine(String patterns, @Nullable String blacklistingPatterns) throws PatternSyntaxException {
         matchers = compilePatterns(patterns);
         blacklistingMatchers = compilePatterns(blacklistingPatterns);
     }
@@ -80,7 +82,6 @@ public class SearchEngine {
      */
     private List<Pattern> compilePatterns(@Nullable String patterns) throws PatternSyntaxException {
         List<Pattern> patternsList = new ArrayList<>();
-
         if (patterns != null && !patterns.isEmpty()) {
             String list[] = patterns.split("\\|");
             if (list.length > 0) {

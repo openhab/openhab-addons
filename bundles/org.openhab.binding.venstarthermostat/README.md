@@ -43,6 +43,8 @@ After adding the Inbox item, enter the user name and password from the physical 
 
 | Channel            | Type               | Description                  | Notes                                                  |
 |--------------------|--------------------|------------------------------|--------------------------------------------------------|
+| awayMode           | String             | Home or Away Mode            |                                                        |
+| awayModeRaw        | Number             | Away Mode Raw (Read Only)    | 0 (Home) 1 (Away)                                      |
 | systemMode         | String             | System Mode                  |                                                        |
 | systemModeRaw      | Number             | System Mode Raw (Read Only)  | 0 (Off) 1 (Heat) 2 (Cool) 3 (Auto)                     |
 | systemState        | String             | System State (Read Only)     |                                                        |
@@ -72,6 +74,7 @@ Number:Temperature Guest_HVAC_CoolSetpoint  "Cool Setpoint [%d °F]" {channel="v
 Number Guest_HVAC_Mode                      "Mode [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:systemMode"}
 Number Guest_HVAC_Humidity                  "Humidity [%d %%]"      {channel="venstarthermostat:colorTouchThermostat:001122334455:humidity"}
 Number Guest_HVAC_State                     "State [%s]"            {channel="venstarthermostat:colorTouchThermostat:001122334455:systemState"}
+Number Guest_Away_Mode                      "Mode [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:awayMode"}
 ```
 
 ### thermostat.sitemap
@@ -83,6 +86,7 @@ sitemap demo label="Venstar Color Thermostat Demo"
     Setpoint item=Guest_HVAC_HeatSetpoint minValue=50 maxValue=99
     Setpoint item=Guest_HVAC_CoolSetpoint minValue=50 maxValue=99
     Switch item=Guest_HVAC_Mode mappings=[off=Off,heat=Heat,cool=Cool,auto=Auto]
+    Switch item=Guest_Away_Mode mappings=[home=Home,away=Away]
     Text item=Guest_HVAC_State
    }
 }

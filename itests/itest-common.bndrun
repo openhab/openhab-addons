@@ -14,6 +14,10 @@ Test-Cases: ${classes;CONCRETE;PUBLIC;NAMED;*Test}
 # A temporary inclusion until an R7 framework is available
 Import-Package: org.osgi.framework.*;version="[1.8,2)",*
 
+# We would like to use the slf4j-api and implementation provided by pax-logging
+-runblacklist.itest-common: \
+	bnd.identity;id='slf4j.api'
+
 # Used by Objenesis/Mockito and not actually optional
 -runsystempackages: sun.reflect
 

@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.irobot.internal;
 
+import javax.net.ssl.TrustManager;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -21,6 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author hkuhn42 - Initial contribution
  * @author Pavel Fedin - rename and update
+ * @author Alexander Falkenstern - Add support for I7 series
  */
 @NonNullByDefault
 public class IRobotBindingConstants {
@@ -29,6 +33,9 @@ public class IRobotBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ROOMBA = new ThingTypeUID(BINDING_ID, "roomba");
+
+    // Something goes wrong...
+    public static final String UNKNOWN = "UNKNOWN";
 
     // List of all Channel ids
     public static final String CHANNEL_COMMAND = "command";
@@ -69,4 +76,12 @@ public class IRobotBindingConstants {
     public static final String PASSES_AUTO = "auto";
     public static final String PASSES_1 = "1";
     public static final String PASSES_2 = "2";
+
+    // Connection and config constants
+    public static final int MQTT_PORT = 8883;
+    public static final int UDP_PORT = 5678;
+    public static final TrustManager[] TRUST_MANAGERS = { TrustAllTrustManager.getInstance() };
+
+    public static final String ROBOT_BLID = "blid";
+    public static final String ROBOT_PASSWORD = "password";
 }

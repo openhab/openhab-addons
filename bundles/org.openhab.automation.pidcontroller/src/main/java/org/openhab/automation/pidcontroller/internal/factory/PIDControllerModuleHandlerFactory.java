@@ -17,9 +17,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.automation.pidcontroller.internal.handler.PIDControllerActionHandler;
 import org.openhab.automation.pidcontroller.internal.handler.PIDControllerTriggerHandler;
-import org.openhab.core.automation.Action;
 import org.openhab.core.automation.Module;
 import org.openhab.core.automation.Trigger;
 import org.openhab.core.automation.handler.BaseModuleHandlerFactory;
@@ -39,8 +37,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ModuleHandlerFactory.class, configurationPid = "action.pidcontroller")
 @NonNullByDefault
 public class PIDControllerModuleHandlerFactory extends BaseModuleHandlerFactory {
-    private static final Collection<String> TYPES = Set.of(PIDControllerTriggerHandler.MODULE_TYPE_ID,
-            PIDControllerActionHandler.MODULE_TYPE_ID);
+    private static final Collection<String> TYPES = Set.of(PIDControllerTriggerHandler.MODULE_TYPE_ID);
     private ItemRegistry itemRegistry;
     private EventPublisher eventPublisher;
     private BundleContext bundleContext;
@@ -63,8 +60,6 @@ public class PIDControllerModuleHandlerFactory extends BaseModuleHandlerFactory 
         switch (module.getTypeUID()) {
             case PIDControllerTriggerHandler.MODULE_TYPE_ID:
                 return new PIDControllerTriggerHandler((Trigger) module, itemRegistry, eventPublisher, bundleContext);
-            case PIDControllerActionHandler.MODULE_TYPE_ID:
-                return new PIDControllerActionHandler((Action) module, itemRegistry, eventPublisher);
         }
 
         return null;
