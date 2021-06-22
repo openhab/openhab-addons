@@ -12,22 +12,18 @@
  */
 package org.openhab.binding.remoteopenhab.internal.data;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Response to the API GET /rest/items
- * Also payload from ItemAddedEvent / ItemRemovedEvent / ItemUpdatedEvent events received through the SSE connection.
+ * Part of {@link RemoteopenhabItem} containing the command description
  *
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class RemoteopenhabItem {
+public class RemoteopenhabCommandDescription {
 
-    public String name = "";
-    public String type = "";
-    public String state = "";
-    public String groupType = "";
-    public @Nullable RemoteopenhabStateDescription stateDescription;
-    public @Nullable RemoteopenhabCommandDescription commandDescription;
+    public @Nullable List<RemoteopenhabCommandOption> commandOptions;
 }
