@@ -77,7 +77,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
                 setStatusOnDevice(mergeOnOffBits(powerStatus, command));
             }
         } catch (IOException e) {
-            logger.error("Could not send command to socket device", e);
+            logger.warn("Could not send command to socket device", e);
         }
     }
 
@@ -89,7 +89,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
             updateState("nightLight", deriveNightLightStateFromStatusByte(statusByte));
             return true;
         } catch (Exception ex) {
-            logger.error("Exception while getting status from device", ex);
+            logger.warn("Exception while getting status from device", ex);
             return false;
         }
     }

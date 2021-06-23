@@ -15,7 +15,13 @@ package org.openhab.binding.broadlink;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -64,6 +70,9 @@ public class BroadlinkBindingConstants {
     public static final String COMMAND_CHANNEL = "command";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
+
+    public static final Unit<Temperature> BROADLINK_TEMPERATURE_UNIT = SIUnits.CELSIUS;
+    public static final Unit<Dimensionless> BROADLINK_HUMIDITY_UNIT = Units.PERCENT;
 
     public static final Map<ThingTypeUID, String> SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP = new HashMap<ThingTypeUID, String>();
 

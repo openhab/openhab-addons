@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.broadlink.handler;
 
+import static org.openhab.binding.broadlink.BroadlinkBindingConstants.*;
+import static org.openhab.binding.broadlink.BroadlinkBindingConstants.BROADLINK_HUMIDITY_UNIT;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
@@ -29,6 +32,7 @@ import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryAgent;
 import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryListener;
 import org.openhab.binding.broadlink.internal.socket.NetworkTrafficObserver;
 import org.openhab.binding.broadlink.internal.socket.RetryableSocket;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -87,7 +91,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     public void initialize() {
-        logger.debug("initializing polling");
+        logger.debug("initializing handler");
 
         this.thingConfig = getConfigAs(BroadlinkDeviceConfiguration.class);
         count = (new Random()).nextInt(65535);
@@ -150,7 +154,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             authenticated = true;
             return true;
         } catch (Exception e) {
-            logger.error("Authentication failed: ", e);
+            logger.warn("Authentication failed: ", e);
             return false;
         }
     }
@@ -220,7 +224,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
                         logger.warn(
                                 "Problem getting status. Not marking offline because configured to ignore failed updates ...");
                     } else {
-                        logger.error("Problem getting status. Marking as offline ...");
                         forceOffline(ThingStatusDetail.GONE, "Problem getting status");
                     }
                 }
@@ -228,7 +231,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         } else {
             if (thingConfig.isStaticIp()) {
                 if (!Utils.isOffline(getThing())) {
-                    logger.debug("Statically-IP-addressed device not found at {}", thingConfig.getIpAddress());
                     forceOffline(ThingStatusDetail.NONE, "Couldn't find statically-IP-addressed device");
                 }
             } else {
@@ -248,8 +250,8 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
 
     public void onDeviceRediscoveryFailure() {
         if (!Utils.isOffline(getThing())) {
-            logger.debug("Dynamically-IP-addressed device not found after network scan. Marking offline");
-            forceOffline(ThingStatusDetail.NONE, "Couldn't rediscover device");
+            forceOffline(ThingStatusDetail.NONE,
+                    "Couldn't rediscover dynamically-IP-addressedv device after network scan");
         }
     }
 
@@ -260,16 +262,13 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             if (authenticate()) {
                 logger.debug("Authenticated with newly-detected device, will now get its status");
             } else {
-                logger.error("Attempting to authenticate prior to getting device status FAILED. Will mark as offline");
                 forceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Couldn't authenticate");
                 return;
             }
         }
         if (onBroadlinkDeviceBecomingReachable()) {
-            logger.debug("Offline -> Online");
             updateStatus(ThingStatus.ONLINE);
         } else {
-            logger.error("Device became reachable but had trouble getting status. Marking as offline ...");
             forceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Trouble getting status");
         }
     }
@@ -281,5 +280,13 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         if (socket != null) {
             socket.close();
         }
+    }
+
+    protected void updateTemperature(double temperature) {
+        updateState(CHANNEL_TEMPERATURE, new QuantityType<>(temperature, BROADLINK_TEMPERATURE_UNIT));
+    }
+
+    protected void updateHumidity(double humidity) {
+        updateState(CHANNEL_HUMIDITY, new QuantityType<>(humidity, BROADLINK_HUMIDITY_UNIT));
     }
 }

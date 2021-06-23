@@ -12,16 +12,12 @@
  */
 package org.openhab.binding.broadlink.handler;
 
-import static org.openhab.binding.broadlink.BroadlinkBindingConstants.CHANNEL_HUMIDITY;
-import static org.openhab.binding.broadlink.BroadlinkBindingConstants.CHANNEL_TEMPERATURE;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.binding.broadlink.internal.Utils;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -61,13 +57,13 @@ public class BroadlinkRemoteModel4Handler extends BroadlinkRemoteHandler {
             // Temps and humidity get divided by 100 now, not 10
             // Temperature and Humidity response fields are 2 bytes further into the response,
             // mirroring the request
-            float temperature = (float) ((double) (decodedPayload[6] * 100 + decodedPayload[7]) / 100D);
-            updateState(CHANNEL_TEMPERATURE, new DecimalType(temperature));
-            float humidity = (float) ((double) (decodedPayload[8] * 100 + decodedPayload[9]) / 100D);
-            updateState(CHANNEL_HUMIDITY, new DecimalType(humidity));
+            double temperature = ((double) (decodedPayload[6] * 100 + decodedPayload[7]) / 100D);
+            updateTemperature(temperature);
+            double humidity = ((double) (decodedPayload[8] * 100 + decodedPayload[9]) / 100D);
+            updateHumidity(humidity);
             return true;
         } catch (Exception e) {
-            logger.error("Could not get status: ", e);
+            logger.warn("Could not get status: ", e);
             return false;
         }
     }
@@ -89,7 +85,7 @@ public class BroadlinkRemoteModel4Handler extends BroadlinkRemoteHandler {
             byte[] message = buildMessage((byte) 0x6a, padded);
             sendAndReceiveDatagram(message, "remote code");
         } catch (IOException e) {
-            logger.error("Exception while sending code", e);
+            logger.warn("Exception while sending code", e);
         }
     }
 }

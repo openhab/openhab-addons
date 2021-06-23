@@ -29,7 +29,6 @@ import org.slf4j.Logger;
  */
 @NonNullByDefault
 public class RetryableSocket {
-
     private final BroadlinkDeviceConfiguration thingConfig;
     private final Logger logger;
 
@@ -42,22 +41,16 @@ public class RetryableSocket {
 
     /**
      * Send a packet to the device, and expect a response.
-     * If retries in the thingConfig is > 0, we will send
-     * and receive repeatedly if we fail to get any response.
+     * We'll try again if we fail to get any response.
      */
     public byte @Nullable [] sendAndReceive(byte message[], String purpose) {
         byte[] firstAttempt = sendAndReceiveOneTime(message, purpose);
 
         if (firstAttempt != null) {
             return firstAttempt;
-        }
-
-        if (thingConfig.getRetries() > 0) {
-            logger.trace("Retrying sendAndReceive (for {}) ONE time before giving up...", purpose);
+        } else {
             return sendAndReceiveOneTime(message, purpose);
         }
-
-        return null;
     }
 
     private byte @Nullable [] sendAndReceiveOneTime(byte message[], String purpose) {
@@ -92,7 +85,7 @@ public class RetryableSocket {
             logger.trace("Sending {} complete", purpose);
             return true;
         } catch (IOException e) {
-            logger.error("IO error during UDP command sending {}:", purpose, e);
+            logger.warn("IO error during UDP command sending {}:", purpose, e);
             return false;
         }
     }
@@ -102,7 +95,7 @@ public class RetryableSocket {
 
         try {
             if (socket == null) {
-                logger.error("receiveDatagram {} for socket was unexpectedly null", purpose);
+                logger.warn("receiveDatagram {} for socket was unexpectedly null", purpose);
             } else {
                 socket.receive(receivePacket);
                 logger.trace("Received {} ({}} bytes)", purpose, receivePacket.getLength());
@@ -111,7 +104,7 @@ public class RetryableSocket {
         } catch (SocketTimeoutException ste) {
             logger.debug("No further {} response received for device", purpose);
         } catch (Exception e) {
-            logger.error("While {}", purpose, e);
+            logger.warn("While {}", purpose, e);
         }
 
         return null;

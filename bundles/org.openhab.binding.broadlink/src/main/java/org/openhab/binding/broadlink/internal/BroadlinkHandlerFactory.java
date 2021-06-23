@@ -105,10 +105,7 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_MP2)) {
             return new BroadlinkStripModel1Handler(thing);
         } else {
-            // thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_S1C);
-            // thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_PIR);
-            // thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_MAGNET);
-            logger.error("Can't create handler for thing type UID: {}", thingTypeUID.getAsString());
+            logger.warn("Can't create handler for thing type UID: {}", thingTypeUID.getAsString());
             return null;
         }
     }

@@ -66,7 +66,7 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
                 setStatusOnDevice((byte) sid, (byte) 0);
             }
         } catch (IOException e) {
-            logger.error("Couldn't interpret command for strip device MP13K2U", e);
+            logger.warn("Couldn't interpret command for strip device MP13K2U", e);
         }
     }
 
@@ -121,7 +121,7 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
             this.updateState("s3powerOn", (status & 0x04) == 0x04 ? OnOffType.ON : OnOffType.OFF);
             this.updateState("usbPowerOn", (status & 0x08) == 0x08 ? OnOffType.ON : OnOffType.OFF);
         } catch (Exception ex) {
-            logger.error("Exception while getting status from device", ex);
+            logger.warn("Exception while getting status from device", ex);
             return false;
         }
         return true;

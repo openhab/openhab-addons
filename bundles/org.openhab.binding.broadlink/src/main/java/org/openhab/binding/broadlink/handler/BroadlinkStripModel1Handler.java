@@ -65,7 +65,7 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
                 setStatusOnDevice((byte) sid, (byte) 0);
             }
         } catch (IOException e) {
-            logger.error("Couldn't interpret command for strip device", e);
+            logger.warn("Couldn't interpret command for strip device", e);
         }
     }
 
@@ -120,7 +120,7 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
             this.updateState("s3powerOn", (status & 4) == 4 ? OnOffType.ON : OnOffType.OFF);
             this.updateState("s4powerOn", (status & 8) == 8 ? OnOffType.ON : OnOffType.OFF);
         } catch (Exception ex) {
-            logger.error("Exception while getting status from device", ex);
+            logger.warn("Exception while getting status from device", ex);
             return false;
         }
         return true;

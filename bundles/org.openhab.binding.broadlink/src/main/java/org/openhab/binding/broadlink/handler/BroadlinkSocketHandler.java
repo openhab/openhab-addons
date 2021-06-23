@@ -44,7 +44,7 @@ public abstract class BroadlinkSocketHandler extends BroadlinkBaseThingHandler {
                 }
             }
         } catch (IOException e) {
-            logger.error("Could not send command to socket device", e);
+            logger.warn("Could not send command to socket device", e);
         }
     }
 }
