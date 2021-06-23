@@ -36,7 +36,6 @@ import org.openwebnet4j.OpenGateway;
 import org.openwebnet4j.communication.OWNException;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.EnergyManagement;
-import org.openwebnet4j.message.EnergyManagement.DIM;
 import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereEnergyManagement;
@@ -182,7 +181,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
             return;
         } else {
             // fix: check for correct DIM (ActivePower / 113)
-            if (msg.getDim().equals(DIM.ACTIVE_POWER)) {
+            if (msg.getDim().equals(EnergyManagement.DimEnergyMgmt.ACTIVE_POWER)) {
                 updateActivePower(msg);
             } else {
                 logger.debug("handleMessage() Ignoring message {} because it's not related to active power value.",

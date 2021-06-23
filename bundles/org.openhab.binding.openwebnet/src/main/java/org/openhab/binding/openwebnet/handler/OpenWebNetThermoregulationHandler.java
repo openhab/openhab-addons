@@ -41,8 +41,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetThermoregulationHandler} is responsible for handling commands/messages for a Thermoregulation
- * OpenWebNet device. It extends the abstract {@link OpenWebNetThingHandler}.
+ * The {@link OpenWebNetThermoregulationHandler} is responsible for handling commands/messages for Thermoregulation
+ * Things. It extends the abstract {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution
  * @author Andrea Conte - Thermoregulation
@@ -55,7 +55,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.THERMOREGULATION_SUPPORTED_THING_TYPES;
 
-    private boolean isTempSensor = false; // is the device a sensor or thermostat?
+    private boolean isTempSensor = false; // is the thing a sensor ?
 
     private double currentSetPointTemp = 11.5d; // 11.5 is the default setTemp used in MyHomeUP mobile app
 
@@ -293,25 +293,25 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         try {
             Thermoregulation.ValveOrActuatorStatus cv = Thermoregulation.parseValveStatus(tmsg,
                     Thermoregulation.WhatThermo.CONDITIONING);
-            updateState(CHANNEL_CONDITIONING_VALVE, new StringType(cv.toString()));
+            updateState(CHANNEL_CONDITIONING_VALVES, new StringType(cv.toString()));
 
             Thermoregulation.ValveOrActuatorStatus hv = Thermoregulation.parseValveStatus(tmsg,
                     Thermoregulation.WhatThermo.HEATING);
-            updateState(CHANNEL_HEATING_VALVE, new StringType(hv.toString()));
+            updateState(CHANNEL_HEATING_VALVES, new StringType(hv.toString()));
         } catch (FrameException e) {
             logger.warn("updateValveStatus() FrameException on frame {}: {}", tmsg, e.getMessage());
-            updateState(CHANNEL_CONDITIONING_VALVE, UnDefType.UNDEF);
-            updateState(CHANNEL_HEATING_VALVE, UnDefType.UNDEF);
+            updateState(CHANNEL_CONDITIONING_VALVES, UnDefType.UNDEF);
+            updateState(CHANNEL_HEATING_VALVES, UnDefType.UNDEF);
         }
     }
 
     private void updateActuatorStatus(Thermoregulation tmsg) {
         try {
             Thermoregulation.ValveOrActuatorStatus hv = Thermoregulation.parseActuatorStatus(tmsg);
-            updateState(CHANNEL_ACTUATOR, new StringType(hv.toString()));
+            updateState(CHANNEL_ACTUATORS, new StringType(hv.toString()));
         } catch (FrameException e) {
             logger.warn("updateActuatorStatus() FrameException on frame {}: {}", tmsg, e.getMessage());
-            updateState(CHANNEL_ACTUATOR, UnDefType.UNDEF);
+            updateState(CHANNEL_ACTUATORS, UnDefType.UNDEF);
         }
     }
 
@@ -322,12 +322,12 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             try {
                 send(Thermoregulation.requestTemperature(w));
                 if (!this.isTempSensor) {
-                    // for bus_thermostat request also other single channels updates
+                    // for bus_thermo_zone request also other single channels updates
                     send(Thermoregulation.requestSetPointTemperature(w));
                     send(Thermoregulation.requestFanCoilSpeed(w));
                     send(Thermoregulation.requestMode(w));
-                    send(Thermoregulation.requestValveStatus(w));
-                    send(Thermoregulation.requestActuatorStatus(w));
+                    send(Thermoregulation.requestValvesStatus(w));
+                    send(Thermoregulation.requestActuatorsStatus(w));
                 }
             } catch (OWNException e) {
                 logger.warn("refreshDevice() where='{}' returned OWNException {}", w, e.getMessage());
