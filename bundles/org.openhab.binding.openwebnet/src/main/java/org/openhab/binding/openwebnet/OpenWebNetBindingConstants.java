@@ -55,10 +55,10 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_BUS_AUTOMATION = "Automation";
     public static final ThingTypeUID THING_TYPE_BUS_ENERGY_METER = new ThingTypeUID(BINDING_ID, "bus_energy_meter");
     public static final String THING_LABEL_BUS_ENERGY_METER = "Energy Meter";
-    public static final ThingTypeUID THING_TYPE_BUS_TEMP_SENSOR = new ThingTypeUID(BINDING_ID, "bus_temp_sensor");
-    public static final String THING_LABEL_BUS_TEMP_SENSOR = "Temperature Sensor";
-    public static final ThingTypeUID THING_TYPE_BUS_THERMOSTAT = new ThingTypeUID(BINDING_ID, "bus_thermostat");
-    public static final String THING_LABEL_BUS_THERMOSTAT = "Thermostat (stand-alone)";
+    public static final ThingTypeUID THING_TYPE_BUS_THERMO_SENSOR = new ThingTypeUID(BINDING_ID, "bus_thermo_sensor");
+    public static final String THING_LABEL_BUS_THERMO_SENSOR = "Thermo Sensor";
+    public static final ThingTypeUID THING_TYPE_BUS_THERMO_ZONE = new ThingTypeUID(BINDING_ID, "bus_thermo_zone");
+    public static final String THING_LABEL_BUS_THERMO_ZONE = "Thermo Zone";
 
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ZB_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "zb_on_off_switch");
@@ -83,8 +83,8 @@ public class OpenWebNetBindingConstants {
             THING_TYPE_BUS_AUTOMATION);
 
     // ## Thermoregulation
-    public static final Set<ThingTypeUID> THERMOREGULATION_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_THERMOSTAT,
-            THING_TYPE_BUS_TEMP_SENSOR);
+    public static final Set<ThingTypeUID> THERMOREGULATION_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_THERMO_ZONE,
+            THING_TYPE_BUS_THERMO_SENSOR);
 
     // ## Energy Management
     public static final Set<ThingTypeUID> ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_ENERGY_METER);
@@ -119,9 +119,9 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_TEMP_SETPOINT = "setpointTemperature";
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_FAN_SPEED = "speedFanCoil";
-    public static final String CHANNEL_CONDITIONING_VALVE = "conditioningValve";
-    public static final String CHANNEL_HEATING_VALVE = "heatingValve";
-    public static final String CHANNEL_ACTUATOR = "actuator";
+    public static final String CHANNEL_CONDITIONING_VALVES = "conditioningValves";
+    public static final String CHANNEL_HEATING_VALVES = "heatingValves";
+    public static final String CHANNEL_ACTUATORS = "actuators";
 
     // energy management
     public static final String CHANNEL_POWER = "power";
