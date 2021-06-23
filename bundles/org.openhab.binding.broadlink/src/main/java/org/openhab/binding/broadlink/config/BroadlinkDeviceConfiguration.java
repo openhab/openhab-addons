@@ -27,7 +27,6 @@ public class BroadlinkDeviceConfiguration {
     private String macAddress;
     private int pollingInterval;
     private String mapFilename;
-    private int retries;
     private boolean ignoreFailedUpdates;
     private int deviceType;
 
@@ -36,7 +35,6 @@ public class BroadlinkDeviceConfiguration {
         staticIp = true;
         macAddress = "";
         pollingInterval = 30;
-        retries = 1;
         mapFilename = "broadlink.map";
         ignoreFailedUpdates = false;
     }
@@ -106,14 +104,6 @@ public class BroadlinkDeviceConfiguration {
 
     public void setDeviceType(int newDeviceType) {
         this.deviceType = newDeviceType;
-    }
-
-    public void setRetries(int retries) {
-        this.retries = retries;
-    }
-
-    public int getRetries() {
-        return this.retries;
     }
 
     public void setIgnoreFailedUpdates(boolean ignore) {

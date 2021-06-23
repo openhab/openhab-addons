@@ -93,7 +93,7 @@ public class BroadlinkSocket {
                 }
             } catch (IOException e) {
                 if (!isInterrupted()) {
-                    logger.error("Error while receiving", e);
+                    logger.warn("Error while receiving", e);
                 }
             }
             logger.info("Receiver thread ended");
@@ -123,7 +123,7 @@ public class BroadlinkSocket {
             try {
                 socket = new MulticastSocket();
             } catch (IOException e) {
-                logger.error("Setup socket error '{}'.", e.getMessage());
+                logger.warn("Setup socket error '{}'.", e.getMessage());
             }
             socketReceiveThread = new ReceiverThread(logger);
             socketReceiveThread.start();
@@ -152,7 +152,7 @@ public class BroadlinkSocket {
             DatagramPacket sendPacket = new DatagramPacket(message, message.length, InetAddress.getByName(host), port);
             socket.send(sendPacket);
         } catch (IOException e) {
-            logger.error("IO Error sending message: '{}'", e.getMessage());
+            logger.warn("IO Error sending message: '{}'", e.getMessage());
         }
     }
 }

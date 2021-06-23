@@ -41,13 +41,6 @@
 			<default>30</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="retries" type="integer" min="0" max="1">
-			<label>Retries</label>
-			<description>The number of times to retry a network request before declaring the device Offline</description>
-			<required>true</required>
-			<advanced>true</advanced>
-			<default>1</default>
-		</parameter>
 		<parameter name="ignoreFailedUpdates" type="boolean">
 			<context>ignore-failed-updates</context>
 			<label>Ignore Failed Updates</label>

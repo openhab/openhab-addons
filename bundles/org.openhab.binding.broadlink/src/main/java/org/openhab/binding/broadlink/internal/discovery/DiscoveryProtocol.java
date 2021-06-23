@@ -68,7 +68,7 @@ public class DiscoveryProtocol {
             byte message[] = BroadlinkProtocol.buildDiscoveryPacket(localAddress.getHostAddress(), localPort);
             BroadlinkSocket.sendMessage(message, "255.255.255.255", 80, logger);
         } catch (UnknownHostException e) {
-            logger.error("Failed to initiate discovery", e);
+            logger.warn("Failed to initiate discovery", e);
         }
     }
 
@@ -79,7 +79,7 @@ public class DiscoveryProtocol {
             logger.warn("Device scan: wait complete ...");
 
         } catch (InterruptedException e) {
-            logger.error("problem {}", e.getMessage());
+            logger.warn("problem {}", e.getMessage());
         }
     }
 }

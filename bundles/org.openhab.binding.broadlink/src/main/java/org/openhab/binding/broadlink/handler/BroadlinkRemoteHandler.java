@@ -35,15 +35,21 @@ import org.openhab.core.util.HexUtils;
  * Remote blaster handler
  *
  * @author Cato Sognen - Initial contribution
- * @author John Marshall - V3 rewrite with state description provider
+ * @author John Marshall - V3 rewrite with dynamic command description provider
  */
 @NonNullByDefault
 public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
-    private final BroadlinkMappingService mappingService;
+    private final BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider;
+    private @Nullable BroadlinkMappingService mappingService;
 
     public BroadlinkRemoteHandler(Thing thing,
             BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider) {
         super(thing);
+        this.commandDescriptionProvider = commandDescriptionProvider;
+    }
+
+    public void initialize() {
+        super.initialize();
         this.mappingService = new BroadlinkMappingService(thingConfig.getMapFilename(), commandDescriptionProvider,
                 new ChannelUID(thing.getUID(), BroadlinkBindingConstants.COMMAND_CHANNEL));
     }
@@ -64,7 +70,7 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             byte[] message = buildMessage((byte) 0x6a, padded);
             sendAndReceiveDatagram(message, "remote code");
         } catch (IOException e) {
-            logger.error("Exception while sending code", e);
+            logger.warn("Exception while sending code", e);
         }
     }
 
@@ -80,12 +86,12 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         }
         Channel channel = thing.getChannel(channelUID.getId());
         if (channel == null) {
-            logger.error("Unexpected null channel while handling command {}", command.toFullString());
+            logger.warn("Unexpected null channel while handling command {}", command.toFullString());
             return;
         }
         ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
         if (channelTypeUID == null) {
-            logger.error("Unexpected null channelTypeUID while handling command {}", command.toFullString());
+            logger.warn("Unexpected null channelTypeUID while handling command {}", command.toFullString());
             return;
         }
         if (channelTypeUID.getId().equals(BroadlinkBindingConstants.COMMAND_CHANNEL)) {

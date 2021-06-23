@@ -20,6 +20,9 @@ import static org.openhab.binding.broadlink.BroadlinkBindingConstants.CHANNEL_TE
 import java.io.IOException;
 import java.util.List;
 
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +30,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.broadlink.BroadlinkBindingConstants;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 
@@ -179,13 +182,15 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
         ChannelUID expectedTemperatureChannel = new ChannelUID(thing.getUID(), CHANNEL_TEMPERATURE);
         assertEquals(expectedTemperatureChannel, channelCaptures.get(0));
 
-        DecimalType expectedTemperature = new DecimalType(4.880000114440918);
+        QuantityType<Temperature> expectedTemperature = new QuantityType<>(4.88,
+                BroadlinkBindingConstants.BROADLINK_TEMPERATURE_UNIT);
         assertEquals(expectedTemperature, stateCaptures.get(0));
 
         ChannelUID expectedHumidityChannel = new ChannelUID(thing.getUID(), CHANNEL_HUMIDITY);
         assertEquals(expectedHumidityChannel, channelCaptures.get(1));
 
-        DecimalType expectedHumidity = new DecimalType(51.29999923706055);
+        QuantityType<Dimensionless> expectedHumidity = new QuantityType(51.3,
+                BroadlinkBindingConstants.BROADLINK_HUMIDITY_UNIT);
         assertEquals(expectedHumidity, stateCaptures.get(1));
     }
 }

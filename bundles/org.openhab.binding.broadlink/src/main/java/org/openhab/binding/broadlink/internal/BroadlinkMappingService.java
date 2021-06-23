@@ -66,7 +66,7 @@ public class BroadlinkMappingService {
         this.targetChannelUID = targetChannelUID;
         reloadFromFile();
         startWatching();
-        logger.info("BroadlinkMappingService constructed on behalf of {}", this.targetChannelUID);
+        logger.debug("BroadlinkMappingService constructed on behalf of {}", this.targetChannelUID);
     }
 
     public void dispose() {
