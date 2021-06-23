@@ -131,15 +131,15 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 deviceWho = Who.AUTOMATION;
                 break;
             }
-            case SCS_TEMP_SENSOR: {
-                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_TEMP_SENSOR;
-                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_TEMP_SENSOR;
+            case SCS_THERMO_SENSOR: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_SENSOR;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_THERMO_SENSOR;
                 deviceWho = Who.THERMOREGULATION;
                 break;
             }
-            case SCS_THERMOSTAT: {
-                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_THERMOSTAT;
-                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_THERMOSTAT;
+            case SCS_THERMO_ZONE: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_ZONE;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_THERMO_ZONE;
                 deviceWho = Who.THERMOREGULATION;
                 break;
             }
