@@ -14,6 +14,7 @@ package org.openhab.binding.deconz.internal;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -21,8 +22,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
+import org.openhab.core.thing.events.ThingEventFactory;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
 import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.StateDescriptionFragment;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +38,11 @@ import org.slf4j.LoggerFactory;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { DynamicStateDescriptionProvider.class, StateDescriptionProvider.class })
-public class StateDescriptionProvider implements DynamicStateDescriptionProvider {
+@Component(service = { DynamicStateDescriptionProvider.class, DeconzDynamicStateDescriptionProvider.class })
+public class DeconzDynamicStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
+    private final Logger logger = LoggerFactory.getLogger(DeconzDynamicStateDescriptionProvider.class);
 
-    private final Map<ChannelUID, StateDescription> descriptions = new ConcurrentHashMap<>();
-    private final Logger logger = LoggerFactory.getLogger(StateDescriptionProvider.class);
+    private final Map<ChannelUID, StateDescriptionFragment> stateDescriptionFragments = new ConcurrentHashMap<>();
 
     /**
      * Set a state description for a channel. This description will be used when preparing the channel state by
@@ -46,12 +50,18 @@ public class StateDescriptionProvider implements DynamicStateDescriptionProvider
      *
      * @param channelUID
      *            channel UID
-     * @param description
+     * @param stateDescriptionFragment
      *            state description for the channel
      */
-    public void setDescription(ChannelUID channelUID, StateDescription description) {
-        logger.trace("adding state description for channel {}", channelUID);
-        descriptions.put(channelUID, description);
+    public void setDescriptionFragment(ChannelUID channelUID, StateDescriptionFragment stateDescriptionFragment) {
+        StateDescriptionFragment oldStateDescriptionFragment = stateDescriptionFragments.get(channelUID);
+        if (!stateDescriptionFragment.equals(oldStateDescriptionFragment)) {
+            logger.trace("adding state description for channel {}", channelUID);
+            stateDescriptionFragments.put(channelUID, stateDescriptionFragment);
+            postEvent(ThingEventFactory.createChannelDescriptionChangedEvent(channelUID,
+                    itemChannelLinkRegistry != null ? itemChannelLinkRegistry.getLinkedItemNames(channelUID) : Set.of(),
+                    stateDescriptionFragment, oldStateDescriptionFragment));
+        }
     }
 
     /**
@@ -61,17 +71,18 @@ public class StateDescriptionProvider implements DynamicStateDescriptionProvider
      */
     public void removeDescriptionsForThing(ThingUID thingUID) {
         logger.trace("removing state description for thing {}", thingUID);
-        descriptions.entrySet().removeIf(entry -> entry.getKey().getThingUID().equals(thingUID));
+        stateDescriptionFragments.entrySet().removeIf(entry -> entry.getKey().getThingUID().equals(thingUID));
     }
 
     @Override
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
-        if (descriptions.containsKey(channel.getUID())) {
+        StateDescriptionFragment stateDescriptionFragment = stateDescriptionFragments.get(channel.getUID());
+        if (stateDescriptionFragment != null) {
             logger.trace("returning new stateDescription for {}", channel.getUID());
-            return descriptions.get(channel.getUID());
+            return stateDescriptionFragment.toStateDescription();
         } else {
-            return null;
+            return super.getStateDescription(channel, originalStateDescription, locale);
         }
     }
 }
