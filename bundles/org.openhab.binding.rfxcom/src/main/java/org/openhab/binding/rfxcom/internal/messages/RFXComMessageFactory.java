@@ -51,6 +51,7 @@ public class RFXComMessageFactory {
                     // put(PacketType.FAN_FT1211R, RFXComFanMessage.class);
                     put(PacketType.FAN_FALMEC, RFXComFanMessage.class);
                     put(PacketType.FAN_LUCCI_DC_II, RFXComFanMessage.class);
+                    put(PacketType.FAN_NOVY, RFXComFanMessage.class);
                     put(PacketType.CURTAIN1, RFXComCurtain1Message.class);
                     put(PacketType.BLINDS1, RFXComBlinds1Message.class);
                     put(PacketType.RFY, RFXComRfyMessage.class);

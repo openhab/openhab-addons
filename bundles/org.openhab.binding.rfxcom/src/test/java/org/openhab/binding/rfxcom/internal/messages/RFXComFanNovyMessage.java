@@ -13,8 +13,8 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.FAN_LUCCI_DC;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubType.LUCCI_AIR_DC;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.FAN_NOVY;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubType.NOVY;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,7 +32,7 @@ import org.openhab.core.types.UnDefType;
  * @author Martin van Wingerden - Initial contribution
  */
 @NonNullByDefault
-public class RFXComFanLucciAirDcMessageTest {
+public class RFXComFanNovyMessage {
 
     @Test
     public void testUp() throws RFXComException {
@@ -54,17 +54,15 @@ public class RFXComFanLucciAirDcMessageTest {
                 StringType.valueOf("DOWN"));
         testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("LIGHT"), OnOffType.ON, null,
                 StringType.valueOf("LIGHT"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("REVERSE"), UnDefType.UNDEF, null,
-                StringType.valueOf("REVERSE"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("NATURAL_FLOW"), UnDefType.UNDEF, null,
-                StringType.valueOf("NATURAL_FLOW"));
-        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("PAIR"), UnDefType.UNDEF, null,
-                StringType.valueOf("PAIR"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("LEARN"), UnDefType.UNDEF, null,
+                StringType.valueOf("LEARN"));
+        testCommand(CHANNEL_COMMAND_STRING, StringType.valueOf("RESET_FILTER"), UnDefType.UNDEF, null,
+                StringType.valueOf("RESET_FILTER"));
     }
 
     private void testCommand(String channel, State inputValue, State expectedLightCommand,
             @Nullable State expectedFanSpeed, State expectedCommandString) throws RFXComException {
-        RFXComFanMessageTest.testCommand(LUCCI_AIR_DC, channel, inputValue, null, expectedLightCommand,
-                expectedFanSpeed, expectedCommandString, FAN_LUCCI_DC);
+        RFXComFanMessageTest.testCommand(NOVY, channel, inputValue, null, expectedLightCommand, expectedFanSpeed,
+                expectedCommandString, FAN_NOVY);
     }
 }
