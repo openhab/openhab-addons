@@ -32,7 +32,7 @@ import org.openhab.core.util.HexUtils;
 public class RFXComInterfaceMessageTest {
     private RFXComInterfaceMessage testMessage(String hexMsg, SubType subType, int seqNbr, Commands command)
             throws RFXComException {
-        RFXComInterfaceMessage msg = (RFXComInterfaceMessage) RFXComMessageFactory
+        RFXComInterfaceMessage msg = (RFXComInterfaceMessage) RFXComMessageFactoryImpl.INSTANCE
                 .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals(subType, msg.subType, "SubType");
         assertEquals(seqNbr, (short) (msg.seqNbr & 0xFF), "Seq Number");

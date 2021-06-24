@@ -37,14 +37,15 @@ public class RFXComLighting5MessageTest {
 
     @Test
     public void convertFromStateItMessage() throws RFXComException {
-        RFXComDeviceMessage itMessageObject = (RFXComDeviceMessage) RFXComMessageFactory.createMessage(LIGHTING5);
+        RFXComDeviceMessage itMessageObject = (RFXComDeviceMessage) RFXComMessageFactoryImpl.INSTANCE
+                .createMessage(LIGHTING5);
         itMessageObject.setDeviceId("2061.1");
         itMessageObject.setSubType(IT);
         itMessageObject.convertFromState(CHANNEL_COMMAND, OnOffType.ON);
         byte[] message = itMessageObject.decodeMessage();
         String hexMessage = HexUtils.bytesToHex(message);
         assertEquals("0A140F0000080D01010000", hexMessage, "Message is not as expected");
-        RFXComLighting5Message msg = (RFXComLighting5Message) RFXComMessageFactory.createMessage(message);
+        RFXComLighting5Message msg = (RFXComLighting5Message) RFXComMessageFactoryImpl.INSTANCE.createMessage(message);
         assertEquals(IT, msg.subType, "SubType");
         assertEquals("2061.1", msg.getDeviceId(), "Sensor Id");
         assertEquals(ON, msg.command, "Command");
@@ -52,7 +53,8 @@ public class RFXComLighting5MessageTest {
 
     @Test
     public void basicBoundaryCheck() throws RFXComException {
-        RFXComLighting5Message message = (RFXComLighting5Message) RFXComMessageFactory.createMessage(LIGHTING5);
+        RFXComLighting5Message message = (RFXComLighting5Message) RFXComMessageFactoryImpl.INSTANCE
+                .createMessage(LIGHTING5);
 
         message.subType = RFXComLighting5Message.SubType.LIGHTWAVERF;
         message.command = ON;

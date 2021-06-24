@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.rfxcom.internal;
 
+import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +21,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
+import org.openhab.binding.rfxcom.internal.config.RFXComLighting4DeviceConfiguration;
+import org.openhab.binding.rfxcom.internal.config.RFXComRawDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -65,6 +69,7 @@ public class RFXComBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_RAW_MESSAGE = "rawMessage";
     public static final String CHANNEL_RAW_PAYLOAD = "rawPayload";
+    public static final String CHANNEL_PULSES = "pulses";
     public static final String CHANNEL_SHUTTER = "shutter";
     public static final String CHANNEL_VENETIAN_BLIND = "venetianBlind";
     public static final String CHANNEL_SUN_WIND_DETECTOR = "sunWindDetector";
@@ -187,6 +192,16 @@ public class RFXComBindingConstants {
                     THING_TYPE_TEMPERATURE_HUMIDITY_BAROMETRIC, THING_TYPE_TEMPERATURE_RAIN, THING_TYPE_THERMOSTAT1,
                     THING_TYPE_THERMOSTAT2, THING_TYPE_THERMOSTAT3, THING_TYPE_UNDECODED, THING_TYPE_UV,
                     THING_TYPE_WATER_USAGE, THING_TYPE_WEIGHTING_SCALE, THING_TYPE_WIND).collect(Collectors.toSet()));
+
+    /**
+     * Map Device ThingTypeUIDs to their Configuration class
+     */
+    public static final Map<ThingTypeUID, Class<? extends RFXComDeviceConfiguration>> THING_TYPE_UID_CONFIGURATION_CLASS_MAP = Map
+            .ofEntries(
+                    new AbstractMap.SimpleEntry<ThingTypeUID, Class<? extends RFXComDeviceConfiguration>>(
+                            THING_TYPE_RAW, RFXComRawDeviceConfiguration.class),
+                    new AbstractMap.SimpleEntry<ThingTypeUID, Class<? extends RFXComDeviceConfiguration>>(
+                            THING_TYPE_LIGHTNING4, RFXComLighting4DeviceConfiguration.class));
 
     /**
      * Map RFXCOM packet types to RFXCOM Thing types and vice versa.
