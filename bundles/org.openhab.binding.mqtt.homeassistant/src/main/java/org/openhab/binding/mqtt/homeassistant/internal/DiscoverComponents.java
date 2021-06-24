@@ -94,8 +94,6 @@ public class DiscoverComponents implements MqttMessageSubscriber {
 
         HaID haID = new HaID(topic);
         String config = new String(payload);
-
-        @Nullable
         AbstractComponent<?> component = null;
 
         if (config.length() > 0) {
@@ -147,7 +145,6 @@ public class DiscoverComponents implements MqttMessageSubscriber {
     }
 
     private void subscribeSuccess() {
-        @Nullable
         final MqttBrokerConnection connection = connectionRef.get();
         // Set up a scheduled future that will stop the discovery after the given time
         if (connection != null && discoverTime > 0) {
@@ -164,14 +161,12 @@ public class DiscoverComponents implements MqttMessageSubscriber {
     }
 
     private @Nullable Void subscribeFail(Throwable e) {
-        @Nullable
         final ScheduledFuture<?> scheduledFuture = this.stopDiscoveryFuture;
         if (scheduledFuture != null) { // Cancel timeout
             scheduledFuture.cancel(false);
             this.stopDiscoveryFuture = null;
         }
         this.discoveredListener = null;
-        @Nullable
         final MqttBrokerConnection connection = connectionRef.get();
         if (connection != null) {
             this.topics.parallelStream().forEach(t -> connection.unsubscribe(t, this));

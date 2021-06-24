@@ -67,7 +67,6 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
                         .stateTopic(channelConfiguration.state_topic, channelConfiguration.getValueTemplate())//
                         .build();
 
-        @Nullable
         String command_topic = channelConfiguration.command_topic;
         if (command_topic != null) {
             buildChannel(switchDisarmChannelID, new TextValue(new String[] { channelConfiguration.payload_disarm }),

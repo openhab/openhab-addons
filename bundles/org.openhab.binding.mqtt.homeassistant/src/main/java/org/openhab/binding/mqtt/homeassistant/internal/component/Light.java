@@ -148,7 +148,6 @@ public class Light extends AbstractComponent<Light.ChannelConfiguration> impleme
      */
     @Override
     public void updateChannelState(ChannelUID channelUID, State value) {
-        @Nullable
         ChannelStateUpdateListener listener = channelStateUpdateListener;
         if (listener != null) {
             listener.updateChannelState(colorChannel.getChannelUID(), value);
@@ -160,7 +159,6 @@ public class Light extends AbstractComponent<Light.ChannelConfiguration> impleme
      */
     @Override
     public void postChannelCommand(ChannelUID channelUID, Command value) {
-        @Nullable
         ChannelStateUpdateListener listener = channelStateUpdateListener;
         if (listener != null) {
             listener.postChannelCommand(colorChannel.getChannelUID(), value);
@@ -172,7 +170,6 @@ public class Light extends AbstractComponent<Light.ChannelConfiguration> impleme
      */
     @Override
     public void triggerChannel(ChannelUID channelUID, String eventPayload) {
-        @Nullable
         ChannelStateUpdateListener listener = channelStateUpdateListener;
         if (listener != null) {
             listener.triggerChannel(colorChannel.getChannelUID(), eventPayload);

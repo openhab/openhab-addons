@@ -188,7 +188,6 @@ public class HaID {
      * @return group id
      */
     public String getGroupId(@Nullable final String uniqueId) {
-        @Nullable
         String result = uniqueId;
 
         // the null test is only here so the compile knows, result is not null afterwards

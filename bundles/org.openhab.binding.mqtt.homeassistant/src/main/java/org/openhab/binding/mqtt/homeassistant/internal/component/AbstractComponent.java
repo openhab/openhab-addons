@@ -86,7 +86,6 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
         this.configSeen = false;
 
-        @Nullable
         String availability_topic = this.channelConfiguration.getAvailabilityTopic();
         if (availability_topic != null) {
             componentConfiguration.getTracker().addAvailabilityTopic(availability_topic,

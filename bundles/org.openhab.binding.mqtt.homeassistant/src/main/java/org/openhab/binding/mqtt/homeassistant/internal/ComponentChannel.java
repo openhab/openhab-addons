@@ -152,8 +152,7 @@ public class ComponentChannel {
         public Builder stateTopic(@Nullable String state_topic, @Nullable String... templates) {
             this.state_topic = state_topic;
             if (state_topic != null && !state_topic.isBlank()) {
-                for (@Nullable
-                String template : templates) {
+                for (String template : templates) {
                     if (template != null && !template.isBlank()) {
                         this.templateIn = template;
                         break;
@@ -220,7 +219,6 @@ public class ComponentChannel {
                             .withCommandTopic(command_topic).makeTrigger(trigger).build(),
                     channelUID, valueState, channelStateUpdateListener, commandFilter);
 
-            @Nullable
             String localStateTopic = state_topic;
             if (localStateTopic == null || localStateTopic.isBlank() || this.trigger) {
                 type = ChannelTypeBuilder.trigger(channelTypeUID, label)
@@ -242,16 +240,13 @@ public class ComponentChannel {
             ComponentChannel result = new ComponentChannel(channelUID, channelState, channel, type, channelTypeUID,
                     channelStateUpdateListener);
 
-            @Nullable
             TransformationServiceProvider transformationProvider = component.getTransformationServiceProvider();
 
-            @Nullable
             final String templateIn = this.templateIn;
             if (templateIn != null && transformationProvider != null) {
                 channelState
                         .addTransformation(new ChannelStateTransformation(JINJA, templateIn, transformationProvider));
             }
-            @Nullable
             final String templateOut = this.templateOut;
             if (templateOut != null && transformationProvider != null) {
                 channelState.addTransformationOut(

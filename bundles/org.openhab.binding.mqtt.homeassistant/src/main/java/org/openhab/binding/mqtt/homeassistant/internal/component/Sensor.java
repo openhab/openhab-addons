@@ -58,8 +58,6 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
         super(componentConfiguration, ChannelConfiguration.class);
 
         Value value;
-
-        @Nullable
         String uom = channelConfiguration.unit_of_measurement;
 
         if (uom != null && !uom.isBlank()) {

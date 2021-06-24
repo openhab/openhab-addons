@@ -51,7 +51,6 @@ public class OffDelayUpdateStateListener extends ChannelStateUpdateListenerProxy
     public void updateChannelState(final ChannelUID channelUID, State state) {
         super.updateChannelState(channelUID, state);
 
-        @Nullable
         ScheduledFuture<?> newDelay = null;
 
         if (OnOffType.ON == state) {

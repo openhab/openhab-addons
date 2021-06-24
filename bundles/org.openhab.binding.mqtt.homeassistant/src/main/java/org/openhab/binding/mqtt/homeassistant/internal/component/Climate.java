@@ -138,10 +138,8 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
     public Climate(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        @Nullable
         BigDecimal minTemp = channelConfiguration.min_temp != null ? BigDecimal.valueOf(channelConfiguration.min_temp)
                 : null;
-        @Nullable
         BigDecimal maxTemp = channelConfiguration.max_temp != null ? BigDecimal.valueOf(channelConfiguration.max_temp)
                 : null;
         float precision = channelConfiguration.precision != null ? channelConfiguration.precision
@@ -149,12 +147,10 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                         : DEFAULT_CELSIUM_PRECISION);
         final ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
 
-        @Nullable
         ComponentChannel actionChannel = buildOptionalChannel(ACTION_CH_ID,
                 new TextValue(ACTION_MODES.toArray(new String[0])), updateListener, null, null,
                 channelConfiguration.action_template, channelConfiguration.action_topic, null);
 
-        @Nullable
         final Predicate<Command> commandFilter = channelConfiguration.send_if_off ? null
                 : getCommandFilter(actionChannel);
 

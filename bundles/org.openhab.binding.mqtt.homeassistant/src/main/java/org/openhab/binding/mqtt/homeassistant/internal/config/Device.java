@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.config;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.JsonAdapter;
@@ -23,6 +24,7 @@ import com.google.gson.annotations.JsonAdapter;
  *
  * @author Jochen Klein - Initial contribution
  */
+@NonNullByDefault
 public class Device {
     @JsonAdapter(ListOrStringDeserializer.class)
     protected @Nullable List<String> identifiers;
@@ -33,7 +35,6 @@ public class Device {
     protected @Nullable String sw_version;
 
     public @Nullable String getId() {
-        @Nullable
         List<String> identifiers = this.identifiers;
         return identifiers == null ? null : String.join("_", identifiers);
     }

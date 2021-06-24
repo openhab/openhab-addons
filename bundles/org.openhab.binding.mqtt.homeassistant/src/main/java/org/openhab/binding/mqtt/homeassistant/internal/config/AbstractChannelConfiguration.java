@@ -75,7 +75,6 @@ public abstract class AbstractChannelConfiguration {
     }
 
     public String getThingName() {
-        @Nullable
         String result = null;
 
         if (this.device != null) {
@@ -88,7 +87,6 @@ public abstract class AbstractChannelConfiguration {
     }
 
     public String getThingId(String defaultId) {
-        @Nullable
         String result = null;
         if (this.device != null) {
             result = this.device.getId();
@@ -100,22 +98,18 @@ public abstract class AbstractChannelConfiguration {
     }
 
     public Map<String, Object> appendToProperties(Map<String, Object> properties) {
-        @Nullable
         final Device device_ = device;
         if (device_ == null) {
             return properties;
         }
-        @Nullable
         final String manufacturer = device_.manufacturer;
         if (manufacturer != null) {
             properties.put(Thing.PROPERTY_VENDOR, manufacturer);
         }
-        @Nullable
         final String model = device_.model;
         if (model != null) {
             properties.put(Thing.PROPERTY_MODEL_ID, model);
         }
-        @Nullable
         final String sw_version = device_.sw_version;
         if (sw_version != null) {
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, sw_version);
