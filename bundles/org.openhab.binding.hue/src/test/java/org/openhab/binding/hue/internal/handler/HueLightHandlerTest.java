@@ -400,8 +400,7 @@ public class HueLightHandlerTest {
 
         long fadeTime = 400;
 
-        HueLightHandler hueLightHandler = new HueLightHandler(mockThing,
-                mock(HueStateDescriptionProvider.class)) {
+        HueLightHandler hueLightHandler = new HueLightHandler(mockThing, mock(HueStateDescriptionProvider.class)) {
             @Override
             protected synchronized HueClient getHueClient() {
                 return mockClient;
