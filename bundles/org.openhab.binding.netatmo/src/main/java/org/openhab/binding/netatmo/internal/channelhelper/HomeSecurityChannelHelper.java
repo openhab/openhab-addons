@@ -66,7 +66,7 @@ public class HomeSecurityChannelHelper extends AbstractChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
+    protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
         if (CHANNEL_HOME_PERSONCOUNT.equals(channelId)) {
             return persons != -1 ? new DecimalType(persons) : UnDefType.UNDEF;
         } else if (CHANNEL_HOME_UNKNOWNCOUNT.equals(channelId)) {

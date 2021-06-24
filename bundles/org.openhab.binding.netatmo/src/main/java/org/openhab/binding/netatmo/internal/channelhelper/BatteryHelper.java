@@ -41,16 +41,17 @@ public class BatteryHelper extends AbstractChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
+    protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
         if (naThing instanceof NAModule) {
             NAModule module = (NAModule) naThing;
             int percent = module.getBatteryPercent();
-            if (CHANNEL_VALUE.equals(channelId)) {
-                return percent >= 0 ? new DecimalType(percent) : UnDefType.NULL;
-            } else if (CHANNEL_LOW_BATTERY.equals(channelId)) {
-                return percent >= 0 ? OnOffType.from(percent < 20) : UnDefType.NULL;
-            } else if (CHANNEL_BATTERY_STATUS.equals(channelId)) {
-                return toStringType(module.getBatteryState());
+            switch (channelId) {
+                case CHANNEL_VALUE:
+                    return percent >= 0 ? new DecimalType(percent) : UnDefType.NULL;
+                case CHANNEL_LOW_BATTERY:
+                    return percent >= 0 ? OnOffType.from(percent < 20) : UnDefType.NULL;
+                case CHANNEL_BATTERY_STATUS:
+                    return toStringType(module.getBatteryState());
             }
         }
         return null;

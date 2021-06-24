@@ -40,7 +40,7 @@ import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.dto.NAWebhookEvent;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
-import org.openhab.binding.netatmo.internal.handler.NetatmoEventDeviceHandler;
+import org.openhab.binding.netatmo.internal.handler.DeviceWithEventHandler;
 import org.openhab.binding.netatmo.internal.utils.BindingUtils;
 import org.openhab.core.config.core.Configuration;
 import org.osgi.service.component.ComponentContext;
@@ -65,7 +65,7 @@ public class NetatmoServlet extends HttpServlet {
     private static final long serialVersionUID = -354583910860541214L;
 
     private final Logger logger = LoggerFactory.getLogger(NetatmoServlet.class);
-    private final Map<String, NetatmoEventDeviceHandler> dataListeners = new ConcurrentHashMap<>();
+    private final Map<String, DeviceWithEventHandler> dataListeners = new ConcurrentHashMap<>();
     private final HttpService httpService;
     private boolean hookSet = false;
     private @Nullable SecurityApi api;
@@ -133,14 +133,18 @@ public class NetatmoServlet extends HttpServlet {
                 logger.debug("Event transmitted from restService : {}", data);
                 NAWebhookEvent event = apiBridge.deserialize(NAWebhookEvent.class, data);
                 List<String> tobeNotified = collectNotified(event);
-                dataListeners.keySet().stream().filter(tobeNotified::contains)
-                        .forEach(id -> dataListeners.get(id).setEvent(event));
+                dataListeners.keySet().stream().filter(tobeNotified::contains).forEach(id -> {
+                    DeviceWithEventHandler module = dataListeners.get(id);
+                    if (module != null) {
+                        module.setNewData(event);
+                    }
+                });
             }
             resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
             resp.setContentType(MediaType.APPLICATION_JSON);
             resp.setHeader("Access-Control-Allow-Origin", "*");
             resp.setHeader("Access-Control-Allow-Methods", HttpMethod.POST);
-            resp.setHeader("Access-Control-Max-Age", "3600");
+            resp.setIntHeader("Access-Control-Max-Age", 3600);
             resp.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             resp.getWriter().write("");
         }
@@ -157,11 +161,11 @@ public class NetatmoServlet extends HttpServlet {
         return result.stream().distinct().collect(Collectors.toList());
     }
 
-    public void registerDataListener(String id, NetatmoEventDeviceHandler dataListener) {
+    public void registerDataListener(String id, DeviceWithEventHandler dataListener) {
         dataListeners.put(id, dataListener);
     }
 
-    public void unregisterDataListener(NetatmoEventDeviceHandler dataListener) {
+    public void unregisterDataListener(DeviceWithEventHandler dataListener) {
         dataListeners.entrySet().forEach(entry -> {
             if (entry.getValue().equals(dataListener)) {
                 dataListeners.remove(entry.getKey());

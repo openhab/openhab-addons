@@ -38,7 +38,7 @@ public class RainChannelHelper extends AbstractChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetDashboard(NADashboard dashboard, String channelId) {
+    protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
         switch (channelId) {
             case CHANNEL_VALUE:
                 return toQuantityType(dashboard.getRain(), MeasureClass.RAIN_INTENSITY);

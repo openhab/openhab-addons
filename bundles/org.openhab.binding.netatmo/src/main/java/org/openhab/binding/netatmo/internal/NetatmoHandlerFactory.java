@@ -26,7 +26,7 @@ import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.SignalHelper;
-import org.openhab.binding.netatmo.internal.handler.NetatmoEventDeviceHandler;
+import org.openhab.binding.netatmo.internal.handler.DeviceWithEventHandler;
 import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -79,8 +79,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         Bridge bridge = (Bridge) thing;
         BaseThingHandler handler = ModuleType.asSet.stream().filter(mt -> mt.matches(thingTypeUID)).findFirst()
                 .map(mt -> buildThing(bridge, mt)).orElse(null);
-        if (handler instanceof NetatmoEventDeviceHandler) {
-            ((NetatmoEventDeviceHandler) handler).setWebHookServlet(webhookServlet);
+        if (handler instanceof DeviceWithEventHandler) {
+            ((DeviceWithEventHandler) handler).setWebHookServlet(webhookServlet);
         }
         return handler;
     }

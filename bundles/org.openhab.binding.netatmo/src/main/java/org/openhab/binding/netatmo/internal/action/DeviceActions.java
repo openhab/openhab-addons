@@ -14,7 +14,7 @@ package org.openhab.binding.netatmo.internal.action;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
+import org.openhab.binding.netatmo.internal.handler.DeviceHandler;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public class DeviceActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(DeviceActions.class);
 
-    private @Nullable NetatmoDeviceHandler handler;
+    private @Nullable DeviceHandler handler;
 
     public DeviceActions() {
         logger.trace("Netatmo Device actions service created");
@@ -40,8 +40,8 @@ public class DeviceActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof NetatmoDeviceHandler) {
-            this.handler = (NetatmoDeviceHandler) handler;
+        if (handler instanceof DeviceHandler) {
+            this.handler = (DeviceHandler) handler;
         }
     }
 
@@ -52,7 +52,7 @@ public class DeviceActions implements ThingActions {
 
     @RuleAction(label = "@text/reconnectApiLabel", description = "@text/reconnectApiDesc")
     public void reconnectApi() {
-        NetatmoDeviceHandler localHandler = handler;
+        DeviceHandler localHandler = handler;
         if (localHandler == null) {
             logger.debug("Handler not set for device thing actions.");
             return;

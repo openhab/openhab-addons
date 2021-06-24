@@ -25,6 +25,7 @@ import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
+import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAPerson;
 import org.openhab.binding.netatmo.internal.api.dto.NAWelcome;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
@@ -46,9 +47,9 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class CameraHandler extends NetatmoEventDeviceHandler {
+public class CameraHandler extends DeviceWithEventHandler {
     private final Logger logger = LoggerFactory.getLogger(CameraHandler.class);
-    private @Nullable CameraAddress cameraAddress;
+    protected @Nullable CameraAddress cameraAddress;
 
     public CameraHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             NetatmoDescriptionProvider descriptionProvider) {
@@ -64,40 +65,20 @@ public class CameraHandler extends NetatmoEventDeviceHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if ((command instanceof OnOffType) && (CHANNEL_CAMERA_IS_MONITORING.equals(channelUID.getIdWithoutGroup()))) {
-            String localCameraURL = getLocalCameraURL();
-            if (localCameraURL != null) {
-                tryApiCall(() -> apiBridge.getHomeApi().changeStatus(localCameraURL, command == OnOffType.ON));
+            CameraAddress camAddress = cameraAddress;
+            if (camAddress != null) {
+                String localURL = camAddress.getLocalURL();
+                if (localURL != null) {
+                    tryApiCall(() -> apiBridge.getHomeApi().changeStatus(localURL, command == OnOffType.ON));
+                }
             }
         } else {
             super.handleCommand(channelUID, command);
         }
     }
 
-    protected @Nullable String getLocalCameraURL() {
-        if (naThing instanceof NAWelcome) {
-            NAWelcome camera = (NAWelcome) naThing;
-            String vpn = camera.getVpnUrl();
-            if (vpn != null) {
-                CameraAddress address = cameraAddress;
-                // The local address is (re-)requested when it wasn't already determined or when
-                // the vpn address was changed.
-                if (address == null || address.isVpnURLChanged(vpn)) {
-                    String localUrl = pingVpnUrl(vpn);
-                    if (localUrl != null) {
-                        address = new CameraAddress(vpn, localUrl);
-                        cameraAddress = address;
-                        return address.getLocalURL();
-                    }
-                } else {
-                    return address.getLocalURL();
-                }
-            }
-        }
-        return null;
-    }
-
     @Override
-    public void setEvent(NAEvent event) {
+    protected void internalSetNewEvent(NAEvent event) {
         logger.debug("Updating camera with event : {}", event.toString());
         updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_TYPE, toStringType(event.getEventType()));
         updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_MESSAGE, toStringType(event.getMessage()));
@@ -111,7 +92,6 @@ public class CameraHandler extends NetatmoEventDeviceHandler {
             updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SNAPSHOT, toRawType(url));
             updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_SNAPSHOT_URL, toStringType(url));
         });
-
         if (event instanceof NAHomeEvent) {
             NAHomeEvent homeEvent = (NAHomeEvent) event;
             updateIfLinked(GROUP_WELCOME_EVENT, CHANNEL_EVENT_VIDEO_STATUS, toStringType(homeEvent.getVideoStatus()));
@@ -120,20 +100,24 @@ public class CameraHandler extends NetatmoEventDeviceHandler {
         }
     }
 
-    private @Nullable String getStreamURL(@Nullable String videoId) {
-        if (naThing instanceof NAWelcome) {
-            NAWelcome camera = (NAWelcome) naThing;
+    @Override
+    public void setNewData(NAObject newData) {
+        if (newData instanceof NAWelcome) {
+            NAWelcome camera = (NAWelcome) newData;
             String vpn = camera.getVpnUrl();
-            if (videoId != null && vpn != null) {
-                StringBuilder result = new StringBuilder(String.format("%s/vod/%s/index", vpn, videoId));
-                if (camera.isLocal()) {
-                    result.append("_local");
+            if (vpn != null) {
+                CameraAddress address = cameraAddress;
+                if (address == null || address.vpnURLChanged(vpn)) {
+                    cameraAddress = new CameraAddress(vpn, camera.isLocal(), pingVpnUrl(vpn));
                 }
-                result.append(".m3u8");
-                return result.toString();
             }
         }
-        return null;
+        super.setNewData(newData);
+    }
+
+    private @Nullable String getStreamURL(@Nullable String videoId) {
+        CameraAddress camAddress = cameraAddress;
+        return (camAddress != null && videoId != null) ? camAddress.getStreamUrl(videoId) : null;
     }
 
     private @Nullable String pingVpnUrl(String vpnUrl) {

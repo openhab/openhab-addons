@@ -28,8 +28,8 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class ListBodyResponse<T extends NAObject> {
-    @SerializedName(value = "devices", alternate = { "homes", "events-list" })
-    private @NonNullByDefault({}) NAObjectMap<T> elements;
+    @SerializedName(value = "devices", alternate = { "homes", "events_list" })
+    private NAObjectMap<T> elements = new NAObjectMap<>();
 
     public @Nullable T getElement(String id) {
         return elements.get(id);

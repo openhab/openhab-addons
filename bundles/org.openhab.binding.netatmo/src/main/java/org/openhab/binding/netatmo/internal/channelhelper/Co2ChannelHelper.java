@@ -38,7 +38,7 @@ public class Co2ChannelHelper extends AbstractChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetDashboard(NADashboard dashboard, String channelId) {
+    protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
         return CHANNEL_VALUE.equals(channelId) ? toQuantityType(dashboard.getCo2(), MeasureClass.CO2) : null;
     }
 }

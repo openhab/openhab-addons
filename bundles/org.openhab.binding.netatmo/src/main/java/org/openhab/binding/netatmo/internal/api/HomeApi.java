@@ -43,7 +43,7 @@ public class HomeApi extends RestManager {
 
     public Collection<NAHome> getHomeData(String homeId) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_GETHOME);
-        uriBuilder.queryParam(PARM_MODULEID, homeId);
+        uriBuilder.queryParam(PARM_HOMEID, homeId);
         return get(uriBuilder, NAHomesDataResponse.class).getBody().getElementsCollection();
     }
 

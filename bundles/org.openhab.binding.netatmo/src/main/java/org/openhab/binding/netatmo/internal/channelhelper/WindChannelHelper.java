@@ -38,7 +38,7 @@ public class WindChannelHelper extends AbstractChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetDashboard(NADashboard dashboard, String channelId) {
+    protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
         switch (channelId) {
             case CHANNEL_WIND_ANGLE:
                 return toQuantityType(dashboard.getWindAngle(), MeasureClass.WIND_ANGLE);

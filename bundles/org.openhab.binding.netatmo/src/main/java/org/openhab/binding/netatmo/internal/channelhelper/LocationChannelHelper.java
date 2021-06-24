@@ -41,7 +41,7 @@ public class LocationChannelHelper extends AbstractChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
+    protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
         if (CHANNEL_LOCATION.equals(channelId)) {
             PointType point = null;
             if (naThing instanceof NAHome) {

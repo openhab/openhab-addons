@@ -112,7 +112,7 @@ public class SecurityApi extends RestManager {
     private class NALastEventsDataResponse extends ApiResponse<ListBodyResponse<NAHomeEvent>> {
     }
 
-    public Collection<NAHomeEvent> getLastEventOf(String homeId, String personId) throws NetatmoException {
+    public Collection<NAHomeEvent> getLastEventsOf(String homeId, String personId) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_GETLASTEVENT);
         uriBuilder.queryParam(PARM_HOMEID, homeId);
         uriBuilder.queryParam(PARM_PERSONID, personId);

@@ -83,14 +83,10 @@ public class WeatherApi extends RestManager {
 
     public @Nullable Object getMeasurements(String deviceId, @Nullable String moduleId, MeasureScale scale,
             MeasureType type, MeasureLimit limit) throws NetatmoException {
-        NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale,
-                (limit.toString() + "_" + type.toString()).toLowerCase(), 0, 0);
-        return result.getSingleValue();
-    }
+        String queryLimit = (limit != MeasureLimit.NONE) ? limit.toString() + "_" : "";
+        queryLimit += type.toString();
 
-    public @Nullable Object getMeasurements(String deviceId, @Nullable String moduleId, MeasureScale scale,
-            MeasureType type) throws NetatmoException {
-        NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, type.toString().toLowerCase(), 0, 0);
+        NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, queryLimit.toLowerCase(), 0, 0);
         return result.getSingleValue();
     }
 

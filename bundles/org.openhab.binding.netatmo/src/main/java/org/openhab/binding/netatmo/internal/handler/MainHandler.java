@@ -31,7 +31,7 @@ import org.openhab.core.thing.Bridge;
  *
  */
 @NonNullByDefault
-public class MainHandler extends NetatmoDeviceHandler {
+public class MainHandler extends DeviceWithMeasureHandler {
 
     public MainHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             NetatmoDescriptionProvider descriptionProvider) {

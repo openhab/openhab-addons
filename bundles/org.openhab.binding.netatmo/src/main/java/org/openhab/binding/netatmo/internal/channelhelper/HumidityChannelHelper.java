@@ -40,7 +40,7 @@ public class HumidityChannelHelper extends AbstractChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetDashboard(NADashboard dashboard, String channelId) {
+    protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
         return CHANNEL_VALUE.equals(channelId) ? toQuantityType(dashboard.getHumidity(), MeasureClass.HUMIDITY)
                 : getDerived(dashboard.getTemperature(), dashboard.getHumidity(), channelId);
     }

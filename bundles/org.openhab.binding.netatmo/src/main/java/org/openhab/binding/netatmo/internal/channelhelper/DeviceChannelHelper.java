@@ -37,7 +37,7 @@ public class DeviceChannelHelper extends AbstractChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
+    protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
         return CHANNEL_LAST_SEEN.equals(channelId) ? ChannelTypeUtils.toDateTimeType(naThing.getLastSeen()) : null;
     }
 }

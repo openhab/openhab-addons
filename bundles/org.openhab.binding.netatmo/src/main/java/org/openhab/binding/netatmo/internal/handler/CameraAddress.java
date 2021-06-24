@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
-import java.util.Objects;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -25,11 +23,13 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class CameraAddress {
 
-    private final String vpnURL;
-    private final String localURL;
+    private final String vpnURL; // https://prodvpn-eu-2.netatmo.net/restricted/10.255.39.58/f48daf5f0e366bc8f9c397fbc73220e7/MTYyNDQ1NjgwMDrf1ChChrvaKZolVvWtHuuxT8_EiA,,
+    private final boolean local;
+    private @Nullable String localURL; // http://192.168.0.65/f48daf5f0e366bc8f9c397fbc73220e7
 
-    CameraAddress(final String vpnURL, final String localURL) {
+    CameraAddress(String vpnURL, boolean isLocal, @Nullable String localURL) {
         this.vpnURL = vpnURL;
+        this.local = isLocal;
         this.localURL = localURL;
     }
 
@@ -37,34 +37,25 @@ public class CameraAddress {
         return vpnURL;
     }
 
-    public String getLocalURL() {
+    public @Nullable String getLocalURL() {
         return localURL;
+    }
+
+    public boolean isLocal() {
+        return local;
+    }
+
+    public String getStreamUrl(@Nullable String videoId) {
+        return String.format("%s/vod/%s/%s.m3u8", vpnURL, videoId, local ? "index_local" : "index");
     }
 
     /**
      * Checks if the VPN URL was changed / isn't equal to the given VPN-URL.
-     * 
+     *
      * @param vpnURL old / known VPN URL
      * @return true, when the VPN URL isn't equal given VPN URL, otherwise false
      */
-    public boolean isVpnURLChanged(String vpnURL) {
-        return !getVpnURL().equals(vpnURL);
-    }
-
-    @Override
-    public boolean equals(@Nullable Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (object == null || getClass() != object.getClass()) {
-            return false;
-        }
-        CameraAddress that = (CameraAddress) object;
-        return vpnURL.equals(that.vpnURL) && localURL.equals(that.localURL);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(vpnURL, localURL);
+    public boolean vpnURLChanged(String vpnURL) {
+        return !vpnURL.equals(vpnURL);
     }
 }

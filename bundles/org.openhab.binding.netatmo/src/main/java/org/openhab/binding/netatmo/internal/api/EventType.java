@@ -34,7 +34,10 @@ public enum EventType {
     PERSON_AWAY(Set.of(ModuleType.NAPerson)),
 
     @SerializedName("outdoor") // When the Outdoor Camera detects a human, a car or an animal
-    OUTDOOR(Set.of(ModuleType.NOC)),
+    OUTDOOR(Set.of(ModuleType.NOC, ModuleType.NDB)),
+
+    @SerializedName("daily_summary") // When the Outdoor Camera video summary of the last 24 hours is available
+    DAILY_SUMMARY(Set.of(ModuleType.NOC)),
 
     @SerializedName("movement") // When the Indoor Camera detects motion
     MOVEMENT(Set.of(ModuleType.NACamera)),

@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
 
 import java.util.Set;
 
@@ -20,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
@@ -40,6 +40,18 @@ public class SignalHelper extends AbstractChannelHelper {
         this.levels = signalLevels;
     }
 
+    @Override
+    protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
+        int status = naThing.getRadioStatus();
+        switch (channelId) {
+            case CHANNEL_SIGNAL_STRENGTH:
+                return new DecimalType(getSignalStrength(status));
+            case CHANNEL_VALUE:
+                return toQuantityType(status, Units.DECIBEL_MILLIWATTS);
+        }
+        return null;
+    }
+
     private int getSignalStrength(int signalLevel) {
         int level;
         for (level = 0; level < levels.length; level++) {
@@ -48,12 +60,5 @@ public class SignalHelper extends AbstractChannelHelper {
             }
         }
         return level;
-    }
-
-    @Override
-    protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
-        int status = naThing.getRadioStatus();
-        return CHANNEL_SIGNAL_STRENGTH.equals(channelId) ? new DecimalType(getSignalStrength(status))
-                : CHANNEL_VALUE.equals(channelId) ? new QuantityType<>(status, Units.DECIBEL_MILLIWATTS) : null;
     }
 }

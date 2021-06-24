@@ -34,9 +34,8 @@ public class NetatmoDescriptionProvider extends BaseDynamicStateDescriptionProvi
     public NetatmoDescriptionProvider(final @Reference EventPublisher eventPublisher,
             final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry,
             final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
-        // Implements PR #10884
-        // TODO : uncomment this.eventPublisher = eventPublisher;
-        // TODO : uncomment this.itemChannelLinkRegistry = itemChannelLinkRegistry;
+        this.eventPublisher = eventPublisher;
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
     }
 }

@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 
 @NonNullByDefault
-public class RoomHandler extends NetatmoDeviceHandler {
+public class RoomHandler extends DeviceHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RoomHandler.class);
 

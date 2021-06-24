@@ -30,7 +30,7 @@ import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 import org.openhab.core.thing.Bridge;
 
 /**
- * {@link NetatmoEventDeviceHandler} is the base class for handlers
+ * {@link DeviceWithEventHandler} is the base class for handlers
  * subject to receive event notifications. This class registers to webhookservlet so
  * it can be notified when an event arrives.
  *
@@ -38,7 +38,7 @@ import org.openhab.core.thing.Bridge;
  *
  */
 @NonNullByDefault
-public abstract class NetatmoEventDeviceHandler extends NetatmoDeviceHandler {
+public abstract class DeviceWithEventHandler extends DeviceHandler {
 
     class LastEventTimeHelper {
         private @Nullable ZonedDateTime maxEventTime;
@@ -59,10 +59,10 @@ public abstract class NetatmoEventDeviceHandler extends NetatmoDeviceHandler {
         }
     }
 
-    protected final LastEventTimeHelper lastEventTime = new LastEventTimeHelper();
+    private final LastEventTimeHelper lastEventTime = new LastEventTimeHelper();
     private @Nullable NetatmoServlet webhookServlet;
 
-    public NetatmoEventDeviceHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
+    public DeviceWithEventHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             NetatmoDescriptionProvider descriptionProvider) {
         super(bridge, channelHelpers, apiBridge, descriptionProvider);
     }
@@ -85,19 +85,35 @@ public abstract class NetatmoEventDeviceHandler extends NetatmoDeviceHandler {
         super.dispose();
     }
 
-    public abstract void setEvent(NAEvent event);
-
     @Override
-    protected void notifyListener(String id, NAObject newData) {
-        NetatmoDeviceHandler listener = getDataListeners().get(id);
-        if (listener instanceof NetatmoEventDeviceHandler && newData instanceof NAEvent) {
+    public void setNewData(NAObject newData) {
+        if (newData instanceof NAEvent) {
             NAEvent event = (NAEvent) newData;
             if (event.getTime().isAfter(lastEventTime.get())) {
-                ((NetatmoEventDeviceHandler) listener).setEvent(event);
                 lastEventTime.set(event.getTime());
+                internalSetNewEvent(event);
+            }
+        }
+        super.setNewData(newData);
+    }
+
+    protected abstract void internalSetNewEvent(NAEvent event);
+
+    @Override
+    protected void updateChildModules(NAObject newData) {
+        if (newData instanceof NAEvent) {
+            NAEvent event = (NAEvent) newData;
+            DeviceHandler person = getDataListeners().get(event.getPersonId());
+            if (person != null) {
+                person.setNewData(event);
+            }
+            DeviceHandler camera = getDataListeners().get(event.getCameraId());
+            if (camera != null) {
+                camera.setNewData(event);
+
             }
         } else {
-            super.notifyListener(id, newData);
+            super.updateChildModules(newData);
         }
     }
 

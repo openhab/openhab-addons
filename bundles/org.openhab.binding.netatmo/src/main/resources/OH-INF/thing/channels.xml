@@ -15,6 +15,12 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>A contact representing on/off or open/closed</label>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="snapshot">
 		<item-type>Image</item-type>
 		<label>Event Snapshot</label>

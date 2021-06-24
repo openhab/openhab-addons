@@ -38,13 +38,14 @@ public class PlugChannelHelper extends AbstractChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
+    protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
         if (naThing instanceof NAPlug) {
             NAPlug plug = (NAPlug) naThing;
-            if (CHANNEL_CONNECTED_BOILER.equals(channelId)) {
-                return plug.getPlugConnectedBoiler();
-            } else if (CHANNEL_LAST_BILAN.equals(channelId)) {
-                return toDateTimeType(plug.getLastBilan());
+            switch (channelId) {
+                case CHANNEL_CONNECTED_BOILER:
+                    return plug.getPlugConnectedBoiler();
+                case CHANNEL_LAST_BILAN:
+                    return toDateTimeType(plug.getLastBilan());
             }
         }
         return null;

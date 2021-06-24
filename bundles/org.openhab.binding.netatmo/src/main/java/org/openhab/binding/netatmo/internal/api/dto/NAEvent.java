@@ -31,7 +31,7 @@ import org.openhab.binding.netatmo.internal.api.EventType;
 public abstract class NAEvent extends NAObject {
     protected EventType type = EventType.UNKNOWN;
     private @NonNullByDefault({}) String cameraId;
-    private @NonNullByDefault({}) String message;
+    private @Nullable String message;
     protected int subType = -1;
 
     public EventType getEventType() {
@@ -43,7 +43,7 @@ public abstract class NAEvent extends NAObject {
     }
 
     public String getMessage() {
-        return message.replace("<b>", "").replace("</b>", "");
+        return (message != null ? message.replace("<b>", "").replace("</b>", "") : "");
     }
 
     public abstract ZonedDateTime getTime();

@@ -30,7 +30,7 @@ import org.openhab.core.thing.Bridge;
  *
  */
 @NonNullByDefault
-public class HomeCoachHandler extends NetatmoDeviceHandler {
+public class HomeCoachHandler extends DeviceHandler {
 
     public HomeCoachHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             NetatmoDescriptionProvider descriptionProvider) {

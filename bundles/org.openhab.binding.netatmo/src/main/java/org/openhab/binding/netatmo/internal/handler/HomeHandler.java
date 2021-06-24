@@ -16,13 +16,15 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.NetatmoCalendarUtils.getSetpointEndTimeFromNow;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.NetatmoDescriptionProvider;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.EnergyApi;
@@ -35,8 +37,11 @@ import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
+import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAPerson;
+import org.openhab.binding.netatmo.internal.api.dto.NARoom;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
+import org.openhab.binding.netatmo.internal.api.dto.NAWelcome;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -56,15 +61,14 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class HomeHandler extends NetatmoEventDeviceHandler {
+public class HomeHandler extends DeviceWithEventHandler {
     private final Logger logger = LoggerFactory.getLogger(HomeHandler.class);
 
-    // private List<NAPerson> knownPersons = List.of();
-    // private NAObjectMap<NAWelcome> cameras = new NAObjectMap<NAWelcome>();
     private @NonNullByDefault({}) HomeApi homeApi;
     private @NonNullByDefault({}) NAHome home;
     private Optional<EnergyApi> energyApi = Optional.empty();
     private Optional<SecurityApi> securityApi = Optional.empty();
+    private int setPointDefaultDuration = -1;
 
     public HomeHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             NetatmoDescriptionProvider descriptionProvider) {
@@ -94,7 +98,6 @@ public class HomeHandler extends NetatmoEventDeviceHandler {
 
             ThingBuilder builder = editThing().withoutChannels(toBeRemovedChannels);
             updateThing(builder.build());
-
         } catch (NetatmoException e) {
             logger.warn("Error retreiving home detailed informations : {}", e);
         }
@@ -107,7 +110,7 @@ public class HomeHandler extends NetatmoEventDeviceHandler {
      * @return a list of all {@link Channel}s in the given channel group
      */
     private List<Channel> channelsOfGroup(String channelGroupId) {
-        logger.debug("Removing channel group '{}' from thing '{}'.", channelGroupId, getThing().getUID());
+        logger.debug("Selecting channels of group '{}' from thing '{}'.", channelGroupId, getThing().getUID());
         return getThing().getChannelsOfGroup(channelGroupId);
     }
 
@@ -130,11 +133,24 @@ public class HomeHandler extends NetatmoEventDeviceHandler {
                 logger.warn("Error getting homestatus : {}", e);
             }
         });
-        // securityApi.ifPresent(api -> {
-        // this.knownPersons = home.getKnownPersons();
-        // this.cameras = home.getCameras();
-        // });
+        securityApi.ifPresent(api -> {
+            home.getPersons().putAll(homeData.getPersons());
+            home.getCameras().putAll(homeData.getCameras());
+        });
         return home;
+    }
+
+    @Override
+    public void setNewData(NAObject newData) {
+        if (newData instanceof NAHome) {
+            NAHome home = (NAHome) newData;
+            this.setPointDefaultDuration = home.getThermSetpointDefaultDuration();
+        }
+        super.setNewData(newData);
+    }
+
+    @Override
+    protected void internalSetNewEvent(NAEvent event) {
     }
 
     @Override
@@ -160,27 +176,52 @@ public class HomeHandler extends NetatmoEventDeviceHandler {
     }
 
     @Override
-    protected void updateChildModules() {
-        super.updateChildModules();
-        if (naThing instanceof NAHome) {
-            NAHome localNaThing = (NAHome) naThing;
+    protected void updateChildModules(NAObject newData) {
+        super.updateChildModules(newData);
+        if (newData instanceof NAHome) {
+            NAHome homeData = (NAHome) newData;
             energyApi.ifPresent(api -> {
-                localNaThing.getRooms().forEach((k, v) -> notifyListener(k, v));
+                dataListeners.entrySet().forEach(listener -> {
+                    DeviceHandler child = listener.getValue();
+                    if (child instanceof RoomHandler) {
+                        RoomHandler room = (RoomHandler) child;
+                        NARoom roomData = homeData.getRooms().get(listener.getKey());
+                        if (roomData != null) {
+                            room.setNewData(roomData);
+                        }
+                    }
+                });
             });
             securityApi.ifPresent(api -> {
-                dataListeners.values().stream().filter(PersonHandler.class::isInstance).map(PersonHandler.class::cast)
-                        .forEach(person -> person.setCameras(localNaThing.getCameras()));
-                dataListeners.values().stream().filter(CameraHandler.class::isInstance).map(CameraHandler.class::cast)
-                        .forEach(person -> person.setPersons(localNaThing.getKnownPersons()));
-                localNaThing.getEvents().stream().filter(e -> e.getTime().isAfter(lastEventTime.get()))
-                        .sorted(Comparator.comparing(NAHomeEvent::getTime)).forEach(event -> {
-                            String personId = event.getPersonId();
-                            if (personId != null) {
-                                notifyListener(personId, event);
-                            }
-                            notifyListener(event.getCameraId(), event);
-                            lastEventTime.set(event.getTime());
-                        });
+                dataListeners.entrySet().forEach(listener -> {
+                    DeviceHandler child = listener.getValue();
+                    if (child instanceof PersonHandler) {
+                        PersonHandler person = (PersonHandler) child;
+                        person.setCameras(homeData.getModules());
+                        NAPerson personData = homeData.getPersons().get(listener.getKey());
+                        if (personData != null) {
+                            person.setNewData(personData);
+                        }
+                    } else if (child instanceof CameraHandler) {
+                        CameraHandler camera = (CameraHandler) child;
+                        camera.setPersons(homeData.getKnownPersons());
+                        NAWelcome cameraData = homeData.getCameras().get(listener.getKey());
+                        if (cameraData != null) {
+                            camera.setNewData(cameraData);
+                        }
+                    }
+                });
+                /*
+                 * localNaThing.getEvents().stream()// .filter(e -> e.getTime().isAfter(lastEventTime.get()))
+                 * .sorted(Comparator.comparing(NAHomeEvent::getTime)).forEach(event -> {
+                 * String personId = event.getPersonId();
+                 * if (personId != null) {
+                 * notifyListener(personId, event);
+                 * }
+                 * notifyListener(event.getCameraId(), event);
+                 * lastEventTime.set(event.getTime());
+                 * });
+                 */
             });
         }
     }
@@ -192,11 +233,7 @@ public class HomeHandler extends NetatmoEventDeviceHandler {
     }
 
     public int getSetpointDefaultDuration() {
-        if (naThing instanceof NAHome) {
-            NAHome localNaThing = (NAHome) naThing;
-            return localNaThing.getThermSetpointDefaultDuration();
-        }
-        return -1;
+        return this.setPointDefaultDuration;
     }
 
     public void callSetPersonAway(String personId, boolean away) {
@@ -237,33 +274,34 @@ public class HomeHandler extends NetatmoEventDeviceHandler {
                 .collect(Collectors.toList());
     }
 
-    public List<NAHomeEvent> getLastEventOf(String personId) {
-        List<NAHomeEvent> events = new ArrayList<>();
-        securityApi.ifPresent(api -> {
+    public @Nullable NAHomeEvent getLastEventOf(String personId) {
+        if (securityApi.isPresent()) {
+            SecurityApi api = securityApi.get();
             try {
-                events.addAll(api.getLastEventOf(config.id, personId));
-            } catch (NetatmoException e) {
-                logger.warn("Error retrieving last events of person '{}' : {}", personId, e.getMessage());
+                Collection<NAHomeEvent> events = api.getLastEventsOf(config.id, personId);
+                return events.isEmpty() ? null : events.iterator().next();
+            } catch (NetatmoException | NoSuchElementException e) {
+                logger.warn("Error retrieving last events of person '{}' : {}", personId, e);
             }
-        });
-        return events;
+        }
+        return null;
     }
 
-    @Override
-    public void setEvent(NAEvent event) {
-        // if (event instanceof NAWebhookEvent) {
-        // NAWebhookEvent whEvent = (NAWebhookEvent) event;
-        // Set<String> modules = new HashSet<>();
-        // if (whEvent.getEventType().appliesOn(ModuleType.NACamera)
-        // || whEvent.getEventType().appliesOn(ModuleType.NOC)) {
-        // modules.add(whEvent.getCameraId());
-        // }
-        // if (event.getEventType().appliesOn(ModuleType.NAPerson)) {
-        // modules.addAll(whEvent.getPersons().keySet());
-        // }
-        // modules.forEach(module -> notifyListener(module, whEvent));
-        // } else {
-        // super.setEvent(event);
-        // }
-    }
+    // @Override
+    // public void setEvent(NAEvent event) {
+    // if (event instanceof NAWebhookEvent) {
+    // NAWebhookEvent whEvent = (NAWebhookEvent) event;
+    // Set<String> modules = new HashSet<>();
+    // if (whEvent.getEventType().appliesOn(ModuleType.NACamera)
+    // || whEvent.getEventType().appliesOn(ModuleType.NOC)) {
+    // modules.add(whEvent.getCameraId());
+    // }
+    // if (event.getEventType().appliesOn(ModuleType.NAPerson)) {
+    // modules.addAll(whEvent.getPersons().keySet());
+    // }
+    // modules.forEach(module -> notifyListener(module, whEvent));
+    // } else {
+    // super.setEvent(event);
+    // }
+    // }
 }

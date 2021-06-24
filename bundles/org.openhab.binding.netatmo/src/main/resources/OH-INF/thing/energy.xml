@@ -39,11 +39,11 @@
 	<channel-group-type id="room-properties">
 		<label>Room status</label>
 		<channels>
-			<channel id="window-open" typeId="switch-ro">
+			<channel id="window-open" typeId="contact">
 				<label>Window Status</label>
-				<description>Indicates whether window open deteced or not</description>
+				<description>Indicates whether window open detected or not</description>
 			</channel>
-			<channel id="anticipating" typeId="switch-ro">
+			<channel id="anticipating" typeId="contact">
 				<label>Anticipated heating</label>
 			</channel>
 			<channel id="heating-power-request" typeId="room-heating-percent">
@@ -72,12 +72,12 @@
 		<label>Thermostat</label>
 		<channels>
 			<!-- channel id="temperature" typeId="system.outdoor-temperature"/ -->
-			<channel id="relay-status" typeId="switch-ro">
+			<channel id="relay-status" typeId="contact">
 				<label>Heating Status</label>
 				<description>Indicates whether the furnace is heating or not</description>
 			</channel>
 			<channel id="orientation" typeId="orientation"/>
-			<channel id="anticipating" typeId="switch-ro">
+			<channel id="anticipating" typeId="contact">
 				<label>Anticipated heating</label>
 			</channel>
 		</channels>

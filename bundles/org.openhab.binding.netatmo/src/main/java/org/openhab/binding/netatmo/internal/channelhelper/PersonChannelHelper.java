@@ -40,7 +40,7 @@ public class PersonChannelHelper extends AbstractChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
+    protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
         NAPerson naPerson = (NAPerson) naThing;
         if (CHANNEL_PERSON_AT_HOME.equals(channelId)) {
             return OnOffType.from(!naPerson.isOutOfSight());
@@ -48,11 +48,11 @@ public class PersonChannelHelper extends AbstractChannelHelper {
             return toDateTimeType(naPerson.getLastSeen());
         }
         NASnapshot avatar = naPerson.getFace();
-        return avatar != null ? internalGetAvatar(avatar, channelId) : null;
+        return avatar != null ? internalGetAvatar(avatar.getUrl(), channelId) : null;
     }
 
-    private State internalGetAvatar(NASnapshot avatar, String channelId) {
-        return CHANNEL_PERSON_AVATAR_URL.equals(channelId) ? toStringType(avatar.getUrl())
-                : CHANNEL_PERSON_AVATAR.equals(channelId) ? toRawType(avatar.getUrl()) : null;
+    private State internalGetAvatar(@Nullable String url, String channelId) {
+        return CHANNEL_PERSON_AVATAR_URL.equals(channelId) ? toStringType(url)
+                : CHANNEL_PERSON_AVATAR.equals(channelId) ? toRawType(url) : null;
     }
 }

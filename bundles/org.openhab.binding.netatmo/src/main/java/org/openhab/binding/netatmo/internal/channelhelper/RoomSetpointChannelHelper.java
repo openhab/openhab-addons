@@ -23,7 +23,6 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.api.dto.NARoom;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -42,17 +41,19 @@ public class RoomSetpointChannelHelper extends AbstractChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
-        NARoom room = (NARoom) naThing;
-        switch (channelId) {
-            case CHANNEL_VALUE:
-                return getCurrentSetpoint(room);
-            case CHANNEL_SETPOINT_MODE:
-                return new StringType(room.getThermSetpointMode().name());
-            case CHANNEL_SETPOINT_START_TIME:
-                return toDateTimeType(room.getThermSetpointStartTime());
-            case CHANNEL_SETPOINT_END_TIME:
-                return toDateTimeType(room.getThermSetpointEndTime());
+    protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
+        if (naThing instanceof NARoom) {
+            NARoom room = (NARoom) naThing;
+            switch (channelId) {
+                case CHANNEL_VALUE:
+                    return getCurrentSetpoint(room);
+                case CHANNEL_SETPOINT_MODE:
+                    return toStringType(room.getThermSetpointMode().name());
+                case CHANNEL_SETPOINT_START_TIME:
+                    return toDateTimeType(room.getThermSetpointStartTime());
+                case CHANNEL_SETPOINT_END_TIME:
+                    return toDateTimeType(room.getThermSetpointEndTime());
+            }
         }
         return null;
     }

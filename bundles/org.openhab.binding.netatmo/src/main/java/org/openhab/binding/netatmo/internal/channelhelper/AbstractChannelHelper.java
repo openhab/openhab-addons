@@ -30,33 +30,29 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public abstract class AbstractChannelHelper {
-    private @Nullable NAThing naThing;
+    private @Nullable NAThing data;
     private final Set<String> providedGroup;
-
-    public AbstractChannelHelper() {
-        this(Set.of());
-    }
 
     public AbstractChannelHelper(Set<String> providedGroup) {
         this.providedGroup = providedGroup;
     }
 
-    public void setNewData(NAThing naThing) {
-        this.naThing = naThing;
+    public void setNewData(NAThing data) {
+        this.data = data;
     }
 
-    public final @Nullable State getNAThingProperty(ChannelUID channelUID) {
+    public final @Nullable State getChannelState(ChannelUID channelUID) {
         State result = null;
-        NAThing module = this.naThing;
-        if (module != null) {
+        NAThing currentData = data;
+        if (currentData != null) {
             String channelId = channelUID.getIdWithoutGroup();
             String groupId = channelUID.getGroupId();
             if (providedGroup.isEmpty() || (groupId != null && providedGroup.contains(groupId))) {
-                result = internalGetProperty(module, channelId);
+                result = internalGetProperty(channelId, currentData);
                 if (result == null) {
-                    NADashboard dashboard = module.getDashboardData();
+                    NADashboard dashboard = currentData.getDashboardData();
                     if (dashboard != null) {
-                        result = internalGetDashboard(dashboard, channelId);
+                        result = internalGetDashboard(channelId, dashboard);
                     }
                 }
             }
@@ -64,11 +60,11 @@ public abstract class AbstractChannelHelper {
         return result;
     }
 
-    protected @Nullable State internalGetDashboard(NADashboard dashboard, String channelId) {
+    protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
         return null;
     }
 
-    protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
+    protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
         return null;
     }
 }

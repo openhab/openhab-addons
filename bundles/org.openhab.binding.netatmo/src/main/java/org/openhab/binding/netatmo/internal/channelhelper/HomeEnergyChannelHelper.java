@@ -46,7 +46,7 @@ public class HomeEnergyChannelHelper extends AbstractChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
+    protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
         NAHome localThing = (NAHome) naThing;
         NAThermProgram currentProgram = localThing.getActiveProgram();
         SetpointMode thermMode = localThing.getThermMode();

@@ -19,9 +19,10 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NARoom;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
@@ -36,19 +37,23 @@ import org.openhab.core.types.State;
 public class RoomChannelHelper extends AbstractChannelHelper {
 
     public RoomChannelHelper() {
-        super(Set.of(GROUP_ROOM_PROPERTIES));
+        super(Set.of(GROUP_ROOM_PROPERTIES, GROUP_ROOM_TEMPERATURE));
     }
 
     @Override
-    protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
-        NARoom room = (NARoom) naThing;
-        switch (channelId) {
-            case CHANNEL_ROOM_WINDOW_OPEN:
-                return OnOffType.from(room.isOpenWindow());
-            case CHANNEL_ANTICIPATING:
-                return OnOffType.from(room.isAnticipating());
-            case CHANNEL_ROOM_HEATING_POWER:
-                return toQuantityType(room.getHeatingPowerRequest(), Units.PERCENT);
+    protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
+        if (naThing instanceof NARoom) {
+            NARoom room = (NARoom) naThing;
+            switch (channelId) {
+                case CHANNEL_ROOM_WINDOW_OPEN:
+                    return (room.isOpenWindow() ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                case CHANNEL_ANTICIPATING:
+                    return (room.isAnticipating() ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                case CHANNEL_ROOM_HEATING_POWER:
+                    return toQuantityType(room.getHeatingPowerRequest(), Units.PERCENT);
+                case CHANNEL_VALUE:
+                    return toQuantityType(room.getThermMeasuredTemperature(), MeasureClass.INTERIOR_TEMPERATURE);
+            }
         }
         return null;
     }

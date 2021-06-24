@@ -12,21 +12,12 @@
  */
 package org.openhab.binding.netatmo.internal.channelhelper;
 
-import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
-
-import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureScale;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureType;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.binding.netatmo.internal.config.MeasureChannelConfig;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -38,42 +29,21 @@ import org.openhab.core.types.UnDefType;
 
 @NonNullByDefault
 public class MeasuresChannelHelper extends AbstractChannelHelper {
-    private final Map<MeasureChannelConfig, Object> measures = new HashMap<>();
-    private final Map<String, MeasureChannelConfig> thingChannels = new HashMap<>();
+
+    private @Nullable Map<String, State> measures;
 
     public MeasuresChannelHelper() {
-        super();
+        super(Set.of());
     }
 
     @Override
-    protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
-        MeasureChannelConfig channelConfig = thingChannels.get(channelId);
-        if (channelConfig != null) {
-            Object measure = measures.get(channelConfig);
-            return measure instanceof ZonedDateTime ? toDateTimeType((ZonedDateTime) measure)
-                    : measure instanceof Double ? toQuantityType((Double) measure, channelConfig.type.getUnit())
-                            : UnDefType.NULL;
-        }
-        return null;
+    protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
+        Map<String, State> localMeasures = measures;
+        return localMeasures != null ? localMeasures.containsKey(channelId) ? localMeasures.get(channelId) : null
+                : UnDefType.UNDEF;
     }
 
-    private boolean isChannelConfigIfValid(Channel channel) {
-        MeasureChannelConfig config = channel.getConfiguration().as(MeasureChannelConfig.class);
-        return config.period != MeasureScale.UNKNOWN && config.type != MeasureType.UNKNOWN;
-    }
-
-    public Map<MeasureChannelConfig, Object> getMeasures() {
-        return measures;
-    }
-
-    public void collectMeasuredChannels(List<Channel> channels) {
-        measures.clear();
-        thingChannels.clear();
-        channels.stream().filter(channel -> isChannelConfigIfValid(channel)).filter(Objects::nonNull)
-                .forEach(channel -> {
-                    MeasureChannelConfig config = channel.getConfiguration().as(MeasureChannelConfig.class);
-                    thingChannels.put(channel.getUID().getIdWithoutGroup(), config);
-                    measures.put(config, Double.NaN);
-                });
+    public void setMeasures(Map<String, State> measures) {
+        this.measures = measures;
     }
 }

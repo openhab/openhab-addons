@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.channelhelper;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_ANTICIPATING;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_THERM_RELAY;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_TH_PROPERTIES;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.Set;
 
@@ -40,13 +38,15 @@ public class Therm1PropsChannelHelper extends AbstractChannelHelper {
     }
 
     @Override
-    protected @Nullable State internalGetProperty(NAThing naThing, String channelId) {
-        NAThermostat thermostat = (NAThermostat) naThing;
-        switch (channelId) {
-            case CHANNEL_THERM_RELAY:
-                return OnOffType.from(thermostat.getBoilerStatus());
-            case CHANNEL_ANTICIPATING:
-                return OnOffType.from(thermostat.isAnticipating());
+    protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
+        if (naThing instanceof NAThermostat) {
+            NAThermostat thermostat = (NAThermostat) naThing;
+            switch (channelId) {
+                case CHANNEL_THERM_RELAY:
+                    return OnOffType.from(thermostat.getBoilerStatus());
+                case CHANNEL_ANTICIPATING:
+                    return OnOffType.from(thermostat.isAnticipating());
+            }
         }
         return null;
     }

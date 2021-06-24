@@ -49,15 +49,15 @@ import org.openhab.binding.netatmo.internal.channelhelper.PressureChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.RainChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.RoomChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.RoomSetpointChannelHelper;
-import org.openhab.binding.netatmo.internal.channelhelper.RoomTempChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.TemperatureChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.Therm1PropsChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.WindChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.CameraHandler;
+import org.openhab.binding.netatmo.internal.handler.DeviceHandler;
+import org.openhab.binding.netatmo.internal.handler.DeviceWithMeasureHandler;
 import org.openhab.binding.netatmo.internal.handler.HomeCoachHandler;
 import org.openhab.binding.netatmo.internal.handler.HomeHandler;
 import org.openhab.binding.netatmo.internal.handler.MainHandler;
-import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.internal.handler.PersonHandler;
 import org.openhab.binding.netatmo.internal.handler.PresenceHandler;
 import org.openhab.binding.netatmo.internal.handler.RoomHandler;
@@ -75,9 +75,8 @@ public enum ModuleType {
     NAHome(HomeHandler.class, RefreshPolicy.CONFIG, FeatureArea.NONE, null, List.of(),
             List.of(HomeSecurityChannelHelper.class, HomeEnergyChannelHelper.class),
             List.of(GROUP_HOME_SECURITY, GROUP_HOME_ENERGY), null),
-    // Security Group
-    // NAHomeSecurity(HomeSecurityHandler.class, RefreshPolicy.CONFIG, null, List.of(),
-    // List.of(HomeSecurityChannelHelper.class), List.of(GROUP_HOME_SECURITY), null),
+
+    // Security Features
     NAPerson(PersonHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome, List.of(),
             List.of(PersonChannelHelper.class), List.of(GROUP_PERSON, GROUP_PERSON_EVENT), null),
     NACamera(CameraHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome, List.of(),
@@ -85,9 +84,10 @@ public enum ModuleType {
     NOC(PresenceHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome, List.of(),
             List.of(CameraChannelHelper.class, PresenceChannelHelper.class),
             List.of(GROUP_WELCOME, GROUP_WELCOME_EVENT, GROUP_PRESENCE), NAWelcome.class),
+    NDB(PresenceHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome, List.of(),
+            List.of(CameraChannelHelper.class), List.of(GROUP_WELCOME, GROUP_WELCOME_EVENT), NAWelcome.class),
 
-    // Weather group
-    // NAHomeWeather(null, RefreshPolicy.NONE, null, List.of(), List.of(), List.of(), null),
+    // Weather Features
     NAMain(MainHandler.class, RefreshPolicy.AUTO, FeatureArea.WEATHER, null, List.of("measure", "measure-timestamp"),
             List.of(PressureChannelHelper.class, NoiseChannelHelper.class, HumidityChannelHelper.class,
                     TemperatureChannelHelper.class, Co2ChannelHelper.class, DeviceChannelHelper.class,
@@ -95,25 +95,25 @@ public enum ModuleType {
             List.of(GROUP_TEMPERATURE, GROUP_HUMIDITY, GROUP_CO2, GROUP_NOISE, GROUP_PRESSURE, GROUP_DEVICE,
                     GROUP_SIGNAL, GROUP_LOCATION),
             NAThing.class),
-    NAModule1(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain,
+    NAModule1(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain,
             List.of("measure", "measure-timestamp"),
             List.of(HumidityChannelHelper.class, TemperatureChannelHelper.class, BatteryHelper.class,
                     MeasuresChannelHelper.class),
             List.of(GROUP_TEMPERATURE, GROUP_HUMIDITY, GROUP_SIGNAL, GROUP_BATTERY), NAModule.class),
-    NAModule2(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain, List.of(),
+    NAModule2(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain, List.of(),
             List.of(WindChannelHelper.class, BatteryHelper.class), List.of(GROUP_WIND, GROUP_SIGNAL, GROUP_BATTERY),
             NAModule.class),
-    NAModule3(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain, List.of("sum-rain"),
+    NAModule3(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain, List.of("sum-rain"),
             List.of(RainChannelHelper.class, BatteryHelper.class, MeasuresChannelHelper.class),
             List.of(GROUP_RAIN, GROUP_SIGNAL, GROUP_BATTERY), NAModule.class),
-    NAModule4(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain,
+    NAModule4(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain,
             List.of("measure", "measure-timestamp"),
             List.of(HumidityChannelHelper.class, TemperatureChannelHelper.class, Co2ChannelHelper.class,
                     BatteryHelper.class, MeasuresChannelHelper.class),
             List.of(GROUP_TEMPERATURE, GROUP_HUMIDITY, GROUP_CO2, GROUP_SIGNAL, GROUP_BATTERY), NAModule.class),
 
-    // Aircare group
-    NHC(HomeCoachHandler.class, RefreshPolicy.AUTO, FeatureArea.AIR_CARE, null, List.of("measure", "measure-timestamp"),
+    // Aircare Features
+    NHC(HomeCoachHandler.class, RefreshPolicy.AUTO, FeatureArea.AIR_CARE, null, List.of(),
             List.of(NoiseChannelHelper.class, HumidityChannelHelper.class, PressureChannelHelper.class,
                     TemperatureChannelHelper.class, Co2ChannelHelper.class, HomeCoachChannelHelper.class,
                     DeviceChannelHelper.class, MeasuresChannelHelper.class),
@@ -121,26 +121,23 @@ public enum ModuleType {
                     GROUP_DEVICE, GROUP_SIGNAL),
             NAThing.class),
 
-    // Energy group
-    // NAHomeEnergy(HomeEnergyHandler.class, RefreshPolicy.AUTO, null, List.of(),
-    // List.of(HomeEnergyChannelHelper.class),
-    // List.of(GROUP_HOME_ENERGY), null),
-    NAPlug(NetatmoDeviceHandler.class, RefreshPolicy.PARENT, FeatureArea.ENERGY, NAHome, List.of(),
+    // Energy Features
+    NAPlug(DeviceHandler.class, RefreshPolicy.PARENT, FeatureArea.ENERGY, NAHome, List.of(),
             List.of(PlugChannelHelper.class, DeviceChannelHelper.class),
             List.of(GROUP_PLUG, GROUP_DEVICE, GROUP_SIGNAL), NAPlug.class),
-    NATherm1(NetatmoDeviceHandler.class, RefreshPolicy.CONFIG, FeatureArea.ENERGY, NAHome, List.of(),
+    NATherm1(DeviceHandler.class, RefreshPolicy.CONFIG, FeatureArea.ENERGY, NAHome, List.of(),
             List.of(Therm1PropsChannelHelper.class, BatteryHelper.class),
             List.of(GROUP_TH_PROPERTIES, GROUP_SIGNAL, GROUP_ENERGY_BATTERY), NAThermostat.class),
     NARoom(RoomHandler.class, RefreshPolicy.PARENT, FeatureArea.ENERGY, NAHome, List.of(),
-            List.of(RoomChannelHelper.class, RoomTempChannelHelper.class, RoomSetpointChannelHelper.class),
+            List.of(RoomChannelHelper.class, RoomSetpointChannelHelper.class),
             List.of(GROUP_ROOM_PROPERTIES, GROUP_TH_SETPOINT, GROUP_ROOM_TEMPERATURE), NARoom.class),
-    NRV(NetatmoDeviceHandler.class, RefreshPolicy.CONFIG, FeatureArea.ENERGY, NAHome, List.of(),
-            List.of(BatteryHelper.class), List.of(GROUP_ENERGY_BATTERY, GROUP_SIGNAL), NAPlug.class),
+    NRV(DeviceHandler.class, RefreshPolicy.CONFIG, FeatureArea.ENERGY, NAHome, List.of(), List.of(BatteryHelper.class),
+            List.of(GROUP_ENERGY_BATTERY, GROUP_SIGNAL), NAPlug.class),
+
     // Left for future implementation
     // NACamDoorTag : self explaining
     // NSD : smoke detector
     // NIS : indoor siren
-    // NDB : doorbell
     ;
 
     public enum RefreshPolicy {
@@ -154,12 +151,12 @@ public enum ModuleType {
 
     private final List<String> groups;
     private final List<String> extensions;
+    private final List<Class<? extends AbstractChannelHelper>> channelHelpers;
     private final @Nullable ModuleType bridgeType;
-    private final RefreshPolicy refreshPeriod;
     private final @Nullable Class<?> handlerClass;
     private final @Nullable Class<?> dto;
     private final ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, this.name());
-    private final List<Class<? extends AbstractChannelHelper>> channelHelpers;
+    private final RefreshPolicy refreshPeriod;
     private final FeatureArea features;
 
     ModuleType(@Nullable Class<?> handlerClass, RefreshPolicy refreshPeriod, FeatureArea features,
@@ -226,7 +223,7 @@ public enum ModuleType {
         return thingTypeUID;
     }
 
-    public static Boolean isModuleTypeImplemented(String name) {
+    public static boolean isModuleTypeImplemented(String name) {
         return Stream.of(values()).anyMatch(mt -> mt.toString().equals(name));
     }
 
