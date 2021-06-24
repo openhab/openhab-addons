@@ -13,10 +13,11 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
-import static org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration.*;
+import static org.openhab.binding.rfxcom.internal.config.RFXComLighting4DeviceConfiguration.*;
 import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
+import org.openhab.binding.rfxcom.internal.config.RFXComLighting4DeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -274,10 +275,11 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
 
     @Override
     public void setConfig(RFXComDeviceConfiguration config) throws RFXComException {
-        super.setConfig(config);
-        this.pulse = config.pulse != null ? config.pulse : 350;
-        this.onCommandId = valueOrDefault(config.onCommandId, DEFAULT_ON_COMMAND_ID);
-        this.offCommandId = valueOrDefault(config.offCommandId, DEFAULT_OFF_COMMAND_ID);
+        RFXComLighting4DeviceConfiguration lighting4Config = (RFXComLighting4DeviceConfiguration) config;
+        super.setConfig(lighting4Config);
+        this.pulse = lighting4Config.pulse != null ? lighting4Config.pulse : 350;
+        this.onCommandId = valueOrDefault(lighting4Config.onCommandId, DEFAULT_ON_COMMAND_ID);
+        this.offCommandId = valueOrDefault(lighting4Config.offCommandId, DEFAULT_OFF_COMMAND_ID);
     }
 
     private int valueOrDefault(Integer commandId, byte defaultValue) {

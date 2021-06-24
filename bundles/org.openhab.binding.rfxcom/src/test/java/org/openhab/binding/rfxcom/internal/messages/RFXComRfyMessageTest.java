@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.RFY;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,7 +32,7 @@ public class RFXComRfyMessageTest {
 
     @Test
     public void basicBoundaryCheck() throws RFXComException {
-        RFXComRfyMessage message = (RFXComRfyMessage) RFXComMessageFactory.createMessage(RFY);
+        RFXComRfyMessage message = (RFXComRfyMessage) RFXComMessageFactoryImpl.INSTANCE.createMessage(RFY);
 
         message.subType = SubType.RFY;
         message.command = Commands.UP;
@@ -41,7 +41,7 @@ public class RFXComRfyMessageTest {
     }
 
     private void testMessage(SubType subType, Commands command, String deviceId, String data) throws RFXComException {
-        RFXComRfyMessage message = (RFXComRfyMessage) RFXComMessageFactory.createMessage(RFY);
+        RFXComRfyMessage message = (RFXComRfyMessage) RFXComMessageFactoryImpl.INSTANCE.createMessage(RFY);
         message.setSubType(subType);
         message.command = command;
         message.setDeviceId(deviceId);

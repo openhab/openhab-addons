@@ -31,7 +31,7 @@ public class RFXComLighting2MessageTest {
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "0B11000600109B520B000080";
         byte[] message = HexUtils.hexToBytes(hexMessage);
-        RFXComLighting2Message msg = (RFXComLighting2Message) RFXComMessageFactory.createMessage(message);
+        RFXComLighting2Message msg = (RFXComLighting2Message) RFXComMessageFactoryImpl.INSTANCE.createMessage(message);
         assertEquals(RFXComLighting2Message.SubType.AC, msg.subType, "SubType");
         assertEquals(6, (short) (msg.seqNbr & 0xFF), "Seq Number");
         assertEquals("1088338.11", msg.getDeviceId(), "Sensor Id");
