@@ -96,18 +96,18 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
             // JOB PING
             SoulissGatewayJobPing soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(bridge);
-            scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2,
-                    soulissGatewayJobPingRunnable.getPingRefreshInterval(), TimeUnit.SECONDS);
+            scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2, this.gwConfig.pingInterval,
+                    TimeUnit.SECONDS);
             // JOB SUBSCRIPTION
             SoulissGatewayJobSubscription soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(
                     bridge);
             scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 0,
-                    soulissGatewayJobSubscriptionRunnable.getSubscriptionRefreshInterval(), TimeUnit.MINUTES);
+                    this.gwConfig.subscriptionInterval, TimeUnit.MINUTES);
 
             // JOB HEALTH OF NODES
             SoulissGatewayJobHealthy soulissGatewayJobHealthyRunnable = new SoulissGatewayJobHealthy(bridge);
-            scheduler.scheduleWithFixedDelay(soulissGatewayJobHealthyRunnable, 5,
-                    soulissGatewayJobHealthyRunnable.gethealthRefreshInterval(), TimeUnit.SECONDS);
+            scheduler.scheduleWithFixedDelay(soulissGatewayJobHealthyRunnable, 5, this.gwConfig.healthyInterval,
+                    TimeUnit.SECONDS);
 
             // il ciclo Send è schedulato con la costante
             // SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_cicleInMillis

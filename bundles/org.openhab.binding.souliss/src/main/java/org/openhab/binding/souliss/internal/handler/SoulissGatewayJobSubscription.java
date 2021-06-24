@@ -36,10 +36,6 @@ public class SoulissGatewayJobSubscription extends Thread {
         sendSubscription();
     }
 
-    public int getSubscriptionRefreshInterval() {
-        return this.gwHandler.gwConfig.subscriptionInterval;
-    }
-
     private void sendSubscription() {
         SoulissGatewayHandler localGwHandler = this.gwHandler;
         if (localGwHandler != null) {
