@@ -36,7 +36,7 @@ public class RFXComLighting1MessageTest {
 
     private void testMessage(String hexMsg, RFXComLighting1Message.SubType subType, int seqNbr, String deviceId,
             byte signalLevel, Commands command, String commandString) throws RFXComException {
-        final RFXComLighting1Message msg = (RFXComLighting1Message) RFXComMessageFactory
+        final RFXComLighting1Message msg = (RFXComLighting1Message) RFXComMessageFactoryImpl.INSTANCE
                 .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals(subType, msg.subType, "SubType");
         assertEquals(seqNbr, (short) (msg.seqNbr & 0xFF), "Seq Number");

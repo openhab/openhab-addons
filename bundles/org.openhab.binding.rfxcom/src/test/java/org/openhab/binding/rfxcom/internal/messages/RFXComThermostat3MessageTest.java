@@ -41,12 +41,13 @@ public class RFXComThermostat3MessageTest {
 
     @Test
     public void checkForSupportTest() throws RFXComException {
-        RFXComMessageFactory.createMessage(THERMOSTAT3);
+        RFXComMessageFactoryImpl.INSTANCE.createMessage(THERMOSTAT3);
     }
 
     @Test
     public void basicBoundaryCheck() throws RFXComException {
-        RFXComThermostat3Message message = (RFXComThermostat3Message) RFXComMessageFactory.createMessage(THERMOSTAT3);
+        RFXComThermostat3Message message = (RFXComThermostat3Message) RFXComMessageFactoryImpl.INSTANCE
+                .createMessage(THERMOSTAT3);
 
         message.subType = RFXComThermostat3Message.SubType.MERTIK__G6R_H4S_TRANSMIT_ONLY;
         message.command = RFXComThermostat3Message.Commands.ON;
@@ -68,7 +69,8 @@ public class RFXComThermostat3MessageTest {
             @Nullable State secondCommandChannel, State controlChannel, State commandStringChannel)
             throws RFXComException {
         byte[] message = HexUtils.hexToBytes(hexMessage);
-        RFXComThermostat3Message msg = (RFXComThermostat3Message) RFXComMessageFactory.createMessage(message);
+        RFXComThermostat3Message msg = (RFXComThermostat3Message) RFXComMessageFactoryImpl.INSTANCE
+                .createMessage(message);
         assertEquals(subtype, msg.subType, "SubType");
         assertEquals(sequenceNumber, (short) (msg.seqNbr & 0xFF), "Seq Number");
         assertEquals(sensorId, msg.getDeviceId(), "Sensor Id");

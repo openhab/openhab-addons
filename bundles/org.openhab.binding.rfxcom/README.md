@@ -171,6 +171,7 @@ This binding currently supports following channel types:
 | mood            | Number        | Mood channel.                                                                      |
 | motion          | Switch        | Motion detection sensor state.                                                     |
 | pressure        | Number        | Barometric value in hPa.                                                           |
+| pulses          | String        | Space separated decimal pulse lengths for a raw message in usec.                   |
 | rainrate        | Number        | Rain fall rate in millimeters per hour.                                            |
 | raintotal       | Number        | Total rain in millimeters.                                                         |
 | rawmessage      | String        | Hexadecimal representation of the raw RFXCOM msg incl. header and payload          |
@@ -918,9 +919,15 @@ A Rain device
         *   RAIN6 - La Crosse TX5
         *   RAIN9 - TFA 30.3233.1
 
+
 ### raw - RFXCOM Raw Messages
 
-Raw messages.
+Raw messages. These messages are included in the Pro firmware and represent messages
+for which the device does not understand the protocol. The raw message is a list of the
+length of the RF pulses before they have been interpreted as bytes.
+
+You can also send raw messages by recording the pulses of an incoming message and
+using them to configure a raw thing item.
 
 #### Channels
 
@@ -928,11 +935,13 @@ Raw messages.
 |------------|---------------------------|-----------|-------------|
 | rawMessage | [rawmessage](#channels)   | String    |             |
 | rawPayload | [rawpayload](#channels)   | String    |             |
+| pulses     | [pulses](#channels)       | String    |             |
 
 #### Configuration Options
 
 *   deviceId - Device Id
-    *   Raw items cannot provide a device ID, so this value is always RAW.
+    *   Raw items cannot provide a device ID, so to receive RAW messages use
+        a Device Id of RAW. For transmit only devices, use any Device Id.
 
 *   subType - Sub Type
     *   Specifies message sub type.
@@ -942,6 +951,79 @@ Raw messages.
         *   RAW_PACKET3
         *   RAW_PACKET4
 
+*   repeat - Repeat
+    *   Number of times to repeat message on transmit. Defaults to 5.
+
+*   onPulses - On Pulses
+    *   Pulses to send for an ON command. Space delimited pulse lengths
+        in usec. Must be an even number of pulse lengths, with a maximum
+        of 142 total pulses. Max pulse length is 65535. Pulses of value 0
+        will be transmitted as 10000. See the RFXtfx user guide for more
+        information.
+
+*   offPulses - Off Pulses
+    *   Pulses to send for an OFF command. Space delimited pulse lengths
+        in usec. Must be an even number of pulse lengths, with a maximum
+        of 142 total pulses. Max pulse length is 65535. Pulses of value 0
+        will be transmitted as 10000. See the RFXtfx user guide for more
+        information.
+
+*   openPulses - Open Pulses
+    *   Pulses to send for an OPEN command. Space delimited pulse lengths
+        in usec. Must be an even number of pulse lengths, with a maximum
+        of 142 total pulses. Max pulse length is 65535. Pulses of value 0
+        will be transmitted as 10000. See the RFXtfx user guide for more
+        information.
+
+*   closedPulses - Closed Pulses
+    *   Pulses to send for an CLOSED command. Space delimited pulse lengths
+        in usec. Must be an even number of pulse lengths, with a maximum
+        of 142 total pulses. Max pulse length is 65535. Pulses of value 0
+        will be transmitted as 10000. See the RFXtfx user guide for more
+        information.
+
+#### Examples
+
+This can be used to transmit raw messages.
+
+The first step is to work out the right pulses for the device. You can do this using RFXmngr, or
+you can do this using openhab:
+
+1. Set up a RAW thing to receive raw pulses:
+
+    ```
+    Bridge rfxcom:tcpbridge:rfxtrx0 [ host="192.168.42.10", port=10001, enableUndecoded=true ] {
+        Thing raw RAW [ deviceId="RAW", subType="RAW_PACKET1" ]
+    }
+    ```
+
+2. Add an item to see what the pulses are:
+
+    ```
+    String RawPulses { channel="rfxcom:raw:rfxtrx0:RAW:pulses" }
+    ```
+
+3. Activate the device and look at the pulses that are set. Look for a higher value in the pulses, that is
+   likely to be a gap for a repeat. Take the pulses from before the gap. Make sure there are an
+   even number, and if not, drop a 0 on the end.
+
+Now you have the pulses, set up a send device:
+
+1. Set up a RAW thing to send a command:
+
+    ```
+    Bridge rfxcom:tcpbridge:rfxtrx0 [ host="192.168.42.10", port=10001, enableUndecoded=true ] {
+        Thing raw MySwitch [ deviceId="MySwitch", subType="RAW_PACKET1", onPulses="100 200 300 0", offPulses="400 500 600 0" ]
+    }
+    ```
+
+2. Add an item to send the command:
+
+    ```
+    Switch MySwitch { channel="rfxcom:raw:rfxtrx0:MySwitch:command" }
+    ```
+
+3. Use the command to send the raw message.
 
 ### rfxsensor - RFXCOM RFXSensor 
 
@@ -1230,7 +1312,12 @@ A Thermostat3 device.
 
 ### undecoded - RFXCOM Undecoded RF Messages
 
-Any messages that RFXCOM can receive but not decode.
+Undecoded messages are messages where RFCOM understands the protocol and has converted
+the raw RF pulses into bytes, but has not attempted to decode the bytes into meaningful
+data.
+
+Undecoded message are receive only, there is not way to transmit an undecoded message.
+If you need to repeat an undecoded message, consider looking at Raw messages instead.
 
 #### Channels
 

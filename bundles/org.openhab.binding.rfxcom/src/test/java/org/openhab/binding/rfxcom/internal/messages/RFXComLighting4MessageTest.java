@@ -24,8 +24,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
-import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfigurationBuilder;
+import org.openhab.binding.rfxcom.internal.config.RFXComLighting4DeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.util.HexUtils;
@@ -39,15 +38,19 @@ import org.openhab.core.util.HexUtils;
 public class RFXComLighting4MessageTest {
     @Test
     public void basicBoundaryCheck() throws RFXComException {
-        RFXComLighting4Message message = (RFXComLighting4Message) RFXComMessageFactory.createMessage(LIGHTING4);
+        RFXComLighting4Message message = (RFXComLighting4Message) RFXComMessageFactoryImpl.INSTANCE
+                .createMessage(LIGHTING4);
 
-        RFXComDeviceConfiguration build = new RFXComDeviceConfigurationBuilder().withDeviceId("90000").withPulse(300)
-                .withSubType("PT2262").build();
-        message.setConfig(build);
+        RFXComLighting4DeviceConfiguration config = new RFXComLighting4DeviceConfiguration();
+        config.deviceId = "90000";
+        config.subType = "PT2262";
+        config.pulse = 300;
+        message.setConfig(config);
         message.convertFromState(CHANNEL_COMMAND, OnOffType.ON);
 
         byte[] binaryMessage = message.decodeMessage();
-        RFXComLighting4Message msg = (RFXComLighting4Message) RFXComMessageFactory.createMessage(binaryMessage);
+        RFXComLighting4Message msg = (RFXComLighting4Message) RFXComMessageFactoryImpl.INSTANCE
+                .createMessage(binaryMessage);
 
         assertEquals("90000", msg.getDeviceId(), "Sensor Id");
     }
@@ -61,7 +64,7 @@ public class RFXComLighting4MessageTest {
     private void testMessage(String hexMsg, RFXComLighting4Message.SubType subType, String deviceId,
             @Nullable Integer pulse, byte commandByte, @Nullable Integer seqNbr, int signalLevel, int offCommand,
             int onCommand) throws RFXComException {
-        RFXComLighting4Message msg = (RFXComLighting4Message) RFXComMessageFactory
+        RFXComLighting4Message msg = (RFXComLighting4Message) RFXComMessageFactoryImpl.INSTANCE
                 .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals(deviceId, msg.getDeviceId(), "Sensor Id");
         assertEquals(commandByte, RFXComTestHelper.getActualIntValue(msg, CHANNEL_COMMAND_ID), "Command");
