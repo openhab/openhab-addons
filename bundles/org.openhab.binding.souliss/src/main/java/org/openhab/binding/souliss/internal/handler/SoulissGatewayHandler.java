@@ -62,21 +62,10 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     private @Nullable SoulissGatewayDiscovery discoveryService;
 
-    // private Configuration gwConfigurationMap = new Configuration();
-
-    // public int pingRefreshInterval;
-    // public int subscriptionRefreshInterval;
     public boolean thereIsAThingDetection = true;
-    // public int healthRefreshInterval;
-    // public int sendRefreshInterval;
-    // public int sendTimeoutToRequeue;
-    // public int sendTimeoutToRemovePacket;
+
     private Bridge bridge;
-    // public int preferredLocalPort;
-    // public int soulissGatewayPort;
-    // public byte userIndex;
-    // public byte nodeIndex;
-    // public String ipAddressOnLAN = "";
+
     private int nodes;
     private int maxTypicalXnode;
     private int countPingKo = 0;
