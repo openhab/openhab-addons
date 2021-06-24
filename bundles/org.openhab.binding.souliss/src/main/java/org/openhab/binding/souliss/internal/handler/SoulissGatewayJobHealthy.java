@@ -41,16 +41,14 @@ public class SoulissGatewayJobHealthy extends Thread {
     }
 
     private void sendHealthyRequest() {
-        // sending healthy packet
-        if (this.gwHandler.gwConfig.gatewayIpAddress.length() > 0 && this.gwHandler != null) {
-            soulissCommands.sendHealthyRequestFrame(this.gwHandler.gwConfig.gatewayIpAddress,
-                    (byte) this.gwHandler.gwConfig.nodeIndex, (byte) this.gwHandler.gwConfig.userIndex,
-                    this.gwHandler.getNodes());
-            // healthy packet sent
+        if (this.gwHandler != null) {
+            // sending healthy packet
+            if (this.gwHandler.gwConfig.gatewayIpAddress.length() > 0 && this.gwHandler != null) {
+                soulissCommands.sendHealthyRequestFrame(this.gwHandler.gwConfig.gatewayIpAddress,
+                        (byte) this.gwHandler.gwConfig.nodeIndex, (byte) this.gwHandler.gwConfig.userIndex,
+                        this.gwHandler.getNodes());
+                // healthy packet sent
+            }
         }
-    }
-
-    public int gethealthRefreshInterval() {
-        return this.gwHandler.gwConfig.healthyInterval;
     }
 }

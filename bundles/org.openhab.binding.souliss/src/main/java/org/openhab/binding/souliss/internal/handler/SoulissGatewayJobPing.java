@@ -31,7 +31,6 @@ public class SoulissGatewayJobPing implements Runnable {
     @Nullable
     private SoulissGatewayHandler gwHandler;
 
-    @SuppressWarnings("null")
     public SoulissGatewayJobPing(Bridge bridge) {
         BridgeHandler bridgeHandler = bridge.getHandler();
         if (bridgeHandler != null) {
@@ -41,29 +40,24 @@ public class SoulissGatewayJobPing implements Runnable {
 
     @Override
     public void run() {
-        sendPing();
         @Nullable
         SoulissGatewayHandler localGwHandler = this.gwHandler;
         if (localGwHandler != null) {
+            sendPing(localGwHandler);
+
             localGwHandler.pingSent();
         }
     }
 
-    private void sendPing() {
+    private void sendPing(SoulissGatewayHandler soulissGwHandler) {
         // sending ping packet
 
-        if (this.gwHandler != null && this.gwHandler.gwConfig.gatewayIpAddress != null
-                && this.gwHandler.gwConfig.gatewayIpAddress.length() > 0) {
-            soulissCommands.sendPing(this.gwHandler.gwConfig.gatewayIpAddress, (byte) this.gwHandler.gwConfig.nodeIndex,
-                    (byte) this.gwHandler.gwConfig.userIndex, (byte) 0, (byte) 0);
+        if (soulissGwHandler.gwConfig.gatewayIpAddress != null
+                && soulissGwHandler.gwConfig.gatewayIpAddress.length() > 0) {
+            soulissCommands.sendPing(soulissGwHandler.gwConfig.gatewayIpAddress,
+                    (byte) soulissGwHandler.gwConfig.nodeIndex, (byte) soulissGwHandler.gwConfig.userIndex, (byte) 0,
+                    (byte) 0);
             // ping packet sent
         }
-    }
-
-    public int getPingRefreshInterval() {
-        if (this.gwHandler != null) {
-            return this.gwHandler.gwConfig.pingInterval;
-        }
-        return -1;
     }
 }
