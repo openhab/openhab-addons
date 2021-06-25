@@ -213,8 +213,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         }
 
         if (thing.getStatus() != ThingStatus.ONLINE) {
-            logger.debug("Controller is not ONLINE, aborting resource value update for channel '{}'!",
-                    channelUID);
+            logger.debug("Controller is not ONLINE, aborting resource value update for channel '{}'!", channelUID);
             return;
         }
 
