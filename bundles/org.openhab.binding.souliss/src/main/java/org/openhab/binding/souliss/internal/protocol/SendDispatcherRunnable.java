@@ -230,7 +230,7 @@ public class SendDispatcherRunnable implements Runnable {
                         @Nullable
                         SoulissGenericHandler localTyp = SendDispatcherRunnable.typ;
                         if (this.gwHandler != null) {
-                            localTyp = getHandler(this.gwHandler.gwConfig.gatewayIpAddress, node, iSlot, this.logger);
+                            localTyp = getHandler(node, iSlot, this.logger);
 
                             if (localTyp == null) {
                                 break;
@@ -318,23 +318,12 @@ public class SendDispatcherRunnable implements Runnable {
     }
 
     @Nullable
-    private static SoulissGenericHandler getHandler(String ipAddressOnLAN, int node, int slot, Logger logger) {
-        // recupero il riferimento al gateway
-        SoulissGatewayHandler gateway = null;
-        byte lastByteGatewayIP = (byte) Integer.parseInt(ipAddressOnLAN.split("\\.")[3]);
-        try {
-            Bridge bridge = NetworkParameters.getGateway(lastByteGatewayIP);
-            if (bridge != null) {
-                gateway = (SoulissGatewayHandler) bridge.getHandler();
-            }
-        } catch (Exception ex) {
-            logger.warn("exception getting gw handler {}", ex.getMessage());
-        }
+    private SoulissGenericHandler getHandler(int node, int slot, Logger logger) {
+        SoulissGatewayHandler localGwHandler = this.gwHandler;
 
         Iterator<Thing> thingsIterator;
-        if (gateway != null
-                && (byte) Integer.parseInt(gateway.gwConfig.gatewayIpAddress.split("\\.")[3]) == lastByteGatewayIP) {
-            thingsIterator = gateway.getThing().getThings().iterator();
+        if (localGwHandler != null) {
+            thingsIterator = localGwHandler.getThing().getThings().iterator();
             Thing typ = null;
             while (thingsIterator.hasNext()) {
                 typ = thingsIterator.next();
@@ -344,10 +333,8 @@ public class SendDispatcherRunnable implements Runnable {
                                        // Gateway
                     String gatewayIP = handler.getGatewayIP();
                     if ((gatewayIP != null) && sUIDArray[0].equals(SoulissBindingConstants.BINDING_ID)
-                            && (byte) Integer.parseInt(gatewayIP.split("\\.")[3]) == lastByteGatewayIP
                             && (handler.getNode() == node && handler.getSlot() == slot)) {
                         return handler;
-
                     }
                 }
             }

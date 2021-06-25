@@ -51,7 +51,6 @@ public class UDPListenDiscoverRunnable implements Runnable {
         this.discoverResult = pDiscoverResult;
 
         decoder = new UDPDecoder(discoverResult);
-
     }
 
     @Override
@@ -85,21 +84,21 @@ public class UDPListenDiscoverRunnable implements Runnable {
                 }
 
             } catch (BindException e) {
-                logger.error("UDP Port busy, Souliss already listening? {} ", e.getMessage());
+                logger.error("UDP Port busy, Souliss already listening? {} ", e.getLocalizedMessage());
                 try {
                     if (socket != null && !socket.isClosed()) {
                         socket.close();
                     }
                 } catch (Exception e1) {
-                    logger.error("UDP socket close failed: {} ", e1.getMessage());
+                    logger.error("UDP socket close failed: {} ", e1.getLocalizedMessage());
                 }
             } catch (SocketTimeoutException e2) {
-                logger.warn("UDP SocketTimeoutException close! {}", e2);
+                logger.warn("UDP SocketTimeoutException close: {}", e2.getLocalizedMessage());
                 if (socket != null && !socket.isClosed()) {
                     socket.close();
                 }
             } catch (Exception ee) {
-                logger.error("Exception receiving-decoding message! {} ", ee.getMessage());
+                logger.error("Exception receiving-decoding message: {} ", ee.getLocalizedMessage());
                 if (socket != null && !socket.isClosed()) {
                     socket.close();
                 }
@@ -109,7 +108,6 @@ public class UDPListenDiscoverRunnable implements Runnable {
                 }
             }
         }
-
     }
 
     private String macacoToString(byte[] frame) {

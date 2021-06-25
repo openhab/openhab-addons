@@ -32,7 +32,6 @@ public class SoulissGatewayJobHealthy extends Thread {
 
     public SoulissGatewayJobHealthy(Bridge bridge) {
         this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();
-
     }
 
     @Override

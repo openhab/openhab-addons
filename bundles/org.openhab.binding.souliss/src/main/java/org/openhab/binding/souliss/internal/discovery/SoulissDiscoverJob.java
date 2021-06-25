@@ -55,7 +55,6 @@ public class SoulissDiscoverJob implements Runnable {
     private int resendCounter = 0;
 
     public SoulissDiscoverJob() {
-
     }
 
     @Override
