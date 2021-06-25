@@ -384,7 +384,6 @@ public class CommonCommands {
         macacoFrame.add((byte) 0x00); // Number Of
         logger.debug("sendBroadcastPing - {} ", macacoToString(macacoFrame));
         sendBroadcastNow(macacoFrame);
-
     }
 
     /**

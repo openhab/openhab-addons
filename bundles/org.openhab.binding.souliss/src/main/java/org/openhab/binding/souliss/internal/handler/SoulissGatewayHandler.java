@@ -53,7 +53,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     private ExecutorService udpExecutorService = Executors
             .newSingleThreadExecutor(new NamedThreadFactory("binding-souliss"));
 
-    private @Nullable UDPListenDiscoverRunnable udpServerDefaultPortRunnableClass;
+    private UDPListenDiscoverRunnable udpServerDefaultPortRunnableClass;
     private @Nullable Future<?> eventListenerJob;
 
     private CommonCommands soulissCommands = new CommonCommands();
@@ -75,6 +75,8 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     public SoulissGatewayHandler(Bridge br) {
         super(br);
         bridge = br;
+        // new runnable udp listener
+        udpServerDefaultPortRunnableClass = new UDPListenDiscoverRunnable(NetworkParameters.discoverResult);
     }
 
     @Override
@@ -86,43 +88,35 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
         gwConfig = getConfigAs(GatewayConfig.class);
 
-        if (udpServerDefaultPortRunnableClass == null) {
-            logger.debug("Starting UDP server on Souliss Default Port for Topics (Publish&Subcribe)");
+        logger.debug("Starting UDP server on Souliss Default Port for Topics (Publish&Subcribe)");
 
-            // new runnable udp listener
-            udpServerDefaultPortRunnableClass = new UDPListenDiscoverRunnable(NetworkParameters.discoverResult);
-            // and exec on thread
-            this.udpExecutorService.execute(udpServerDefaultPortRunnableClass);
+        // and exec on thread
+        this.udpExecutorService.execute(udpServerDefaultPortRunnableClass);
 
-            // JOB PING
-            SoulissGatewayJobPing soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(bridge);
-            scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2, this.gwConfig.pingInterval,
-                    TimeUnit.SECONDS);
-            // JOB SUBSCRIPTION
-            SoulissGatewayJobSubscription soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(
-                    bridge);
-            scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 0,
-                    this.gwConfig.subscriptionInterval, TimeUnit.MINUTES);
+        // JOB PING
+        SoulissGatewayJobPing soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(bridge);
+        scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2, this.gwConfig.pingInterval,
+                TimeUnit.SECONDS);
+        // JOB SUBSCRIPTION
+        SoulissGatewayJobSubscription soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(bridge);
+        scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 0, this.gwConfig.subscriptionInterval,
+                TimeUnit.MINUTES);
 
-            // JOB HEALTH OF NODES
-            SoulissGatewayJobHealthy soulissGatewayJobHealthyRunnable = new SoulissGatewayJobHealthy(bridge);
-            scheduler.scheduleWithFixedDelay(soulissGatewayJobHealthyRunnable, 5, this.gwConfig.healthyInterval,
-                    TimeUnit.SECONDS);
+        // JOB HEALTH OF NODES
+        SoulissGatewayJobHealthy soulissGatewayJobHealthyRunnable = new SoulissGatewayJobHealthy(bridge);
+        scheduler.scheduleWithFixedDelay(soulissGatewayJobHealthyRunnable, 5, this.gwConfig.healthyInterval,
+                TimeUnit.SECONDS);
 
-            // il ciclo Send è schedulato con la costante
-            // SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_cicleInMillis
-            // internamente il ciclo viene rallentato al timer impostato da configurazione (PaperUI o File)
-            SendDispatcherRunnable soulissSendDispatcherRunnable = new SendDispatcherRunnable(bridge);
-            scheduler.scheduleWithFixedDelay(soulissSendDispatcherRunnable, 15,
-                    SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_CYCLE_IN_MILLIS, TimeUnit.MILLISECONDS);
-        }
+        // il ciclo Send è schedulato con la costante
+        // SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_cicleInMillis
+        // internamente il ciclo viene rallentato al timer impostato da configurazione (PaperUI o File)
+        SendDispatcherRunnable soulissSendDispatcherRunnable = new SendDispatcherRunnable(bridge);
+        scheduler.scheduleWithFixedDelay(soulissSendDispatcherRunnable, 15,
+                SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_CYCLE_IN_MILLIS, TimeUnit.MILLISECONDS);
     }
 
-    private byte getGwIpByte() throws Exception {
-        if (this.gwConfig.gatewayIpAddress != null) {
-            return (byte) Integer.parseInt(this.gwConfig.gatewayIpAddress.split("\\.")[3]);
-        }
-        throw new Exception("ip gateway null!");
+    private byte getGwIpByte() {
+        return (byte) Integer.parseInt(this.gwConfig.gatewayIpAddress.split("\\.")[3]);
     }
 
     @Override
@@ -231,5 +225,4 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     public void setDiscoveryService(SoulissGatewayDiscovery discoveryService) {
         this.discoveryService = discoveryService;
     }
-
 }
