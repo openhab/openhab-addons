@@ -14,11 +14,17 @@ package org.openhab.transform.javascript.internal;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.script.Bindings;
@@ -70,25 +76,44 @@ public class JavaScriptTransformationService implements TransformationService, C
      * transformations one should use subfolders.
      *
      * @param filename the name of the file which contains the Java script
-     *            transformation rule. Transformation service inject input
-     *            (source) to 'input' variable.
+     *            transformation rule. Filename can also include additional
+     *            variables in URI query variable format which will be injected
+     *            to script engine. Transformation service inject input (source)
+     *            to 'input' variable.
      * @param source the input to transform
      */
     @Override
     public @Nullable String transform(String filename, String source) throws TransformationException {
-        if (filename == null || source == null) {
-            throw new TransformationException("the given parameters 'filename' and 'source' must not be null");
-        }
-
         final long startTime = System.currentTimeMillis();
         logger.debug("about to transform '{}' by the JavaScript '{}'", source, filename);
+
+        Map<String, String> vars = Collections.emptyMap();
+
+        String fn = filename;
+
+        try {
+            URI uri = new URI("file://" + filename);
+            fn = uri.getHost();
+            vars = splitQuery(uri.getQuery());
+            vars.forEach((k, v) -> {
+                if ("input".equals(k)) {
+                    throw new RuntimeException();
+                }
+                logger.debug("Inject additional variable {}={}", k, v);
+            });
+        } catch (RuntimeException e) {
+            throw new TransformationException("'input' word is reserved and can't be used in additional parameters");
+        } catch (UnsupportedEncodingException | URISyntaxException e) {
+            // fallback to given filename
+        }
 
         String result = "";
 
         try {
-            final CompiledScript cScript = manager.getScript(filename);
+            final CompiledScript cScript = manager.getScript(fn);
             final Bindings bindings = cScript.getEngine().createBindings();
             bindings.put("input", source);
+            vars.forEach((k, v) -> bindings.put(k, v));
             result = String.valueOf(cScript.eval(bindings));
             return result;
         } catch (ScriptException e) {
@@ -97,6 +122,16 @@ public class JavaScriptTransformationService implements TransformationService, C
             logger.trace("JavaScript execution elapsed {} ms. Result: {}", System.currentTimeMillis() - startTime,
                     result);
         }
+    }
+
+    private Map<String, String> splitQuery(String query) throws UnsupportedEncodingException {
+        Map<String, String> result = new LinkedHashMap<>();
+        String[] pairs = query.split("&");
+        for (String pair : pairs) {
+            String[] keyval = pair.split("=");
+            result.put(URLDecoder.decode(keyval[0], "UTF-8"), URLDecoder.decode(keyval[1], "UTF-8"));
+        }
+        return result;
     }
 
     @Override
