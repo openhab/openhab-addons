@@ -22,9 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
-import org.openhab.binding.souliss.internal.discovery.SoulissDiscoverJob.DiscoverResult;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
-import org.openhab.binding.souliss.internal.protocol.NetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.UDPListenDiscoverRunnable;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -64,7 +62,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         super(SoulissBindingConstants.SUPPORTED_THING_TYPES_UIDS, SoulissBindingConstants.DISCOVERY_TIMEOUT_IN_SECONDS,
                 false);
         this.soulissGwHandler = bridgeHandler;
-        NetworkParameters.discoverResult = this;
+        this.soulissGwHandler.discoverResult = this;
     }
 
     @Override
