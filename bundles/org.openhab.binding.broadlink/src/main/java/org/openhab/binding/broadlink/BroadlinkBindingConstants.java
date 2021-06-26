@@ -17,6 +17,7 @@ import java.util.Map;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Power;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,7 +45,9 @@ public class BroadlinkBindingConstants {
     public static final ThingTypeUID THING_TYPE_MP2 = new ThingTypeUID("broadlink", "mp2");
     public static final ThingTypeUID THING_TYPE_SP1 = new ThingTypeUID("broadlink", "sp1");
     public static final ThingTypeUID THING_TYPE_SP2 = new ThingTypeUID("broadlink", "sp2");
+    public static final ThingTypeUID THING_TYPE_SP2S = new ThingTypeUID("broadlink", "sp2s");
     public static final ThingTypeUID THING_TYPE_SP3 = new ThingTypeUID("broadlink", "sp3");
+    public static final ThingTypeUID THING_TYPE_SP3S = new ThingTypeUID("broadlink", "sp3s");
     public static final ThingTypeUID THING_TYPE_PIR = new ThingTypeUID("broadlink", "s1p");
     public static final ThingTypeUID THING_TYPE_MAGNET = new ThingTypeUID("broadlink", "s1m");
 
@@ -58,9 +61,11 @@ public class BroadlinkBindingConstants {
     public static final String MP1_1K3S2U = "Broadlink MP1 1K3S2U";
     public static final String MP2 = "Broadlink MP2";
 
-    public static final String SP1 = "SP1";
-    public static final String SP2 = "SP2";
-    public static final String SP3 = "SP3";
+    public static final String SP1 = "Broadlink SP1";
+    public static final String SP2 = "Broadlink SP2";
+    public static final String SP2S = "Broadlink SP2s";
+    public static final String SP3 = "Broadlink SP3";
+    public static final String SP3S = "Broadlink SP3s";
     public static final String S1P = "Smart One PIR Sensor";
     public static final String S1M = "Smart One Magnet Sensor";
 
@@ -68,11 +73,19 @@ public class BroadlinkBindingConstants {
     public static final String BROADLINK_IV = "562e17996d093d28ddb3ba695a2e6f58";
 
     public static final String COMMAND_CHANNEL = "command";
+    public static final String LEARNING_CONTROL_CHANNEL = "learningControl";
+    public static final String LEARNING_CONTROL_COMMAND_LEARN = "LEARN";
+    public static final String LEARNING_CONTROL_COMMAND_CHECK = "CHECK";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
+    public static final String CHANNEL_POWER_CONSUMPTION = "powerConsumption";
+
+    public static final String COMMAND_POWER_ON = "powerOn";
+    public static final String COMMAND_NIGHTLIGHT = "nightLight";
 
     public static final Unit<Temperature> BROADLINK_TEMPERATURE_UNIT = SIUnits.CELSIUS;
     public static final Unit<Dimensionless> BROADLINK_HUMIDITY_UNIT = Units.PERCENT;
+    public static final Unit<Power> BROADLINK_POWER_CONSUMPTION_UNIT = Units.WATT;
 
     public static final Map<ThingTypeUID, String> SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP = new HashMap<ThingTypeUID, String>();
 
@@ -88,7 +101,9 @@ public class BroadlinkBindingConstants {
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_MP2, MP2);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP1, SP1);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP2, SP2);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP2S, SP2S);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP3, SP3);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP3S, SP3S);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_PIR, S1P);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_MAGNET, S1M);
     }

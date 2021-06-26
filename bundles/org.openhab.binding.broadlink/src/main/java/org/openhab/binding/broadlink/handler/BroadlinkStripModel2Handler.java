@@ -24,6 +24,6 @@ import org.openhab.core.thing.Thing;
 public class BroadlinkStripModel2Handler extends BroadlinkSocketModel2Handler {
 
     public BroadlinkStripModel2Handler(Thing thing) {
-        super(thing);
+        super(thing, false);
     }
 }
