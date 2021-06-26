@@ -196,7 +196,7 @@ public class BroadlinkProtocol {
 
         try {
             IvParameterSpec ivSpec = new IvParameterSpec(HexUtils.hexToBytes(initializationVector));
-            return Utils.decrypt(authorizationKey, ivSpec, Utils.slice(packet, 56, 88));
+            return Utils.decrypt(authorizationKey, ivSpec, Utils.padTo(Utils.slice(packet, 56, packet.length), 16));
         } catch (Exception ex) {
             throw new IOException("Failed while getting device status", ex);
         }

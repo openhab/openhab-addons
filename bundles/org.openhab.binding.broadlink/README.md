@@ -35,7 +35,6 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 | port                | Integer | 80            | The network port for the device                                                   |
 | macAddress          | String  |               | The device's MAC Address                                                           |
 | pollingInterval     | Integer | 30            | The interval in seconds for polling the status of the device                      |
-| retries             | Integer | 1             | The number of re-attempts for a request before the device is considered `OFFLINE` |
 | ignoreFailedUpdates | Boolean | false         | If enabled, failed status requests won't put the device `OFFLINE`                       |
 | mapFilename         | String  | broadlink.map | The map file that contains remote codes to send via IR                            |
 
@@ -45,26 +44,27 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 
 | Channel          | Supported Devices        | Type                 | Description                                     |
 |------------------|--------------------------|----------------------|-------------------------------------------------|
-| powerOn          | mp2, sp1, sp2, sp3, sp3s | Switch               | Power on/off for switches/strips                |
-| nightLight       | sp2, sp3, sp3s           | Switch               | Night light on/off                              |
-| temperature      | a1, rm2, rm4             | Number:Temperature   | Temperature                                     |
-| humidity         | a1, rm4                  | Number:Dimensionless | Air humidity percentage                         |
-| noise            | a1                       | String               | Noise level: `QUIET`/`NORMAL`/`NOISY`/`EXTREME` |
-| light            | a1                       | String               | Light level: `DARK`/`DIM`/`NORMAL`/`BRIGHT`     |
-| air              | a1                       | String               | Air quality: `PERFECT`/`GOOD`/`NORMAL`/`BAD`    |
-| s1powerOn        | mp1, mp1_1k3s2u          | Switch               | Socket 1 power                                  |
-| s2powerOn        | mp1, mp1_1k3s2u          | Switch               | Socket 2 power                                  |
-| s3powerOn        | mp1, mp1_1k3s2u          | Switch               | Socket 3 power                                  |
-| s4powerOn        | mp1                      | Switch               | Socket 4 power                                  |
-| usbPowerOn       | mp1_1k3s2u               | Switch               | USB power                                       |
-| powerConsumption | mp2, sp2,sp3s            | Number:Power         | Power consumption                               |
-| command          | rm, rm2, rm3, rm3q, rm4  | String               | IR Command code to transmit                     |
+| powerOn          | MP2, all SPx             | Switch               | Power on/off for switches/strips                |
+| nightLight       | SP3                      | Switch               | Night light on/off                              |
+| temperature      | A1, RM2, RM4             | Number:Temperature   | Temperature                                     |
+| humidity         | A1, RM4                  | Number:Dimensionless | Air humidity percentage                         |
+| noise            | A1                       | String               | Noise level: `QUIET`/`NORMAL`/`NOISY`/`EXTREME` |
+| light            | A1                       | String               | Light level: `DARK`/`DIM`/`NORMAL`/`BRIGHT`     |
+| air              | A1                       | String               | Air quality: `PERFECT`/`GOOD`/`NORMAL`/`BAD`    |
+| s1powerOn        | MP1, MP1_1k3s2u          | Switch               | Socket 1 power                                  |
+| s2powerOn        | MP1, MP1_1k3s2u          | Switch               | Socket 2 power                                  |
+| s3powerOn        | MP1, v_1k3s2u            | Switch               | Socket 3 power                                  |
+| s4powerOn        | MP1                      | Switch               | Socket 4 power                                  |
+| usbPowerOn       | MP1_1k3s2u               | Switch               | USB power                                       |
+| powerConsumption | MP2, SP2s,SP3s           | Number:Power         | Power consumption                               |
+| command          | all RMx                  | String               | IR Command code to transmit                     |
+| learningControl  | all RMx                  | String               | Learn mode command channel (see below)          |
 
 ## Map File
 
 The Broadlink RM family of devices can transmit IR codes.
 The map file contains a list of IR command codes to send via the device.
-The file uses the *Map Transformation* and is stored in the `<OPENHAB_CONF>/transform` folder.
+The file uses the [Java Properties File format](https://en.wikipedia.org/wiki/.properties) and is stored in the `<OPENHAB_CONF>/transform` folder.
 By default, the file name is `broadlink.map` but can be changed using the `mapFile` setting.
 
 Here is a map file example:
@@ -77,6 +77,35 @@ heatpump_off=2600760069380D0C0D0C0D290D0C0D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D2
 
 The above codes are power on/off for Samsung TVs and Power Off for a Fujitsu heat pump.
 To send either code, the string `TV_POWER` or `heatpump_off` must be sent to the `command` channel for the device.
+
+## Learning new remote codes
+To obtain the command codes, you can get this binding to put your Broadlink RMx device into 
+"learn mode" and then ask it for the code it learnt. Here are the steps:
+1. In the openHAB web UI, navigate to your RMx Thing, and click on its *Channels* tab
+2. Find the *Remote Learning Control* channel and create an Item for it
+3. Click the item, and click the rectangular area that is marked NULL
+4. In the pop-up menu that appears, select "Enter infrared learn mode"
+5. *The LED on your RM device will illuminate solidly*
+6. Point your IR remote control at your RM device and press the button you'd like to learn
+7. *The LED on your RM device will extinguish once it has learnt the command*
+8. Now click the rectangular area again (which will now show "Enter infrared learn mode")
+9. Select the "Check last captured IR code" menu option in the pop-up menu
+10. Inspect the `openhab.log` file on your openHAB server - you should see the following:
+```
+[BroadlinkRemoteHandler] - BEGIN LAST LEARNT CODE (976 bytes)
+[BroadlinkRemoteHandler] - 2600bc017239100d0e2b0e0f100c107f55747be51a3e1d4ff4......f5be8b3d4ff4b
+4d77c44d105fa530546becaa2bcfbd348b30145447f55747be51a3747be51a3e1d4ff4b3f4f4f......a3e1d4ff4b348
+0145447f55747be51a3e1d4ff4b
+[BroadlinkRemoteHandler] - END LAST LEARNT CODE (1944 characters)
+```
+11. If you carefully copy the log line between the `BEGIN` and `END` messages, 
+    it should have exactly the number of characters as advised in the `END` message.
+    
+12. You can now paste a new entry into your `map` file, with the name of your choice; for example:
+```
+BLURAY_ON=2600bc017239100d0e2b0e0f100c107f55747be51a3e1d4ff4...0145447f55747be51a3e1d4ff4b
+```
+
 
 ## Full Example
 

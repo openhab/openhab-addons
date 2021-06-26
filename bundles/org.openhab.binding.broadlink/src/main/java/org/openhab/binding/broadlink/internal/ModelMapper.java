@@ -29,137 +29,101 @@ public class ModelMapper {
     private static final StringType UNKNOWN = new StringType("UNKNOWN");
 
     public static ThingTypeUID getThingType(int model, Logger logger) {
-        if (model == 0) {
-            return BroadlinkBindingConstants.THING_TYPE_SP1;
-        }
-        if (model == 0x2717) {
-            return BroadlinkBindingConstants.THING_TYPE_SP2;
-        }
-        if (model == 0x2719 || model == 0x7919 || model == 0x271a || model == 0x791a) {
-            return BroadlinkBindingConstants.THING_TYPE_SP2; // Honeywell SP2
-        }
-        if (model == 0x2720 || model == 0x2728) {
-            return BroadlinkBindingConstants.THING_TYPE_SP2; // SPMini
-        }
-        if (model == 0x753e) {
-            return BroadlinkBindingConstants.THING_TYPE_SP3; // SP mini 3 - does NOT have a nightlight
-        }
-        if (model == 0x7d00) {
-            return BroadlinkBindingConstants.THING_TYPE_SP3; // OEM-branded SP3
-        }
-        if (model == 0x947a || model == 0x9479) {
-            return BroadlinkBindingConstants.THING_TYPE_SP3; // NB: this is ACTUALLY an SP3S - see
-            // https://github.com/mjg59/python-broadlink/blob/master/broadlink/__init__.py
-        }
-        if (model == 0x2733 || model == 0x2736 || model == 0x273e) {
-            return BroadlinkBindingConstants.THING_TYPE_SP2; // OEM-branded SPMini
-        }
-        if (model >= 0x7530 && model <= 0x7547) {
-            return BroadlinkBindingConstants.THING_TYPE_SP2; // OEM-branded SPMini2
-        }
-        if (model >= 0x7918 && model <= 0x7d0d) {
-            return BroadlinkBindingConstants.THING_TYPE_SP2; // SPMiniPlus
-        }
-        if (model == 0x2711 || model == 0x2716 || model == 0x271d || model == 0x2736) {
-            return BroadlinkBindingConstants.THING_TYPE_SP2; // SP2s and compatible
-        }
-        if (model == 0x2712) {
-            return BroadlinkBindingConstants.THING_TYPE_RM2;
-        }
-        if (model == 0x2737) {
-            return BroadlinkBindingConstants.THING_TYPE_RM3; // RM Mini
-        }
-        if (model == 0x27c2 || model == 0x27c7 || model == 0x27cc || model == 0x27cd) {
-            return BroadlinkBindingConstants.THING_TYPE_RM3; // RM Mini 3, firmware rev v40
-        }
-        if (model >= 0x27d0 && model <= 0x27df) {
-            return BroadlinkBindingConstants.THING_TYPE_RM3; // RM Mini 3, firmware rev v40
-        }
-        if (model == 0x5f36) {
-            return BroadlinkBindingConstants.THING_TYPE_RM3Q; // RM Mini 3, firmware rev v44057 - has sendCode quirk
-            // from RM4
-        }
-        if (model == 0x51da) {
-            return BroadlinkBindingConstants.THING_TYPE_RM4; // RM4b
-        }
-        if (model >= 0x6020 && model <= 0x602f) {
-            return BroadlinkBindingConstants.THING_TYPE_RM4; // RM4 Pro - wide range of identifiers exist
-        }
-        if (model >= 0x610f && model <= 0x62bf) {
-            return BroadlinkBindingConstants.THING_TYPE_RM4; // RM4c - wide range of identifiers exist
-        }
-        if (model == 0x6539) {
-            return BroadlinkBindingConstants.THING_TYPE_RM4; // RM4c Mini
-        }
-        if (model == 0x610e) {
-            return BroadlinkBindingConstants.THING_TYPE_RM4; // RM4 Mini
-        }
-        if (model == 0x61a2) {
-            return BroadlinkBindingConstants.THING_TYPE_RM4; // RM4 Pro
-        }
-        if (model == 0x649b) {
-            return BroadlinkBindingConstants.THING_TYPE_RM4; // RM4 Pro
-        }
-        if (model == 0x273d) {
-            return BroadlinkBindingConstants.THING_TYPE_RM; // RM Pro Phicomm
-        }
-        if (model == 0x2783) {
-            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Home Plus
-        }
-        if (model == 0x277c) {
-            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Home Plus GDT
-        }
-        if (model == 0x272a) {
-            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Pro Plus
-        }
-        if (model == 0x2787) {
-            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Pro Plus2
-        }
-        if (model == 0x279d) {
-            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Pro Plus3
-        }
-        if (model == 0x27a9) {
-            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Pro Plus_300
-        }
-        if (model == 0x278b) {
-            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Pro Plus BL
-        }
-        if (model == 0x2797) {
-            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Pro Plus HYC
-        }
-        if (model == 0x27a1) {
-            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Pro Plus R1
-        }
-        if (model == 0x27a6) {
-            return BroadlinkBindingConstants.THING_TYPE_RM2; // RM2 Pro PP
-        }
-        if (model == 0x278f) {
-            return BroadlinkBindingConstants.THING_TYPE_RM; // RM Mini Shate
-        }
-        if (model == 0x2714) {
-            return BroadlinkBindingConstants.THING_TYPE_A1;
-        }
-        if (model == 0x4eb5) {
-            return BroadlinkBindingConstants.THING_TYPE_MP1;
-        }
-        if (model == 0x4f65) {
-            return BroadlinkBindingConstants.THING_TYPE_MP1_1K3S2U;
-        }
-        if (model == 20251) {
-            return BroadlinkBindingConstants.THING_TYPE_MP2;
-        }
-        if (model == 0x4ef7) {
-            return BroadlinkBindingConstants.THING_TYPE_MP1; // Honyar OEM MP1
-        }
+        logger.debug("Looking for thing type corresponding to model {}", model);
 
-        String modelAsHexString = Integer.toHexString(model);
-        logger.warn(
-                "Device identifying itself as '{}' (0x{}) is not currently supported. Please report this to the developer!",
-                model, modelAsHexString);
-        logger.warn(
-                "Join the discussion at https://community.openhab.org/t/broadlink-binding-for-rmx-a1-spx-and-mp-any-interest/22768/616");
-        throw new UnsupportedOperationException("Device identifying itself as '" + model + "' (hex 0x"
-                + modelAsHexString + ") is not currently supported. Please report this to the developer!");
+        switch (model) {
+            case 0x0000:
+                return BroadlinkBindingConstants.THING_TYPE_SP1;
+            case 0x2717:
+            case 0x2719:
+            case 0x271A:
+            case 0x2720:
+            case 0x2728:
+            case 0x273E:
+            case 0x7530:
+            case 0x7539:
+            case 0x753E:
+            case 0x7540:
+            case 0x7544:
+            case 0x7546:
+            case 0x7547:
+            case 0x7918:
+            case 0x7919:
+            case 0x791A:
+            case 0x7D0D:
+                return BroadlinkBindingConstants.THING_TYPE_SP2;
+            case 0x2711:
+            case 0x2716:
+            case 0x271D:
+            case 0x2736:
+                return BroadlinkBindingConstants.THING_TYPE_SP2S;
+            case 0x2733:
+            case 0x7D00:
+                return BroadlinkBindingConstants.THING_TYPE_SP3;
+            case 0x9479:
+            case 0x947A:
+                return BroadlinkBindingConstants.THING_TYPE_SP3S;
+            case 0x2737:
+            case 0x278F:
+            case 0x27C2:
+            case 0x27C7:
+            case 0x27CC:
+            case 0x27CD:
+            case 0x27D0:
+            case 0x27D1:
+            case 0x27D3:
+            case 0x27DE:
+                return BroadlinkBindingConstants.THING_TYPE_RM3;
+            case 0x2712:
+            case 0x272A:
+            case 0x273D:
+            case 0x277C:
+            case 0x2783:
+            case 0x2787:
+            case 0x278B:
+            case 0x2797:
+            case 0x279D:
+            case 0x27A1:
+            case 0x27A6:
+            case 0x27A9:
+            case 0x27C3:
+                return BroadlinkBindingConstants.THING_TYPE_RM2;
+            case 0x5F36:
+            case 0x6508:
+                return BroadlinkBindingConstants.THING_TYPE_RM3Q;
+            case 0x51DA:
+            case 0x6070:
+            case 0x610E:
+            case 0x610F:
+            case 0x62BC:
+            case 0x62BE:
+            case 0x6364:
+            case 0x648D:
+            case 0x6539:
+            case 0x653A:
+            case 0x6026:
+            case 0x61A2:
+            case 0x649B:
+            case 0x653C:
+                return BroadlinkBindingConstants.THING_TYPE_RM4;
+            case 0x2714:
+                return BroadlinkBindingConstants.THING_TYPE_A1;
+            case 0x4EB5:
+            case 0x4EF7:
+            case 0x4F1B:
+            case 0x4F65:
+                return BroadlinkBindingConstants.THING_TYPE_MP1;
+            default: {
+                String modelAsHexString = Integer.toHexString(model);
+                logger.warn(
+                        "Device identifying itself as '{}' (0x{}) is not currently supported. Please report this to the developer!",
+                        model, modelAsHexString);
+                logger.warn(
+                        "Join the discussion at https://community.openhab.org/t/broadlink-binding-for-rmx-a1-spx-and-mp-any-interest/22768/616");
+                throw new UnsupportedOperationException("Device identifying itself as '" + model + "' (hex 0x"
+                        + modelAsHexString + ") is not currently supported. Please report this to the developer!");
+            }
+        }
     }
 
     private static StringType lookup(StringType[] values, byte b) {

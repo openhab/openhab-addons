@@ -37,7 +37,7 @@ import org.openhab.core.types.State;
 /**
  * Tests the Remote Model 4 handler.
  * 
- * @author John Marshall/Cato Sognen - Initial contribution
+ * @author John Marshall - Initial contribution
  */
 @NonNullByDefault
 public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHandlerTest {

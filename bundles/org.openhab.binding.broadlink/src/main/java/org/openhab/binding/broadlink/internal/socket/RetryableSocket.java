@@ -98,7 +98,7 @@ public class RetryableSocket {
                 logger.warn("receiveDatagram {} for socket was unexpectedly null", purpose);
             } else {
                 socket.receive(receivePacket);
-                logger.trace("Received {} ({}} bytes)", purpose, receivePacket.getLength());
+                logger.trace("Received {} ({} bytes)", purpose, receivePacket.getLength());
                 return receivePacket;
             }
         } catch (SocketTimeoutException ste) {

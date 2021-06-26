@@ -39,6 +39,10 @@ import org.openhab.core.util.HexUtils;
  */
 @NonNullByDefault
 public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
+
+    private static final byte[] ENTER_LEARNING = { 0x03, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    private static final byte[] CHECK_LEARNT_DATA = { 0x04, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
     private final BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider;
     private @Nullable BroadlinkMappingService mappingService;
 
@@ -55,7 +59,10 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     }
 
     public void dispose() {
-        this.mappingService.dispose();
+        if (this.mappingService != null) {
+            this.mappingService.dispose();
+        }
+        super.dispose();
     }
 
     protected void sendCode(byte code[]) {
@@ -71,6 +78,49 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             sendAndReceiveDatagram(message, "remote code");
         } catch (IOException e) {
             logger.warn("Exception while sending code", e);
+        }
+    }
+
+    protected void sendEnterLearningModeCommand() {
+        try {
+            byte[] message = buildMessage((byte) 0x6a, ENTER_LEARNING);
+            sendAndReceiveDatagram(message, "enter remote code learning mode");
+        } catch (IOException e) {
+            logger.warn("Exception while attempting to enter learn mode", e);
+        }
+    }
+
+    protected void sendCheckDataCommandAndLog() {
+        try {
+            byte[] message = buildMessage((byte) 0x6a, CHECK_LEARNT_DATA);
+            byte[] response = sendAndReceiveDatagram(message, "send learnt code check command");
+            if (response == null) {
+                logger.warn("Got nothing back while getting learnt code");
+            } else {
+                byte decryptResponse[] = decodeDevicePacket(response);
+                // Interesting stuff begins at the fourth byte
+                String hexString = Utils.toHexString(Utils.slice(decryptResponse, 4, decryptResponse.length));
+                logger.info("BEGIN LAST LEARNT CODE ({} bytes)", decryptResponse.length);
+                logger.info("{}", hexString);
+                logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
+            }
+
+        } catch (IOException e) {
+            logger.warn("Exception while attempting to check learnt code", e);
+        }
+    }
+
+    private void handleLearningCommand(String learningCommand) {
+        logger.trace("Sending learning-channel command {}", learningCommand);
+        switch (learningCommand) {
+            case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_LEARN:
+                sendEnterLearningModeCommand();
+                break;
+            case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK:
+                sendCheckDataCommandAndLog();
+                break;
+            default:
+                logger.warn("Unrecognised learning channel command: {}", learningCommand);
         }
     }
 
@@ -94,15 +144,21 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             logger.warn("Unexpected null channelTypeUID while handling command {}", command.toFullString());
             return;
         }
-        if (channelTypeUID.getId().equals(BroadlinkBindingConstants.COMMAND_CHANNEL)) {
-            logger.debug("Handling ir/rf command '{}' on channel {} of thing {}", command, channelUID.getId(),
-                    getThing().getLabel());
-            byte code[] = lookupCode(command, channelUID);
-            if (code != null) {
-                sendCode(code);
+        switch (channelTypeUID.getId()) {
+            case BroadlinkBindingConstants.COMMAND_CHANNEL: {
+                logger.debug("Handling ir/rf command '{}' on channel {} of thing {}", command, channelUID.getId(),
+                        getThing().getLabel());
+                byte code[] = lookupCode(command, channelUID);
+                if (code != null) {
+                    sendCode(code);
+                }
+                break;
             }
-        } else {
-            logger.debug("Thing {} has unknown channel type '{}'", getThing().getLabel(), channelTypeUID.getId());
+            case BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL:
+                handleLearningCommand(command.toString());
+                break;
+            default:
+                logger.debug("Thing {} has unknown channel type '{}'", getThing().getLabel(), channelTypeUID.getId());
         }
     }
 

@@ -23,6 +23,7 @@ import org.openhab.binding.broadlink.handler.BroadlinkRemoteModel4Handler;
 import org.openhab.binding.broadlink.handler.BroadlinkSocketModel1Handler;
 import org.openhab.binding.broadlink.handler.BroadlinkSocketModel2Handler;
 import org.openhab.binding.broadlink.handler.BroadlinkSocketModel3Handler;
+import org.openhab.binding.broadlink.handler.BroadlinkSocketModel3SHandler;
 import org.openhab.binding.broadlink.handler.BroadlinkStripModel11K3S2UHandler;
 import org.openhab.binding.broadlink.handler.BroadlinkStripModel1Handler;
 import org.openhab.core.thing.Thing;
@@ -97,10 +98,16 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
             return new BroadlinkSocketModel1Handler(thing);
         }
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_SP2)) {
-            return new BroadlinkSocketModel2Handler(thing);
+            return new BroadlinkSocketModel2Handler(thing, false);
+        }
+        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_SP2S)) {
+            return new BroadlinkSocketModel2Handler(thing, true);
         }
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_SP3)) {
             return new BroadlinkSocketModel3Handler(thing);
+        }
+        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_SP3S)) {
+            return new BroadlinkSocketModel3SHandler(thing);
         }
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_MP2)) {
             return new BroadlinkStripModel1Handler(thing);

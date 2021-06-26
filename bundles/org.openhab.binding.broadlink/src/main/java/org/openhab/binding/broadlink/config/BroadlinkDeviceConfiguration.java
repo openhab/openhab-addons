@@ -25,6 +25,7 @@ public class BroadlinkDeviceConfiguration {
     private boolean staticIp;
     private int port;
     private String macAddress;
+    private byte[] macAddressBytes;
     private int pollingInterval;
     private String mapFilename;
     private boolean ignoreFailedUpdates;
@@ -34,6 +35,7 @@ public class BroadlinkDeviceConfiguration {
         ipAddress = "";
         staticIp = true;
         macAddress = "";
+        macAddressBytes = new byte[0];
         pollingInterval = 30;
         mapFilename = "broadlink.map";
         ignoreFailedUpdates = false;
@@ -64,18 +66,20 @@ public class BroadlinkDeviceConfiguration {
     }
 
     public void setMacAddress(String macAddress) {
+        this.macAddressBytes = new byte[0];
         this.macAddress = macAddress;
     }
 
     public byte[] getMacAddress() {
-        byte configMac[] = new byte[6];
-        String elements[] = macAddress.split(":");
-        for (int i = 0; i < 6; i++) {
-            String element = elements[i];
-            configMac[i] = (byte) Integer.parseInt(element, 16);
+        if (macAddressBytes.length != 6) {
+            macAddressBytes = new byte[6];
+            String elements[] = macAddress.split(":");
+            for (int i = 0; i < 6; i++) {
+                String element = elements[i];
+                macAddressBytes[i] = (byte) Integer.parseInt(element, 16);
+            }
         }
-
-        return configMac;
+        return macAddressBytes;
     }
 
     public String getMacAddressAsString() {

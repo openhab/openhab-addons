@@ -69,6 +69,14 @@ public class Utils {
         return padded;
     }
 
+    public static String toHexString(byte[] source) {
+        StringBuilder stringBuilder = new StringBuilder(source.length * 2);
+        for (byte b : source) {
+            stringBuilder.append(String.format("%02x", b));
+        }
+        return stringBuilder.toString();
+    }
+
     public static byte[] encrypt(byte key[], IvParameterSpec ivSpec, byte data[]) throws IOException {
         SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
         try {

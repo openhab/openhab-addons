@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 
 /**
- * Tests the generic utilty functions.
+ * Tests the generic utility functions.
  * 
  * @author John Marshall/Cato Sognen - Initial contribution
  */
@@ -64,5 +64,32 @@ public class UtilsTest {
         byte[] expected = { 0x01, 0x02, 0x03, 0x04, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, };
 
         assertArrayEquals(expected, result);
+    }
+
+    @Test
+    public void toHexStringWorksOnSingleByte() {
+        byte[] source = { (byte) 0x81 };
+
+        String result = Utils.toHexString(source);
+
+        assertEquals("81", result);
+    }
+
+    @Test
+    public void toHexStringWorksOnMultipleBytesLowValues() {
+        byte[] source = { 0x01, 0x02, 0x03, 0x04 };
+
+        String result = Utils.toHexString(source);
+
+        assertEquals("01020304", result);
+    }
+
+    @Test
+    public void toHexStringWorksOnMultipleBytesMixedValues() {
+        byte[] source = { (byte) 0x81, (byte) 0xC2, 0x03, (byte) 0xA3, (byte) 0xF4 };
+
+        String result = Utils.toHexString(source);
+
+        assertEquals("81c203a3f4", result);
     }
 }

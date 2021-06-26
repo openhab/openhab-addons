@@ -89,7 +89,6 @@ public class BroadlinkSocket {
                         model = Byte.toUnsignedInt(receivedPacket[52]) | Byte.toUnsignedInt(receivedPacket[53]) << 8;
                         deviceType = ModelMapper.getThingType(model, logger);
                     }
-
                 }
             } catch (IOException e) {
                 if (!isInterrupted()) {
