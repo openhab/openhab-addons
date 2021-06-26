@@ -39,12 +39,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerHttpBridgeHandler.class);
-
-    @Nullable
-    private ScheduledFuture<?> pollingJob;
-    @Nullable
-    private OpenSprinklerApi openSprinklerDevice;
-
+    private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> delayedJob;
+    private @Nullable OpenSprinklerApi openSprinklerDevice;
     private OpenSprinklerHttpInterfaceConfig openSprinklerConfig = new OpenSprinklerHttpInterfaceConfig();
     private OpenSprinklerApiFactory apiFactory;
 
@@ -93,11 +90,13 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
     }
 
     public void delayedRefresh() {
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
+        ScheduledFuture<?> localFuture = delayedJob;
+        if (localFuture == null || localFuture.isDone()) {
+            delayedJob = scheduler.schedule(this::refreshStations, 3, TimeUnit.SECONDS);
+        } else {// User has sent multiple commands quickly, only need to update the controls once.
+            localFuture.cancel(true);
+            delayedJob = scheduler.schedule(this::refreshStations, 3, TimeUnit.SECONDS);
         }
-        refreshStations();
     }
 
     @SuppressWarnings("null")
@@ -142,6 +141,11 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
             openSprinklerDevice = null;
         }
         ScheduledFuture<?> localFuture = pollingJob;
+        if (localFuture != null) {
+            localFuture.cancel(true);
+            pollingJob = null;
+        }
+        localFuture = delayedJob;
         if (localFuture != null) {
             localFuture.cancel(true);
             pollingJob = null;
