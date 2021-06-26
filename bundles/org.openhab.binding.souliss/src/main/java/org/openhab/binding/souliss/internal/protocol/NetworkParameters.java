@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.souliss.internal.discovery.SoulissDiscoverJob.DiscoverResult;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 
@@ -38,8 +37,8 @@ public final class NetworkParameters {
     private static ConcurrentMap<Byte, Thing> hashTableGateways = new ConcurrentHashMap<>();
     private static ConcurrentMap<String, Thing> hashTableTopics = new ConcurrentHashMap<>();
 
-    @Nullable
-    public static DiscoverResult discoverResult = null;
+    // @Nullable
+    // public static DiscoverResult discoverResult = null;
 
     public static void addGateway(byte lastByteGatewayIP, Thing thing) {
         hashTableGateways.put(lastByteGatewayIP, thing);

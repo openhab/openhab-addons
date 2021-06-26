@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.config.GatewayConfig;
+import org.openhab.binding.souliss.internal.discovery.DiscoverResult;
 import org.openhab.binding.souliss.internal.discovery.SoulissGatewayDiscovery;
 import org.openhab.binding.souliss.internal.protocol.CommonCommands;
 import org.openhab.binding.souliss.internal.protocol.NetworkParameters;
@@ -62,6 +63,9 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     private @Nullable SoulissGatewayDiscovery discoveryService;
 
+    @Nullable
+    public DiscoverResult discoverResult = null;
+
     public boolean thereIsAThingDetection = true;
 
     private Bridge bridge;
@@ -76,7 +80,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         super(br);
         bridge = br;
         // new runnable udp listener
-        udpServerDefaultPortRunnableClass = new UDPListenDiscoverRunnable(NetworkParameters.discoverResult);
+        udpServerDefaultPortRunnableClass = new UDPListenDiscoverRunnable(this.discoverResult);
     }
 
     @Override

@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
 import org.openhab.binding.souliss.internal.SoulissUDPConstants;
-import org.openhab.binding.souliss.internal.discovery.SoulissDiscoverJob.DiscoverResult;
+import org.openhab.binding.souliss.internal.discovery.DiscoverResult;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
 import org.openhab.binding.souliss.internal.handler.SoulissGenericHandler;
 import org.openhab.binding.souliss.internal.handler.SoulissT11Handler;
