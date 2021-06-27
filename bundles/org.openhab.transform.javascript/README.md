@@ -22,7 +22,8 @@ JavaScript transformation syntax also support additional parameters which can be
 This can prevent redundancy when transformation is needed for several use cases, but with small adaptations.
 additional parameters can be passed to the script via [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) query syntax.
 
-As `input` name is reserved for transformed data, it can't be used in query parameters. Also `?` and `&` is reserved, but if they need to passed as additional data, they can be escaped according to URI syntax.
+As `input` name is reserved for transformed data, it can't be used in query parameters. 
+Also `?` and `&` characters are reserved, but if they need to passed as additional data, they can be escaped according to URI syntax.
 
 
 transform/scale.js:
