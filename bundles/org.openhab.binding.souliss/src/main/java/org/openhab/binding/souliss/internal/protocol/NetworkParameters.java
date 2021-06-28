@@ -37,16 +37,13 @@ public final class NetworkParameters {
     private static ConcurrentMap<Byte, Thing> hashTableGateways = new ConcurrentHashMap<>();
     private static ConcurrentMap<String, Thing> hashTableTopics = new ConcurrentHashMap<>();
 
-    // @Nullable
-    // public static DiscoverResult discoverResult = null;
+    // public static void addGateway(byte lastByteGatewayIP, Thing thing) {
+    // hashTableGateways.put(lastByteGatewayIP, thing);
+    // }
 
-    public static void addGateway(byte lastByteGatewayIP, Thing thing) {
-        hashTableGateways.put(lastByteGatewayIP, thing);
-    }
-
-    public static void addTopics(String sUID, Thing thing) {
-        hashTableTopics.put(sUID, thing);
-    }
+    // public static void addTopics(String sUID, Thing thing) {
+    // hashTableTopics.put(sUID, thing);
+    // }
 
     public static ConcurrentMap<Byte, Thing> getHashTableGateways() {
         return hashTableGateways;

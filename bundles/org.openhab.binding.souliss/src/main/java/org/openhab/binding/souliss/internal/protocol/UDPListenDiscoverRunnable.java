@@ -41,16 +41,16 @@ public class UDPListenDiscoverRunnable implements Runnable {
     protected boolean bExit = false;
     @Nullable
     UDPDecoder decoder = null;
-    @Nullable
-    DiscoverResult discoverResult = null;
+    // @Nullable
+    // DiscoverResult discoverResult = null;
 
     private final Logger logger = LoggerFactory.getLogger(UDPListenDiscoverRunnable.class);
 
     public UDPListenDiscoverRunnable(@Nullable DiscoverResult pDiscoverResult) {
         super();
-        this.discoverResult = pDiscoverResult;
+        // this.discoverResult = pDiscoverResult;
 
-        decoder = new UDPDecoder(discoverResult);
+        decoder = new UDPDecoder(pDiscoverResult);
     }
 
     @Override

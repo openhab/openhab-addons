@@ -62,7 +62,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         super(SoulissBindingConstants.SUPPORTED_THING_TYPES_UIDS, SoulissBindingConstants.DISCOVERY_TIMEOUT_IN_SECONDS,
                 false);
         this.soulissGwHandler = bridgeHandler;
-        this.soulissGwHandler.discoverResult = this;
+        bridgeHandler.discoverResult = this;
     }
 
     @Override

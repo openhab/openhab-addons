@@ -54,7 +54,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     private ExecutorService udpExecutorService = Executors
             .newSingleThreadExecutor(new NamedThreadFactory("binding-souliss"));
 
-    private UDPListenDiscoverRunnable udpServerDefaultPortRunnableClass;
+    private @Nullable UDPListenDiscoverRunnable udpServerDefaultPortRunnableClass = null;
     private @Nullable Future<?> eventListenerJob;
 
     private CommonCommands soulissCommands = new CommonCommands();
@@ -79,8 +79,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     public SoulissGatewayHandler(Bridge br) {
         super(br);
         bridge = br;
-        // new runnable udp listener
-        udpServerDefaultPortRunnableClass = new UDPListenDiscoverRunnable(this.discoverResult);
+
     }
 
     @Override
@@ -94,11 +93,13 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
         logger.debug("Starting UDP server on Souliss Default Port for Topics (Publish&Subcribe)");
 
+        // new runnable udp listener
+        this.udpServerDefaultPortRunnableClass = new UDPListenDiscoverRunnable(this.discoverResult);
         // and exec on thread
         this.udpExecutorService.execute(udpServerDefaultPortRunnableClass);
 
         // JOB PING
-        SoulissGatewayJobPing soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(bridge);
+        SoulissGatewayJobPing soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(this.bridge);
         scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2, this.gwConfig.pingInterval,
                 TimeUnit.SECONDS);
         // JOB SUBSCRIPTION

@@ -71,10 +71,10 @@ public class UDPDecoder {
 
     private final Logger logger = LoggerFactory.getLogger(UDPDecoder.class);
     @Nullable
-    private static DiscoverResult discoverResult;
+    private DiscoverResult discoverResult;
 
     public UDPDecoder(@Nullable DiscoverResult pDiscoverResult) {
-        UDPDecoder.discoverResult = pDiscoverResult;
+        this.discoverResult = pDiscoverResult;
     }
 
     /**
@@ -189,7 +189,7 @@ public class UDPDecoder {
         logger.debug("decodePingBroadcast. Gateway Discovery. IP: {}", ip);
 
         @Nullable
-        DiscoverResult localDiscoverResult = UDPDecoder.discoverResult;
+        DiscoverResult localDiscoverResult = this.discoverResult;
         if (localDiscoverResult != null) {
             localDiscoverResult.gatewayDetected(InetAddress.getByAddress(addr), macaco.get(8).toString());
         } else {
@@ -228,7 +228,7 @@ public class UDPDecoder {
                                 logger.debug("Thing Detected. IP (last byte): {}, Typical: 0x{}, Node: {}, Slot: {} ",
                                         lastByteGatewayIP, Integer.toHexString(typical), node, slot);
                                 @Nullable
-                                DiscoverResult localDiscoverResult = UDPDecoder.discoverResult;
+                                DiscoverResult localDiscoverResult = this.discoverResult;
                                 if (localDiscoverResult != null) {
                                     localDiscoverResult.thingDetectedTypicals(lastByteGatewayIP, typical, node, slot);
                                 } else {
@@ -304,7 +304,7 @@ public class UDPDecoder {
                         }
                     }
                 }
-                DiscoverResult localDiscoverResult = UDPDecoder.discoverResult;
+                DiscoverResult localDiscoverResult = this.discoverResult;
                 if (localDiscoverResult != null && !bIsPresent) {
                     localDiscoverResult.thingDetectedActionMessages(sTopicNumber, sTopicVariant);
                 }
