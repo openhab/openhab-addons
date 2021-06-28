@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="last-successful-read-type">
+		<item-type>DateTime</item-type>
+		<label>Last Successful Read</label>
+		<description>Date of last read</description>
+		<config-description></config-description>
+	</channel-type>
+	<channel-type id="last-erroring-read-type">
+		<item-type>DateTime</item-type>
+		<label>Last Erroring Read</label>
+		<description>Date of last read error</description>
+		<config-description></config-description>
+	</channel-type>
+
+</thing:thing-descriptions>

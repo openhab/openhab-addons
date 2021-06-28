@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="inverter-solax-x3-mic">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+			<bridge-type-ref id="serial"/>
+		</supported-bridge-type-refs>
+
+		<label>Solax X3 Mic Inverter</label>
+		<description>Solax X3 Mic Inverter supporting modbus connection</description>
+		<category>Inverter</category>
+
+		<channel-groups>
+			<channel-group id="deviceInformation" typeId="device-information">
+				<label>Device Status</label>
+			</channel-group>
+			<channel-group id="acGeneral" typeId="ac-general">
+				<label>Production Summary</label>
+			</channel-group>
+			<channel-group id="acPhaseA" typeId="ac-phase">
+				<label>AC Phase A (L1)</label>
+			</channel-group>
+			<channel-group id="acPhaseB" typeId="ac-phase">
+				<label>AC Phase B (L2)</label>
+			</channel-group>
+			<channel-group id="acPhaseC" typeId="ac-phase">
+				<label>AC Phase C (L3)</label>
+			</channel-group>
+			<channel-group id="dcGeneral1" typeId="dc-general">
+				<label>DC Chain 1</label>
+			</channel-group>
+			<channel-group id="dcGeneral2" typeId="dc-general">
+				<label>DC Chain 2</label>
+			</channel-group>
+		</channel-groups>
+
+		<properties>
+			<property name="serialNumber"/>
+			<property name="uniqueAddress"/>
+		</properties>
+
+		<representation-property>uniqueAddress</representation-property>
+
+		<config-description-ref uri="thing-type:modbus:solaxx3mic-modbusconfig"/>
+
+	</thing-type>
+
+</thing:thing-descriptions>
