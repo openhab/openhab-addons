@@ -49,7 +49,6 @@ import org.openhab.binding.souliss.internal.handler.SoulissT66Handler;
 import org.openhab.binding.souliss.internal.handler.SoulissT67Handler;
 import org.openhab.binding.souliss.internal.handler.SoulissT68Handler;
 import org.openhab.binding.souliss.internal.handler.SoulissTopicsHandler;
-import org.openhab.binding.souliss.internal.protocol.NetworkParameters;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
@@ -88,11 +87,11 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(GATEWAY_THING_TYPE)) {
-            if (!NetworkParameters.getHashTableGateways().isEmpty()) {
-                // logger.warn("Multiple gateways configuration is not supported");
-                throw new UnsupportedOperationException("Multiple gateways configuration is not supported");
-
-            }
+            // if (!NetworkParameters.getHashTableGateways().isEmpty()) {
+            // // logger.warn("Multiple gateways configuration is not supported");
+            // throw new UnsupportedOperationException("Multiple gateways configuration is not supported");
+            //
+            // }
 
             SoulissGatewayHandler bridgeHandler = new SoulissGatewayHandler((Bridge) thing);
             this.registerDiscoveryService(bridgeHandler);
@@ -101,7 +100,7 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
 
             Configuration gwConfigurationMap = thing.getConfiguration();
             String ipAddressOnLAN = (String) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_IP_ADDRESS);
-            NetworkParameters.addGateway((byte) Integer.parseInt(ipAddressOnLAN.split("\\.")[3]), thing);
+            // NetworkParameters.addGateway((byte) Integer.parseInt(ipAddressOnLAN.split("\\.")[3]), thing);
 
             return bridgeHandler;
 
@@ -188,7 +187,7 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
             return new SoulissT68Handler(thing);
         } else if (thingTypeUID.equals(TOPICS_THING_TYPE)) {
             logger.debug("Create handler for Action Messages (Topics) '{}'", thingTypeUID);
-            NetworkParameters.addTopics(thing.getUID().getId(), thing);
+            // NetworkParameters.addTopics(thing.getUID().getId(), thing);
             return new SoulissTopicsHandler(thing);
         }
 
