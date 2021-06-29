@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,6 +41,7 @@ import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.AbstractHomeAssistantTests;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.AbstractChannelConfiguration;
@@ -138,10 +140,23 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
      * @param label label
      * @param valueClass value class
      */
-    @SuppressWarnings("ConstantConditions")
     protected static void assertChannel(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
             String channelId, String stateTopic, String commandTopic, String label, Class<? extends Value> valueClass) {
         var stateChannel = component.getChannel(channelId);
+        assertChannel(stateChannel, stateTopic, commandTopic, label, valueClass);
+    }
+
+    /**
+     * Assert channel topics, label and value class
+     *
+     * @param stateChannel channel
+     * @param stateTopic state topic or empty string
+     * @param commandTopic command topic or empty string
+     * @param label label
+     * @param valueClass value class
+     */
+    protected static void assertChannel(ComponentChannel stateChannel, String stateTopic, String commandTopic,
+            String label, Class<? extends Value> valueClass) {
         assertThat(stateChannel.getChannel().getLabel(), is(label));
         assertThat(stateChannel.getState().getStateTopic(), is(stateTopic));
         assertThat(stateChannel.getState().getCommandTopic(), is(commandTopic));
@@ -161,7 +176,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
     }
 
     /**
-     * Assert that given payload was published on given topic.
+     * Assert that given payload was published exact-once on given topic.
      *
      * @param mqttTopic Mqtt topic
      * @param payload payload
@@ -169,6 +184,18 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
     protected void assertPublished(String mqttTopic, String payload) {
         verify(bridgeConnection).publish(eq(mqttTopic), eq(payload.getBytes(StandardCharsets.UTF_8)), anyInt(),
                 anyBoolean());
+    }
+
+    /**
+     * Assert that given payload was published N times on given topic.
+     *
+     * @param mqttTopic Mqtt topic
+     * @param payload payload
+     * @param t payload must be published N times on given topic
+     */
+    protected void assertPublished(String mqttTopic, String payload, int t) {
+        verify(bridgeConnection, times(t)).publish(eq(mqttTopic), eq(payload.getBytes(StandardCharsets.UTF_8)),
+                anyInt(), anyBoolean());
     }
 
     /**

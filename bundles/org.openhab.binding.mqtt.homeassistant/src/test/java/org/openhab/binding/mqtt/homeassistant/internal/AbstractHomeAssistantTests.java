@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -175,7 +174,12 @@ public abstract class AbstractHomeAssistantTests {
     }
 
     protected byte[] getResourceAsByteArray(String relativePath) {
-        return getResourceAsString(relativePath).getBytes(StandardCharsets.UTF_8);
+        try {
+            return Files.readAllBytes(getResourcePath(relativePath));
+        } catch (IOException e) {
+            Assertions.fail(e);
+        }
+        throw new IllegalArgumentException();
     }
 
     protected static String configTopicToMqtt(String configTopic) {
