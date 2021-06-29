@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="maxcul"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="cun_max_bridge">
+		<label>CUN Bridge</label>
+		<description>This bridge is used when using a CUN (network) in MORIZ mode (MAX!)</description>
+		<channels>
+			<channel id="led" typeId="onoff"/>
+			<channel id="credit10ms" typeId="credits"/>
+		</channels>
+		<config-description>
+			<parameter name="networkPath" type="text" required="true">
+				<label>Network Path</label>
+				<description>Set the device of the CUN device (mandatory)
+					Example CUN with default port 2323: 127.0.0.1
+					Example CUN
+					with Port: 127.0.0.1:2323
+				</description>
+				<limitToOptions>false</limitToOptions>
+				<options>
+					<option value="127.0.0.1">127.0.0.1</option>
+					<option value="127.0.0.1:2323">127.0.0.1:2323</option>
+				</options>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	<channel-type id="credits" advanced="true">
+		<item-type>Number</item-type>
+		<label>credits</label>
+		<description>credits of 10ms</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="onoff">
+		<item-type>Switch</item-type>
+		<label>On/Off</label>
+		<category>Switch</category>
+		<tags>
+			<tag>Switchable</tag>
+		</tags>
+	</channel-type>
+</thing:thing-descriptions>

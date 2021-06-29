@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="maxcul"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="maxcul_bridge">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cul_max_bridge"/>
+			<bridge-type-ref id="cun_max_bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>MAX! Bridge</label>
+		<description>This bridge is used when using a MAX! with a CUL/CUN Bridge</description>
+		<channels>
+			<channel id="pair_mode" typeId="onoff"/>
+			<channel id="listen_mode" typeId="onoff"/>
+		</channels>
+		<config-description>
+			<parameter name="timezone" type="text" required="false">
+				<label>Timezone</label>
+				<description>Set timezone you want the units to be set to.</description>
+				<default>Europe/London</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	<channel-type id="onoff">
+		<item-type>Switch</item-type>
+		<label>On/Off</label>
+		<category>Switch</category>
+		<tags>
+			<tag>Switchable</tag>
+		</tags>
+	</channel-type>
+</thing:thing-descriptions>

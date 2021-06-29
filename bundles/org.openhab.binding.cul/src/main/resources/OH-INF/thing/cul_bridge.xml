@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="maxcul"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="cul_max_bridge">
+		<label>CUL Bridge</label>
+		<description>This bridge is used when using a CUL (serial) in MORIZ mode (MAX!)</description>
+		<channels>
+			<channel id="led" typeId="onoff"/>
+			<channel id="credit10ms" typeId="credits"/>
+		</channels>
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<label>Serial port</label>
+				<description>Set the device of the CUL device (mandatory)
+					Example CUL with serial port: /dev/ttyACM0 or serial:COM3
+				</description>
+				<limitToOptions>false</limitToOptions>
+				<options>
+					<option value="/dev/ttyACM0">/dev/ttyACM0</option>
+					<option value="COM3">COM3</option>
+				</options>
+			</parameter>
+			<parameter name="baudrate" type="integer" min="1" required="false">
+				<label>Serial port baudrate</label>
+				<description>Serial port baudrate.</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="75">75</option>
+					<option value="110">110</option>
+					<option value="300">300</option>
+					<option value="1200">1200</option>
+					<option value="2400">2400</option>
+					<option value="4800">4800</option>
+					<option value="9600">9600</option>
+					<option value="19200">19200</option>
+					<option value="38400">38400</option>
+					<option value="57600">57600</option>
+					<option value="115200">115200</option>
+				</options>
+				<default>38400</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="parity" type="text" required="false">
+				<label>Serial port parity</label>
+				<description>Serial port parity.</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="EVEN">EVEN</option>
+					<option value="ODD">ODD</option>
+					<option value="MARK">MARK</option>
+					<option value="NONE">NONE</option>
+					<option value="SPACE">SPACE</option>
+				</options>
+				<default>NONE</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	<channel-type id="credits" advanced="true">
+		<item-type>Number</item-type>
+		<label>credits</label>
+		<description>credits of 10ms</description>
+		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="onoff">
+		<item-type>Switch</item-type>
+		<label>On/Off</label>
+		<category>Switch</category>
+		<tags>
+			<tag>Switchable</tag>
+		</tags>
+	</channel-type>
+</thing:thing-descriptions>
