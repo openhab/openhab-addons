@@ -59,7 +59,7 @@ public class SendDispatcherRunnable implements Runnable {
      */
     public static synchronized void put(DatagramPacket packetToPUT, Logger logger) {
         bPopSuspend = true;
-        boolean bPacchettoGestito = false;
+        var bPacchettoGestito = false;
         // estraggo il nodo indirizzato dal pacchetto in ingresso
         // restituisce -1 se il pacchetto non è del tipo SOULISS_UDP_FUNCTION_FORCE
         int node = getNode(packetToPUT);
@@ -72,7 +72,7 @@ public class SendDispatcherRunnable implements Runnable {
         } else {
             // OTTIMIZZATORE
             // scansione lista pacchetti da inviare
-            for (int i = 0; i < packetsList.size(); i++) {
+            for (var i = 0; i < packetsList.size(); i++) {
                 if (node >= 0 && getNode(packetsList.get(i).packet) == node && !packetsList.get(i).isSent()) {
                     // frame per lo stesso nodo già  presente in lista
                     logger.debug("Frame UPD per nodo {} già presente in coda. Esecuzione ottimizzazione.", node);
@@ -88,7 +88,7 @@ public class SendDispatcherRunnable implements Runnable {
                         logger.trace("Optimizer. Previous frame: {}",
                                 macacoToString(packetsList.get(i).packet.getData()));
                         // i valori dei tipici partono dal byte 12 in poi
-                        for (int j = 12; j < packetToPUT.getData().length; j++) {
+                        for (var j = 12; j < packetToPUT.getData().length; j++) {
                             // se il j-esimo byte è diverso da zero allora lo
                             // sovrascrivo al byte del pacchetto già presente
                             if (packetToPUT.getData()[j] != 0) {
@@ -103,7 +103,7 @@ public class SendDispatcherRunnable implements Runnable {
                         // inserire, poi elimino quello in lista ed inserisco
                         // quello nuovo
                         if (packetToPUT.getData().length > packetsList.get(i).packet.getData().length) {
-                            for (int j = 12; j < packetsList.get(i).packet.getData().length; j++) {
+                            for (var j = 12; j < packetsList.get(i).packet.getData().length; j++) {
                                 // se il j-esimo byte è diverso da zero allora
                                 // lo sovrascrivo al byte del pacchetto già
                                 // presente
@@ -151,12 +151,12 @@ public class SendDispatcherRunnable implements Runnable {
                             Integer.toHexString(sp.packet.getData()[7]), macacoToString(sp.packet.getData()),
                             packetsList.size());
 
-                    DatagramChannel channel = DatagramChannel.open();
+                    var channel = DatagramChannel.open();
                     sender = channel.socket();
                     sender.setReuseAddress(true);
                     sender.setBroadcast(true);
 
-                    InetSocketAddress sa = new InetSocketAddress(230);
+                    var sa = new InetSocketAddress(230);
                     sender.bind(sa);
 
                     sender.send(sp.packet);
@@ -191,7 +191,7 @@ public class SendDispatcherRunnable implements Runnable {
 
     private static String macacoToString(byte[] frame2) {
         byte[] frame = frame2.clone();
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.append("HEX: [");
         for (byte b : frame) {
             sb.append(String.format("%02X ", b));
@@ -218,12 +218,12 @@ public class SendDispatcherRunnable implements Runnable {
     public void safeSendCheck() {
         // short sVal = getByteAtSlot(macacoFrame, slot);
         // scansione lista paccetti inviati
-        for (int i = 0; i < packetsList.size(); i++) {
+        for (var i = 0; i < packetsList.size(); i++) {
 
             if (packetsList.get(i).isSent()) {
                 node = getNode(packetsList.get(i).packet);
                 iSlot = 0;
-                for (int j = 12; j < packetsList.get(i).packet.getData().length; j++) {
+                for (var j = 12; j < packetsList.get(i).packet.getData().length; j++) {
                     // controllo lo slot solo se il comando è diverso da ZERO
                     if (packetsList.get(i).packet.getData()[j] != 0) {
                         // recupero tipico dalla memoria
@@ -351,8 +351,8 @@ public class SendDispatcherRunnable implements Runnable {
     }
 
     private static boolean checkAllsSlotZero(DatagramPacket packet) {
-        boolean bflag = true;
-        for (int j = 12; j < packet.getData().length; j++) {
+        var bflag = true;
+        for (var j = 12; j < packet.getData().length; j++) {
             if ((packet.getData()[j] != 0)) {
                 bflag = false;
             }
@@ -387,8 +387,8 @@ public class SendDispatcherRunnable implements Runnable {
 
                     }
 
-                    int iPacket = 0;
-                    boolean bFlagWhile = true;
+                    var iPacket = 0;
+                    var bFlagWhile = true;
                     // scarta i pacchetti già  inviati
                     while ((iPacket < packetsList.size()) && bFlagWhile) {
                         if (packetsList.get(iPacket).sent) {
@@ -427,8 +427,8 @@ public class SendDispatcherRunnable implements Runnable {
 
                         logger.debug("POP: {} packets in memory", packetsList.size());
                         if (logger.isDebugEnabled()) {
-                            int iPacketSentCounter = 0;
-                            int i = 0;
+                            var iPacketSentCounter = 0;
+                            var i = 0;
                             while ((i < packetsList.size())) {
                                 if (packetsList.get(i).sent) {
                                     iPacketSentCounter++;

@@ -43,7 +43,7 @@ public class SoulissT13Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     public void setState(@Nullable PrimitiveType state) {

@@ -22,7 +22,7 @@ import org.openhab.core.thing.Bridge;
  */
 
 @NonNullByDefault
-public class SoulissGatewayJobSubscription extends Thread {
+public class SoulissGatewayJobSubscription implements Runnable {
 
     @Nullable
     private SoulissGatewayHandler gwHandler;

@@ -25,7 +25,6 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -67,7 +66,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     protected SoulissGenericHandler(Thing thing) {
         super(thing);
         this.thingGeneric = thing;
-        int iPosNodeSlot = 2; // if uuid is of type souliss:gateway:[typical]:[node]-[slot] then node/slot is at
+        var iPosNodeSlot = 2; // if uuid is of type souliss:gateway:[typical]:[node]-[slot] then node/slot is at
                               // position 2
 
         if (thing.getUID().getAsString().split(":").length > 3) {
@@ -132,8 +131,8 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
      */
     private static String getTimestamp() {
         // Pattern : yyyy-MM-dd'T'HH:mm:ssz
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz");
-        Date n = new Date();
+        var sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz");
+        var n = new Date();
         return sdf.format(n.getTime());
     }
 
@@ -154,14 +153,12 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
 
     @Nullable
     public String getGatewayIP() {
-        Bridge bridge = getBridge();
+        var bridge = getBridge();
         if (bridge != null) {
             SoulissGatewayHandler bridgeHandler = (SoulissGatewayHandler) bridge.getHandler();
             if (bridgeHandler != null) {
                 GatewayConfig gwConfig = bridgeHandler.gwConfig;
-                if (gwConfig.gatewayIpAddress != null) {
-                    return gwConfig.gatewayIpAddress;
-                }
+                return gwConfig.gatewayIpAddress;
             }
         }
         return null;
@@ -173,7 +170,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     }
 
     public byte getGatewayUserIndex() {
-        Bridge bridge = getBridge();
+        var bridge = getBridge();
         if (bridge != null) {
             SoulissGatewayHandler soulissgwHandler = (SoulissGatewayHandler) bridge.getHandler();
             if (soulissgwHandler != null) {
@@ -185,7 +182,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     }
 
     public byte getGatewayNodeIndex() {
-        Bridge bridge = getBridge();
+        var bridge = getBridge();
         if (bridge != null) {
             SoulissGatewayHandler soulissgwHandler = (SoulissGatewayHandler) bridge.getHandler();
             if (soulissgwHandler != null) {
@@ -198,6 +195,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
 
     public void setHealthy(byte shHealthy) {
         this.updateState(SoulissBindingConstants.HEALTHY_CHANNEL, new DecimalType(shHealthy & 0xFF));
+        this.updateStatus(ThingStatus.ONLINE);
     }
 
     public void setLastStatusStored() {

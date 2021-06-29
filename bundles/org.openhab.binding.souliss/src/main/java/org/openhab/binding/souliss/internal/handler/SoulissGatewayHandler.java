@@ -24,7 +24,6 @@ import org.openhab.binding.souliss.internal.config.GatewayConfig;
 import org.openhab.binding.souliss.internal.discovery.DiscoverResult;
 import org.openhab.binding.souliss.internal.discovery.SoulissGatewayDiscovery;
 import org.openhab.binding.souliss.internal.protocol.CommonCommands;
-import org.openhab.binding.souliss.internal.protocol.NetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.SendDispatcherRunnable;
 import org.openhab.binding.souliss.internal.protocol.UDPListenDiscoverRunnable;
 import org.openhab.core.common.NamedThreadFactory;
@@ -34,7 +33,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +52,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     private ExecutorService udpExecutorService = Executors
             .newSingleThreadExecutor(new NamedThreadFactory("binding-souliss"));
 
-    private @Nullable UDPListenDiscoverRunnable udpServerDefaultPortRunnableClass = null;
     private @Nullable Future<?> eventListenerJob;
 
     private CommonCommands soulissCommands = new CommonCommands();
@@ -79,11 +76,11 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     public SoulissGatewayHandler(Bridge br) {
         super(br);
         bridge = br;
-
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        // do nothing
     }
 
     @Override
@@ -94,64 +91,35 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         logger.debug("Starting UDP server on Souliss Default Port for Topics (Publish&Subcribe)");
 
         // new runnable udp listener
-        this.udpServerDefaultPortRunnableClass = new UDPListenDiscoverRunnable(this.discoverResult);
+        var udpServerDefaultPortRunnableClass = new UDPListenDiscoverRunnable(this.bridge, this.discoverResult);
         // and exec on thread
         this.udpExecutorService.execute(udpServerDefaultPortRunnableClass);
 
         // JOB PING
-        SoulissGatewayJobPing soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(this.bridge);
+        var soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(this.bridge);
         scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2, this.gwConfig.pingInterval,
                 TimeUnit.SECONDS);
         // JOB SUBSCRIPTION
-        SoulissGatewayJobSubscription soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(bridge);
+        var soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(bridge);
         scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 0, this.gwConfig.subscriptionInterval,
                 TimeUnit.MINUTES);
 
         // JOB HEALTH OF NODES
-        SoulissGatewayJobHealthy soulissGatewayJobHealthyRunnable = new SoulissGatewayJobHealthy(bridge);
+        var soulissGatewayJobHealthyRunnable = new SoulissGatewayJobHealthy(this.bridge);
         scheduler.scheduleWithFixedDelay(soulissGatewayJobHealthyRunnable, 5, this.gwConfig.healthyInterval,
                 TimeUnit.SECONDS);
 
         // il ciclo Send è schedulato con la costante
         // SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_cicleInMillis
         // internamente il ciclo viene rallentato al timer impostato da configurazione (PaperUI o File)
-        SendDispatcherRunnable soulissSendDispatcherRunnable = new SendDispatcherRunnable(bridge);
+        var soulissSendDispatcherRunnable = new SendDispatcherRunnable(this.bridge);
         scheduler.scheduleWithFixedDelay(soulissSendDispatcherRunnable, 15,
                 SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_CYCLE_IN_MILLIS, TimeUnit.MILLISECONDS);
     }
 
-    private byte getGwIpByte() {
-        return (byte) Integer.parseInt(this.gwConfig.gatewayIpAddress.split("\\.")[3]);
-    }
-
-    @Override
-    public void handleRemoval() {
-        try {
-            NetworkParameters.removeGateway(getGwIpByte());
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            logger.warn("Ip Gateway null on HandleRemoval: {}", e.getLocalizedMessage());
-        }
-        logger.debug("Gateway handler removing");
-    }
-
-    @Override
-    public void thingUpdated(Thing thing) {
-        logger.debug("Thing Updated: {}", thing.getThingTypeUID());
-        try {
-            NetworkParameters.removeGateway(getGwIpByte());
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            logger.warn("Ip Gateway null on ThingUpdated: {}", e.getLocalizedMessage());
-        }
-        this.thing = thing;
-    }
-
     public void dbStructAnswerReceived() {
-        if (this.gwConfig.gatewayIpAddress != null) {
-            soulissCommands.sendTypicalRequestFrame(this.gwConfig.gatewayIpAddress, (byte) this.gwConfig.nodeIndex,
-                    (byte) this.gwConfig.userIndex, nodes);
-        }
+        soulissCommands.sendTypicalRequestFrame(this.gwConfig.gatewayIpAddress, (byte) this.gwConfig.nodeIndex,
+                (byte) this.gwConfig.userIndex, nodes);
     }
 
     public void setNodes(int nodes) {
@@ -161,7 +129,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     int iPosNodeSlot = 2;
 
     public int getNodes() {
-        int maxNode = 0;
+        var maxNode = 0;
         for (Thing thing : bridge.getThings()) {
             String[] uuidStrings = thing.getUID().getAsString().split(SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR);
             String[] uuidNodeNumber = uuidStrings[0].split(SoulissBindingConstants.UUID_ELEMENTS_SEPARATOR);
@@ -202,7 +170,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     public void pingSent() {
         if (++countPingKo > 3) {
-            BridgeHandler bridgeHandler = bridge.getHandler();
+            var bridgeHandler = bridge.getHandler();
             if (bridgeHandler != null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                         "Gateway " + bridgeHandler.getThing().getUID() + " do not respond to " + countPingKo + " ping");
@@ -211,7 +179,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     }
 
     public void sendSubscription() {
-        if (this.gwConfig.gatewayIpAddress != null && this.gwConfig.gatewayIpAddress.length() > 0) {
+        if (this.gwConfig.gatewayIpAddress.length() > 0) {
             soulissCommands.sendSUBSCRIPTIONframe(this.gwConfig.gatewayIpAddress, (byte) this.gwConfig.nodeIndex,
                     (byte) this.gwConfig.userIndex, getNodes());
 

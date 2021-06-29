@@ -49,7 +49,6 @@ import org.openhab.binding.souliss.internal.handler.SoulissT66Handler;
 import org.openhab.binding.souliss.internal.handler.SoulissT67Handler;
 import org.openhab.binding.souliss.internal.handler.SoulissT68Handler;
 import org.openhab.binding.souliss.internal.handler.SoulissTopicsHandler;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -84,23 +83,12 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        var thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(GATEWAY_THING_TYPE)) {
-            // if (!NetworkParameters.getHashTableGateways().isEmpty()) {
-            // // logger.warn("Multiple gateways configuration is not supported");
-            // throw new UnsupportedOperationException("Multiple gateways configuration is not supported");
-            //
-            // }
 
-            SoulissGatewayHandler bridgeHandler = new SoulissGatewayHandler((Bridge) thing);
+            var bridgeHandler = new SoulissGatewayHandler((Bridge) thing);
             this.registerDiscoveryService(bridgeHandler);
-
-            // get last byte of IP number
-
-            Configuration gwConfigurationMap = thing.getConfiguration();
-            String ipAddressOnLAN = (String) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_IP_ADDRESS);
-            // NetworkParameters.addGateway((byte) Integer.parseInt(ipAddressOnLAN.split("\\.")[3]), thing);
 
             return bridgeHandler;
 
@@ -187,7 +175,6 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
             return new SoulissT68Handler(thing);
         } else if (thingTypeUID.equals(TOPICS_THING_TYPE)) {
             logger.debug("Create handler for Action Messages (Topics) '{}'", thingTypeUID);
-            // NetworkParameters.addTopics(thing.getUID().getId(), thing);
             return new SoulissTopicsHandler(thing);
         }
 
@@ -201,7 +188,7 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
      */
     private synchronized void registerDiscoveryService(SoulissGatewayHandler bridgeHandler) {
         logger.debug("Registering XML device discovery service.");
-        SoulissGatewayDiscovery discoveryService = new SoulissGatewayDiscovery(bridgeHandler);
+        var discoveryService = new SoulissGatewayDiscovery(bridgeHandler);
         bridgeHandler.setDiscoveryService(discoveryService);
         discoveryServiceRegMap.put(bridgeHandler.getThing().getUID(),
                 bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));

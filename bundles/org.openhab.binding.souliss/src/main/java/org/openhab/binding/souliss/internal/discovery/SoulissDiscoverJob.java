@@ -12,16 +12,11 @@
  */
 package org.openhab.binding.souliss.internal.discovery;
 
-import java.util.Collection;
-import java.util.concurrent.ConcurrentMap;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
 import org.openhab.binding.souliss.internal.protocol.CommonCommands;
-import org.openhab.binding.souliss.internal.protocol.NetworkParameters;
 import org.openhab.binding.souliss.internal.protocol.UDPListenDiscoverRunnable;
-import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,23 +35,25 @@ public class SoulissDiscoverJob implements Runnable {
 
     private int resendCounter = 0;
 
-    public SoulissDiscoverJob() {
+    @Nullable
+    private SoulissGatewayHandler gwHandler;
+
+    public SoulissDiscoverJob(SoulissGatewayHandler soulissGwHandler) {
+        this.gwHandler = soulissGwHandler;
     }
 
     @Override
     public void run() {
-        ConcurrentMap<Byte, Thing> gwMaps = NetworkParameters.getHashTableGateways();
-        Collection<Thing> gwMapsCollection = gwMaps.values();
-        for (Thing t : gwMapsCollection) {
-            SoulissGatewayHandler gw = (SoulissGatewayHandler) t.getHandler();
-            if (gw != null) {
-                logger.debug("Sending request to gateway for souliss network - Counter={}", resendCounter);
-                soulissCommands.sendDBStructFrame(gw.gwConfig.gatewayIpAddress, (byte) gw.gwConfig.nodeIndex,
-                        (byte) gw.gwConfig.userIndex);
-            } else {
-                logger.debug("Gateway null - Skipped");
-            }
+
+        if (this.gwHandler != null) {
+            soulissCommands.sendDBStructFrame(this.gwHandler.gwConfig.gatewayIpAddress,
+                    (byte) this.gwHandler.gwConfig.nodeIndex, (byte) this.gwHandler.gwConfig.userIndex);
+            logger.debug("Sending request to gateway for souliss network - Counter={}", resendCounter);
+
+        } else {
+            logger.debug("Gateway null - Skipped");
         }
+
         resendCounter++;
     }
 }
