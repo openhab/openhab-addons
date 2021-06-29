@@ -47,7 +47,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
     @Nullable
     UDPListenDiscoverRunnable udpServerRunnableClass = null;
 
-    SoulissGatewayHandler soulissGwHandler;
+    private SoulissGatewayHandler soulissGwHandler;
 
     @Override
     public void deactivate() {
@@ -86,9 +86,9 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         String label = "Souliss Gateway " + (Byte.parseByte(id) & 0xFF);
         Map<String, Object> properties = new TreeMap<>();
         properties.put(SoulissBindingConstants.CONFIG_IP_ADDRESS, addr.getHostAddress());
-        ThingUID gatewayUID = new ThingUID(SoulissBindingConstants.GATEWAY_THING_TYPE,
+        var gatewayUID = new ThingUID(SoulissBindingConstants.GATEWAY_THING_TYPE,
                 Integer.toString((Byte.parseByte(id) & 0xFF)));
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(gatewayUID).withLabel(label)
+        var discoveryResult = DiscoveryResultBuilder.create(gatewayUID).withLabel(label)
                 .withRepresentationProperty(SoulissBindingConstants.CONFIG_IP_ADDRESS).withProperties(properties)
                 .build();
         thingDiscovered(discoveryResult);
@@ -100,7 +100,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
         // create discovery class
         if (soulissDiscoverRunnableClass == null) {
-            soulissDiscoverRunnableClass = new SoulissDiscoverJob();
+            soulissDiscoverRunnableClass = new SoulissDiscoverJob(this.soulissGwHandler);
 
             discoveryJob = scheduler.scheduleWithFixedDelay(soulissDiscoverRunnableClass, 100,
                     SoulissBindingConstants.DISCOVERY_RESEND_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS);
@@ -122,14 +122,14 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
     }
 
     @Override
-    public void thingDetectedActionMessages(String TopicNumber, String sTopicVariant) {
+    public void thingDetectedActionMessages(String topicNumber, String sTopicVariant) {
         ThingUID thingUID = null;
-        String label = "";
+        var label = "";
         DiscoveryResult discoveryResult;
-        String sNodeID = TopicNumber + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + sTopicVariant;
+        String sNodeID = topicNumber + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + sTopicVariant;
 
         thingUID = new ThingUID(SoulissBindingConstants.TOPICS_THING_TYPE, sNodeID);
-        label = "Topic. Number: " + TopicNumber + ", Variant: " + sTopicVariant;
+        label = "Topic. Number: " + topicNumber + ", Variant: " + sTopicVariant;
 
         discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label).build();
         thingDiscovered(discoveryResult);
@@ -139,9 +139,9 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
     public void thingDetectedTypicals(byte lastByteGatewayIP, byte typical, byte node, byte slot) {
         @Nullable
         ThingUID thingUID = null;
-        String label = "";
+        var label = "";
         DiscoveryResult discoveryResult;
-        SoulissGatewayHandler gwHandler = this.soulissGwHandler; // NetworkParameters.getGateway(lastByteGatewayIP);
+        SoulissGatewayHandler gwHandler = this.soulissGwHandler;
         if (lastByteGatewayIP == (byte) Integer.parseInt(gwHandler.gwConfig.gatewayIpAddress.split("\\.")[3])) {
             String sNodeId = node + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + slot;
 

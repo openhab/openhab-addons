@@ -23,6 +23,7 @@ import java.nio.channels.DatagramChannel;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.discovery.DiscoverResult;
+import org.openhab.core.thing.Bridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,11 +47,9 @@ public class UDPListenDiscoverRunnable implements Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(UDPListenDiscoverRunnable.class);
 
-    public UDPListenDiscoverRunnable(@Nullable DiscoverResult pDiscoverResult) {
-        super();
-        // this.discoverResult = pDiscoverResult;
+    public UDPListenDiscoverRunnable(Bridge bridge, @Nullable DiscoverResult pDiscoverResult) {
 
-        decoder = new UDPDecoder(pDiscoverResult);
+        decoder = new UDPDecoder(bridge, pDiscoverResult);
     }
 
     @Override
@@ -60,18 +59,18 @@ public class UDPListenDiscoverRunnable implements Runnable {
         while (true) {
             try {
                 // open socket for listening...
-                DatagramChannel channel = DatagramChannel.open();
+                var channel = DatagramChannel.open();
                 socket = channel.socket();
 
                 socket.setReuseAddress(true);
                 socket.setBroadcast(true);
 
-                InetSocketAddress sa = new InetSocketAddress(230);
+                var sa = new InetSocketAddress(230);
                 socket.bind(sa);
 
                 byte[] buf = new byte[200];
                 // receive request
-                final DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                final var packet = new DatagramPacket(buf, buf.length);
                 socket.setSoTimeout(60000);
                 socket.receive(packet);
                 buf = packet.getData();
@@ -111,7 +110,7 @@ public class UDPListenDiscoverRunnable implements Runnable {
     }
 
     private String macacoToString(byte[] frame) {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.append("HEX: [");
         for (byte b : frame) {
             sb.append(String.format("%02X ", b));

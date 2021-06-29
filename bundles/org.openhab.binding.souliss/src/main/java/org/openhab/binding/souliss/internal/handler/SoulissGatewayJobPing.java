@@ -16,7 +16,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.protocol.CommonCommands;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.binding.BridgeHandler;
 
 /**
  * @author Tonino Fazio - Initial contribution
@@ -32,7 +31,7 @@ public class SoulissGatewayJobPing implements Runnable {
     private SoulissGatewayHandler gwHandler;
 
     public SoulissGatewayJobPing(Bridge bridge) {
-        BridgeHandler bridgeHandler = bridge.getHandler();
+        var bridgeHandler = bridge.getHandler();
         if (bridgeHandler != null) {
             gwHandler = (SoulissGatewayHandler) bridgeHandler;
         }
@@ -52,8 +51,7 @@ public class SoulissGatewayJobPing implements Runnable {
     private void sendPing(SoulissGatewayHandler soulissGwHandler) {
         // sending ping packet
 
-        if (soulissGwHandler.gwConfig.gatewayIpAddress != null
-                && soulissGwHandler.gwConfig.gatewayIpAddress.length() > 0) {
+        if (soulissGwHandler.gwConfig.gatewayIpAddress.length() > 0) {
             soulissCommands.sendPing(soulissGwHandler.gwConfig.gatewayIpAddress,
                     (byte) soulissGwHandler.gwConfig.nodeIndex, (byte) soulissGwHandler.gwConfig.userIndex, (byte) 0,
                     (byte) 0);

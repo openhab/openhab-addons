@@ -46,7 +46,8 @@ public class SoulissT22Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
+
         gwConfigurationMap = thingGeneric.getConfiguration();
         if (gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND) != null) {
             bSecureSend = ((Boolean) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND)).booleanValue();

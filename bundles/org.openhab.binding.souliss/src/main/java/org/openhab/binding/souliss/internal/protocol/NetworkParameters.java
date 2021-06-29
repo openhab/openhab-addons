@@ -16,8 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -37,37 +35,8 @@ public final class NetworkParameters {
     private static ConcurrentMap<Byte, Thing> hashTableGateways = new ConcurrentHashMap<>();
     private static ConcurrentMap<String, Thing> hashTableTopics = new ConcurrentHashMap<>();
 
-    // public static void addGateway(byte lastByteGatewayIP, Thing thing) {
-    // hashTableGateways.put(lastByteGatewayIP, thing);
-    // }
-
-    // public static void addTopics(String sUID, Thing thing) {
-    // hashTableTopics.put(sUID, thing);
-    // }
-
-    public static ConcurrentMap<Byte, Thing> getHashTableGateways() {
-        return hashTableGateways;
-    }
-
     public static ConcurrentMap<String, Thing> getHashTableTopics() {
         return hashTableTopics;
     }
 
-    @Nullable
-    public static Thing getTopic(String sUID) {
-        return hashTableTopics.get(sUID);
-    }
-
-    @Nullable
-    public static Bridge getGateway(byte lastByteGatewayIP) {
-        return (Bridge) hashTableGateways.get(lastByteGatewayIP);
-    }
-
-    public static void removeGateway(byte lastByteGatewayIP) {
-        hashTableGateways.remove(lastByteGatewayIP);
-    }
-
-    public static void removeTopic(String sUID) {
-        hashTableTopics.remove(sUID);
-    }
 }

@@ -72,9 +72,18 @@ public class UDPDecoder {
     private final Logger logger = LoggerFactory.getLogger(UDPDecoder.class);
     @Nullable
     private DiscoverResult discoverResult;
+    @Nullable
+    private SoulissGatewayHandler gwHandler;
 
-    public UDPDecoder(@Nullable DiscoverResult pDiscoverResult) {
+    @Nullable
+    private Byte lastByteGatewayIp = null;
+
+    public UDPDecoder(Bridge bridge, @Nullable DiscoverResult pDiscoverResult) {
+        this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();
         this.discoverResult = pDiscoverResult;
+        if (this.gwHandler != null) {
+            this.lastByteGatewayIp = (byte) Integer.parseInt(this.gwHandler.gwConfig.gatewayIpAddress.split("\\.")[3]);
+        }
     }
 
     /**
@@ -86,12 +95,15 @@ public class UDPDecoder {
     public void decodeVNetDatagram(DatagramPacket packet) {
         int checklen = packet.getLength();
         ArrayList<Byte> mac = new ArrayList<>();
-        for (int ig = 7; ig < checklen; ig++) {
+        for (var ig = 7; ig < checklen; ig++) {
             mac.add((byte) (packet.getData()[ig] & 0xFF));
         }
-        // Last number of IP of Original Destination Address (2 byte)
 
-        decodeMacaco((byte) (packet.getData()[5] & 0xFF), mac);
+        // Check if decoded Gw equal to ip of bridge handler or 1 (action messages)
+        Byte gwCheck = (byte) (packet.getData()[5] & 0xFF);
+        if ((gwCheck == 1) || (gwCheck.equals(this.lastByteGatewayIp))) {
+            decodeMacaco((byte) (packet.getData()[5] & 0xFF), mac);
+        }
     }
 
     /**
@@ -106,7 +118,7 @@ public class UDPDecoder {
         switch (functionalCode) {
             case SoulissUDPConstants.SOULISS_UDP_FUNCTION_PING_RESP:
                 logger.debug("Received functional code: 0x{}- Ping answer", Integer.toHexString(functionalCode));
-                decodePing(lastByteGatewayIP, macacoPck);
+                decodePing(macacoPck);
                 break;
 
             case SoulissUDPConstants.SOULISS_UDP_FUNCTION_DISCOVER_GW_NODE_BCAST_RESP:
@@ -123,7 +135,7 @@ public class UDPDecoder {
             case SoulissUDPConstants.SOULISS_UDP_FUNCTION_SUBSCRIBE_RESP:
             case SoulissUDPConstants.SOULISS_UDP_FUNCTION_POLL_RESP:
                 logger.debug("Received functional code: 0x{} - Read state answer", Integer.toHexString(functionalCode));
-                decodeStateRequest(lastByteGatewayIP, macacoPck);
+                decodeStateRequest(macacoPck);
                 break;
 
             case SoulissUDPConstants.SOULISS_UDP_FUNCTION_TYP_RESP:// Answer for assigned typical logic
@@ -135,13 +147,13 @@ public class UDPDecoder {
             case SoulissUDPConstants.SOULISS_UDP_FUNCTION_HEALTHY_RESP:// Answer
                 // nodes healthy
                 logger.debug("Received functional code: 0x{} - Nodes Healthy", Integer.toHexString(functionalCode));
-                decodeHealthyRequest(lastByteGatewayIP, macacoPck);
+                decodeHealthyRequest(macacoPck);
                 break;
 
             case (byte) SoulissUDPConstants.SOULISS_UDP_FUNCTION_DBSTRUCT_RESP:
                 logger.debug("Received functional code: 0x{} - Database structure answer",
                         Integer.toHexString(functionalCode));
-                decodeDBStructRequest(lastByteGatewayIP, macacoPck);
+                decodeDBStructRequest(macacoPck);
                 break;
             case 0x83:
                 logger.debug("Functional code not supported");
@@ -166,18 +178,13 @@ public class UDPDecoder {
     /**
      * @param mac
      */
-    private void decodePing(byte lastByteGatewayIP, ArrayList<Byte> mac) {
+    private void decodePing(ArrayList<Byte> mac) {
         int putIn1 = mac.get(1); // not used
         int putIn2 = mac.get(2); // not used
         logger.debug("decodePing: putIn code: {}, {}", putIn1, putIn2);
 
-        Bridge gw = NetworkParameters.getGateway(lastByteGatewayIP);
-
-        if (gw != null) {
-            SoulissGatewayHandler gwHandler = (SoulissGatewayHandler) gw.getHandler();
-            if (gwHandler != null) {
-                gwHandler.gatewayDetected();
-            }
+        if (this.gwHandler != null) {
+            this.gwHandler.gatewayDetected();
         }
     }
 
@@ -188,8 +195,7 @@ public class UDPDecoder {
                 (macaco.get(8)).byteValue() };
         logger.debug("decodePingBroadcast. Gateway Discovery. IP: {}", ip);
 
-        @Nullable
-        DiscoverResult localDiscoverResult = this.discoverResult;
+        var localDiscoverResult = this.discoverResult;
         if (localDiscoverResult != null) {
             localDiscoverResult.gatewayDetected(InetAddress.getByAddress(addr), macaco.get(8).toString());
         } else {
@@ -206,41 +212,31 @@ public class UDPDecoder {
      * @param mac
      */
     private void decodeTypRequest(byte lastByteGatewayIP, ArrayList<Byte> mac) {
-        try {
+        if (this.gwHandler != null) {
+            int typXnodo = this.gwHandler.getMaxTypicalXnode();
+
             byte tgtnode = mac.get(3);
             int numberOf = mac.get(4);
 
-            Bridge bridge = NetworkParameters.getGateway(lastByteGatewayIP);
-            if (bridge != null) {
-                SoulissGatewayHandler gateway;
-                gateway = (SoulissGatewayHandler) bridge.getHandler();
+            // creates Souliss nodes
+            for (var j = 0; j < numberOf; j++) {
+                if (mac.get(5 + j) != 0) {// create only not-empty typicals
+                    if ((mac.get(5 + j) != SoulissProtocolConstants.SOULISS_T_RELATED)) {
+                        byte typical = mac.get(5 + j);
+                        byte slot = (byte) (j % typXnodo);
+                        byte node = (byte) (j / typXnodo + tgtnode);
+                        logger.debug("Thing Detected. IP (last byte): {}, Typical: 0x{}, Node: {}, Slot: {} ",
+                                lastByteGatewayIP, Integer.toHexString(typical), node, slot);
 
-                if (gateway != null) {
-                    int typXnodo = gateway.getMaxTypicalXnode();
-
-                    // creates Souliss nodes
-                    for (int j = 0; j < numberOf; j++) {
-                        if (mac.get(5 + j) != 0) {// create only not-empty typicals
-                            if ((mac.get(5 + j) != SoulissProtocolConstants.SOULISS_T_RELATED)) {
-                                byte typical = mac.get(5 + j);
-                                byte slot = (byte) (j % typXnodo);
-                                byte node = (byte) (j / typXnodo + tgtnode);
-                                logger.debug("Thing Detected. IP (last byte): {}, Typical: 0x{}, Node: {}, Slot: {} ",
-                                        lastByteGatewayIP, Integer.toHexString(typical), node, slot);
-                                @Nullable
-                                DiscoverResult localDiscoverResult = this.discoverResult;
-                                if (localDiscoverResult != null) {
-                                    localDiscoverResult.thingDetectedTypicals(lastByteGatewayIP, typical, node, slot);
-                                } else {
-                                    logger.debug("decodeTypRequest aborted. 'discoverResult' is null");
-                                }
-                            }
+                        var localDiscoverResult = this.discoverResult;
+                        if (localDiscoverResult != null) {
+                            localDiscoverResult.thingDetectedTypicals(lastByteGatewayIP, typical, node, slot);
+                        } else {
+                            logger.debug("decodeTypRequest aborted. 'discoverResult' is null");
                         }
                     }
                 }
             }
-        } catch (Exception uy) {
-            logger.error("decodeTypRequest ERROR: %s", uy);
         }
     }
 
@@ -292,7 +288,7 @@ public class UDPDecoder {
                 ConcurrentMap<String, Thing> gwMaps = NetworkParameters.getHashTableTopics();
                 Collection<Thing> gwMapsCollection = gwMaps.values();
                 SoulissTopicsHandler topicHandler;
-                boolean bIsPresent = false;
+                var bIsPresent = false;
 
                 for (Thing t : gwMapsCollection) {
                     if (t.getUID().toString().split(":")[2]
@@ -304,7 +300,7 @@ public class UDPDecoder {
                         }
                     }
                 }
-                DiscoverResult localDiscoverResult = this.discoverResult;
+                var localDiscoverResult = this.discoverResult;
                 if (localDiscoverResult != null && !bIsPresent) {
                     localDiscoverResult.thingDetectedActionMessages(sTopicNumber, sTopicVariant);
                 }
@@ -330,24 +326,20 @@ public class UDPDecoder {
      *
      * @param mac
      */
-    private void decodeDBStructRequest(byte lastByteGatewayIP, ArrayList<Byte> mac) {
-        try {
-            int nodes = mac.get(5);
-            int maxTypicalXnode = mac.get(7);
+    private void decodeDBStructRequest(ArrayList<Byte> mac) {
 
-            Bridge bridge = NetworkParameters.getGateway(lastByteGatewayIP);
-            if (bridge != null) {
-                SoulissGatewayHandler gateway = (SoulissGatewayHandler) bridge.getHandler();
-                if (gateway != null) {
-                    gateway.setNodes(nodes);
-                    gateway.setMaxTypicalXnode(maxTypicalXnode);
+        int nodes = mac.get(5);
+        int maxTypicalXnode = mac.get(7);
 
-                    // db Struct Answer from lastByteGatewayIP
-                    gateway.dbStructAnswerReceived();
-                }
-            }
-        } catch (Exception e) {
-            logger.error("decodeDBStructRequest: SoulissNetworkParameter update ERROR");
+        // Bridge bridge = NetworkParameters.getGateway(lastByteGatewayIP);
+        SoulissGatewayHandler localGwHandler = this.gwHandler;
+        if (localGwHandler != null) {
+
+            localGwHandler.setNodes(nodes);
+            localGwHandler.setMaxTypicalXnode(maxTypicalXnode);
+
+            // db Struct Answer from lastByteGatewayIP
+            localGwHandler.dbStructAnswerReceived();
         }
     }
 
@@ -357,23 +349,14 @@ public class UDPDecoder {
      * @param macaco
      *            packet
      */
-    private void decodeHealthyRequest(byte lastByteGatewayIP, ArrayList<Byte> mac) {
+    private void decodeHealthyRequest(ArrayList<Byte> mac) {
         int numberOf = mac.get(4);
-        SoulissGatewayHandler gateway = null;
-        try {
-            Bridge bridge = NetworkParameters.getGateway(lastByteGatewayIP);
-            if (bridge != null) {
-                gateway = (SoulissGatewayHandler) bridge.getHandler();
-            }
-        } catch (Exception ex) {
-            logger.debug("null bridge-gw handler");
-        }
 
-        if (gateway != null) {
-            for (int i = 5; i < 5 + numberOf; i++) {
+        for (var i = 5; i < 5 + numberOf; i++) {
 
+            if (this.gwHandler != null) {
                 // build an array containing healths
-                List<Thing> listaThings = gateway.getThing().getThings();
+                List<Thing> listaThings = this.gwHandler.getThing().getThings();
                 ThingHandler handler = null;
                 for (Thing thing : listaThings) {
                     handler = thing.getHandler();
@@ -387,28 +370,18 @@ public class UDPDecoder {
                     }
                 }
             }
-        } else {
-            logger.debug("decode Healthy Request Warning. Gateway is null");
         }
     }
 
-    private void decodeStateRequest(byte lastByteGatewayIP, ArrayList<Byte> mac) {
+    private void decodeStateRequest(ArrayList<Byte> mac) {
         int tgtnode = mac.get(3);
-        SoulissGatewayHandler gateway = null;
-        try {
-            Bridge bridge = NetworkParameters.getGateway(lastByteGatewayIP);
-            if (bridge != null) {
-                gateway = (SoulissGatewayHandler) bridge.getHandler();
-            }
-        } catch (Exception ex) {
-            logger.warn("Error at first decode State: {}", ex.getLocalizedMessage());
-        }
 
-        Iterator<Thing> thingsIterator;
-        if (gateway != null /* && gateway.ipAddressOnLAN != null */
-                && ((byte) Integer.parseInt(gateway.gwConfig.gatewayIpAddress.split("\\.")[3])) == lastByteGatewayIP) {
-            thingsIterator = gateway.getThing().getThings().iterator();
-            boolean bFound = false;
+        Iterator<Thing> thingsIterator = null;
+
+        if (this.gwHandler != null) {
+            thingsIterator = this.gwHandler.getThing().getThings().iterator();
+
+            var bFound = false;
             Thing typ = null;
             while (thingsIterator.hasNext() && !bFound) {
                 typ = thingsIterator.next();
@@ -418,8 +391,9 @@ public class UDPDecoder {
                                        // Gateway
                     String gwIp = ((SoulissGenericHandler) handler).getGatewayIP();
                     if (gwIp != null) {
-                        if (sUIDArray[0].equals(SoulissBindingConstants.BINDING_ID)
-                                && (byte) Integer.parseInt(gwIp.split("\\.")[3]) == lastByteGatewayIP) {
+                        if (sUIDArray[0].equals(SoulissBindingConstants.BINDING_ID))
+                        // && (byte) Integer.parseInt(gwIp.split("\\.")[3]) == lastByteGatewayIP)
+                        {
                             if (((SoulissGenericHandler) handler).getNode() == tgtnode) { // execute it
                                                                                           // only
                                                                                           // if it is
@@ -428,7 +402,7 @@ public class UDPDecoder {
                                 // ...now check slot
                                 int slot = ((SoulissGenericHandler) handler).getSlot();
                                 // get typical value
-                                byte sVal = getByteAtSlot(mac, slot);
+                                var sVal = getByteAtSlot(mac, slot);
                                 // update Txx
                                 switch (sUIDArray[1]) {
                                     case SoulissBindingConstants.T11:
@@ -603,7 +577,7 @@ public class UDPDecoder {
     }
 
     public byte getBitState(byte vRaw, int iBit) {
-        final int maskBit1 = 0x1;
+        final var maskBit1 = 0x1;
 
         if (((vRaw >>> iBit) & maskBit1) == 0) {
             return 0;

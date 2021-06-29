@@ -44,7 +44,7 @@ public class SoulissT14Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override

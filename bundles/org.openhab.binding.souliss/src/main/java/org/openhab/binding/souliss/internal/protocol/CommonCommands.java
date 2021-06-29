@@ -84,7 +84,7 @@ public class CommonCommands {
                                                        // + Green + Blu
         }
 
-        for (int i = 0; i <= slot - 1; i++) {
+        for (var i = 0; i <= slot - 1; i++) {
             macacoFrame.add((byte) 00); // pongo a zero i byte precedenti lo
                                         // slot da modificare
         }
@@ -119,7 +119,7 @@ public class CommonCommands {
         macacoFrame.add((byte) (idNode));// Start Offset
         macacoFrame.add((byte) ((byte) slot + 2)); // Number Of byte of payload= command + set byte
 
-        for (int i = 0; i <= slot - 1; i++) {
+        for (var i = 0; i <= slot - 1; i++) {
             macacoFrame.add((byte) 00); // pongo a zero i byte precedenti lo
                                         // slot da modificare
         }
@@ -148,7 +148,7 @@ public class CommonCommands {
         macacoFrame.add((byte) (idNode));// Start Offset
         macacoFrame.add((byte) ((byte) slot + 5)); // Number Of byte of payload= command + set byte
 
-        for (int i = 0; i <= slot - 1; i++) {
+        for (var i = 0; i <= slot - 1; i++) {
             macacoFrame.add((byte) 00); // pongo a zero i byte precedenti lo
                                         // slot da modificare
         }
@@ -198,7 +198,7 @@ public class CommonCommands {
         InetAddress serverAddr;
         try {
             serverAddr = InetAddress.getByName(sSoulissNodeIPAddressOnLAN);
-            DatagramPacket packet = new DatagramPacket(merd, merd.length, serverAddr,
+            var packet = new DatagramPacket(merd, merd.length, serverAddr,
                     SoulissUDPConstants.SOULISS_GATEWAY_DEFAULT_PORT);
             SendDispatcherRunnable.put(packet, this.logger);
         } catch (IOException e) {
@@ -220,13 +220,13 @@ public class CommonCommands {
             interfaces = NetworkInterface.getNetworkInterfaces();
 
             while (interfaces.hasMoreElements()) {
-                NetworkInterface networkInterface = interfaces.nextElement();
+                var networkInterface = interfaces.nextElement();
                 if (networkInterface != null) {
                     if (networkInterface.isLoopback() || !networkInterface.isUp()) {
                         continue;
                     }
                     for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-                        InetAddress[] broadcast = new InetAddress[3];
+                        var broadcast = new InetAddress[3];
                         broadcast[0] = InetAddress.getByName("224.0.0.1");
                         broadcast[1] = InetAddress.getByName("255.255.255.255");
                         broadcast[2] = interfaceAddress.getBroadcast();
@@ -237,15 +237,15 @@ public class CommonCommands {
                                     ArrayList<Byte> buf = buildVNetFrame(macacoFrame, "255.255.255.255", iUserIndex,
                                             iNodeIndex);
                                     byte[] merd = toByteArray(buf);
-                                    DatagramPacket packet = new DatagramPacket(merd, merd.length, bc,
+                                    var packet = new DatagramPacket(merd, merd.length, bc,
                                             SoulissUDPConstants.SOULISS_GATEWAY_DEFAULT_PORT);
                                     // Datagramsocket creation
-                                    DatagramChannel channel = DatagramChannel.open();
+                                    var channel = DatagramChannel.open();
                                     sender = channel.socket();
                                     sender.setReuseAddress(true);
                                     sender.setBroadcast(true);
 
-                                    InetSocketAddress sa = new InetSocketAddress(230);
+                                    var sa = new InetSocketAddress(230);
                                     sender.bind(sa);
 
                                     sender.send(packet);
@@ -266,9 +266,7 @@ public class CommonCommands {
                     }
                 }
             }
-        } catch (SocketException e) {
-            logger.warn("{}", e.getMessage());
-        } catch (UnknownHostException e) {
+        } catch (SocketException | UnknownHostException e) {
             logger.warn("{}", e.getMessage());
         }
     }
@@ -319,8 +317,8 @@ public class CommonCommands {
      * @return
      */
     private static byte[] toByteArray(ArrayList<Byte> buf) {
-        byte[] merd = new byte[buf.size()];
-        for (int i = 0; i < buf.size(); i++) {
+        var merd = new byte[buf.size()];
+        for (var i = 0; i < buf.size(); i++) {
             merd[i] = buf.get(i);
         }
         return merd;
@@ -446,7 +444,7 @@ public class CommonCommands {
         ArrayList<Byte> mACACOframe2 = new ArrayList<>();
         mACACOframe2.addAll(mACACOframe);
         flag = false;
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         sb.append("HEX: [");
         for (byte b : mACACOframe2) {
             sb.append(String.format("%02X ", b));

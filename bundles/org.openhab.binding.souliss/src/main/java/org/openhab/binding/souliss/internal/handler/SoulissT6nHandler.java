@@ -52,7 +52,7 @@ public class SoulissT6nHandler extends SoulissGenericHandler {
     @Override
     public void initialize() {
         // status online
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     public void setState(PrimitiveType state) {

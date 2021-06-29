@@ -70,7 +70,7 @@ public class SoulissT41Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
 
         gwConfigurationMap = thingGeneric.getConfiguration();
         if (gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND) != null) {

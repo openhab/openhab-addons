@@ -42,7 +42,7 @@ public class SoulissT1AHandler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     private OpenClosedType getTypeFromBool(boolean value) {

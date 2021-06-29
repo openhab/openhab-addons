@@ -44,7 +44,7 @@ public class SoulissT18Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
 
         gwConfigurationMap = thingGeneric.getConfiguration();
 

@@ -23,7 +23,7 @@ import org.openhab.core.thing.Bridge;
  */
 
 @NonNullByDefault
-public class SoulissGatewayJobHealthy extends Thread {
+public class SoulissGatewayJobHealthy implements Runnable {
 
     private final CommonCommands soulissCommands = new CommonCommands();
 

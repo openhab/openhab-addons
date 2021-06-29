@@ -48,7 +48,7 @@ public class SoulissT12Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
 
         this.gwConfigurationMap = thingGeneric.getConfiguration();
         if (this.gwConfigurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL) != null) {

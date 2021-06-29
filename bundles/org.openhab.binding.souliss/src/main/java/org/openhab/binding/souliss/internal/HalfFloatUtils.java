@@ -57,7 +57,7 @@ public final class HalfFloatUtils {
 
     // returns all higher 16 bits as 0 for all results
     public static int fromFloat(float fval) {
-        int fbits = Float.floatToIntBits(fval);
+        var fbits = Float.floatToIntBits(fval);
         int sign = fbits >>> 16 & 0x8000; // sign only
         int val = (fbits & 0x7fffffff) + 0x1000; // rounded value
 
