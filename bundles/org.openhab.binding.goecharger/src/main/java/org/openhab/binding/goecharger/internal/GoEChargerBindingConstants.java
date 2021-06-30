@@ -31,7 +31,7 @@ public class GoEChargerBindingConstants {
 
     // List of all Channel ids
     public static final String MAX_CURRENT = "maxCurrent";
-    public static final String MAX_CURR_TEMP = "maxCurrTemp";
+    public static final String MAX_CURRENT_TEMPORARY = "maxCurrentTemporary";
     public static final String ACCESS_CONFIGURATION = "accessConfiguration";
     public static final String PWM_SIGNAL = "pwmSignal";
     public static final String ERROR = "error";
@@ -48,8 +48,8 @@ public class GoEChargerBindingConstants {
     public static final String ALLOW_CHARGING = "allowCharging";
     public static final String CABLE_ENCODING = "cableCurrent";
     public static final String PHASES = "phases";
-    public static final String TEMP_TMA1 = "temptma1";
-    public static final String TEMP_TMA2 = "temptma2";
+    public static final String TEMP_TMA1 = "tempTma1";
+    public static final String TEMP_TMA2 = "tempTma2";
     public static final String SESSION_CHARGE_CONSUMPTION = "sessionChargedEnergy";
     public static final String SESSION_CHARGE_CONSUMPTION_LIMIT = "sessionChargeEnergyLimit";
     public static final String TOTAL_CONSUMPTION = "totalChargedEnergy";

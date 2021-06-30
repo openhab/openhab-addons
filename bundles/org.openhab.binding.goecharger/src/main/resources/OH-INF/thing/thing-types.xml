@@ -10,7 +10,7 @@
 
 		<channels>
 			<channel id="maxCurrent" typeId="current"/>
-			<channel id="maxCurrTemp" typeId="amx"/>
+			<channel id="maxCurrentTemporary" typeId="amx"/>
 			<channel id="pwmSignal" typeId="pwm"/>
 			<channel id="error" typeId="err"/>
 			<channel id="voltageL1" typeId="vl1"/>
@@ -29,8 +29,8 @@
 			<channel id="totalChargedEnergy" typeId="eto"/>
 			<channel id="allowCharging" typeId="alw"/>
 			<channel id="cableCurrent" typeId="cbl"/>
-			<channel id="temptma1" typeId="tma1"/>
-			<channel id="temptma2" typeId="tma2"/>
+			<channel id="tempTma1" typeId="tma1"/>
+			<channel id="tempTma2" typeId="tma2"/>
 			<channel id="firmware" typeId="fmw"/>
 			<channel id="accessConfiguration" typeId="ast"/>
 		</channels>
@@ -193,7 +193,7 @@
 	<channel-type id="cbl">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Cable Encoding</label>
-		<description>Specifies the max amps that can be charged with that cable</description>
+		<description>Specifies the maximal current that can be charged with that cable</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="tma1">
