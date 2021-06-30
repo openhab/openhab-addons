@@ -21,7 +21,7 @@ import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.ERROR;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.FIRMWARE;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.MAX_CURRENT;
-import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.MAX_CURR_TEMP;
+import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.MAX_CURRENT_TEMPORARY;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.PHASES;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_ALL;
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.POWER_L1;
@@ -111,11 +111,11 @@ public class GoEChargerHandler extends BaseThingHandler {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.maxCurrent, Units.AMPERE);
-            case MAX_CURR_TEMP:
-                if (goeResponse.maxCurrTemp == null) {
+            case MAX_CURRENT_TEMPORARY:
+                if (goeResponse.maxCurrentTemporary == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.maxCurrTemp, Units.AMPERE);
+                return new QuantityType<>(goeResponse.maxCurrentTemporary, Units.AMPERE);
             case PWM_SIGNAL:
                 if (goeResponse.pwmSignal == null) {
                     return UnDefType.UNDEF;
@@ -207,15 +207,15 @@ public class GoEChargerHandler extends BaseThingHandler {
                 }
                 return new DecimalType(count);
             case TEMP_TMA1:
-                if ((goeResponse.temptma == null) | (goeResponse.temptma.length == 0)) {
+                if ((goeResponse.tempTma == null) | (goeResponse.tempTma.length == 0)) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.temptma[0], SIUnits.CELSIUS);
+                return new QuantityType<>(goeResponse.tempTma[0], SIUnits.CELSIUS);
             case TEMP_TMA2:
-                if ((goeResponse.temptma == null) | (goeResponse.temptma.length <= 1)) {
+                if ((goeResponse.tempTma == null) | (goeResponse.tempTma.length <= 1)) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponse.temptma[1], SIUnits.CELSIUS);
+                return new QuantityType<>(goeResponse.tempTma[1], SIUnits.CELSIUS);
             case SESSION_CHARGE_CONSUMPTION:
                 if (goeResponse.sessionChargeConsumption == null) {
                     return UnDefType.UNDEF;
@@ -312,7 +312,7 @@ public class GoEChargerHandler extends BaseThingHandler {
                     value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(Units.AMPERE).intValue());
                 }
                 break;
-            case MAX_CURR_TEMP:
+            case MAX_CURRENT_TEMPORARY:
                 key = "amx";
                 if (command instanceof DecimalType) {
                     value = String.valueOf(((DecimalType) command).intValue());

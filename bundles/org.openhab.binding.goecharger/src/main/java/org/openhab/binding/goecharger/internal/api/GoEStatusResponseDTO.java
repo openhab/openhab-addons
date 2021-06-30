@@ -34,7 +34,7 @@ public class GoEStatusResponseDTO {
     public Integer maxCurrent;
 
     @SerializedName("amx")
-    public Integer maxCurrTemp;
+    public Integer maxCurrentTemporary;
 
     @SerializedName("nrg")
     public Integer[] energy;
@@ -52,7 +52,7 @@ public class GoEStatusResponseDTO {
     public Integer phases;
 
     @SerializedName("tma")
-    public Double[] temptma;
+    public Double[] tempTma;
 
     @SerializedName("dws")
     public Long sessionChargeConsumption;
