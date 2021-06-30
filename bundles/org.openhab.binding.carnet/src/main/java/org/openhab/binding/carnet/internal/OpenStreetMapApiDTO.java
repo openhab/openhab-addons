@@ -20,8 +20,8 @@ import java.util.Map;
 
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.carnet.internal.api.ApiException;
+import org.openhab.binding.carnet.internal.api.ApiHttpClient;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetPosition;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +63,7 @@ public class OpenStreetMapApiDTO {
         public String[] boundingbox;
     }
 
-    public String getAddressFromPosition(CarNetHttpClient http, CarNetPosition position) throws ApiException {
+    public String getAddressFromPosition(ApiHttpClient http, CarNetPosition position) throws ApiException {
         try {
             String url = "https://nominatim.openstreetmap.org/reverse?lat=" + position.getLattitude() + "&lon="
                     + position.getLongitude() + "&format=json";

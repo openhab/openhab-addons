@@ -31,7 +31,10 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory.Client;
 import org.openhab.binding.carnet.internal.CarUtils;
 import org.openhab.binding.carnet.internal.TextResources;
+import org.openhab.binding.carnet.internal.api.ApiDataTypesDTO.VehicleDetails;
+import org.openhab.binding.carnet.internal.api.ApiEventListener;
 import org.openhab.binding.carnet.internal.api.ApiException;
+import org.openhab.binding.carnet.internal.api.ApiHttpClient;
 import org.openhab.binding.carnet.internal.api.TokenManager;
 import org.openhab.binding.carnet.internal.api.brand.BrandCarNetAudi;
 import org.openhab.binding.carnet.internal.api.brand.BrandCarNetSeat;
@@ -39,11 +42,7 @@ import org.openhab.binding.carnet.internal.api.brand.BrandCarNetSkoda;
 import org.openhab.binding.carnet.internal.api.brand.BrandCarNetVW;
 import org.openhab.binding.carnet.internal.api.brand.BrandNull;
 import org.openhab.binding.carnet.internal.api.brand.BrandWeConnect;
-import org.openhab.binding.carnet.internal.api.carnet.ApiEventListener;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNVehicleDetails.CarNetVehicleDetails;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetVehicleList;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetHttpClient;
 import org.openhab.binding.carnet.internal.config.AccountConfiguration;
 import org.openhab.binding.carnet.internal.config.CombinedConfig;
 import org.openhab.core.thing.Bridge;
@@ -74,7 +73,7 @@ public class AccountHandler extends BaseBridgeHandler {
     private final TokenManager tokenManager;
 
     private CarNetApiBase api = new BrandNull();
-    private List<VehicleInformation> vehicleList = new CopyOnWriteArrayList<>();
+    private List<VehicleDetails> vehicleList = new CopyOnWriteArrayList<>();
     private List<BridgeListener> vehicleInformationListeners = new CopyOnWriteArrayList<>();
     private @Nullable ScheduledFuture<?> refreshJob;
 
@@ -156,15 +155,13 @@ public class AccountHandler extends BaseBridgeHandler {
             refreshProperties(properties);
         }
 
-        CarNetVehicleList vehices = api.getVehicles();
-        vehicleList = new ArrayList<VehicleInformation>();
-        for (String vin : vehices.userVehicles.vehicle) {
+        vehicleList = new ArrayList<VehicleDetails>();
+        for (String vin : api.getVehicles()) {
             config.vehicle.vin = vin;
             api.setConfig(config);
             config.vstatus.apiUrlPrefix = api.getApiUrl();
             api.setConfig(config);
-            CarNetVehicleDetails details = api.getVehicleDetails(vin);
-            vehicleList.add(new VehicleInformation(details));
+            vehicleList.add(api.getVehicleDetails(vin));
         }
         informVehicleInformationListeners(vehicleList);
 
@@ -203,7 +200,7 @@ public class AccountHandler extends BaseBridgeHandler {
     }
 
     public CarNetApiBase createApi(CombinedConfig config, @Nullable ApiEventListener apiListener) {
-        CarNetHttpClient httpClient = createHttpClient(apiListener);
+        ApiHttpClient httpClient = createHttpClient(apiListener);
         switch (config.account.brand) {
             case CNAPI_BRAND_AUDI:
                 return new BrandCarNetAudi(httpClient, tokenManager, apiListener);
@@ -224,7 +221,7 @@ public class AccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private CarNetHttpClient createHttpClient(@Nullable ApiEventListener apiListener) {
+    private ApiHttpClient createHttpClient(@Nullable ApiEventListener apiListener) {
         // Each instance has it's own http client. Audi requires weaked SSL attributes, other may not
         HttpClient httpClient = new HttpClient();
         try {
@@ -236,7 +233,7 @@ public class AccountHandler extends BaseBridgeHandler {
         } catch (Exception e) {
             logger.warn("{}: {}", messages.get("init-fialed", "Unable to start HttpClient!"), thingId, e);
         }
-        CarNetHttpClient client = new CarNetHttpClient(httpClient, apiListener);
+        ApiHttpClient client = new ApiHttpClient(httpClient, apiListener);
         client.setConfig(config);
         return client;
     }
@@ -264,7 +261,7 @@ public class AccountHandler extends BaseBridgeHandler {
      *
      * @param vehicleInformationList
      */
-    private void informVehicleInformationListeners(@Nullable List<VehicleInformation> vehicleInformationList) {
+    private void informVehicleInformationListeners(@Nullable List<VehicleDetails> vehicleInformationList) {
         this.vehicleInformationListeners.forEach(discovery -> discovery.informationUpdate(vehicleInformationList));
     }
 

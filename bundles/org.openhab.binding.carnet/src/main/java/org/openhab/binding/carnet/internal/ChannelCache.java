@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.provider;
+package org.openhab.binding.carnet.internal;
 
 import static org.openhab.binding.carnet.internal.CarUtils.mkChannelId;
 
@@ -18,8 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.carnet.internal.CarUtils;
-import org.openhab.binding.carnet.internal.handler.VehicleHandler;
+import org.openhab.binding.carnet.internal.handler.VehicleBaseHandler;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -34,12 +33,12 @@ import org.slf4j.LoggerFactory;
 public class ChannelCache {
     private final Logger logger = LoggerFactory.getLogger(ChannelCache.class);
 
-    private final VehicleHandler thingHandler;
+    private final VehicleBaseHandler thingHandler;
     private final Map<String, State> channelData = new ConcurrentHashMap<>();
     private String thingId = "";
     private boolean enabled = false;
 
-    public ChannelCache(VehicleHandler thingHandler, String thingId) {
+    public ChannelCache(VehicleBaseHandler thingHandler, String thingId) {
         this.thingHandler = thingHandler;
         setthingId(thingId);
     }

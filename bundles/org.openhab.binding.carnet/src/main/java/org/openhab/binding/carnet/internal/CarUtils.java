@@ -183,12 +183,17 @@ public class CarUtils {
         return (value != null ? value ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
     }
 
-    public static OnOffType getOnOff(int value) {
-        return value == 0 ? OnOffType.OFF : OnOffType.ON;
+    public static OnOffType getOnOffType(@Nullable String value) {
+        if (value == null) {
+            return OnOffType.OFF;
+        }
+        String str = value.toLowerCase();
+        return "on".equals(str) || "true".equals(str) || "1".equals(str) || "yes".equals(str) ? OnOffType.ON
+                : OnOffType.OFF;
     }
 
-    public static OnOffType getOnOff(@Nullable String value) {
-        return (value != null ? "on".equalsIgnoreCase(value) ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
+    public static OnOffType getOnOff(int value) {
+        return value == 0 ? OnOffType.OFF : OnOffType.ON;
     }
 
     public static State toQuantityType(@Nullable Double value, int digits, Unit<?> unit) {
@@ -200,6 +205,10 @@ public class CarUtils {
             bd = bd.setScale(digits, RoundingMode.HALF_EVEN);
         }
         return toQuantityType(bd, unit);
+    }
+
+    public static State toQuantityType(@Nullable Integer value, int digits, Unit<?> unit) {
+        return toQuantityType(value.doubleValue(), digits, unit);
     }
 
     public static State toQuantityType(@Nullable Number value, Unit<?> unit) {

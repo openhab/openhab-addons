@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.api.cnservices;
+package org.openhab.binding.carnet.internal.api;
 
 import java.util.Map;
 
@@ -20,11 +20,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.carnet.internal.CarUtils;
-import org.openhab.binding.carnet.internal.api.ApiException;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.config.CombinedConfig;
 import org.openhab.binding.carnet.internal.handler.AccountHandler;
-import org.openhab.binding.carnet.internal.handler.VehicleHandler;
+import org.openhab.binding.carnet.internal.handler.VehicleBaseHandler;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.types.State;
@@ -38,16 +37,16 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class CarNetBaseService {
-    private final Logger logger = LoggerFactory.getLogger(CarNetBaseService.class);
+public class ApiBaseService {
+    private final Logger logger = LoggerFactory.getLogger(ApiBaseService.class);
     protected final CarNetApiBase api;
-    protected final VehicleHandler thingHandler;
+    protected final VehicleBaseHandler thingHandler;
     protected final ChannelDefinitions idMapper;
     protected final String thingId;
     protected String serviceId = "";
     protected boolean enabled = true;
 
-    public CarNetBaseService(String serviceId, VehicleHandler thingHandler, CarNetApiBase api) {
+    public ApiBaseService(String serviceId, VehicleBaseHandler thingHandler, CarNetApiBase api) {
         this.serviceId = serviceId;
         this.thingHandler = thingHandler;
         this.thingId = thingHandler.thingId;
@@ -94,6 +93,22 @@ public class CarNetBaseService {
     // will be overload by service
     public boolean serviceUpdate() throws ApiException {
         return false;
+    }
+
+    public boolean addChannels(Map<String, ChannelIdMapEntry> channels, boolean condition, String... channel) {
+        if (!condition) {
+            return false;
+        }
+        boolean created = false;
+        for (String ch : channel) {
+            ChannelIdMapEntry definition = idMapper.find(ch);
+            if (definition == null) {
+                throw new IllegalArgumentException("Missing channel definition for " + ch);
+            }
+            created |= addChannel(channels, definition.groupName, ch, definition.itemType, definition.unit,
+                    definition.advanced, definition.readOnly);
+        }
+        return created;
     }
 
     public boolean addChannel(Map<String, ChannelIdMapEntry> channels, String group, String channel, String itemType,

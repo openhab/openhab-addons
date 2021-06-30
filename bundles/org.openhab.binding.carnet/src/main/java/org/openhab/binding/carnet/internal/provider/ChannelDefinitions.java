@@ -59,7 +59,6 @@ public class ChannelDefinitions {
         public String channelName = "";
         public String itemType = "";
         public String groupName = "";
-        public String groupPrefix = "";
 
         public boolean disabled = false;
         public boolean advanced = false;
@@ -116,11 +115,7 @@ public class ChannelDefinitions {
             if (groupName.isEmpty()) {
                 return label;
             }
-            // return groupPrefix.isEmpty() ? label : groupPrefix + getGroupIndex() + "_" + label;
-            // if (getGroupIndex().isEmpty()) {
-            // return label;
-            // }
-            // return groupPrefix + getGroupIndex() + "_" + label;
+
             return groupName + "_" + label.replaceAll("[ \\(\\)]", "");
         }
 
@@ -269,7 +264,6 @@ public class ChannelDefinitions {
         entry.id = id;
         entry.symbolicName = name;
         entry.groupName = group;
-        entry.groupPrefix = getGroupAttribute(resources, entry.groupName, "prefix");
         entry.channelName = channel;
         entry.itemType = itemType;
         if (ITEMT_PERCENT.equals(itemType) && (unit == null)) {
@@ -278,7 +272,7 @@ public class ChannelDefinitions {
             entry.unit = unit;
         }
         entry.advanced = advanced;
-        entry.readOnly = readOnly;
+        entry.readOnly = group.equals(CHANNEL_GROUP_STATUS) ? true : readOnly;
 
         entry.min = entry.getMin();
         entry.max = entry.getMax();
@@ -335,14 +329,14 @@ public class ChannelDefinitions {
         add("FUEL_LEVEL_PERCENT", "0x030103000A", "fuelPercentage", ITEMT_PERCENT, CHANNEL_GROUP_RANGE, PERCENT);
         add("FUEL_METHOD", "0x030103000B", "fuelMethod", ITEMT_STRING, CHANNEL_GROUP_RANGE, null, true, true); // '0':'measured',
         // '1':'calculated'
-        add("TOTAL_RANGE", "0x0301030005", "totalRange", ITEMT_DISTANCE, CHANNEL_GROUP_RANGE, KILOMETRE);
-        add("PRIMARY_RANGE", "0x0301030006", "primaryRange", ITEMT_DISTANCE, CHANNEL_GROUP_RANGE, KILOMETRE, true,
+        add("TOTAL_RANGE", "0x0301030005", CHANNEL_RANGE_TOTAL, ITEMT_DISTANCE, CHANNEL_GROUP_RANGE, KILOMETRE);
+        add("PRIMARY_RANGE", "0x0301030006", CHANNEL_RANGE_PRANGE, ITEMT_DISTANCE, CHANNEL_GROUP_RANGE, KILOMETRE, true,
                 true);
-        add("PRIMARY_FUEL_TYPE", "0x0301030007", "primaryFuelType", ITEMT_NUMBER, CHANNEL_GROUP_RANGE, null, true,
+        add("PRIMARY_FUEL_TYPE", "0x0301030007", CHANNEL_RANGE_PFUELTYPE, ITEMT_NUMBER, CHANNEL_GROUP_RANGE, null, true,
                 true);
-        add("SECONDARY_RANGE", "0x0301030008", "secondaryRange", ITEMT_DISTANCE, CHANNEL_GROUP_RANGE, KILOMETRE, true,
-                true);
-        add("SECONDARY_DRIVE", "0x0301030009", "secondaryFuelType", ITEMT_NUMBER, CHANNEL_GROUP_RANGE, null, true,
+        add("SECONDARY_RANGE", "0x0301030008", CHANNEL_RANGE_SRANGE, ITEMT_DISTANCE, CHANNEL_GROUP_RANGE, KILOMETRE,
+                true, true);
+        add("SECONDARY_DRIVE", "0x0301030009", CHANNEL_RANGE_SFUELTYPE, ITEMT_NUMBER, CHANNEL_GROUP_RANGE, null, true,
                 true);
         add("CHARGING_LEVEL_PERCENT", "0x0301030002", "chargingLevel", ITEMT_PERCENT, CHANNEL_GROUP_RANGE, PERCENT,
                 true, true);
@@ -423,6 +417,40 @@ public class ChannelDefinitions {
         // Misc
         add("UTC_TIME_STATUS", "0x0101010001");
         add("UNKNOWN_0x02040C0002", "0x02040C0002"); // no yet decoded
+
+        // Group general
+        add("LAST_ACTION", "lastAction", CHANNEL_GENERAL_ACTION, ITEMT_STRING, CHANNEL_GROUP_GENERAL);
+        add("ACTION_STATUS", "actionStatus", CHANNEL_GENERAL_ACTION_STATUS, ITEMT_STRING, CHANNEL_GROUP_GENERAL);
+        add("LAST_PENDING", "actionPending", CHANNEL_GENERAL_ACTION_PENDING, ITEMT_SWITCH, CHANNEL_GROUP_GENERAL);
+        add("TIME_IN_CAR", "timeInCar", CHANNEL_GENERAL_TIMEINCAR, ITEMT_DATETIME, CHANNEL_GROUP_GENERAL);
+
+        // Group control
+        add("WIN_HEAT", "windowHeat", CHANNEL_CONTROL_WINHEAT, ITEMT_SWITCH, CHANNEL_GROUP_CONTROL);
+        add("CHG_MAXCURRENT", "chargerMaxCurrent", CHANNEL_CONTROL_MAXCURRENT, ITEMT_AMP, CHANNEL_GROUP_CONTROL,
+                Units.AMPERE);
+
+        // Group status
+        add("LAST_ERROR", "error", CHANNEL_STATUS_ERROR, ITEMT_STRING);
+        add("PARKING_BRAKE", "parkingBrake", CHANNEL_STATUS_PBRAKE, ITEMT_SWITCH);
+        add("VEHICLE_LIGHTS", "vehicleLights", CHANNEL_STATUS_LIGHTS, ITEMT_SWITCH);
+
+        // Group charger
+        add("CHG_STATE", "chargingState", CHANNEL_CHARGER_CHG_STATE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
+        add("CHG_MODE", "chargingMode", CHANNEL_CHARGER_MODE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
+        add("CHG_REMAIN", "charginngRemainig", CHANNEL_CHARGER_REMAINING, ITEMT_TIME, CHANNEL_GROUP_CHARGER,
+                Units.MINUTE);
+        add("CHG_KMPH", "charginngKmPh", CHANNEL_CHARGER_KMPH, ITEMT_NUMBER, CHANNEL_GROUP_CHARGER);
+        add("CHG_LEVEL", "charginngLevel", CHANNEL_CHARGER_CHGLVL, ITEMT_PERCENT, CHANNEL_GROUP_CHARGER, Units.PERCENT);
+        add("CHG_PLUG", "chgPlugState", CHANNEL_CHARGER_PLUG_STATE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
+        add("CHG_PLUGLOCK", "chgPLockState", CHANNEL_CHARGER_LOCK_STATE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
+
+        // Group climater
+
+        add("CLIM_STATE", "climaState", CHANNEL_CLIMATER_GEN_STATE, ITEMT_SWITCH, CHANNEL_GROUP_CLIMATER);
+        add("CLIM_REMAINING", "climaRemain", CHANNEL_CLIMATER_REMAINING, ITEMT_TIME, CHANNEL_GROUP_CLIMATER,
+                Units.MINUTE);
+        add("CLIM_TARGETTEMP", "climaTargetTemp", CHANNEL_CLIMATER_TARGET_TEMP, ITEMT_TEMP, CHANNEL_GROUP_CLIMATER,
+                SIUnits.CELSIUS);
     }
 
     private ChannelIdMapEntry add(String name, String id, String channel, String itemType, String group,

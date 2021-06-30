@@ -35,10 +35,6 @@
 	</config-description>
 
 	<config-description uri="thing-type:carnet:vehicle">
-		<parameter-group name="advancedOptions">
-			<label>Advanced Options</label>
-		</parameter-group>
-
 		<parameter name="vin" type="text" required="false">
 			<label>Vehicle Identification Number (VIN)</label>
 			<description>This is the unique ID to identify the vehicle</description>
@@ -98,6 +94,24 @@
 			<advanced>true</advanced>
 		</parameter>
 
+		<parameter name="pollingInterval" type="integer" required="false" min="5">
+			<label>Polling Interval</label>
+			<description>Status update interval in minutes.</description>
+			<default>15</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:carnet:idvehicle">
+		<parameter name="vin" type="text" required="false">
+			<label>Vehicle Identification Number (VIN)</label>
+			<description>This is the unique ID to identify the vehicle</description>
+		</parameter>
+		<parameter name="enableAddressLookup" type="boolean" required="false">
+			<label>Enable Address Lookups</label>
+			<description>Use OpenStreetMap to reverse lookup address from vehicle's Geo position</description>
+			<default>true</default>
+		</parameter>
 		<parameter name="pollingInterval" type="integer" required="false" min="5">
 			<label>Polling Interval</label>
 			<description>Status update interval in minutes.</description>

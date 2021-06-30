@@ -21,10 +21,11 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.carnet.internal.OpenStreetMapApiDTO;
+import org.openhab.binding.carnet.internal.api.ApiBaseService;
 import org.openhab.binding.carnet.internal.api.ApiException;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetPosition;
-import org.openhab.binding.carnet.internal.handler.VehicleHandler;
+import org.openhab.binding.carnet.internal.handler.VehicleCarNetHandler;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -41,11 +42,11 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetServiceCarFinder extends CarNetBaseService {
+public class CarNetServiceCarFinder extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(CarNetServiceCarFinder.class);
     private final OpenStreetMapApiDTO osmApi = new OpenStreetMapApiDTO();
 
-    public CarNetServiceCarFinder(VehicleHandler thingHandler, CarNetApiBase api) {
+    public CarNetServiceCarFinder(VehicleCarNetHandler thingHandler, CarNetApiBase api) {
         super(CNAPI_SERVICE_CAR_FINDER, thingHandler, api);
     }
 

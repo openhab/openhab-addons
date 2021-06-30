@@ -57,6 +57,18 @@
 		<config-description-ref uri="thing-type:carnet:vehicle"/>
 	</thing-type>
 
+	<thing-type id="idvehicle">
+		<label>@text/thing-type.carnet.vehicle.label</label>
+		<description>@text/thing-type.carnet.vehicle.description</description>
+
+		<channel-groups>
+			<channel-group id="general" typeId="general"/>
+		</channel-groups>
+
+		<representation-property>vin</representation-property>
+		<config-description-ref uri="thing-type:carnet:idvehicle"/>
+	</thing-type>
+
 	<channel-group-type id="general">
 		<label>@text/thing-type.carnet.vehicle.group.general.label</label>
 		<description>@text/thing-type.carnet.vehicle.group.general.description</description>

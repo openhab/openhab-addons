@@ -99,7 +99,6 @@ public class CarChannelTypeProvider implements ChannelTypeProvider, ChannelGroup
             }
         }
 
-        logger.trace("Adding ChannelGroupType with id={}, UID={}", group, channelGroupTypeUID.getAsString());
         // groupType = ChannelGroupTypeBuilder.instance(channelGroupTypeUID, label)
         // .withDescription(CarNetChannelIdMapper.getGroupAttribute(resources, group, "description"))
         // .withChannelDefinitions(channelDefinitions).build();

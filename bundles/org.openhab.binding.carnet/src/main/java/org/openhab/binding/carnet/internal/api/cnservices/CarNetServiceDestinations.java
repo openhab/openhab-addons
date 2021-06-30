@@ -22,11 +22,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.carnet.internal.api.ApiBaseService;
 import org.openhab.binding.carnet.internal.api.ApiException;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNDestinations.CarNetDestination;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNDestinations.CarNetDestinationList;
-import org.openhab.binding.carnet.internal.handler.VehicleHandler;
+import org.openhab.binding.carnet.internal.handler.VehicleCarNetHandler;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
@@ -38,8 +39,8 @@ import org.openhab.core.types.UnDefType;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetServiceDestinations extends CarNetBaseService {
-    public CarNetServiceDestinations(VehicleHandler thingHandler, CarNetApiBase api) {
+public class CarNetServiceDestinations extends ApiBaseService {
+    public CarNetServiceDestinations(VehicleCarNetHandler thingHandler, CarNetApiBase api) {
         super(CNAPI_SERVICE_DESTINATIONS, thingHandler, api);
     }
 

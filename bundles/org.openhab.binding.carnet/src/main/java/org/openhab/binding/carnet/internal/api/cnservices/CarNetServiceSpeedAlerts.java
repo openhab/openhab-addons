@@ -22,11 +22,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.carnet.internal.api.ApiBaseService;
 import org.openhab.binding.carnet.internal.api.ApiException;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNSpeedAlerts.CarNetSpeedAlerts;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNSpeedAlerts.CarNetSpeedAlerts.CarNetpeedAlertEntry;
-import org.openhab.binding.carnet.internal.handler.VehicleHandler;
+import org.openhab.binding.carnet.internal.handler.VehicleCarNetHandler;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
@@ -38,10 +39,10 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetServiceSpeedAlerts extends CarNetBaseService {
+public class CarNetServiceSpeedAlerts extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(CarNetServiceSpeedAlerts.class);
 
-    public CarNetServiceSpeedAlerts(VehicleHandler thingHandler, CarNetApiBase api) {
+    public CarNetServiceSpeedAlerts(VehicleCarNetHandler thingHandler, CarNetApiBase api) {
         super(CNAPI_SERVICE_SPEED_ALERT, thingHandler, api);
     }
 

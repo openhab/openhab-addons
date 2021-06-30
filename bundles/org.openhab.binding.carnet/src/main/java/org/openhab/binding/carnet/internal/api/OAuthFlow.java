@@ -13,19 +13,16 @@
 package org.openhab.binding.carnet.internal.api;
 
 import static org.openhab.binding.carnet.internal.CarUtils.substringBetween;
-import static org.openhab.binding.carnet.internal.api.carnet.CarNetHttpClient.getUrlParm;
+import static org.openhab.binding.carnet.internal.api.ApiHttpClient.getUrlParm;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,38 +40,37 @@ public class OAuthFlow {
     public String code = "", codeVerifier = "", codeChallenge = "";
     public String action = "";
     public ApiResult res = new ApiResult();
-    private final CarNetHttpClient http;
+    private final ApiHttpClient http;
 
-    public OAuthFlow(CarNetHttpClient http) {
+    public OAuthFlow(ApiHttpClient http) {
         this.http = http;
         http.clearCookies();
     }
 
-    private Map<String, String> headers = new LinkedHashMap<>();
-    private Map<String, String> data = new LinkedHashMap<>();
+    ApiHttpMap map = new ApiHttpMap();
 
     public OAuthFlow header(String header, String value) {
-        headers.put(header, value);
+        map.header(header, value);
         return this;
     }
 
     public OAuthFlow header(HttpHeader header, String value) {
-        headers.put(header.toString(), value);
+        map.header(header.toString(), value);
         return this;
     }
 
     public OAuthFlow data(String attribute, String value) {
-        data.put(attribute, value);
+        map.data(attribute, value);
         return this;
     }
 
     public ApiResult get(String url) throws ApiException {
-        res = http.get(url, headers, false);
+        res = http.get(url, map.getHeaders(), false);
         return update();
     }
 
     public ApiResult post(String url, boolean json) throws ApiException {
-        res = http.post(url, headers, data, json);
+        res = http.post(url, map.getHeaders(), map.getData(), json);
         return update();
     }
 
@@ -166,12 +162,12 @@ public class OAuthFlow {
     }
 
     public OAuthFlow clearHeader() {
-        headers.clear();
+        map.clearHeader();
         return this;
     }
 
     public OAuthFlow clearData() {
-        data.clear();
+        map.clearData();
         return this;
     }
 }

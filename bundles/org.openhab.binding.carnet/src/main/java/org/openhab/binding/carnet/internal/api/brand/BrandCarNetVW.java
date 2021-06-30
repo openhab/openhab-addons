@@ -16,12 +16,12 @@ import static org.openhab.binding.carnet.internal.BindingConstants.CNAPI_BRAND_V
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.carnet.internal.api.ApiEventListener;
 import org.openhab.binding.carnet.internal.api.ApiException;
+import org.openhab.binding.carnet.internal.api.ApiHttpClient;
 import org.openhab.binding.carnet.internal.api.TokenManager;
-import org.openhab.binding.carnet.internal.api.carnet.ApiEventListener;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetImageUrlsVW;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class BrandCarNetVW extends CarNetApiBase implements BrandAuthenticator {
     private final Logger logger = LoggerFactory.getLogger(BrandCarNetVW.class);
 
-    public BrandCarNetVW(CarNetHttpClient httpClient, TokenManager tokenManager,
+    public BrandCarNetVW(ApiHttpClient httpClient, TokenManager tokenManager,
             @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }

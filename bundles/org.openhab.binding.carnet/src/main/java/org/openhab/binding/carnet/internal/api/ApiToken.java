@@ -53,11 +53,7 @@ public class ApiToken {
         refreshToken = getString(token.refreshToken);
         authType = getString(token.authType);
 
-        if (token.validity != null) {
-            setValidity(token.validity);
-        } else {
-            validity = -1;
-        }
+        setValidity(token.validity != null ? token.validity : 3600);
     }
 
     public void updateToken(CNApiToken token) {

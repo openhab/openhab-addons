@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.carnet.internal.api.brand;
 
-import static org.openhab.binding.carnet.internal.BindingConstants.CNAPI_BRAND_VWID;
+import static org.openhab.binding.carnet.internal.BindingConstants.CNAPI_BRAND_WECHARGE;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.ApiEventListener;
 import org.openhab.binding.carnet.internal.api.ApiHttpClient;
@@ -22,13 +21,13 @@ import org.openhab.binding.carnet.internal.api.TokenManager;
 import org.openhab.binding.carnet.internal.api.weconnect.WeConnectApi;
 
 /**
- * {@link BrandWeConnect} provides the VW ID.3/ID.4 specific functions of the API
+ * {@link BrandWeCharge} provides the Brand interface for WeCharge
  *
  * @author Markus Michels - Initial contribution
  */
-@NonNullByDefault
-public class BrandWeConnect extends WeConnectApi {
-    public BrandWeConnect(ApiHttpClient httpClient, TokenManager tokenManager,
+public class BrandWeCharge extends WeConnectApi {
+
+    public BrandWeCharge(ApiHttpClient httpClient, TokenManager tokenManager,
             @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
@@ -36,28 +35,18 @@ public class BrandWeConnect extends WeConnectApi {
     @Override
     public BrandApiProperties getProperties() {
         BrandApiProperties properties = new BrandApiProperties();
-        properties.brand = CNAPI_BRAND_VWID;
+        properties.brand = CNAPI_BRAND_WECHARGE;
         properties.xcountry = "DE";
         properties.apiDefaultUrl = "https://mobileapi.apps.emea.vwapps.io";
         properties.oidcConfigUrl = "https://identity.vwgroup.io/.well-known/openid-configuration";
-        properties.clientId = "a24fba63-34b3-4d43-b181-942111e6bda8@apps_vw-dilab_com";
-        properties.xClientId = "1e63bd93-ce66-4aa3-b373-0ec56247e1d7";
-        properties.authScope = "openid profile badge cars dealers vin";
-        properties.redirect_uri = "weconnect://authenticated";
+        properties.clientId = "0fa5ae01-ebc0-4901-a2aa-4dd60572ea0e@apps_vw-dilab_com";
+        properties.xClientId = "";
+        properties.authScope = "openid profile";
+        properties.redirect_uri = "wecharge://authenticated";
         properties.xrequest = "com.volkswagen.weconnect";
         properties.responseType = "code id_token token";
         properties.xappName = "";
         properties.xappVersion = "";
         return properties;
     }
-    /*
-     * @Override
-     * public String updateAuthorizationUrl(String url) throws CarNetException {
-     * String codeVerifier = generateCodeVerifier();
-     * String codeChallenge = generateCodeChallange(codeVerifier);
-     * return url + "&prompt=login&code_challenge_method=s256&code_challenge=" + codeChallenge;
-     * }
-     *
-     * }
-     */
 }

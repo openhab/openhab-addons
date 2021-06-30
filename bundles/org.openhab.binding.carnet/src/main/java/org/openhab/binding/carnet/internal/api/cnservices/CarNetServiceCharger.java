@@ -19,11 +19,12 @@ import static org.openhab.binding.carnet.internal.api.carnet.CarNetApiConstants.
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.carnet.internal.api.ApiBaseService;
 import org.openhab.binding.carnet.internal.api.ApiException;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNChargerInfo.CarNetChargerStatus;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNChargerInfo.CarNetChargerStatus.CNChargerStatus.CarNetChargerStatusData;
-import org.openhab.binding.carnet.internal.handler.VehicleHandler;
+import org.openhab.binding.carnet.internal.handler.VehicleCarNetHandler;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -36,8 +37,8 @@ import org.openhab.core.types.UnDefType;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetServiceCharger extends CarNetBaseService {
-    public CarNetServiceCharger(VehicleHandler thingHandler, CarNetApiBase api) {
+public class CarNetServiceCharger extends ApiBaseService {
+    public CarNetServiceCharger(VehicleCarNetHandler thingHandler, CarNetApiBase api) {
         super(CNAPI_SERVICE_REMOTE_BATTERY_CHARGE, thingHandler, api);
     }
 
@@ -75,7 +76,7 @@ public class CarNetServiceCharger extends CarNetBaseService {
             if (sd.chargingState != null) {
                 updated |= updateChannel(group, CHANNEL_CHARGER_CHG_STATE, getStringType(sd.chargingState.content));
                 updated |= updateChannel(group, CHANNEL_CHARGER_STATUS, getStringType(sd.chargingState.content));
-                updated |= updateChannel(group, CHANNEL_CONTROL_CHARGER, getOnOff(sd.chargingState.content));
+                updated |= updateChannel(group, CHANNEL_CONTROL_CHARGER, getOnOffType(sd.chargingState.content));
             }
             if (sd.chargingStateErrorCode != null) {
                 updated |= updateChannel(group, CHANNEL_CHARGER_ERROR, getDecimal(sd.chargingStateErrorCode.content));

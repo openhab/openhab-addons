@@ -20,11 +20,11 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.carnet.internal.api.ApiEventListener;
 import org.openhab.binding.carnet.internal.api.ApiException;
+import org.openhab.binding.carnet.internal.api.ApiHttpClient;
 import org.openhab.binding.carnet.internal.api.TokenManager;
-import org.openhab.binding.carnet.internal.api.carnet.ApiEventListener;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetHttpClient;
 import org.openhab.binding.carnet.internal.config.CombinedConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +90,7 @@ public class BrandCarNetAudi extends CarNetApiBase implements BrandAuthenticator
         properties.xrequest = "de.myaudi.mobile.assistant";
     }
 
-    public BrandCarNetAudi(CarNetHttpClient httpClient, TokenManager tokenManager,
+    public BrandCarNetAudi(ApiHttpClient httpClient, TokenManager tokenManager,
             @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }

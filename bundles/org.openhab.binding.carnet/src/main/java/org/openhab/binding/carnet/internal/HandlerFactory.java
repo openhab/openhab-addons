@@ -23,9 +23,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.ApiException;
 import org.openhab.binding.carnet.internal.api.TokenManager;
-import org.openhab.binding.carnet.internal.discovery.CarNetDiscoveryService;
+import org.openhab.binding.carnet.internal.discovery.ConnectedCarDiscoveryService;
 import org.openhab.binding.carnet.internal.handler.AccountHandler;
-import org.openhab.binding.carnet.internal.handler.VehicleHandler;
+import org.openhab.binding.carnet.internal.handler.VehicleCarNetHandler;
+import org.openhab.binding.carnet.internal.handler.VehicleWeConnectHandler;
 import org.openhab.binding.carnet.internal.provider.CarChannelTypeProvider;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -89,8 +90,10 @@ public class HandlerFactory extends BaseThingHandlerFactory {
                 AccountHandler handler = new AccountHandler((Bridge) thing, resources, tokenManager);
                 registerDeviceDiscoveryService(handler);
                 return handler;
-            } else if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {
-                return new VehicleHandler(thing, resources, zoneId, channelIdMapper, channelTypeProvider);
+            } else if (THING_TYPE_CNVEHICLE.equals(thingTypeUID)) {
+                return new VehicleCarNetHandler(thing, resources, zoneId, channelIdMapper, channelTypeProvider);
+            } else if (THING_TYPE_IDVEHICLE.equals(thingTypeUID)) {
+                return new VehicleWeConnectHandler(thing, resources, zoneId, channelIdMapper, channelTypeProvider);
             }
         } catch (ApiException e) {
             logger.warn("Unable to create thing of type {}", thingTypeUID);
@@ -107,7 +110,8 @@ public class HandlerFactory extends BaseThingHandlerFactory {
     }
 
     private synchronized void registerDeviceDiscoveryService(AccountHandler bridgeHandler) {
-        CarNetDiscoveryService discoveryService = new CarNetDiscoveryService(bridgeHandler, bundleContext.getBundle());
+        ConnectedCarDiscoveryService discoveryService = new ConnectedCarDiscoveryService(bridgeHandler,
+                bundleContext.getBundle());
         discoveryService.activate();
         this.discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
@@ -117,7 +121,7 @@ public class HandlerFactory extends BaseThingHandlerFactory {
         ServiceRegistration<?> serviceRegistration = this.discoveryServiceRegistrations
                 .get(bridgeHandler.getThing().getUID());
         if (serviceRegistration != null) {
-            CarNetDiscoveryService discoveryService = (CarNetDiscoveryService) bundleContext
+            ConnectedCarDiscoveryService discoveryService = (ConnectedCarDiscoveryService) bundleContext
                     .getService(serviceRegistration.getReference());
             if (discoveryService != null) {
                 discoveryService.deactivate();

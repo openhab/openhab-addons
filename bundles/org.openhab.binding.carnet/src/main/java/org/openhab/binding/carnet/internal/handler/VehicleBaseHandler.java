@@ -29,38 +29,25 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.carnet.internal.ChannelCache;
 import org.openhab.binding.carnet.internal.TextResources;
+import org.openhab.binding.carnet.internal.api.ApiBaseService;
+import org.openhab.binding.carnet.internal.api.ApiBrandInterface;
+import org.openhab.binding.carnet.internal.api.ApiDataTypesDTO.VehicleDetails;
+import org.openhab.binding.carnet.internal.api.ApiErrorDTO;
+import org.openhab.binding.carnet.internal.api.ApiEventListener;
 import org.openhab.binding.carnet.internal.api.ApiException;
 import org.openhab.binding.carnet.internal.api.ApiResult;
-import org.openhab.binding.carnet.internal.api.CarApiInterface;
 import org.openhab.binding.carnet.internal.api.brand.BrandNull;
-import org.openhab.binding.carnet.internal.api.carnet.ApiEventListener;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiErrorDTO;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiErrorDTO.CNErrorMessage2Details;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetPendingRequest;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetBaseService;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceCarFinder;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceCharger;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceClimater;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceDestinations;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceGeoFenceAlerts;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceHonkFlash;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServicePreHeat;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceRLU;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceSpeedAlerts;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceStatus;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceTripData;
 import org.openhab.binding.carnet.internal.config.CombinedConfig;
 import org.openhab.binding.carnet.internal.config.VehicleConfiguration;
 import org.openhab.binding.carnet.internal.provider.CarChannelTypeProvider;
-import org.openhab.binding.carnet.internal.provider.ChannelCache;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -81,7 +68,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link VehicleHandler} is responsible for handling commands, which are
+ * The {@link VehicleBaseHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Markus Michels - Initial contribution
@@ -89,30 +76,30 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class VehicleHandler extends BaseThingHandler implements BridgeListener, ApiEventListener {
-    private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
-    private final TextResources resources;
-    private final ChannelDefinitions idMapper;
-    private final CarChannelTypeProvider channelTypeProvider;
-    private final ChannelCache cache;
-    private final int cacheCount = 20;
-    private final ZoneId zoneId;
+public abstract class VehicleBaseHandler extends BaseThingHandler implements BridgeListener, ApiEventListener {
+    private final Logger logger = LoggerFactory.getLogger(VehicleBaseHandler.class);
+    protected final TextResources resources;
+    protected final ChannelDefinitions idMapper;
+    protected final CarChannelTypeProvider channelTypeProvider;
+    protected final ChannelCache cache;
+    protected final int cacheCount = 20;
+    protected final ZoneId zoneId;
 
     public final String thingId;
-    private CarApiInterface api = new BrandNull();
-    private @Nullable AccountHandler accountHandler;
-    private @Nullable ScheduledFuture<?> pollingJob;
-    private int updateCounter = 0;
-    private int skipCount = 1;
-    private boolean forceUpdate = false; // true: update status on next polling cycle
-    private boolean requestStatus = false; // true: request update from vehicle
-    private boolean channelsCreated = false;
-    private boolean stopping = false;
+    protected ApiBrandInterface api = new BrandNull();
+    protected @Nullable AccountHandler accountHandler;
+    protected @Nullable ScheduledFuture<?> pollingJob;
+    protected int updateCounter = 0;
+    protected int skipCount = 1;
+    protected boolean forceUpdate = false; // true: update status on next polling cycle
+    protected boolean requestStatus = false; // true: request update from vehicle
+    protected boolean channelsCreated = false;
+    protected boolean stopping = false;
 
-    private Map<String, CarNetBaseService> services = new LinkedHashMap<>();
-    private CombinedConfig config = new CombinedConfig();
+    protected Map<String, ApiBaseService> services = new LinkedHashMap<>();
+    protected CombinedConfig config = new CombinedConfig();
 
-    public VehicleHandler(Thing thing, TextResources resources, ZoneId zoneId, ChannelDefinitions idMapper,
+    public VehicleBaseHandler(Thing thing, TextResources resources, ZoneId zoneId, ChannelDefinitions idMapper,
             CarChannelTypeProvider channelTypeProvider) throws ApiException {
         super(thing);
 
@@ -215,21 +202,12 @@ public class VehicleHandler extends BaseThingHandler implements BridgeListener, 
                 // General channels
                 Map<String, ChannelIdMapEntry> channels = new LinkedHashMap<>();
                 addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_UPDATED, ITEMT_DATETIME, null, false, true);
-                addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_RATELIM, ITEMT_NUMBER, null, false, true);
-                addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_LOCKED, ITEMT_SWITCH, null, false, true);
-                addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_MAINTREQ, ITEMT_SWITCH, null, false, true);
-                addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_WINCLOSED, ITEMT_SWITCH, null, false, true);
-                addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_TIRESOK, ITEMT_SWITCH, null, false, true);
                 addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_UPDATE, ITEMT_SWITCH, null, false, false);
-
-                for (int i = 0; i < config.vstatus.imageUrls.length; i++) {
-                    addChannel(channels, CHANNEL_GROUP_PICTURES, CHANNEL_PICTURES_IMG_PREFIX + (i + 1), ITEMT_STRING,
-                            null, i > 0, false);
-                }
+                createBrandChannels(channels);
 
                 // Add channels based on service information
-                for (Map.Entry<String, CarNetBaseService> s : services.entrySet()) {
-                    CarNetBaseService service = s.getValue();
+                for (Map.Entry<String, ApiBaseService> s : services.entrySet()) {
+                    ApiBaseService service = s.getValue();
                     if (!service.createChannels(channels)) {
                         logger.debug("{}: Service {} is not available, disable", thingId, service.getServiceId());
                         service.disable();
@@ -248,7 +226,7 @@ public class VehicleHandler extends BaseThingHandler implements BridgeListener, 
 
             }
         } catch (ApiException e) {
-            CarNetApiErrorDTO res = e.getApiResult().getApiError();
+            ApiErrorDTO res = e.getApiResult().getApiError();
             if (res.description.contains("disabled ")) {
                 // Status service in the vehicle is disabled
                 String message = "Status service is disabled, check data privacy settings in MMI: " + res;
@@ -268,21 +246,6 @@ public class VehicleHandler extends BaseThingHandler implements BridgeListener, 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
         }
         return successful;
-    }
-
-    /**
-     * Brigde status changed
-     */
-    @Override
-    public void stateChanged(ThingStatus status, ThingStatusDetail detail, String message) {
-        forceUpdate = true;
-        cache.clear();
-    }
-
-    @Override
-    public void informationUpdate(@Nullable List<VehicleInformation> vehicleList) {
-        forceUpdate = true;
-        channelsCreated = false;
     }
 
     @Override
@@ -305,10 +268,6 @@ public class VehicleHandler extends BaseThingHandler implements BridgeListener, 
 
         String channelId = channelUID.getIdWithoutGroup();
         String error = "";
-        boolean sendOffOnError = false;
-        String action = "";
-        String actionStatus = "";
-        boolean switchOn = (command instanceof OnOffType) && (OnOffType) command == OnOffType.ON;
         logger.debug("{}: Channel {} received command {}", thingId, channelId, command);
         try {
             switch (channelId) {
@@ -319,79 +278,14 @@ public class VehicleHandler extends BaseThingHandler implements BridgeListener, 
                         forceUpdate = true;
                     }
                     break;
-                case CHANNEL_CONTROL_LOCK:
-                    sendOffOnError = true;
-                    action = switchOn ? "lock" : "unlock";
-                    actionStatus = api.controlLock(switchOn);
-                    break;
-                case CHANNEL_CONTROL_CLIMATER:
-                    sendOffOnError = true;
-                    action = switchOn ? "startClimater" : "stopClimater";
-                    actionStatus = api.controlClimater(switchOn, getHeaterSource());
-                    break;
-                case CHANNEL_CLIMATER_TARGET_TEMP:
-                    actionStatus = api.controlClimaterTemp(((DecimalType) command).doubleValue(), getHeaterSource());
-                    break;
-                case CHANNEL_CONTROL_HEATSOURCE:
-                    String heaterSource = command.toString().toLowerCase();
-                    logger.debug("{}: Set heater source for climatisation to {}", thingId, heaterSource);
-                    cache.setValue(channelId, channelUID.getId(), new StringType(heaterSource));
-                    break;
-                case CHANNEL_CONTROL_CHARGER:
-                    sendOffOnError = true;
-                    action = switchOn ? "startCharging" : "stopCharging";
-                    actionStatus = api.controlCharger(switchOn);
-                    break;
-                case CHANNEL_CONTROL_MAXCURRENT:
-                    sendOffOnError = true;
-                    int maxCurrent = ((DecimalType) command).intValue();
-                    logger.info("{}: Setting max charging current to {}A", thingId, maxCurrent);
-                    actionStatus = api.controlMaxCharge(maxCurrent);
-                    break;
-                case CHANNEL_CONTROL_WINHEAT:
-                    sendOffOnError = true;
-                    action = switchOn ? "startWindowHeat" : "stopWindowHeat";
-                    actionStatus = api.controlWindowHeating(switchOn);
-                    break;
-                case CHANNEL_CONTROL_PREHEAT:
-                    sendOffOnError = true;
-                    action = switchOn ? "startPreHeat" : "stopPreHeat";
-                    actionStatus = api.controlPreHeating(switchOn, 30);
-                    break;
-                case CHANNEL_CONTROL_VENT:
-                    sendOffOnError = true;
-                    action = switchOn ? "startVentilation" : "stopVentilation";
-                    actionStatus = api.controlVentilation(switchOn, getVentDuration());
-                    break;
-                case CHANNEL_CONTROL_DURATION:
-                    DecimalType value = new DecimalType(((DecimalType) command).intValue());
-                    logger.debug("{}: Set ventilation/pre-heat duration to {}", thingId, value);
-                    cache.setValue(channelUID.getId(), value);
-                    break;
-                case CHANNEL_CONTROL_FLASH:
-                case CHANNEL_CONTROL_HONKFLASH:
-                    if (command == OnOffType.ON) {
-                        sendOffOnError = true;
-                        State point = cache.getValue(mkChannelId(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO));
-                        if (point != UnDefType.NULL) {
-                            actionStatus = api.controlHonkFlash(CHANNEL_CONTROL_HONKFLASH.equals(channelId),
-                                    (PointType) point, getHfDuration());
-                        } else {
-                            logger.warn("{}: Geo position is not available, can't execute command", thingId);
-                        }
-                    }
-                    break;
-                case CHANNEL_CONTROL_HFDURATION:
-                    DecimalType hfd = new DecimalType(((DecimalType) command).intValue());
-                    logger.debug("{}: Set honk%flash duration to {}", thingId, hfd);
-                    cache.setValue(channelUID.getId(), hfd);
-                    break;
                 default:
-                    logger.info("{}: Channel {} is unknown, command {} ignored", thingId, channelId, command);
+                    if (!handleBrandCommand(channelUID, command)) {
+                        logger.info("{}: Channel {} is unknown, command {} ignored", thingId, channelId, command);
+                    }
                     break;
             }
         } catch (ApiException e) {
-            CarNetApiErrorDTO res = e.getApiResult().getApiError();
+            ApiErrorDTO res = e.getApiResult().getApiError();
             if (res.isOpAlreadyInProgress()) {
                 logger.warn("{}: \"An operation is already in progress, request was rejected!\"", thingId);
             }
@@ -405,15 +299,21 @@ public class VehicleHandler extends BaseThingHandler implements BridgeListener, 
             error = "General Error: " + getString(e.getMessage());
             logger.warn("{}: {}", thingId, error, e);
         }
+    }
 
-        if (!action.isEmpty()) {
-            logger.debug("{}: Action {} submitted, initial status={}", thingId, action, actionStatus);
-        }
-        if (!error.isEmpty()) {
-            if (sendOffOnError) {
-                updateState(channelUID.getId(), OnOffType.OFF);
-            }
-        }
+    /**
+     * Brigde status changed
+     */
+    @Override
+    public void stateChanged(ThingStatus status, ThingStatusDetail detail, String message) {
+        forceUpdate = true;
+        cache.clear();
+    }
+
+    @Override
+    public void informationUpdate(@Nullable List<VehicleDetails> vehicleList) {
+        forceUpdate = true;
+        channelsCreated = false;
     }
 
     /**
@@ -427,7 +327,7 @@ public class VehicleHandler extends BaseThingHandler implements BridgeListener, 
         forceUpdate = true;
     }
 
-    private boolean updateVehicleStatus() throws ApiException {
+    protected boolean updateVehicleStatus() throws ApiException {
         boolean pending = false;
         // check for pending refresh
         Map<String, CarNetPendingRequest> requests = api.getPendingRequests();
@@ -455,8 +355,8 @@ public class VehicleHandler extends BaseThingHandler implements BridgeListener, 
          * unless the access token expired and can't be renewed
          */
         boolean updated = false;
-        for (Map.Entry<String, CarNetBaseService> s : services.entrySet()) {
-            CarNetBaseService service = s.getValue();
+        for (Map.Entry<String, ApiBaseService> s : services.entrySet()) {
+            ApiBaseService service = s.getValue();
             try {
                 updated |= service.update();
             } catch (ApiException e) {
@@ -524,60 +424,8 @@ public class VehicleHandler extends BaseThingHandler implements BridgeListener, 
         updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_RATELIM, new DecimalType(rateLimit));
     }
 
-    private boolean updateActionStatus(String service, String action, String statusDetail) {
-        boolean updated = false;
-        updated |= updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION, getStringType(service + "." + action));
-        updated |= updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION_STATUS, getStringType(statusDetail));
-        updated |= updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION_PENDING,
-                CarNetPendingRequest.isInProgress(statusDetail) ? OnOffType.ON : OnOffType.OFF);
-
-        if (!CarNetPendingRequest.isInProgress(statusDetail)) {
-            String channel = "";
-            switch (action) {
-                case CNAPI_CMD_FLASH:
-                    channel = CHANNEL_CONTROL_FLASH;
-                    break;
-                case CNAPI_CMD_HONK_FLASH:
-                    channel = CHANNEL_CONTROL_HONKFLASH;
-                    break;
-            }
-            if (!channel.isEmpty()) {
-                updateChannel(CHANNEL_GROUP_CONTROL, channel, OnOffType.OFF);
-            }
-
-            forceUpdate = true; // refresh vehicle status
-            updated = true;
-        }
-        return updateLastUpdate(updated);
-    }
-
-    /**
-     * Register all available services
-     */
-    private void registerServices() {
-        services.clear();
-        addService(new CarNetServiceStatus(this, (CarNetApiBase) api));
-        addService(new CarNetServiceCarFinder(this, (CarNetApiBase) api));
-        addService(new CarNetServiceRLU(this, (CarNetApiBase) api));
-        addService(new CarNetServiceClimater(this, (CarNetApiBase) api));
-        addService(new CarNetServicePreHeat(this, (CarNetApiBase) api));
-        addService(new CarNetServiceCharger(this, (CarNetApiBase) api));
-        addService(new CarNetServiceTripData(this, (CarNetApiBase) api));
-        addService(new CarNetServiceDestinations(this, (CarNetApiBase) api));
-        addService(new CarNetServiceHonkFlash(this, (CarNetApiBase) api));
-        addService(new CarNetServiceGeoFenceAlerts(this, (CarNetApiBase) api));
-        addService(new CarNetServiceSpeedAlerts(this, (CarNetApiBase) api));
-    }
-
-    private boolean addService(CarNetBaseService service) {
-        String serviceId = service.getServiceId();
-        boolean available = false;
-        if (!services.containsKey(serviceId) && service.isEnabled()) {
-            services.put(serviceId, service);
-            available = true;
-        }
-        logger.debug("{}: Remote Control Service {} {} available", thingId, serviceId, available ? "is" : "is NOT");
-        return available;
+    public boolean updateActionStatus(String service, String action, String statusDetail) {
+        return updateLastUpdate(true);
     }
 
     /**
@@ -701,13 +549,13 @@ public class VehicleHandler extends BaseThingHandler implements BridgeListener, 
         return false;
     }
 
-    private void updateAllChannels() {
+    protected void updateAllChannels() {
         for (Map.Entry<String, State> s : cache.getChannelData().entrySet()) {
             updateState(s.getKey(), s.getValue());
         }
     }
 
-    private boolean updateLastUpdate(boolean updated) {
+    protected boolean updateLastUpdate(boolean updated) {
         if (updated) {
             updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_UPDATED, getTimestamp(zoneId));
         }
@@ -742,7 +590,7 @@ public class VehicleHandler extends BaseThingHandler implements BridgeListener, 
         return false;
     }
 
-    private String getError(ApiException e) {
+    protected String getError(ApiException e) {
         ApiResult res = e.getApiResult();
         if (res.httpCode == HttpStatus.FORBIDDEN_403) {
             logger.info("{}: API Service is not available: ", thingId);
@@ -750,7 +598,7 @@ public class VehicleHandler extends BaseThingHandler implements BridgeListener, 
         }
 
         String reason = "";
-        CarNetApiErrorDTO error = e.getApiResult().getApiError();
+        ApiErrorDTO error = e.getApiResult().getApiError();
         if (!error.isError()) {
             return getString(e.getMessage());
         } else {
@@ -783,15 +631,26 @@ public class VehicleHandler extends BaseThingHandler implements BridgeListener, 
         return message;
     }
 
-    private String getReason(CarNetApiErrorDTO error) {
-        CNErrorMessage2Details details = error.details;
-        if (details != null) {
-            return getString(details.reason);
-        }
+    protected String getReason(ApiErrorDTO error) {
         return "";
     }
 
-    private String getApiStatus(String errorMessage, String errorClass) {
+    public void registerServices() {
+        // default: none
+    }
+
+    protected boolean addService(ApiBaseService service) {
+        String serviceId = service.getServiceId();
+        boolean available = false;
+        if (!services.containsKey(serviceId) && service.isEnabled()) {
+            services.put(serviceId, service);
+            available = true;
+        }
+        logger.debug("{}: Remote Control Service {} {} available", thingId, serviceId, available ? "is" : "is NOT");
+        return available;
+    }
+
+    protected String getApiStatus(String errorMessage, String errorClass) {
         if (errorMessage.contains(errorClass)) {
             // extract the error code like VSR.security.9007
             String key = API_STATUS_MSG_PREFIX
@@ -811,6 +670,17 @@ public class VehicleHandler extends BaseThingHandler implements BridgeListener, 
 
     public ZoneId getZoneId() {
         return zoneId;
+    }
+
+    public boolean createBrandChannels(Map<String, ChannelIdMapEntry> channels) {
+        return false;
+    }
+
+    /**
+     * Device specific command handlers are overriding this method to do additional stuff
+     */
+    public boolean handleBrandCommand(ChannelUID channelUID, Command command) throws ApiException {
+        return false;
     }
 
     @Override

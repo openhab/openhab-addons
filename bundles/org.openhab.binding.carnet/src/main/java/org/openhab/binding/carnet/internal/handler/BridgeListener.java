@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.carnet.internal.api.ApiDataTypesDTO.VehicleDetails;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 
@@ -26,7 +27,7 @@ import org.openhab.core.thing.ThingStatusDetail;
  */
 @NonNullByDefault
 public interface BridgeListener {
-    void informationUpdate(@Nullable List<VehicleInformation> vehicleList);
+    void informationUpdate(@Nullable List<VehicleDetails> vehicleList);
 
     void stateChanged(ThingStatus status, ThingStatusDetail detail, String message);
 }

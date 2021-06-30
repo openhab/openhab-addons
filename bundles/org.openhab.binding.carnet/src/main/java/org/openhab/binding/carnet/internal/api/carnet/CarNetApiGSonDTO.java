@@ -300,7 +300,6 @@ public class CarNetApiGSonDTO {
     }
 
     public static class CarNetVehicleStatus {
-
         public static class CNStoredVehicleDataResponse {
             public static class CNVehicleData {
                 public static class CNStatusData {

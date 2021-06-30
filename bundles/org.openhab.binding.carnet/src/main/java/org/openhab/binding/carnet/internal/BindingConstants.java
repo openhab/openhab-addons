@@ -56,10 +56,11 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_VWGO = new ThingTypeUID(BINDING_ID, THING_VWGO);
     public static final ThingTypeUID THING_TYPE_SKODA = new ThingTypeUID(BINDING_ID, THING_SKODA);
     public static final ThingTypeUID THING_TYPE_SEAT = new ThingTypeUID(BINDING_ID, THING_SEAT);
-    public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_MYAUDI, THING_TYPE_VW, THING_TYPE_VWID, THING_TYPE_VWGO,
-                    THING_TYPE_SKODA, THING_TYPE_SEAT, THING_TYPE_VEHICLE).collect(Collectors.toSet()));
+    public static final ThingTypeUID THING_TYPE_CNVEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
+    public static final ThingTypeUID THING_TYPE_IDVEHICLE = new ThingTypeUID(BINDING_ID, "idvehicle");
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_MYAUDI, THING_TYPE_VW, THING_TYPE_VWID, THING_TYPE_VWGO, THING_TYPE_SKODA,
+                    THING_TYPE_SEAT, THING_TYPE_CNVEHICLE, THING_TYPE_IDVEHICLE).collect(Collectors.toSet()));
 
     // List of all ChannelGroups and Channels
     public static final String CHANNEL_GROUP_GENERAL = "general";
@@ -72,7 +73,15 @@ public class BindingConstants {
     public static final String CHANNEL_GENERAL_ACTION_STATUS = "lastActionStatus";
     public static final String CHANNEL_GENERAL_ACTION_PENDING = "lastActionPending";
     public static final String CHANNEL_GENERAL_RATELIM = "rateLimit";
+    public static final String CHANNEL_GENERAL_TIMEINCAR = "timeInCar";
 
+    // Group status
+    public static final String CHANNEL_GROUP_STATUS = "status";
+    public static final String CHANNEL_STATUS_PBRAKE = "parkingBrake";
+    public static final String CHANNEL_STATUS_LIGHTS = "vehicleLights";
+    public static final String CHANNEL_STATUS_ERROR = "error";
+
+    // Group control
     public static final String CHANNEL_GROUP_CONTROL = "control";
     public static final String CHANNEL_CONTROL_UPDATE = "update";
     public static final String CHANNEL_CONTROL_LOCK = "lock";
@@ -97,6 +106,15 @@ public class BindingConstants {
     public static final String CHANNEL_PARK_TIME = "parkingTime";
     public static final String CHANNEL_CAR_MOVING = "carMoving";
 
+    // Group range
+    public static final String CHANNEL_GROUP_RANGE = "range";
+    public static final String CHANNEL_RANGE_TOTAL = "totalRange";
+    public static final String CHANNEL_RANGE_PRANGE = "primaryRange";
+    public static final String CHANNEL_RANGE_PFUELTYPE = "primaryFuelType";
+    public static final String CHANNEL_RANGE_SRANGE = "secondaryRange";
+    public static final String CHANNEL_RANGE_SFUELTYPE = "secondaryFuelType";
+
+    // Group Climarter
     public static final String CHANNEL_GROUP_CLIMATER = "climater";
     public static final String CHANNEL_CLIMATER_TARGET_TEMP = "targetTemperature";
     public static final String CHANNEL_CLIMATER_HEAT_SOURCE = "heaterSource";
@@ -106,17 +124,22 @@ public class BindingConstants {
     public static final String CHANNEL_CLIMATER_RL_STATE = "rearLeft";
     public static final String CHANNEL_CLIMATER_RR_STATE = "rearRight";
     public static final String CHANNEL_CLIMATER_MIRROR_HEAT = "mirrorHeat";
+    public static final String CHANNEL_CLIMATER_REMAINING = "remainingClimatisation";
 
+    // Group charger
     public static final String CHANNEL_GROUP_CHARGER = "charger";
     public static final String CHANNEL_CHARGER_STATUS = "chargingStatus";
     public static final String CHANNEL_CHARGER_ERROR = "errorCode";
     public static final String CHANNEL_CHARGER_PWR_STATE = "powerState";
     public static final String CHANNEL_CHARGER_FLOW = "energyFlow";
     public static final String CHANNEL_CHARGER_CHG_STATE = "chargingState";
+    public static final String CHANNEL_CHARGER_MODE = "chargingMode";
+    public static final String CHANNEL_CHARGER_CHGLVL = "chargingLevel";
     public static final String CHANNEL_CHARGER_BAT_STATE = "batteryState";
-    public static final String CHANNEL_CHARGER_REMAINING = "remainingTime";
     public static final String CHANNEL_CHARGER_PLUG_STATE = "plugState";
     public static final String CHANNEL_CHARGER_LOCK_STATE = "lockState";
+    public static final String CHANNEL_CHARGER_REMAINING = "remainingChargingTime";
+    public static final String CHANNEL_CHARGER_KMPH = "chargeRate_kmph";
 
     public static final String CHANNEL_GROUP_TRIP_PRE = "trip";
     public static final String CHANNEL_TRIP_SHORT = "Short";
@@ -154,8 +177,6 @@ public class BindingConstants {
     public static final String CHANNEL_GEOFENCE_TIME = "geoFenceAlertTime";
 
     // Other channels group in here
-    public static final String CHANNEL_GROUP_STATUS = "status";
-    public static final String CHANNEL_GROUP_RANGE = "range";
     public static final String CHANNEL_GROUP_MAINT = "maintenance";
     public static final String CHANNEL_GROUP_WINDOWS = "windows";
     public static final String CHANNEL_GROUP_DOORS = "doors";
@@ -196,6 +217,8 @@ public class BindingConstants {
     public static final String CNAPI_BRAND_AUDI = "Audi";
     public static final String CNAPI_BRAND_VW = "VW";
     public static final String CNAPI_BRAND_VWID = "Id";
+    public static final String CNAPI_BRAND_WECHARGE = "Wc";
+
     public static final String CNAPI_BRAND_VWGO = "Go";
     public static final String CNAPI_BRAND_SKODA = "Skoda";
     public static final String CNAPI_BRAND_SEAT = "Seat";

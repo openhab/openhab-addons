@@ -14,8 +14,8 @@ package org.openhab.binding.carnet.internal.api;
 
 import static org.openhab.binding.carnet.internal.BindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarUtils.*;
+import static org.openhab.binding.carnet.internal.api.ApiHttpClient.*;
 import static org.openhab.binding.carnet.internal.api.carnet.CarNetApiConstants.*;
-import static org.openhab.binding.carnet.internal.api.carnet.CarNetHttpClient.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -34,7 +34,6 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNApiToken;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetSecurityPinAuthInfo;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetSecurityPinAuthentication;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetHttpClient;
 import org.openhab.binding.carnet.internal.config.CombinedConfig;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -60,10 +59,10 @@ public class TokenManager {
         private ApiToken idToken = new ApiToken();
         private ApiToken vwToken = new ApiToken();
         private String csrf = "";
-        private CarNetHttpClient http = new CarNetHttpClient();
+        private ApiHttpClient http = new ApiHttpClient();
     }
 
-    public void setup(String tokenSetId, CarNetHttpClient httpClient) {
+    public void setup(String tokenSetId, ApiHttpClient httpClient) {
         TokenSet tokens = getTokenSet(tokenSetId);
         tokens.http = httpClient;
     }
@@ -179,6 +178,9 @@ public class TokenManager {
                     .data("password", URLEncoder.encode(config.account.password, UTF_8));
             res = oauth.post(url);
             url = oauth.location; // Continue URL
+            if (url.contains("error=login.error.password_invalid")) {
+                throw new ApiSecurityException("Login failed due to invalid password or locked account!");
+            }
             if (url.contains("error=login.error.throttled")) {
                 throw new ApiSecurityException(
                         "Login failed due to invalid password, locked account or API throtteling!");
@@ -244,8 +246,8 @@ public class TokenManager {
                  * authorizationCode: jwtauth_code,
                  * });
                  */
-                json = oauth.clearHeader().header(HttpHeader.HOST, "login.apps.emea.vwapps.io") //
-                        .clearData().data("state", state).data("id_token", oauth.idToken)
+                json = oauth.clearHeader().header(HttpHeader.HOST, "login.apps.emea.vwapps.io")//
+                        .clearData().data("state", oauth.state).data("id_token", oauth.idToken)
                         .data("redirect_uri", config.api.redirect_uri).data("region", "emea")
                         .data("access_token", oauth.accessToken).data("authorizationCode", oauth.code) //
                         .post("https://login.apps.emea.vwapps.io/login/v1", true).response;
@@ -324,7 +326,7 @@ public class TokenManager {
          * 3. Send authentication and request token, save token to the cache
          */
         TokenSet tokens = getTokenSet(config.tokenSetId);
-        CarNetHttpClient http = tokens.http;
+        ApiHttpClient http = tokens.http;
 
         String accessToken = createVwToken(config);
 
@@ -440,7 +442,7 @@ public class TokenManager {
         }
 
         TokenSet tokens = getTokenSet(config.tokenSetId);
-        CarNetHttpClient http = tokens.http;
+        ApiHttpClient http = tokens.http;
         if (tokens.vwToken.refreshToken.isEmpty()) {
             logger.debug("{}: No refreshToken available, token is now invalid", config.vehicle.vin);
             token.invalidate();

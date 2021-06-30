@@ -22,12 +22,13 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.carnet.internal.api.ApiBaseService;
 import org.openhab.binding.carnet.internal.api.ApiException;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetTripData;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetTripData.CarNetTripDataList.CarNetTripDataEntry;
 import org.openhab.binding.carnet.internal.config.CombinedConfig;
-import org.openhab.binding.carnet.internal.handler.VehicleHandler;
+import org.openhab.binding.carnet.internal.handler.VehicleCarNetHandler;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.unit.SIUnits;
@@ -41,10 +42,10 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetServiceTripData extends CarNetBaseService {
+public class CarNetServiceTripData extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(CarNetServiceTripData.class);
 
-    public CarNetServiceTripData(VehicleHandler thingHandler, CarNetApiBase api) {
+    public CarNetServiceTripData(VehicleCarNetHandler thingHandler, CarNetApiBase api) {
         super(CNAPI_SERVICE_REMOTE_TRIP_STATISTICS, thingHandler, api);
     }
 

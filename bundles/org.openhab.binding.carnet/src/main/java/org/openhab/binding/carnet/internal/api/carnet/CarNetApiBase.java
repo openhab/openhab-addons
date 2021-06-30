@@ -32,9 +32,14 @@ import javax.measure.IncommensurableException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpHeader;
+import org.openhab.binding.carnet.internal.api.ApiBrandInterface;
+import org.openhab.binding.carnet.internal.api.ApiDataTypesDTO.VehicleDetails;
+import org.openhab.binding.carnet.internal.api.ApiDataTypesDTO.VehicleStatus;
+import org.openhab.binding.carnet.internal.api.ApiErrorDTO;
+import org.openhab.binding.carnet.internal.api.ApiEventListener;
 import org.openhab.binding.carnet.internal.api.ApiException;
+import org.openhab.binding.carnet.internal.api.ApiHttpClient;
 import org.openhab.binding.carnet.internal.api.ApiResult;
-import org.openhab.binding.carnet.internal.api.CarApiInterface;
 import org.openhab.binding.carnet.internal.api.TokenManager;
 import org.openhab.binding.carnet.internal.api.brand.BrandApiProperties;
 import org.openhab.binding.carnet.internal.api.brand.BrandAuthenticator;
@@ -69,7 +74,6 @@ import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNSpeedAl
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNSpeedAlerts.CarNetSpeedAlerts;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNStoredPosition;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNVehicleDetails;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNVehicleDetails.CarNetVehicleDetails;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetActionResponse.CNActionResponse;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetHomeRegion;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetJwtToken;
@@ -90,18 +94,18 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * The {@link CarNetApiBase} implements the http based API access to CarNet
+ * The {@link CarNetApiBase} implements the based API access to CarNet
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public abstract class CarNetApiBase implements BrandAuthenticator, CarApiInterface {
+public abstract class CarNetApiBase implements BrandAuthenticator, ApiBrandInterface {
     private final Logger logger = LoggerFactory.getLogger(CarNetApiBase.class);
     protected final Gson gson = new Gson();
 
     protected String thingId = "";
     protected CombinedConfig config = new CombinedConfig();
-    protected CarNetHttpClient http = new CarNetHttpClient();
+    protected ApiHttpClient http = new ApiHttpClient();
     protected TokenManager tokenManager = new TokenManager();
     protected @Nullable ApiEventListener eventListener;
 
@@ -111,7 +115,7 @@ public abstract class CarNetApiBase implements BrandAuthenticator, CarApiInterfa
     public CarNetApiBase() {
     }
 
-    public CarNetApiBase(CarNetHttpClient httpClient, TokenManager tokenManager,
+    public CarNetApiBase(ApiHttpClient httpClient, TokenManager tokenManager,
             @Nullable ApiEventListener eventListener) {
         logger.debug("Initializing CarNet API");
         this.http = httpClient;
@@ -130,7 +134,7 @@ public abstract class CarNetApiBase implements BrandAuthenticator, CarApiInterfa
         http.setConfig(this.config);
     }
 
-    public CarNetHttpClient getHttp() {
+    public ApiHttpClient getHttp() {
         return this.http;
     }
 
@@ -253,23 +257,25 @@ public abstract class CarNetApiBase implements BrandAuthenticator, CarApiInterfa
                 "getMyDestinationsFeed", String.class);
     }
 
-    public CarNetVehicleList getVehicles() throws ApiException {
+    @Override
+    public ArrayList<String> getVehicles() throws ApiException {
         return callApi("https://msg.volkswagen.de/fs-car/usermanagement/users/v1/{0}/{1}/vehicles", "getVehicles",
-                CarNetVehicleList.class);
+                CarNetVehicleList.class).userVehicles.vehicle;
     }
 
-    public CarNetVehicleDetails getVehicleDetails(String vin) throws ApiException {
+    @Override
+    public VehicleDetails getVehicleDetails(String vin) throws ApiException {
         Map<String, String> headers = fillAppHeaders();
         headers.put("Accept",
                 "application/vnd.vwg.mbb.vehicleDataDetail_v2_1_0+json, application/vnd.vwg.mbb.genericError_v1_0_2+json");
         CNVehicleDetails details = callApi(vin, "vehicleMgmt/vehicledata/v2/{0}/{1}/vehicles/{2}", headers,
                 "getVehicleDetails", CNVehicleDetails.class);
-        return details.vehicleDataDetail;
+        return new VehicleDetails(config, details.vehicleDataDetail);
     }
 
-    public CarNetVehicleStatus getVehicleStatus() throws ApiException {
-        return callApi(getApiUrl() + "/" + "bs/vsr/v1/{0}/{1}/vehicles/{2}/status", "getVehicleStatus",
-                CarNetVehicleStatus.class);
+    public VehicleStatus getVehicleStatus() throws ApiException {
+        return new VehicleStatus(callApi(getApiUrl() + "/" + "bs/vsr/v1/{0}/{1}/vehicles/{2}/status",
+                "getVehicleStatus", CarNetVehicleStatus.class));
     }
 
     @Override
@@ -672,7 +678,7 @@ public abstract class CarNetApiBase implements BrandAuthenticator, CarApiInterfa
                 try {
                     request.status = getRequestStatus(request.requestId, "");
                 } catch (ApiException ex) {
-                    CarNetApiErrorDTO error = ex.getApiResult().getApiError();
+                    ApiErrorDTO error = ex.getApiResult().getApiError();
                     if (error.isTechValidationError()) {
                         // Id is no longer valid
                         request.status = CNAPI_REQUEST_ERROR;
@@ -682,6 +688,7 @@ public abstract class CarNetApiBase implements BrandAuthenticator, CarApiInterfa
         }
     }
 
+    @Override
     public Map<String, CarNetPendingRequest> getPendingRequests() {
         return pendingRequests;
     }

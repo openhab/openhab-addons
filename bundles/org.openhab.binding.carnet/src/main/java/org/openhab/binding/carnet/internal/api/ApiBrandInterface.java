@@ -12,21 +12,23 @@
  */
 package org.openhab.binding.carnet.internal.api;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.carnet.internal.api.ApiDataTypesDTO.VehicleDetails;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetPendingRequest;
 import org.openhab.binding.carnet.internal.config.CombinedConfig;
 import org.openhab.core.library.types.PointType;
 
 /**
- * The {@link CarApiInterface} defines the internal API interface, which then gets adapted to the varios Connected Car
+ * The {@link ApiBrandInterface} defines the internal API interface, which then gets adapted to the varios Connected Car
  * APIs
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public interface CarApiInterface {
+public interface ApiBrandInterface {
     abstract void initialize(CombinedConfig configIn) throws ApiException;
 
     abstract CombinedConfig initialize(String vin, CombinedConfig configIn) throws ApiException;
@@ -34,6 +36,10 @@ public interface CarApiInterface {
     abstract Map<String, CarNetPendingRequest> getPendingRequests();
 
     abstract void checkPendingRequests();
+
+    abstract public ArrayList<String> getVehicles() throws ApiException;
+
+    abstract VehicleDetails getVehicleDetails(String vin) throws ApiException;
 
     abstract String refreshVehicleStatus() throws ApiException;
 

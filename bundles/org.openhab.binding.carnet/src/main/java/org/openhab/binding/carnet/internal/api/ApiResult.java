@@ -21,8 +21,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiErrorDTO;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiErrorDTO.CNApiError2;
+import org.openhab.binding.carnet.internal.api.ApiErrorDTO.CNApiError2;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -42,7 +41,7 @@ public class ApiResult {
     public String httpReason = "";
     public int rateLimit = -1;
     public HttpFields responseHeaders = new HttpFields();
-    CarNetApiErrorDTO apiError = new CarNetApiErrorDTO();
+    ApiErrorDTO apiError = new ApiErrorDTO();
 
     public ApiResult() {
     }
@@ -76,7 +75,7 @@ public class ApiResult {
         }
     }
 
-    public CarNetApiErrorDTO getApiError() {
+    public ApiErrorDTO getApiError() {
         return apiError;
     }
 
@@ -138,14 +137,14 @@ public class ApiResult {
                 Gson gson = new Gson();
                 try {
                     if (response.contains("\"error_code\": ")) {
-                        CarNetApiErrorDTO error = gson.fromJson(response, CarNetApiErrorDTO.class);
+                        ApiErrorDTO error = gson.fromJson(response, ApiErrorDTO.class);
                         if (error != null) {
                             apiError = error;
                         }
                     } else {
                         CNApiError2 error2 = gson.fromJson(response, CNApiError2.class);
                         if (error2 != null) {
-                            apiError = new CarNetApiErrorDTO(error2);
+                            apiError = new ApiErrorDTO(error2);
                         }
                     }
                 } catch (JsonParseException e) {

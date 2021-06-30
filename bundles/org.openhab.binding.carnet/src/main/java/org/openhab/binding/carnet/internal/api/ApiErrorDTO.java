@@ -10,12 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.api.carnet;
+package org.openhab.binding.carnet.internal.api;
 
 import static org.openhab.binding.carnet.internal.api.carnet.CarNetApiConstants.API_STATUS_CLASS_SECURUTY;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiErrorDTO.CNApiError2.CNErrorMessage2;
+import org.openhab.binding.carnet.internal.api.ApiErrorDTO.CNApiError2.CNErrorMessage2;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -24,7 +25,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Markus Michels - Initial contribution
  */
-public class CarNetApiErrorDTO {
+public class ApiErrorDTO {
     /*
      * {
      * "error":"invalid_request",
@@ -36,16 +37,16 @@ public class CarNetApiErrorDTO {
     public String description = "";
     public @Nullable CNErrorMessage2Details details = new CNErrorMessage2Details();
 
-    public CarNetApiErrorDTO() {
+    public ApiErrorDTO() {
     }
 
-    public CarNetApiErrorDTO(CNApiError1 format1) {
+    public ApiErrorDTO(CNApiError1 format1) {
         error = getString(format1.error);
         code = getString(format1.code);
         description = getString(format1.description);
     }
 
-    public CarNetApiErrorDTO(CNApiError2 format2) {
+    public ApiErrorDTO(CNApiError2 format2) {
         if (format2 != null) {
             CNErrorMessage2 error2 = format2.error;
             if (error2 != null) {

@@ -21,10 +21,10 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.carnet.internal.api.ApiDataTypesDTO.VehicleDetails;
 import org.openhab.binding.carnet.internal.api.ApiException;
 import org.openhab.binding.carnet.internal.handler.AccountHandler;
 import org.openhab.binding.carnet.internal.handler.BridgeListener;
-import org.openhab.binding.carnet.internal.handler.VehicleInformation;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -43,13 +43,13 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class CarNetDiscoveryService extends AbstractDiscoveryService implements BridgeListener {
-    private final Logger logger = LoggerFactory.getLogger(CarNetDiscoveryService.class);
+public class ConnectedCarDiscoveryService extends AbstractDiscoveryService implements BridgeListener {
+    private final Logger logger = LoggerFactory.getLogger(ConnectedCarDiscoveryService.class);
     private final AccountHandler accountHandler;
     private ThingUID bridgeUID;
     private static final int TIMEOUT = 10;
 
-    public CarNetDiscoveryService(AccountHandler bridgeHandler, Bundle bundle) {
+    public ConnectedCarDiscoveryService(AccountHandler bridgeHandler, Bundle bundle) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
         this.accountHandler = bridgeHandler;
         this.bridgeUID = bridgeHandler.getThing().getUID();
@@ -59,18 +59,19 @@ public class CarNetDiscoveryService extends AbstractDiscoveryService implements 
      * Called by Account Handler for each vehicle found under the account, creates the corresponding vehicle thing
      */
     @Override
-    public void informationUpdate(@Nullable List<VehicleInformation> vehicleList) {
+    public void informationUpdate(@Nullable List<VehicleDetails> vehicleList) {
         if (vehicleList == null) {
             return;
         }
-        for (VehicleInformation vehicle : vehicleList) {
+        for (VehicleDetails vehicle : vehicleList) {
             logger.debug("VIN {} discovery, create thing", vehicle.getId());
             Map<String, Object> properties = new TreeMap<String, Object>();
-            ThingUID uid = new ThingUID(THING_TYPE_VEHICLE, bridgeUID, vehicle.getId());
+            ThingUID uid = new ThingUID(
+                    CNAPI_BRAND_VWID.equals(vehicle.brand) ? THING_TYPE_IDVEHICLE : THING_TYPE_CNVEHICLE, bridgeUID,
+                    vehicle.getId());
             properties.put(PROPERTY_VIN, vehicle.vin);
             properties.put(PROPERTY_MODEL, vehicle.model);
             properties.put(PROPERTY_COLOR, vehicle.color);
-            properties.put(PROPERTY_MMI, vehicle.mmi);
             properties.put(PROPERTY_ENGINE, vehicle.engine);
             properties.put(PROPERTY_TRANS, vehicle.transmission);
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)

@@ -25,12 +25,13 @@ import javax.measure.UnconvertibleException;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.carnet.internal.api.ApiBaseService;
 import org.openhab.binding.carnet.internal.api.ApiException;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetVehicleStatus;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetVehicleStatus.CNStoredVehicleDataResponse.CNVehicleData.CNStatusData;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetVehicleStatus.CNStoredVehicleDataResponse.CNVehicleData.CNStatusData.CNStatusField;
-import org.openhab.binding.carnet.internal.handler.VehicleHandler;
+import org.openhab.binding.carnet.internal.handler.VehicleCarNetHandler;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -49,10 +50,10 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetServiceStatus extends CarNetBaseService {
+public class CarNetServiceStatus extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(CarNetServiceStatus.class);
 
-    public CarNetServiceStatus(VehicleHandler thingHandler, CarNetApiBase api) {
+    public CarNetServiceStatus(VehicleCarNetHandler thingHandler, CarNetApiBase api) {
         super(CNAPI_SERVICE_VEHICLE_STATUS_REPORT, thingHandler, api);
     }
 
@@ -61,7 +62,7 @@ public class CarNetServiceStatus extends CarNetBaseService {
         boolean updated = false;
 
         // Try to query status information from vehicle
-        CarNetVehicleStatus status = api.getVehicleStatus();
+        CarNetVehicleStatus status = api.getVehicleStatus().cnStatus;
         for (CNStatusData data : status.storedVehicleDataResponse.vehicleData.data) {
             for (CNStatusField field : data.fields) {
                 try {
@@ -118,7 +119,7 @@ public class CarNetServiceStatus extends CarNetBaseService {
         boolean tiresOk = true; // tire if all tire pressures are ok
         boolean updated = false;
 
-        CarNetVehicleStatus status = api.getVehicleStatus();
+        CarNetVehicleStatus status = api.getVehicleStatus().cnStatus;
         logger.debug("{}: Vehicle Status:\n{}", thingId, status);
         for (CNStatusData data : status.storedVehicleDataResponse.vehicleData.data) {
             for (CNStatusField field : data.fields) {

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.api.carnet;
+package org.openhab.binding.carnet.internal.api;
 
 import static org.openhab.binding.carnet.internal.BindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarUtils.*;
@@ -38,31 +38,28 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.UrlEncoded;
-import org.openhab.binding.carnet.internal.api.ApiException;
-import org.openhab.binding.carnet.internal.api.ApiResult;
-import org.openhab.binding.carnet.internal.api.ApiSecurityException;
 import org.openhab.binding.carnet.internal.config.CombinedConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link CarNetHttpClient} implements http client functions
+ * The {@link ApiHttpClient} implements http client functions
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetHttpClient {
-    private final Logger logger = LoggerFactory.getLogger(CarNetHttpClient.class);
+public class ApiHttpClient {
+    private final Logger logger = LoggerFactory.getLogger(ApiHttpClient.class);
 
     private final HttpClient httpClient;
     private CombinedConfig config = new CombinedConfig();
     private @Nullable ApiEventListener eventListener;
 
-    public CarNetHttpClient() {
+    public ApiHttpClient() {
         this.httpClient = new HttpClient();
     }
 
-    public CarNetHttpClient(HttpClient httpClient, @Nullable ApiEventListener eventListener) {
+    public ApiHttpClient(HttpClient httpClient, @Nullable ApiEventListener eventListener) {
         this.httpClient = httpClient;
         this.eventListener = eventListener;
     }
@@ -203,6 +200,7 @@ public class CarNetHttpClient {
                 case HttpStatus.ACCEPTED_202:
                 case HttpStatus.NO_CONTENT_204:
                 case HttpStatus.SEE_OTHER_303:
+                case HttpStatus.MULTI_STATUS_207:
                     return apiResult; // valid
                 case HttpStatus.MOVED_PERMANENTLY_301:
                 case HttpStatus.TEMPORARY_REDIRECT_307:
@@ -288,7 +286,7 @@ public class CarNetHttpClient {
                 String contentType = request.getHeaders().get(HttpHeader.CONTENT_TYPE);
                 postData = new StringContentProvider(contentType, data, StandardCharsets.UTF_8);
             } else {
-                boolean json = data.startsWith("{");
+                boolean json = data.startsWith("{") || data.contains("\": {");
                 String type = json ? CONTENT_TYPE_JSON : CONTENT_TYPE_FORM_URLENC;
                 request.header(HttpHeader.CONTENT_TYPE, type);
                 postData = new StringContentProvider(type, data, StandardCharsets.UTF_8);
