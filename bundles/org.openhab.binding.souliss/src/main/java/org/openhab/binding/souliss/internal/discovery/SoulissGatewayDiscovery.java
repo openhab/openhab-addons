@@ -128,11 +128,13 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         DiscoveryResult discoveryResult;
         String sNodeID = topicNumber + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + sTopicVariant;
 
-        thingUID = new ThingUID(SoulissBindingConstants.TOPICS_THING_TYPE, sNodeID);
+        var gatewayUID = this.soulissGwHandler.getThing().getUID();
+        thingUID = new ThingUID(SoulissBindingConstants.TOPICS_THING_TYPE, gatewayUID, sNodeID);
         label = "Topic. Number: " + topicNumber + ", Variant: " + sTopicVariant;
 
-        discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label).build();
+        discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label).withBridge(gatewayUID).build();
         thingDiscovered(discoveryResult);
+
     }
 
     @Override

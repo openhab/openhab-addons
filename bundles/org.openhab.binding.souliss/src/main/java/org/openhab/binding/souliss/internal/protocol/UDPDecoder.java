@@ -285,26 +285,33 @@ public class UDPDecoder {
             }
 
             try {
-                ConcurrentMap<String, Thing> gwMaps = NetworkParameters.getHashTableTopics();
-                Collection<Thing> gwMapsCollection = gwMaps.values();
-                SoulissTopicsHandler topicHandler;
-                var bIsPresent = false;
 
-                for (Thing t : gwMapsCollection) {
-                    if (t.getUID().toString().split(":")[2]
-                            .equals(sTopicNumber + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + sTopicVariant)) {
-                        topicHandler = (SoulissTopicsHandler) (t.getHandler());
-                        if (topicHandler != null) {
-                            topicHandler.setState(DecimalType.valueOf(Float.toString(fRet)));
-                            bIsPresent = true;
+                Iterator<Thing> thingsIterator = null;
+
+                if (this.gwHandler != null) {
+                    // thingsIterator = this.gwHandler.getThing().getThings().iterator();
+                    thingsIterator = this.gwHandler.getThing().getThings().iterator();
+
+                    ConcurrentMap<String, Thing> gwMaps = NetworkParameters.getHashTableTopics();
+                    Collection<Thing> gwMapsCollection = gwMaps.values();
+                    SoulissTopicsHandler topicHandler;
+                    var bIsPresent = false;
+
+                    for (Thing t : gwMapsCollection) {
+                        if (t.getUID().toString().split(":")[2].equals(
+                                sTopicNumber + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + sTopicVariant)) {
+                            topicHandler = (SoulissTopicsHandler) (t.getHandler());
+                            if (topicHandler != null) {
+                                topicHandler.setState(DecimalType.valueOf(Float.toString(fRet)));
+                                bIsPresent = true;
+                            }
                         }
                     }
+                    var localDiscoverResult = this.discoverResult;
+                    if (localDiscoverResult != null && !bIsPresent) {
+                        localDiscoverResult.thingDetectedActionMessages(sTopicNumber, sTopicVariant);
+                    }
                 }
-                var localDiscoverResult = this.discoverResult;
-                if (localDiscoverResult != null && !bIsPresent) {
-                    localDiscoverResult.thingDetectedActionMessages(sTopicNumber, sTopicVariant);
-                }
-
             } catch (Exception ex) {
             }
 
