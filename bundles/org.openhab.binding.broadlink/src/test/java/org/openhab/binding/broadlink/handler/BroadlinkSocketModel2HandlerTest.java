@@ -167,7 +167,7 @@ public class BroadlinkSocketModel2HandlerTest extends AbstractBroadlinkThingHand
         ChannelUID expectedConsumptionChannel = new ChannelUID(thing.getUID(), CHANNEL_POWER_CONSUMPTION);
         assertEquals(expectedConsumptionChannel, channels.get(1));
 
-        QuantityType<Power> expectedPower = new QuantityType<>(254280.537,
+        QuantityType<Power> expectedPower = new QuantityType<>(2622.297,
                 BroadlinkBindingConstants.BROADLINK_POWER_CONSUMPTION_UNIT);
         assertEquals(expectedPower, states.get(1));
     }

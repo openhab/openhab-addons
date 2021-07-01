@@ -187,11 +187,10 @@ public class BroadlinkProtocol {
             throw new ProtocolException("Unexpectedly short packet; length " + packet.length
                     + " is shorter than protocol minimum " + MIN_RESPONSE_PACKET_LENGTH);
         }
-        boolean error = (int) packet[0x22] != 0 || (int) packet[0x23] != 0;// || (int) packet[0x24] != 0;
+        boolean error = (int) packet[0x22] != 0 || (int) packet[0x23] != 0;
         if (error) {
-            throw new ProtocolException(
-                    String.format("Response from device is not valid. (0x22=0x%02X,0x23=0x%02X,0x24=0x%02X)",
-                            packet[0x22], packet[0x23], packet[0x24]));
+            throw new ProtocolException(String.format("Response from device is not valid. (0x22=0x%02X,0x23=0x%02X)",
+                    packet[0x22], packet[0x23]));
         }
 
         try {

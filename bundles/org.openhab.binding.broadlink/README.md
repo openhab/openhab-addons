@@ -14,7 +14,6 @@ This binding supports a range of home networking devices made by (and occasional
 | sp2        | Broadlink SP2 WiFi Smart Socket with night light                        |
 | sp3        | Broadlink SP3/Mini WiFi Smart Socket with night light                   |
 | sp3s       | Broadlink SP3s WiFi Smart Socket with Power Meter                       |
-| rm         | Broadlink RM WiFi IR Transmitter                                        |
 | rm2        | Broadline RM2/Pro WiFi IR/RF Transmitter with temperature sensor        |
 | rm3        | Broadlink RM3/Mini WiFi IR Transmitter                                  |
 | rm3q       | Broadlink RM3 WiFi IR Transmitter with Firmware v44057                  |
@@ -79,8 +78,10 @@ The above codes are power on/off for Samsung TVs and Power Off for a Fujitsu hea
 To send either code, the string `TV_POWER` or `heatpump_off` must be sent to the `command` channel for the device.
 
 ## Learning new remote codes
+
 To obtain the command codes, you can get this binding to put your Broadlink RMx device into 
 "learn mode" and then ask it for the code it learnt. Here are the steps:
+
 1. In the openHAB web UI, navigate to your RMx Thing, and click on its *Channels* tab
 2. Find the *Remote Learning Control* channel and create an Item for it
 3. Click the item, and click the rectangular area that is marked NULL
@@ -91,6 +92,7 @@ To obtain the command codes, you can get this binding to put your Broadlink RMx 
 8. Now click the rectangular area again (which will now show "Enter infrared learn mode")
 9. Select the "Check last captured IR code" menu option in the pop-up menu
 10. Inspect the `openhab.log` file on your openHAB server - you should see the following:
+
 ```
 [BroadlinkRemoteHandler] - BEGIN LAST LEARNT CODE (976 bytes)
 [BroadlinkRemoteHandler] - 2600bc017239100d0e2b0e0f100c107f55747be51a3e1d4ff4......f5be8b3d4ff4b
@@ -98,10 +100,12 @@ To obtain the command codes, you can get this binding to put your Broadlink RMx 
 0145447f55747be51a3e1d4ff4b
 [BroadlinkRemoteHandler] - END LAST LEARNT CODE (1944 characters)
 ```
+
 11. If you carefully copy the log line between the `BEGIN` and `END` messages, 
     it should have exactly the number of characters as advised in the `END` message.
     
 12. You can now paste a new entry into your `map` file, with the name of your choice; for example:
+
 ```
 BLURAY_ON=2600bc017239100d0e2b0e0f100c107f55747be51a3e1d4ff4...0145447f55747be51a3e1d4ff4b
 ```
