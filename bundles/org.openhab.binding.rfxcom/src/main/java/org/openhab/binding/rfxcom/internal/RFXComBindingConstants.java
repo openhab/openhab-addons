@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.rfxcom.internal;
 
+import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +21,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
+import org.openhab.binding.rfxcom.internal.config.RFXComLighting4DeviceConfiguration;
+import org.openhab.binding.rfxcom.internal.config.RFXComRawDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -47,6 +51,8 @@ public class RFXComBindingConstants {
     public static final ThingTypeUID BRIDGE_RFXTRX315 = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_RFXTRX315);
     public static final ThingTypeUID BRIDGE_RFXREC443 = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_RFXREC433);
 
+    public static final int MAX_RFXCOM_MESSAGE_LEN = 256;
+
     /**
      * Presents all supported Bridge types by RFXCOM binding.
      */
@@ -63,6 +69,7 @@ public class RFXComBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_RAW_MESSAGE = "rawMessage";
     public static final String CHANNEL_RAW_PAYLOAD = "rawPayload";
+    public static final String CHANNEL_PULSES = "pulses";
     public static final String CHANNEL_SHUTTER = "shutter";
     public static final String CHANNEL_VENETIAN_BLIND = "venetianBlind";
     public static final String CHANNEL_SUN_WIND_DETECTOR = "sunWindDetector";
@@ -131,6 +138,7 @@ public class RFXComBindingConstants {
     private static final ThingTypeUID THING_TYPE_FAN_FT1211R = new ThingTypeUID(BINDING_ID, "fan_ft1211r");
     private static final ThingTypeUID THING_TYPE_FAN_FALMEC = new ThingTypeUID(BINDING_ID, "fan_falmec");
     private static final ThingTypeUID THING_TYPE_FAN_LUCCI_DC_II = new ThingTypeUID(BINDING_ID, "fan_lucci_dc_ii");
+    private static final ThingTypeUID THING_TYPE_FAN_NOVY = new ThingTypeUID(BINDING_ID, "fan_novy");
     private static final ThingTypeUID THING_TYPE_FS20 = new ThingTypeUID(BINDING_ID, "fs20");
     private static final ThingTypeUID THING_TYPE_GAS_USAGE = new ThingTypeUID(BINDING_ID, "gasusage");
     private static final ThingTypeUID THING_TYPE_HOME_CONFORT = new ThingTypeUID(BINDING_ID, "homeconfort");
@@ -145,6 +153,7 @@ public class RFXComBindingConstants {
     private static final ThingTypeUID THING_TYPE_POWER = new ThingTypeUID(BINDING_ID, "power");
     private static final ThingTypeUID THING_TYPE_RADIATOR1 = new ThingTypeUID(BINDING_ID, "radiator1");
     private static final ThingTypeUID THING_TYPE_RAIN = new ThingTypeUID(BINDING_ID, "rain");
+    private static final ThingTypeUID THING_TYPE_RAW = new ThingTypeUID(BINDING_ID, "raw");
     private static final ThingTypeUID THING_TYPE_REMOTE_CONTROL = new ThingTypeUID(BINDING_ID, "remotecontrol");
     private static final ThingTypeUID THING_TYPE_RFX_METER = new ThingTypeUID(BINDING_ID, "rfxmeter");
     private static final ThingTypeUID THING_TYPE_RFX_SENSOR = new ThingTypeUID(BINDING_ID, "rfxsensor");
@@ -169,19 +178,30 @@ public class RFXComBindingConstants {
     /**
      * Presents all supported Thing types by RFXCOM binding.
      */
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream.of(
-            THING_TYPE_BAROMETRIC, THING_TYPE_BBQ_TEMPERATURE, THING_TYPE_BLINDS1, THING_TYPE_CAMERA1, THING_TYPE_CHIME,
-            THING_TYPE_CURRENT, THING_TYPE_CURRENT_ENERGY, THING_TYPE_CURTAIN1, THING_TYPE_DATE_TIME, THING_TYPE_ENERGY,
-            THING_TYPE_FAN, THING_TYPE_FAN_SF01, THING_TYPE_FAN_ITHO, THING_TYPE_FAN_SEAV, THING_TYPE_FAN_LUCCI_DC,
-            THING_TYPE_FAN_FT1211R, THING_TYPE_FAN_FALMEC, THING_TYPE_FAN_LUCCI_DC_II, THING_TYPE_GAS_USAGE,
-            THING_TYPE_HOME_CONFORT, THING_TYPE_HUMIDITY, THING_TYPE_IO_LINES, THING_TYPE_LIGHTNING1,
-            THING_TYPE_LIGHTNING2, THING_TYPE_LIGHTNING3, THING_TYPE_LIGHTNING4, THING_TYPE_LIGHTNING5,
-            THING_TYPE_LIGHTNING6, THING_TYPE_POWER, THING_TYPE_RADIATOR1, THING_TYPE_RAIN, THING_TYPE_REMOTE_CONTROL,
-            THING_TYPE_RFX_METER, THING_TYPE_RFX_SENSOR, THING_TYPE_RFY, THING_TYPE_SECURITY1, THING_TYPE_SECURITY2,
-            THING_TYPE_TEMPERATURE, THING_TYPE_TEMPERATURE_HUMIDITY, THING_TYPE_TEMPERATURE_HUMIDITY_BAROMETRIC,
-            THING_TYPE_TEMPERATURE_RAIN, THING_TYPE_THERMOSTAT1, THING_TYPE_THERMOSTAT2, THING_TYPE_THERMOSTAT3,
-            THING_TYPE_UNDECODED, THING_TYPE_UV, THING_TYPE_WATER_USAGE, THING_TYPE_WEIGHTING_SCALE, THING_TYPE_WIND)
-            .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_BAROMETRIC, THING_TYPE_BBQ_TEMPERATURE, THING_TYPE_BLINDS1,
+                    THING_TYPE_CAMERA1, THING_TYPE_CHIME, THING_TYPE_CURRENT, THING_TYPE_CURRENT_ENERGY,
+                    THING_TYPE_CURTAIN1, THING_TYPE_DATE_TIME, THING_TYPE_ENERGY, THING_TYPE_FAN, THING_TYPE_FAN_SF01,
+                    THING_TYPE_FAN_ITHO, THING_TYPE_FAN_SEAV, THING_TYPE_FAN_LUCCI_DC, THING_TYPE_FAN_FT1211R,
+                    THING_TYPE_FAN_FALMEC, THING_TYPE_FAN_LUCCI_DC_II, THING_TYPE_FAN_NOVY, THING_TYPE_GAS_USAGE,
+                    THING_TYPE_HOME_CONFORT, THING_TYPE_HUMIDITY, THING_TYPE_IO_LINES, THING_TYPE_LIGHTNING1,
+                    THING_TYPE_LIGHTNING2, THING_TYPE_LIGHTNING3, THING_TYPE_LIGHTNING4, THING_TYPE_LIGHTNING5,
+                    THING_TYPE_LIGHTNING6, THING_TYPE_POWER, THING_TYPE_RADIATOR1, THING_TYPE_RAIN, THING_TYPE_RAW,
+                    THING_TYPE_REMOTE_CONTROL, THING_TYPE_RFX_METER, THING_TYPE_RFX_SENSOR, THING_TYPE_RFY,
+                    THING_TYPE_SECURITY1, THING_TYPE_SECURITY2, THING_TYPE_TEMPERATURE, THING_TYPE_TEMPERATURE_HUMIDITY,
+                    THING_TYPE_TEMPERATURE_HUMIDITY_BAROMETRIC, THING_TYPE_TEMPERATURE_RAIN, THING_TYPE_THERMOSTAT1,
+                    THING_TYPE_THERMOSTAT2, THING_TYPE_THERMOSTAT3, THING_TYPE_UNDECODED, THING_TYPE_UV,
+                    THING_TYPE_WATER_USAGE, THING_TYPE_WEIGHTING_SCALE, THING_TYPE_WIND).collect(Collectors.toSet()));
+
+    /**
+     * Map Device ThingTypeUIDs to their Configuration class
+     */
+    public static final Map<ThingTypeUID, Class<? extends RFXComDeviceConfiguration>> THING_TYPE_UID_CONFIGURATION_CLASS_MAP = Map
+            .ofEntries(
+                    new AbstractMap.SimpleEntry<ThingTypeUID, Class<? extends RFXComDeviceConfiguration>>(
+                            THING_TYPE_RAW, RFXComRawDeviceConfiguration.class),
+                    new AbstractMap.SimpleEntry<ThingTypeUID, Class<? extends RFXComDeviceConfiguration>>(
+                            THING_TYPE_LIGHTNING4, RFXComLighting4DeviceConfiguration.class));
 
     /**
      * Map RFXCOM packet types to RFXCOM Thing types and vice versa.
@@ -207,6 +227,7 @@ public class RFXComBindingConstants {
                     put(PacketType.FAN_FT1211R, RFXComBindingConstants.THING_TYPE_FAN_FT1211R);
                     put(PacketType.FAN_FALMEC, RFXComBindingConstants.THING_TYPE_FAN_FALMEC);
                     put(PacketType.FAN_LUCCI_DC_II, RFXComBindingConstants.THING_TYPE_FAN_LUCCI_DC_II);
+                    put(PacketType.FAN_NOVY, RFXComBindingConstants.THING_TYPE_FAN_NOVY);
                     put(PacketType.FS20, RFXComBindingConstants.THING_TYPE_FS20);
                     put(PacketType.GAS, RFXComBindingConstants.THING_TYPE_GAS_USAGE);
                     put(PacketType.HOME_CONFORT, RFXComBindingConstants.THING_TYPE_HOME_CONFORT);
@@ -221,6 +242,7 @@ public class RFXComBindingConstants {
                     put(PacketType.POWER, RFXComBindingConstants.THING_TYPE_POWER);
                     put(PacketType.RADIATOR1, RFXComBindingConstants.THING_TYPE_RADIATOR1);
                     put(PacketType.RAIN, RFXComBindingConstants.THING_TYPE_RAIN);
+                    put(PacketType.RAW, RFXComBindingConstants.THING_TYPE_RAW);
                     put(PacketType.REMOTE_CONTROL, RFXComBindingConstants.THING_TYPE_REMOTE_CONTROL);
                     put(PacketType.RFXMETER, RFXComBindingConstants.THING_TYPE_RFX_METER);
                     put(PacketType.RFXSENSOR, RFXComBindingConstants.THING_TYPE_RFX_SENSOR);

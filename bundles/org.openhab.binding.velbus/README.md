@@ -152,18 +152,30 @@ OnOff command types are supported.
 For thing type `vmb4ry` 4 channels are available `CH1` ... `CH4`.
 OnOff command types are supported.
 
-For thing types `vmb1ryno`, `vmb1rynos`, `vmb1rys`, `vmb4ryld` and `vmb4ryno` 5 channels are available `CH1` ... `CH5`.
+For thing types `vmb1ryno`, `vmb1rynos`, `vmb4ryld` and `vmb4ryno` 5 channels are available `CH1` ... `CH5`.
 OnOff command types are supported.
+
+For thing types `vmb1rys` 6 channels are available `CH1` ... `CH6`.
+OnOff command types are supported on channels `CH1` ... `CH5`.
+Pressed and Long_Pressed command types are supported on channel `CH6`.
+1 trigger channel on `CH6t`.
 
 The module `vmb1ts` has a number of channels to set the module's thermostat (`thermostat:currentTemperatureSetpoint`, `thermostat:heatingModeComfortTemperatureSetpoint`, `thermostat:heatingModeDayTemperatureSetpoint`, `thermostat:heatingModeNightTemperatureSetpoint`, `thermostat:heatingModeAntiFrostTemperatureSetpoint`, `thermostat:coolingModeComfortTemperatureSetpoint`, `thermostat:coolingModeDayTemperatureSetpoint`, `thermostat:coolingModeNightTemperatureSetpoint`, `thermostat:coolingModeSafeTemperatureSetpoint`, `operatingMode` and `thermostat:mode`) and thermostat trigger channels: `thermostat:heater`, `thermostat:boost`, `thermostat:pump`, `thermostat:cooler`, `thermostat:alarm1`, `thermostat:alarm2`, `thermostat:alarm3`, `thermostat:alarm4`.
 
 For thing types `vmb2bl` and `vmb2ble` the supported channels are `CH1` and `CH2`. UpDown, StopMove and Percent command types are supported.
 
-Thing type `vmb6in` has 6 trigger channels `input#CH1` ... `input#CH6`.
+For thing type `vmb6in` 6 channels are available `CH1` ... `CH6`.
+Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH6`.
+6 trigger channels on channels `input#CH1` ... `input#CH6`.
 
-Thing type `vmb7in` has 8 trigger channels `input#CH1` ... `input#CH8`.
+For thing type `vmb7in` 8 channels are available `CH1` ... `CH8`.
+Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH8`.
+8 trigger channels on channels `input#CH1` ... `input#CH8`.
 
-Thing types `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8ir`, `vmb8pb`, `vmb8pbu`, `vmbrfr8s` and `vmbvp1` have 8 trigger channels (`input:CH1` ... `input:CH8`).
+For thing types `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8ir`, `vmb8pb`, `vmb8pbu`, `vmbrfr8s` and `vmbvp1`  8 channels are available `CH1` ... `CH8`.
+Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH8`.
+8 trigger channels on channels `input:CH1` ... `input:CH8`.
+
 Thing types `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8pb`, `vmb8pbu`, `vmbrfr8s` and `vmbvp1` also have and 2 channels to steer the button LED feedback (`feedback:CH1` and `feedback:CH2`).
 Additionally, the modules `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8pbu`, `vmbrfr8s` and `vmbvp1` have a number of channels to set the module's alarms: `clockAlarm:clockAlarm1Enabled`, `clockAlarm:clockAlarm1Type`, `clockAlarm:clockAlarm1WakeupHour`, `clockAlarm:clockAlarm1WakeupMinute`, `clockAlarm:clockAlarm1BedtimeHour`, `clockAlarm:clockAlarm1BedtimeMinute`, `clockAlarm:clockAlarm2Enabled`, `clockAlarm:clockAlarm2Type`, `clockAlarm:clockAlarm2WakeupHour`, `clockAlarm:clockAlarm2WakeupMinute`, `clockAlarm:clockAlarm2BedtimeHour` and `clockAlarm:clockAlarm2BedtimeMinute`.
 
@@ -181,6 +193,7 @@ For thing type `vmb4ry` 4 channels are available `CH1` ... `CH4`.
 OnOff command types are supported.
 
 Thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbgp1`, `vmbgp2`, `vmbgp4`, `vmbgp4pir` and `vmbpiro` have 8 trigger channels `input:CH1` ... `input:CH8` and one temperature channel `input:CH9`.
+Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH8`.
 The thing types `vmbel1` and `vmbgp1` have one channel to steer the button LED feedback `feedback:CH1`.
 The thing types `vmbel2` and `vmbgp2` have two channels to steer the button LED feedback `feedback:CH1` and `feedback:CH2`.
 The thing types `vmbel4`, `vmbgp4` and `vmbgp4pir` have four channels to steer the button LED feedback `feedback:CH1` ... `feedback:CH4`.
@@ -189,6 +202,7 @@ Thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbgp1`, `vmbgp2`, `vmbgp4` and `vmbg
 Thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbgp1`, `vmbgp2`, `vmbgp4` and `vmbgp4pir` also have a number of channels to set the module's thermostat (`thermostat:currentTemperatureSetpoint`, `thermostat:heatingModeComfortTemperatureSetpoint`, `thermostat:heatingModeDayTemperatureSetpoint`, `thermostat:heatingModeNightTemperatureSetpoint`, `thermostat:heatingModeAntiFrostTemperatureSetpoint`, `thermostat:coolingModeComfortTemperatureSetpoint`, `thermostat:coolingModeDayTemperatureSetpoint`, `thermostat:coolingModeNightTemperatureSetpoint`, `thermostat:coolingModeSafeTemperatureSetpoint`, `operatingMode` and `thermostat:mode`) and thermostat trigger channels: `thermostat:heater`, `thermostat:boost`, `thermostat:pump`, `thermostat:cooler`, `thermostat:alarm1`, `thermostat:alarm2`, `thermostat:alarm3`, `thermostat:alarm4`.
 
 Thing types `vmbelo`, `vmbgpo` and `vmbgpod` have 32 trigger channels `input:CH1` ... `input:CH32` and one temperature channel `input:CH33`.
+Pressed and Long_Pressed command types are supported on channels `button#CH1` ... `button#CH32`.
 They have have 32 channels to steer the button LED feedback `feedback:CH1` ... `feedback:CH32`.
 They have a number of channels to set the module's alarms: `clockAlarm:clockAlarm1Enabled`, `clockAlarm:clockAlarm1Type`, `clockAlarm:clockAlarm1WakeupHour`, `clockAlarm:clockAlarm1WakeupMinute`, `clockAlarm:clockAlarm1BedtimeHour`, `clockAlarm:clockAlarm1BedtimeMinute`, `clockAlarm:clockAlarm2Enabled`, `clockAlarm:clockAlarm2Type`, `clockAlarm:clockAlarm2WakeupHour`, `clockAlarm:clockAlarm2WakeupMinute`, `clockAlarm:clockAlarm2BedtimeHour` and `clockAlarm:clockAlarm2BedtimeMinute`.
 They have a number of channels to set the module's thermostat thermostat (`thermostat:currentTemperatureSetpoint`, `thermostat:heatingModeComfortTemperatureSetpoint`, `thermostat:heatingModeDayTemperatureSetpoint`, `thermostat:heatingModeNightTemperatureSetpoint`, `thermostat:heatingModeAntiFrostTemperatureSetpoint`, `thermostat:coolingModeComfortTemperatureSetpoint`, `thermostat:coolingModeDayTemperatureSetpoint`, `thermostat:coolingModeNightTemperatureSetpoint`, `thermostat:coolingModeSafeTemperatureSetpoint`, `operatingMode` and `thermostat:mode`) and thermostat trigger channels: `thermostat:heater`, `thermostat:boost`, `thermostat:pump`, `thermostat:cooler`, `thermostat:alarm1`, `thermostat:alarm2`, `thermostat:alarm3`, `thermostat:alarm4`.
@@ -202,6 +216,9 @@ Thing types `vmbpirc` and `vmbpirm` have 7 trigger channels `input:CH1` ... `inp
 Additionally, these modules have a number of channels to set the module's alarms: `clockAlarm:clockAlarm1Enabled`, `clockAlarm:clockAlarm1Type`, `clockAlarm:clockAlarm1WakeupHour`, `clockAlarm:clockAlarm1WakeupMinute`, `clockAlarm:clockAlarm1BedtimeHour`, `clockAlarm:clockAlarm1BedtimeMinute`, `clockAlarm:clockAlarm2Enabled`, `clockAlarm:clockAlarm2Type`, `clockAlarm:clockAlarm2WakeupHour`, `clockAlarm:clockAlarm2WakeupMinute`, `clockAlarm:clockAlarm2BedtimeHour` and `clockAlarm:clockAlarm2BedtimeMinute`.
 
 The trigger channels can be used as a trigger to rules. The event message can be `PRESSED`, `RELEASED`or `LONG_PRESSED`.
+
+To remove the state of the Item in the Sitemap for a `button` channel.
+Go to the Items list, select the Item, add a State Description Metadata, and set the Pattern value to a blank space.
 
 ## Full Example
 
@@ -230,6 +247,7 @@ Bridge velbus:bridge:1 [ port="COM1"] {
 
 ```
 Switch LivingRoom           {channel="velbus:vmb4ryld:1:06:CH1"}                # Switch for onOff type action
+Switch KitchenButton        {velbus:vmb2pbn:1:05:button#CH1}                    # Switch for Pressed and Long_Pressed type actions
 Dimmer TVRoom               {channel="velbus:vmb4dc:1:07:CH2"}                  # Changing brightness dimmer type action
 Rollershutter Kitchen       {channel="velbus:vmb2ble:1:01"}                     # Controlling rollershutter or blind type action
 
@@ -245,6 +263,12 @@ Switch item=LivingRoom
 Slider item=TVRoom
 Switch item=TVRoom          # allows switching dimmer item off or on
 Rollershutter item=Kitchen
+
+Switch item=KitchenButton # Press and Long_Pressed message are available
+# or
+Switch item=KitchenButton mappings=[PRESSED="Push"] # only the Pressed message is send on the bus
+# or
+Switch item=KitchenButton mappings=[LONG_PRESSED="Push"] # only the Long_Pressed message is send on the bus
 ```
 
 Example trigger rule:

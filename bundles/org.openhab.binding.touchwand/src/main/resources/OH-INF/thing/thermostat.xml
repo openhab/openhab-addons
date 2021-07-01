@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="touchwand"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="thermostat">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"></bridge-type-ref>
+		</supported-bridge-type-refs>
+		<label>TouchWand Thermostat Unit</label>
+		<channels>
+			<channel id="state" typeId="state"/>
+			<channel id="targetTemperature" typeId="targetTemperature"/>
+			<channel id="roomTemperature" typeId="roomTemperature"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="fanLevel" typeId="fanLevel"/>
+		</channels>
+	</thing-type>
+	<channel-type id="state">
+		<item-type>Switch</item-type>
+		<label>AC On Off State</label>
+	</channel-type>
+	<channel-type id="targetTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>The set point temperature</description>
+		<category>Temperature</category>
+		<state min="16" max="30" step="1" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+	<channel-type id="roomTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Room Temperature</label>
+		<description>Current room temperature</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Thermostat mode (Cool, Heat, Fan, Dry, Auto)</description>
+		<state readOnly="false">
+			<options>
+				<option value="cool">Cool</option>
+				<option value="heat">Heat</option>
+				<option value="fan">Fan</option>
+				<option value="auto">Auto</option>
+				<option value="dry">Dry</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="fanLevel">
+		<item-type>String</item-type>
+		<label>Fan Level</label>
+		<description>Fan level (Low, Medium, High, Auto)</description>
+		<state readOnly="false">
+			<options>
+				<option value="low">Low</option>
+				<option value="medium">Medium</option>
+				<option value="high">High</option>
+				<option value="fanAuto">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

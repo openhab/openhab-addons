@@ -37,6 +37,8 @@ public class TouchWandBindingConstants {
     public static final ThingTypeUID THING_TYPE_WALLCONTROLLER = new ThingTypeUID(BINDING_ID, "wallcontroller");
     public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
     public static final ThingTypeUID THING_TYPE_ALARMSENSOR = new ThingTypeUID(BINDING_ID, "alarmsensor");
+    public static final ThingTypeUID THING_TYPE_BSENSOR = new ThingTypeUID(BINDING_ID, "bsensor");
+    public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
 
     // List of all Channel ids
     public static final String CHANNEL_SWITCH = "switch";
@@ -51,6 +53,12 @@ public class TouchWandBindingConstants {
     public static final String CHANNEL_ILLUMINATION = "illumination";
     public static final String CHANNEL_DOORWINDOW = "isOpen";
     public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_THERMOSTAT_STATE = "state";
+    public static final String CHANNEL_THERMOSTAT_TARGET_TEMPERATURE = "targetTemperature";
+    public static final String CHANNEL_THERMOSTAT_ROOM_TEMPERATURE = "roomTemperature";
+    public static final String CHANNEL_THERMOSTAT_MODE = "mode";
+    public static final String CHANNEL_THERMOSTAT_FAN_LEVEL = "fanLevel";
+    public static final String CHANNEL_SMOKE = "smoke";
 
     // List of configuration parameters
 
@@ -70,11 +78,18 @@ public class TouchWandBindingConstants {
 
     public static final String CONNECTIVITY_KNX = "knx";
     public static final String CONNECTIVITY_ZWAVE = "zwave";
+    public static final String CONNECTIVITY_RISCO = "risco";
+    public static final String CONNECTIVITY_PIMA = "pima";
+    public static final String CONNECTIVITY_ACWAND = "acwand";
 
     // commands
+
     public static final String SWITCH_STATUS_ON = "255";
     public static final String SWITCH_STATUS_OFF = "0";
 
+    // thermostat commands
+    public static final String THERMOSTAT_STATE_ON = "1";
+    public static final String THERMOSTAT_STATE_OFF = "0";
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
 
     static {
@@ -83,6 +98,8 @@ public class TouchWandBindingConstants {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_WALLCONTROLLER);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_DIMMER);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_ALARMSENSOR);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_BSENSOR);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_THERMOSTAT);
     }
 
     public static final String TYPE_WALLCONTROLLER = "WallController";
@@ -90,6 +107,8 @@ public class TouchWandBindingConstants {
     public static final String TYPE_SHUTTER = "shutter";
     public static final String TYPE_DIMMER = "dimmer";
     public static final String TYPE_ALARMSENSOR = "AlarmSensor";
+    public static final String TYPE_BSENSOR = "bsensor";
+    public static final String TYPE_THERMOSTAT = "thermostat";
     public static final String TYPE_UNKNOWN = "unknown";
 
     public static final int SENSOR_TYPE_TEMPERATURE = 1;
@@ -98,6 +117,15 @@ public class TouchWandBindingConstants {
     public static final int SENSOR_TYPE_DOOR_WINDOW = 10;
     public static final int SENSOR_TYPE_MOTION = 12;
 
+    // bsensor currStatus options
+
+    public static final String BSENSOR_STATUS_OPEN = "open";
+    public static final String BSENSOR_STATUS_CLOSE = "close";
+
+    public static final String BSENSOR_SUBTYPE_DOORWINDOW = "doors &windows";
+    public static final String BSENSOR_SUBTYPE_MOTION = "motion";
+    public static final String BSENSOR_SUBTYPE_SMOKE = "smoke";
+
     public static final String[] SUPPORTED_TOUCHWAND_TYPES = { TYPE_WALLCONTROLLER, TYPE_SWITCH, TYPE_SHUTTER,
-            TYPE_DIMMER, TYPE_ALARMSENSOR };
+            TYPE_DIMMER, TYPE_ALARMSENSOR, TYPE_BSENSOR, TYPE_THERMOSTAT };
 }

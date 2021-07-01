@@ -21,13 +21,13 @@ import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Tests for {@link DeviceListModel}.
@@ -38,43 +38,65 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AVMFritzDeviceListModelTest {
 
-    private final Logger logger = LoggerFactory.getLogger(AVMFritzDeviceListModelTest.class);
-
     private @NonNullByDefault({}) DeviceListModel devices;
 
+    @SuppressWarnings("null")
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws JAXBException, XMLStreamException {
         //@formatter:off
         final String xml =
-                "<devicelist version=\"1\">" +
-                    "<group identifier=\"F0:A3:7F-900\" id=\"20000\" functionbitmask=\"6784\" fwversion=\"1.0\" manufacturer=\"AVM\" productname=\"\"><present>1</present><name>Schlafzimmer</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><voltage>230051</voltage><power>0</power><energy>2087</energy></powermeter><groupinfo><masterdeviceid>17</masterdeviceid><members>17,18</members></groupinfo></group>" +
-                    "<group identifier=\"F0:A3:7F-901\" id=\"20001\" functionbitmask=\"4160\" fwversion=\"1.0\" manufacturer=\"AVM\" productname=\"\"><present>1</present><name>Schlafzimmer</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><windowopenactiv>0</windowopenactiv><windowopenactiveendtime>0</windowopenactiveendtime><boostactive>0</boostactive><boostactiveendtime>0</boostactiveendtime><batterylow>0</batterylow><battery>100</battery><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr><groupinfo><masterdeviceid>0</masterdeviceid><members>20,21,22</members></groupinfo></group>" +
-                    "<device identifier=\"08761 0000434\" id=\"17\" functionbitmask=\"2944\" fwversion=\"03.83\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 200\"><present>1</present><name>FRITZ!DECT 200 #1</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><voltage>230051</voltage><power>0</power><energy>2087</energy></powermeter><temperature><celsius>255</celsius><offset>0</offset></temperature></device>" +
-                    "<device identifier=\"08761 0000438\" id=\"18\" functionbitmask=\"2944\" fwversion=\"03.83\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 210\"><present>1</present><name>FRITZ!DECT 210 #8</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><voltage>230051</voltage><power>0</power><energy>2087</energy></powermeter><temperature><celsius>255</celsius><offset>0</offset></temperature></device>" +
-                    "<device identifier=\"08761 0000437\" id=\"20\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 300\"><present>0</present><name>FRITZ!DECT 300 #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><windowopenactiv>0</windowopenactiv><windowopenactiveendtime>0</windowopenactiveendtime><boostactive>0</boostactive><boostactiveendtime>0</boostactiveendtime><batterylow>0</batterylow><battery>100</battery><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>" +
-                    "<device identifier=\"08761 0000436\" id=\"21\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 301\"><present>0</present><name>FRITZ!DECT 301 #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><windowopenactiv>0</windowopenactiv><windowopenactiveendtime>0</windowopenactiveendtime><boostactive>0</boostactive><boostactiveendtime>0</boostactiveendtime><batterylow>0</batterylow><battery>100</battery><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>" +
-                    "<device identifier=\"08761 0000435\" id=\"22\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"Comet DECT\"><present>0</present><name>Comet DECT #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><windowopenactiv>0</windowopenactiv><windowopenactiveendtime>0</windowopenactiveendtime><boostactive>0</boostactive><boostactiveendtime>0</boostactiveendtime><batterylow>0</batterylow><battery>100</battery><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>" +
-                    "<device identifier=\"5C:49:79:F0:A3:84\" id=\"30\" functionbitmask=\"640\" fwversion=\"06.92\" manufacturer=\"AVM\" productname=\"FRITZ!Powerline 546E\"><present>1</present><name>FRITZ!Powerline 546E #1</name><switch><state>0</state><mode>manuell</mode><lock>0</lock><devicelock>1</devicelock></switch><powermeter><voltage>230051</voltage><power>0</power><energy>2087</energy></powermeter></device>" +
-                    "<device identifier=\"08761 0000439\" id=\"40\" functionbitmask=\"1280\" fwversion=\"03.86\" manufacturer=\"AVM\" productname=\"FRITZ!DECT Repeater 100\"><present>1</present><name>FRITZ!DECT Repeater 100 #5</name><temperature><celsius>230</celsius><offset>0</offset></temperature></device>" +
-                    "<device identifier=\"11934 0059978-1\" id=\"2000\" functionbitmask=\"8208\" fwversion=\"0.0\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\"><present>0</present><name>HAN-FUN #2: Unit #2</name><etsiunitinfo><etsideviceid>406</etsideviceid><unittype>514</unittype><interfaces>256</interfaces></etsiunitinfo><alert><state>1</state></alert></device>" +
-                    "<device identifier=\"11934 0059979-1\" id=\"2001\" functionbitmask=\"8200\" fwversion=\"0.0\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\"><present>0</present><name>HAN-FUN #2: Unit #2</name><etsiunitinfo><etsideviceid>412</etsideviceid><unittype>273</unittype><interfaces>772</interfaces></etsiunitinfo><button><lastpressedtimestamp>1529590797</lastpressedtimestamp></button></device>" +
-                    "<device identifier=\"13096 0007307\" id=\"29\" functionbitmask=\"32\" fwversion=\"04.90\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 400\"><present>1</present><name>FRITZ!DECT 400 #14</name><battery>100</battery><batterylow>0</batterylow><button identifier=\"13096 0007307-0\" id=\"5000\"><name>FRITZ!DECT 400 #14: kurz</name><lastpressedtimestamp>1549195586</lastpressedtimestamp></button><button identifier=\"13096 0007307-9\" id=\"5001\"><name>FRITZ!DECT 400 #14: lang</name><lastpressedtimestamp>1549195595</lastpressedtimestamp></button></device>" +
-                    "<device identifier=\"13096 0007308\" id=\"30\" functionbitmask=\"1048864\" fwversion=\"05.10\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 440\"><present>1</present><name>FRITZ!DECT 440 #15</name><temperature><celsius>230</celsius><offset>0</offset></temperature><humidity><rel_humidity>43</rel_humidity></humidity><battery>100</battery><batterylow>0</batterylow><button identifier=\"13096 0007308-1\" id=\"5000\"><name>FRITZ!DECT 440 #15: Oben rechts</name><lastpressedtimestamp>1549195586</lastpressedtimestamp></button><button identifier=\"13096 0007308-3\" id=\"5001\"><name>FRITZ!DECT 440 #15: Unten rechts</name><lastpressedtimestamp>1549195595</lastpressedtimestamp></button><button identifier=\"13096 0007308-5\" id=\"5002\"><name>FRITZ!DECT 440 #15: Unten links</name><lastpressedtimestamp>1549195586</lastpressedtimestamp></button><button identifier=\"13096 0007308-7\" id=\"5003\"><name>FRITZ!DECT 440 #15: Oben links</name><lastpressedtimestamp>1549195595</lastpressedtimestamp></button></device>" +
-                    "<device identifier=\"14276 0503450-1\" id=\"2000\" functionbitmask=\"335888\" fwversion=\"0.0\" manufacturer=\"0x37c4\" productname=\"Rollotron 1213\"><present>1</present><txbusy>0</txbusy><name>Rollotron 1213 #1</name><blind><endpositionsset>1</endpositionsset><mode>manuell</mode></blind><levelcontrol><level>26</level><levelpercentage>10</levelpercentage></levelcontrol><etsiunitinfo><etsideviceid>406</etsideviceid><unittype>281</unittype><interfaces>256,513,516,517</interfaces></etsiunitinfo><alert><state>0</state><lastalertchgtimestamp></lastalertchgtimestamp></alert></device>" +
+                "<devicelist version=\"1\">"
+                    + "<group identifier=\"F0:A3:7F-900\" id=\"20000\" functionbitmask=\"6784\" fwversion=\"1.0\" manufacturer=\"AVM\" productname=\"\"><present>1</present><name>Schlafzimmer</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><voltage>230051</voltage><power>0</power><energy>2087</energy></powermeter><groupinfo><masterdeviceid>17</masterdeviceid><members>17,18</members></groupinfo></group>"
+                    + "<group identifier=\"F0:A3:7F-901\" id=\"20001\" functionbitmask=\"4160\" fwversion=\"1.0\" manufacturer=\"AVM\" productname=\"\"><present>1</present><name>Schlafzimmer</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><windowopenactiv>0</windowopenactiv><windowopenactiveendtime>0</windowopenactiveendtime><boostactive>0</boostactive><boostactiveendtime>0</boostactiveendtime><batterylow>0</batterylow><battery>100</battery><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr><groupinfo><masterdeviceid>0</masterdeviceid><members>20,21,22</members></groupinfo></group>"
+                    + "<device identifier=\"08761 0000434\" id=\"17\" functionbitmask=\"35712\" fwversion=\"03.83\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 200\"><present>1</present><name>FRITZ!DECT 200 #1</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><voltage>230051</voltage><power>0</power><energy>2087</energy></powermeter><temperature><celsius>255</celsius><offset>0</offset></temperature></device>"
+                    + "<device identifier=\"08761 0000438\" id=\"18\" functionbitmask=\"35712\" fwversion=\"03.83\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 210\"><present>1</present><name>FRITZ!DECT 210 #8</name><switch><state>1</state><mode>manuell</mode><lock>0</lock><devicelock>0</devicelock></switch><powermeter><voltage>230051</voltage><power>0</power><energy>2087</energy></powermeter><temperature><celsius>255</celsius><offset>0</offset></temperature></device>"
+                    + "<device identifier=\"08761 0000437\" id=\"20\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 300\"><present>0</present><name>FRITZ!DECT 300 #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><windowopenactiv>0</windowopenactiv><windowopenactiveendtime>0</windowopenactiveendtime><boostactive>0</boostactive><boostactiveendtime>0</boostactiveendtime><batterylow>0</batterylow><battery>100</battery><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>"
+                    + "<device identifier=\"08761 0000436\" id=\"21\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 301\"><present>0</present><name>FRITZ!DECT 301 #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><windowopenactiv>0</windowopenactiv><windowopenactiveendtime>0</windowopenactiveendtime><boostactive>0</boostactive><boostactiveendtime>0</boostactiveendtime><batterylow>0</batterylow><battery>100</battery><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>"
+                    + "<device identifier=\"08761 0000435\" id=\"22\" functionbitmask=\"320\" fwversion=\"03.50\" manufacturer=\"AVM\" productname=\"Comet DECT\"><present>0</present><name>Comet DECT #1</name><temperature><celsius>220</celsius><offset>-10</offset></temperature><hkr><tist>44</tist><tsoll>42</tsoll><absenk>28</absenk><komfort>42</komfort><lock>1</lock><devicelock>1</devicelock><errorcode>0</errorcode><windowopenactiv>0</windowopenactiv><windowopenactiveendtime>0</windowopenactiveendtime><boostactive>0</boostactive><boostactiveendtime>0</boostactiveendtime><batterylow>0</batterylow><battery>100</battery><nextchange><endperiod>1484341200</endperiod><tchange>28</tchange></nextchange></hkr></device>"
+                    + "<device identifier=\"5C:49:79:F0:A3:84\" id=\"30\" functionbitmask=\"640\" fwversion=\"06.92\" manufacturer=\"AVM\" productname=\"FRITZ!Powerline 546E\"><present>1</present><name>FRITZ!Powerline 546E #1</name><switch><state>0</state><mode>manuell</mode><lock>0</lock><devicelock>1</devicelock></switch><powermeter><voltage>230051</voltage><power>0</power><energy>2087</energy></powermeter></device>"
+                    + "<device identifier=\"08761 0000439\" id=\"40\" functionbitmask=\"1280\" fwversion=\"03.86\" manufacturer=\"AVM\" productname=\"FRITZ!DECT Repeater 100\"><present>1</present><name>FRITZ!DECT Repeater 100 #5</name><temperature><celsius>230</celsius><offset>0</offset></temperature></device>"
+                    + "<device identifier=\"11934 0059978-1\" id=\"2000\" functionbitmask=\"8208\" fwversion=\"0.0\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\"><present>0</present><name>HAN-FUN #2: Unit #2</name><etsiunitinfo><etsideviceid>406</etsideviceid><unittype>514</unittype><interfaces>256</interfaces></etsiunitinfo><alert><state>1</state></alert></device>"
+                    + "<device identifier=\"11934 0059979-1\" id=\"2001\" functionbitmask=\"8200\" fwversion=\"0.0\" manufacturer=\"0x0feb\" productname=\"HAN-FUN\"><present>0</present><name>HAN-FUN #2: Unit #2</name><etsiunitinfo><etsideviceid>412</etsideviceid><unittype>273</unittype><interfaces>772</interfaces></etsiunitinfo><button><lastpressedtimestamp>1529590797</lastpressedtimestamp></button></device>"
+                    + "<device identifier=\"13096 0007307\" id=\"29\" functionbitmask=\"32\" fwversion=\"04.90\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 400\"><present>1</present><name>FRITZ!DECT 400 #14</name><battery>100</battery><batterylow>0</batterylow><button identifier=\"13096 0007307-0\" id=\"5000\"><name>FRITZ!DECT 400 #14: kurz</name><lastpressedtimestamp>1549195586</lastpressedtimestamp></button><button identifier=\"13096 0007307-9\" id=\"5001\"><name>FRITZ!DECT 400 #14: lang</name><lastpressedtimestamp>1549195595</lastpressedtimestamp></button></device>"
+                    + "<device identifier=\"13096 0007308\" id=\"30\" functionbitmask=\"1048864\" fwversion=\"05.10\" manufacturer=\"AVM\" productname=\"FRITZ!DECT 440\"><present>1</present><name>FRITZ!DECT 440 #15</name><temperature><celsius>230</celsius><offset>0</offset></temperature><humidity><rel_humidity>43</rel_humidity></humidity><battery>100</battery><batterylow>0</batterylow><button identifier=\"13096 0007308-1\" id=\"5000\"><name>FRITZ!DECT 440 #15: Oben rechts</name><lastpressedtimestamp>1549195586</lastpressedtimestamp></button><button identifier=\"13096 0007308-3\" id=\"5001\"><name>FRITZ!DECT 440 #15: Unten rechts</name><lastpressedtimestamp>1549195595</lastpressedtimestamp></button><button identifier=\"13096 0007308-5\" id=\"5002\"><name>FRITZ!DECT 440 #15: Unten links</name><lastpressedtimestamp>1549195586</lastpressedtimestamp></button><button identifier=\"13096 0007308-7\" id=\"5003\"><name>FRITZ!DECT 440 #15: Oben links</name><lastpressedtimestamp>1549195595</lastpressedtimestamp></button></device>"
+                    + "<device identifier=\"14276 0503450-1\" id=\"2000\" functionbitmask=\"335888\" fwversion=\"0.0\" manufacturer=\"0x37c4\" productname=\"Rollotron 1213\"><present>1</present><txbusy>0</txbusy><name>Rollotron 1213 #1</name><blind><endpositionsset>1</endpositionsset><mode>manuell</mode></blind><levelcontrol><level>26</level><levelpercentage>10</levelpercentage></levelcontrol><etsiunitinfo><etsideviceid>406</etsideviceid><unittype>281</unittype><interfaces>256,513,516,517</interfaces></etsiunitinfo><alert><state>0</state><lastalertchgtimestamp></lastalertchgtimestamp></alert></device>"
+                    + "<device identifier=\"11324 0824499-1\" id=\"2002\" functionbitmask=\"40960\" fwversion=\"0.0\" manufacturer=\"0x2c3c\" productname=\"HAN-FUN\">\n"
+                    + "    <present>1</present>\n"
+                    + "    <txbusy>0</txbusy>\n"
+                    + "    <name>Steckdose innen</name>\n"
+                    + "    <simpleonoff>\n"
+                    + "        <state>0</state>\n"
+                    + "    </simpleonoff>\n"
+                    + "    <etsiunitinfo>\n"
+                    + "        <etsideviceid>408</etsideviceid>\n"
+                    + "        <unittype>263</unittype>\n"
+                    + "        <interfaces>512,768</interfaces>\n"
+                    + "    </etsiunitinfo>\n"
+                    + "</device>"
+                    + "<device identifier=\"11324 0584796-1\" id=\"2001\" functionbitmask=\"40960\" fwversion=\"0.0\" manufacturer=\"0x2c3c\" productname=\"HAN-FUN\">\n"
+                    + "    <present>1</present>\n"
+                    + "    <txbusy>0</txbusy>\n"
+                    + "    <name>Steckdose außen</name>\n"
+                    + "    <simpleonoff>\n"
+                    + "        <state>0</state>\n"
+                    + "    </simpleonoff>\n"
+                    + "    <etsiunitinfo>\n"
+                    + "        <etsideviceid>407</etsideviceid>\n"
+                    + "        <unittype>262</unittype>\n"
+                    + "        <interfaces>512</interfaces>\n"
+                    + "    </etsiunitinfo>\n"
+                    + "</device>" +
                 "</devicelist>";
-        //@formatter:off
-        try {
-            Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
-            devices = (DeviceListModel) u.unmarshal(new StringReader(xml));
-        } catch (JAXBException e) {
-            logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
-        }
+        //@formatter:on
+        XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(xml));
+        Unmarshaller u = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
+        devices = u.unmarshal(xsr, DeviceListModel.class).getValue();
     }
 
     @Test
     public void validateDeviceListModel() {
         assertNotNull(devices);
-        assertEquals(14, devices.getDevicelist().size());
+        assertEquals(16, devices.getDevicelist().size());
         assertEquals("1", devices.getXmlApiVersion());
     }
 
@@ -99,7 +121,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHANFUNAlarmSensor());
         assertTrue(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
-        assertTrue(device.isTempSensor());
+        assertTrue(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
@@ -134,16 +156,19 @@ public class AVMFritzDeviceListModelTest {
         assertEquals(1, device.getPresent());
         assertEquals("FRITZ!DECT 200 #1", device.getName());
 
-        assertFalse(device.isButton());
         assertFalse(device.isHANFUNButton());
         assertFalse(device.isHANFUNAlarmSensor());
-        assertFalse(device.isDectRepeater());
-        assertTrue(device.isSwitchableOutlet());
-        assertTrue(device.isTempSensor());
-        assertFalse(device.isHumiditySensor());
-        assertTrue(device.isPowermeter());
+        assertFalse(device.isButton());
         assertFalse(device.isHeatingThermostat());
+        assertTrue(device.isPowermeter());
+        assertTrue(device.isTemperatureSensor());
+        assertTrue(device.isSwitchableOutlet());
+        assertFalse(device.isDectRepeater());
+        assertTrue(device.hasMicrophone());
+        assertFalse(device.isHANFUNUnit());
+        assertTrue(device.isHANFUNOnOff());
         assertFalse(device.isHANFUNBlinds());
+        assertFalse(device.isHumiditySensor());
 
         assertNotNull(device.getSwitch());
         assertEquals(SwitchModel.ON, device.getSwitch().getState());
@@ -178,16 +203,19 @@ public class AVMFritzDeviceListModelTest {
         assertEquals(1, device.getPresent());
         assertEquals("FRITZ!DECT 210 #8", device.getName());
 
-        assertFalse(device.isButton());
         assertFalse(device.isHANFUNButton());
         assertFalse(device.isHANFUNAlarmSensor());
-        assertFalse(device.isDectRepeater());
-        assertTrue(device.isSwitchableOutlet());
-        assertTrue(device.isTempSensor());
-        assertFalse(device.isHumiditySensor());
-        assertTrue(device.isPowermeter());
+        assertFalse(device.isButton());
         assertFalse(device.isHeatingThermostat());
+        assertTrue(device.isPowermeter());
+        assertTrue(device.isTemperatureSensor());
+        assertTrue(device.isSwitchableOutlet());
+        assertFalse(device.isDectRepeater());
+        assertTrue(device.hasMicrophone());
+        assertFalse(device.isHANFUNUnit());
+        assertTrue(device.isHANFUNOnOff());
         assertFalse(device.isHANFUNBlinds());
+        assertFalse(device.isHumiditySensor());
 
         assertNotNull(device.getSwitch());
         assertEquals(SwitchModel.ON, device.getSwitch().getState());
@@ -227,7 +255,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHANFUNAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
-        assertTrue(device.isTempSensor());
+        assertTrue(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertTrue(device.isHeatingThermostat());
@@ -265,7 +293,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHANFUNAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
-        assertTrue(device.isTempSensor());
+        assertTrue(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertTrue(device.isHeatingThermostat());
@@ -303,7 +331,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHANFUNAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
-        assertTrue(device.isTempSensor());
+        assertTrue(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertTrue(device.isHeatingThermostat());
@@ -341,7 +369,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHANFUNAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
-        assertFalse(device.isTempSensor());
+        assertFalse(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
@@ -390,7 +418,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHANFUNAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
-        assertTrue(device.isTempSensor());
+        assertTrue(device.isTemperatureSensor());
         assertTrue(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
@@ -460,7 +488,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHANFUNAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertTrue(device.isSwitchableOutlet());
-        assertFalse(device.isTempSensor());
+        assertFalse(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
         assertTrue(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
@@ -502,7 +530,7 @@ public class AVMFritzDeviceListModelTest {
         assertTrue(device.isHANFUNAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
-        assertFalse(device.isTempSensor());
+        assertFalse(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
@@ -545,7 +573,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHANFUNAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
-        assertFalse(device.isTempSensor());
+        assertFalse(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
@@ -588,7 +616,7 @@ public class AVMFritzDeviceListModelTest {
         assertTrue(device.isHANFUNAlarmSensor());
         assertFalse(device.isDectRepeater());
         assertFalse(device.isSwitchableOutlet());
-        assertFalse(device.isTempSensor());
+        assertFalse(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
         assertFalse(device.isHeatingThermostat());
@@ -614,6 +642,55 @@ public class AVMFritzDeviceListModelTest {
     }
 
     @Test
+    public void validateHANFUNOnOffModel() {
+        Optional<AVMFritzBaseModel> optionalDevice = findModelByIdentifier("113240824499-1");
+        assertTrue(optionalDevice.isPresent());
+        assertTrue(optionalDevice.get() instanceof DeviceModel);
+
+        DeviceModel device = (DeviceModel) optionalDevice.get();
+        assertEquals("HAN-FUN", device.getProductName());
+        assertEquals("113240824499-1", device.getIdentifier());
+        assertEquals("2002", device.getDeviceId());
+        assertEquals("0.0", device.getFirmwareVersion());
+        assertEquals("0x2c3c", device.getManufacturer());
+
+        assertEquals(1, device.getPresent());
+        assertEquals("Steckdose innen", device.getName());
+
+        assertFalse(device.isHANFUNButton());
+        assertFalse(device.isHANFUNAlarmSensor());
+        assertFalse(device.isButton());
+        assertFalse(device.isHeatingThermostat());
+        assertFalse(device.isPowermeter());
+        assertFalse(device.isTemperatureSensor());
+        assertFalse(device.isSwitchableOutlet());
+        assertFalse(device.isDectRepeater());
+        assertFalse(device.hasMicrophone());
+        assertTrue(device.isHANFUNUnit());
+        assertTrue(device.isHANFUNOnOff());
+        assertFalse(device.isHANFUNBlinds());
+        assertFalse(device.isHumiditySensor());
+
+        assertTrue(device.getButtons().isEmpty());
+
+        assertNull(device.getAlert());
+
+        assertNull(device.getSwitch());
+
+        assertNull(device.getTemperature());
+
+        SimpleOnOffModel model = device.getSimpleOnOffUnit();
+        assertNotNull(model);
+        assertEquals(false, model.state);
+
+        assertNull(device.getPowermeter());
+
+        assertNull(device.getHkr());
+
+        assertNull(device.getLevelcontrol());
+    }
+
+    @Test
     public void validateHeatingGroupModel() {
         Optional<AVMFritzBaseModel> optionalGroup = findModelByIdentifier("F0:A3:7F-901");
         assertTrue(optionalGroup.isPresent());
@@ -634,7 +711,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(group.isHANFUNAlarmSensor());
         assertFalse(group.isDectRepeater());
         assertFalse(group.isSwitchableOutlet());
-        assertFalse(group.isTempSensor());
+        assertFalse(group.isTemperatureSensor());
         assertFalse(group.isHumiditySensor());
         assertFalse(group.isPowermeter());
         assertTrue(group.isHeatingThermostat());
@@ -672,7 +749,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(group.isHANFUNAlarmSensor());
         assertFalse(group.isDectRepeater());
         assertTrue(group.isSwitchableOutlet());
-        assertFalse(group.isTempSensor());
+        assertFalse(group.isTemperatureSensor());
         assertFalse(group.isHumiditySensor());
         assertTrue(group.isPowermeter());
         assertFalse(group.isHeatingThermostat());

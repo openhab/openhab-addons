@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.logreader.internal.filereader.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Interface for file reader listeners.
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public interface FileReaderListener {
 
     /**
@@ -35,12 +39,12 @@ public interface FileReaderListener {
      *
      * @param line the line.
      */
-    void handle(String line);
+    void handle(@Nullable String line);
 
     /**
      * This method is called when exception has occurred.
      *
      * @param ex the exception.
      */
-    void handle(Exception ex);
+    void handle(@Nullable Exception ex);
 }

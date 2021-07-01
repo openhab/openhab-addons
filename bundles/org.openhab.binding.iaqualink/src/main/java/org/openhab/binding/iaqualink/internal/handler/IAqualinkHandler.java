@@ -38,11 +38,11 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.iaqualink.internal.IAqualinkBindingConstants;
 import org.openhab.binding.iaqualink.internal.api.IAqualinkClient;
 import org.openhab.binding.iaqualink.internal.api.IAqualinkClient.NotAuthorizedException;
-import org.openhab.binding.iaqualink.internal.api.model.AccountInfo;
-import org.openhab.binding.iaqualink.internal.api.model.Auxiliary;
-import org.openhab.binding.iaqualink.internal.api.model.Device;
-import org.openhab.binding.iaqualink.internal.api.model.Home;
-import org.openhab.binding.iaqualink.internal.api.model.OneTouch;
+import org.openhab.binding.iaqualink.internal.api.dto.AccountInfo;
+import org.openhab.binding.iaqualink.internal.api.dto.Auxiliary;
+import org.openhab.binding.iaqualink.internal.api.dto.Device;
+import org.openhab.binding.iaqualink.internal.api.dto.Home;
+import org.openhab.binding.iaqualink.internal.api.dto.OneTouch;
 import org.openhab.binding.iaqualink.internal.config.IAqualinkConfiguration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -457,7 +457,7 @@ public class IAqualinkHandler extends BaseThingHandler {
                 default:
                     return StringType.valueOf(value);
             }
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             return UnDefType.UNDEF;
         }
     }

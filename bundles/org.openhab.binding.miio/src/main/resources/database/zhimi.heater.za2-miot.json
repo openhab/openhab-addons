@@ -68,7 +68,7 @@
 				"friendlyName": "Heater - Target Temperature",
 				"channel": "target-temperature",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"stateDescription": {
 					"minimum": 16,
 					"maximum": 28,
@@ -155,7 +155,7 @@
 				"friendlyName": "Environment - Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"stateDescription": {
 					"minimum": -30,
 					"maximum": 100,

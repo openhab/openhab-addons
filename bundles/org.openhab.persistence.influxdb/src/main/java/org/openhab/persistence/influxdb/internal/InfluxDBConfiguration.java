@@ -14,6 +14,7 @@ package org.openhab.persistence.influxdb.internal;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -61,7 +62,7 @@ public class InfluxDBConfiguration {
         token = (String) config.getOrDefault(TOKEN_PARAM, "");
         databaseName = (String) config.getOrDefault(DATABASE_PARAM, "openhab");
         retentionPolicy = (String) config.getOrDefault(RETENTION_POLICY_PARAM, "autogen");
-        version = parseInfluxVersion(config.getOrDefault(VERSION_PARAM, InfluxDBVersion.V1.name()));
+        version = parseInfluxVersion((String) config.getOrDefault(VERSION_PARAM, InfluxDBVersion.V1.name()));
 
         replaceUnderscore = getConfigBooleanValue(config, REPLACE_UNDERSCORE_PARAM, false);
         addCategoryTag = getConfigBooleanValue(config, ADD_CATEGORY_TAG_PARAM, false);
@@ -80,9 +81,9 @@ public class InfluxDBConfiguration {
         }
     }
 
-    private InfluxDBVersion parseInfluxVersion(@Nullable Object value) {
+    private InfluxDBVersion parseInfluxVersion(@Nullable String value) {
         try {
-            return InfluxDBVersion.valueOf((String) value);
+            return Optional.ofNullable(value).map(InfluxDBVersion::valueOf).orElse(InfluxDBVersion.UNKNOWN);
         } catch (RuntimeException e) {
             logger.warn("Invalid version {}", value);
             return InfluxDBVersion.UNKNOWN;

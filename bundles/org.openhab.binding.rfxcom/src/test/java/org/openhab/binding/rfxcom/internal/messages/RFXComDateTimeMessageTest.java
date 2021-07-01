@@ -32,7 +32,7 @@ public class RFXComDateTimeMessageTest {
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "0D580117B90003041D030D150A69";
         byte[] message = HexUtils.hexToBytes(hexMessage);
-        RFXComDateTimeMessage msg = (RFXComDateTimeMessage) RFXComMessageFactory.createMessage(message);
+        RFXComDateTimeMessage msg = (RFXComDateTimeMessage) RFXComMessageFactoryImpl.INSTANCE.createMessage(message);
         assertEquals(RFXComDateTimeMessage.SubType.RTGR328N, msg.subType, "SubType");
         assertEquals(23, (short) (msg.seqNbr & 0xFF), "Seq Number");
         assertEquals("47360", msg.getDeviceId(), "Sensor Id");

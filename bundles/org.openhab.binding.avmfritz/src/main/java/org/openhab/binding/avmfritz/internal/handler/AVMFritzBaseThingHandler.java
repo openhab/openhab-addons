@@ -35,6 +35,7 @@ import org.openhab.binding.avmfritz.internal.dto.HeatingModel.NextChangeModel;
 import org.openhab.binding.avmfritz.internal.dto.HumidityModel;
 import org.openhab.binding.avmfritz.internal.dto.LevelcontrolModel;
 import org.openhab.binding.avmfritz.internal.dto.PowerMeterModel;
+import org.openhab.binding.avmfritz.internal.dto.SimpleOnOffModel;
 import org.openhab.binding.avmfritz.internal.dto.SwitchModel;
 import org.openhab.binding.avmfritz.internal.dto.TemperatureModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaStatusListener;
@@ -140,9 +141,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             if (device.isHeatingThermostat()) {
                 updateHeatingThermostat(device.getHkr());
             }
+            if (device.isHANFUNUnit() && device.isHANFUNOnOff()) {
+                updateSimpleOnOffUnit(device.getSimpleOnOffUnit());
+            }
             if (device instanceof DeviceModel) {
                 DeviceModel deviceModel = (DeviceModel) device;
-                if (deviceModel.isTempSensor()) {
+                if (deviceModel.isTemperatureSensor()) {
                     updateTemperatureSensor(deviceModel.getTemperature());
                 }
                 if (deviceModel.isHumiditySensor()) {
@@ -225,8 +229,13 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
         if (lowBattery == null) {
             updateThingChannelState(CHANNEL_BATTERY_LOW, UnDefType.UNDEF);
         } else {
-            updateThingChannelState(CHANNEL_BATTERY_LOW,
-                    BatteryModel.BATTERY_ON.equals(lowBattery) ? OnOffType.ON : OnOffType.OFF);
+            updateThingChannelState(CHANNEL_BATTERY_LOW, OnOffType.from(BatteryModel.BATTERY_ON.equals(lowBattery)));
+        }
+    }
+
+    private void updateSimpleOnOffUnit(@Nullable SimpleOnOffModel simpleOnOffUnit) {
+        if (simpleOnOffUnit != null) {
+            updateThingChannelState(CHANNEL_ON_OFF, OnOffType.from(simpleOnOffUnit.state));
         }
     }
 
@@ -241,7 +250,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             if (state == null) {
                 updateThingChannelState(CHANNEL_OUTLET, UnDefType.UNDEF);
             } else {
-                updateThingChannelState(CHANNEL_OUTLET, SwitchModel.ON.equals(state) ? OnOffType.ON : OnOffType.OFF);
+                updateThingChannelState(CHANNEL_OUTLET, OnOffType.from(SwitchModel.ON.equals(state)));
             }
         }
     }
@@ -370,11 +379,9 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
                 break;
             case CHANNEL_OUTLET:
+            case CHANNEL_ON_OFF:
                 if (command instanceof OnOffType) {
                     fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
-                    if (state != null) {
-                        state.getSwitch().setState(OnOffType.ON.equals(command) ? SwitchModel.ON : SwitchModel.OFF);
-                    }
                 }
                 break;
             case CHANNEL_SETTEMP:

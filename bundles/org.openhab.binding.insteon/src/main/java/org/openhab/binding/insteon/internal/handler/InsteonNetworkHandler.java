@@ -52,7 +52,6 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(InsteonNetworkHandler.class);
 
-    private @Nullable InsteonNetworkConfiguration config;
     private @Nullable InsteonBinding insteonBinding;
     private @Nullable InsteonDeviceDiscoveryService insteonDeviceDiscoveryService;
     private @Nullable ScheduledFuture<?> pollingJob = null;
@@ -77,18 +76,9 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Starting Insteon bridge");
-        config = getConfigAs(InsteonNetworkConfiguration.class);
-        updateStatus(ThingStatus.UNKNOWN);
+        InsteonNetworkConfiguration config = getConfigAs(InsteonNetworkConfiguration.class);
 
         scheduler.execute(() -> {
-            InsteonNetworkConfiguration config = this.config;
-            if (config == null) {
-                String msg = "Initialization failed, configuration is null.";
-                logger.warn(msg);
-
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
-                return;
-            }
             SerialPortManager serialPortManager = this.serialPortManager;
             if (serialPortManager == null) {
                 String msg = "Initialization failed, serial port manager is null.";
@@ -99,6 +89,7 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
                 return;
             }
             insteonBinding = new InsteonBinding(this, config, serialPortManager, scheduler);
+            updateStatus(ThingStatus.UNKNOWN);
 
             // hold off on starting to poll until devices that already are defined as things are added.
             // wait SETTLE_TIME_IN_SECONDS to start then check every second afterwards until it has been at

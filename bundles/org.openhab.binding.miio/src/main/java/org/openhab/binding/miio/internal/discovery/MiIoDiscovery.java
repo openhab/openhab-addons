@@ -233,7 +233,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     }
 
     private void submitDiscovery(String ip, String token, String id, String label, String country, boolean isOnline) {
-        ThingUID uid = new ThingUID(THING_TYPE_MIIO, id);
+        ThingUID uid = new ThingUID(THING_TYPE_MIIO, id.replace(".", "_"));
         DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(uid).withProperty(PROPERTY_HOST_IP, ip)
                 .withProperty(PROPERTY_DID, id);
         if (IGNORED_TOKENS.contains(token)) {

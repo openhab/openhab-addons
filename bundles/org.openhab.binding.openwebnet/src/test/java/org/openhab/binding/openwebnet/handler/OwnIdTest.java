@@ -24,6 +24,7 @@ import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereEnergyManagement;
 import org.openwebnet4j.message.WhereLightAutom;
+import org.openwebnet4j.message.WhereThermo;
 import org.openwebnet4j.message.WhereZigBee;
 import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
@@ -55,11 +56,12 @@ public class OwnIdTest {
      * BUS Local Bus        25#4#01         25h4h01             1.25h4h01       25h4h01
      * BUS Autom            93              93                  2.93            93
      * BUS Thermo           #1 or 1         1                   4.1             1
+     * BUS Thermo actuator  1#2             1                   4.1             1
      * BUS TempSensor       500             500                 4.500           500
      * BUS Energy           51              51                  18.51           51
-     * BUS CEN              51              51                  15.51           51
-     * BUS CEN+             212             212                 25.212          212
-     * BUS DryContact       399             399                 25.399          399
+     * -INACTIVE- BUS CEN              51              51                  15.51           51
+     * -INACTIVE- BUS CEN+             212             212                 25.212          212
+     * -INACTIVE- BUS DryContact       399             399                 25.399          399
      *
      */
 // @formatter:on
@@ -71,10 +73,11 @@ public class OwnIdTest {
         zb_switch_2u_2(new WhereZigBee("789301202#9"), Who.fromValue(1), "*1*1*789301202#9##", "789301200h9", "1.789301200h9", "789301200h9"),
         bus_switch(new WhereLightAutom("51"), Who.fromValue(1), "*1*1*51##", "51", "1.51", "51"),
         bus_localbus(new WhereLightAutom("25#4#01"), Who.fromValue(1), "*1*1*25#4#01##", "25h4h01", "1.25h4h01", "25h4h01"),
-        //bus_thermo_zone(new WhereThermo("1"), Who.fromValue(4),"*#4*1*0*0020##" , "1", "4.1", "1"),
-        //bus_thermo_zone_act(new WhereThermo("2#1"), Who.fromValue(4),"*#4*2#1*20*0##" ,"2", "4.2", "2"),
-        //bus_thermo_via_cu(new WhereThermo("#1"), Who.fromValue(4),"*#4*#1*0*0020##" ,"1", "4.1", "1"),
-        // bus_tempSensor("500", "4", "500", "4.500", "500"),
+        bus_autom(new WhereLightAutom("93"), Who.fromValue(2), "*2*0*93##", "93", "2.93", "93"),
+        bus_thermo_via_cu(new WhereThermo("#1"), Who.fromValue(4),"*#4*#1*0*0020##" ,"1", "4.1", "1"),
+        bus_thermo(new WhereThermo("1"), Who.fromValue(4),"*#4*1*0*0020##" , "1", "4.1", "1"),
+        bus_thermo_act(new WhereThermo("1#2"), Who.fromValue(4),"*#4*1#2*20*0##" ,"1", "4.1", "1"),
+        bus_tempSensor(new WhereThermo("500"), Who.fromValue(4), "*#4*500*15*1*0020*0001##", "500", "4.500", "500"),
         bus_energy(new WhereEnergyManagement("51"), Who.fromValue(18), "*#18*51*113##", "51", "18.51", "51");
 
         // @formatter:on

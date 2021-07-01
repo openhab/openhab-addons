@@ -87,7 +87,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
     private int shutterRun = SHUTTER_RUN_UNDEFINED;
     private static final String AUTO_CALIBRATION = "AUTO";
 
-    private long startedMovingAt = -1;
+    private long startedMovingAtTS = -1; // timestamp when device started moving UP/DOWN
     private int movingState = MOVING_STATE_UNKNOWN;
     private int positionEstimation = POSITION_UNKNOWN;
     private @Nullable ScheduledFuture<?> moveSchedule;
@@ -351,7 +351,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
         } else if (msg.isStop()) {
             long stoppedAt = System.currentTimeMillis();
             if (calibrating == CALIBRATION_GOING_DOWN && shutterRun == SHUTTER_RUN_UNDEFINED) {
-                shutterRun = (int) (stoppedAt - startedMovingAt);
+                shutterRun = (int) (stoppedAt - startedMovingAtTS);
                 logger.debug("& {} & CALIBRATION - reached DOWN ---> shutterRun={}", deviceWhere, shutterRun);
                 updateMovingState(MOVING_STATE_STOPPED);
                 logger.debug("& {} & CALIBRATION - COMPLETED, now going to {}%", deviceWhere, positionRequested);
@@ -393,19 +393,19 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
     private void updateMovingState(int newState) {
         if (movingState == MOVING_STATE_STOPPED) {
             if (newState != MOVING_STATE_STOPPED) { // moving after stop
-                startedMovingAt = System.currentTimeMillis();
+                startedMovingAtTS = System.currentTimeMillis();
                 synchronized (DATE_FORMATTER) {
-                    logger.debug("# {} # MOVING {} - startedMovingAt={} - {}", deviceWhere, newState, startedMovingAt,
-                            DATE_FORMATTER.format(new Date(startedMovingAt)));
+                    logger.debug("# {} # MOVING {} - startedMovingAt={} - {}", deviceWhere, newState, startedMovingAtTS,
+                            DATE_FORMATTER.format(new Date(startedMovingAtTS)));
                 }
             }
         } else { // we were moving
             updatePosition();
             if (newState != MOVING_STATE_STOPPED) { // moving after moving, take new timestamp
-                startedMovingAt = System.currentTimeMillis();
+                startedMovingAtTS = System.currentTimeMillis();
                 synchronized (DATE_FORMATTER) {
-                    logger.debug("# {} # MOVING {} - startedMovingAt={} - {}", deviceWhere, newState, startedMovingAt,
-                            DATE_FORMATTER.format(new Date(startedMovingAt)));
+                    logger.debug("# {} # MOVING {} - startedMovingAt={} - {}", deviceWhere, newState, startedMovingAtTS,
+                            DATE_FORMATTER.format(new Date(startedMovingAtTS)));
                 }
             }
             // cancel the schedule
@@ -424,8 +424,9 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
      */
     private void updatePosition() {
         int newPos = POSITION_UNKNOWN;
-        if (shutterRun > 0) {// we have shutterRun defined, let's calculate new positionEstimation
-            long movedTime = System.currentTimeMillis() - startedMovingAt;
+        if (shutterRun > 0 && startedMovingAtTS != -1) {// we have shutterRun and startedMovingAtTS defined, let's
+                                                        // calculate new positionEstimation
+            long movedTime = System.currentTimeMillis() - startedMovingAtTS;
             logger.debug("# {} # current positionEstimation={} movedTime={}", deviceWhere, positionEstimation,
                     movedTime);
             int movedSteps = Math.round((float) movedTime / shutterRun * POSITION_MAX_STEPS);
