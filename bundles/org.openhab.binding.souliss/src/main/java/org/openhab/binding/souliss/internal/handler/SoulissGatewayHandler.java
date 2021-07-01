@@ -131,6 +131,9 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     public int getNodes() {
         var maxNode = 0;
         for (Thing thing : bridge.getThings()) {
+            if (thing.getHandler().getClass() == SoulissTopicsHandler.class) {
+                break;
+            }
             String[] uuidStrings = thing.getUID().getAsString().split(SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR);
             String[] uuidNodeNumber = uuidStrings[0].split(SoulissBindingConstants.UUID_ELEMENTS_SEPARATOR);
 
