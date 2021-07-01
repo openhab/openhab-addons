@@ -15,8 +15,6 @@ package org.openhab.binding.broadlink.handler;
 import static org.openhab.binding.broadlink.BroadlinkBindingConstants.*;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import javax.measure.quantity.Power;
 
@@ -62,10 +60,11 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         return deriveOnOffBitFromStatusPayload(statusPayload, (byte) 0x01);
     }
 
+    // https://github.com/mjg59/python-broadlink/blob/822b3c326631c1902b5892a83db126291acbf0b6/broadlink/switch.py#L186
     double derivePowerConsumption(byte[] statusPayload) throws IOException {
-        if (statusPayload.length > 7) {
-            ByteBuffer bb = ByteBuffer.wrap(statusPayload).order(ByteOrder.LITTLE_ENDIAN);
-            int intValue = bb.getInt(4);
+        if (statusPayload.length > 6) {
+            // Bytes are little-endian, at positions 4,5 and 6
+            int intValue = (statusPayload[6] << 16) + (statusPayload[5] << 8) + statusPayload[4];
             return (double) intValue / 1000;
         }
         return 0D;

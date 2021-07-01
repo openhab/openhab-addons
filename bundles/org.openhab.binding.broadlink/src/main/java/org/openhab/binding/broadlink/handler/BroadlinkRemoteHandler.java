@@ -32,13 +32,13 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.util.HexUtils;
 
 /**
- * Remote blaster handler
+ * Remote blaster handler superclass
  *
  * @author Cato Sognen - Initial contribution
  * @author John Marshall - V3 rewrite with dynamic command description provider
  */
 @NonNullByDefault
-public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
+public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
 
     private static final byte[] ENTER_LEARNING = { 0x03, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     private static final byte[] CHECK_LEARNT_DATA = { 0x04, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -100,7 +100,7 @@ public class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 byte decryptResponse[] = decodeDevicePacket(response);
                 // Interesting stuff begins at the fourth byte
                 String hexString = Utils.toHexString(Utils.slice(decryptResponse, 4, decryptResponse.length));
-                logger.info("BEGIN LAST LEARNT CODE ({} bytes)", decryptResponse.length);
+                logger.info("BEGIN LAST LEARNT CODE ({} bytes)", decryptResponse.length - 4);
                 logger.info("{}", hexString);
                 logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
             }

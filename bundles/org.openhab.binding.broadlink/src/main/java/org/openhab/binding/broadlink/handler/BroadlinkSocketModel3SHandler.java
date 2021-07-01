@@ -13,8 +13,6 @@
 package org.openhab.binding.broadlink.handler;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
@@ -51,10 +49,10 @@ public class BroadlinkSocketModel3SHandler extends BroadlinkSocketModel2Handler 
     }
 
     double deriveSP3sPowerConsumption(byte[] consumptionResponsePayload) {
-        if (consumptionResponsePayload.length > 7) {
-            ByteBuffer bb = ByteBuffer.wrap(consumptionResponsePayload).order(ByteOrder.BIG_ENDIAN); // Big-endian
-                                                                                                     // (unlike SP2S)
-            int intValue = bb.getInt(4);
+        if (consumptionResponsePayload.length > 6) {
+            // Bytes are little-endian, at positions 4,5 and 6
+            int intValue = (consumptionResponsePayload[6] << 16) + (consumptionResponsePayload[5] << 8)
+                    + consumptionResponsePayload[4];
             return (double) intValue / 100; // Instead of 1000 in SP2S
         }
         return 0D;

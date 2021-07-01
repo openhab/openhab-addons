@@ -72,9 +72,9 @@ public class BroadlinkSocketModel3SHandlerTest extends AbstractBroadlinkThingHan
 
     @Test
     public void derivePowerConsumptionFromStatusByteCorrect() {
-        byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x19, (byte) 0xCD };
+        byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x19, 0x77, 0x00 };
         double result = model3s.deriveSP3sPowerConsumption(payload);
-        assertEquals(66.051D, result, 0.1D);
+        assertEquals(304.89D, result, 0.1D);
     }
 
     @Test
@@ -101,7 +101,7 @@ public class BroadlinkSocketModel3SHandlerTest extends AbstractBroadlinkThingHan
         ChannelUID expectedConsumptionChannel = new ChannelUID(thing.getUID(), CHANNEL_POWER_CONSUMPTION);
         assertEquals(expectedConsumptionChannel, channels.get(1));
 
-        QuantityType<Power> expectedPower = new QuantityType<>(14933790.87,
+        QuantityType<Power> expectedPower = new QuantityType<>(26222.97,
                 BroadlinkBindingConstants.BROADLINK_POWER_CONSUMPTION_UNIT);
         assertEquals(expectedPower, states.get(1));
     }
