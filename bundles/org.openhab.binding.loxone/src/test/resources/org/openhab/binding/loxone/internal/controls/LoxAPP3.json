@@ -851,8 +851,108 @@
 					}
 				}
 			}
-		}
-	},
+		},
+        "17452951-02ae-1b6e-ffff266cf17271db": {
+            "name": "Sauna Controller No Vaporizer No Door Sensor",
+            "type": "Sauna",
+            "uuidAction": "17452951-02ae-1b6e-ffff266cf17271db",
+            "room": "0b734138-037d-034e-ffff403fb0c34b9e",
+            "cat": "0fe650c2-0004-d446-ffff504f9410790f",
+            "defaultRating": 0,
+            "isFavorite": false,
+            "isSecured": false,
+            "details": {
+                "jLockable": true,
+                "hasVaporizer": false,
+                "hasDoorSensor": false
+            },
+            "states": {
+                "jLocked": "97452951-02ae-1b57-ffffe29abab51e83",
+                "power": "17452951-02ae-1b62-ffffe29abab51e83",
+                "tempActual": "17452951-02ae-1b51-ffffe29abab51e83",
+                "tempBench": "17452951-02ae-1b55-ffffe29abab51e83",
+                "tempTarget": "17452951-02ae-1b6b-ffffe29abab51e83",
+                "fan": "17452951-02ae-1b67-ffffe29abab51e83",
+                "drying": "17452951-02ae-1b69-ffffe29abab51e83",
+                "doorClosed": "17452951-02ae-1b54-ffffe29abab51e83",
+                "presence": "17452951-02ae-1b56-ffffe29abab51e83",
+                "error": "17452951-02ae-1b6a-ffffe29abab51e83",
+                "saunaError": "17452951-02ae-1b4e-ffffe29abab51e83",
+                "timer": "17452951-02ae-1b68-ffffe29abab51e83",
+                "active": "17452951-02ae-1b66-ffffe29abab51e83",
+                "timerTotal": "17452951-02ae-1b5c-ffffe29abab51e83"
+            }
+        },
+        "17452951-02ae-1b6e-ffff266cf17271dc": {
+            "name": "Sauna Controller No Vaporizer With Door Sensor",
+            "type": "Sauna",
+            "uuidAction": "17452951-02ae-1b6e-ffff266cf17271dc",
+            "room": "0b734138-037d-034e-ffff403fb0c34b9e",
+            "cat": "0fe650c2-0004-d446-ffff504f9410790f",
+            "defaultRating": 0,
+            "isFavorite": false,
+            "isSecured": false,
+            "details": {
+                "jLockable": true,
+                "hasVaporizer": false,
+                "hasDoorSensor": true
+            },
+            "states": {
+                "jLocked": "97452951-02ae-1b57-ffffe29abab51e84",
+                "power": "17452951-02ae-1b62-ffffe29abab51e84",
+                "tempActual": "17452951-02ae-1b51-ffffe29abab51e84",
+                "tempBench": "17452951-02ae-1b55-ffffe29abab51e84",
+                "tempTarget": "17452951-02ae-1b6b-ffffe29abab51e84",
+                "fan": "17452951-02ae-1b67-ffffe29abab51e84",
+                "drying": "17452951-02ae-1b69-ffffe29abab51e84",
+                "doorClosed": "17452951-02ae-1b54-ffffe29abab51e84",
+                "presence": "17452951-02ae-1b56-ffffe29abab51e84",
+                "error": "17452951-02ae-1b6a-ffffe29abab51e84",
+                "saunaError": "17452951-02ae-1b4e-ffffe29abab51e84",
+                "timer": "17452951-02ae-1b68-ffffe29abab51e84",
+                "active": "17452951-02ae-1b66-ffffe29abab51e84",
+                "timerTotal": "17452951-02ae-1b5c-ffffe29abab51e84"
+            }
+        },
+        "17452951-02ae-1b6e-ffff266cf17271dd": {
+            "name": "Sauna Controller With Vaporizer With Door Sensor",
+            "type": "Sauna",
+            "uuidAction": "17452951-02ae-1b6e-ffff266cf17271dd",
+            "room": "0b734138-037d-034e-ffff403fb0c34b9e",
+            "cat": "0fe650c2-0004-d446-ffff504f9410790f",
+            "defaultRating": 0,
+            "isFavorite": false,
+            "isSecured": false,
+            "details": {
+                "jLockable": true,
+                "hasVaporizer": true,
+                "hasDoorSensor": true
+            },
+            "states": {
+                "jLocked": "97452951-02ae-1b57-ffffe29abab51e85",
+                "power": "17452951-02ae-1b62-ffffe29abab51e85",
+                "tempActual": "17452951-02ae-1b51-ffffe29abab51e85",
+                "tempBench": "17452951-02ae-1b55-ffffe29abab51e85",
+                "tempTarget": "17452951-02ae-1b6b-ffffe29abab51e85",
+                "fan": "17452951-02ae-1b67-ffffe29abab51e85",
+                "drying": "17452951-02ae-1b69-ffffe29abab51e85",
+                "doorClosed": "17452951-02ae-1b54-ffffe29abab51e85",
+                "presence": "17452951-02ae-1b56-ffffe29abab51e85",
+                "error": "17452951-02ae-1b6a-ffffe29abab51e85",
+                "vaporPower": "17eb161f-0350-6d90-ffff292cf0ed07b9",
+                "saunaError": "17452951-02ae-1b4e-ffffe29abab51e85",
+                "tempAndHumidity": "17eb161f-0350-6d6d-ffff292cf0ed07b9",
+                "ready": "17eb161f-0350-6d6e-ffff292cf0ed07b9",
+                "timer": "17452951-02ae-1b68-ffffe29abab51e85",
+                "active": "17452951-02ae-1b66-ffffe29abab51e85",
+                "lessWater": "17eb161f-0350-6d80-ffff292cf0ed07b9",
+                "humidityActual": "17eb161f-0350-6d7a-ffff292cf0ed07b9",
+                "humidityTarget": "17eb161f-0350-6d99-ffff292cf0ed07b9",
+                "mode": "17eb161f-0350-6d96-ffff292cf0ed07b9",
+                "timerTotal": "17452951-02ae-1b5c-ffffe29abab51e85"
+            }
+        }        
+    },
 	"weatherServer": {
 		"states": {
 			"actual": "0b734139-0012-04f4-ffff403fb0c34b9e",
