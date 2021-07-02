@@ -364,8 +364,12 @@ public class UDPDecoder {
             if (this.gwHandler != null) {
                 // build an array containing healths
                 List<Thing> listaThings = this.gwHandler.getThing().getThings();
+
                 ThingHandler handler = null;
                 for (Thing thing : listaThings) {
+                    if (thing.getThingTypeUID().equals(SoulissBindingConstants.TOPICS_THING_TYPE)) {
+                        continue;
+                    }
                     handler = thing.getHandler();
                     if (handler != null) {
                         int tgtnode = i - 5;

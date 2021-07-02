@@ -130,9 +130,9 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     public int getNodes() {
         var maxNode = 0;
-        for (Thing thing : bridge.getThings()) {
-            if (thing.getHandler().getClass() == SoulissTopicsHandler.class) {
-                break;
+        for (Thing thing : getThing().getThings()) {
+            if (thing.getThingTypeUID().equals(SoulissBindingConstants.TOPICS_THING_TYPE)) {
+                continue;
             }
             String[] uuidStrings = thing.getUID().getAsString().split(SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR);
             String[] uuidNodeNumber = uuidStrings[0].split(SoulissBindingConstants.UUID_ELEMENTS_SEPARATOR);
@@ -148,6 +148,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             // alla fine la lunghezza della lista sarà uguale al numero di nodi presenti
         }
         return maxNode + 1;
+
     }
 
     public void setMaxTypicalXnode(int maxTypicalXnode) {
@@ -181,7 +182,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         }
     }
 
-    public void sendSubscription() {
+    public synchronized void sendSubscription() {
         if (this.gwConfig.gatewayIpAddress.length() > 0) {
             soulissCommands.sendSUBSCRIPTIONframe(this.gwConfig.gatewayIpAddress, (byte) this.gwConfig.nodeIndex,
                     (byte) this.gwConfig.userIndex, getNodes());
