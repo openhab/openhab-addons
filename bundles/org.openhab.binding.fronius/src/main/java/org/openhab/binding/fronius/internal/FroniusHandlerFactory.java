@@ -17,6 +17,8 @@ import static org.openhab.binding.fronius.internal.FroniusBindingConstants.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fronius.internal.handler.FroniusBridgeHandler;
 import org.openhab.binding.fronius.internal.handler.FroniusMeterHandler;
 import org.openhab.binding.fronius.internal.handler.FroniusSymoInverterHandler;
@@ -34,10 +36,11 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Thomas Rokohl - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.fronius")
 public class FroniusHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>() {
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>() {
 
         private static final long serialVersionUID = 1L;
         {
@@ -53,6 +56,7 @@ public class FroniusHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
+    @Nullable
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 

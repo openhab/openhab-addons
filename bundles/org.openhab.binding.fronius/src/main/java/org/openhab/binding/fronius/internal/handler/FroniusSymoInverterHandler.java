@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.fronius.internal.handler;
 
-import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
@@ -77,7 +76,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      */
     @Override
     protected Object getValue(String channelId) {
-        final String[] fields = StringUtils.split(channelId, "#");
+        final String[] fields = channelId.split("#");
         if (fields.length < 1) {
             return null;
         }
@@ -159,18 +158,18 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @return
      */
     private Object getInverterFlowValue(final String fieldName, final String number) {
-        final Map<String, PowerFlowRealtimeInverter> inverters = powerFlowResponse.getBody().getData().getInverters();
-        if ((inverters == null) || (inverters.get(number) == null)) {
-            logger.debug("No data for inverter '" + number + "' found.");
-            return null;
-        }
-        switch (fieldName) {
-            case INVERTER_POWER:
-                return new QuantityType<>(inverters.get(number).getP(), Units.WATT);
-            case INVERTER_SOC:
-                return new QuantityType<>(inverters.get(number).getSoc(), Units.PERCENT);
-            default:
-                break;
+        final PowerFlowRealtimeInverter inverter = powerFlowResponse.getBody().getData().getInverters().get(number);
+        if (inverter == null) {
+            logger.debug("No data for inverter '{}' found.", number);
+        } else {
+            switch (fieldName) {
+                case INVERTER_POWER:
+                    return new QuantityType<>(inverter.getP(), Units.WATT);
+                case INVERTER_SOC:
+                    return new QuantityType<>(inverter.getSoc(), Units.PERCENT);
+                default:
+                    break;
+            }
         }
         return null;
     }
@@ -189,8 +188,9 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @param ip address of the device
      * @return {PowerFlowRealtimeResponse} the object representation of the json response
      */
-    private PowerFlowRealtimeResponse getPowerFlowRealtime(String ip) {
-        String location = FroniusBindingConstants.POWERFLOW_REALTIME_DATA.replace("%IP%", StringUtils.trimToEmpty(ip));
+    private PowerFlowRealtimeResponse getPowerFlowRealtime(final String ip) {
+        Objects.requireNonNull(ip, "IP address must be set in the configuration.");
+        String location = FroniusBindingConstants.POWERFLOW_REALTIME_DATA.replace("%IP%", ip.trim());
         return collectDataFormUrl(PowerFlowRealtimeResponse.class, location);
     }
 
@@ -201,10 +201,12 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @param deviceId of the device
      * @return {InverterRealtimeResponse} the object representation of the json response
      */
-    private InverterRealtimeResponse getRealtimeData(String ip, int deviceId) {
-        String location = FroniusBindingConstants.INVERTER_REALTIME_DATA_URL.replace("%IP%",
-                StringUtils.trimToEmpty(ip));
-        location = location.replace("%DEVICEID%", Integer.toString(deviceId));
+    private InverterRealtimeResponse getRealtimeData(final String ip, final Integer deviceId) {
+        Objects.requireNonNull(ip, "IP address must be set in the configuration.");
+        Objects.requireNonNull(deviceId, "Device ID must be set in the configuration.");
+
+        String location = FroniusBindingConstants.INVERTER_REALTIME_DATA_URL.replace("%IP%", ip.trim());
+        location = location.replace("%DEVICEID%", deviceId.toString());
         return collectDataFormUrl(InverterRealtimeResponse.class, location);
     }
 }

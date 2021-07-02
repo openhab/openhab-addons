@@ -129,9 +129,9 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
         } else if (value instanceof ValueUnit) {
             state = new DecimalType(((ValueUnit) value).getValue());
         } else if (value instanceof String) {
-            state = new StringType((String) value);
+            state = StringType.valueOf((String) value);
         } else if (value instanceof QuantityType) {
-            state = (QuantityType) value;
+            state = (QuantityType<?>) value;
         } else {
             logger.warn("Update channel {}: Unsupported value type {}", channelId, value.getClass().getSimpleName());
         }

@@ -13,8 +13,8 @@
 package org.openhab.binding.fronius.internal.handler;
 
 import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
@@ -70,7 +70,7 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
             return null;
         }
 
-        final String[] fields = StringUtils.split(channelId, "#");
+        final String[] fields = channelId.split("#");
         if (fields.length < 1) {
             return null;
         }
@@ -121,7 +121,7 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
             return;
         }
 
-        Map<String, String> properties = editProperties();
+        final Map<String, String> properties = editProperties();
 
         properties.put(FroniusBindingConstants.METER_MODEL, meterRealtimeBodyData.getDetails().getModel());
         properties.put(FroniusBindingConstants.METER_SERIAL, meterRealtimeBodyData.getDetails().getSerial());
@@ -149,8 +149,11 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
      * @param deviceId of the device
      * @return {MeterRealtimeResponse} the object representation of the json response
      */
-    private MeterRealtimeResponseDTO getMeterRealtimeData(String ip, int deviceId) {
-        String location = FroniusBindingConstants.METER_REALTIME_DATA_URL.replace("%IP%", StringUtils.trimToEmpty(ip));
+    private MeterRealtimeResponseDTO getMeterRealtimeData(final String ip, final Integer deviceId) {
+        Objects.requireNonNull(ip, "IP address must be set in the configuration.");
+        Objects.requireNonNull(deviceId, "Device ID must be set in the configuration.");
+
+        String location = FroniusBindingConstants.METER_REALTIME_DATA_URL.replace("%IP%", ip.trim());
         location = location.replace("%DEVICEID%", Integer.toString(deviceId));
         return collectDataFormUrl(MeterRealtimeResponseDTO.class, location);
     }
