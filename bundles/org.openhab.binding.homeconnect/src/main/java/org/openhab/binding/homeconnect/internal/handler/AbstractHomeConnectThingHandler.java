@@ -1006,27 +1006,39 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                     boolean enabled = data.getValueAsBoolean();
                     if (enabled) {
                         // brightness
-                        Data brightnessData = apiClient.get().getAmbientLightBrightnessState(getThingHaId());
-                        getThingChannel(CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE)
-                                .ifPresent(channel -> updateState(channel.getUID(),
-                                        new PercentType(brightnessData.getValueAsInt())));
-
-                        // color
-                        Data colorData = apiClient.get().getAmbientLightColorState(getThingHaId());
-                        getThingChannel(CHANNEL_AMBIENT_LIGHT_COLOR_STATE).ifPresent(
-                                channel -> updateState(channel.getUID(), new StringType(colorData.getValue())));
-
-                        // custom color
-                        Data customColorData = apiClient.get().getAmbientLightCustomColorState(getThingHaId());
-                        getThingChannel(CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE).ifPresent(channel -> {
-                            String value = customColorData.getValue();
-                            if (value != null) {
-                                updateState(channel.getUID(), mapColor(value));
-                            } else {
+                        getThingChannel(CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE).ifPresent(channel -> {
+                            try {
+                                Data brightnessData = apiClient.get().getAmbientLightBrightnessState(getThingHaId());
+                                updateState(channel.getUID(), new PercentType(brightnessData.getValueAsInt()));
+                            } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
                                 updateState(channel.getUID(), UnDefType.UNDEF);
                             }
                         });
 
+                        // color
+                        getThingChannel(CHANNEL_AMBIENT_LIGHT_COLOR_STATE).ifPresent(channel -> {
+                            try {
+                                Data colorData = apiClient.get().getAmbientLightColorState(getThingHaId());
+                                updateState(channel.getUID(), new StringType(colorData.getValue()));
+                            } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
+                                updateState(channel.getUID(), UnDefType.UNDEF);
+                            }
+                        });
+
+                        // custom color
+                        getThingChannel(CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE).ifPresent(channel -> {
+                            try {
+                                Data customColorData = apiClient.get().getAmbientLightCustomColorState(getThingHaId());
+                                String value = customColorData.getValue();
+                                if (value != null) {
+                                    updateState(channel.getUID(), mapColor(value));
+                                } else {
+                                    updateState(channel.getUID(), UnDefType.UNDEF);
+                                }
+                            } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
+                                updateState(channel.getUID(), UnDefType.UNDEF);
+                            }
+                        });
                     }
                     return OnOffType.from(enabled);
                 } else {
@@ -1115,7 +1127,17 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 Program program = apiClient.get().getSelectedProgram(getThingHaId());
 
                 if (program != null) {
-                    updateProgramOptionsStateDescriptions(program.getKey());
+                    try {
+                        updateProgramOptionsStateDescriptions(program.getKey());
+                    } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
+                        getThingChannel(CHANNEL_WASHER_SPIN_SPEED).ifPresent(channel -> dynamicStateDescriptionProvider
+                                .setStateOptions(channel.getUID(), emptyList()));
+                        getThingChannel(CHANNEL_WASHER_TEMPERATURE).ifPresent(channel -> dynamicStateDescriptionProvider
+                                .setStateOptions(channel.getUID(), emptyList()));
+                        getThingChannel(CHANNEL_DRYER_DRYING_TARGET)
+                                .ifPresent(channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(),
+                                        emptyList()));
+                    }
                     processProgramOptions(program.getOptions());
 
                     return new StringType(program.getKey());
