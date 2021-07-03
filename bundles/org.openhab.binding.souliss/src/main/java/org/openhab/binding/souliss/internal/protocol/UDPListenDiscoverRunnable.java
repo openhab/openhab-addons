@@ -98,6 +98,7 @@ public class UDPListenDiscoverRunnable implements Runnable {
                 }
             } catch (Exception ee) {
                 logger.error("Exception receiving-decoding message: {} ", ee.getLocalizedMessage());
+                ee.printStackTrace();
                 if (socket != null && !socket.isClosed()) {
                     socket.close();
                 }
