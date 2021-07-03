@@ -23,6 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author William Welliver - Initial contribution
+ * @author Matthew Davies - added awayMode and awayModeRaw to include thermostat away mode in binding
  */
 @NonNullByDefault
 public class VenstarThermostatBindingConstants {
@@ -30,28 +31,30 @@ public class VenstarThermostatBindingConstants {
     public static final String BINDING_ID = "venstarthermostat";
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_COLOR_TOUCH = new ThingTypeUID(BINDING_ID, "colorTouchThermostat");
+    public static final ThingTypeUID THING_TYPE_COLOR_TOUCH = new ThingTypeUID(BINDING_ID, "colorTouchThermostat");
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_COLOR_TOUCH);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_COLOR_TOUCH);
     // List of all Channel ids
-    public final static String CHANNEL_TEMPERATURE = "temperature";
-    public final static String CHANNEL_HUMIDITY = "humidity";
-    public final static String CHANNEL_EXTERNAL_TEMPERATURE = "outdoorTemperature";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_HUMIDITY = "humidity";
+    public static final String CHANNEL_EXTERNAL_TEMPERATURE = "outdoorTemperature";
 
-    public final static String CHANNEL_HEATING_SETPOINT = "heatingSetpoint";
-    public final static String CHANNEL_COOLING_SETPOINT = "coolingSetpoint";
-    public final static String CHANNEL_SYSTEM_STATE = "systemState";
-    public final static String CHANNEL_SYSTEM_MODE = "systemMode";
-    public final static String CHANNEL_SYSTEM_STATE_RAW = "systemStateRaw";
-    public final static String CHANNEL_SYSTEM_MODE_RAW = "systemModeRaw";
+    public static final String CHANNEL_HEATING_SETPOINT = "heatingSetpoint";
+    public static final String CHANNEL_COOLING_SETPOINT = "coolingSetpoint";
+    public static final String CHANNEL_SYSTEM_STATE = "systemState";
+    public static final String CHANNEL_SYSTEM_MODE = "systemMode";
+    public static final String CHANNEL_SYSTEM_STATE_RAW = "systemStateRaw";
+    public static final String CHANNEL_SYSTEM_MODE_RAW = "systemModeRaw";
+    public static final String CHANNEL_AWAY_MODE = "awayMode";
+    public static final String CHANNEL_AWAY_MODE_RAW = "awayModeRaw";
 
-    public final static String CONFIG_USERNAME = "username";
-    public final static String CONFIG_PASSWORD = "password";
-    public final static String CONFIG_REFRESH = "refresh";
+    public static final String CONFIG_USERNAME = "username";
+    public static final String CONFIG_PASSWORD = "password";
+    public static final String CONFIG_REFRESH = "refresh";
 
-    public final static String PROPERTY_URL = "url";
-    public final static String PROPERTY_UUID = "uuid";
+    public static final String PROPERTY_URL = "url";
+    public static final String PROPERTY_UUID = "uuid";
 
-    public final static String REFRESH_INVALID = "refresh-invalid";
-    public final static String EMPTY_INVALID = "empty-invalid";
+    public static final String REFRESH_INVALID = "refresh-invalid";
+    public static final String EMPTY_INVALID = "empty-invalid";
 }

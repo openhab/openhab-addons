@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.openwebnet;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,7 +25,8 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link OpenWebNetBindingConstants} class defines common constants, which are used across the whole binding.
  *
  * @author Massimo Valla - Initial contribution
- * @author Andrea Conte - Energy management
+ * @author Andrea Conte - Energy management, Thermoregulation
+ * @author Gilberto Cocchi - Thermoregulation
  */
 
 @NonNullByDefault
@@ -55,6 +55,10 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_BUS_AUTOMATION = "Automation";
     public static final ThingTypeUID THING_TYPE_BUS_ENERGY_METER = new ThingTypeUID(BINDING_ID, "bus_energy_meter");
     public static final String THING_LABEL_BUS_ENERGY_METER = "Energy Meter";
+    public static final ThingTypeUID THING_TYPE_BUS_THERMO_SENSOR = new ThingTypeUID(BINDING_ID, "bus_thermo_sensor");
+    public static final String THING_LABEL_BUS_THERMO_SENSOR = "Thermo Sensor";
+    public static final ThingTypeUID THING_TYPE_BUS_THERMO_ZONE = new ThingTypeUID(BINDING_ID, "bus_thermo_zone");
+    public static final String THING_LABEL_BUS_THERMO_ZONE = "Thermo Zone";
 
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ZB_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "zb_on_off_switch");
@@ -69,28 +73,31 @@ public class OpenWebNetBindingConstants {
 
     // #SUPPORTED THINGS SETS
     // ## Generic
-    public static final Set<ThingTypeUID> GENERIC_SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_GENERIC_DEVICE));
+    public static final Set<ThingTypeUID> GENERIC_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_GENERIC_DEVICE);
     // ## Lighting
-    public static final Set<ThingTypeUID> LIGHTING_SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_ZB_ON_OFF_SWITCH, THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS, THING_TYPE_ZB_DIMMER,
-                    THING_TYPE_BUS_ON_OFF_SWITCH, THING_TYPE_BUS_DIMMER));
+    public static final Set<ThingTypeUID> LIGHTING_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ZB_ON_OFF_SWITCH,
+            THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS, THING_TYPE_ZB_DIMMER, THING_TYPE_BUS_ON_OFF_SWITCH,
+            THING_TYPE_BUS_DIMMER);
     // ## Automation
-    public static final Set<ThingTypeUID> AUTOMATION_SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_ZB_AUTOMATION, THING_TYPE_BUS_AUTOMATION));
+    public static final Set<ThingTypeUID> AUTOMATION_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ZB_AUTOMATION,
+            THING_TYPE_BUS_AUTOMATION);
+
+    // ## Thermoregulation
+    public static final Set<ThingTypeUID> THERMOREGULATION_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_THERMO_ZONE,
+            THING_TYPE_BUS_THERMO_SENSOR);
 
     // ## Energy Management
-    public static final Set<ThingTypeUID> ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_BUS_ENERGY_METER));
+    public static final Set<ThingTypeUID> ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_ENERGY_METER);
 
     // ## Groups
     public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Stream
             .of(LIGHTING_SUPPORTED_THING_TYPES, AUTOMATION_SUPPORTED_THING_TYPES,
-                    ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES, GENERIC_SUPPORTED_THING_TYPES)
+                    THERMOREGULATION_SUPPORTED_THING_TYPES, ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES,
+                    GENERIC_SUPPORTED_THING_TYPES)
             .flatMap(Collection::stream).collect(Collectors.toCollection(HashSet::new));
 
-    public static final Set<ThingTypeUID> BRIDGE_SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_ZB_GATEWAY, THING_TYPE_BUS_GATEWAY));
+    public static final Set<ThingTypeUID> BRIDGE_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ZB_GATEWAY,
+            THING_TYPE_BUS_GATEWAY);
 
     public static final Set<ThingTypeUID> ALL_SUPPORTED_THING_TYPES = Stream
             .of(DEVICE_SUPPORTED_THING_TYPES, BRIDGE_SUPPORTED_THING_TYPES).flatMap(Collection::stream)
@@ -105,6 +112,16 @@ public class OpenWebNetBindingConstants {
 
     // automation
     public static final String CHANNEL_SHUTTER = "shutter";
+
+    // thermo
+    public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_FUNCTION = "function";
+    public static final String CHANNEL_TEMP_SETPOINT = "setpointTemperature";
+    public static final String CHANNEL_MODE = "mode";
+    public static final String CHANNEL_FAN_SPEED = "speedFanCoil";
+    public static final String CHANNEL_CONDITIONING_VALVES = "conditioningValves";
+    public static final String CHANNEL_HEATING_VALVES = "heatingValves";
+    public static final String CHANNEL_ACTUATORS = "actuators";
 
     // energy management
     public static final String CHANNEL_POWER = "power";

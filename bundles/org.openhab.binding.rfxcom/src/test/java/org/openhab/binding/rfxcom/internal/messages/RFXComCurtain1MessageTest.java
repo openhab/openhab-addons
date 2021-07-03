@@ -27,12 +27,13 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 public class RFXComCurtain1MessageTest {
     @Test
     public void checkForSupportTest() throws RFXComException {
-        RFXComMessageFactory.createMessage(CURTAIN1);
+        RFXComMessageFactoryImpl.INSTANCE.createMessage(CURTAIN1);
     }
 
     @Test
     public void basicBoundaryCheck() throws RFXComException {
-        RFXComCurtain1Message message = (RFXComCurtain1Message) RFXComMessageFactory.createMessage(CURTAIN1);
+        RFXComCurtain1Message message = (RFXComCurtain1Message) RFXComMessageFactoryImpl.INSTANCE
+                .createMessage(CURTAIN1);
 
         message.subType = RFXComCurtain1Message.SubType.HARRISON;
         message.command = RFXComCurtain1Message.Commands.OPEN;

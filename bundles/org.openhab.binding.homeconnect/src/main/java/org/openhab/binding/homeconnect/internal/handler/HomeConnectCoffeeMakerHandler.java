@@ -22,7 +22,6 @@ import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflin
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -87,10 +86,7 @@ public class HomeConnectCoffeeMakerHandler extends AbstractHomeConnectThingHandl
         super.handleCommand(channelUID, command, apiClient);
 
         // turn coffee maker on and standby
-        if (command instanceof OnOffType && CHANNEL_POWER_STATE.equals(channelUID.getId())) {
-            apiClient.setPowerState(getThingHaId(),
-                    OnOffType.ON.equals(command) ? STATE_POWER_ON : STATE_POWER_STANDBY);
-        }
+        handlePowerCommand(channelUID, command, apiClient, STATE_POWER_STANDBY);
     }
 
     @Override
@@ -99,8 +95,8 @@ public class HomeConnectCoffeeMakerHandler extends AbstractHomeConnectThingHandl
     }
 
     @Override
-    protected void resetProgramStateChannels() {
-        super.resetProgramStateChannels();
+    protected void resetProgramStateChannels(boolean offline) {
+        super.resetProgramStateChannels(offline);
         getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
     }

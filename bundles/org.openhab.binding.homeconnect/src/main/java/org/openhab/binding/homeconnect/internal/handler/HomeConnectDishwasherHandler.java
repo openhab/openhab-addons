@@ -22,7 +22,6 @@ import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflin
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -62,6 +61,7 @@ public class HomeConnectDishwasherHandler extends AbstractHomeConnectThingHandle
         handlers.put(EVENT_REMOTE_CONTROL_ACTIVE, defaultBooleanEventHandler(CHANNEL_REMOTE_CONTROL_ACTIVE_STATE));
         handlers.put(EVENT_REMOTE_CONTROL_START_ALLOWED,
                 defaultBooleanEventHandler(CHANNEL_REMOTE_START_ALLOWANCE_STATE));
+        handlers.put(EVENT_FINISH_IN_RELATIVE, defaultRemainingProgramTimeEventHandler());
         handlers.put(EVENT_REMAINING_PROGRAM_TIME, defaultRemainingProgramTimeEventHandler());
         handlers.put(EVENT_PROGRAM_PROGRESS, defaultPercentQuantityTypeEventHandler(CHANNEL_PROGRAM_PROGRESS_STATE));
         handlers.put(EVENT_SELECTED_PROGRAM, defaultSelectedProgramStateEventHandler());
@@ -81,12 +81,7 @@ public class HomeConnectDishwasherHandler extends AbstractHomeConnectThingHandle
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         super.handleCommand(channelUID, command, apiClient);
 
-        if (command instanceof OnOffType) {
-            if (CHANNEL_POWER_STATE.equals(channelUID.getId())) {
-                apiClient.setPowerState(getThingHaId(),
-                        OnOffType.ON.equals(command) ? STATE_POWER_ON : STATE_POWER_OFF);
-            }
-        }
+        handlePowerCommand(channelUID, command, apiClient, STATE_POWER_OFF);
 
         handleLightCommands(channelUID, command, apiClient);
     }
@@ -97,8 +92,8 @@ public class HomeConnectDishwasherHandler extends AbstractHomeConnectThingHandle
     }
 
     @Override
-    protected void resetProgramStateChannels() {
-        super.resetProgramStateChannels();
+    protected void resetProgramStateChannels(boolean offline) {
+        super.resetProgramStateChannels(offline);
         getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));

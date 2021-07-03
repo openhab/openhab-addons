@@ -19,12 +19,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.deconz.internal.CommandDescriptionProvider;
+import org.openhab.binding.deconz.internal.DeconzDynamicCommandDescriptionProvider;
 import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.GroupAction;
 import org.openhab.binding.deconz.internal.dto.GroupMessage;
 import org.openhab.binding.deconz.internal.dto.GroupState;
+import org.openhab.binding.deconz.internal.dto.Scene;
 import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -36,8 +37,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.CommandDescriptionBuilder;
-import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,12 +55,13 @@ import com.google.gson.Gson;
 public class GroupThingHandler extends DeconzBaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_LIGHTGROUP);
     private final Logger logger = LoggerFactory.getLogger(GroupThingHandler.class);
-    private final CommandDescriptionProvider commandDescriptionProvider;
+    private final DeconzDynamicCommandDescriptionProvider commandDescriptionProvider;
 
     private Map<String, String> scenes = Map.of();
     private GroupState groupStateCache = new GroupState();
 
-    public GroupThingHandler(Thing thing, Gson gson, CommandDescriptionProvider commandDescriptionProvider) {
+    public GroupThingHandler(Thing thing, Gson gson,
+            DeconzDynamicCommandDescriptionProvider commandDescriptionProvider) {
         super(thing, gson, ResourceType.GROUPS);
         this.commandDescriptionProvider = commandDescriptionProvider;
     }
@@ -142,10 +142,8 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
             GroupMessage groupMessage = (GroupMessage) stateResponse;
             scenes = groupMessage.scenes.stream().collect(Collectors.toMap(scene -> scene.name, scene -> scene.id));
             ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_SCENE);
-            commandDescriptionProvider.setDescription(channelUID,
-                    CommandDescriptionBuilder.create().withCommandOptions(groupMessage.scenes.stream()
-                            .map(scene -> new CommandOption(scene.name, scene.name)).collect(Collectors.toList()))
-                            .build());
+            commandDescriptionProvider.setCommandOptions(channelUID,
+                    groupMessage.scenes.stream().map(Scene::toCommandOption).collect(Collectors.toList()));
 
         }
         messageReceived(config.id, stateResponse);

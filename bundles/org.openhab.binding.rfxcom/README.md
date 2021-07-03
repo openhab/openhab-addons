@@ -171,10 +171,11 @@ This binding currently supports following channel types:
 | mood            | Number        | Mood channel.                                                                      |
 | motion          | Switch        | Motion detection sensor state.                                                     |
 | pressure        | Number        | Barometric value in hPa.                                                           |
+| pulses          | String        | Space separated decimal pulse lengths for a raw message in usec.                   |
 | rainrate        | Number        | Rain fall rate in millimeters per hour.                                            |
 | raintotal       | Number        | Total rain in millimeters.                                                         |
 | rawmessage      | String        | Hexadecimal representation of the raw RFXCOM msg incl. header and payload          |
-| rawpayload      | String        | Hexadecimal representation of payload RFXCOM messages                              |
+| rawpayload      | String        | Hexadecimal representation of the payload of RFXCOM messages                       |
 | setpoint        | Number        | Requested temperature.                                                             |
 | shutter         | Rollershutter | Shutter/blind channel.                                                             |
 | status          | String        | Status channel.                                                                    |
@@ -229,6 +230,7 @@ This binding currently supports the following things / message types:
 *   [lighting5 - RFXCOM Lighting5 Actuator](#lighting5---rfxcom-lighting5-actuator)
 *   [lighting6 - RFXCOM Lighting6 Actuator](#lighting6---rfxcom-lighting6-actuator)
 *   [rain - RFXCOM Rain Sensor](#rain---rfxcom-rain-sensor)
+*   [raw - RFXCOM Raw Messages](#raw---rfxcom-raw-messages)
 *   [rfxsensor - RFXCOM rfxsensor](#rfxsensor)
 *   [rfy - RFXCOM Rfy Actuator](#rfy---rfxcom-rfy-actuator)
 *   [security1 - RFXCOM Security1 Sensor](#security1---rfxcom-security1-sensor)
@@ -264,7 +266,7 @@ A BBQ Temperature device
 
 ### blinds1 - RFXCOM Blinds1 Actuator
 
-A Blinds1 device
+A Blinds1 device. Not all blinds support all commands.
 
 #### Channels
 
@@ -290,11 +292,22 @@ A Blinds1 device
         *   T2 - A-OK RF01
         *   T3 - A-OK AC114/AC123
         *   T4 - Raex YR1326
-        *   T5 - Media Mount
-        *   T6 - DC106/Rohrmotor24-RMF/Yooda
+        *   T5 - Media Mount (warning - directions reversed)
+        *   T6 - DC106/Rohrmotor24-RMF/Yooda/Dooya/ESMO/Brel/Quitidom
         *   T7 - Forest
         *   T8 - Chamberlain CS4330CN
+        *   T9 - Sunpery/BTX
+        *   T10 - Dolat DLM-1, Topstar
         *   T11 - ASP
+        *   T12 - Confexx CNF24-2435
+        *   T13 - Screenline
+        *   T14 - Hualite
+        *   T15 - Motostar
+        *   T16 - Zemismart
+        *   T17 - Gaposa
+        *   T18 - Cherubini
+        *   T19 - Louvolite One Touch Vogue motor
+        *   T20 - OZRoll
 
 ### chime - RFXCOM Chime
 
@@ -427,7 +440,7 @@ A DateTime device
 
 A group of fan devices
 
-#### Standard Fan
+#### fan - Standard Fan
 
 A Fan device
 
@@ -462,7 +475,7 @@ Switch item=FanLightSwitch label="Light" mappings=[ON="On"]
 Switch item=FanSpeedSwitch label="Speed" mappings=[LOW=Low, MED=Medium, HI=High]
 ```
 
-#### Falmec fan
+#### fan_falmec - Falmec fan
 
 A Falmec Fan device
 
@@ -484,7 +497,7 @@ A Falmec Fan device
     *   Specifies device sub type.
         *   FALMEC - Falmec
 
-#### Lucci Air DC fan
+#### fan_lucci_dc - Lucci Air DC fan
 
 A Lucci Air DC fan device
 
@@ -505,7 +518,7 @@ A Lucci Air DC fan device
     *   Specifies device sub type.
         *   LUCCI_AIR_DC - Lucci Air DC
 
-#### Lucci Air DC II fan
+#### fan_lucci_dc_ii - Lucci Air DC II fan
 
 A Lucci Air DC II fan device
 
@@ -526,6 +539,28 @@ A Lucci Air DC II fan device
 *   subType - Sub Type
     *   Specifies device sub type.
         *   LUCCI_AIR_DC_II - Lucci Air DC II
+        
+#### fan_novy - Novy extractor fan
+
+A Novy extractor fan.
+
+##### Channels
+
+| Name         | Channel Type                        | Item Type     | Remarks                  |
+|--------------|-------------------------------------|---------------|--------------------------|
+| command      | [command](#channels)                | Switch        |                          |
+| commandString| [commandString](#channels)          | String        | Options: POWER, UP, DOWN, LIGHT, LEARN, RESET_FILTER |
+| fanSpeed     | [fanspeedcontrol](#channels)        | RollerShutter | Options: UP / DOWN       |
+| fanLight     | [fanlight](#channels)               | Switch        |                          |
+| signalLevel  | [system.signal-strength](#channels) | Number        |                          |
+
+##### Configuration Options
+
+*   deviceId - Device Id
+    *   Device id, example 47360
+*   subType - Sub Type
+    *   Specifies device sub type.
+        *   NOVY - Novy extractor fan
 
 ### energy - RFXCOM Energy Sensor
 
@@ -882,6 +917,113 @@ A Rain device
         *   RAIN4 - UPM RG700
         *   RAIN5 - WS2300
         *   RAIN6 - La Crosse TX5
+        *   RAIN9 - TFA 30.3233.1
+
+
+### raw - RFXCOM Raw Messages
+
+Raw messages. These messages are included in the Pro firmware and represent messages
+for which the device does not understand the protocol. The raw message is a list of the
+length of the RF pulses before they have been interpreted as bytes.
+
+You can also send raw messages by recording the pulses of an incoming message and
+using them to configure a raw thing item.
+
+#### Channels
+
+| Name       | Channel Type              | Item Type | Remarks     |
+|------------|---------------------------|-----------|-------------|
+| rawMessage | [rawmessage](#channels)   | String    |             |
+| rawPayload | [rawpayload](#channels)   | String    |             |
+| pulses     | [pulses](#channels)       | String    |             |
+
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Raw items cannot provide a device ID, so to receive RAW messages use
+        a Device Id of RAW. For transmit only devices, use any Device Id.
+
+*   subType - Sub Type
+    *   Specifies message sub type.
+
+        *   RAW_PACKET1
+        *   RAW_PACKET2
+        *   RAW_PACKET3
+        *   RAW_PACKET4
+
+*   repeat - Repeat
+    *   Number of times to repeat message on transmit. Defaults to 5.
+
+*   onPulses - On Pulses
+    *   Pulses to send for an ON command. Space delimited pulse lengths
+        in usec. Must be an even number of pulse lengths, with a maximum
+        of 142 total pulses. Max pulse length is 65535. Pulses of value 0
+        will be transmitted as 10000. See the RFXtfx user guide for more
+        information.
+
+*   offPulses - Off Pulses
+    *   Pulses to send for an OFF command. Space delimited pulse lengths
+        in usec. Must be an even number of pulse lengths, with a maximum
+        of 142 total pulses. Max pulse length is 65535. Pulses of value 0
+        will be transmitted as 10000. See the RFXtfx user guide for more
+        information.
+
+*   openPulses - Open Pulses
+    *   Pulses to send for an OPEN command. Space delimited pulse lengths
+        in usec. Must be an even number of pulse lengths, with a maximum
+        of 142 total pulses. Max pulse length is 65535. Pulses of value 0
+        will be transmitted as 10000. See the RFXtfx user guide for more
+        information.
+
+*   closedPulses - Closed Pulses
+    *   Pulses to send for an CLOSED command. Space delimited pulse lengths
+        in usec. Must be an even number of pulse lengths, with a maximum
+        of 142 total pulses. Max pulse length is 65535. Pulses of value 0
+        will be transmitted as 10000. See the RFXtfx user guide for more
+        information.
+
+#### Examples
+
+This can be used to transmit raw messages.
+
+The first step is to work out the right pulses for the device. You can do this using RFXmngr, or
+you can do this using openhab:
+
+1. Set up a RAW thing to receive raw pulses:
+
+    ```
+    Bridge rfxcom:tcpbridge:rfxtrx0 [ host="192.168.42.10", port=10001, enableUndecoded=true ] {
+        Thing raw RAW [ deviceId="RAW", subType="RAW_PACKET1" ]
+    }
+    ```
+
+2. Add an item to see what the pulses are:
+
+    ```
+    String RawPulses { channel="rfxcom:raw:rfxtrx0:RAW:pulses" }
+    ```
+
+3. Activate the device and look at the pulses that are set. Look for a higher value in the pulses, that is
+   likely to be a gap for a repeat. Take the pulses from before the gap. Make sure there are an
+   even number, and if not, drop a 0 on the end.
+
+Now you have the pulses, set up a send device:
+
+1. Set up a RAW thing to send a command:
+
+    ```
+    Bridge rfxcom:tcpbridge:rfxtrx0 [ host="192.168.42.10", port=10001, enableUndecoded=true ] {
+        Thing raw MySwitch [ deviceId="MySwitch", subType="RAW_PACKET1", onPulses="100 200 300 0", offPulses="400 500 600 0" ]
+    }
+    ```
+
+2. Add an item to send the command:
+
+    ```
+    Switch MySwitch { channel="rfxcom:raw:rfxtrx0:MySwitch:command" }
+    ```
+
+3. Use the command to send the raw message.
 
 ### rfxsensor - RFXCOM RFXSensor 
 
@@ -1170,7 +1312,12 @@ A Thermostat3 device.
 
 ### undecoded - RFXCOM Undecoded RF Messages
 
-Any messages that RFXCOM can receive but not decode.
+Undecoded messages are messages where RFCOM understands the protocol and has converted
+the raw RF pulses into bytes, but has not attempted to decode the bytes into meaningful
+data.
+
+Undecoded message are receive only, there is not way to transmit an undecoded message.
+If you need to repeat an undecoded message, consider looking at Raw messages instead.
 
 #### Channels
 
@@ -1210,7 +1357,10 @@ Any messages that RFXCOM can receive but not decode.
         *   RTS - RTS
         *   SELECT\_PLUS - Select Plus
         *   HOME\_CONFORT - Home Confort
-
+        *   EDISIO - Edisio
+        *   HONEYWELL - Honeywell
+        *   FUNKBUS - Gira Funk-Bussystem
+        *   BYRONSX - Byron SX
 
 ### uv - RFXCOM UV/Temperature Sensor
 

@@ -41,6 +41,7 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.Comma
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.SubType;
 import org.openhab.binding.rfxcom.internal.messages.RFXComMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComMessageFactory;
+import org.openhab.binding.rfxcom.internal.messages.RFXComMessageFactoryImpl;
 import org.openhab.binding.rfxcom.internal.messages.RFXComTransmitterMessage;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
@@ -74,6 +75,8 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
     private ScheduledFuture<?> connectorTask;
 
     private SerialPortManager serialPortManager;
+
+    private RFXComMessageFactory messageFactory;
 
     private class TransmitQueue {
         private Queue<RFXComBaseMessage> queue = new LinkedBlockingQueue<>();
@@ -116,6 +119,14 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
     public RFXComBridgeHandler(@NonNull Bridge br, SerialPortManager serialPortManager) {
         super(br);
         this.serialPortManager = serialPortManager;
+        this.messageFactory = RFXComMessageFactoryImpl.INSTANCE;
+    }
+
+    public RFXComBridgeHandler(@NonNull Bridge br, SerialPortManager serialPortManager,
+            RFXComMessageFactory messageFactory) {
+        super(br);
+        this.serialPortManager = serialPortManager;
+        this.messageFactory = messageFactory;
     }
 
     @Override
@@ -198,7 +209,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 connector.connect(configuration);
 
                 logger.debug("Reset controller");
-                connector.sendMessage(RFXComMessageFactory.CMD_RESET);
+                connector.sendMessage(RFXComInterfaceMessage.CMD_RESET);
 
                 // controller does not response immediately after reset,
                 // so wait a while
@@ -207,7 +218,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 connector.addEventListener(eventListener);
 
                 logger.debug("Get status of controller");
-                connector.sendMessage(RFXComMessageFactory.CMD_GET_STATUS);
+                connector.sendMessage(RFXComInterfaceMessage.CMD_GET_STATUS);
             }
         } catch (IOException e) {
             logger.error("Connection to RFXCOM transceiver failed", e);
@@ -243,7 +254,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         @Override
         public void packetReceived(byte[] packet) {
             try {
-                RFXComMessage message = RFXComMessageFactory.createMessage(packet);
+                RFXComMessage message = messageFactory.createMessage(packet);
                 logger.debug("Message received: {}", message);
 
                 if (message instanceof RFXComInterfaceMessage) {
@@ -253,6 +264,15 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                             logger.debug("RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
                                     msg.transceiverType, msg.hardwareVersion1, msg.hardwareVersion2,
                                     msg.firmwareVersion);
+                            if (msg.firmwareVersion < 1000) {
+                                /**
+                                 * Versions before 1000 had some different behaviour, so lets encourage upgrading.
+                                 * 1001 was released in Feb 2016!
+                                 */
+                                logger.warn(
+                                        "RFXCOM device using outdated firmware (version {}), consider flashing with more a more recent version",
+                                        msg.firmwareVersion);
+                            }
                             thing.setProperty(Thing.PROPERTY_HARDWARE_VERSION,
                                     msg.hardwareVersion1 + "." + msg.hardwareVersion2);
                             thing.setProperty(Thing.PROPERTY_FIRMWARE_VERSION, Integer.toString(msg.firmwareVersion));
@@ -290,7 +310,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                             // regardless of whether it fails and the RFXCOM's buffer
                             // is big enough to queue up the command.
                             logger.debug("Start receiver");
-                            connector.sendMessage(RFXComMessageFactory.CMD_START_RECEIVER);
+                            connector.sendMessage(RFXComInterfaceMessage.CMD_START_RECEIVER);
                         }
                     } else if (msg.subType == SubType.START_RECEIVER) {
                         updateStatus(ThingStatus.ONLINE);

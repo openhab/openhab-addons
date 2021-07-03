@@ -163,7 +163,7 @@ public class PushoverMessageBuilder {
         return this;
     }
 
-    public ContentProvider build() {
+    public ContentProvider build() throws PushoverCommunicationException {
         if (message != null) {
             if (message.length() > MAX_MESSAGE_LENGTH) {
                 throw new IllegalArgumentException(String.format(
@@ -248,7 +248,9 @@ public class PushoverMessageBuilder {
                 body.addFilePart(MESSAGE_KEY_ATTACHMENT, file.getName(),
                         new PathContentProvider(contentType, file.toPath()), null);
             } catch (IOException e) {
-                throw new IllegalArgumentException(String.format("Skip sending the message: %s", e.getMessage()));
+                logger.debug("IOException occurred - skip sending message: {}", e.getLocalizedMessage(), e);
+                throw new PushoverCommunicationException(
+                        String.format("Skip sending the message: %s", e.getLocalizedMessage()), e);
             }
         }
 

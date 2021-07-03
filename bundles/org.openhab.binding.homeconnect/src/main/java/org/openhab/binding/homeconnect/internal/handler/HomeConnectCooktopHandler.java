@@ -17,8 +17,14 @@ import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstan
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homeconnect.internal.client.HomeConnectApiClient;
+import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflineException;
+import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
+import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -67,13 +73,22 @@ public class HomeConnectCooktopHandler extends AbstractHomeConnectThingHandler {
     }
 
     @Override
+    protected void handleCommand(final ChannelUID channelUID, final Command command,
+            final HomeConnectApiClient apiClient)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        super.handleCommand(channelUID, command, apiClient);
+
+        handlePowerCommand(channelUID, command, apiClient, STATE_POWER_OFF);
+    }
+
+    @Override
     public String toString() {
         return "HomeConnectCooktopHandler [haId: " + getThingHaId() + "]";
     }
 
     @Override
-    protected void resetProgramStateChannels() {
-        super.resetProgramStateChannels();
+    protected void resetProgramStateChannels(boolean offline) {
+        super.resetProgramStateChannels(offline);
         getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
     }
 }

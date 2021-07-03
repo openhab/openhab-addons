@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link GPIOInputConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Nils Bauer - Initial contribution
+ * @author Martin Dagarin - Pull Up/Down GPIO pin
  */
 @NonNullByDefault
 public class GPIOInputConfiguration extends GPIOConfiguration {
@@ -25,4 +26,10 @@ public class GPIOInputConfiguration extends GPIOConfiguration {
      * Time in ms to double check if value hasn't changed
      */
     public int debouncingTime = 10;
+
+    /**
+     * Setup a pullup resistor on the GPIO pin
+     * OFF = PI_PUD_OFF, DOWN = PI_PUD_DOWN, UP = PI_PUD_UP
+     */
+    public String pullupdown = "OFF";
 }

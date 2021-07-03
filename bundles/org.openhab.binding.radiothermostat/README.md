@@ -42,6 +42,7 @@ The thing has a few configuration parameters:
 | isCT80          | Flag to enable additional features only available on the CT80 thermostat. Optional, the default is false.                                                                                                                                                       |
 | disableLogs     | Disable retrieval of run-time logs from the thermostat. Optional, the default is false.                                                                                                                                                                         |
 | setpointMode    | Controls temporary or absolute setpoint mode. In "temporary" mode the thermostat will temporarily maintain the given setpoint, returning to its program after a time. In "absolute" mode the thermostat will ignore its program maintaining the given setpoint. |
+| clockSync       | Flag to enable the binding to sync the internal clock on the thermostat to match the openHAB host's system clock. Use if the thermostat is not setup to connect to the manufacturer's cloud server. Sync occurs at binding startup and every hour thereafter.   |
 
 ## Channels
 

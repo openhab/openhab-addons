@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="semsportal"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="portal">
+		<label>SEMS Portal</label>
+		<description>The SEMS Portal is where the data about powerstations is collected online.
+			Configuration will only work if
+			you have used this account at least once in the portal itsself.</description>
+
+		<properties>
+			<property name="vendor">GoodWe</property>
+		</properties>
+		<representation-property>username</representation-property>
+
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Username (email address) of the account at the SEMS portal</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password of the SEMS Portal</description>
+			</parameter>
+			<parameter name="interval" type="integer" min="1" max="60" unit="min">
+				<label>Interval</label>
+				<description>Number of minutes between updates. Minimum is 1 minute, maximum is 60. The default is 5 minutes.</description>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="station" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="portal"/>
+		</supported-bridge-type-refs>
+
+		<label>Power Station</label>
+		<description>A Power Station is the GoodWe converter that is connected through the internet with the SEMSPortal.</description>
+
+		<channels>
+			<channel id="lastUpdate" typeId="lastUpdate"/>
+			<channel id="currentOutput" typeId="currentOutput"/>
+			<channel id="todayTotal" typeId="todayTotal"/>
+			<channel id="monthTotal" typeId="monthTotal"/>
+			<channel id="overallTotal" typeId="overallTotal"/>
+			<channel id="todayIncome" typeId="todayIncome"/>
+			<channel id="totalIncome" typeId="totalIncome"/>
+		</channels>
+
+	</thing-type>
+
+
+	<channel-type id="lastUpdate">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Timestamp that the last information was received from the station. This is not the same as the last time
+			that was checked: the station goes offline at night.</description>
+	</channel-type>
+	<channel-type id="currentOutput">
+		<item-type>Number:Power</item-type>
+		<label>Current Output</label>
+		<description>Current output in Watts</description>
+	</channel-type>
+	<channel-type id="todayTotal">
+		<item-type>Number:Energy</item-type>
+		<label>Todays Total Output</label>
+		<description>Todays total output in kWh</description>
+	</channel-type>
+	<channel-type id="monthTotal">
+		<item-type>Number:Energy</item-type>
+		<label>Current Month Total Output</label>
+		<description>The total output of this month in kWh</description>
+	</channel-type>
+	<channel-type id="overallTotal">
+		<item-type>Number:Energy</item-type>
+		<label>Overall Total Output</label>
+		<description>The total output from the start of the installation in kWh</description>
+	</channel-type>
+	<channel-type id="todayIncome">
+		<item-type>Number</item-type>
+		<label>Todays Income</label>
+		<description>Todays income. Only reports if you have set the tariffs in the SEMS portal. Unit is the currency that is
+			set in these tariffs.</description>
+	</channel-type>
+	<channel-type id="totalIncome">
+		<item-type>Number</item-type>
+		<label>Total Income</label>
+		<description>Total income since installation. Only reports if you have set the tariffs in the SEMS portal. Unit is the
+			currency that is set in these tariffs.</description>
+	</channel-type>
+
+</thing:thing-descriptions>

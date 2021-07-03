@@ -36,7 +36,6 @@ import org.openhab.binding.homeconnect.internal.client.model.Data;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -89,18 +88,8 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
                     }
                     return UnDefType.UNDEF;
                 })));
-        handlers.put(CHANNEL_SETPOINT_TEMPERATURE, (channelUID, cache) -> {
-            Optional<Channel> channel = getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE);
-            if (channel.isPresent()) {
-                defaultSelectedProgramStateUpdateHandler().handle(channel.get().getUID(), cache);
-            }
-        });
-        handlers.put(CHANNEL_DURATION, (channelUID, cache) -> {
-            Optional<Channel> channel = getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE);
-            if (channel.isPresent()) {
-                defaultSelectedProgramStateUpdateHandler().handle(channel.get().getUID(), cache);
-            }
-        });
+        handlers.put(CHANNEL_SETPOINT_TEMPERATURE, getAndUpdateSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_DURATION, getAndUpdateSelectedProgramStateUpdateHandler());
     }
 
     @Override
@@ -111,6 +100,7 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
         handlers.put(EVENT_REMOTE_CONTROL_START_ALLOWED,
                 defaultBooleanEventHandler(CHANNEL_REMOTE_START_ALLOWANCE_STATE));
         handlers.put(EVENT_SELECTED_PROGRAM, defaultSelectedProgramStateEventHandler());
+        handlers.put(EVENT_FINISH_IN_RELATIVE, defaultRemainingProgramTimeEventHandler());
         handlers.put(EVENT_REMAINING_PROGRAM_TIME, defaultRemainingProgramTimeEventHandler());
         handlers.put(EVENT_PROGRAM_PROGRESS, defaultPercentQuantityTypeEventHandler(CHANNEL_PROGRAM_PROGRESS_STATE));
         handlers.put(EVENT_ELAPSED_PROGRAM_TIME, defaultElapsedProgramTimeEventHandler());
@@ -130,7 +120,7 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
             if (STATE_POWER_ON.equals(event.getValue())) {
                 updateChannels();
             } else {
-                resetProgramStateChannels();
+                resetProgramStateChannels(true);
                 getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE)
                         .ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
                 getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
@@ -159,11 +149,7 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         super.handleCommand(channelUID, command, apiClient);
 
-        // turn coffee maker on and standby
-        if (command instanceof OnOffType && CHANNEL_POWER_STATE.equals(channelUID.getId())) {
-            apiClient.setPowerState(getThingHaId(),
-                    OnOffType.ON.equals(command) ? STATE_POWER_ON : STATE_POWER_STANDBY);
-        }
+        handlePowerCommand(channelUID, command, apiClient, STATE_POWER_STANDBY);
 
         String operationState = getOperationState();
         if (operationState != null && INACTIVE_STATE.contains(operationState) && command instanceof QuantityType) {
@@ -226,8 +212,8 @@ public class HomeConnectOvenHandler extends AbstractHomeConnectThingHandler {
     }
 
     @Override
-    protected void resetProgramStateChannels() {
-        super.resetProgramStateChannels();
+    protected void resetProgramStateChannels(boolean offline) {
+        super.resetProgramStateChannels(offline);
         getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_ELAPSED_PROGRAM_TIME).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));

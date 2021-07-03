@@ -76,6 +76,7 @@ public class HomeConnectBindingConstants {
     public static final String EVENT_REMOTE_CONTROL_START_ALLOWED = STATUS_REMOTE_CONTROL_START_ALLOWED;
     public static final String EVENT_REMOTE_CONTROL_ACTIVE = STATUS_REMOTE_CONTROL_ACTIVE;
     public static final String EVENT_LOCAL_CONTROL_ACTIVE = STATUS_LOCAL_CONTROL_ACTIVE;
+    public static final String EVENT_FINISH_IN_RELATIVE = "BSH.Common.Option.FinishInRelative";
     public static final String EVENT_REMAINING_PROGRAM_TIME = "BSH.Common.Option.RemainingProgramTime";
     public static final String EVENT_PROGRAM_PROGRESS = "BSH.Common.Option.ProgramProgress";
     public static final String EVENT_SETPOINT_TEMPERATURE = "Cooking.Oven.Option.SetpointTemperature";
@@ -119,8 +120,17 @@ public class HomeConnectBindingConstants {
     public static final String CHANNEL_DURATION = "duration";
     public static final String CHANNEL_WASHER_TEMPERATURE = "laundry_care_washer_temperature";
     public static final String CHANNEL_WASHER_SPIN_SPEED = "laundry_care_washer_spin_speed";
+    public static final String CHANNEL_WASHER_IDOS1_LEVEL = "laundry_care_washer_idos1_level";
+    public static final String CHANNEL_WASHER_IDOS2_LEVEL = "laundry_care_washer_idos2_level";
     public static final String CHANNEL_WASHER_IDOS1 = "laundry_care_washer_idos1";
     public static final String CHANNEL_WASHER_IDOS2 = "laundry_care_washer_idos2";
+    public static final String CHANNEL_WASHER_VARIO_PERFECT = "laundry_care_washer_vario_perfect";
+    public static final String CHANNEL_WASHER_LESS_IRONING = "laundry_care_washer_less_ironing";
+    public static final String CHANNEL_WASHER_PRE_WASH = "laundry_care_washer_pre_wash";
+    public static final String CHANNEL_WASHER_RINSE_PLUS = "laundry_care_washer_rinse_plus";
+    public static final String CHANNEL_WASHER_SOAK = "laundry_care_washer_soak";
+    public static final String CHANNEL_PROGRAM_ENERGY = "program_energy";
+    public static final String CHANNEL_PROGRAM_WATER = "program_water";
     public static final String CHANNEL_REFRIGERATOR_SETPOINT_TEMPERATURE = "setpoint_temperature_refrigerator";
     public static final String CHANNEL_REFRIGERATOR_SUPER_MODE = "super_mode_refrigerator";
     public static final String CHANNEL_FREEZER_SETPOINT_TEMPERATURE = "setpoint_temperature_freezer";
@@ -162,6 +172,7 @@ public class HomeConnectBindingConstants {
     public static final String STATE_EVENT_PRESENT_STATE_OFF = "BSH.Common.EnumType.EventPresentState.Off";
 
     // List of program options
+    public static final String OPTION_FINISH_IN_RELATIVE = "BSH.Common.Option.FinishInRelative";
     public static final String OPTION_REMAINING_PROGRAM_TIME = "BSH.Common.Option.RemainingProgramTime";
     public static final String OPTION_PROGRAM_PROGRESS = "BSH.Common.Option.ProgramProgress";
     public static final String OPTION_ELAPSED_PROGRAM_TIME = "BSH.Common.Option.ElapsedProgramTime";
@@ -171,6 +182,15 @@ public class HomeConnectBindingConstants {
     public static final String OPTION_WASHER_SPIN_SPEED = "LaundryCare.Washer.Option.SpinSpeed";
     public static final String OPTION_WASHER_IDOS_1_DOSING_LEVEL = "LaundryCare.Washer.Option.IDos1DosingLevel";
     public static final String OPTION_WASHER_IDOS_2_DOSING_LEVEL = "LaundryCare.Washer.Option.IDos2DosingLevel";
+    public static final String OPTION_WASHER_IDOS_1_ACTIVE = "LaundryCare.Washer.Option.IDos1.Active";
+    public static final String OPTION_WASHER_IDOS_2_ACTIVE = "LaundryCare.Washer.Option.IDos2.Active";
+    public static final String OPTION_WASHER_VARIO_PERFECT = "LaundryCare.Common.Option.VarioPerfect";
+    public static final String OPTION_WASHER_LESS_IRONING = "LaundryCare.Washer.Option.LessIroning";
+    public static final String OPTION_WASHER_PRE_WASH = "LaundryCare.Washer.Option.Prewash";
+    public static final String OPTION_WASHER_RINSE_PLUS = "LaundryCare.Washer.Option.RinsePlus";
+    public static final String OPTION_WASHER_SOAK = "LaundryCare.Washer.Option.Soak";
+    public static final String OPTION_WASHER_ENERGY_FORECAST = "BSH.Common.Option.EnergyForecast";
+    public static final String OPTION_WASHER_WATER_FORECAST = "BSH.Common.Option.WaterForecast";
     public static final String OPTION_DRYER_DRYING_TARGET = "LaundryCare.Dryer.Option.DryingTarget";
     public static final String OPTION_HOOD_VENTING_LEVEL = "Cooking.Common.Option.Hood.VentingLevel";
     public static final String OPTION_HOOD_INTENSIVE_LEVEL = "Cooking.Common.Option.Hood.IntensiveLevel";

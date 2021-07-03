@@ -36,7 +36,6 @@ import org.openwebnet4j.OpenGateway;
 import org.openwebnet4j.communication.OWNException;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.EnergyManagement;
-import org.openwebnet4j.message.EnergyManagement.DIM;
 import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereEnergyManagement;
@@ -56,8 +55,8 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetEnergyHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES;
-    public final int ENERGY_SUBSCRIPTION_PERIOD = 10; // minutes
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES;
+    public static final int ENERGY_SUBSCRIPTION_PERIOD = 10; // minutes
     private @Nullable ScheduledFuture<?> notificationSchedule;
 
     public OpenWebNetEnergyHandler(Thing thing) {
@@ -98,7 +97,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     }
 
     private void subscribeToActivePowerChanges() {
-        notificationSchedule = scheduler.scheduleAtFixedRate(() -> {
+        notificationSchedule = scheduler.scheduleWithFixedDelay(() -> {
             if (isFirstSchedulerLaunch) {
                 logger.debug(
                         "subscribeToActivePowerChanges() For WHERE={} subscribing to active power changes notification for the next {}min",
@@ -182,11 +181,12 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
             return;
         } else {
             // fix: check for correct DIM (ActivePower / 113)
-            if (msg.getDim().equals(DIM.ACTIVE_POWER))
+            if (msg.getDim().equals(EnergyManagement.DimEnergyMgmt.ACTIVE_POWER)) {
                 updateActivePower(msg);
-            else
+            } else {
                 logger.debug("handleMessage() Ignoring message {} because it's not related to active power value.",
                         msg);
+            }
         }
     }
 

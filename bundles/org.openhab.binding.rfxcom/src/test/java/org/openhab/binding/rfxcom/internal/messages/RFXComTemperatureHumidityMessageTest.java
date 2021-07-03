@@ -35,7 +35,7 @@ public class RFXComTemperatureHumidityMessageTest {
             double temperature, int humidity, HumidityStatus humidityStatus, int signalLevel, int batteryLevel)
             throws RFXComException {
         byte[] binaryMessage = HexUtils.hexToBytes(hexMsg);
-        final RFXComTemperatureHumidityMessage msg = (RFXComTemperatureHumidityMessage) RFXComMessageFactory
+        final RFXComTemperatureHumidityMessage msg = (RFXComTemperatureHumidityMessage) RFXComMessageFactoryImpl.INSTANCE
                 .createMessage(binaryMessage);
         assertEquals(subType, msg.subType, "SubType");
         assertEquals(seqNbr, (short) (msg.seqNbr & 0xFF), "Seq Number");

@@ -17,6 +17,7 @@ import static java.util.Collections.emptyList;
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,6 +26,7 @@ import org.openhab.binding.homeconnect.internal.client.HomeConnectApiClient;
 import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflineException;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
+import org.openhab.binding.homeconnect.internal.client.model.AvailableProgramOption;
 import org.openhab.binding.homeconnect.internal.client.model.Data;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
 import org.openhab.core.library.types.OnOffType;
@@ -143,12 +145,7 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         super.handleCommand(channelUID, command, apiClient);
 
-        if (command instanceof OnOffType) {
-            if (CHANNEL_POWER_STATE.equals(channelUID.getId())) {
-                apiClient.setPowerState(getThingHaId(),
-                        OnOffType.ON.equals(command) ? STATE_POWER_ON : STATE_POWER_OFF);
-            }
-        }
+        handlePowerCommand(channelUID, command, apiClient, STATE_POWER_OFF);
 
         // light commands
         handleLightCommands(channelUID, command, apiClient);
@@ -217,7 +214,12 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
                                 new StateOption(COMMAND_DELAYED_SHUT_OFF, mapStringType(availableProgram.getKey())));
                     } else if (PROGRAM_HOOD_VENTING.equals(availableProgram.getKey())) {
                         try {
-                            apiClient.get().getProgramOptions(getThingHaId(), PROGRAM_HOOD_VENTING).forEach(option -> {
+                            List<AvailableProgramOption> availableProgramOptions = apiClient.get()
+                                    .getProgramOptions(getThingHaId(), PROGRAM_HOOD_VENTING);
+                            if (availableProgramOptions.isEmpty()) {
+                                throw new CommunicationException("Program " + PROGRAM_HOOD_VENTING + " is unsupported");
+                            }
+                            availableProgramOptions.forEach(option -> {
                                 if (OPTION_HOOD_VENTING_LEVEL.equalsIgnoreCase(option.getKey())) {
                                     option.getAllowedValues().stream().filter(s -> !STAGE_FAN_OFF.equalsIgnoreCase(s))
                                             .forEach(s -> stateOptions.add(createVentingStateOption(s)));
@@ -265,8 +267,8 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
     }
 
     @Override
-    protected void resetProgramStateChannels() {
-        super.resetProgramStateChannels();
+    protected void resetProgramStateChannels(boolean offline) {
+        super.resetProgramStateChannels(offline);
         getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_HOOD_INTENSIVE_LEVEL).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         getThingChannel(CHANNEL_HOOD_VENTING_LEVEL).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
