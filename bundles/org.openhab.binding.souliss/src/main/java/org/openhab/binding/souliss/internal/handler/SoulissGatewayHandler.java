@@ -148,7 +148,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             // alla fine la lunghezza della lista sarà uguale al numero di nodi presenti
         }
         return maxNode + 1;
-
     }
 
     public void setMaxTypicalXnode(int maxTypicalXnode) {

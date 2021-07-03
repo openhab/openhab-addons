@@ -407,7 +407,6 @@ public class CommonCommands {
      */
     public final void sendHealthyRequestFrame(String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex,
             int iNodes) {
-
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_HEALTHY_REQ);
 

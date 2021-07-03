@@ -48,7 +48,6 @@ public class UDPListenDiscoverRunnable implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(UDPListenDiscoverRunnable.class);
 
     public UDPListenDiscoverRunnable(Bridge bridge, @Nullable DiscoverResult pDiscoverResult) {
-
         decoder = new UDPDecoder(bridge, pDiscoverResult);
     }
 
@@ -98,7 +97,6 @@ public class UDPListenDiscoverRunnable implements Runnable {
                 }
             } catch (Exception ee) {
                 logger.error("Exception receiving-decoding message: {} ", ee.getLocalizedMessage());
-                ee.printStackTrace();
                 if (socket != null && !socket.isClosed()) {
                     socket.close();
                 }

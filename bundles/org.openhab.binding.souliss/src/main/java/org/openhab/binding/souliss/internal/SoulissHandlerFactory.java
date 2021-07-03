@@ -86,7 +86,6 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
         var thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(GATEWAY_THING_TYPE)) {
-
             var bridgeHandler = new SoulissGatewayHandler((Bridge) thing);
             this.registerDiscoveryService(bridgeHandler);
 
