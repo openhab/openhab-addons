@@ -64,6 +64,10 @@
 		<label>Temperature Indoor</label>
 		<description>Current Temperature Indoors</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="temperatureOutdoor">
@@ -71,6 +75,10 @@
 		<label>Temperature Outdoor</label>
 		<description>Current Temperature Outdoors</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="humidityIndoor">
@@ -78,6 +86,10 @@
 		<label>Humidity Indoor</label>
 		<description>Current Humidity Indoors</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="humidityOutdoor">
@@ -85,6 +97,10 @@
 		<label>Humidity Outdoor</label>
 		<description>Current Humidity Outdoors</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressureAbsolute">
@@ -92,6 +108,10 @@
 		<label>Pressure Absolute</label>
 		<description>Absolute Current Pressure</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressureRelative">
@@ -99,6 +119,10 @@
 		<label>Pressure Relative</label>
 		<description>Relative Current Pressure</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="windDirection">
@@ -162,6 +186,10 @@
 		<label>Rain Hourly Rate</label>
 		<description>How much rain will fall in an Hour if the rate continues.</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state pattern="%.2f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainToday">
@@ -169,6 +197,10 @@
 		<label>Rain Today</label>
 		<description>Rain since Midnight.</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state pattern="%.2f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainForWeek" advanced="true">
@@ -176,6 +208,10 @@
 		<label>Rain For Week</label>
 		<description>Weekly Rain</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state pattern="%.2f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainForMonth" advanced="true">
@@ -183,6 +219,10 @@
 		<label>Rain For Month</label>
 		<description>Rain since 12:00 on the 1st of this month.</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state pattern="%.2f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainForYear">
@@ -190,6 +230,10 @@
 		<label>Rain For Year</label>
 		<description>Total rain since 12:00 on 1st Jan.</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state pattern="%.2f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="batteryOutdoor" advanced="true">
