@@ -25,29 +25,29 @@ import com.google.gson.annotations.SerializedName;
 public class MenuItemTabViewDTO {
     @SerializedName("IsExpertView")
     @Expose
-    public Boolean IsExpertView;
+    public Boolean isExpertView;
 
     @SerializedName("TabName")
     @Expose
-    public String TabName;
+    public String tabName;
 
     @SerializedName("GuiId")
     @Expose
-    public Long GuiId;
+    public Long guiId;
 
     @SerializedName("BundleId")
     @Expose
-    public Long BundleId;
+    public Long bundleId;
 
     @SerializedName("ParameterDescriptors")
     @Expose
-    public List<ParameterDescriptorDTO> ParameterDescriptors;
+    public List<ParameterDescriptorDTO> parameterDescriptors;
 
     @SerializedName("ViewType")
     @Expose
-    public Long ViewType;
+    public Long viewType;
 
     @SerializedName("SvgSchemaDeviceId")
     @Expose
-    public Long SvgSchemaDeviceId;
+    public Long svgSchemaDeviceId;
 }

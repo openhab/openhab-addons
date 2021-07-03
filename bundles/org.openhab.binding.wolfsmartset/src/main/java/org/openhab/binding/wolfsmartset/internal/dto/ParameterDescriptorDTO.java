@@ -23,93 +23,93 @@ import com.google.gson.annotations.SerializedName;
 public class ParameterDescriptorDTO {
     @SerializedName("ValueId")
     @Expose
-    public Long ValueId;
+    public Long valueId;
 
     @SerializedName("SortId")
     @Expose
-    public Long SortId;
+    public Long sortId;
 
     @SerializedName("SubBundleId")
     @Expose
-    public Long SubBundleId;
+    public Long subBundleId;
 
     @SerializedName("ParameterId")
     @Expose
-    public Long ParameterId;
+    public Long parameterId;
 
     @SerializedName("IsReadOnly")
     @Expose
-    public Boolean IsReadOnly;
+    public Boolean isReadOnly;
 
     @SerializedName("NoDataPoint")
     @Expose
-    public Boolean NoDataPoint;
+    public Boolean noDataPoint;
 
     @SerializedName("IsExpertProtectable")
     @Expose
-    public Boolean IsExpertProtectable;
+    public Boolean isExpertProtectable;
 
     @SerializedName("Name")
     @Expose
-    public String Name;
+    public String name;
 
     @SerializedName("Group")
     @Expose
-    public String Group;
+    public String group;
 
     @SerializedName("ControlType")
     @Expose
-    public Integer ControlType;
+    public Integer controlType;
 
     @SerializedName("Value")
     @Expose
-    public String Value;
+    public String value;
 
     @SerializedName("ValueState")
     @Expose
-    public Long ValueState;
+    public Long valueState;
 
     @SerializedName("HasDependentParameter")
     @Expose
-    public Boolean HasDependentParameter;
+    public Boolean hasDependentParameter;
 
     @SerializedName("ProtGrp")
     @Expose
-    public String ProtGrp;
+    public String protGrp;
 
     @SerializedName("Unit")
     @Expose
-    public String Unit;
+    public String unit;
 
     @SerializedName("Decimals")
     @Expose
-    public Long Decimals;
+    public Long decimals;
 
     @SerializedName("MinValueCondition")
     @Expose
-    public String MinValueCondition;
+    public String minValueCondition;
 
     @SerializedName("MaxValueCondition")
     @Expose
-    public String MaxValueCondition;
+    public String maxValueCondition;
 
     @SerializedName("MinValue")
     @Expose
-    public Long MinValue;
+    public Long minValue;
 
     @SerializedName("MaxValue")
     @Expose
-    public Long MaxValue;
+    public Long maxValue;
 
     @SerializedName("StepWidth")
     @Expose
-    public double StepWidth;
+    public double stepWidth;
 
     @SerializedName("NamePrefix")
     @Expose
-    public String NamePrefix;
+    public String namePrefix;
 
     @SerializedName("TurnOffValue")
     @Expose
-    public Long TurnOffValue;
+    public Long turnOffValue;
 }

@@ -65,7 +65,6 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
     private final HttpClient httpClient;
 
     private @NonNullByDefault({}) WolfSmartsetApi api;
-    private @NonNullByDefault({}) String apiKey;
     private int refreshIntervalConfigurationMinutes;
     private int refreshIntervalValuesSeconds;
     private boolean discoveryEnabled;
@@ -118,7 +117,7 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         cancelRefreshJob();
-        api.stopClient();
+        api.stopRequestQueue();
         logger.debug("AccountBridge: Disposing");
     }
 
@@ -240,10 +239,10 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
                                 var tabmenu = unitHandler.getTabMenu();
                                 if (tabmenu != null) {
                                     var lastRefreshTime = unitHandler.getLastRefreshTime();
-                                    var valueIds = tabmenu.ParameterDescriptors.stream().filter(p -> p.ValueId > 0)
-                                            .map(p -> p.ValueId).collect(Collectors.toList());
+                                    var valueIds = tabmenu.parameterDescriptors.stream().filter(p -> p.valueId > 0)
+                                            .map(p -> p.valueId).collect(Collectors.toList());
                                     var paramValues = api.getGetParameterValues(systemConfig.getId(),
-                                            systemConfig.getGatewayId(), tabmenu.BundleId, valueIds, lastRefreshTime);
+                                            systemConfig.getGatewayId(), tabmenu.bundleId, valueIds, lastRefreshTime);
 
                                     unitHandler.updateValues(paramValues);
                                 }

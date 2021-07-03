@@ -18,11 +18,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.wolfsmartset.internal.dto.GetSystemListDTO;
-import org.openhab.binding.wolfsmartset.internal.dto.MenuItemTabViewDTO;
-import org.openhab.binding.wolfsmartset.internal.dto.SubMenuEntryDTO;
+import org.openhab.binding.wolfsmartset.internal.dto.SubMenuEntryWithMenuItemTabView;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -86,7 +84,7 @@ public class WolfSmartsetBindingConstants {
     public static final String CONFIG_SYSTEM_ID = "systemId";
     public static final String CONFIG_UNIT_ID = "unitId";
 
-    public static final List<Pair<SubMenuEntryDTO, MenuItemTabViewDTO>> EMPTY_UNITS = Collections
-            .<Pair<SubMenuEntryDTO, MenuItemTabViewDTO>> emptyList();
+    public static final List<SubMenuEntryWithMenuItemTabView> EMPTY_UNITS = Collections
+            .<SubMenuEntryWithMenuItemTabView> emptyList();
     public static final List<GetSystemListDTO> EMPTY_SYSTEMS = Collections.<GetSystemListDTO> emptyList();
 }

@@ -107,7 +107,6 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
             if (state != null) {
                 updateState(channelUID.getId(), state);
             }
-            return;
         }
     }
 
@@ -154,12 +153,12 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
         var thingId = thing.getUID();
 
         paramDescriptionMap.clear();
-        for (var param : tabmenu.ParameterDescriptors) {
-            paramDescriptionMap.put(param.ValueId, param);
-            var channelId = new ChannelUID(thingId, param.ParameterId.toString()); // "bindingId:type:thingId:1")
+        for (var param : tabmenu.parameterDescriptors) {
+            paramDescriptionMap.put(param.valueId, param);
+            var channelId = new ChannelUID(thingId, param.parameterId.toString()); // "bindingId:type:thingId:1")
             if (thing.getChannel(channelId) == null) {
                 logger.info("UnitThing: Create channel '{}'", channelId);
-                Channel channel = ChannelBuilder.create(channelId, getItemType(param.ControlType)).withLabel(param.Name)
+                Channel channel = ChannelBuilder.create(channelId, getItemType(param.controlType)).withLabel(param.name)
                         .withType(getChannelType(param)).build();
                 thingBuilder.withChannel(channel);
             }
@@ -167,9 +166,9 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
 
         updateThing(thingBuilder.build());
 
-        for (var param : tabmenu.ParameterDescriptors) {
-            var channelId = new ChannelUID(thingId, param.ParameterId.toString());
-            setState(channelId, WolfSmartsetUtils.undefOrString(param.Value));
+        for (var param : tabmenu.parameterDescriptors) {
+            var channelId = new ChannelUID(thingId, param.parameterId.toString());
+            setState(channelId, WolfSmartsetUtils.undefOrString(param.value));
         }
     }
 
@@ -181,18 +180,17 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
     public void updateValues(@Nullable GetParameterValuesDTO values) {
         var thingId = thing.getUID();
         if (values != null && values.getValues() != null && values.getValues().size() > 0) {
-            if (!values.getIsNewJobCreated())
+            if (!values.getIsNewJobCreated()) {
                 lastRefreshTime = Instant.now();
+            }
 
             for (var value : values.getValues()) {
                 var param = paramDescriptionMap.get(value.getValueId());
                 if (param != null) {
-                    var channelId = new ChannelUID(thingId, param.ParameterId.toString());
+                    var channelId = new ChannelUID(thingId, param.parameterId.toString());
                     setState(channelId, WolfSmartsetUtils.undefOrString(value.getValue()));
                 }
             }
-        } else {
-
         }
     }
 
@@ -208,11 +206,11 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
     }
 
     private ChannelTypeUID getChannelType(ParameterDescriptorDTO parmeter) {
-        if (parmeter.Unit == null || parmeter.Unit.isBlank()) {
-            if (parmeter.ControlType == null) {
+        if (parmeter.unit == null || parmeter.unit.isBlank()) {
+            if (parmeter.controlType == null) {
                 return new ChannelTypeUID(BINDING_ID, CH_STRING);
             } else {
-                switch (parmeter.ControlType) {
+                switch (parmeter.controlType) {
                     case 1:
                     case 3:
                     case 6:
@@ -228,7 +226,7 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
                 }
             }
         } else {
-            switch (parmeter.Unit) {
+            switch (parmeter.unit) {
                 case "bar":
                     return new ChannelTypeUID("barometric-pressure");
                 case "%":
@@ -245,7 +243,6 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
     private String getItemType(Integer controlType) {
         switch (controlType) {
             case 1:
-
             case 3:
             case 6:
             case 8:

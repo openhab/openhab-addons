@@ -20,12 +20,10 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wolfsmartset.internal.dto.GetSystemListDTO;
-import org.openhab.binding.wolfsmartset.internal.dto.MenuItemTabViewDTO;
-import org.openhab.binding.wolfsmartset.internal.dto.SubMenuEntryDTO;
+import org.openhab.binding.wolfsmartset.internal.dto.SubMenuEntryWithMenuItemTabView;
 import org.openhab.binding.wolfsmartset.internal.handler.WolfSmartsetSystemBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -127,7 +125,6 @@ public class WolfSmartsetSystemDiscoveryService extends AbstractDiscoveryService
     }
 
     private synchronized void discoverUnits() {
-
         if (this.bridgeHandler != null) {
             String systemId = this.bridgeHandler.getSystemId();
             var systemConfig = this.bridgeHandler.getSystemConfig();
@@ -136,22 +133,23 @@ public class WolfSmartsetSystemDiscoveryService extends AbstractDiscoveryService
                         systemConfig.getName(), systemId);
                 for (var unit : this.bridgeHandler.getUnits()) {
                     ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
-                    ThingUID unitUID = new ThingUID(UID_UNIT_THING, bridgeUID, unit.getValue().BundleId.toString());
+                    ThingUID unitUID = new ThingUID(UID_UNIT_THING, bridgeUID,
+                            unit.menuItemTabViewDTO.bundleId.toString());
                     thingDiscovered(createUnitDiscoveryResult(unitUID, bridgeUID, systemConfig, unit));
                     logger.debug(
                             "WolfSmartsetSystemDiscovery: Unit for '{}' with id '{}' and name '{}' added with UID '{}'",
-                            systemId, unit.getValue().BundleId, unit.getValue().TabName, unitUID);
+                            systemId, unit.menuItemTabViewDTO.bundleId, unit.menuItemTabViewDTO.tabName, unitUID);
                 }
             }
         }
     }
 
     private DiscoveryResult createUnitDiscoveryResult(ThingUID unitUID, ThingUID bridgeUID,
-            GetSystemListDTO systemConfig, Pair<SubMenuEntryDTO, MenuItemTabViewDTO> unit) {
+            GetSystemListDTO systemConfig, SubMenuEntryWithMenuItemTabView unit) {
         Map<String, Object> properties = new HashMap<>();
-        properties.put(CONFIG_UNIT_ID, unit.getValue().BundleId.toString());
-        var tabName = unit.getValue().TabName;
-        var menuName = unit.getKey().getName();
+        properties.put(CONFIG_UNIT_ID, unit.menuItemTabViewDTO.bundleId.toString());
+        var tabName = unit.menuItemTabViewDTO.tabName;
+        var menuName = unit.subMenuEntryDTO.getName();
         tabName = tabName.isEmpty() || tabName.equalsIgnoreCase("NULL") || menuName.equalsIgnoreCase(tabName) ? ""
                 : "-" + tabName;
 

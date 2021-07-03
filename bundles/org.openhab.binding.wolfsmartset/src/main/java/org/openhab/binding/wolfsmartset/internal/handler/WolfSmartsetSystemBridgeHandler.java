@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wolfsmartset.internal.config.WolfSmartsetSystemConfiguration;
@@ -29,9 +28,8 @@ import org.openhab.binding.wolfsmartset.internal.discovery.WolfSmartsetSystemDis
 import org.openhab.binding.wolfsmartset.internal.dto.GetGuiDescriptionForGatewayDTO;
 import org.openhab.binding.wolfsmartset.internal.dto.GetSystemListDTO;
 import org.openhab.binding.wolfsmartset.internal.dto.GetSystemStateListDTO;
-import org.openhab.binding.wolfsmartset.internal.dto.MenuItemTabViewDTO;
 import org.openhab.binding.wolfsmartset.internal.dto.ReadFaultMessagesDTO;
-import org.openhab.binding.wolfsmartset.internal.dto.SubMenuEntryDTO;
+import org.openhab.binding.wolfsmartset.internal.dto.SubMenuEntryWithMenuItemTabView;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -62,7 +60,7 @@ public class WolfSmartsetSystemBridgeHandler extends BaseBridgeHandler {
     private final Map<String, WolfSmartsetUnitThingHandler> unitHandlers = new ConcurrentHashMap<>();
 
     private @Nullable GetSystemListDTO savedSystem;
-    private @Nullable List<Pair<SubMenuEntryDTO, MenuItemTabViewDTO>> savedUnits;
+    private @Nullable List<SubMenuEntryWithMenuItemTabView> savedUnits;
     private Map<String, State> stateCache = new ConcurrentHashMap<>();
 
     public WolfSmartsetSystemBridgeHandler(Bridge bridge) {
@@ -93,8 +91,9 @@ public class WolfSmartsetSystemBridgeHandler extends BaseBridgeHandler {
         unitHandlers.put(unitId, (WolfSmartsetUnitThingHandler) unitHandler);
         logger.debug("SystemBridge: Saving unit handler for {} with id {}", unitThing.getUID(), unitId);
         var accountBridgeHandler = getAccountBridgeHanlder();
-        if (accountBridgeHandler != null)
+        if (accountBridgeHandler != null) {
             accountBridgeHandler.scheduleRefreshJob();
+        }
     }
 
     @Override
@@ -146,8 +145,8 @@ public class WolfSmartsetSystemBridgeHandler extends BaseBridgeHandler {
      * 
      * @return
      */
-    public List<Pair<SubMenuEntryDTO, MenuItemTabViewDTO>> getUnits() {
-        List<Pair<SubMenuEntryDTO, MenuItemTabViewDTO>> localSavedUnits = savedUnits;
+    public List<SubMenuEntryWithMenuItemTabView> getUnits() {
+        List<SubMenuEntryWithMenuItemTabView> localSavedUnits = savedUnits;
         return localSavedUnits == null ? EMPTY_UNITS : localSavedUnits;
     }
 
@@ -236,16 +235,16 @@ public class WolfSmartsetSystemBridgeHandler extends BaseBridgeHandler {
     }
 
     private void updateUnitsConfiguration(GetGuiDescriptionForGatewayDTO systemDescription) {
-        List<Pair<SubMenuEntryDTO, MenuItemTabViewDTO>> listUnits = new ArrayList<>();
+        List<SubMenuEntryWithMenuItemTabView> listUnits = new ArrayList<>();
         var fachmannNode = systemDescription.getMenuItems().stream()
                 .filter(m -> "Fachmann".equalsIgnoreCase(m.getName())).findFirst();
 
         if (fachmannNode.isPresent()) {
             for (var submenu : fachmannNode.get().getSubMenuEntries()) {
                 for (var tabmenu : submenu.getTabViews()) {
-                    listUnits.add(Pair.of(submenu, tabmenu));
+                    listUnits.add(new SubMenuEntryWithMenuItemTabView(submenu, tabmenu));
 
-                    var handler = unitHandlers.get(tabmenu.BundleId.toString());
+                    var handler = unitHandlers.get(tabmenu.bundleId.toString());
                     if (handler != null) {
                         handler.updateConfiguration(submenu, tabmenu);
                     }
@@ -254,15 +253,6 @@ public class WolfSmartsetSystemBridgeHandler extends BaseBridgeHandler {
 
         }
         savedUnits = listUnits;
-    }
-
-    private @Nullable WolfSmartsetAccountBridgeHandler getBridgeHandler() {
-        WolfSmartsetAccountBridgeHandler handler = null;
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            handler = (WolfSmartsetAccountBridgeHandler) bridge.getHandler();
-        }
-        return handler;
     }
 
     private void clearSavedState() {
