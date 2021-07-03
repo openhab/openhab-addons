@@ -210,8 +210,8 @@ public class CommonCommands {
      * send broadcast UDP frame - unused in this version - to Test
      */
     private final void sendBroadcastNow(ArrayList<Byte> macacoFrame) {
-        byte iUserIndex = NetworkParameters.DEFAULT_USER_INDEX;
-        byte iNodeIndex = NetworkParameters.DEFAULT_NODE_INDEX;
+        byte iUserIndex = (byte) 120;
+        byte iNodeIndex = (byte) 70;
 
         // Broadcast the message over all the network interfaces
         Enumeration<@Nullable NetworkInterface> interfaces;
