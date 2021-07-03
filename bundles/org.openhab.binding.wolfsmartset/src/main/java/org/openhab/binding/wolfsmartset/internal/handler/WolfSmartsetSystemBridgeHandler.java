@@ -90,7 +90,7 @@ public class WolfSmartsetSystemBridgeHandler extends BaseBridgeHandler {
         String unitId = (String) unitThing.getConfiguration().get(CONFIG_UNIT_ID);
         unitHandlers.put(unitId, (WolfSmartsetUnitThingHandler) unitHandler);
         logger.debug("SystemBridge: Saving unit handler for {} with id {}", unitThing.getUID(), unitId);
-        var accountBridgeHandler = getAccountBridgeHanlder();
+        var accountBridgeHandler = getAccountBridgeHandler();
         if (accountBridgeHandler != null) {
             accountBridgeHandler.scheduleRefreshJob();
         }
@@ -127,7 +127,7 @@ public class WolfSmartsetSystemBridgeHandler extends BaseBridgeHandler {
      * 
      * @return
      */
-    public @Nullable WolfSmartsetAccountBridgeHandler getAccountBridgeHanlder() {
+    public @Nullable WolfSmartsetAccountBridgeHandler getAccountBridgeHandler() {
         return (WolfSmartsetAccountBridgeHandler) this.getBridge().getHandler();
     }
 

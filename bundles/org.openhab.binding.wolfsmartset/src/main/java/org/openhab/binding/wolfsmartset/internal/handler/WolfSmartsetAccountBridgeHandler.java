@@ -169,7 +169,7 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
         cancelRefreshJob();
         refreshConfigurationCounter.set(0);
         refreshValuesCounter.set(0);
-        refreshSystemsJob = scheduler.scheduleWithFixedDelay(this::refresh, REFRESH_STARTUP_DELAY_SECONDS,
+        refreshSystemsJob = scheduler.scheduleWithFixedDelay(this::refreshSystems, REFRESH_STARTUP_DELAY_SECONDS,
                 REFRESH_INTERVAL_SECONDS, TimeUnit.SECONDS);
     }
 
@@ -179,10 +179,6 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
      * determine if any system data has changed since the last summary. If any change is detected,
      * a full query of the systems is performed.
      */
-    private void refresh() {
-        refreshSystems();
-    }
-
     private void refreshSystems() {
         if (refreshConfigurationCounter.getAndDecrement() == 0) {
             refreshConfigurationCounter.set(refreshIntervalConfigurationMinutes * 60);
@@ -217,9 +213,11 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
                     var systemStates = api.getSystemState(systemConfigs);
                     if (systemStates != null) {
                         for (var systemState : systemStates) {
-                            var systemHandler = systemHandlers.get(systemState.getSystemId().toString());
-                            if (systemHandler != null) {
-                                systemHandler.updateSystemState(systemState);
+                            if (systemState != null) {
+                                var systemHandler = systemHandlers.get(systemState.getSystemId().toString());
+                                if (systemHandler != null) {
+                                    systemHandler.updateSystemState(systemState);
+                                }
                             }
                         }
                     } else {
@@ -228,28 +226,34 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
                     }
 
                     for (var systemHandler : systemHandlers.values()) {
-                        var systemConfig = systemHandler.getSystemConfig();
+                        if (systemHandler != null) {
+                            var systemConfig = systemHandler.getSystemConfig();
+                            if (systemConfig != null) {
+                                var faultMessages = api.getFaultMessages(systemConfig.getId(),
+                                        systemConfig.getGatewayId());
 
-                        if (systemConfig != null) {
-                            var faultMessages = api.getFaultMessages(systemConfig.getId(), systemConfig.getGatewayId());
+                                systemHandler.updateFaultMessages(faultMessages);
 
-                            systemHandler.updateFaultMessages(faultMessages);
+                                for (var unitHandler : systemHandler.getUnitHandler()) {
+                                    if (unitHandler != null) {
+                                        var tabmenu = unitHandler.getTabMenu();
+                                        if (tabmenu != null) {
+                                            var lastRefreshTime = unitHandler.getLastRefreshTime();
+                                            var valueIds = tabmenu.parameterDescriptors.stream()
+                                                    .filter(p -> p.valueId > 0).map(p -> p.valueId)
+                                                    .collect(Collectors.toList());
+                                            var paramValues = api.getGetParameterValues(systemConfig.getId(),
+                                                    systemConfig.getGatewayId(), tabmenu.bundleId, valueIds,
+                                                    lastRefreshTime);
 
-                            for (var unitHandler : systemHandler.getUnitHandler()) {
-                                var tabmenu = unitHandler.getTabMenu();
-                                if (tabmenu != null) {
-                                    var lastRefreshTime = unitHandler.getLastRefreshTime();
-                                    var valueIds = tabmenu.parameterDescriptors.stream().filter(p -> p.valueId > 0)
-                                            .map(p -> p.valueId).collect(Collectors.toList());
-                                    var paramValues = api.getGetParameterValues(systemConfig.getId(),
-                                            systemConfig.getGatewayId(), tabmenu.bundleId, valueIds, lastRefreshTime);
-
-                                    unitHandler.updateValues(paramValues);
+                                            unitHandler.updateValues(paramValues);
+                                        }
+                                    }
                                 }
+                            } else {
+                                // waiting for config.
+                                systemHandler.updateSystemState(null);
                             }
-                        } else {
-                            // waiting for config.
-                            systemHandler.updateSystemState(null);
                         }
                     }
                 }
@@ -257,11 +261,6 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Authorization failed");
             }
         }
-        // } catch (WolfSmartsetCloudException e) {
-        // updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, "Error updating things: " +
-        // e.getMessage());
-        // logger.error("Error updating things {}", e);
-        // }
     }
 
     private void cancelRefreshJob() {

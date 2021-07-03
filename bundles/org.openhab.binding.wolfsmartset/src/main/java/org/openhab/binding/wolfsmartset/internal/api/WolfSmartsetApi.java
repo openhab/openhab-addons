@@ -307,7 +307,7 @@ public class WolfSmartsetApi {
             session = GSON.fromJson(response, CreateSession2DTO.class);
         } catch (JsonSyntaxException | IllegalStateException | ClassCastException e) {
             loginFailedCounter++;
-            logger.info("Error while parsing CreateSession2DTO: {}", e.getMessage());
+            logger.info("getCreateSession failed with {}: {}", e.getCause(), e.getMessage());
         }
         return session;
     }
@@ -430,6 +430,7 @@ public class WolfSmartsetApi {
             var requestUrl = getApiUrl() + url;
             Request request = httpClient.newRequest(requestUrl).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
+            // using HTTP GET with ContentType application/x-www-form-urlencoded like the iOS App does
             request.header(HttpHeader.AUTHORIZATION, serviceToken);
             request.method(HttpMethod.GET);
             request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
@@ -553,6 +554,7 @@ public class WolfSmartsetApi {
             Request request = httpClient.POST(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
 
+            // Building Request body exacly the way the iOS App did this
             var encodedUser = URLEncoder.encode(username, StandardCharsets.UTF_8);
             var encodedPassword = URLEncoder.encode(password, StandardCharsets.UTF_8);
             var authRequestBody = "grant_type=password&username=" + encodedUser + "&password=" + encodedPassword;

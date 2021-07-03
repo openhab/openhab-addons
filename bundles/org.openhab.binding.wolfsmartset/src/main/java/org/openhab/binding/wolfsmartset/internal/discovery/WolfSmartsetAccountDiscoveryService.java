@@ -125,14 +125,20 @@ public class WolfSmartsetAccountDiscoveryService extends AbstractDiscoveryServic
 
     private synchronized void discoverSystems() {
         logger.debug("WolfSmartsetDiscovery: Discovering systems");
-        for (GetSystemListDTO system : bridgeHandler.getRegisteredSystems()) {
-            String name = system.getName();
-            String identifier = system.getId().toString();
-            if (identifier != null && name != null) {
-                ThingUID thingUID = new ThingUID(UID_SYSTEM_BRIDGE, bridgeHandler.getThing().getUID(), identifier);
-                thingDiscovered(createSystemDiscoveryResult(thingUID, identifier, name));
-                logger.debug("WolfSmartsetDiscovery: System '{}' and name '{}' added with UID '{}'", identifier, name,
-                        thingUID);
+        var registeredSytems = bridgeHandler.getRegisteredSystems();
+        if (registeredSytems != null) {
+            for (GetSystemListDTO system : bridgeHandler.getRegisteredSystems()) {
+                String name = system.getName();
+                String identifier = null;
+                if (system.getId() != null) {
+                    identifier = system.getId().toString();
+                }
+                if (identifier != null && name != null) {
+                    ThingUID thingUID = new ThingUID(UID_SYSTEM_BRIDGE, bridgeHandler.getThing().getUID(), identifier);
+                    thingDiscovered(createSystemDiscoveryResult(thingUID, identifier, name));
+                    logger.debug("WolfSmartsetDiscovery: System '{}' and name '{}' added with UID '{}'", identifier,
+                            name, thingUID);
+                }
             }
         }
     }
