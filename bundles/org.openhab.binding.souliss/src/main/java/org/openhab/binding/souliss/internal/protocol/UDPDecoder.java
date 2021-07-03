@@ -132,8 +132,12 @@ public class UDPDecoder {
                 }
                 break;
 
-            case SoulissUDPConstants.SOULISS_UDP_FUNCTION_SUBSCRIBE_RESP:
             case SoulissUDPConstants.SOULISS_UDP_FUNCTION_POLL_RESP:
+                logger.debug("Received functional code: 0x{} - subscribe response",
+                        Integer.toHexString(functionalCode));
+                decodeStateRequest(macacoPck);
+                break;
+            case SoulissUDPConstants.SOULISS_UDP_FUNCTION_SUBSCRIBE_RESP:
                 logger.debug("Received functional code: 0x{} - Read state answer", Integer.toHexString(functionalCode));
                 decodeStateRequest(macacoPck);
                 break;
@@ -396,6 +400,10 @@ public class UDPDecoder {
             Thing typ = null;
             while (thingsIterator.hasNext() && !bFound) {
                 typ = thingsIterator.next();
+                if (typ.getThingTypeUID().equals(SoulissBindingConstants.TOPICS_THING_TYPE)) { // if a topic continue
+                                                                                               // ignoring it
+                    continue;
+                }
                 String[] sUIDArray = typ.getUID().getAsString().split(":");
                 ThingHandler handler = typ.getHandler();
                 if (handler != null) { // execute it only if binding is Souliss and update is for my
