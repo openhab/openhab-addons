@@ -16,10 +16,8 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -288,37 +286,26 @@ public class UDPDecoder {
                 logger.debug("Topic Value (Payload 2 bytes): {}", fRet);
             }
 
-            try {
+            if (this.gwHandler != null) {
+                var listThings = this.gwHandler.getThing().getThings();
 
-                Iterator<Thing> thingsIterator = null;
+                Boolean bIsPresent = false;
 
-                if (this.gwHandler != null) {
-                    // thingsIterator = this.gwHandler.getThing().getThings().iterator();
-                    thingsIterator = this.gwHandler.getThing().getThings().iterator();
-
-                    ConcurrentMap<String, Thing> gwMaps = NetworkParameters.getHashTableTopics();
-                    Collection<Thing> gwMapsCollection = gwMaps.values();
-                    SoulissTopicsHandler topicHandler;
-                    var bIsPresent = false;
-
-                    for (Thing t : gwMapsCollection) {
-                        if (t.getUID().toString().split(":")[2].equals(
-                                sTopicNumber + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + sTopicVariant)) {
-                            topicHandler = (SoulissTopicsHandler) (t.getHandler());
-                            if (topicHandler != null) {
-                                topicHandler.setState(DecimalType.valueOf(Float.toString(fRet)));
-                                bIsPresent = true;
-                            }
+                for (Thing t : listThings) {
+                    if (t.getUID().toString().split(":")[2]
+                            .equals(sTopicNumber + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + sTopicVariant)) {
+                        var topicHandler = (SoulissTopicsHandler) (t.getHandler());
+                        if (topicHandler != null) {
+                            topicHandler.setState(DecimalType.valueOf(Float.toString(fRet)));
+                            bIsPresent = true;
                         }
                     }
-                    var localDiscoverResult = this.discoverResult;
-                    if (localDiscoverResult != null && !bIsPresent) {
-                        localDiscoverResult.thingDetectedActionMessages(sTopicNumber, sTopicVariant);
-                    }
                 }
-            } catch (Exception ex) {
+                var localDiscoverResult = this.discoverResult;
+                if (localDiscoverResult != null && !bIsPresent) {
+                    localDiscoverResult.thingDetectedActionMessages(sTopicNumber, sTopicVariant);
+                }
             }
-
         } catch (Exception uy) {
             logger.warn("decodeActionMessages ERROR");
         }
