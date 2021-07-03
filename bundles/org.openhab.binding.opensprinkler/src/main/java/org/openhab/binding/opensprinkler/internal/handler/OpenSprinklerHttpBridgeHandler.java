@@ -99,21 +99,21 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    @SuppressWarnings("null")
     private void setupAPI() {
         logger.debug("Initializing OpenSprinkler with config (Hostname: {}, Port: {}, Refresh: {}).",
                 openSprinklerConfig.hostname, openSprinklerConfig.port, openSprinklerConfig.refresh);
         try {
             openSprinklerDevice = apiFactory.getHttpApi(openSprinklerConfig);
-            openSprinklerDevice.enterManualMode();
+            OpenSprinklerApi localApi = openSprinklerDevice;
+            localApi.enterManualMode();
+            if (!localApi.isManualModeEnabled()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        "Could not initialize the connection to the OpenSprinkler.");
+            }
         } catch (CommunicationApiException | GeneralApiException exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not create an API connection to the OpenSprinkler. Error received: " + exp);
             return;
-        }
-        if (!openSprinklerDevice.isManualModeEnabled()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not initialize the connection to the OpenSprinkler.");
         }
     }
 
