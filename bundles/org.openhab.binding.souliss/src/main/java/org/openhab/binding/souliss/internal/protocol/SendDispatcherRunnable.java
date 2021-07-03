@@ -138,11 +138,9 @@ public class SendDispatcherRunnable implements Runnable {
 
     @Override
     public void run() {
-
         DatagramSocket sender = null;
 
         try {
-
             if (checkTime()) {
                 PacketStruct sp = pop();
                 if (sp != null) {

@@ -325,18 +325,13 @@ public class UDPDecoder {
      * @param mac
      */
     private void decodeDBStructRequest(ArrayList<Byte> mac) {
-
         int nodes = mac.get(5);
         int maxTypicalXnode = mac.get(7);
 
-        // Bridge bridge = NetworkParameters.getGateway(lastByteGatewayIP);
         SoulissGatewayHandler localGwHandler = this.gwHandler;
         if (localGwHandler != null) {
-
             localGwHandler.setNodes(nodes);
             localGwHandler.setMaxTypicalXnode(maxTypicalXnode);
-
-            // db Struct Answer from lastByteGatewayIP
             localGwHandler.dbStructAnswerReceived();
         }
     }
