@@ -21,16 +21,18 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link CarNetApiBase} implements some helpers for the oauth flow
+ * The {@link CarNetApi} implements some helpers for the oauth flow
  *
  * @author Markus Michels - Initial contribution
  */
+@NonNullByDefault
 public class OAuthFlow {
     private final Logger logger = LoggerFactory.getLogger(OAuthFlow.class);
 

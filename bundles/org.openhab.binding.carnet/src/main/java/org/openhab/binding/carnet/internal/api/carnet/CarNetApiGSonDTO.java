@@ -16,6 +16,9 @@ import static org.openhab.binding.carnet.internal.CarUtils.getString;
 
 import java.util.ArrayList;
 
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PointType;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -59,41 +62,6 @@ public class CarNetApiGSonDTO {
             accessToken = getString(accessToken2);
             refreshToken = getString(refreshToken2);
         }
-    }
-
-    public static class CarNetJwtToken {
-        /*
-         * "at_hash":"9wYmNBTSKQ8bJV7F2f4otQ",
-         * "sub":"c3ab56e9-XXXX-41c8-XXXX-XXXXXXXX",
-         * "email_verified":true,
-         * "cor":"DE",
-         * "iss":"https:\/\/identity.vwgroup.io",
-         * "jtt":"id_token",
-         * "type":"identity",
-         * "nonce":"MTYyMjMxNzA0MTQ5OA==",
-         * "lee":[
-         * "AUDI"
-         * ],
-         * "aud":[
-         * "09b6cbec-cd19-4589-82fd-363dfa8c24da@apps_vw-dilab_com",
-         * "VWGMBB01DELIV1",
-         * "https:\/\/api.vas.eu.dp15.vwg-connect.com",
-         * "https:\/\/api.vas.eu.wcardp.io"
-         * ],
-         * "acr":"https:\/\/identity.vwgroup.io\/assurance\/loa-2",
-         * "updated_at":1617052457793,
-         * "aat":"identitykit",
-         * "exp":1622320642,
-         * "iat":1622317042,
-         * "jti":"1cb4abb3-497d-4f46-a300-669223f830ee",
-         * "email":"user@me.com"
-         *
-         */
-        public String sub;
-        public Boolean email_verified;
-        public String cor;
-        public String type;
-        public String nonce;
     }
 
     public static class CarNetSecurityPinAuthInfo {
@@ -331,13 +299,16 @@ public class CarNetApiGSonDTO {
         public CNStoredVehicleDataResponse storedVehicleDataResponse;
     }
 
-    public static class CarNetPosition {
+    public static class CarPosition {
         public CarNetCoordinate coordinate = new CarNetCoordinate();
         public String parkingTimeUTC = "";
         public String timestampCarSent = "";
         public String timestampTssReceived = "";
 
-        public CarNetPosition(CNFindCarResponse position) {
+        public CarPosition() {
+        }
+
+        public CarPosition(CNFindCarResponse position) {
             if (position != null && position.findCarResponse != null) {
                 coordinate = position.findCarResponse.carPosition.carCoordinate;
                 timestampCarSent = position.findCarResponse.carPosition.timestampCarSent;
@@ -346,11 +317,16 @@ public class CarNetApiGSonDTO {
             }
         }
 
-        public CarNetPosition(CNStoredPosition position) {
+        public CarPosition(CNStoredPosition position) {
             if (position != null && position.storedPositionResponse != null) {
                 coordinate = position.storedPositionResponse.position.carCoordinate;
                 parkingTimeUTC = position.storedPositionResponse.parkingTimeUTC;
             }
+        }
+
+        public CarPosition(PointType point) {
+            coordinate.latitude = point.getLatitude().intValue() * 1000000;
+            coordinate.longitude = point.getLongitude().intValue() * 1000000;
         }
 
         public double getLattitude() {
@@ -359,6 +335,10 @@ public class CarNetApiGSonDTO {
 
         public double getLongitude() {
             return coordinate.longitude / 1000000.0;
+        }
+
+        public PointType getAsPointType() {
+            return new PointType(new DecimalType(getLattitude()), new DecimalType(getLongitude()));
         }
 
         public String getCarSentTime() {

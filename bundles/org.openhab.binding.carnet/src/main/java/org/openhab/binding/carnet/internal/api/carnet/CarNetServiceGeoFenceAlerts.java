@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.api.cnservices;
+package org.openhab.binding.carnet.internal.api.carnet;
 
 import static org.openhab.binding.carnet.internal.BindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarUtils.*;
@@ -23,7 +23,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.carnet.internal.api.ApiBaseService;
 import org.openhab.binding.carnet.internal.api.ApiException;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNGeoFenceAlerts.CarNetGeoFenceAlerts;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNGeoFenceAlerts.CarNetGeoFenceAlerts.CarNetGeoFenceAlertEntry;
 import org.openhab.binding.carnet.internal.handler.VehicleCarNetHandler;
@@ -40,7 +39,7 @@ import org.slf4j.LoggerFactory;
 public class CarNetServiceGeoFenceAlerts extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(CarNetServiceGeoFenceAlerts.class);
 
-    public CarNetServiceGeoFenceAlerts(VehicleCarNetHandler thingHandler, CarNetApiBase api) {
+    public CarNetServiceGeoFenceAlerts(VehicleCarNetHandler thingHandler, CarNetApi api) {
         super(CNAPI_SERVICE_GEOFENCING, thingHandler, api);
     }
 
@@ -64,7 +63,7 @@ public class CarNetServiceGeoFenceAlerts extends ApiBaseService {
 
     @Override
     public boolean serviceUpdate() throws ApiException {
-        CarNetGeoFenceAlerts gfa = api.getGeoFenceAlerts();
+        CarNetGeoFenceAlerts gfa = ((CarNetApi) api).getGeoFenceAlerts();
         if (gfa.geofencingAlert == null) {
             return false;
         }

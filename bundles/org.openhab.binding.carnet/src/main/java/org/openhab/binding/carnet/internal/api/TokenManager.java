@@ -82,7 +82,7 @@ public class TokenManager {
     /**
      * Create the API access token
      */
-    public String createVwToken(CombinedConfig config) throws ApiException {
+    public String createAccessToken(CombinedConfig config) throws ApiException {
         TokenSet tokens = getTokenSet(config.tokenSetId);
         if (tokens.vwToken.isValid() && !tokens.vwToken.isExpired()) {
             // Token is still valid
@@ -286,7 +286,7 @@ public class TokenManager {
             // Token got invalid, force recreation
             logger.debug("{}: idToken experied, re-login", config.vehicle.vin);
             tokens.vwToken.invalidate();
-            createVwToken(config);
+            createAccessToken(config);
         }
         return tokens.idToken.idToken;
     }
@@ -316,7 +316,7 @@ public class TokenManager {
         while (it.hasNext()) {
             ApiToken stoken = it.next();
             if (stoken.service.equals(service) && stoken.isValid()) {
-                return stoken.securityToken;
+                // return stoken.securityToken;
             }
         }
 
@@ -328,7 +328,7 @@ public class TokenManager {
         TokenSet tokens = getTokenSet(config.tokenSetId);
         ApiHttpClient http = tokens.http;
 
-        String accessToken = createVwToken(config);
+        String accessToken = createAccessToken(config);
 
         // "User-Agent": "okhttp/3.7.0",
         // "X-App-Version": "3.14.0",

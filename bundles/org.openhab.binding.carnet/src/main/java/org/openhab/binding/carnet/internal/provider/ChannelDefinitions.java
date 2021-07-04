@@ -338,7 +338,7 @@ public class ChannelDefinitions {
                 true, true);
         add("SECONDARY_DRIVE", "0x0301030009", CHANNEL_RANGE_SFUELTYPE, ITEMT_NUMBER, CHANNEL_GROUP_RANGE, null, true,
                 true);
-        add("CHARGING_LEVEL_PERCENT", "0x0301030002", "chargingLevel", ITEMT_PERCENT, CHANNEL_GROUP_RANGE, PERCENT,
+        add("CHARGING_LEVEL_PERCENT", "0x0301030002", "chargingLevel", ITEMT_PERCENT, CHANNEL_GROUP_CHARGER, PERCENT,
                 true, true);
         add("15CNG_LEVEL_IN_PERCENT", "0x030103000D", "gasPercentage", ITEMT_PERCENT, CHANNEL_GROUP_RANGE, PERCENT,
                 true, true);
@@ -425,7 +425,7 @@ public class ChannelDefinitions {
         add("TIME_IN_CAR", "timeInCar", CHANNEL_GENERAL_TIMEINCAR, ITEMT_DATETIME, CHANNEL_GROUP_GENERAL);
 
         // Group control
-        add("WIN_HEAT", "windowHeat", CHANNEL_CONTROL_WINHEAT, ITEMT_SWITCH, CHANNEL_GROUP_CONTROL);
+        add("WIN_HEAT", "windowHeat", CHANNEL_CONTROL_WINHEAT, ITEMT_SWITCH, CHANNEL_GROUP_CONTROL, null, false, false);
         add("CHG_MAXCURRENT", "chargerMaxCurrent", CHANNEL_CONTROL_MAXCURRENT, ITEMT_AMP, CHANNEL_GROUP_CONTROL,
                 Units.AMPERE);
 
@@ -434,18 +434,31 @@ public class ChannelDefinitions {
         add("PARKING_BRAKE", "parkingBrake", CHANNEL_STATUS_PBRAKE, ITEMT_SWITCH);
         add("VEHICLE_LIGHTS", "vehicleLights", CHANNEL_STATUS_LIGHTS, ITEMT_SWITCH);
 
+        // Group location
+        add("LOC_GEO", "vehiclePos", CHANNEL_LOCATTION_GEO, ITEMT_LOCATION, CHANNEL_GROUP_LOCATION);
+        add("LOC_ADDR", "locationAddr", CHANNEL_LOCATTION_ADDRESS, ITEMT_STRING, CHANNEL_GROUP_LOCATION);
+        add("LOC_TIME", "locationTime", CHANNEL_LOCATTION_TIME, ITEMT_DATETIME, CHANNEL_GROUP_LOCATION);
+        add("PARK_POS", "parkPos", CHANNEL_PARK_LOCATION, ITEMT_LOCATION, CHANNEL_GROUP_LOCATION);
+        add("PARK_ADDR", "parkAddr", CHANNEL_PARK_ADDRESS, ITEMT_STRING, CHANNEL_GROUP_LOCATION);
+        add("PARK_TIME", "parkTime", CHANNEL_PARK_TIME, ITEMT_DATETIME, CHANNEL_GROUP_LOCATION);
+
         // Group charger
+        add("CHG_CONTROL", "chargerControl", CHANNEL_CONTROL_CHARGER, ITEMT_SWITCH, CHANNEL_GROUP_CHARGER, null, false,
+                true);
+        add("CHG_TLVL", "targetChgLevel", CHANNEL_CONTROL_TARGETCHG, ITEMT_PERCENT, CHANNEL_GROUP_CHARGER, null, false,
+                true);
         add("CHG_STATE", "chargingState", CHANNEL_CHARGER_CHG_STATE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
         add("CHG_MODE", "chargingMode", CHANNEL_CHARGER_MODE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
         add("CHG_REMAIN", "charginngRemainig", CHANNEL_CHARGER_REMAINING, ITEMT_TIME, CHANNEL_GROUP_CHARGER,
                 Units.MINUTE);
         add("CHG_KMPH", "charginngKmPh", CHANNEL_CHARGER_KMPH, ITEMT_NUMBER, CHANNEL_GROUP_CHARGER);
-        add("CHG_LEVEL", "charginngLevel", CHANNEL_CHARGER_CHGLVL, ITEMT_PERCENT, CHANNEL_GROUP_CHARGER, Units.PERCENT);
+        add("CHG_LEVEL", "charginngLevel", CHANNEL_CHARGER_CHGLVL, ITEMT_PERCENT, CHANNEL_GROUP_CHARGER);
+        add("CHG_PLUGLOCK", "chgPLockState", CHANNEL_CHARGER_LOCK_STATE, ITEMT_SWITCH, CHANNEL_GROUP_CHARGER);
         add("CHG_PLUG", "chgPlugState", CHANNEL_CHARGER_PLUG_STATE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
-        add("CHG_PLUGLOCK", "chgPLockState", CHANNEL_CHARGER_LOCK_STATE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
 
         // Group climater
-
+        add("CLIM_CONTROL", "climaControl", CHANNEL_CONTROL_CLIMATER, ITEMT_SWITCH, CHANNEL_GROUP_CLIMATER, null, false,
+                false);
         add("CLIM_STATE", "climaState", CHANNEL_CLIMATER_GEN_STATE, ITEMT_SWITCH, CHANNEL_GROUP_CLIMATER);
         add("CLIM_REMAINING", "climaRemain", CHANNEL_CLIMATER_REMAINING, ITEMT_TIME, CHANNEL_GROUP_CLIMATER,
                 Units.MINUTE);

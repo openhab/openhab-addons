@@ -20,7 +20,7 @@ import org.openhab.binding.carnet.internal.api.ApiEventListener;
 import org.openhab.binding.carnet.internal.api.ApiException;
 import org.openhab.binding.carnet.internal.api.ApiHttpClient;
 import org.openhab.binding.carnet.internal.api.TokenManager;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetApi;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetImageUrlsVW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class BrandCarNetVW extends CarNetApiBase implements BrandAuthenticator {
+public class BrandCarNetVW extends CarNetApi implements BrandAuthenticator {
     private final Logger logger = LoggerFactory.getLogger(BrandCarNetVW.class);
 
     public BrandCarNetVW(ApiHttpClient httpClient, TokenManager tokenManager,

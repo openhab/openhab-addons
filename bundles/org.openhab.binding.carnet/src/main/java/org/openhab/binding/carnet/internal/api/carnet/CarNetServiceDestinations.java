@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.api.cnservices;
+package org.openhab.binding.carnet.internal.api.carnet;
 
 import static org.openhab.binding.carnet.internal.BindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarUtils.getStringType;
@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.ApiBaseService;
 import org.openhab.binding.carnet.internal.api.ApiException;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNDestinations.CarNetDestination;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNDestinations.CarNetDestinationList;
 import org.openhab.binding.carnet.internal.handler.VehicleCarNetHandler;
@@ -40,7 +39,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class CarNetServiceDestinations extends ApiBaseService {
-    public CarNetServiceDestinations(VehicleCarNetHandler thingHandler, CarNetApiBase api) {
+    public CarNetServiceDestinations(VehicleCarNetHandler thingHandler, CarNetApi api) {
         super(CNAPI_SERVICE_DESTINATIONS, thingHandler, api);
     }
 
@@ -82,7 +81,7 @@ public class CarNetServiceDestinations extends ApiBaseService {
 
     private boolean update(@Nullable Map<String, ChannelIdMapEntry> channels) throws ApiException {
         boolean updated = false;
-        CarNetDestinationList dest = api.getDestinations();
+        CarNetDestinationList dest = ((CarNetApi) api).getDestinations();
         if (dest.destination.size() == 0) {
             // no/empty list
             return false;

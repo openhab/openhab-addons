@@ -15,7 +15,7 @@ package org.openhab.binding.carnet.internal.api.brand;
 import static org.openhab.binding.carnet.internal.BindingConstants.CNAPI_BRAND_NULL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
+import org.openhab.binding.carnet.internal.api.ApiBase;
 
 /**
  * {@link BrandNull} providesan empty implementation of the Brand interface
@@ -23,7 +23,7 @@ import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class BrandNull extends CarNetApiBase {
+public class BrandNull extends ApiBase {
 
     public BrandNull() {
     }

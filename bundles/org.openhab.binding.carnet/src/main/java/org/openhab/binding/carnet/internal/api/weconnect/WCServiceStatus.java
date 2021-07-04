@@ -19,9 +19,9 @@ import static org.openhab.binding.carnet.internal.api.carnet.CarNetApiConstants.
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.carnet.internal.api.ApiBase;
 import org.openhab.binding.carnet.internal.api.ApiBaseService;
 import org.openhab.binding.carnet.internal.api.ApiException;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleStatusData.WCVehicleStatus;
 import org.openhab.binding.carnet.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleStatusData.WCVehicleStatus.WCCapabilityStatus.WCCapability;
 import org.openhab.binding.carnet.internal.handler.VehicleBaseHandler;
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public class WCServiceStatus extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(WCServiceStatus.class);
 
-    public WCServiceStatus(VehicleBaseHandler thingHandler, CarNetApiBase api) {
+    public WCServiceStatus(VehicleBaseHandler thingHandler, ApiBase api) {
         super(CNAPI_SERVICE_VEHICLE_STATUS_REPORT, thingHandler, api);
     }
 
@@ -53,16 +53,18 @@ public class WCServiceStatus extends ApiBaseService {
 
         addChannels(channels, true, CHANNEL_GENERAL_ACTION, CHANNEL_GENERAL_ACTION_STATUS,
                 CHANNEL_GENERAL_ACTION_PENDING);
-        addChannels(channels, true, CHANNEL_STATUS_PBRAKE, CHANNEL_STATUS_LIGHTS, CHANNEL_STATUS_ERROR);
+        addChannels(channels, true, /* CHANNEL_STATUS_PBRAKE, CHANNEL_STATUS_LIGHTS, */ CHANNEL_STATUS_ERROR);
         addChannels(channels, status.rangeStatus != null, CHANNEL_RANGE_TOTAL, CHANNEL_RANGE_PRANGE,
                 CHANNEL_RANGE_PFUELTYPE);
         addChannels(channels, status.batteryStatus != null, CHANNEL_CHARGER_CHGLVL);
-        addChannels(channels, status.chargingStatus != null, CHANNEL_CHARGER_CHG_STATE, CHANNEL_CHARGER_MODE,
-                CHANNEL_CHARGER_REMAINING, CHANNEL_CONTROL_MAXCURRENT, CHANNEL_CHARGER_KMPH);
+        addChannels(channels, status.chargingStatus != null, CHANNEL_CONTROL_CHARGER, CHANNEL_CHARGER_CHG_STATE,
+                CHANNEL_CHARGER_MODE, CHANNEL_CHARGER_REMAINING, CHANNEL_CONTROL_MAXCURRENT, CHANNEL_CONTROL_TARGETCHG,
+                CHANNEL_CHARGER_KMPH);
         addChannels(channels, status.plugStatus != null, CHANNEL_CHARGER_PLUG_STATE, CHANNEL_CHARGER_LOCK_STATE);
         addChannels(channels, status.climatisationStatus != null, CHANNEL_CLIMATER_GEN_STATE,
                 CHANNEL_CLIMATER_REMAINING);
-        addChannels(channels, status.climatisationSettings != null, CHANNEL_CLIMATER_TARGET_TEMP);
+        addChannels(channels, status.climatisationSettings != null, CHANNEL_CONTROL_CLIMATER,
+                CHANNEL_CLIMATER_TARGET_TEMP);
         addChannels(channels, status.climatisationTimer != null, CHANNEL_GENERAL_TIMEINCAR);
         addChannels(channels, status.windowHeatingStatus != null, CHANNEL_CONTROL_WINHEAT);
         return true;
@@ -111,12 +113,16 @@ public class WCServiceStatus extends ApiBaseService {
         boolean updated = false;
         String group = CHANNEL_GROUP_CHARGER;
         if (status.chargingStatus != null) {
+            updated |= updateChannel(group, CHANNEL_CONTROL_CHARGER,
+                    "charging".equals(getString(status.chargingStatus.chargingState)) ? OnOffType.ON : OnOffType.OFF);
             updated |= updateChannel(group, CHANNEL_CHARGER_CHG_STATE,
                     getStringType(status.chargingStatus.chargingState));
             updated |= updateChannel(group, CHANNEL_CHARGER_MODE, getStringType(status.chargingStatus.chargeMode));
             updated |= updateChannel(group, CHANNEL_CHARGER_REMAINING, toQuantityType(
                     getInteger(status.chargingStatus.remainingChargingTimeToComplete_min), 0, Units.MINUTE));
             updated |= updateChannel(group, CHANNEL_CHARGER_KMPH, getDecimal(status.chargingStatus.chargeRate_kmph));
+            updated |= updateChannel(group, CHANNEL_CONTROL_TARGETCHG,
+                    toQuantityType(getInteger(status.chargingSettings.targetSOC_pct), 0, PERCENT));
             String maxCurrent = getString(status.chargingSettings.maxChargeCurrentAC);
             if ("maximum".equalsIgnoreCase(maxCurrent)) {
                 maxCurrent = "255";
@@ -129,9 +135,10 @@ public class WCServiceStatus extends ApiBaseService {
                     toQuantityType(getInteger(status.batteryStatus.currentSOC_pct), 0, PERCENT));
         }
         if (status.plugStatus != null) {
+            updated |= updateChannel(group, CHANNEL_CHARGER_LOCK_STATE,
+                    "locked".equals(getString(status.plugStatus.plugLockState)) ? OnOffType.ON : OnOffType.OFF);
             updated |= updateChannel(group, CHANNEL_CHARGER_PLUG_STATE,
                     getStringType(status.plugStatus.plugConnectionState));
-            updated |= updateChannel(group, CHANNEL_CHARGER_LOCK_STATE, getStringType(status.plugStatus.plugLockState));
         }
         return updated;
     }

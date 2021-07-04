@@ -22,6 +22,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.carnet.internal.api.ApiErrorDTO.CNApiError2;
+import org.openhab.binding.carnet.internal.api.weconnect.WeConnectApiJsonDTO.WCActionResponse.WCApiError;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -136,16 +137,18 @@ public class ApiResult {
             if (response.contains("\"error\":")) {
                 Gson gson = new Gson();
                 try {
-                    if (response.contains("\"error_code\": ")) {
+                    if (response.contains("\"group\": ")) {
+                        // WeConnect
+                        apiError = new ApiErrorDTO(gson.fromJson(response, WCApiError.class));
+                    } else if (response.contains("\"error_code\": ")) {
+                        // CarNet variant 1
                         ApiErrorDTO error = gson.fromJson(response, ApiErrorDTO.class);
                         if (error != null) {
                             apiError = error;
                         }
                     } else {
-                        CNApiError2 error2 = gson.fromJson(response, CNApiError2.class);
-                        if (error2 != null) {
-                            apiError = new ApiErrorDTO(error2);
-                        }
+                        // CarNet variant 2
+                        apiError = new ApiErrorDTO(gson.fromJson(response, CNApiError2.class));
                     }
                 } catch (JsonParseException e) {
                     apiError.error = "Unable to parse '" + response + "'";

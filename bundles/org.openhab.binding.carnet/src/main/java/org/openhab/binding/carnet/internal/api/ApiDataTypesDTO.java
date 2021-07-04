@@ -40,6 +40,9 @@ public class ApiDataTypesDTO {
         public String engine = "";
         public String transmission = "";
 
+        public VehicleDetails() {
+        }
+
         public VehicleDetails(CombinedConfig config, CarNetVehicleDetails vehicle) {
             vin = getString(vehicle.vin);
             brand = config.api.brand;
@@ -72,6 +75,9 @@ public class ApiDataTypesDTO {
     }
 
     public static class VehicleStatus {
+        public VehicleStatus() {
+        }
+
         public VehicleStatus(CarNetVehicleStatus status) {
             cnStatus = status;
         }
@@ -82,5 +88,40 @@ public class ApiDataTypesDTO {
 
         public @Nullable CarNetVehicleStatus cnStatus;
         public @Nullable WCVehicleStatus wcStatus;
+    }
+
+    public static class JwtToken {
+        /*
+         * "at_hash":"9wYmNBTSKQ8bJV7F2f4otQ",
+         * "sub":"c3ab56e9-XXXX-41c8-XXXX-XXXXXXXX",
+         * "email_verified":true,
+         * "cor":"DE",
+         * "iss":"https:\/\/identity.vwgroup.io",
+         * "jtt":"id_token",
+         * "type":"identity",
+         * "nonce":"MTYyMjMxNzA0MTQ5OA==",
+         * "lee":[
+         * "AUDI"
+         * ],
+         * "aud":[
+         * "09b6cbec-cd19-4589-82fd-363dfa8c24da@apps_vw-dilab_com",
+         * "VWGMBB01DELIV1",
+         * "https:\/\/api.vas.eu.dp15.vwg-connect.com",
+         * "https:\/\/api.vas.eu.wcardp.io"
+         * ],
+         * "acr":"https:\/\/identity.vwgroup.io\/assurance\/loa-2",
+         * "updated_at":1617052457793,
+         * "aat":"identitykit",
+         * "exp":1622320642,
+         * "iat":1622317042,
+         * "jti":"1cb4abb3-497d-4f46-a300-669223f830ee",
+         * "email":"user@me.com"
+         *
+         */
+        public String sub;
+        public Boolean email_verified;
+        public String cor;
+        public String type;
+        public String nonce;
     }
 }

@@ -31,8 +31,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.carnet.internal.ChannelCache;
 import org.openhab.binding.carnet.internal.TextResources;
+import org.openhab.binding.carnet.internal.api.ApiBase;
 import org.openhab.binding.carnet.internal.api.ApiBaseService;
-import org.openhab.binding.carnet.internal.api.ApiBrandInterface;
 import org.openhab.binding.carnet.internal.api.ApiDataTypesDTO.VehicleDetails;
 import org.openhab.binding.carnet.internal.api.ApiErrorDTO;
 import org.openhab.binding.carnet.internal.api.ApiEventListener;
@@ -86,7 +86,7 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
     protected final ZoneId zoneId;
 
     public final String thingId;
-    protected ApiBrandInterface api = new BrandNull();
+    protected ApiBase api = new BrandNull();
     protected @Nullable AccountHandler accountHandler;
     protected @Nullable ScheduledFuture<?> pollingJob;
     protected int updateCounter = 0;
@@ -204,6 +204,10 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
                 addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_UPDATED, ITEMT_DATETIME, null, false, true);
                 addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_UPDATE, ITEMT_SWITCH, null, false, false);
                 createBrandChannels(channels);
+                for (int i = 0; i < config.vstatus.imageUrls.length; i++) {
+                    addChannel(channels, CHANNEL_GROUP_PICTURES, CHANNEL_PICTURES_IMG_PREFIX + (i + 1), ITEMT_STRING,
+                            null, i > 0, false);
+                }
 
                 // Add channels based on service information
                 for (Map.Entry<String, ApiBaseService> s : services.entrySet()) {
@@ -333,7 +337,7 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
         Map<String, CarNetPendingRequest> requests = api.getPendingRequests();
         for (Map.Entry<String, CarNetPendingRequest> e : requests.entrySet()) {
             CarNetPendingRequest request = e.getValue();
-            if (CNAPI_SERVICE_VEHICLE_STATUS_REPORT.equalsIgnoreCase(request.service)) {
+            if (CarNetPendingRequest.isInProgress(request.requestId)) {
                 pending = true;
             }
         }
@@ -374,21 +378,6 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
         }
 
         return updateLastUpdate(updated);
-    }
-
-    private String getHeaterSource() {
-        State value = cache.getValue(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HEATSOURCE);
-        return value != UnDefType.NULL ? ((StringType) value).toString().toLowerCase() : CNAPI_HEATER_SOURCE_ELECTRIC;
-    }
-
-    private int getVentDuration() {
-        State state = cache.getValue(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_DURATION);
-        return state != UnDefType.NULL ? ((DecimalType) state).intValue() : VENT_DEFAULT_DURATION_MIN;
-    }
-
-    private int getHfDuration() {
-        State state = cache.getValue(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HFDURATION);
-        return state != UnDefType.NULL ? ((DecimalType) state).intValue() : HF_DEFAULT_DURATION_SEC;
     }
 
     public State getChannelValue(String group, String channel) {
@@ -519,6 +508,9 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
 
             String groupId = channelDef.groupName.isEmpty() ? CHANNEL_GROUP_STATUS : channelDef.groupName;
             String channelId = channelDef.channelName;
+            if (channelDef.groupName.equals("charger")) {
+                int i = 1;
+            }
             if (getThing().getChannel(mkChannelId(groupId, channelId)) == null) { // only if not yet exist
                 ChannelTypeUID channelTypeUID = channelDef.getChannelTypeUID();
                 String itemType = channelDef.itemType.isEmpty() ? ITEMT_NUMBER : channelDef.itemType;

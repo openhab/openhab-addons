@@ -109,6 +109,10 @@ public class ApiHttpClient {
         return request(HttpMethod.GET, uri, "", headers, "", vin, "");
     }
 
+    public ApiResult put(String uri, Map<String, String> headers, String data) throws ApiException {
+        return request(HttpMethod.PUT, uri, "", headers, data, "", "", false);
+    }
+
     /**
      * Sends a HTTP POST request using the synchronous client
      *

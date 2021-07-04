@@ -87,6 +87,7 @@ public class BindingConstants {
     public static final String CHANNEL_CONTROL_LOCK = "lock";
     public static final String CHANNEL_CONTROL_CHARGER = "charge";
     public static final String CHANNEL_CONTROL_MAXCURRENT = "maxCurrent";
+    public static final String CHANNEL_CONTROL_TARGETCHG = "targetChgLvl";
     public static final String CHANNEL_CONTROL_CLIMATER = "climater";
     public static final String CHANNEL_CONTROL_HEATSOURCE = "heaterSource";
     public static final String CHANNEL_CONTROL_WINHEAT = "windowHeat";
@@ -217,9 +218,8 @@ public class BindingConstants {
     public static final String CNAPI_BRAND_AUDI = "Audi";
     public static final String CNAPI_BRAND_VW = "VW";
     public static final String CNAPI_BRAND_VWID = "Id";
-    public static final String CNAPI_BRAND_WECHARGE = "Wc";
-
     public static final String CNAPI_BRAND_VWGO = "Go";
+    public static final String CNAPI_BRAND_WECHARGE = "Wc";
     public static final String CNAPI_BRAND_SKODA = "Skoda";
     public static final String CNAPI_BRAND_SEAT = "Seat";
     public static final String CNAPI_BRAND_NULL = "NULL";

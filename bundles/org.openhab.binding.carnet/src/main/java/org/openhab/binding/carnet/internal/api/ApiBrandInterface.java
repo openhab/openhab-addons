@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.carnet.internal.api.ApiDataTypesDTO.VehicleDetails;
+import org.openhab.binding.carnet.internal.api.brand.BrandApiProperties;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetPendingRequest;
 import org.openhab.binding.carnet.internal.config.CombinedConfig;
 import org.openhab.core.library.types.PointType;
@@ -33,9 +34,21 @@ public interface ApiBrandInterface {
 
     abstract CombinedConfig initialize(String vin, CombinedConfig configIn) throws ApiException;
 
+    abstract boolean isInitialized();
+
+    abstract String getApiUrl() throws ApiException;
+
+    abstract BrandApiProperties getProperties();
+
+    abstract void setConfig(CombinedConfig config);
+
+    abstract ApiHttpClient getHttp();
+
     abstract Map<String, CarNetPendingRequest> getPendingRequests();
 
     abstract void checkPendingRequests();
+
+    abstract boolean refreshTokens() throws ApiException;
 
     abstract public ArrayList<String> getVehicles() throws ApiException;
 
@@ -55,11 +68,13 @@ public interface ApiBrandInterface {
 
     abstract String controlVentilation(boolean start, int duration) throws ApiException;
 
+    abstract String controlWindowHeating(boolean start) throws ApiException;
+
     abstract String controlCharger(boolean start) throws ApiException;
 
     abstract String controlMaxCharge(int maxCurrent) throws ApiException;
 
-    abstract String controlWindowHeating(boolean start) throws ApiException;
+    abstract String controlTargetChgLevel(int targetLevel) throws ApiException;
 
     abstract String controlHonkFlash(boolean honk, PointType position, int duration) throws ApiException;
 }

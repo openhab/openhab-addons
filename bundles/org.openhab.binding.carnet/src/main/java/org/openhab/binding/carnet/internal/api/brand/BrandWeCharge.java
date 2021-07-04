@@ -14,6 +14,7 @@ package org.openhab.binding.carnet.internal.api.brand;
 
 import static org.openhab.binding.carnet.internal.BindingConstants.CNAPI_BRAND_WECHARGE;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.ApiEventListener;
 import org.openhab.binding.carnet.internal.api.ApiHttpClient;
@@ -25,6 +26,7 @@ import org.openhab.binding.carnet.internal.api.weconnect.WeConnectApi;
  *
  * @author Markus Michels - Initial contribution
  */
+@NonNullByDefault
 public class BrandWeCharge extends WeConnectApi {
 
     public BrandWeCharge(ApiHttpClient httpClient, TokenManager tokenManager,

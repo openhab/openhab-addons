@@ -17,8 +17,10 @@ import static org.openhab.binding.carnet.internal.BindingConstants.CNAPI_BRAND_V
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.ApiEventListener;
+import org.openhab.binding.carnet.internal.api.ApiException;
 import org.openhab.binding.carnet.internal.api.ApiHttpClient;
 import org.openhab.binding.carnet.internal.api.TokenManager;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetImageUrlsVW;
 import org.openhab.binding.carnet.internal.api.weconnect.WeConnectApi;
 
 /**
@@ -50,14 +52,15 @@ public class BrandWeConnect extends WeConnectApi {
         properties.xappVersion = "";
         return properties;
     }
-    /*
-     * @Override
-     * public String updateAuthorizationUrl(String url) throws CarNetException {
-     * String codeVerifier = generateCodeVerifier();
-     * String codeChallenge = generateCodeChallange(codeVerifier);
-     * return url + "&prompt=login&code_challenge_method=s256&code_challenge=" + codeChallenge;
-     * }
-     *
-     * }
-     */
+
+    @Override
+    public String[] getImageUrls() throws ApiException {
+        if (config.vstatus.imageUrls.length == 0) {
+            config.vstatus.imageUrls = super.callApi("",
+                    "https://vehicle-image.apps.emea.vwapps.io/vehicleimages/exterior/{2}",
+                    fillAppHeaders(tokenManager.createProfileToken(config)), "getImageUrls",
+                    CarNetImageUrlsVW.class).imageUrls;
+        }
+        return config.vstatus.imageUrls;
+    }
 }

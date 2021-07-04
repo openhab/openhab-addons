@@ -12,16 +12,18 @@
  */
 package org.openhab.binding.carnet.internal.api;
 
+import static org.openhab.binding.carnet.internal.CarUtils.getInteger;
 import static org.openhab.binding.carnet.internal.api.carnet.CarNetApiConstants.API_STATUS_CLASS_SECURUTY;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.ApiErrorDTO.CNApiError2.CNErrorMessage2;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetApi;
+import org.openhab.binding.carnet.internal.api.weconnect.WeConnectApiJsonDTO.WCActionResponse.WCApiError;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link CarNetApiBase} implements the http based API access to CarNet
+ * The {@link CarNetApi} implements the http based API access to CarNet
  *
  * @author Markus Michels - Initial contribution
  */
@@ -55,6 +57,14 @@ public class ApiErrorDTO {
                 description = getString(error2.description);
                 details = error2.details;
             }
+        }
+    }
+
+    public ApiErrorDTO(WCApiError wcerror) {
+        if (wcerror != null) {
+            code = getInteger(wcerror.code).toString();
+            error = getString(wcerror.message);
+            description = getString(wcerror.info) + ", retry=" + (wcerror.retry);
         }
     }
 

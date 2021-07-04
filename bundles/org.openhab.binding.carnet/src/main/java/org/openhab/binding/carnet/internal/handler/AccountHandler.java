@@ -31,6 +31,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory.Client;
 import org.openhab.binding.carnet.internal.CarUtils;
 import org.openhab.binding.carnet.internal.TextResources;
+import org.openhab.binding.carnet.internal.api.ApiBase;
 import org.openhab.binding.carnet.internal.api.ApiDataTypesDTO.VehicleDetails;
 import org.openhab.binding.carnet.internal.api.ApiEventListener;
 import org.openhab.binding.carnet.internal.api.ApiException;
@@ -42,7 +43,6 @@ import org.openhab.binding.carnet.internal.api.brand.BrandCarNetSkoda;
 import org.openhab.binding.carnet.internal.api.brand.BrandCarNetVW;
 import org.openhab.binding.carnet.internal.api.brand.BrandNull;
 import org.openhab.binding.carnet.internal.api.brand.BrandWeConnect;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.config.AccountConfiguration;
 import org.openhab.binding.carnet.internal.config.CombinedConfig;
 import org.openhab.core.thing.Bridge;
@@ -72,7 +72,7 @@ public class AccountHandler extends BaseBridgeHandler {
     private final TextResources messages;
     private final TokenManager tokenManager;
 
-    private CarNetApiBase api = new BrandNull();
+    private ApiBase api = new BrandNull();
     private List<VehicleDetails> vehicleList = new CopyOnWriteArrayList<>();
     private List<BridgeListener> vehicleInformationListeners = new CopyOnWriteArrayList<>();
     private @Nullable ScheduledFuture<?> refreshJob;
@@ -199,7 +199,7 @@ public class AccountHandler extends BaseBridgeHandler {
         logger.debug("{}: Undefined command '{}' for channel {}", thingId, command, channelId);
     }
 
-    public CarNetApiBase createApi(CombinedConfig config, @Nullable ApiEventListener apiListener) {
+    public ApiBase createApi(CombinedConfig config, @Nullable ApiEventListener apiListener) {
         ApiHttpClient httpClient = createHttpClient(apiListener);
         switch (config.account.brand) {
             case CNAPI_BRAND_AUDI:

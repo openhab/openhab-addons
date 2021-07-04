@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.api.cnservices;
+package org.openhab.binding.carnet.internal.api.carnet;
 
 import static org.openhab.binding.carnet.internal.BindingConstants.*;
 import static org.openhab.binding.carnet.internal.api.carnet.CarNetApiConstants.CNAPI_SERVICE_REMOTE_HEATING;
@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.carnet.internal.CarUtils;
 import org.openhab.binding.carnet.internal.api.ApiBaseService;
 import org.openhab.binding.carnet.internal.api.ApiException;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNHeaterVentilation.CarNetHeaterVentilationStatus;
 import org.openhab.binding.carnet.internal.handler.VehicleCarNetHandler;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
@@ -33,7 +32,7 @@ import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelId
  */
 @NonNullByDefault
 public class CarNetServicePreHeat extends ApiBaseService {
-    public CarNetServicePreHeat(VehicleCarNetHandler thingHandler, CarNetApiBase api) {
+    public CarNetServicePreHeat(VehicleCarNetHandler thingHandler, CarNetApi api) {
         super(CNAPI_SERVICE_REMOTE_HEATING, thingHandler, api);
     }
 
@@ -49,7 +48,7 @@ public class CarNetServicePreHeat extends ApiBaseService {
     @Override
     public boolean serviceUpdate() throws ApiException {
         boolean updated = false;
-        CarNetHeaterVentilationStatus hvs = api.getHeaterVentilationStatus();
+        CarNetHeaterVentilationStatus hvs = ((CarNetApi) api).getHeaterVentilationStatus();
         String group = CHANNEL_GROUP_CONTROL;
         if (hvs.climatisationStateReport != null) {
             if (hvs.climatisationStateReport.climatisationState != null) {

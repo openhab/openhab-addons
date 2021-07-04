@@ -12,24 +12,23 @@
  */
 package org.openhab.binding.carnet.internal.api.brand;
 
-import static org.openhab.binding.carnet.internal.BindingConstants.CNAPI_BRAND_VW;
+import static org.openhab.binding.carnet.internal.BindingConstants.CNAPI_BRAND_VWGO;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.ApiEventListener;
 import org.openhab.binding.carnet.internal.api.ApiHttpClient;
 import org.openhab.binding.carnet.internal.api.TokenManager;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApi;
+import org.openhab.binding.carnet.internal.api.weconnect.WeConnectApi;
 
 /**
- * {@link BrandCarNetSkoda} provides the Skoda specific functions of the API, portal URL us
- * https://www.skoda-connect.com
+ * {@link BrandWeConnectGo} provides brand interface for WeConnect Go Dataplug
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class BrandCarNetSkoda extends CarNetApi {
-    public BrandCarNetSkoda(ApiHttpClient httpClient, TokenManager tokenManager,
+public class BrandWeConnectGo extends WeConnectApi {
+    public BrandWeConnectGo(ApiHttpClient httpClient, TokenManager tokenManager,
             @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
@@ -37,17 +36,14 @@ public class BrandCarNetSkoda extends CarNetApi {
     @Override
     public BrandApiProperties getProperties() {
         BrandApiProperties properties = new BrandApiProperties();
-        properties.brand = CNAPI_BRAND_VW; // it's "VW", not "Skoda"
-        properties.xcountry = "CZ";
-        properties.apiDefaultUrl = "";
-        properties.clientId = "7f045eee-7003-4379-9968-9355ed2adb06@apps_vw-dilab_com";
-        properties.xClientId = "28cd30c6-dee7-4529-a0e6-b1e07ff90b79";
-        properties.authScope = "openid profile mbb cars";
-        properties.redirect_uri = "skodaconnect://oidc.login/";
-        properties.xrequest = "cz.skodaauto.connect";
-        properties.responseType = "token id_token";
-        properties.xappVersion = "3.2.6";
-        properties.xappName = "cz.skodaauto.connect";
+        properties.brand = CNAPI_BRAND_VWGO;
+        properties.apiDefaultUrl = "https://mobileapi.apps.emea.vwapps.io";
+        properties.clientId = "ac42b0fa-3b11-48a0-a941-43a399e7ef84@apps_vw-dilab_com";
+        properties.authScope = "openid profile";
+        properties.redirect_uri = "vwconnect://de.volkswagen.vwconnect/oauth2redirec/identitykit";
+        properties.tokenUrl = "https://dmp.apps.emea.vwapps.io/mobility-platform/token";
+        properties.xrequest = "com.volkswagen.weconnect";
+        properties.responseType = "code id_token token";
         return properties;
     }
 }

@@ -15,6 +15,7 @@ package org.openhab.binding.carnet.internal.api;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpHeader;
 
 /**
@@ -22,6 +23,7 @@ import org.eclipse.jetty.http.HttpHeader;
  *
  * @author Markus Michels - Initial contribution
  */
+@NonNullByDefault
 public class ApiHttpMap {
     private Map<String, String> headers = new LinkedHashMap<>();
     private Map<String, String> data = new LinkedHashMap<>();

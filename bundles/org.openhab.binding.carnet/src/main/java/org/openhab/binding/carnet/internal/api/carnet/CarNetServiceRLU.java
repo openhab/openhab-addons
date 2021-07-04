@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.api.cnservices;
+package org.openhab.binding.carnet.internal.api.carnet;
 
 import static org.openhab.binding.carnet.internal.BindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarUtils.*;
@@ -23,7 +23,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.carnet.internal.api.ApiBaseService;
 import org.openhab.binding.carnet.internal.api.ApiException;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNEluActionHistory.CarNetRluHistory;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNEluActionHistory.CarNetRluHistory.CarNetRluLockActionList.CarNetRluLockAction;
 import org.openhab.binding.carnet.internal.handler.VehicleCarNetHandler;
@@ -40,7 +39,7 @@ import org.slf4j.LoggerFactory;
 public class CarNetServiceRLU extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(CarNetServiceRLU.class);
 
-    public CarNetServiceRLU(VehicleCarNetHandler thingHandler, CarNetApiBase api) {
+    public CarNetServiceRLU(VehicleCarNetHandler thingHandler, CarNetApi api) {
         super(CNAPI_SERVICE_REMOTE_LOCK_UNLOCK, thingHandler, api);
     }
 
@@ -65,7 +64,7 @@ public class CarNetServiceRLU extends ApiBaseService {
     @Override
     public boolean serviceUpdate() throws ApiException {
         boolean updated = false;
-        CarNetRluHistory hist = api.getRluActionHistory();
+        CarNetRluHistory hist = ((CarNetApi) api).getRluActionHistory();
         Collections.sort(hist.actions.action, Collections.reverseOrder(new Comparator<CarNetRluLockAction>() {
             @Override
             public int compare(CarNetRluLockAction a, CarNetRluLockAction b) {

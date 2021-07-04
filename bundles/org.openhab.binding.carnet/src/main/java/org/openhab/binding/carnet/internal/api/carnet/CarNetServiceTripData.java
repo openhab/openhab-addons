@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.api.cnservices;
+package org.openhab.binding.carnet.internal.api.carnet;
 
 import static org.openhab.binding.carnet.internal.BindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarUtils.*;
@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.ApiBaseService;
 import org.openhab.binding.carnet.internal.api.ApiException;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetTripData;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetTripData.CarNetTripDataList.CarNetTripDataEntry;
 import org.openhab.binding.carnet.internal.config.CombinedConfig;
@@ -45,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public class CarNetServiceTripData extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(CarNetServiceTripData.class);
 
-    public CarNetServiceTripData(VehicleCarNetHandler thingHandler, CarNetApiBase api) {
+    public CarNetServiceTripData(VehicleCarNetHandler thingHandler, CarNetApi api) {
         super(CNAPI_SERVICE_REMOTE_TRIP_STATISTICS, thingHandler, api);
     }
 
@@ -89,7 +88,7 @@ public class CarNetServiceTripData extends ApiBaseService {
 
     private boolean update(String type, @Nullable Map<String, ChannelIdMapEntry> channels) throws ApiException {
         boolean updated = false;
-        CarNetTripData std = api.getTripData(type);
+        CarNetTripData std = ((CarNetApi) api).getTripData(type);
         Collections.sort(std.tripDataList.tripData, Collections.reverseOrder(new Comparator<CarNetTripDataEntry>() {
             @Override
             public int compare(CarNetTripDataEntry a, CarNetTripDataEntry b) {

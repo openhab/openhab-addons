@@ -12,17 +12,19 @@
  */
 package org.openhab.binding.carnet.internal.handler;
 
+import static org.openhab.binding.carnet.internal.BindingConstants.*;
+
 import java.time.ZoneId;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.carnet.internal.TextResources;
 import org.openhab.binding.carnet.internal.api.ApiException;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.weconnect.WCServiceStatus;
 import org.openhab.binding.carnet.internal.provider.CarChannelTypeProvider;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -57,7 +59,8 @@ public class VehicleWeConnectHandler extends VehicleBaseHandler {
     @Override
     public void registerServices() {
         services.clear();
-        addService(new WCServiceStatus(this, (CarNetApiBase) api));
+        addService(new WCServiceStatus(this, api));
+        // addService(new WCServiceLocation(this, (CarNetApiBase) api));
     }
 
     @Override
@@ -70,36 +73,38 @@ public class VehicleWeConnectHandler extends VehicleBaseHandler {
         logger.debug("{}: Channel {} received command {}", thingId, channelId, command);
         try {
             switch (channelId) {
+                case CHANNEL_CONTROL_CLIMATER:
+                    action = switchOn ? "startClimater" : "stopClimater";
+                    actionStatus = api.controlClimater(switchOn, "");
+                    break;
+                case CHANNEL_CONTROL_CHARGER:
+                    action = switchOn ? "startCharging" : "stopCharging";
+                    actionStatus = api.controlCharger(switchOn);
+                    break;
+                case CHANNEL_CLIMATER_TARGET_TEMP:
+                    actionStatus = api.controlClimaterTemp(((DecimalType) command).doubleValue(), "electric");
+                    break;
+                case CHANNEL_CONTROL_MAXCURRENT:
+                    int maxCurrent = ((DecimalType) command).intValue();
+                    logger.info("{}: Setting max charging current to {}A", thingId, maxCurrent);
+                    action = "controlMaxCurrent";
+                    actionStatus = api.controlMaxCharge(maxCurrent);
+                    break;
+                case CHANNEL_CONTROL_TARGETCHG:
+                    int maxLevel = ((DecimalType) command).intValue();
+                    logger.info("{}: Setting target charge level to {}", thingId, maxLevel);
+                    action = "controlTargetChgLevel";
+                    actionStatus = api.controlTargetChgLevel(maxLevel);
+                    break;
+                case CHANNEL_CONTROL_WINHEAT:
+                    action = switchOn ? "startWindowHeat" : "stopWindowHeat";
+                    actionStatus = api.controlWindowHeating(switchOn);
+                    break;
+
                 /*
                  * case CHANNEL_CONTROL_LOCK:
                  * action = switchOn ? "lock" : "unlock";
                  * actionStatus = api.controlLock(switchOn);
-                 * break;
-                 * case CHANNEL_CONTROL_CLIMATER:
-                 * action = switchOn ? "startClimater" : "stopClimater";
-                 * actionStatus = api.controlClimater(switchOn, getHeaterSource());
-                 * break;
-                 * case CHANNEL_CLIMATER_TARGET_TEMP:
-                 * actionStatus = api.controlClimaterTemp(((DecimalType) command).doubleValue(), getHeaterSource());
-                 * break;
-                 * case CHANNEL_CONTROL_HEATSOURCE:
-                 * String heaterSource = command.toString().toLowerCase();
-                 * logger.debug("{}: Set heater source for climatisation to {}", thingId, heaterSource);
-                 * cache.setValue(channelId, channelUID.getId(), new StringType(heaterSource));
-                 * break;
-                 * case CHANNEL_CONTROL_CHARGER:
-                 * action = switchOn ? "startCharging" : "stopCharging";
-                 * actionStatus = api.controlCharger(switchOn);
-                 * break;
-                 * case CHANNEL_CONTROL_MAXCURRENT:
-                 * int maxCurrent = ((DecimalType) command).intValue();
-                 * logger.info("{}: Setting max charging current to {}A", thingId, maxCurrent);
-                 * action = "controlMaxCurrent";
-                 * actionStatus = api.controlMaxCharge(maxCurrent);
-                 * break;
-                 * case CHANNEL_CONTROL_WINHEAT:
-                 * action = switchOn ? "startWindowHeat" : "stopWindowHeat";
-                 * actionStatus = api.controlWindowHeating(switchOn);
                  * break;
                  * case CHANNEL_CONTROL_PREHEAT:
                  * action = switchOn ? "startPreHeat" : "stopPreHeat";

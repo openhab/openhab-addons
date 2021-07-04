@@ -24,19 +24,19 @@ import org.openhab.binding.carnet.internal.TextResources;
 import org.openhab.binding.carnet.internal.api.ApiErrorDTO;
 import org.openhab.binding.carnet.internal.api.ApiErrorDTO.CNErrorMessage2Details;
 import org.openhab.binding.carnet.internal.api.ApiException;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetApi;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetPendingRequest;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceCarFinder;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceCharger;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceClimater;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceDestinations;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceGeoFenceAlerts;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceHonkFlash;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServicePreHeat;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceRLU;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceSpeedAlerts;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceStatus;
-import org.openhab.binding.carnet.internal.api.cnservices.CarNetServiceTripData;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetServiceCarFinder;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetServiceCharger;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetServiceClimater;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetServiceDestinations;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetServiceGeoFenceAlerts;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetServiceHonkFlash;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetServicePreHeat;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetServiceRLU;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetServiceSpeedAlerts;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetServiceStatus;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetServiceTripData;
 import org.openhab.binding.carnet.internal.provider.CarChannelTypeProvider;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
@@ -75,11 +75,6 @@ public class VehicleCarNetHandler extends VehicleBaseHandler {
         addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_MAINTREQ, ITEMT_SWITCH, null, false, true);
         addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_WINCLOSED, ITEMT_SWITCH, null, false, true);
         addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_TIRESOK, ITEMT_SWITCH, null, false, true);
-
-        for (int i = 0; i < config.vstatus.imageUrls.length; i++) {
-            addChannel(channels, CHANNEL_GROUP_PICTURES, CHANNEL_PICTURES_IMG_PREFIX + (i + 1), ITEMT_STRING, null,
-                    i > 0, false);
-        }
         return true;
     }
 
@@ -218,17 +213,17 @@ public class VehicleCarNetHandler extends VehicleBaseHandler {
     @Override
     public void registerServices() {
         services.clear();
-        addService(new CarNetServiceStatus(this, (CarNetApiBase) api));
-        addService(new CarNetServiceCarFinder(this, (CarNetApiBase) api));
-        addService(new CarNetServiceRLU(this, (CarNetApiBase) api));
-        addService(new CarNetServiceClimater(this, (CarNetApiBase) api));
-        addService(new CarNetServicePreHeat(this, (CarNetApiBase) api));
-        addService(new CarNetServiceCharger(this, (CarNetApiBase) api));
-        addService(new CarNetServiceTripData(this, (CarNetApiBase) api));
-        addService(new CarNetServiceDestinations(this, (CarNetApiBase) api));
-        addService(new CarNetServiceHonkFlash(this, (CarNetApiBase) api));
-        addService(new CarNetServiceGeoFenceAlerts(this, (CarNetApiBase) api));
-        addService(new CarNetServiceSpeedAlerts(this, (CarNetApiBase) api));
+        addService(new CarNetServiceStatus(this, (CarNetApi) api));
+        addService(new CarNetServiceCarFinder(this, (CarNetApi) api));
+        addService(new CarNetServiceRLU(this, (CarNetApi) api));
+        addService(new CarNetServiceClimater(this, (CarNetApi) api));
+        addService(new CarNetServicePreHeat(this, (CarNetApi) api));
+        addService(new CarNetServiceCharger(this, (CarNetApi) api));
+        addService(new CarNetServiceTripData(this, (CarNetApi) api));
+        addService(new CarNetServiceDestinations(this, (CarNetApi) api));
+        addService(new CarNetServiceHonkFlash(this, (CarNetApi) api));
+        addService(new CarNetServiceGeoFenceAlerts(this, (CarNetApi) api));
+        addService(new CarNetServiceSpeedAlerts(this, (CarNetApi) api));
     }
 
     @Override

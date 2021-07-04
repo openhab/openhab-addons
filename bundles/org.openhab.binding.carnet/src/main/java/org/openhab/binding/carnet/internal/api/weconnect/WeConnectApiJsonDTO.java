@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.carnet.internal.api.weconnect;
 
+import static org.openhab.binding.carnet.internal.BindingConstants.API_REQUEST_TIMEOUT_SEC;
+
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * {@link WeConnectApiJsonDTO} defines the We Connect API data formats
@@ -20,6 +23,19 @@ import java.util.ArrayList;
  * @author Markus Michels - Initial contribution
  */
 public class WeConnectApiJsonDTO {
+    public static final String WCAPI_BASE_URL = "https://mobileapi.apps.emea.vwapps.io";
+
+    public static final String WCSERVICE_STATUS = "status";
+    public static final String WCSERVICE_CLIMATISATION = "climatisation";
+    public static final String WCSERVICE_CHARGING = "charging";
+
+    // request status codes
+    public static final String WCAPI_REQUEST_QUEUED = "queued";
+    public static final String WCAPI_REQUEST_STARTED = "started";
+    public static final String WCAPI_REQUEST_SUCCESSFUL = "successful";
+    public static final String WCAPI_REQUEST_ERROR = "api_error";
+    public static final String WCAPI_REQUEST_TIMEOUT = "timeout";
+
     public static class WCVehicleList {
         public static class WCVehicle {
             /*
@@ -264,5 +280,68 @@ public class WeConnectApiJsonDTO {
         }
 
         public WCVehicleStatus data;
+    }
+
+    public static class WCActionResponse {
+        public class WCApiError {
+            /*
+             * "error": {
+             * "code": 2105,
+             * "message": "The provided request is incorrect",
+             * "group": 2,
+             * "info": "Internal error, please try again later. If the problem persists, please contact our support.",
+             * "retry": true
+             * }
+             */
+            public Integer code;
+            public String message;
+            public Integer group;
+            public String info;
+            public Boolean retry;
+        }
+
+        /*
+         * {
+         * "data": {
+         * "requestID": "a1d78f9c-90be-4adb-8ce8-b0d196c239d8"
+         * }
+         * }
+         */
+        public class WCActionResponseData {
+            public String requestID;
+        }
+
+        public WCActionResponseData data;
+        public WCApiError error;
+    }
+
+    public static class WCPendingRequest {
+        public String vin = "";
+        public String service = "";
+        public String action = "";
+        public String requestId = "";
+        public String status = "";
+        public String checkUrl = "";
+        public Date creationTime = new Date();
+        public long timeout = API_REQUEST_TIMEOUT_SEC;
+
+        public WCPendingRequest(String vin, String service, String action, String requestId) {
+            this.vin = vin;
+            this.service = service;
+            this.action = action;
+            this.requestId = requestId;
+            this.checkUrl = WCAPI_BASE_URL + "/vehicles/{2}/requests/" + requestId + "/status";
+        }
+
+        public static boolean isInProgress(String status) {
+            String st = status.toLowerCase();
+            return WCAPI_REQUEST_QUEUED.equals(st) || WCAPI_REQUEST_STARTED.equals(st);
+        }
+
+        public boolean isExpired() {
+            Date currentTime = new Date();
+            long diff = currentTime.getTime() - creationTime.getTime();
+            return (diff / 1000) > timeout;
+        }
     }
 }

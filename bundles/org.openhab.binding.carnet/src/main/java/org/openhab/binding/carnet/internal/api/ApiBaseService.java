@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.carnet.internal.CarUtils;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.config.CombinedConfig;
 import org.openhab.binding.carnet.internal.handler.AccountHandler;
 import org.openhab.binding.carnet.internal.handler.VehicleBaseHandler;
@@ -39,14 +38,14 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(ApiBaseService.class);
-    protected final CarNetApiBase api;
+    protected final ApiBase api;
     protected final VehicleBaseHandler thingHandler;
     protected final ChannelDefinitions idMapper;
     protected final String thingId;
     protected String serviceId = "";
     protected boolean enabled = true;
 
-    public ApiBaseService(String serviceId, VehicleBaseHandler thingHandler, CarNetApiBase api) {
+    public ApiBaseService(String serviceId, VehicleBaseHandler thingHandler, ApiBase api) {
         this.serviceId = serviceId;
         this.thingHandler = thingHandler;
         this.thingId = thingHandler.thingId;

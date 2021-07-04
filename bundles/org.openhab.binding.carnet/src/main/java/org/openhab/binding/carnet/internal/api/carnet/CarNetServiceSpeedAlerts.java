@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.api.cnservices;
+package org.openhab.binding.carnet.internal.api.carnet;
 
 import static org.openhab.binding.carnet.internal.BindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarUtils.*;
@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.ApiBaseService;
 import org.openhab.binding.carnet.internal.api.ApiException;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNSpeedAlerts.CarNetSpeedAlerts;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNSpeedAlerts.CarNetSpeedAlerts.CarNetpeedAlertEntry;
 import org.openhab.binding.carnet.internal.handler.VehicleCarNetHandler;
@@ -42,7 +41,7 @@ import org.slf4j.LoggerFactory;
 public class CarNetServiceSpeedAlerts extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(CarNetServiceSpeedAlerts.class);
 
-    public CarNetServiceSpeedAlerts(VehicleCarNetHandler thingHandler, CarNetApiBase api) {
+    public CarNetServiceSpeedAlerts(VehicleCarNetHandler thingHandler, CarNetApi api) {
         super(CNAPI_SERVICE_SPEED_ALERT, thingHandler, api);
     }
 
@@ -71,7 +70,7 @@ public class CarNetServiceSpeedAlerts extends ApiBaseService {
     }
 
     private boolean update(@Nullable Map<String, ChannelIdMapEntry> channels) throws ApiException {
-        CarNetSpeedAlerts sa = api.getSpeedAlerts();
+        CarNetSpeedAlerts sa = ((CarNetApi) api).getSpeedAlerts();
         if (sa.speedAlert == null) {
             return false;
         }

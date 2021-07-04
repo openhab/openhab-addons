@@ -243,7 +243,9 @@ public class CarUtils {
 
     public static State getDateTime(String timestamp, ZoneId zoneId) {
         try {
-            Date date = Date.from(Instant.from(DateTimeFormatter.ISO_INSTANT.parse(timestamp)));
+            DateTimeFormatter fmt = timestamp.contains("+") ? DateTimeFormatter.ISO_ZONED_DATE_TIME
+                    : DateTimeFormatter.ISO_INSTANT;
+            Date date = Date.from(Instant.from(fmt.parse(timestamp)));
             return new DateTimeType(ZonedDateTime.ofInstant(date.toInstant(), zoneId));
         } catch (DateTimeException e) {
             return UnDefType.UNDEF;

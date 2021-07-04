@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.api.cnservices;
+package org.openhab.binding.carnet.internal.api.carnet;
 
 import static org.openhab.binding.carnet.internal.BindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarUtils.getString;
@@ -23,14 +23,11 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.carnet.internal.OpenStreetMapApiDTO;
 import org.openhab.binding.carnet.internal.api.ApiBaseService;
 import org.openhab.binding.carnet.internal.api.ApiException;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarNetPosition;
+import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CarPosition;
 import org.openhab.binding.carnet.internal.handler.VehicleCarNetHandler;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -46,7 +43,7 @@ public class CarNetServiceCarFinder extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(CarNetServiceCarFinder.class);
     private final OpenStreetMapApiDTO osmApi = new OpenStreetMapApiDTO();
 
-    public CarNetServiceCarFinder(VehicleCarNetHandler thingHandler, CarNetApiBase api) {
+    public CarNetServiceCarFinder(VehicleCarNetHandler thingHandler, CarNetApi api) {
         super(CNAPI_SERVICE_CAR_FINDER, thingHandler, api);
     }
 
@@ -66,13 +63,16 @@ public class CarNetServiceCarFinder extends ApiBaseService {
         boolean updated = false;
         try {
             logger.debug("{}: Get Vehicle Position", thingId);
-            CarNetPosition position = api.getVehiclePosition();
-            updated |= updateLocation(position, CHANNEL_LOCATTION_GEO);
+            CarPosition position = api.getVehiclePosition();
+            updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO, position.getAsPointType());
+
             String time = position.getCarSentTime();
             updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, new DateTimeType(time));
             updated |= updateAddress(position, CHANNEL_LOCATTION_ADDRESS);
 
-            updated |= updateLocation(api.getStoredPosition(), CHANNEL_PARK_LOCATION);
+            position = api.getStoredPosition();
+            updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_PARK_LOCATION, position.getAsPointType());
+            updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, new DateTimeType(time));
             updated |= updateAddress(position, CHANNEL_PARK_ADDRESS);
             String parkingTime = getString(position.getParkingTime());
             updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_PARK_TIME,
@@ -90,17 +90,10 @@ public class CarNetServiceCarFinder extends ApiBaseService {
         return updated;
     }
 
-    private boolean updateLocation(CarNetPosition position, String channel) {
-        double latitude = position.getLattitude();
-        double longitude = position.getLongitude();
-        PointType location = new PointType(new DecimalType(latitude), new DecimalType(longitude));
-        return updateChannel(CHANNEL_GROUP_LOCATION, channel, location);
-    }
-
-    private boolean updateAddress(CarNetPosition position, String channel) {
+    private boolean updateAddress(CarPosition position, String channel) {
         if (getConfig().vehicle.enableAddressLookup) {
             try {
-                String address = osmApi.getAddressFromPosition(api.getHttp(), position);
+                String address = osmApi.getAddressFromPosition(api.getHttp(), position.getAsPointType());
                 return updateChannel(CHANNEL_GROUP_LOCATION, channel, new StringType(address));
             } catch (ApiException e) {
                 updateChannel(CHANNEL_GROUP_LOCATION, channel, UnDefType.UNDEF);

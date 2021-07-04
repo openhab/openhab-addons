@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.carnet.internal.api.cnservices;
+package org.openhab.binding.carnet.internal.api.carnet;
 
 import static org.openhab.binding.carnet.internal.BindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarUtils.*;
@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.ApiBaseService;
 import org.openhab.binding.carnet.internal.api.ApiException;
-import org.openhab.binding.carnet.internal.api.carnet.CarNetApiBase;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNClimater.CarNetClimaterStatus;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNClimater.CarNetClimaterStatus.CNClimaterStatus.CarNetClimaterStatusData;
 import org.openhab.binding.carnet.internal.api.carnet.CarNetApiGSonDTO.CNClimater.CarNetClimaterStatus.CNClimaterStatus.CarNetClimaterStatusData.CNClimaterElementState.CarNetClimaterZoneStateList;
@@ -45,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public class CarNetServiceClimater extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(CarNetServiceClimater.class);
 
-    public CarNetServiceClimater(VehicleCarNetHandler thingHandler, CarNetApiBase api) {
+    public CarNetServiceClimater(VehicleCarNetHandler thingHandler, CarNetApi api) {
         super(CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION, thingHandler, api);
     }
 
@@ -70,7 +69,7 @@ public class CarNetServiceClimater extends ApiBaseService {
     public boolean serviceUpdate() throws ApiException {
         boolean updated = false;
         try {
-            CarNetClimaterStatus cs = api.getClimaterStatus();
+            CarNetClimaterStatus cs = ((CarNetApi) api).getClimaterStatus();
             String group = CHANNEL_GROUP_CLIMATER;
             if (cs.settings != null) {
                 if (cs.settings.heaterSource != null) {
