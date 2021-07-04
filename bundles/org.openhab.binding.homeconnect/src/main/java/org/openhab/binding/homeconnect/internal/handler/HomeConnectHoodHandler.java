@@ -222,7 +222,7 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
                         try {
                             List<AvailableProgramOption> availableProgramOptions = apiClient.get()
                                     .getProgramOptions(getThingHaId(), PROGRAM_HOOD_VENTING);
-                            if (availableProgramOptions.isEmpty()) {
+                            if (availableProgramOptions == null || availableProgramOptions.isEmpty()) {
                                 throw new CommunicationException("Program " + PROGRAM_HOOD_VENTING + " is unsupported");
                             }
                             availableProgramOptions.forEach(option -> {
