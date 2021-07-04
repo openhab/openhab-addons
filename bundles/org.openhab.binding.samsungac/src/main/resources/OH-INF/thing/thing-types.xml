@@ -1,0 +1,173 @@
+<thing:thing-descriptions bindingId="samsungac"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!--Samsung Digital Inverter Thing -->
+	<thing-type id="ac">
+		<label>Samsung Air Conditioner</label>
+		<description>
+			A new-generation Samsung air conditioner with digital inverter and built-in HTTP interface.
+		</description>
+		<category>HVAC</category>
+
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="autoclean" typeId="autoclean"/>
+			<channel id="beep" typeId="beep"/>
+			<channel id="setpoint_temperature" typeId="setpoint_temperature"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="outdoor_temperature" typeId="outdoor_temperature"/>
+			<channel id="winddirection" typeId="winddirection"/>
+			<channel id="windspeed" typeId="windspeed"/>
+			<channel id="operation_mode" typeId="operation_mode"/>
+			<channel id="comode" typeId="comode"/>
+			<channel id="running_time" typeId="running_time"/>
+			<channel id="power_usage" typeId="power_usage"/>
+			<channel id="filtertime" typeId="filtertime"/>
+			<channel id="filteralarmtime" typeId="filteralarmtime"/>
+			<channel id="alarm" typeId="alarm"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:samsungac:ac"/>
+	</thing-type>
+
+	<channel-type id="setpoint_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>Desired room temperature</description>
+		<tags>
+			<tag>TargetTemperature</tag>
+		</tags>
+		<state pattern="%.0f %unit%" min="8.0" max="30.0" step="1.0" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature measured by the device</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>CurrentTemperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="winddirection" advanced="true">
+		<item-type>String</item-type>
+		<label>Wind Direction</label>
+		<state>
+			<options>
+				<option value="All">Automatic</option>
+				<option value="Up_And_Low">Up and Down</option>
+				<option value="Left_And_Right">Left and Right</option>
+				<option value="Fix">Fixed</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="windspeed">
+		<item-type>String</item-type>
+		<label>Wind Speed</label>
+		<state>
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">Low</option>
+				<option value="2">Medium</option>
+				<option value="3">High</option>
+				<option value="4">Turbo</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="operation_mode">
+		<item-type>String</item-type>
+		<label>Operating Mode</label>
+		<state>
+			<options>
+				<option value="Auto">Auto</option>
+				<option value="Heat">Heat</option>
+				<option value="Cool">Cool</option>
+				<option value="Dry">Dry</option>
+				<option value="Wind">Wind</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="comode" advanced="true">
+		<item-type>String</item-type>
+		<label>Comfort Settings</label>
+		<state>
+			<options>
+				<option value="Comode_Off">Normal</option>
+				<option value="Comode_Quiet">Quiet</option>
+				<option value="Comode_Sleep">Sleep</option>
+				<option value="Comode_Comfort">Comfort</option>
+				<option value="Comode_Smart">Smart</option>
+				<option value="Comode_25step">25step</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="outdoor_temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Outdoor Temperature</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="running_time" advanced="true">
+		<item-type>Number</item-type>
+		<label>Hours Running</label>
+		<description>Total hours running</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="power_usage" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Power Consumption</label>
+		<description>Power consumption accumulated since last reset</description>
+		<state readOnly="true" pattern="%.1f KWh"/>
+	</channel-type>
+
+	<channel-type id="autoclean" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Autoclean</label>
+		<description>Enable/disable Autoclean</description>
+	</channel-type>
+
+	<channel-type id="beep" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Beep</label>
+		<description>Enable/disable beep sound</description>
+	</channel-type>
+
+	<channel-type id="reset_filter_clean_alarm" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Reset Filter Alarm</label>
+		<description>Resets filter clean alarm</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="filtertime" advanced="true">
+		<item-type>Number</item-type>
+		<label>Last Cleaning</label>
+		<description>Hours since filter was cleaned</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="filteralarmtime" advanced="true">
+		<item-type>Number</item-type>
+		<label>Interval Time for Filter Cleaning</label>
+		<description>Cleaning interval for filter</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="alarm" advanced="true">
+		<item-type>String</item-type>
+		<label>Alarm</label>
+		<category>Alarm</category>
+	</channel-type>
+
+
+</thing:thing-descriptions>
