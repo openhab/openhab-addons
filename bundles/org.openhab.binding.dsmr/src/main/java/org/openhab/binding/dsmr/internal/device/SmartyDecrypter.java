@@ -140,7 +140,7 @@ public class SmartyDecrypter implements TelegramParser {
                 break;
             case READ_PAYLOAD_LENGTH:
                 dataLength <<= 8;
-                dataLength |= rawInput;
+                dataLength |= (rawInput & 0xFF);
                 if (currentBytePosition >= changeToNextStateAt) {
                     state = State.READ_SEPARATOR_30;
                     changeToNextStateAt++;
