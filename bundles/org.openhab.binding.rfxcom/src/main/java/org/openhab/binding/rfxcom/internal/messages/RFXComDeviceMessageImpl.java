@@ -17,6 +17,7 @@ import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.CHANNEL
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.config.RFXComGenericDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -48,13 +49,14 @@ abstract class RFXComDeviceMessageImpl<T> extends RFXComBaseMessage implements R
     }
 
     @Override
-    public Command convertToCommand(String channelId, DeviceState deviceState)
-            throws RFXComUnsupportedChannelException {
-        return (Command) convertToState(channelId, deviceState);
+    public Command convertToCommand(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
+            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
+        return (Command) convertToState(channelId, config, deviceState);
     }
 
     @Override
-    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
+            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
         switch (channelId) {
             case CHANNEL_SIGNAL_LEVEL:
                 return convertSignalLevelToSystemWideLevel(signalLevel);

@@ -102,8 +102,10 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 RFXComBaseMessage msg = queue.peek();
 
                 try {
-                    logger.debug("Transmitting message '{}'", msg);
                     byte[] data = msg.decodeMessage();
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Transmitting bytes '{}' for message '{}'", HexUtils.bytesToHex(data), msg);
+                    }
                     connector.sendMessage(data);
                     break;
                 } catch (RFXComException rfxe) {
