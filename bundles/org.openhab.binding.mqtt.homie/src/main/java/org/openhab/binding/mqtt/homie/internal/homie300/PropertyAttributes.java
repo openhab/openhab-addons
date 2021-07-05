@@ -29,6 +29,7 @@ import org.openhab.binding.mqtt.generic.mapping.TopicPrefix;
 @TopicPrefix
 public class PropertyAttributes extends AbstractMqttAttributeClass {
     // Lower-case enum value names required. Those are identifiers for the MQTT/homie protocol.
+    // https://homieiot.github.io/specification/#payload
     public enum DataTypeEnum {
         unknown,
         integer_,
@@ -36,7 +37,9 @@ public class PropertyAttributes extends AbstractMqttAttributeClass {
         boolean_,
         string_,
         enum_,
-        color_
+        color_,
+        datetime_,
+        duration_
     }
 
     public String name = "";

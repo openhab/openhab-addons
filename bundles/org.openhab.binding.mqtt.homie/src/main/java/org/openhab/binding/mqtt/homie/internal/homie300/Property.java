@@ -26,16 +26,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelConfigBuilder;
 import org.openhab.binding.mqtt.generic.ChannelState;
-import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass.AttributeChanged;
 import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
+import org.openhab.binding.mqtt.generic.values.DateTimeValue;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants;
+import org.openhab.binding.mqtt.homie.internal.handler.HomieThingHandler;
 import org.openhab.binding.mqtt.homie.internal.homie300.PropertyAttributes.DataTypeEnum;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -95,7 +96,8 @@ public class Property implements AttributeChanged {
 
     /**
      * Subscribe to property attributes. This will not subscribe
-     * to the property value though. Call {@link Device#startChannels(MqttBrokerConnection)} to do that.
+     * to the property value though. Call
+     * {@link Device#startChannels(MqttBrokerConnection, ScheduledExecutorService, int, HomieThingHandler)} to do that.
      *
      * @return Returns a future that completes as soon as all attribute values have been received or requests have timed
      *         out.
@@ -177,7 +179,7 @@ public class Property implements AttributeChanged {
         Value value;
         Boolean isDecimal = null;
 
-        if (attributes.name == "") {
+        if (attributes.name.isBlank()) {
             attributes.name = propertyID;
         }
 
@@ -218,6 +220,10 @@ public class Property implements AttributeChanged {
                     value = new NumberValue(min, max, step, attributes.unit);
                 }
                 break;
+            case datetime_:
+                value = new DateTimeValue();
+                break;
+            case duration_:
             case string_:
             case unknown:
             default:
@@ -262,7 +268,7 @@ public class Property implements AttributeChanged {
 
     /**
      * @return Returns the channelState. You should have called
-     *         {@link Property#subscribe(AbstractMqttAttributeClass, int)}
+     *         {@link Property#subscribe(MqttBrokerConnection, ScheduledExecutorService, int)}
      *         and waited for the future to complete before calling this Getter.
      */
     public @Nullable ChannelState getChannelState() {
@@ -275,7 +281,6 @@ public class Property implements AttributeChanged {
      * @param connection A broker connection
      * @param scheduler A scheduler to realize the timeout
      * @param timeout A timeout in milliseconds. Can be 0 to disable the timeout and let the future return earlier.
-     * @param channelStateUpdateListener An update listener
      * @return A future that completes with true if the subscribing worked and false and/or exceptionally otherwise.
      */
     public CompletableFuture<@Nullable Void> startChannel(MqttBrokerConnection connection,
