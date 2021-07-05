@@ -5,38 +5,33 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:samsungac:ac">
-
 		<parameter name="bearer" type="text" required="false">
 			<context>password</context>
 			<label>Token</label>
-			<description>Data token to access the Samsung Digital Inverter</description>
-			<default>1eD8FjsyC5</default>
+			<description>Data token to access the Samsung Air Conditioner</description>
 		</parameter>
 		<parameter name="ip" type="text" required="true">
-			<label>IP-Address</label>
+			<label>IP Address</label>
 			<description>IP Address</description>
 			<context>network-address</context>
-			<default>192.168.1.145</default>
 		</parameter>
 		<parameter name="port" type="integer" required="true">
 			<label>Port Number</label>
-			<description>Fill in port number (8888)</description>
+			<description>The port number the AC is accessible</description>
 			<default>8888</default>
 		</parameter>
 		<parameter name="refresh" type="integer" min="300" required="false">
-			<label>Refresh interval</label>
+			<label>Refresh Interval</label>
 			<description>Specifies the refresh interval in seconds.</description>
 			<default>300</default>
 		</parameter>
 		<parameter name="keystore" type="text" required="true">
 			<label>Keystore</label>
 			<description>Path to Keystore File (pkcs #12 format)</description>
-			<default>/etc/openhab/services/samsung.pkcs12</default>
 		</parameter>
 		<parameter name="keystore_secret" type="text">
 			<label>Keystore Password</label>
 			<context>password</context>
-			<default>secret</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>
