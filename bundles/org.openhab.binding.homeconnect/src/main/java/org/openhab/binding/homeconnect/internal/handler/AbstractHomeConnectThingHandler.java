@@ -1471,7 +1471,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                         : Collections.emptyList();
             } else {
                 // Depending on the current program operation state, the APi request could trigger a
-                // CommunicationException exception due to returned status code 509
+                // CommunicationException exception due to returned status code 409
                 try {
                     availableProgramOptions = apiClient.get().getProgramOptions(getThingHaId(), programKey);
                     if (availableProgramOptions == null) {
