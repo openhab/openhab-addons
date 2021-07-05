@@ -16,7 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -52,10 +51,8 @@ public abstract class SoulissGenericActionMessage extends BaseThingHandler {
         thingGenActMsg = pThing;
 
         try {
-            sTopicNumber = thingGenActMsg.getUID().toString().split(":")[2]
-                    .split(SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR)[0];
-            sTopicVariant = thingGenActMsg.getUID().toString().split(":")[2]
-                    .split(SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR)[1];
+            sTopicNumber = thingGenActMsg.getConfiguration().getProperties().get("number").toString();
+            sTopicVariant = thingGenActMsg.getConfiguration().getProperties().get("variant").toString();
         } catch (Exception e) {
             logger.debug("Item Definition Error. Use ex:'souliss:t11:nodeNumber-slotNumber'");
         }

@@ -325,6 +325,9 @@ public class SendDispatcherRunnable implements Runnable {
             Thing typ = null;
             while (thingsIterator.hasNext()) {
                 typ = thingsIterator.next();
+                if (typ.getThingTypeUID().equals(SoulissBindingConstants.TOPICS_THING_TYPE)) {
+                    continue;
+                }
                 String[] sUIDArray = typ.getUID().getAsString().split(":");
                 SoulissGenericHandler handler = (SoulissGenericHandler) typ.getHandler();
                 if (handler != null) { // execute it only if binding is Souliss and update is for my
