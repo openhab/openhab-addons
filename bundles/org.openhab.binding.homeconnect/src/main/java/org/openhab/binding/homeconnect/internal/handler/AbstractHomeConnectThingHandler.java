@@ -1116,20 +1116,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 Program program = apiClient.get().getSelectedProgram(getThingHaId());
 
                 if (program != null) {
-                    // Depending on the current program operation state, the method
-                    // updateProgramOptionsStateDescriptions could trigger a CommunicationException exception due to the
-                    // called API returning the code 509.
-                    try {
-                        updateProgramOptionsStateDescriptions(program.getKey());
-                    } catch (CommunicationException e) {
-                        getThingChannel(CHANNEL_WASHER_SPIN_SPEED).ifPresent(channel -> dynamicStateDescriptionProvider
-                                .setStateOptions(channel.getUID(), emptyList()));
-                        getThingChannel(CHANNEL_WASHER_TEMPERATURE).ifPresent(channel -> dynamicStateDescriptionProvider
-                                .setStateOptions(channel.getUID(), emptyList()));
-                        getThingChannel(CHANNEL_DRYER_DRYING_TARGET)
-                                .ifPresent(channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(),
-                                        emptyList()));
-                    }
+                    updateProgramOptionsStateDescriptions(program.getKey());
                     processProgramOptions(program.getOptions());
 
                     return new StringType(program.getKey());
@@ -1472,7 +1459,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     }
 
     protected void updateProgramOptionsStateDescriptions(String programKey)
-            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+            throws AuthorizationException, ApplianceOfflineException {
         Optional<HomeConnectApiClient> apiClient = getApiClient();
         if (apiClient.isPresent()) {
             boolean cacheToSet = false;
@@ -1483,15 +1470,21 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 availableProgramOptions = availableProgramOptions != null ? availableProgramOptions
                         : Collections.emptyList();
             } else {
-                availableProgramOptions = apiClient.get().getProgramOptions(getThingHaId(), programKey);
-                if (availableProgramOptions == null) {
-                    // Program is unsupported, save in cache an empty list of options to avoid calling again the API
-                    // for this program
+                // Depending on the current program operation state, the APi request could trigger a
+                // CommunicationException exception due to returned status code 509
+                try {
+                    availableProgramOptions = apiClient.get().getProgramOptions(getThingHaId(), programKey);
+                    if (availableProgramOptions == null) {
+                        // Program is unsupported, save in cache an empty list of options to avoid calling again the API
+                        // for this program
+                        availableProgramOptions = emptyList();
+                        logger.debug("Saving empty options in cache for unsupported program '{}'.", programKey);
+                        availableProgramOptionsCache.put(programKey, availableProgramOptions);
+                    } else {
+                        cacheToSet = true;
+                    }
+                } catch (CommunicationException e) {
                     availableProgramOptions = emptyList();
-                    logger.debug("Saving empty options in cache for unsupported program '{}'.", programKey);
-                    availableProgramOptionsCache.put(programKey, availableProgramOptions);
-                } else {
-                    cacheToSet = true;
                 }
             }
 
