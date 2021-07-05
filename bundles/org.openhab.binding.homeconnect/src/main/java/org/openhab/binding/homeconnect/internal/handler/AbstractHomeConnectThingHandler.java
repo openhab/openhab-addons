@@ -1116,6 +1116,9 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 Program program = apiClient.get().getSelectedProgram(getThingHaId());
 
                 if (program != null) {
+                    // Depending on the current program operation state, the method
+                    // updateProgramOptionsStateDescriptions could trigger a CommunicationException exception due to the
+                    // called API returning the code 509.
                     try {
                         updateProgramOptionsStateDescriptions(program.getKey());
                     } catch (CommunicationException e) {
