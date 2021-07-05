@@ -66,20 +66,12 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     protected SoulissGenericHandler(Thing thing) {
         super(thing);
         this.thingGeneric = thing;
-        var iPosNodeSlot = 2; // if uuid is of type souliss:gateway:[typical]:[node]-[slot] then node/slot is at
-                              // position 2
 
-        if (thing.getUID().getAsString().split(":").length > 3) {
-            iPosNodeSlot = 3; // else, if uuid is of type souliss:gateway:[bridgeID]:[typical]:[node]-[slot] then
-                              // node/slot is at position 3
-        }
         try {
-            iNode = Integer.parseInt(thing.getUID().toString().split(":")[iPosNodeSlot]
-                    .split(SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR)[0]);
-            iSlot = Integer.parseInt(thing.getUID().toString().split(":")[iPosNodeSlot]
-                    .split(SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR)[1]);
+            iNode = Integer.parseInt(thing.getConfiguration().getProperties().get("node").toString());
+            iSlot = Integer.parseInt(thing.getConfiguration().getProperties().get("slot").toString());
         } catch (Exception e) {
-            logger.debug("Item Definition Error. Use ex:'souliss:t11:nodeNumber-slotNumber'");
+            logger.warn("Error getting node/slot from souliss typical (thing config).");
         }
     }
 

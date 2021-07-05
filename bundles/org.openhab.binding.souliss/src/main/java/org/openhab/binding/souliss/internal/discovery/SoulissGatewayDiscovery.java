@@ -132,7 +132,8 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         thingUID = new ThingUID(SoulissBindingConstants.TOPICS_THING_TYPE, gatewayUID, sNodeID);
         label = "Topic. Number: " + topicNumber + ", Variant: " + sTopicVariant;
 
-        discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label).withBridge(gatewayUID).build();
+        discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label).withProperty("number", topicNumber)
+                .withProperty("variant", sTopicVariant).withBridge(gatewayUID).build();
         thingDiscovered(discoveryResult);
     }
 
@@ -256,8 +257,9 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
             }
             if (thingUID != null) {
                 label = "[" + gwHandler.getThing().getUID().getAsString() + "] " + label;
-                discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label)
-                        .withBridge(gwHandler.getThing().getUID()).build();
+
+                discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label).withProperty("node", node)
+                        .withProperty("slot", slot).withBridge(gwHandler.getThing().getUID()).build();
                 thingDiscovered(discoveryResult);
                 gwHandler.setThereIsAThingDetection();
 

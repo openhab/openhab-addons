@@ -15,6 +15,7 @@ package org.openhab.binding.souliss.internal.handler;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -53,6 +54,10 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             .newSingleThreadExecutor(new NamedThreadFactory("binding-souliss"));
 
     private @Nullable Future<?> eventListenerJob;
+
+    private @Nullable ScheduledFuture<?> pingScheduler;
+    private @Nullable ScheduledFuture<?> subscriptionScheduler;
+    private @Nullable ScheduledFuture<?> healthScheduler;
 
     private CommonCommands soulissCommands = new CommonCommands();
 
@@ -97,17 +102,17 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
         // JOB PING
         var soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(this.bridge);
-        scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2, this.gwConfig.pingInterval,
+        pingScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2, this.gwConfig.pingInterval,
                 TimeUnit.SECONDS);
         // JOB SUBSCRIPTION
         var soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(bridge);
-        scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 0, this.gwConfig.subscriptionInterval,
-                TimeUnit.MINUTES);
+        subscriptionScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 0,
+                this.gwConfig.subscriptionInterval, TimeUnit.MINUTES);
 
         // JOB HEALTH OF NODES
         var soulissGatewayJobHealthyRunnable = new SoulissGatewayJobHealthy(this.bridge);
-        scheduler.scheduleWithFixedDelay(soulissGatewayJobHealthyRunnable, 5, this.gwConfig.healthyInterval,
-                TimeUnit.SECONDS);
+        healthScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobHealthyRunnable, 5,
+                this.gwConfig.healthyInterval, TimeUnit.SECONDS);
 
         // il ciclo Send è schedulato con la costante
         // SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_cicleInMillis
@@ -200,5 +205,21 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     public void setDiscoveryService(SoulissGatewayDiscovery discoveryService) {
         this.discoveryService = discoveryService;
+    }
+
+    @Override
+    public void dispose() {
+
+        if (this.pingScheduler != null) {
+            this.pingScheduler.cancel(true);
+        }
+        if (this.subscriptionScheduler != null) {
+            this.subscriptionScheduler.cancel(true);
+        }
+        if (this.healthScheduler != null) {
+            this.healthScheduler.cancel(true);
+        }
+        this.udpExecutorService.shutdown();
+        super.dispose();
     }
 }

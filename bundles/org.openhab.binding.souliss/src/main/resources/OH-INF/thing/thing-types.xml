@@ -98,6 +98,16 @@
 		</channels>
 
 		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
 			<parameter name="sleep" type="integer" min="1" max="1000">
 				<label>Sleep</label>
 				<description>Set sleep timer in cycles (conf.parameter: "sleep")</description>
@@ -110,7 +120,6 @@
 				<required>false</required>
 				<default>true</default>
 			</parameter>
-
 		</config-description>
 	</thing-type>
 
@@ -127,6 +136,16 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
 			<parameter name="sleep" type="integer" min="1" max="1000">
 				<label>Sleep</label>
 				<description>Set sleep timer in cycles</description>
@@ -135,7 +154,7 @@
 			</parameter>
 			<parameter name="secureSend" type="boolean">
 				<label>Secure Send</label>
-				<description></description>
+				<description/>
 				<required>false</required>
 				<default>true</default>
 			</parameter>
@@ -155,6 +174,18 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t14">
@@ -168,6 +199,18 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t16">
@@ -189,6 +232,16 @@
 		</channels>
 
 		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
 			<parameter name="sleep" type="integer" min="1" max="1000">
 				<label>Sleep</label>
 				<description>Set sleep timer in cycles</description>
@@ -198,7 +251,7 @@
 
 			<parameter name="secureSend" type="boolean">
 				<label>Secure Send</label>
-				<description></description>
+				<description/>
 				<required>false</required>
 				<default>true</default>
 			</parameter>
@@ -218,6 +271,16 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
 			<parameter name="sleep" type="integer" min="1" max="1000">
 				<label>Sleep</label>
 				<description>Set sleep timer in cycles</description>
@@ -227,7 +290,7 @@
 
 			<parameter name="secureSend" type="boolean">
 				<label>Secure Send</label>
-				<description></description>
+				<description/>
 				<required>false</required>
 				<default>true</default>
 			</parameter>
@@ -251,6 +314,16 @@
 		</channels>
 
 		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
 			<parameter name="sleep" type="integer" min="1" max="1000">
 				<label>Sleep</label>
 				<description>Set sleep timer in cycles</description>
@@ -302,6 +375,18 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t21">
@@ -317,9 +402,19 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
 			<parameter name="secureSend" type="boolean">
 				<label>Secure Send</label>
-				<description></description>
+				<description/>
 				<required>false</required>
 				<default>true</default>
 			</parameter>
@@ -339,9 +434,19 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
 			<parameter name="secureSend" type="boolean">
 				<label>Secure Send</label>
-				<description></description>
+				<description/>
 				<required>false</required>
 				<default>true</default>
 			</parameter>
@@ -374,6 +479,16 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
 			<!-- To Implement -->
 			<!-- <parameter name="secureSend" type="boolean"> -->
 			<!-- <label>Secure Send</label> -->
@@ -405,9 +520,19 @@
 
 		</channels>
 		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
 			<parameter name="secureSend" type="boolean">
 				<label>Secure Send</label>
-				<description></description>
+				<description/>
 				<required>false</required>
 				<default>true</default>
 			</parameter>
@@ -434,9 +559,19 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
 			<parameter name="secureSend" type="boolean">
 				<label>Secure Send</label>
-				<description></description>
+				<description/>
 				<required>false</required>
 				<default>true</default>
 			</parameter>
@@ -456,6 +591,18 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t52">
@@ -470,6 +617,18 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t53">
@@ -483,6 +642,18 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t54">
@@ -496,6 +667,18 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t55">
@@ -509,7 +692,18 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
-
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t56">
@@ -523,6 +717,18 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t57">
@@ -536,6 +742,18 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t58">
@@ -549,6 +767,18 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t61">
@@ -561,6 +791,18 @@
 			<channel id="value" typeId="float6n"/>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t62">
@@ -573,6 +815,18 @@
 			<channel id="value" typeId="float6n"/>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t63">
@@ -585,6 +839,18 @@
 			<channel id="value" typeId="float6n"/>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t64">
@@ -598,6 +864,18 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t65">
@@ -611,6 +889,18 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t66">
@@ -624,6 +914,18 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t67">
@@ -637,6 +939,18 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="t68">
@@ -650,6 +964,18 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="1" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="1" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<thing-type id="topic">
@@ -663,9 +989,21 @@
 			<channel id="value" typeId="float6n"/>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 		</channels>
-
+		<config-description>
+			<parameter name="number" type="text">
+				<label>Number</label>
+				<description>Topic Number</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="variant" type="text">
+				<label>Variant</label>
+				<description>Topic Variant</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 	</thing-type>
 
+	<!-- CHANNELS -->
 
 	<channel-type id="fan-channel">
 		<item-type>String</item-type>
@@ -797,7 +1135,7 @@
 		<tags>
 			<tag>QualityOfService</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f"></state>
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="float">
@@ -807,7 +1145,7 @@
 		<tags>
 			<tag>sensors</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f "></state>
+		<state readOnly="true" pattern="%.1f "/>
 	</channel-type>
 
 	<channel-type id="float6n">
@@ -815,7 +1153,7 @@
 		<label>Setpoint</label>
 		<description>Floating Point Input</description>
 		<category>Temperature</category>
-		<state pattern="%.1f"></state>
+		<state pattern="%.1f"/>
 	</channel-type>
 
 	<channel-type id="humidity">
@@ -826,7 +1164,7 @@
 		<tags>
 			<tag>sensors</tag>
 		</tags>
-		<state readOnly="true" pattern="%d %%"></state>
+		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
 
@@ -839,7 +1177,7 @@
 			<tag>sensors</tag>
 		</tags>
 
-		<state readOnly="true" pattern="%.1f °C"></state>
+		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
 
 	<channel-type id="lux">
@@ -849,7 +1187,7 @@
 		<tags>
 			<tag>sensors</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f kLux"></state>
+		<state readOnly="true" pattern="%.1f kLux"/>
 	</channel-type>
 
 	<channel-type id="voltage">
@@ -860,7 +1198,7 @@
 		<tags>
 			<tag>sensors</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f V"></state>
+		<state readOnly="true" pattern="%.1f V"/>
 	</channel-type>
 	<channel-type id="ampere">
 		<item-type>Number</item-type>
@@ -870,7 +1208,7 @@
 		<tags>
 			<tag>sensors</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f A"></state>
+		<state readOnly="true" pattern="%.1f A"/>
 	</channel-type>
 
 	<channel-type id="power">
@@ -881,7 +1219,7 @@
 		<tags>
 			<tag>sensors</tag>
 		</tags>
-		<state readOnly="true" pattern="%d W"></state>
+		<state readOnly="true" pattern="%d W"/>
 	</channel-type>
 
 	<channel-type id="pressure">
@@ -891,7 +1229,7 @@
 		<tags>
 			<tag>sensors</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f hPa"></state>
+		<state readOnly="true" pattern="%.1f hPa"/>
 	</channel-type>
 
 	<channel-type id="ledColor">
@@ -907,7 +1245,7 @@
 		<label>Dimmer Brightness</label>
 		<description>The brightness can be set in 16 steps for RGBW/White leds and in 64 steps for RGBWW leds</description>
 		<category>DimmableLight</category>
-		<state min="0" max="100" step="1" pattern="%d"></state>
+		<state min="0" max="100" step="1" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="whiteMode">
@@ -924,4 +1262,5 @@
 		<category>DimmableLight</category>
 		<state readOnly="false"/>
 	</channel-type>
+
 </thing:thing-descriptions>
