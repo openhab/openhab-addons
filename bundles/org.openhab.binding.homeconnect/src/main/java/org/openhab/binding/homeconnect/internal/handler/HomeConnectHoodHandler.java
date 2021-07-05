@@ -84,16 +84,10 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
                         if (data.getValue() != null) {
                             boolean enabled = data.getValueAsBoolean();
                             if (enabled) {
-                                getThingChannel(CHANNEL_FUNCTIONAL_LIGHT_BRIGHTNESS_STATE).ifPresent(channel -> {
-                                    try {
-                                        Data brightnessData = apiClient.get()
-                                                .getFunctionalLightBrightnessState(getThingHaId());
-                                        updateState(channel.getUID(), new PercentType(brightnessData.getValueAsInt()));
-                                    } catch (CommunicationException | ApplianceOfflineException
-                                            | AuthorizationException e) {
-                                        updateState(channel.getUID(), UnDefType.UNDEF);
-                                    }
-                                });
+                                Data brightnessData = apiClient.get().getFunctionalLightBrightnessState(getThingHaId());
+                                getThingChannel(CHANNEL_FUNCTIONAL_LIGHT_BRIGHTNESS_STATE)
+                                        .ifPresent(channel -> updateState(channel.getUID(),
+                                                new PercentType(brightnessData.getValueAsInt())));
                             }
                             return OnOffType.from(enabled);
                         } else {

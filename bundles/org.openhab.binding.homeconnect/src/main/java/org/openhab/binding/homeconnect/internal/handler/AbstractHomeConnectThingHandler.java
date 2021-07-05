@@ -1008,36 +1008,23 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                     boolean enabled = data.getValueAsBoolean();
                     if (enabled) {
                         // brightness
-                        getThingChannel(CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE).ifPresent(channel -> {
-                            try {
-                                Data brightnessData = apiClient.get().getAmbientLightBrightnessState(getThingHaId());
-                                updateState(channel.getUID(), new PercentType(brightnessData.getValueAsInt()));
-                            } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
-                                updateState(channel.getUID(), UnDefType.UNDEF);
-                            }
-                        });
+                        Data brightnessData = apiClient.get().getAmbientLightBrightnessState(getThingHaId());
+                        getThingChannel(CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE)
+                                .ifPresent(channel -> updateState(channel.getUID(),
+                                        new PercentType(brightnessData.getValueAsInt())));
 
                         // color
-                        getThingChannel(CHANNEL_AMBIENT_LIGHT_COLOR_STATE).ifPresent(channel -> {
-                            try {
-                                Data colorData = apiClient.get().getAmbientLightColorState(getThingHaId());
-                                updateState(channel.getUID(), new StringType(colorData.getValue()));
-                            } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
-                                updateState(channel.getUID(), UnDefType.UNDEF);
-                            }
-                        });
+                        Data colorData = apiClient.get().getAmbientLightColorState(getThingHaId());
+                        getThingChannel(CHANNEL_AMBIENT_LIGHT_COLOR_STATE).ifPresent(
+                                channel -> updateState(channel.getUID(), new StringType(colorData.getValue())));
 
                         // custom color
+                        Data customColorData = apiClient.get().getAmbientLightCustomColorState(getThingHaId());
                         getThingChannel(CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE).ifPresent(channel -> {
-                            try {
-                                Data customColorData = apiClient.get().getAmbientLightCustomColorState(getThingHaId());
-                                String value = customColorData.getValue();
-                                if (value != null) {
-                                    updateState(channel.getUID(), mapColor(value));
-                                } else {
-                                    updateState(channel.getUID(), UnDefType.UNDEF);
-                                }
-                            } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
+                            String value = customColorData.getValue();
+                            if (value != null) {
+                                updateState(channel.getUID(), mapColor(value));
+                            } else {
                                 updateState(channel.getUID(), UnDefType.UNDEF);
                             }
                         });
@@ -1131,7 +1118,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 if (program != null) {
                     try {
                         updateProgramOptionsStateDescriptions(program.getKey());
-                    } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
+                    } catch (CommunicationException e) {
                         getThingChannel(CHANNEL_WASHER_SPIN_SPEED).ifPresent(channel -> dynamicStateDescriptionProvider
                                 .setStateOptions(channel.getUID(), emptyList()));
                         getThingChannel(CHANNEL_WASHER_TEMPERATURE).ifPresent(channel -> dynamicStateDescriptionProvider
