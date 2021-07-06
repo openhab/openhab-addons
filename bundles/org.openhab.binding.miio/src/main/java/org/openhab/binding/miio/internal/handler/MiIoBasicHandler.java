@@ -328,7 +328,17 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         getThing().getUID());
                 continue;
             }
-            sendCommand(miChannel.getChannelCustomRefreshCommand());
+            String cmd = miChannel.getChannelCustomRefreshCommand();
+            if (!cmd.startsWith("/")) {
+                cmds.put(sendCommand(miChannel.getChannelCustomRefreshCommand()), miChannel.getChannel());
+            } else {
+                if (cloudServer.isBlank()) {
+                    logger.debug("Cloudserver empty. Skipping refresh for {} channel '{}'", getThing().getUID(),
+                            miChannel.getChannel());
+                } else {
+                    cmds.put(sendCommand(cmd, cloudServer), miChannel.getChannel());
+                }
+            }
         }
     }
 
@@ -515,6 +525,16 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         return null;
     }
 
+    private @Nullable MiIoBasicChannel getCustomRefreshChannel(String channelName) {
+        for (MiIoBasicChannel refreshEntry : refreshListCustomCommands.values()) {
+            if (refreshEntry.getChannel().equals(channelName)) {
+                return refreshEntry;
+            }
+        }
+        logger.trace("Did not find channel for {} in {}", channelName, refreshList);
+        return null;
+    }
+
     private void updatePropsFromJsonArray(MiIoSendCommand response) {
         JsonArray res = response.getResult().getAsJsonArray();
         JsonArray para = JsonParser.parseString(response.getCommandString()).getAsJsonObject().get("params")
@@ -678,10 +698,11 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     }
                     break;
                 default:
-                    if (refreshListCustomCommands.containsKey(response.getMethod())) {
+                    String channel = cmds.get(response.getId());
+                    if (channel != null) {
                         logger.debug("Processing custom refresh command response for '{}' - {}", response.getMethod(),
                                 response.getResult());
-                        final MiIoBasicChannel ch = refreshListCustomCommands.get(response.getMethod());
+                        final MiIoBasicChannel ch = getCustomRefreshChannel(channel);
                         if (ch != null) {
                             if (response.getResult().isJsonArray()) {
                                 JsonArray cmdResponse = response.getResult().getAsJsonArray();
@@ -697,6 +718,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                                 updateChannel(ch, ch.getChannel(), new JsonPrimitive(response.getResult().toString()));
                             }
                         }
+                        cmds.remove(response.getId());
                     }
                     break;
             }
