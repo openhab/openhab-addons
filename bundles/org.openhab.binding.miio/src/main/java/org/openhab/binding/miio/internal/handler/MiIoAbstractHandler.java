@@ -353,7 +353,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         String deviceId = configuration.deviceId;
         if (deviceId.length() == 8 && deviceId.matches("^.*[a-zA-Z]+.*$")) {
             logger.warn(
-                    "As per openHab version 3.2 the deviceId is no longer a string with hexadecimals, instead it is a string with the numeric respresentation of the deviceId. If you continue seeing this message, update deviceId in your thing configuration");
+                    "As per openHAB version 3.2 the deviceId is no longer a string with hexadecimals, instead it is a string with the numeric respresentation of the deviceId. If you continue seeing this message, update deviceId in your thing configuration");
             deviceId = "";
         }
         try {
