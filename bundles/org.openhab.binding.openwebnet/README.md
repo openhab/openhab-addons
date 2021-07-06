@@ -20,14 +20,15 @@ In order for this binding to work, a **BTicino/Legrand OpenWebNet gateway** is n
 These gateways have been tested with the binding:
 
 - **IP gateways** or scenario programmers, such as BTicino
-[F454](https://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=006),
-[MyHOMEServer1](https://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=067),
-[MyHOME_Screen10](https://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=001),
-[MH201](https://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=053),
-[MH202](https://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=059),
-[F455](https://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=051),
-[MH200N](https://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=016),
-[F453](https://www.homesystems-legrandgroup.com/BtHomeSystems/productDetail.action?lang=EN&productId=027),  etc.
+[F454](https://catalogue.bticino.com/BTI-F454-EN),
+[MyHOMEServer1](https://catalogue.bticino.com/BTI-MYHOMESERVER1-EN),
+[MyHOME_Screen10 (MH4893C)](https://catalogue.bticino.com/BTI-MH4893C-EN),
+[MyHOME_Screen3,5 (LN4890)](https://catalogue.bticino.com/BTI-LN4890-EN),
+[MH201](https://catalogue.bticino.com/BTI-MH201-EN),
+[MH202](https://catalogue.bticino.com/BTI-MH202-EN),
+[F455](https://www.homesystems-legrandgroup.com/home?p_p_id=it_smc_bticino_homesystems_search_AutocompletesearchPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_journalArticleId=2481871&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_mvcPath=%2Fview_journal_article_content.jsp),
+[MH200N](https://www.homesystems-legrandgroup.com/home?p_p_id=it_smc_bticino_homesystems_search_AutocompletesearchPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_journalArticleId=2469209&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_mvcPath=%2Fview_journal_article_content.jsp),
+[F453](https://www.homesystems-legrandgroup.com/home?p_p_id=it_smc_bticino_homesystems_search_AutocompletesearchPortlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_journalArticleId=2703566&_it_smc_bticino_homesystems_search_AutocompletesearchPortlet_mvcPath=%2Fview_journal_article_content.jsp),  etc.
 
 - **ZigBee USB Gateways**, such as [BTicino 3578](https://catalogo.bticino.it/BTI-3578-IT), also known as Legrand 088328
 
@@ -39,10 +40,10 @@ The following Things and OpenWebNet `WHOs` are supported:
 
 | Category             | WHO          | Thing Type IDs                      | Description                                                      | Status           |
 | -------------------- | :----------: | :---------------------------------: | ---------------------------------------------------------------- | ---------------- |
-| Gateway Management   | `13`         | `bus_gateway`                       | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N, ...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F452, F453AV, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202 |
+| Gateway Management   | `13`         | `bus_gateway`                       | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N, ...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, MyHOME_Screen3,5, F455, F452, F453AV, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202 |
 | Lighting             | `1`          | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
 | Automation           | `2`          | `bus_automation`                    | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
-| Temperature Control  | `4`          | `bus_thermo_zone`, `bus_thermo_sensor` | Thermo zones management and temperature sensors (probes). NOTE Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details. | Successfully tested: H/LN4691, KG4691; thermo sensors: L/N/NT4577 + 3455 |
+| Temperature Control  | `4`          | `bus_thermo_zone`, `bus_thermo_sensor` | Thermo zones management and temperature sensors (probes). NOTE Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details. | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455 |
 | Energy Management    | `18`         | `bus_energy_meter`                  | Energy Management                                                | Successfully tested: F520, F521 |
 
 ### For ZigBee (Radio)
@@ -131,7 +132,7 @@ In BTicino MyHOME Thermoregulation (WHO=4) each **zone** has associated a thermo
 Thermo zones can be configured defining a `bus_thermo_zone` Thing for each zone with the following parameters:
 
 - the `where` config parameter (`OpenWebNet Device Address`):
-  - example BUS/SCS Thermo `zone=1` --> `where="1"` 
+  - example BUS/SCS Thermo zone `1` --> `where="1"` 
 - the `standAlone` config parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4 or 99 zones). `standAlone=true` means no Central Unit is present in the system.
 
 Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with the following parameters:
