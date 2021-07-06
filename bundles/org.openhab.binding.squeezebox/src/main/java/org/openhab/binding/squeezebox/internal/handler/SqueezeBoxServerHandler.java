@@ -37,7 +37,9 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxServerConfig;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTO;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTODeserializer;
@@ -535,51 +537,52 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             }
         }
 
+        @NonNullByDefault
+        private class KeyValue {
+            final String key;
+            final String value;
+
+            public KeyValue(String key, String value) {
+                this.key = key;
+                this.value = value;
+            }
+        };
+
+        private List<KeyValue> decodeKeyValueResponse(String[] response) {
+            final List<KeyValue> keysAndValues = new ArrayList<>();
+            if (response != null) {
+                for (String line : response) {
+                    final String decoded = decode(line);
+                    int colonPos = decoded.indexOf(":");
+                    if (colonPos < 0) {
+                        continue;
+                    }
+                    keysAndValues.add(new KeyValue(decoded.substring(0, colonPos), decoded.substring(colonPos + 1)));
+                }
+            }
+            return keysAndValues;
+        }
+
         private void handlePlayersList(String message) {
             final Set<String> connectedPlayers = new HashSet<>();
 
             // Split out players
             String[] playersList = message.split("playerindex\\S*\\s");
             for (String playerParams : playersList) {
-
                 // For each player, split out parameters and decode parameter
-                String[] parameterList = playerParams.split("\\s");
-                for (int i = 0; i < parameterList.length; i++) {
-                    parameterList[i] = decode(parameterList[i]);
-                }
-
-                // parse out the MAC address first
-                String macAddress = null;
-                for (String parameter : parameterList) {
-                    if (parameter.contains("playerid")) {
-                        macAddress = parameter.substring(parameter.indexOf(":") + 1);
-                        break;
-                    }
-                }
+                final Map<String, String> keysAndValues = decodeKeyValueResponse(playerParams.split("\\s")).stream()
+                        .collect(Collectors.toMap(kv -> kv.key, kv -> kv.value));
+                final String macAddress = keysAndValues.get("playerid");
 
                 // if none found then ignore this set of params
                 if (macAddress == null) {
                     continue;
                 }
 
-                final SqueezeBoxPlayer player = new SqueezeBoxPlayer();
-                player.setMacAddress(macAddress);
-                // populate the player state
-                for (String parameter : parameterList) {
-                    int colonPos = parameter.indexOf(":");
-                    final String key = parameter.substring(0, colonPos);
-                    final String value = parameter.substring(colonPos + 1);
-                    if ("ip".equals(key)) {
-                        player.setIpAddr(value);
-                    } else if ("uuid".equals(key)) {
-                        player.setUuid(value);
-                    } else if ("name".equals(key)) {
-                        player.setName(value);
-                    } else if ("model".equals(key)) {
-                        player.setModel(value);
-                    } else if ("connected".equals(key) && "1".equals(value)) {
-                        connectedPlayers.add(macAddress);
-                    }
+                final SqueezeBoxPlayer player = new SqueezeBoxPlayer(macAddress, keysAndValues.get("name"),
+                        keysAndValues.get("ip"), keysAndValues.get("model"), keysAndValues.get("uuid"));
+                if ("1".equals(keysAndValues.get("connected"))) {
+                    connectedPlayers.add(macAddress);
                 }
 
                 // Save player if we haven't seen it yet
@@ -587,13 +590,12 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     players.put(macAddress, player);
                     updatePlayer(listener -> listener.playerAdded(player));
                     // tell the server we want to subscribe to player updates
-                    sendCommand(player.getMacAddress() + " status - 1 subscribe:10 tags:yagJlNKjc");
+                    sendCommand(player.macAddress + " status - 1 subscribe:10 tags:yagJlNKjc");
                 }
             }
             for (final SqueezeBoxPlayer player : players.values()) {
-                final String mac = player.getMacAddress();
-                final boolean connected = connectedPlayers.contains(mac);
-                updatePlayer(listener -> listener.connectedStateChangeEvent(mac, connected));
+                final boolean connected = connectedPlayers.contains(player.macAddress);
+                updatePlayer(listener -> listener.connectedStateChangeEvent(player.macAddress, connected));
             }
         }
 
@@ -691,99 +693,89 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             String coverid = null;
             String artworkUrl = null;
 
-            for (String messagePart : messageParts) {
-                final String decoded = decode(messagePart);
-                final int colonPos = decoded.indexOf(":");
-
-                if (colonPos < 0) {
-                    continue;
-                }
-
-                final String key = decoded.substring(0, colonPos);
-                final String value = decoded.substring(colonPos + 1);
-
+            for (KeyValue entry : decodeKeyValueResponse(messageParts)) {
                 // Parameter Power
-                if ("power".equals(key)) {
-                    final boolean power = "1".equals(value);
+                if ("power".equals(entry.key)) {
+                    final boolean power = "1".equals(entry.value);
                     updatePlayer(listener -> listener.powerChangeEvent(mac, power));
                 }
                 // Parameter Volume
-                else if ("mixer volume".equals(key)) {
-                    final int volume = (int) Double.parseDouble(value);
+                else if ("mixer volume".equals(entry.key)) {
+                    final int volume = (int) Double.parseDouble(entry.value);
                     updatePlayer(listener -> listener.absoluteVolumeChangeEvent(mac, volume));
                 }
                 // Parameter Mode
-                else if ("mode".equals(key)) {
-                    updatePlayer(listener -> listener.modeChangeEvent(mac, value));
+                else if ("mode".equals(entry.key)) {
+                    updatePlayer(listener -> listener.modeChangeEvent(mac, entry.value));
                 }
                 // Parameter Playing Time
-                else if ("time".equals(key)) {
-                    final int time = (int) Double.parseDouble(value);
+                else if ("time".equals(entry.key)) {
+                    final int time = (int) Double.parseDouble(entry.value);
                     updatePlayer(listener -> listener.currentPlayingTimeEvent(mac, time));
                 }
                 // Parameter duration
-                else if ("duration".equals(key)) {
-                    final int duration = (int) Double.parseDouble(value);
+                else if ("duration".equals(entry.key)) {
+                    final int duration = (int) Double.parseDouble(entry.value);
                     updatePlayer(listener -> listener.durationEvent(mac, duration));
                 }
                 // Parameter Playing Playlist Index
-                else if ("playlist_cur_index".equals(key)) {
-                    final int index = (int) Double.parseDouble(value);
+                else if ("playlist_cur_index".equals(entry.key)) {
+                    final int index = (int) Double.parseDouble(entry.value);
                     updatePlayer(listener -> listener.currentPlaylistIndexEvent(mac, index));
                 }
                 // Parameter Playlist Number Tracks
-                else if ("playlist_tracks".equals(key)) {
-                    final int track = (int) Double.parseDouble(value);
+                else if ("playlist_tracks".equals(entry.key)) {
+                    final int track = (int) Double.parseDouble(entry.value);
                     updatePlayer(listener -> listener.numberPlaylistTracksEvent(mac, track));
                 }
                 // Parameter Playlist Repeat Mode
-                else if ("playlist repeat".equals(key)) {
-                    final int repeat = (int) Double.parseDouble(value);
+                else if ("playlist repeat".equals(entry.key)) {
+                    final int repeat = (int) Double.parseDouble(entry.value);
                     updatePlayer(listener -> listener.currentPlaylistRepeatEvent(mac, repeat));
                 }
                 // Parameter Playlist Shuffle Mode
-                else if ("playlist shuffle".equals(key)) {
-                    final int shuffle = (int) Double.parseDouble(value);
+                else if ("playlist shuffle".equals(entry.key)) {
+                    final int shuffle = (int) Double.parseDouble(entry.value);
                     updatePlayer(listener -> listener.currentPlaylistShuffleEvent(mac, shuffle));
                 }
                 // Parameter Title
-                else if ("title".equals(key)) {
-                    updatePlayer(listener -> listener.titleChangeEvent(mac, decode(value)));
+                else if ("title".equals(entry.key)) {
+                    updatePlayer(listener -> listener.titleChangeEvent(mac, entry.value));
                 }
                 // Parameter Remote Title (radio)
-                else if ("remote_title".equals(key)) {
-                    remoteTitle = value;
+                else if ("remote_title".equals(entry.key)) {
+                    remoteTitle = entry.value;
                 }
                 // Parameter Artist
-                else if ("artist".equals(key)) {
-                    artist = value;
+                else if ("artist".equals(entry.key)) {
+                    artist = entry.value;
                 }
                 // Parameter Album
-                else if ("album".equals(key)) {
-                    album = value;
+                else if ("album".equals(entry.key)) {
+                    album = entry.value;
                 }
                 // Parameter Genre
-                else if ("genre".equals(key)) {
-                    genre = value;
+                else if ("genre".equals(entry.key)) {
+                    genre = entry.value;
                 }
                 // Parameter Year
-                else if ("year".equals(key)) {
-                    year = value;
+                else if ("year".equals(entry.key)) {
+                    year = entry.value;
                 }
                 // Parameter artwork_url contains url to cover art
-                else if ("artwork_url".equals(key)) {
-                    artworkUrl = value;
+                else if ("artwork_url".equals(entry.key)) {
+                    artworkUrl = entry.value;
                 }
                 // When coverart is "1" coverid will contain a unique coverart id
-                else if ("coverart".equals(key)) {
-                    coverart = "1".equals(value);
+                else if ("coverart".equals(entry.key)) {
+                    coverart = "1".equals(entry.value);
                 }
                 // Id for covert art (only valid when coverart is "1")
-                else if ("coverid".equals(key)) {
-                    coverid = value;
+                else if ("coverid".equals(entry.key)) {
+                    coverid = entry.value;
                 } else {
                     // Added to be able to see additional status message types
-                    logger.trace("Unhandled status message type '{}'", messagePart);
+                    logger.trace("Unhandled status message type '{}' (value '{}')", entry.key, entry.value);
                 }
             }
 
@@ -907,33 +899,22 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             List<Favorite> favorites = new ArrayList<>();
             Favorite f = null;
             boolean isTypePlaylist = false;
-            for (String part : messageParts) {
-                final String decoded = decode(part);
-                int colonPos = decoded.indexOf(":");
-                if (colonPos < 0) {
-                    continue;
-                }
-
-                final String key = decoded.substring(0, colonPos);
-                final String value = decoded.substring(colonPos + 1);
-
+            for (KeyValue entry : decodeKeyValueResponse(messageParts)) {
                 // Favorite ID (in form xxxxxxxxx.n)
-                if ("id".equals(key)) {
-                    f = new Favorite(value);
+                if ("id".equals(entry.key)) {
+                    f = new Favorite(entry.value);
                     favorites.add(f);
                     isTypePlaylist = false;
                 }
                 // Favorite name
-                else if ("name".equals(key)) {
-                    if (value != null) {
-                        f.name = value;
-                    }
-                } else if ("type".equals(key) && "playlist".equals(value)) {
+                else if ("name".equals(entry.key)) {
+                    f.name = entry.value;
+                } else if ("type".equals(entry.key) && "playlist".equals(entry.value)) {
                     isTypePlaylist = true;
                 }
                 // When "1", favorite is a submenu with additional favorites
-                else if ("hasitems".equals(key)) {
-                    boolean hasitems = "1".equals(value);
+                else if ("hasitems".equals(entry.key)) {
+                    boolean hasitems = "1".equals(entry.value);
                     if (f != null) {
                         // Except for some favorites (e.g. Spotify) use hasitems:1 and type:playlist
                         if (hasitems && isTypePlaylist == false) {
