@@ -76,7 +76,7 @@ However, for devices that are unsupported, you may override the value and try to
 |-----------------|---------|----------|---------------------------------------------------------------------|
 | host            | text    | true     | Device IP address                                                   |
 | token           | text    | true     | Token for communication (in Hex)                                    |
-| deviceId        | text    | true     | Device ID number for communication (in Hex)                         |
+| deviceId        | text    | true     | Device Id (typically a number for normal devices) for communication |
 | model           | text    | false    | Device model string, used to determine the subtype                  |
 | refreshInterval | integer | false    | Refresh interval for refreshing the data in seconds. (0=disabled)   |
 | timeout         | integer | false    | Timeout time in milliseconds                                        |
@@ -86,11 +86,11 @@ Note: Suggest to use the cloud communication only for devices that require it. I
 
 ### Example Thing file
 
-`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="0326xxxx", model="philips.light.bulb", communication="direct"  ]` 
+`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="326xxxx", model="philips.light.bulb", communication="direct" ]` 
 
 or in case of unknown models include the model information of a similar device that is supported:
 
-`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId=“0470DDAA”, model="roborock.vacuum.s4", communication="cloud"]`
+`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId="326xxxx", model="roborock.vacuum.s4", communication="direct" ]`
 
 # Advanced: Unsupported devices
 

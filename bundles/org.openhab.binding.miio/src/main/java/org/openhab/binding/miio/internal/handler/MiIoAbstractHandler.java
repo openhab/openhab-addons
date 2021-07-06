@@ -351,16 +351,21 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
         @Nullable
         String deviceId = configuration.deviceId;
+        if (deviceId.length() == 8 && deviceId.matches("^.*[a-zA-Z]+.*$")) {
+            logger.warn(
+                    "As per openHab version 3.2 the deviceId is no longer a string with hexadecimals, instead it is a string with the numeric respresentation of the deviceId. If you continue seeing this message, update deviceId in your thing configuration");
+            deviceId = "";
+        }
         try {
-            if (deviceId.length() == 8 && tokenCheckPass(configuration.token)) {
-                final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token,
-                        Utils.hexStringToByteArray(deviceId), lastId, configuration.timeout, cloudConnector);
+            if (!deviceId.isBlank() && tokenCheckPass(configuration.token)) {
+                final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token, deviceId,
+                        lastId, configuration.timeout, cloudConnector);
                 if (getCloudServer().isBlank()) {
-                    logger.debug("Ping Mi device {} at {}", deviceId, configuration.host);
+                    logger.debug("Ping Mi deviceId '{}' at {}", deviceId, configuration.host);
                     Message miIoResponse = miioCom.sendPing(configuration.host);
                     if (miIoResponse != null) {
-                        logger.debug("Ping response from device {} at {}. Time stamp: {}, OH time {}, delta {}",
-                                Utils.getHex(miIoResponse.getDeviceId()), configuration.host,
+                        logger.debug("Ping response from deviceId '{}' at {}. Time stamp: {}, OH time {}, delta {}",
+                                Utils.fromHEX(Utils.getHex(miIoResponse.getDeviceId())), configuration.host,
                                 miIoResponse.getTimestamp(), LocalDateTime.now(), miioCom.getTimeDelta());
                         miioCom.registerListener(this);
                         this.miioCom = miioCom;
@@ -374,20 +379,17 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     return miioCom;
                 }
             } else {
-                logger.debug("No device ID defined. Retrieving Mi device ID");
-                final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token,
-                        new byte[0], lastId, configuration.timeout, cloudConnector);
+                logger.debug("No deviceId defined. Retrieving Mi deviceId");
+                final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token, "", lastId,
+                        configuration.timeout, cloudConnector);
                 Message miIoResponse = miioCom.sendPing(configuration.host);
                 if (miIoResponse != null) {
-                    logger.debug("Ping response from device {} at {}. Time stamp: {}, OH time {}, delta {}",
-                            Utils.getHex(miIoResponse.getDeviceId()), configuration.host, miIoResponse.getTimestamp(),
-                            LocalDateTime.now(), miioCom.getTimeDelta());
-                    deviceId = Utils.getHex(miIoResponse.getDeviceId());
-                    logger.debug("Ping response from device {} at {}. Time stamp: {}, OH time {}, delta {}", deviceId,
-                            configuration.host, miIoResponse.getTimestamp(), LocalDateTime.now(),
+                    deviceId = Utils.fromHEX(Utils.getHex(miIoResponse.getDeviceId()));
+                    logger.debug("Ping response from deviceId '{}' at {}. Time stamp: {}, OH time {}, delta {}",
+                            deviceId, configuration.host, miIoResponse.getTimestamp(), LocalDateTime.now(),
                             miioCom.getTimeDelta());
-                    miioCom.setDeviceId(miIoResponse.getDeviceId());
-                    logger.debug("Using retrieved Mi device ID: {}", deviceId);
+                    miioCom.setDeviceId(deviceId);
+                    logger.debug("Using retrieved Mi deviceId: {}", deviceId);
                     updateDeviceIdConfig(deviceId);
                     miioCom.registerListener(this);
                     this.miioCom = miioCom;
@@ -396,7 +398,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     miioCom.close();
                 }
             }
-            logger.debug("Ping response from device {} at {} FAILED", configuration.deviceId, configuration.host);
+            logger.debug("Ping response from deviceId '{}' at {} FAILED", configuration.deviceId, configuration.host);
             disconnectedNoResponse();
             return null;
         } catch (IOException e) {
@@ -413,7 +415,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             config.put(PROPERTY_DID, deviceId);
             updateConfiguration(config);
         } else {
-            logger.debug("Could not update config with device ID: {}", deviceId);
+            logger.debug("Could not update config with deviceId: {}", deviceId);
         }
     }
 
@@ -529,10 +531,11 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
     @Override
     public void onMessageReceived(MiIoSendCommand response) {
-        logger.debug("Received response for {} type: {}, result: {}, fullresponse: {}", getThing().getUID().getId(),
-                response.getCommand(), response.getResult(), response.getResponse());
+        logger.debug("Received response for device {} type: {}, result: {}, fullresponse: {}",
+                getThing().getUID().getId(), response.getCommand(), response.getResult(), response.getResponse());
         if (response.isError()) {
-            logger.debug("Error received: {}", response.getResponse().get("error"));
+            logger.debug("Error received for command '{}': {}.", response.getCommandString(),
+                    response.getResponse().get("error"));
             if (MiIoCommand.MIIO_INFO.equals(response.getCommand())) {
                 network.invalidateValue();
             }
