@@ -915,7 +915,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 }
 
                 final String key = decoded.substring(0, colonPos);
-                final String value = decoded.substring(colonPos);
+                final String value = decoded.substring(colonPos + 1);
 
                 // Favorite ID (in form xxxxxxxxx.n)
                 if ("id".equals(key)) {
