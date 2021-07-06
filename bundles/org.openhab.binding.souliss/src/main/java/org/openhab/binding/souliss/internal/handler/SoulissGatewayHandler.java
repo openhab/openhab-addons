@@ -102,17 +102,17 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
         // JOB PING
         var soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(this.bridge);
-        pingScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2, this.gwConfig.pingInterval,
+        pingScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2, GatewayConfig.pingInterval,
                 TimeUnit.SECONDS);
         // JOB SUBSCRIPTION
         var soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(bridge);
-        subscriptionScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 0,
-                this.gwConfig.subscriptionInterval, TimeUnit.MINUTES);
+        subscriptionScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 15,
+                GatewayConfig.subscriptionInterval, TimeUnit.SECONDS);
 
         // JOB HEALTH OF NODES
         var soulissGatewayJobHealthyRunnable = new SoulissGatewayJobHealthy(this.bridge);
         healthScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobHealthyRunnable, 5,
-                this.gwConfig.healthyInterval, TimeUnit.SECONDS);
+                GatewayConfig.healthyInterval, TimeUnit.SECONDS);
 
         // il ciclo Send è schedulato con la costante
         // SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_cicleInMillis
@@ -123,8 +123,8 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     }
 
     public void dbStructAnswerReceived() {
-        soulissCommands.sendTypicalRequestFrame(this.gwConfig.gatewayIpAddress, (byte) this.gwConfig.nodeIndex,
-                (byte) this.gwConfig.userIndex, nodes);
+        soulissCommands.sendTypicalRequestFrame(GatewayConfig.gatewayIpAddress, (byte) GatewayConfig.nodeIndex,
+                (byte) GatewayConfig.userIndex, nodes);
     }
 
     public void setNodes(int nodes) {
@@ -187,9 +187,9 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     }
 
     public synchronized void sendSubscription() {
-        if (this.gwConfig.gatewayIpAddress.length() > 0) {
-            soulissCommands.sendSUBSCRIPTIONframe(this.gwConfig.gatewayIpAddress, (byte) this.gwConfig.nodeIndex,
-                    (byte) this.gwConfig.userIndex, getNodes());
+        if (GatewayConfig.gatewayIpAddress.length() > 0) {
+            soulissCommands.sendSUBSCRIPTIONframe(GatewayConfig.gatewayIpAddress, (byte) GatewayConfig.nodeIndex,
+                    (byte) GatewayConfig.userIndex, getNodes());
 
         }
         logger.debug("Sent subscription packet");
@@ -219,7 +219,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         if (this.healthScheduler != null) {
             this.healthScheduler.cancel(true);
         }
-        this.udpExecutorService.shutdown();
+        this.udpExecutorService.shutdownNow();
         super.dispose();
     }
 }

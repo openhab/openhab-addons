@@ -35,11 +35,11 @@
 				<description>Interval in seconds to check for device presence.</description>
 				<default>30</default>
 			</parameter>
-			<parameter name="subscriptionInterval" type="integer" min="1" max="60">
+			<parameter name="subscriptionInterval" type="integer" min="2" max="240">
 				<label>Subscription Interval</label>
-				<description>Interval in minutes to subcribe Souliss Gateway.
+				<description>Interval in seconds to subcribe Souliss Gateway.
 				</description>
-				<default>2</default>
+				<default>30</default>
 			</parameter>
 			<parameter name="healthyInterval" type="integer" min="1" max="60">
 				<label>Healthy Interval</label>
