@@ -158,6 +158,30 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="windowSashState">
+		<item-type>String</item-type>
+		<label>Window Sash State</label>
+		<description>Describes the window sash state</description>
+		<state readOnly="true">
+			<options>
+				<option value="OPEN">Open</option>
+				<option value="TILTED">Tilted</option>
+				<option value="CLOSED">Closed</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="windowBreachEvent">
+		<kind>trigger</kind>
+		<label>Window Breach Event</label>
+		<description>Is triggered potentially multiple times when the sensor detects a break-in attempt.</description>
+		<event>
+			<options>
+				<option value="ALARM">alarm</option>
+			</options>
+		</event>
+	</channel-type>
+
 	<channel-type id="instantpower">
 		<item-type>Number:Power</item-type>
 		<label>Instant Power</label>
