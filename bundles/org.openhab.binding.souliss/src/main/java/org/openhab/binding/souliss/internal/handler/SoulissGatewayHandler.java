@@ -123,7 +123,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     }
 
     public void dbStructAnswerReceived() {
-        soulissCommands.sendTypicalRequestFrame(GatewayConfig.gatewayIpAddress, (byte) GatewayConfig.nodeIndex,
+        soulissCommands.sendTypicalRequestFrame(GatewayConfig.gatewayLanAddress, (byte) GatewayConfig.nodeIndex,
                 (byte) GatewayConfig.userIndex, nodes);
     }
 
@@ -187,9 +187,10 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     }
 
     public synchronized void sendSubscription() {
-        if (GatewayConfig.gatewayIpAddress.length() > 0) {
-            soulissCommands.sendSUBSCRIPTIONframe(GatewayConfig.gatewayIpAddress, (byte) GatewayConfig.nodeIndex,
-                    (byte) GatewayConfig.userIndex, getNodes());
+        if (GatewayConfig.gatewayLanAddress.length() > 0) {
+            int totNodes = getNodes();
+            soulissCommands.sendSUBSCRIPTIONframe(GatewayConfig.gatewayLanAddress, (byte) GatewayConfig.nodeIndex,
+                    (byte) GatewayConfig.userIndex, totNodes);
 
         }
         logger.debug("Sent subscription packet");

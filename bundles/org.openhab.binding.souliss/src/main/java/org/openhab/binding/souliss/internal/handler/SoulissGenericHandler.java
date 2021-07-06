@@ -150,7 +150,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
             SoulissGatewayHandler bridgeHandler = (SoulissGatewayHandler) bridge.getHandler();
             if (bridgeHandler != null) {
                 GatewayConfig gwConfig = bridgeHandler.gwConfig;
-                return gwConfig.gatewayIpAddress;
+                return gwConfig.gatewayLanAddress;
             }
         }
         return null;

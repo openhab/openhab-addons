@@ -80,7 +80,7 @@ public class UDPDecoder {
         this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();
         this.discoverResult = pDiscoverResult;
         if (this.gwHandler != null) {
-            this.lastByteGatewayIp = (byte) Integer.parseInt(this.gwHandler.gwConfig.gatewayIpAddress.split("\\.")[3]);
+            this.lastByteGatewayIp = (byte) Integer.parseInt(this.gwHandler.gwConfig.gatewayLanAddress.split("\\.")[3]);
         }
     }
 

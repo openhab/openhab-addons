@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissUDPConstants;
+import org.openhab.binding.souliss.internal.config.GatewayConfig;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
 import org.openhab.binding.souliss.internal.handler.SoulissGenericHandler;
 import org.openhab.core.thing.Bridge;
@@ -204,16 +205,16 @@ public class SendDispatcherRunnable implements Runnable {
      * Confronta gli aggiornamenti ricevuti con i frame inviati. Se corrispondono allora cancella il
      * frame nella lista inviati .
      */
-    static int node;
-    static int iSlot;
-    @Nullable
-    static SoulissGenericHandler typ;
-    static String sCmd = "";
-    static byte bExpected;
-    static byte bActualItemState;
-    static String sExpected = "";
 
     public void safeSendCheck() {
+        int node;
+        int iSlot;
+        @Nullable
+        SoulissGenericHandler localTyp;
+        String sCmd = "";
+        byte bExpected;
+        byte bActualItemState;
+        String sExpected = "";
         // short sVal = getByteAtSlot(macacoFrame, slot);
         // scansione lista paccetti inviati
         for (var i = 0; i < packetsList.size(); i++) {
@@ -225,8 +226,7 @@ public class SendDispatcherRunnable implements Runnable {
                     // controllo lo slot solo se il comando è diverso da ZERO
                     if (packetsList.get(i).packet.getData()[j] != 0) {
                         // recupero tipico dalla memoria
-                        @Nullable
-                        SoulissGenericHandler localTyp = SendDispatcherRunnable.typ;
+
                         if (this.gwHandler != null) {
                             localTyp = getHandler(node, iSlot, this.logger);
 
@@ -300,8 +300,8 @@ public class SendDispatcherRunnable implements Runnable {
                     @Nullable
                     SoulissGatewayHandler localGwHandler = this.gwHandler;
                     if (localGwHandler != null) {
-                        if (localGwHandler.gwConfig.timeoutToRequeue < time - packetsList.get(i).getTime()) {
-                            if (localGwHandler.gwConfig.timeoutToRemovePacket < time - packetsList.get(i).getTime()) {
+                        if (GatewayConfig.timeoutToRequeue < time - packetsList.get(i).getTime()) {
+                            if (GatewayConfig.timeoutToRemovePacket < time - packetsList.get(i).getTime()) {
                                 logger.debug("Packet Execution timeout - Removed");
                                 packetsList.remove(i);
                             } else {
@@ -384,7 +384,7 @@ public class SendDispatcherRunnable implements Runnable {
                     if (packetsList.size() <= 1) {
                         iDelay = sendMinDelay;
                     } else {
-                        iDelay = localGwHandler.gwConfig.sendInterval;
+                        iDelay = GatewayConfig.sendInterval;
 
                     }
 
@@ -399,7 +399,7 @@ public class SendDispatcherRunnable implements Runnable {
                         }
                     }
 
-                    boolean tFlag = (t - tPrec) >= localGwHandler.gwConfig.sendInterval;
+                    boolean tFlag = (t - tPrec) >= GatewayConfig.sendInterval;
 
                     // se siamo arrivati alla fine della lista e quindi tutti i
                     // pacchetti sono già  stati inviati allora pongo anche il tFlag

@@ -128,7 +128,7 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 
 | Thing type | Parameters Name and Default Value | Description                                                                                              |
 |------------|-----------------------------------|----------------------------------------------------------------------------------------------------------|
-| Gateway    | gatewayIpAddress=""               | Will be resolved by discovery if auto configured                                                         |
+| Gateway    | gatewayLanAddress=""               | Will be resolved by discovery if auto configured                                                         |
 | "          | gatewayPortNumber=230             |                                                                                                          |
 | "          | preferredLocalPortNumber=0        | Default port is 0. It means that it is random                                                            |
 | "          | pingInterval=30                   | Interval in seconds to check for device presence                                                         |
@@ -181,7 +181,7 @@ Thing <thing_type_id> <thing_uid> "<Souliss Thing Label>" [ <parameters> ]
 souliss.things:
 
 ```
-Bridge souliss:gateway:105 "Souliss Gateway - 105" [gatewayIpAddress="192.168.1.105", gatewayPortNumber=230, preferredLocalPortNumber=0, pingInterval=30, subscriptionInterval=2, healthyInterval=38, userIndex=72, nodeIndex=38,  timeoutToRequeue=5000, timeoutToRemovePacket=20000]
+Bridge souliss:gateway:105 "Souliss Gateway - 105" [gatewayLanAddress="192.168.1.105", gatewayPortNumber=230, preferredLocalPortNumber=0, pingInterval=30, subscriptionInterval=2, healthyInterval=38, userIndex=72, nodeIndex=38,  timeoutToRequeue=5000, timeoutToRemovePacket=20000]
 {  
 Thing t14 1-6 "Portoncino"@"Rientro"
 Thing t14 1-7 "Cancello"@"Rientro"

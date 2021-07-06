@@ -45,7 +45,7 @@ public class SoulissDiscoverJob implements Runnable {
     @Override
     public void run() {
         if (this.gwHandler != null) {
-            soulissCommands.sendDBStructFrame(this.gwHandler.gwConfig.gatewayIpAddress,
+            soulissCommands.sendDBStructFrame(this.gwHandler.gwConfig.gatewayLanAddress,
                     (byte) this.gwHandler.gwConfig.nodeIndex, (byte) this.gwHandler.gwConfig.userIndex);
             logger.debug("Sending request to gateway for souliss network - Counter={}", resendCounter);
         } else {
