@@ -208,10 +208,9 @@ public class CloudConnector {
         if (deviceListState != DeviceListState.AVAILABLE) {
             return null;
         }
-        String did = Long.toString(Long.parseUnsignedLong(id, 16));
         List<CloudDeviceDTO> devicedata = new ArrayList<>();
         for (CloudDeviceDTO deviceDetails : deviceList) {
-            if (deviceDetails.getDid().contentEquals(did)) {
+            if (deviceDetails.getDid().contentEquals(id)) {
                 devicedata.add(deviceDetails);
             }
         }
