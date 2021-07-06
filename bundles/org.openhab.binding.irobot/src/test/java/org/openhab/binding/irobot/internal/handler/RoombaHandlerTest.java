@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -107,6 +108,7 @@ public class RoombaHandlerTest {
     }
 
     @Test
+    @Ignore(value = "Test is unstable see #10954")
     void testDock() throws InterruptedException, IOException {
         handler.initialize();
 
