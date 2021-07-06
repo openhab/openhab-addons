@@ -60,8 +60,8 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
     private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("ss.SSS");
 
     private static long lastAllDevicesRefreshTS = -1; // timestamp when the last request for all device refresh was sent
-    protected static final int ALL_DEVICES_REFRESH_INTERVAL_MSEC = 2000; // interval in msec before sending another all
-                                                                         // devices refresh request
+    protected static final int ALL_DEVICES_REFRESH_INTERVAL_MSEC = 60000; // interval in msec before sending another all
+                                                                          // devices refresh request
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.AUTOMATION_SUPPORTED_THING_TYPES;
 
