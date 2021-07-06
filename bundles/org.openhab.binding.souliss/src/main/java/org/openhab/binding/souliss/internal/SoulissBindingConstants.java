@@ -187,7 +187,7 @@ public final class SoulissBindingConstants {
     public static final String POWER_CHANNEL = "power";
 
     public static final String CONFIG_ID = "ID";
-    public static final String CONFIG_IP_ADDRESS = "gatewayIpAddress";
+    public static final String CONFIG_IP_ADDRESS = "gatewayLanAddress";
 
     public static final String UUID_NODE_SLOT_SEPARATOR = "-";
 

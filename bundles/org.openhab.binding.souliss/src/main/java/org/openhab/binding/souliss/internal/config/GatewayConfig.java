@@ -31,5 +31,6 @@ public final class GatewayConfig {
     public static int gatewayPortNumber;
     public static int userIndex;
     public static int nodeIndex;
-    public static String gatewayIpAddress = "";
+    public static String gatewayLanAddress = "";
+    public static String gatewayWanAddress = "";
 }

@@ -144,7 +144,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         var label = "";
         DiscoveryResult discoveryResult;
         SoulissGatewayHandler gwHandler = this.soulissGwHandler;
-        if (lastByteGatewayIP == (byte) Integer.parseInt(gwHandler.gwConfig.gatewayIpAddress.split("\\.")[3])) {
+        if (lastByteGatewayIP == (byte) Integer.parseInt(gwHandler.gwConfig.gatewayLanAddress.split("\\.")[3])) {
             String sNodeId = node + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + slot;
 
             ThingUID gatewayUID = gwHandler.getThing().getUID();
