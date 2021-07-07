@@ -1,0 +1,180 @@
+{
+    "createdAt": "2019-08-24T14:15:22Z",
+    "_embedded": {
+      "extension": {
+        "kinetic": {
+          "createdAt": "2019-08-24T14:15:22Z",
+          "acceleration": 0,
+          "moving": true,
+          "pace": 0,
+          "speed": 0
+        },
+        "odometer": {
+          "createdAt": "2019-08-24T14:15:22Z",
+          "mileage": 0
+        }
+      }
+    },
+    "_links": {
+      "self": {
+        "deprecation": "string",
+        "href": "string",
+        "hreflang": "string",
+        "name": "string",
+        "profile": "string",
+        "templated": true,
+        "title": "string",
+        "type": "string"
+      },
+      "vehicle": {
+        "deprecation": "string",
+        "href": "string",
+        "hreflang": "string",
+        "name": "string",
+        "profile": "string",
+        "templated": true,
+        "title": "string",
+        "type": "string"
+      }
+    },
+    "battery": {
+      "createdAt": "2019-08-24T14:15:22Z",
+      "current": 0,
+      "voltage": 0
+    },
+    "doorsState": {
+      "lockedState": [
+        "Unlocked"
+      ],
+      "opening": [
+        {
+          "identifier": "Driver",
+          "state": "Open"
+        }
+      ],
+      "updatedAt": "2019-08-24T14:15:22Z"
+    },
+    "energy": [
+      {
+        "updatedAt": "2019-08-24T14:15:22Z",
+        "createdAt": "2019-08-24T14:15:22Z",
+        "autonomy": 1,
+        "battery": {
+          "capacity": 0,
+          "health": {
+            "capacity": 0,
+            "resistance": 0
+          }
+        },
+        "charging": {
+          "chargingMode": "No",
+          "chargingRate": 0,
+          "nextDelayedTime": "PT15M",
+          "plugged": true,
+          "remainingTime": "PT15M",
+          "status": "Disconnected"
+        },
+        "consumption": 0,
+        "level": 0,
+        "residual": 0,
+        "type": "Fuel"
+      },
+      {
+        "updatedAt": "2019-08-24T14:15:22Z",
+        "createdAt": "2019-08-24T14:15:22Z",
+        "autonomy": 2,
+        "battery": {
+          "capacity": 0,
+          "health": {
+            "capacity": 0,
+            "resistance": 0
+          }
+        },
+        "charging": {
+          "chargingMode": "No",
+          "chargingRate": 0,
+          "nextDelayedTime": "PT15M",
+          "plugged": true,
+          "remainingTime": "PT15M",
+          "status": "Disconnected"
+        },
+        "consumption": 0,
+        "level": 0,
+        "residual": 0,
+        "type": "Electric"
+      }
+    ],
+    "environment": {
+      "updatedAt": "2019-08-24T14:15:22Z",
+      "createdAt": "2019-08-24T14:15:22Z",
+      "air": {
+        "temp": 0
+      },
+      "luminosity": {
+        "day": true
+      }
+    },
+    "ignition": {
+      "updatedAt": "2019-08-24T14:15:22Z",
+      "type": "Stop"
+    },
+    "kinetic": {
+      "createdAt": "2019-08-24T14:15:22Z",
+      "acceleration": 0,
+      "moving": true,
+      "pace": 0,
+      "speed": 0
+    },
+    "lastPosition": {
+      "updatedAt": "2019-08-24T14:15:22Z",
+      "createdAt": "2019-08-24T14:15:22Z",
+      "geometry": {
+        "coordinates": [
+          0, 0, 0
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "heading": 0,
+        "signalQuality": 0,
+        "type": "Estimate"
+      },
+      "type": "Feature"
+    },
+    "preconditionning": {
+      "airConditioning": {
+        "failureCause": "Defect",
+        "programs": [
+          {
+            "occurence": {
+              "day": [
+                "Mon"
+              ],
+              "week": [
+                "string"
+              ]
+            },
+            "recurrence": "Daily",
+            "start": "string",
+            "enabled": true,
+            "slot": 0
+          }
+        ],
+        "status": "Enabled",
+        "updatedAt": "2019-08-24T14:15:22Z"
+      }
+    },
+    "privacy": {
+      "createdAt": "2019-08-24T14:15:22Z",
+      "state": "None"
+    },
+    "safety": {
+      "createdAt": "2019-08-24T14:15:22Z",
+      "beltWarning": "Normal",
+      "eCallTriggeringRequest": "AirbagUnabled"
+    },
+    "service": {
+      "type": "Electric",
+      "updatedAt": "2019-08-24T14:15:22Z"
+    }
+  }
