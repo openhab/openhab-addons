@@ -75,7 +75,7 @@ public class RoombaHandlerTest {
         config.put("ipaddress", RoombaHandlerTest.IP_ADDRESS);
         config.put("password", RoombaHandlerTest.PASSWORD);
         Mockito.when(thing.getConfiguration()).thenReturn(config);
-        Mockito.when(thing.getStatusInfo())
+        Mockito.lenient().when(thing.getStatusInfo())
                 .thenReturn(new ThingStatusInfo(ThingStatus.UNINITIALIZED, ThingStatusDetail.NONE, "mocked"));
         Mockito.lenient().when(thing.getUID()).thenReturn(new ThingUID("mocked", "irobot", "uid"));
 
