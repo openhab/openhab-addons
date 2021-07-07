@@ -598,7 +598,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     }
                     break;
                 case "color":
-                    if (val.isJsonPrimitive() && val.getAsJsonPrimitive().isNumber()) {
+                    if (val.isJsonPrimitive()
+                            && (val.getAsJsonPrimitive().isNumber() || val.getAsString().matches("^[0-9]+$"))) {
                         Color rgb = new Color(val.getAsInt());
                         HSBType hsb = HSBType.fromRGB(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
                         updateState(basicChannel.getChannel(), hsb);
