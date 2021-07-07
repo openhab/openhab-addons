@@ -97,23 +97,31 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
      * @param command
      */
     public void commandSEND(byte command) {
-        soulissCommands.sendFORCEFrame(getGatewayIP(), getGatewayNodeIndex(), getGatewayUserIndex(), this.getNode(),
-                this.getSlot(), command);
+        var gwConfig = getGatewayConfig();
+        if (gwConfig != null) {
+            soulissCommands.sendFORCEFrame(gwConfig, this.getNode(), this.getSlot(), command);
+        }
     }
 
     public void commandSendRgb(byte command, byte r, byte g, byte b) {
-        soulissCommands.sendFORCEFrame(getGatewayIP(), getGatewayNodeIndex(), getGatewayUserIndex(), this.getNode(),
-                this.getSlot(), command, r, g, b);
+        var gwConfig = getGatewayConfig();
+        if (gwConfig != null) {
+            soulissCommands.sendFORCEFrame(gwConfig, command, r, g, b);
+        }
     }
 
     public void commandSEND(byte command, byte b1, byte b2) {
-        soulissCommands.sendFORCEFrameT31SetPoint(getGatewayIP(), getGatewayNodeIndex(), getGatewayUserIndex(),
-                this.getNode(), this.getSlot(), command, b1, b2);
+        var gwConfig = getGatewayConfig();
+        if (gwConfig != null) {
+            soulissCommands.sendFORCEFrameT31SetPoint(gwConfig, this.getNode(), this.getSlot(), command, b1, b2);
+        }
     }
 
     public void commandSEND(byte b1, byte b2) {
-        soulissCommands.sendFORCEFrameT61SetPoint(getGatewayIP(), getGatewayNodeIndex(), getGatewayUserIndex(),
-                this.getNode(), this.getSlot(), b1, b2);
+        var gwConfig = getGatewayConfig();
+        if (gwConfig != null) {
+            soulissCommands.sendFORCEFrameT61SetPoint(gwConfig, this.getNode(), this.getSlot(), b1, b2);
+        }
     }
 
     /**
@@ -144,13 +152,13 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     }
 
     @Nullable
-    public String getGatewayIP() {
+    public GatewayConfig getGatewayConfig() {
         var bridge = getBridge();
         if (bridge != null) {
             SoulissGatewayHandler bridgeHandler = (SoulissGatewayHandler) bridge.getHandler();
             if (bridgeHandler != null) {
                 GatewayConfig gwConfig = bridgeHandler.gwConfig;
-                return gwConfig.gatewayLanAddress;
+                return gwConfig;
             }
         }
         return null;
@@ -159,30 +167,6 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     @Nullable
     public String getLabel() {
         return thingGeneric.getLabel();
-    }
-
-    public byte getGatewayUserIndex() {
-        var bridge = getBridge();
-        if (bridge != null) {
-            SoulissGatewayHandler soulissgwHandler = (SoulissGatewayHandler) bridge.getHandler();
-            if (soulissgwHandler != null) {
-                return (byte) soulissgwHandler.gwConfig.userIndex;
-
-            }
-        }
-        return 0;
-    }
-
-    public byte getGatewayNodeIndex() {
-        var bridge = getBridge();
-        if (bridge != null) {
-            SoulissGatewayHandler soulissgwHandler = (SoulissGatewayHandler) bridge.getHandler();
-            if (soulissgwHandler != null) {
-                return (byte) soulissgwHandler.gwConfig.nodeIndex;
-
-            }
-        }
-        return 0;
     }
 
     public void setHealthy(byte shHealthy) {

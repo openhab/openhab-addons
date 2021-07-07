@@ -28,6 +28,7 @@ import java.util.Enumeration;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissUDPConstants;
+import org.openhab.binding.souliss.internal.config.GatewayConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,26 +44,23 @@ public class CommonCommands {
 
     private final Logger logger = LoggerFactory.getLogger(CommonCommands.class);
 
-    public final void sendFORCEFrame(@Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex,
-            int idNode, int slot, byte shortCommand) {
-        sendFORCEFrame(soulissNodeIPAddressOnLAN, nodeIndex, userIndex, idNode, slot, shortCommand, null, null, null);
+    public final void sendFORCEFrame(GatewayConfig gwConfig, int idNode, int slot, byte shortCommand) {
+        sendFORCEFrame(gwConfig, idNode, slot, shortCommand, null, null, null);
     }
 
     /*
      * used for set dimmer value. It set command at first byte and dimmerVal to
      * second byte
      */
-    public final void sendFORCEFrame(String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int idNode,
-            int slot, byte shortCommand, byte lDimmer) {
-        sendFORCEFrame(soulissNodeIPAddressOnLAN, nodeIndex, userIndex, idNode, slot, shortCommand, lDimmer, null,
-                null);
+    public final void sendFORCEFrame(GatewayConfig gwConfig, int idNode, int slot, byte shortCommand, byte lDimmer) {
+        sendFORCEFrame(gwConfig, idNode, slot, shortCommand, lDimmer, null, null);
     }
 
     /*
      * send force frame with command and RGB value
      */
-    public final void sendFORCEFrame(@Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex,
-            int idNode, int slot, byte shortCommand, @Nullable Byte byte1, @Nullable Byte byte2, @Nullable Byte byte3) {
+    public final void sendFORCEFrame(GatewayConfig gwConfig, int idNode, int slot, byte shortCommand,
+            @Nullable Byte byte1, @Nullable Byte byte2, @Nullable Byte byte3) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE);
 
@@ -98,23 +96,21 @@ public class CommonCommands {
             macacoFrame.add(byte1);// PAYLOAD DIMMER
         }
 
-        logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame),
-                soulissNodeIPAddressOnLAN);
-        queueToDispatcher(macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+        logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame), gwConfig);
+        queueToDispatcher(macacoFrame, gwConfig);
     }
 
     /*
      * T61 send framte to push the setpoint value
      */
 
-    public final void sendFORCEFrameT61SetPoint(@Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex,
-            byte userIndex, int idNode, int slot, Byte byte1, Byte byte2) {
+    public final void sendFORCEFrameT61SetPoint(GatewayConfig gwConfig, int idNode, int slot, Byte byte1, Byte byte2) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE);
 
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x0);// PUTIN
-        macacoFrame.add((byte) 0x0);// PUTIN
+        macacoFrame.add((byte) gwConfig.userIndex);// PUTIN
+        macacoFrame.add((byte) gwConfig.nodeIndex);// PUTIN
 
         macacoFrame.add((byte) (idNode));// Start Offset
         macacoFrame.add((byte) ((byte) slot + 2)); // Number Of byte of payload= command + set byte
@@ -127,23 +123,22 @@ public class CommonCommands {
         macacoFrame.add(byte1);// first byte Setpoint Value
         macacoFrame.add(byte2);// second byte Setpoint Value
 
-        logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame),
-                soulissNodeIPAddressOnLAN);
+        logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame), gwConfig);
 
-        queueToDispatcher(macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+        queueToDispatcher(macacoFrame, gwConfig);
     }
 
     /*
      * T31 send force frame with command and setpoint float
      */
-    public final void sendFORCEFrameT31SetPoint(@Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex,
-            byte userIndex, int idNode, int slot, byte shortCommand, Byte byte1, Byte byte2) {
+    public final void sendFORCEFrameT31SetPoint(GatewayConfig gwConfig, int idNode, int slot, byte shortCommand,
+            Byte byte1, Byte byte2) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE);
 
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x0);// PUTIN
-        macacoFrame.add((byte) 0x0);// PUTIN
+        macacoFrame.add((byte) gwConfig.userIndex);// PUTIN
+        macacoFrame.add((byte) gwConfig.nodeIndex);// PUTIN
 
         macacoFrame.add((byte) (idNode));// Start Offset
         macacoFrame.add((byte) ((byte) slot + 5)); // Number Of byte of payload= command + set byte
@@ -159,12 +154,11 @@ public class CommonCommands {
         macacoFrame.add(byte1);// Temperature Setpoint Value
         macacoFrame.add(byte2);// Temperature Setpoint Value
 
-        logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame),
-                soulissNodeIPAddressOnLAN);
-        queueToDispatcher(macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+        logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame), gwConfig);
+        queueToDispatcher(macacoFrame, gwConfig);
     }
 
-    public final void sendDBStructFrame(String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex) {
+    public final void sendDBStructFrame(GatewayConfig gwConfig) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add((byte) SoulissUDPConstants.SOULISS_UDP_FUNCTION_DBSTRUCT_REQ);
         macacoFrame.add((byte) 0x0);// PUTIN
@@ -172,9 +166,8 @@ public class CommonCommands {
         macacoFrame.add((byte) 0x0);// Start Offset
         macacoFrame.add((byte) 0x0); // Number Of
 
-        logger.debug("sendDBStructFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame),
-                soulissNodeIPAddressOnLAN);
-        queueToDispatcher(macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+        logger.debug("sendDBStructFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame), gwConfig);
+        queueToDispatcher(macacoFrame, gwConfig);
 
         // Note:
         // Structure of DBStructFrame:
@@ -190,14 +183,15 @@ public class CommonCommands {
     /*
      * Queue command to Dispatcher (for securesend retransmission)
      */
-    private final void queueToDispatcher(ArrayList<Byte> macacoFrame, @Nullable String sSoulissNodeIPAddressOnLAN,
-            byte nodeIndex, byte userIndex) {
-        ArrayList<Byte> buf = buildVNetFrame(macacoFrame, sSoulissNodeIPAddressOnLAN, userIndex, nodeIndex);
+    private final void queueToDispatcher(ArrayList<Byte> macacoFrame, GatewayConfig gwConfig) {
+        ArrayList<Byte> buf = buildVNetFrame(macacoFrame, gwConfig.gatewayLanAddress, (byte) gwConfig.userIndex,
+                (byte) gwConfig.nodeIndex);
         byte[] merd = toByteArray(buf);
 
         InetAddress serverAddr;
         try {
-            serverAddr = InetAddress.getByName(sSoulissNodeIPAddressOnLAN);
+            serverAddr = gwConfig.gatewayWanAddress.isEmpty() ? InetAddress.getByName(gwConfig.gatewayLanAddress)
+                    : InetAddress.getByName(gwConfig.gatewayWanAddress);
             var packet = new DatagramPacket(merd, merd.length, serverAddr,
                     SoulissUDPConstants.SOULISS_GATEWAY_DEFAULT_PORT);
             SendDispatcherRunnable.put(packet, this.logger);
@@ -274,13 +268,13 @@ public class CommonCommands {
     /*
      * Build VNet Frame
      */
-    private final ArrayList<Byte> buildVNetFrame(ArrayList<Byte> macacoFrame2, @Nullable String soulissNodeIPAddress,
+    private final ArrayList<Byte> buildVNetFrame(ArrayList<Byte> macacoFrame2, @Nullable String gatewayLanAddress,
             byte iUserIndex, byte iNodeIndex) {
-        if (soulissNodeIPAddress != null) {
+        if (gatewayLanAddress != null) {
             ArrayList<Byte> frame = new ArrayList<>();
             InetAddress ip;
             try {
-                ip = InetAddress.getByName(soulissNodeIPAddress);
+                ip = InetAddress.getByName(gatewayLanAddress);
             } catch (UnknownHostException e) {
                 logger.error("{}", e.getMessage());
                 return frame;
@@ -293,7 +287,7 @@ public class CommonCommands {
 
             // n broadcast : La comunicazione avviene utilizzando l'indirizzo IP
             // 255.255.255.255 a cui associare l'indirizzo vNet 0xFFFF.
-            frame.add(soulissNodeIPAddress.compareTo(SoulissUDPConstants.BROADCASTADDR) == 0 ? dude[2] : 0);
+            frame.add(gatewayLanAddress.compareTo(SoulissUDPConstants.BROADCASTADDR) == 0 ? dude[2] : 0);
             // 192.168.XX.0
 
             frame.add(iNodeIndex); // NODE INDEX - source vNet address User Interface
@@ -327,8 +321,7 @@ public class CommonCommands {
     /**
      * Build MULTICAST FORCE Frame
      */
-    public final void sendMULTICASTFORCEFrame(String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex,
-            byte typical, byte shortCommand) {
+    public final void sendMULTICASTFORCEFrame(GatewayConfig gwConfig, byte typical, byte shortCommand) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE_MASSIVE);
 
@@ -341,27 +334,26 @@ public class CommonCommands {
 
         macacoFrame.add(shortCommand);// PAYLOAD
         logger.debug("sendMULTICASTFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame),
-                soulissNodeIPAddressOnLAN);
-        queueToDispatcher(macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+                gwConfig);
+        queueToDispatcher(macacoFrame, gwConfig);
     }
 
     /**
      * Build PING Frame
      */
-    public final void sendPing(@Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, byte putIn1,
-            byte putIn2) {
-        if (soulissNodeIPAddressOnLAN != null) {
+    public final void sendPing(@Nullable GatewayConfig gwConfig) {
+        if (gwConfig != null) {
             ArrayList<Byte> macacoFrame = new ArrayList<>();
             macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_PING_REQ);
 
             // PUTIN, STARTOFFEST, NUMBEROF
-            macacoFrame.add(putIn1);// PUTIN
-            macacoFrame.add(putIn2);// PUTIN
+            macacoFrame.add((byte) gwConfig.userIndex);// PUTIN
+            macacoFrame.add((byte) gwConfig.nodeIndex);// PUTIN
 
             macacoFrame.add((byte) 0x00);// Start Offset
             macacoFrame.add((byte) 0x00); // Number Of
-            logger.debug("sendPing - {}, IP: {} ", macacoToString(macacoFrame), soulissNodeIPAddressOnLAN);
-            queueToDispatcher(macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+            logger.debug("sendPing - {}, IP: {} ", macacoToString(macacoFrame), gwConfig);
+            queueToDispatcher(macacoFrame, gwConfig);
         } else {
             logger.warn("Cannot send Souliss Ping -  Ip null");
         }
@@ -387,53 +379,50 @@ public class CommonCommands {
     /**
      * Build SUBSCRIPTION Frame
      */
-    public final void sendSUBSCRIPTIONframe(String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex,
-            int iNodes) {
+    public final void sendSUBSCRIPTIONframe(GatewayConfig gwConfig, int iNodes) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_SUBSCRIBE_REQ);
 
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) 0x00);// PUTIN
+        macacoFrame.add((byte) gwConfig.userIndex);// PUTIN
+        macacoFrame.add((byte) gwConfig.nodeIndex);// PUTIN
         macacoFrame.add((byte) 0x00);
 
         macacoFrame.add((byte) iNodes);
-        logger.debug("sendSUBSCRIPTIONframe - {}, IP: {} ", macacoToString(macacoFrame), soulissNodeIPAddressOnLAN);
-        queueToDispatcher(macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+        logger.debug("sendSUBSCRIPTIONframe - {}, IP: {} ", macacoToString(macacoFrame), gwConfig);
+        queueToDispatcher(macacoFrame, gwConfig);
     }
 
     /**
      * Build HEALTHY REQUEST Frame
      */
-    public final void sendHealthyRequestFrame(String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex,
-            int iNodes) {
+    public final void sendHealthyRequestFrame(GatewayConfig gwConfig, int iNodes) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_HEALTHY_REQ);
 
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) 0x00);// PUTIN
+        macacoFrame.add((byte) gwConfig.userIndex);// PUTIN
+        macacoFrame.add((byte) gwConfig.nodeIndex);// PUTIN
         macacoFrame.add((byte) 0x00);
         macacoFrame.add((byte) iNodes);
-        logger.debug("sendHealthyRequestFrame - {}, IP: {} ", macacoToString(macacoFrame), soulissNodeIPAddressOnLAN);
-        queueToDispatcher(macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+        logger.debug("sendHealthyRequestFrame - {}, IP: {} ", macacoToString(macacoFrame), gwConfig);
+        queueToDispatcher(macacoFrame, gwConfig);
     }
 
     /**
      * Build TYPICAL REQUEST Frame
      */
-    public final void sendTypicalRequestFrame(String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex,
-            int nodes) {
+    public final void sendTypicalRequestFrame(GatewayConfig gwConfig, int nodes) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_TYP_REQ);
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) 0x00);// PUTIN
+        macacoFrame.add((byte) gwConfig.userIndex);// PUTIN
+        macacoFrame.add((byte) gwConfig.nodeIndex);// PUTIN
         macacoFrame.add((byte) 0x00); // startOffset
 
         macacoFrame.add((byte) nodes); // iNodes
-        logger.debug("sendTypicalRequestFrame - {}, IP: {} ", macacoToString(macacoFrame), soulissNodeIPAddressOnLAN);
-        queueToDispatcher(macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+        logger.debug("sendTypicalRequestFrame - {}, IP: {} ", macacoToString(macacoFrame), gwConfig.gatewayLanAddress);
+        queueToDispatcher(macacoFrame, gwConfig);
     }
 
     static boolean flag = true;

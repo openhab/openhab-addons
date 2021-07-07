@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissUDPConstants;
-import org.openhab.binding.souliss.internal.config.GatewayConfig;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
 import org.openhab.binding.souliss.internal.handler.SoulissGenericHandler;
 import org.openhab.core.thing.Bridge;
@@ -300,8 +299,8 @@ public class SendDispatcherRunnable implements Runnable {
                     @Nullable
                     SoulissGatewayHandler localGwHandler = this.gwHandler;
                     if (localGwHandler != null) {
-                        if (GatewayConfig.timeoutToRequeue < time - packetsList.get(i).getTime()) {
-                            if (GatewayConfig.timeoutToRemovePacket < time - packetsList.get(i).getTime()) {
+                        if (localGwHandler.gwConfig.timeoutToRequeue < time - packetsList.get(i).getTime()) {
+                            if (localGwHandler.gwConfig.timeoutToRemovePacket < time - packetsList.get(i).getTime()) {
                                 logger.debug("Packet Execution timeout - Removed");
                                 packetsList.remove(i);
                             } else {
@@ -332,11 +331,7 @@ public class SendDispatcherRunnable implements Runnable {
                 SoulissGenericHandler handler = (SoulissGenericHandler) typ.getHandler();
                 if (handler != null) { // execute it only if binding is Souliss and update is for my
                                        // Gateway
-                    String gatewayIP = handler.getGatewayIP();
-                    if ((gatewayIP != null) && sUIDArray[0].equals(SoulissBindingConstants.BINDING_ID)
-                            && (handler.getNode() == node && handler.getSlot() == slot)) {
-                        return handler;
-                    }
+                    return handler;
                 }
             }
         }
@@ -384,7 +379,7 @@ public class SendDispatcherRunnable implements Runnable {
                     if (packetsList.size() <= 1) {
                         iDelay = sendMinDelay;
                     } else {
-                        iDelay = GatewayConfig.sendInterval;
+                        iDelay = localGwHandler.gwConfig.sendInterval;
 
                     }
 
@@ -399,7 +394,7 @@ public class SendDispatcherRunnable implements Runnable {
                         }
                     }
 
-                    boolean tFlag = (t - tPrec) >= GatewayConfig.sendInterval;
+                    boolean tFlag = (t - tPrec) >= localGwHandler.gwConfig.sendInterval;
 
                     // se siamo arrivati alla fine della lista e quindi tutti i
                     // pacchetti sono già  stati inviati allora pongo anche il tFlag
