@@ -24,7 +24,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 @NonNullByDefault
 public class EmailValidatorTest {
     @ParameterizedTest
-    @ValueSource(strings = { "example@openhab.org", "itsme@test24.com", "my-account@t-online.de" })
+    @ValueSource(strings = { "example@openhab.org", "itsme@test24.com", "my-account@t-online.de", "Some@dDRESs.edu",
+            "min@Length.com" })
     void validEmailAddress(String emailAddress) {
         // when:
         var valid = EmailValidator.isValid(emailAddress);
@@ -34,7 +35,7 @@ public class EmailValidatorTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "examp!e@###.org" })
+    @ValueSource(strings = { "examp!e@###.org", "to@o.short.com" })
     void invalidEmailAddress(String emailAddress) {
         // when:
         var valid = EmailValidator.isValid(emailAddress);
