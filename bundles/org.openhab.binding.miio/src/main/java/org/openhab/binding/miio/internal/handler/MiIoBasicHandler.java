@@ -17,6 +17,7 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URL;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -122,6 +123,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command receivedCommand) {
         Command command = receivedCommand;
+        deviceVariables.put(TIMESTAMP, Instant.now().getEpochSecond());
         if (command == RefreshType.REFRESH) {
             if (updateDataCache.isExpired()) {
                 logger.debug("Refreshing {}", channelUID);
@@ -312,6 +314,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             }
             final MiIoBasicDevice midevice = miioDevice;
             if (midevice != null) {
+                deviceVariables.put(TIMESTAMP, Instant.now().getEpochSecond());
                 refreshProperties(midevice);
                 refreshCustomProperties(midevice);
                 refreshNetwork();

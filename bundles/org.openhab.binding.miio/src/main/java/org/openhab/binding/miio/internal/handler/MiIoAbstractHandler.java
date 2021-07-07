@@ -15,6 +15,8 @@ package org.openhab.binding.miio.internal.handler;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,6 +73,7 @@ import com.google.gson.JsonSyntaxException;
 public abstract class MiIoAbstractHandler extends BaseThingHandler implements MiIoMessageListener {
     protected static final int MAX_QUEUE = 5;
     protected static final Gson GSON = new GsonBuilder().create();
+    protected static final String TIMESTAMP = "timestamp";
 
     protected ScheduledExecutorService miIoScheduler = scheduler;
     protected @Nullable ScheduledFuture<?> pollingJob;
@@ -111,12 +114,13 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     public abstract void handleCommand(ChannelUID channelUID, Command command);
 
     protected boolean handleCommandsChannels(ChannelUID channelUID, Command command) {
+        String cmd = processSubstitutions(command.toString(), deviceVariables);
         if (channelUID.getId().equals(CHANNEL_COMMAND)) {
-            cmds.put(sendCommand(command.toString()), channelUID.getId());
+            cmds.put(sendCommand(cmd), channelUID.getId());
             return true;
         }
         if (channelUID.getId().equals(CHANNEL_RPC)) {
-            cmds.put(sendCommand(command.toString(), cloudServer), channelUID.getId());
+            cmds.put(sendCommand(cmd, cloudServer), channelUID.getId());
             return true;
         }
         return false;
@@ -146,6 +150,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
         this.cloudServer = configuration.cloudServer;
         isIdentified = false;
+        deviceVariables.put(TIMESTAMP, Instant.now().getEpochSecond());
+        deviceVariables.put(PROPERTY_DID, configuration.deviceId);
         miIoScheduler.schedule(this::initializeData, 1, TimeUnit.SECONDS);
         int pollingPeriod = configuration.refreshInterval;
         if (pollingPeriod > 0) {
@@ -218,7 +224,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected int sendCommand(MiIoCommand command, String params) {
         try {
             final MiIoAsyncCommunication connection = getConnection();
-            return (connection != null) ? connection.queueCommand(command, params, getCloudServer()) : 0;
+            return (connection != null)
+                    ? connection.queueCommand(command, processSubstitutions(params, deviceVariables), getCloudServer())
+                    : 0;
         } catch (MiIoCryptoException | IOException e) {
             logger.debug("Command {} for {} failed (type: {}): {}", command.toString(), getThing().getUID(),
                     getThing().getThingTypeUID(), e.getLocalizedMessage());
@@ -244,6 +252,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         final MiIoAsyncCommunication connection = getConnection();
         try {
             String command = commandString.trim();
+            command = processSubstitutions(command, deviceVariables);
             String param = "[]";
             int sb = command.indexOf("[");
             int cb = command.indexOf("{");
@@ -414,6 +423,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             Configuration config = editConfiguration();
             config.put(PROPERTY_DID, deviceId);
             updateConfiguration(config);
+            deviceVariables.put(PROPERTY_DID, deviceId);
         } else {
             logger.debug("Could not update config with deviceId: {}", deviceId);
         }
@@ -456,6 +466,31 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
         deviceVariables.putAll(properties);
         updateProperties(properties);
+    }
+
+    protected String processSubstitutions(String cmd, Map<String, Object> deviceVariables) {
+        String returnCmd = cmd;
+        String cmdParts[] = cmd.split("\\$");
+        for (String substitute : cmdParts) {
+            if (deviceVariables.containsKey(substitute)) {
+                String replacementString = "";
+                Object replacement = deviceVariables.get(substitute);
+                if (replacement == null) {
+                    logger.debug("Replacement for '{}' is null. skipping replacement", substitute);
+                    continue;
+                }
+                if (replacement instanceof Integer || replacement instanceof Long || replacement instanceof Double
+                        || replacement instanceof BigDecimal || replacement instanceof Boolean) {
+                    replacementString = replacement.toString();
+                } else if (replacement instanceof String) {
+                    replacementString = "\"" + (String) replacement + "\"";
+                } else {
+                    replacementString = String.valueOf(replacement);
+                }
+                returnCmd = returnCmd.replace("$" + substitute + "$", replacementString);
+            }
+        }
+        return returnCmd;
     }
 
     protected boolean updateThingType(JsonObject miioInfo) {
