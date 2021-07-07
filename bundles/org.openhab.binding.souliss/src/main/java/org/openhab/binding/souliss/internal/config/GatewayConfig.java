@@ -21,16 +21,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public final class GatewayConfig {
-    public static int pingInterval;
-    public static int subscriptionInterval;
-    public static int healthyInterval;
-    public static int sendInterval;
-    public static int timeoutToRequeue;
-    public static int timeoutToRemovePacket;
-    public static int preferredLocalPortNumber;
-    public static int gatewayPortNumber;
-    public static int userIndex;
-    public static int nodeIndex;
-    public static String gatewayLanAddress = "";
-    public static String gatewayWanAddress = "";
+    public int pingInterval;
+    public int subscriptionInterval;
+    public int healthyInterval;
+    public int sendInterval;
+    public int timeoutToRequeue;
+    public int timeoutToRemovePacket;
+    public int preferredLocalPortNumber;
+    public int gatewayPortNumber;
+    public int userIndex;
+    public int nodeIndex;
+    public String gatewayLanAddress = "";
+    public String gatewayWanAddress = "";
 }

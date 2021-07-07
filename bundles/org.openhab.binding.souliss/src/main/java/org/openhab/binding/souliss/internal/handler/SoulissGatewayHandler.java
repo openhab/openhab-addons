@@ -102,17 +102,17 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
         // JOB PING
         var soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(this.bridge);
-        pingScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2, GatewayConfig.pingInterval,
+        pingScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobPingRunnable, 2, this.gwConfig.pingInterval,
                 TimeUnit.SECONDS);
         // JOB SUBSCRIPTION
         var soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(bridge);
         subscriptionScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 15,
-                GatewayConfig.subscriptionInterval, TimeUnit.SECONDS);
+                this.gwConfig.subscriptionInterval, TimeUnit.SECONDS);
 
         // JOB HEALTH OF NODES
         var soulissGatewayJobHealthyRunnable = new SoulissGatewayJobHealthy(this.bridge);
         healthScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobHealthyRunnable, 5,
-                GatewayConfig.healthyInterval, TimeUnit.SECONDS);
+                this.gwConfig.healthyInterval, TimeUnit.SECONDS);
 
         // il ciclo Send è schedulato con la costante
         // SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_cicleInMillis
@@ -123,8 +123,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     }
 
     public void dbStructAnswerReceived() {
-        soulissCommands.sendTypicalRequestFrame(GatewayConfig.gatewayLanAddress, (byte) GatewayConfig.nodeIndex,
-                (byte) GatewayConfig.userIndex, nodes);
+        soulissCommands.sendTypicalRequestFrame(this.gwConfig, nodes);
     }
 
     public void setNodes(int nodes) {
@@ -139,16 +138,19 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             if (thing.getThingTypeUID().equals(SoulissBindingConstants.TOPICS_THING_TYPE)) {
                 continue;
             }
-            String[] uuidStrings = thing.getUID().getAsString().split(SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR);
-            String[] uuidNodeNumber = uuidStrings[0].split(SoulissBindingConstants.UUID_ELEMENTS_SEPARATOR);
-
-            iPosNodeSlot = 2; // if uuid is of type souliss:gateway:[typical]:[node]-[slot] then node/slot is at
-                              // position 2
-            if (uuidNodeNumber.length > 3) {
-                iPosNodeSlot = 3;
-            }
-            if (Integer.parseInt(uuidNodeNumber[iPosNodeSlot]) > maxNode) {
-                maxNode = Integer.parseInt(uuidNodeNumber[iPosNodeSlot]);
+            // String[] uuidStrings =
+            // thing.getUID().getAsString().split(SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR);
+            // String[] uuidNodeNumber = uuidStrings[0].split(SoulissBindingConstants.UUID_ELEMENTS_SEPARATOR);
+            //
+            // iPosNodeSlot = 2; // if uuid is of type souliss:gateway:[typical]:[node]-[slot] then node/slot is at
+            // // position 2
+            // if (uuidNodeNumber.length > 3) {
+            // iPosNodeSlot = 3;
+            // }
+            var cfg = thing.getConfiguration();
+            int thingNode = Integer.parseInt(cfg.getProperties().get("node").toString());
+            if (thingNode > maxNode) {
+                maxNode = thingNode;
             }
             // alla fine la lunghezza della lista sarà uguale al numero di nodi presenti
         }
@@ -187,10 +189,9 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     }
 
     public synchronized void sendSubscription() {
-        if (GatewayConfig.gatewayLanAddress.length() > 0) {
+        if (this.gwConfig.gatewayLanAddress.length() > 0) {
             int totNodes = getNodes();
-            soulissCommands.sendSUBSCRIPTIONframe(GatewayConfig.gatewayLanAddress, (byte) GatewayConfig.nodeIndex,
-                    (byte) GatewayConfig.userIndex, totNodes);
+            soulissCommands.sendSUBSCRIPTIONframe(this.gwConfig, totNodes);
 
         }
         logger.debug("Sent subscription packet");
