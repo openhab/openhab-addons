@@ -250,7 +250,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     /**
      * Creates the ChannelType for the given datapoint.
      */
-    private ChannelType createChannelType(HmDatapoint dp, ChannelTypeUID channelTypeUID) {
+    public static ChannelType createChannelType(HmDatapoint dp, ChannelTypeUID channelTypeUID) {
         ChannelType channelType;
         if (dp.getName().equals(DATAPOINT_NAME_LOWBAT) || dp.getName().equals(DATAPOINT_NAME_LOWBAT_IP)) {
             channelType = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_LOW_BATTERY;
