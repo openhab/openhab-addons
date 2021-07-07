@@ -1,0 +1,28 @@
+{
+	"deviceMapping": {
+		"id": [
+			"lumi.lock.v1",
+			"lumi.lock.aq1",
+			"lumi.lock.acn02",
+			"lumi.lock.acn03"
+		],
+		"propertyMethod": "get_device_prop_exp",
+		"maxProperties": 3,
+		"channels": [
+			{
+				"property": "status",
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "String",
+				"refresh": true,
+				"actions": [],
+				"category": "lock",
+				"tags": [
+					"Lock"
+				]
+			}
+		],
+		"readmeComment": "Needs to have the Xiaomi gateway configured in the binding as bridge.",
+		"experimental": true
+	}
+}

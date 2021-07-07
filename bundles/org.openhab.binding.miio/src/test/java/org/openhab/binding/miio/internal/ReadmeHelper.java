@@ -25,11 +25,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,6 +42,7 @@ import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.OptionsValueListDTO;
 import org.openhab.binding.miio.internal.basic.StateDescriptionDTO;
+import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,15 +73,19 @@ public class ReadmeHelper {
     private static final String I18N_CHANNEL_FILE = "./src/main/resources/OH-INF/i18n/basic.properties";
     private static final boolean UPDATE_OPTION_MAPPING_README_COMMENTS = true;
 
+    public static final Set<ThingTypeUID> DATABASE_THING_TYPES = Collections
+            .unmodifiableSet(Stream.of(MiIoBindingConstants.THING_TYPE_BASIC, MiIoBindingConstants.THING_TYPE_LUMI,
+                    MiIoBindingConstants.THING_TYPE_GATEWAY).collect(Collectors.toSet()));
+
     @Disabled
     public static void main(String[] args) {
         ReadmeHelper rm = new ReadmeHelper();
         LOGGER.info("## Creating device list");
         StringWriter deviceList = rm.deviceList();
         rm.checkDatabaseEntrys();
-        LOGGER.info("## Creating channel list for basic devices");
+        LOGGER.info("## Creating channel list for json database driven devices");
         StringWriter channelList = rm.channelList();
-        LOGGER.info("## Creating Item Files for miio:basic devices");
+        LOGGER.info("## Creating Item Files for json database driven devices");
         StringWriter itemFileExamples = rm.itemFileExamples();
         try {
             String baseDoc = new String(Files.readAllBytes(Paths.get(BASEFILE)), StandardCharsets.UTF_8);
@@ -134,7 +143,7 @@ public class ReadmeHelper {
                 String link = device.getModel().replace(".", "-");
                 boolean isSupported = device.getThingType().equals(MiIoBindingConstants.THING_TYPE_UNSUPPORTED);
                 String remark = "";
-                if (device.getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
+                if (DATABASE_THING_TYPES.contains(device.getThingType())) {
                     MiIoBasicDevice dev = findDatabaseEntry(device.getModel());
                     if (dev != null) {
                         remark = dev.getDevice().getReadmeComment();
@@ -165,7 +174,7 @@ public class ReadmeHelper {
     private StringWriter channelList() {
         StringWriter sw = new StringWriter();
         Arrays.asList(MiIoDevices.values()).forEach(device -> {
-            if (device.getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
+            if (DATABASE_THING_TYPES.contains(device.getThingType())) {
                 MiIoBasicDevice dev = findDatabaseEntry(device.getModel());
                 if (dev != null) {
                     String link = device.getModel().replace(".", "-");
@@ -217,7 +226,7 @@ public class ReadmeHelper {
     private StringWriter itemFileExamples() {
         StringWriter sw = new StringWriter();
         Arrays.asList(MiIoDevices.values()).forEach(device -> {
-            if (device.getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
+            if (DATABASE_THING_TYPES.contains(device.getThingType())) {
                 MiIoBasicDevice dev = findDatabaseEntry(device.getModel());
                 if (dev != null) {
                     sw.write("### " + device.getDescription() + " (" + device.getModel() + ") item file lines\n\n");
@@ -242,6 +251,7 @@ public class ReadmeHelper {
 
     private void checkDatabaseEntrys() {
         StringBuilder sb = new StringBuilder();
+        StringBuilder commentSb = new StringBuilder("Adding support for the following models:\r\n");
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         HashMap<String, String> names = new HashMap<String, String>();
         try {
@@ -253,7 +263,12 @@ public class ReadmeHelper {
 
         for (MiIoBasicDevice entry : findDatabaseEntrys()) {
             for (String id : entry.getDevice().getId()) {
-                if (!MiIoDevices.getType(id).getThingType().equals(MiIoBindingConstants.THING_TYPE_BASIC)) {
+                if (!DATABASE_THING_TYPES.contains(MiIoDevices.getType(id).getThingType())) {
+                    commentSb.append("* ");
+                    commentSb.append(names.get(id));
+                    commentSb.append(" (modelId: ");
+                    commentSb.append(id);
+                    commentSb.append(")\r\n");
                     sb.append(id.toUpperCase().replace(".", "_"));
                     sb.append("(\"");
                     sb.append(id);
@@ -267,12 +282,17 @@ public class ReadmeHelper {
                                 "id: {} not found in MiIoDevices.java and name unavilable in the device names list.",
                                 id);
                     }
-                    sb.append("\", THING_TYPE_BASIC),\r\n");
+                    sb.append("\", ");
+                    sb.append(id.startsWith("lumi.")
+                            ? (id.startsWith("lumi.gateway") ? "THING_TYPE_GATEWAY" : "THING_TYPE_LUMI")
+                            : "THING_TYPE_BASIC");
+                    sb.append("),\r\n");
                 }
             }
         }
         if (sb.length() > 0) {
             LOGGER.info("Model(s) not found. Suggested lines to add to MiIoDevices.java\r\n{}", sb.toString());
+            LOGGER.info("Model(s) not found. Suggested lines to add to change log\r\n{}", commentSb.toString());
         }
     }
 

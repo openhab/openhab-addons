@@ -22,6 +22,7 @@ import org.openhab.core.library.types.PercentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -77,6 +78,33 @@ public class Conversions {
             return new JsonPrimitive(hsb.toFullString());
         }
         return rgbValue;
+    }
+
+    public static JsonElement deviceDataTab(JsonElement deviceLog, @Nullable Map<String, Object> deviceVariables)
+            throws ClassCastException, IllegalStateException {
+        if (!deviceLog.isJsonObject() && !deviceLog.isJsonPrimitive()) {
+            return deviceLog;
+        }
+        JsonObject outLog = deviceLog.isJsonObject() ? deviceLog.getAsJsonObject()
+                : (JsonObject) JsonParser.parseString(deviceLog.getAsString());
+        JsonArray outLog2 = new JsonArray();
+        if (outLog.has("data") && outLog.get("data").isJsonArray()) {
+            for (JsonElement element : outLog.get("data").getAsJsonArray()) {
+                if (element.isJsonObject()) {
+                    JsonObject elementJO = element.getAsJsonObject();
+                    if (elementJO.has("value")) {
+                        String value = elementJO.get("value").getAsString();
+                        JsonElement val = JsonParser.parseString(value);
+                        if (val.isJsonArray()) {
+                            outLog2.add(JsonParser.parseString(val.getAsString()));
+                        } else {
+                            outLog2.add(val);
+                        }
+                    }
+                }
+            }
+        }
+        return outLog2;
     }
 
     private static JsonElement secondsToHours(JsonElement seconds) throws ClassCastException {
@@ -190,6 +218,8 @@ public class Conversions {
                     return addBrightToHSV(value, deviceVariables);
                 case "BRGBTOHSV":
                     return bRGBtoHSV(value);
+                case "DEVICEDATATAB":
+                    return deviceDataTab(value, deviceVariables);
                 case "GETDIDELEMENT":
                     return getDidElement(value, deviceVariables);
                 default:

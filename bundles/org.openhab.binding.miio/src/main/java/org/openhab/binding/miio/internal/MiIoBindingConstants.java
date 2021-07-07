@@ -36,15 +36,18 @@ public final class MiIoBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_MIIO = new ThingTypeUID(BINDING_ID, "generic");
     public static final ThingTypeUID THING_TYPE_BASIC = new ThingTypeUID(BINDING_ID, "basic");
+    public static final ThingTypeUID THING_TYPE_LUMI = new ThingTypeUID(BINDING_ID, "lumi");
+    public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
     public static final ThingTypeUID THING_TYPE_VACUUM = new ThingTypeUID(BINDING_ID, "vacuum");
     public static final ThingTypeUID THING_TYPE_UNSUPPORTED = new ThingTypeUID(BINDING_ID, "unsupported");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_MIIO, THING_TYPE_BASIC, THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED)
-                    .collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(THING_TYPE_MIIO, THING_TYPE_BASIC, THING_TYPE_LUMI, THING_TYPE_GATEWAY,
+                    THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> NONGENERIC_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_BASIC, THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED).collect(Collectors.toSet()));
+            Stream.of(THING_TYPE_BASIC, THING_TYPE_LUMI, THING_TYPE_GATEWAY, THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED)
+                    .collect(Collectors.toSet()));
 
     // List of all Channel IDs
     public static final String CHANNEL_BATTERY = "status#battery";

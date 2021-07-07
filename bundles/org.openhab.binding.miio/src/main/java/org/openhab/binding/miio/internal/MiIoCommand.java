@@ -97,6 +97,23 @@ public enum MiIoCommand {
     GET_MULTI_MAP_LIST("get_multi_maps_list"),
     GET_ROOM_MAPPING("get_room_mapping"),
 
+    GET_ARMING("get_arming"),
+    GET_ARMING_TIME("get_arming_time"),
+
+    GET_DOORBEL_VOLUME("get_doorbell_volume"),
+    GET_GATEWAY_VOLUME("get_gateway_volume"),
+    GET_ALARMING_VOLUME("get_alarming_volume"),
+    GET_CLOCK_VOLUME("get_clock_volume"),
+    GET_DOORBELL_VOLUME("get_doorbell_volume"),
+    GET_ARM_WAIT_TIME("get_arm_wait_time"),
+    ALARM_TIME_LEN("alarm_time_len"),
+    EN_ALARM_LIGHT("en_alarm_light"),
+    GET_CORRIDOR_ON_TIME("get_corridor_on_time"),
+    GET_ZIGBEE_CHANNEL("get_zigbee_channel"),
+    GET_RGB("get_rgb"),
+    GET_NIGHTLIGHT_RGB("get_night_light_rgb"),
+    GET_LUMI_BIND("get_lumi_bind"),
+
     UNKNOWN("");
 
     private final String command;
