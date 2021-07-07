@@ -590,11 +590,12 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
         final String transformation = basicChannel.getTransformation();
         if (transformation != null) {
-            JsonElement transformed = Conversions.execute(transformation, val);
+            JsonElement transformed = Conversions.execute(transformation, val, deviceVariables);
             logger.debug("Transformed with '{}': {} {} -> {} ", transformation, basicChannel.getFriendlyName(), val,
                     transformed);
             val = transformed;
         }
+        deviceVariables.put(param, val);
         try {
             String[] chType = basicChannel.getType().toLowerCase().split(":");
             switch (chType[0]) {

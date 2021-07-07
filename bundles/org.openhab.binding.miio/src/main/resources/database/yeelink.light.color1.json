@@ -172,6 +172,7 @@
 				"property": "rgb",
 				"friendlyName": "RGB Color",
 				"channel": "rgbColor",
+				"transformation": "addBrightToHSV",
 				"type": "Color",
 				"refresh": true,
 				"ChannelGroup": "actions",
