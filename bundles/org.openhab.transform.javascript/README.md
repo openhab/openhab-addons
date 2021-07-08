@@ -5,7 +5,7 @@ Transform an input to an output using JavaScript.
 It expects the transformation rule to be read from a file which is stored under the `transform` folder. 
 To organize the various transformations, one should use subfolders.
 
-## Example
+## Examples
 
 Let's assume we have received a string containing `foo bar baz` and we're looking for a length of the last word (`baz`).
 
@@ -18,6 +18,26 @@ transform/getValue.js:
 })(input)
 ```
 
+JavaScript transformation syntax also support additional parameters which can be passed to the script. 
+This can prevent redundancy when transformation is needed for several use cases, but with small adaptations.
+additional parameters can be passed to the script via [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) query syntax.
+
+As `input` name is reserved for transformed data, it can't be used in query parameters. 
+Also `?` and `&` characters are reserved, but if they need to passed as additional data, they can be escaped according to URI syntax.
+
+
+transform/scale.js:
+```
+(function(data, cf, d) {
+    return parseFloat(data) * parseFloat(cf) / parseFloat(d);
+})(input, correctionFactor, divider)
+```
+
+`transform/scale.js?correctionFactor=1.1&divider=10`
+
+Following example will return value `23.54` when `input` data is `214`.
+
+   
 ## Test JavaScript
 
 You can use online JavaScript testers to validate your script.
