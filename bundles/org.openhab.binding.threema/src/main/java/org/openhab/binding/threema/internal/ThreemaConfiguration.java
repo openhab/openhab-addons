@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.threema.internal;
 
+import java.util.List;
+
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link ThreemaConfiguration} class contains fields mapping thing configuration parameters.
  *
@@ -19,10 +23,7 @@ package org.openhab.binding.threema.internal;
  */
 public class ThreemaConfiguration {
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
-    public String hostname;
-    public String password;
-    public int refreshInterval;
+    public String gatewayId;
+    public String secret;
+    public @Nullable List<String> recipientIds;
 }
