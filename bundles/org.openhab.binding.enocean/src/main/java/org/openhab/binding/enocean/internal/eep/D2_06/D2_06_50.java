@@ -69,7 +69,7 @@ public class D2_06_50 extends _VLDMessage {
     }
 
     protected State getCalibrationState() {
-        int calibrationState = bytes[1] >>> 6;
+        int calibrationState = bytes[2] >>> 6;
         if (calibrationState == 0x00) {
             return new StringType("OK");
         } else if (calibrationState == 0x01) {
@@ -82,7 +82,7 @@ public class D2_06_50 extends _VLDMessage {
     }
 
     protected State getCalibrationStep() {
-        int calibrationStep = bytes[1] & 0x3F;
+        int calibrationStep = bytes[2] & 0x3F;
         if (calibrationStep == 0x00) {
             return new StringType("NONE");
         } else if (calibrationStep == 0x01) {
@@ -157,20 +157,20 @@ public class D2_06_50 extends _VLDMessage {
         return UnDefType.UNDEF;
     }
 
-    @Override
-    protected boolean validateData(byte[] bytes) {
-        // Window status
-        if (bytes[0] == 0x01) {
-            return bytes.length == 8;
-        }
-        // Alarm
-        if (bytes[0] == 0x02) {
-            return bytes.length == 2;
-        }
-        // Calibration
-        if (bytes[0] == 0x11) {
-            return bytes.length == 2;
-        }
-        return false;
-    }
+    // @Override
+    // protected boolean validateData(byte[] bytes) {
+    // // Window status
+    // if (bytes[0] == 0x01) {
+    // return bytes.length == 8;
+    // }
+    // // Alarm
+    // if (bytes[0] == 0x02) {
+    // return bytes.length == 2;
+    // }
+    // // Calibration
+    // if (bytes[0] == 0x11) {
+    // return bytes.length == 2;
+    // }
+    // return false;
+    // }
 }
