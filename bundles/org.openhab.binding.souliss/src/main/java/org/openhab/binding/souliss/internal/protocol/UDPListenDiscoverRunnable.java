@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.souliss.internal.protocol;
 
-import java.io.BufferedReader;
 import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -37,13 +36,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UDPListenDiscoverRunnable implements Runnable {
 
-    @Nullable
-    protected BufferedReader in = null;
     protected boolean bExit = false;
     @Nullable
     UDPDecoder decoder = null;
-    // @Nullable
-    // DiscoverResult discoverResult = null;
 
     private final Logger logger = LoggerFactory.getLogger(UDPListenDiscoverRunnable.class);
 
@@ -55,7 +50,7 @@ public class UDPListenDiscoverRunnable implements Runnable {
     public void run() {
         DatagramSocket socket = null;
 
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             try {
                 // open socket for listening...
                 var channel = DatagramChannel.open();
@@ -67,7 +62,7 @@ public class UDPListenDiscoverRunnable implements Runnable {
                 var sa = new InetSocketAddress(230);
                 socket.bind(sa);
 
-                byte[] buf = new byte[200];
+                var buf = new byte[200];
                 // receive request
                 final var packet = new DatagramPacket(buf, buf.length);
                 socket.setSoTimeout(60000);

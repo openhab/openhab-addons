@@ -16,7 +16,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
 import org.openhab.binding.souliss.internal.protocol.CommonCommands;
-import org.openhab.binding.souliss.internal.protocol.UDPListenDiscoverRunnable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,9 +27,6 @@ import org.slf4j.LoggerFactory;
 public class SoulissDiscoverJob implements Runnable {
     private CommonCommands soulissCommands = new CommonCommands();
 
-    @Nullable
-    UDPListenDiscoverRunnable udpServerOnDefaultPort = null;
-    ///// Debug
     private final Logger logger = LoggerFactory.getLogger(SoulissDiscoverJob.class);
 
     private int resendCounter = 0;

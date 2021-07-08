@@ -31,8 +31,7 @@ public final class SoulissBindingConstants {
 
     public static final long DISCOVERY_RESEND_TIMEOUT_IN_MILLIS = 5000;
     public static final int DISCOVERY_TIMEOUT_IN_SECONDS = 30;
-    public static final long SERVER_CICLE_IN_MILLIS = 10;
-    public static final long SEND_DISPATCHER_MIN_DELAY_CYCLE_IN_MILLIS = 100;
+    public static final long SEND_DISPATCHER_MIN_DELAY_CYCLE_IN_MILLIS = 500;
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID GATEWAY_THING_TYPE = new ThingTypeUID(BINDING_ID, "gateway");
