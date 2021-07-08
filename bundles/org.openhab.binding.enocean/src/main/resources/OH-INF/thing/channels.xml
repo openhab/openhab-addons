@@ -174,7 +174,7 @@
 	<channel-type id="windowBreachEvent">
 		<kind>trigger</kind>
 		<label>Window Breach Event</label>
-		<description>Is triggered potentially multiple times when the sensor detects a break-in attempt.</description>
+		<description>Is triggered 10 times in 5 seconds when the sensor detects a break-in attempt.</description>
 		<event>
 			<options>
 				<option value="ALARM">alarm</option>
