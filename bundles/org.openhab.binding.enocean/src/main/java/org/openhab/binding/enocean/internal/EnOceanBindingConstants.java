@@ -142,6 +142,8 @@ public class EnOceanBindingConstants {
 
     public static final String CHANNEL_WINDOWHANDLESTATE = "windowHandleState";
     public static final String CHANNEL_WINDOWSASHSTATE = "windowSashState";
+    public static final String CHANNEL_WINDOWCALIBRATIONSTATE = "windowCalibrationState";
+    public static final String CHANNEL_WINDOWCALIBRATIONSTEP = "windowCalibrationStep";
     public static final String CHANNEL_WINDOWBREACHEVENT = "windowBreachEvent";
     public static final String CHANNEL_CONTACT = "contact";
     public static final String CHANNEL_TEACHINCMD = "teachInCMD";
@@ -310,6 +312,13 @@ public class EnOceanBindingConstants {
             Map.entry(CHANNEL_WINDOWSASHSTATE,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_WINDOWSASHSTATE),
                             CoreItemFactory.STRING)),
+            Map.entry(CHANNEL_WINDOWCALIBRATIONSTATE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_WINDOWCALIBRATIONSTATE),
+                            CoreItemFactory.STRING)),
+            Map.entry(CHANNEL_WINDOWCALIBRATIONSTEP,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_WINDOWCALIBRATIONSTEP),
+                            CoreItemFactory.STRING)),
+
             Map.entry(CHANNEL_WINDOWBREACHEVENT,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_WINDOWBREACHEVENT), null, null,
                             false, true)),

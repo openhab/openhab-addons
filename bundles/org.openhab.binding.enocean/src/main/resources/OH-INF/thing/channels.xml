@@ -171,6 +171,40 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="windowCalibrationState">
+		<item-type>String</item-type>
+		<label>Window Calibration State</label>
+		<description>Describes the window calibration state</description>
+		<state readOnly="true">
+			<options>
+				<option value="OK">Open</option>
+				<option value="ERROR">Tilted</option>
+				<option value="INVALID">Closed</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="windowCalibrationStep">
+		<item-type>String</item-type>
+		<label>Window Calibration Step</label>
+		<description>Describes the window calibration step</description>
+		<state readOnly="true">
+			<options>
+				<option value="NONE">Open</option>
+				<option value="SASH CLOSED HANDLE CLOSED">Tilted</option>
+				<option value="SASH CLOSED HANDLE OPEN">Closed</option>
+				<option value="SASH CLOSED HANDLE TILTED">Open</option>
+				<option value="SASH OPEN HANDLE CLOSED">Tilted</option>
+				<option value="SASH OPEN HANDLE OPEN">Closed</option>
+				<option value="SASH OPEN HANDLE TILTED">Open</option>
+				<option value="SASH TILTED HANDLE CLOSED">Tilted</option>
+				<option value="SASH TILTED HANDLE OPEN">Closed</option>
+				<option value="SASH TILTED HANDLE TILTED">Open</option>
+				<option value="FRAME MAGNET VALIDATION">Open</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="windowBreachEvent">
 		<kind>trigger</kind>
 		<label>Window Breach Event</label>
