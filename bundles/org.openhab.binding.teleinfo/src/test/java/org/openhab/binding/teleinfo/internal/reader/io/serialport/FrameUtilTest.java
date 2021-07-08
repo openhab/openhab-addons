@@ -62,4 +62,12 @@ public class FrameUtilTest {
             i++;
         }
     }
+
+    @Test
+    public void testComputeRelaisStates() {
+        assertArrayEquals(new boolean[] { true, false, false, false, false, false, false, false },
+                FrameUtil.parseRelaisStates("001"));
+        assertArrayEquals(new boolean[] { false, false, true, true, false, false, false, true },
+                FrameUtil.parseRelaisStates("140"));
+    }
 }

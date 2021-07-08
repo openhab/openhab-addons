@@ -45,4 +45,20 @@ public class FrameUtil {
         sum = (sum & 0x3F) + 0x20;
         return (char) sum;
     }
+
+    /**
+     * Parse relais states.
+     *
+     * @param relais integer string
+     * @return State of each relais
+     */
+    public static boolean[] parseRelaisStates(String relais) {
+        boolean[] relaisState = new boolean[8];
+        int value = Integer.parseInt(relais);
+        for (int i = 0; i <= 7; i++) {
+            relaisState[i] = (value & 1) == 1;
+            value >>= 1;
+        }
+        return relaisState;
+    }
 }
