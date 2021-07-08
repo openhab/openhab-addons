@@ -101,4 +101,21 @@ public class D2_06_50 extends _VLDMessage {
 
         return UnDefType.UNDEF;
     }
+
+    @Override
+    protected boolean validateData(byte[] bytes) {
+        // Window status
+        if (bytes[0] == 1) {
+            return bytes.length == 8;
+        }
+        // Alarm
+        if (bytes[0] == 2) {
+            return bytes.length == 2;
+        }
+        // Calibration (not supported but valid)
+        if (bytes[0] == 11) {
+            return bytes.length == 2;
+        }
+        return false;
+    }
 }
