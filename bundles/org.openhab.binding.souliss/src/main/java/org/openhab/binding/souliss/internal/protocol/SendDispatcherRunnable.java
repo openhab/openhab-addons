@@ -162,7 +162,7 @@ public class SendDispatcherRunnable implements Runnable {
 
                 // confronta gli stati in memoria con i frame inviati. Se
                 // corrispondono cancella il frame dalla lista inviati
-                safeSendCheck();
+                // safeSendCheck();
 
                 resetTime();
             }
@@ -212,7 +212,7 @@ public class SendDispatcherRunnable implements Runnable {
         SoulissGenericHandler localTyp;
         String sCmd = "";
         byte bExpected;
-        byte bActualItemState;
+
         String sExpected = "";
         // short sVal = getByteAtSlot(macacoFrame, slot);
         // scansione lista paccetti inviati
@@ -327,7 +327,6 @@ public class SendDispatcherRunnable implements Runnable {
                 if (typ.getThingTypeUID().equals(SoulissBindingConstants.TOPICS_THING_TYPE)) {
                     continue;
                 }
-                String[] sUIDArray = typ.getUID().getAsString().split(":");
                 SoulissGenericHandler handler = (SoulissGenericHandler) typ.getHandler();
                 if (handler != null) { // execute it only if binding is Souliss and update is for my
                                        // Gateway

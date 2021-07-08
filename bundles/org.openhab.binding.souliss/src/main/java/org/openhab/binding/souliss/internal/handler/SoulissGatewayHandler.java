@@ -106,7 +106,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
                 TimeUnit.SECONDS);
         // JOB SUBSCRIPTION
         var soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(bridge);
-        subscriptionScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 15,
+        subscriptionScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 5,
                 this.gwConfig.subscriptionInterval, TimeUnit.SECONDS);
 
         // JOB HEALTH OF NODES

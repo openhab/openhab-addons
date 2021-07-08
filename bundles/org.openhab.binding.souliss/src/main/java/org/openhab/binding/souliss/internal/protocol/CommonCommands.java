@@ -109,8 +109,8 @@ public class CommonCommands {
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE);
 
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) gwConfig.userIndex);// PUTIN
-        macacoFrame.add((byte) gwConfig.nodeIndex);// PUTIN
+        macacoFrame.add((byte) 0x00);// PUTIN
+        macacoFrame.add((byte) 0x00);// PUTIN
 
         macacoFrame.add((byte) (idNode));// Start Offset
         macacoFrame.add((byte) ((byte) slot + 2)); // Number Of byte of payload= command + set byte
@@ -137,8 +137,8 @@ public class CommonCommands {
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE);
 
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) gwConfig.userIndex);// PUTIN
-        macacoFrame.add((byte) gwConfig.nodeIndex);// PUTIN
+        macacoFrame.add((byte) 0x00);// PUTIN
+        macacoFrame.add((byte) 0x00);// PUTIN
 
         macacoFrame.add((byte) (idNode));// Start Offset
         macacoFrame.add((byte) ((byte) slot + 5)); // Number Of byte of payload= command + set byte
@@ -300,7 +300,7 @@ public class CommonCommands {
             frame.addAll(macacoFrame2);
             return frame;
         } else {
-            throw new IllegalArgumentException("Cannot build VNet Frame ... Null Souliss IP address");
+            throw new IllegalArgumentException("Cannot build VNet Frame . Null Souliss IP address");
         }
     }
 
@@ -347,8 +347,8 @@ public class CommonCommands {
             macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_PING_REQ);
 
             // PUTIN, STARTOFFEST, NUMBEROF
-            macacoFrame.add((byte) gwConfig.userIndex);// PUTIN
-            macacoFrame.add((byte) gwConfig.nodeIndex);// PUTIN
+            macacoFrame.add((byte) 0x00);// PUTIN
+            macacoFrame.add((byte) 0x00);// PUTIN
 
             macacoFrame.add((byte) 0x00);// Start Offset
             macacoFrame.add((byte) 0x00); // Number Of
@@ -384,8 +384,8 @@ public class CommonCommands {
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_SUBSCRIBE_REQ);
 
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) gwConfig.userIndex);// PUTIN
-        macacoFrame.add((byte) gwConfig.nodeIndex);// PUTIN
+        macacoFrame.add((byte) 0x00);// PUTIN
+        macacoFrame.add((byte) 0x00);// PUTIN
         macacoFrame.add((byte) 0x00);
 
         macacoFrame.add((byte) iNodes);
@@ -401,8 +401,8 @@ public class CommonCommands {
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_HEALTHY_REQ);
 
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) gwConfig.userIndex);// PUTIN
-        macacoFrame.add((byte) gwConfig.nodeIndex);// PUTIN
+        macacoFrame.add((byte) 0x00);// PUTIN
+        macacoFrame.add((byte) 0x00);// PUTIN
         macacoFrame.add((byte) 0x00);
         macacoFrame.add((byte) iNodes);
         logger.debug("sendHealthyRequestFrame - {}, IP: {} ", macacoToString(macacoFrame), gwConfig);
@@ -416,8 +416,8 @@ public class CommonCommands {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_TYP_REQ);
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) gwConfig.userIndex);// PUTIN
-        macacoFrame.add((byte) gwConfig.nodeIndex);// PUTIN
+        macacoFrame.add((byte) 0x00);// PUTIN
+        macacoFrame.add((byte) 0x00);// PUTIN
         macacoFrame.add((byte) 0x00); // startOffset
 
         macacoFrame.add((byte) nodes); // iNodes
