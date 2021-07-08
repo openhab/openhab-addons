@@ -5,42 +5,31 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
-	<thing-type id="sample">
+	<thing-type id="sender">
 		<!-- Comment this in for Things which need a Bridge to function.
 			<supported-bridge-type-refs>
 			<bridge-type-ref id="ThreemaBridge" />
 			</supported-bridge-type-refs>
 		-->
 
-		<label>Threema Binding Thing</label>
-		<description>Sample thing for Threema Binding</description>
-
-		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
-		</channels>
+		<label>Threema Sender</label>
+		<description>A thing to send notifications via Threema.Gateway</description>
 
 		<config-description>
-			<parameter name="hostname" type="text" required="true">
+			<parameter name="gatewayId" type="text" required="true">
 				<context>network-address</context>
-				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
+				<label>Gateway ID</label>
+				<description>The sender Threema.Gateway ID</description>
 			</parameter>
-			<parameter name="password" type="text" required="true">
+			<parameter name="secret" type="text" required="true">
 				<context>password</context>
-				<label>Password</label>
-				<description>Passwort to access the device</description>
+				<label>Secret</label>
+				<description>Your Threema.Gateway secret to access the API.</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
-				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
+			<parameter name="recipientIds" type="text" required="false" multiple="true">
+				<label>Recipient ID(s)</label>
+				<description>One or more Threema ID(s) (optional).</description>
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for Threema Binding</description>
-	</channel-type>
 </thing:thing-descriptions>

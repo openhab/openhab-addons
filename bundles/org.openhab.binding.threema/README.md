@@ -1,8 +1,6 @@
 # Threema Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+The Threema binding allows sending messages to Threema clients (https://threema.ch), by using the Threema.Gateway API (https://gateway.threema.ch).
 
 ## Supported Things
 
@@ -12,7 +10,7 @@ _Note that it is planned to generate some part of this based on the XML files wi
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+Auto discovery is not supported.
 
 ## Binding Configuration
 

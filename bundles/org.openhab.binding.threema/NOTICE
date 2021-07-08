@@ -11,3 +11,10 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+Threema MsgApi SDK
+* License: The MIT License (MIT)
+* Project: https://gateway.threema.ch/en/developer/api
+* Source:  https://gateway.threema.ch/en/developer/api
