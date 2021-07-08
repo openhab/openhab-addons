@@ -22,7 +22,7 @@
 				<label>EEP</label>
 				<description>EEP which is used by handle</description>
 				<options>
-					<option value="D2_06_50">D2_06_50 (Siegenia Senso Secure)</option>
+					<option value="D2_06_50_Siegenia">D2_06_50 (Siegenia Senso Secure)</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 			</parameter>
