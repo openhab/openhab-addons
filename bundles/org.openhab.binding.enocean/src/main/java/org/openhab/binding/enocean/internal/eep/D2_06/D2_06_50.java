@@ -157,20 +157,4 @@ public class D2_06_50 extends _VLDMessage {
         return UnDefType.UNDEF;
     }
 
-    // @Override
-    // protected boolean validateData(byte[] bytes) {
-    // // Window status
-    // if (bytes[0] == 0x01) {
-    // return bytes.length == 8;
-    // }
-    // // Alarm
-    // if (bytes[0] == 0x02) {
-    // return bytes.length == 2;
-    // }
-    // // Calibration
-    // if (bytes[0] == 0x11) {
-    // return bytes.length == 2;
-    // }
-    // return false;
-    // }
 }
