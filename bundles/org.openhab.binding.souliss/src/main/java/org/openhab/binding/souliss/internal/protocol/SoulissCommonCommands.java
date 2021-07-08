@@ -1,0 +1,468 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.souliss.internal.protocol;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.souliss.internal.SoulissBindingUDPConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * This class provide to construct MaCaco and UDP frame
+ *
+ * @author Tonino Fazio - Initial contribution
+ * @author Luca Calcaterra - Refactor for OH3
+ * @author Alessandro Del Pex - Souliss App
+ */
+@NonNullByDefault
+public class SoulissCommonCommands {
+
+    private final Logger logger = LoggerFactory.getLogger(SoulissCommonCommands.class);
+
+    public final void sendFORCEFrame(@Nullable DatagramSocket datagramSocket,
+            @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int idNode, int slot,
+            byte shortCommand) {
+        sendFORCEFrame(datagramSocket, soulissNodeIPAddressOnLAN, nodeIndex, userIndex, idNode, slot, shortCommand,
+                null, null, null);
+    }
+
+    /*
+     * used for set dimmer value. It set command at first byte and dimmerVal to
+     * second byte
+     */
+    public final void sendFORCEFrame(DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN, byte nodeIndex,
+            byte userIndex, int idNode, int slot, byte shortCommand, byte lDimmer) {
+        sendFORCEFrame(datagramSocket, soulissNodeIPAddressOnLAN, nodeIndex, userIndex, idNode, slot, shortCommand,
+                lDimmer, null, null);
+    }
+
+    /*
+     * send force frame with command and RGB value
+     */
+    public final void sendFORCEFrame(@Nullable DatagramSocket datagramSocket,
+            @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int idNode, int slot,
+            byte shortCommand, @Nullable Byte byte1, @Nullable Byte byte2, @Nullable Byte byte3) {
+        ArrayList<Byte> macacoFrame = new ArrayList<>();
+        macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_FORCE);
+
+        // PUTIN, STARTOFFEST, NUMBEROF
+        macacoFrame.add((byte) 0x0);// PUTIN
+        macacoFrame.add((byte) 0x0);// PUTIN
+
+        macacoFrame.add((byte) (idNode));// Start Offset
+
+        if (byte1 == null && byte2 == null && byte3 == null) {
+            macacoFrame.add((byte) ((byte) slot + 1)); // Number Of
+        } else if (byte2 == null && byte3 == null) {
+            macacoFrame.add((byte) ((byte) slot + 2)); // Number Of byte of
+                                                       // payload= command +
+                                                       // set byte
+        } else {
+            macacoFrame.add((byte) ((byte) slot + 4)); // Number Of byte of
+                                                       // payload= OnOFF + Red
+                                                       // + Green + Blu
+        }
+
+        for (int i = 0; i <= slot - 1; i++) {
+            macacoFrame.add((byte) 00); // pongo a zero i byte precedenti lo
+                                        // slot da modificare
+        }
+        macacoFrame.add(shortCommand);// PAYLOAD
+
+        if (byte1 != null && byte2 != null && byte3 != null) {
+            macacoFrame.add(byte1);// PAYLOAD RED
+            macacoFrame.add(byte2);// PAYLOAD GREEN
+            macacoFrame.add(byte3);// PAYLOAD BLUE
+        } else if (byte1 != null) {
+            macacoFrame.add(byte1);// PAYLOAD DIMMER
+        }
+
+        logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame),
+                soulissNodeIPAddressOnLAN);
+        send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+    }
+
+    /*
+     * T61 send framte to push the setpoint value
+     */
+
+    public final void sendFORCEFrameT61SetPoint(@Nullable DatagramSocket datagramSocket,
+            @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int idNode, int slot,
+            Byte byte1, Byte byte2) {
+        ArrayList<Byte> macacoFrame = new ArrayList<>();
+        macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_FORCE);
+
+        // PUTIN, STARTOFFEST, NUMBEROF
+        macacoFrame.add((byte) 0x0);// PUTIN
+        macacoFrame.add((byte) 0x0);// PUTIN
+
+        macacoFrame.add((byte) (idNode));// Start Offset
+        macacoFrame.add((byte) ((byte) slot + 2)); // Number Of byte of payload= command + set byte
+
+        for (int i = 0; i <= slot - 1; i++) {
+            macacoFrame.add((byte) 00); // pongo a zero i byte precedenti lo
+                                        // slot da modificare
+        }
+        // PAYLOAD
+        macacoFrame.add(byte1);// first byte Setpoint Value
+        macacoFrame.add(byte2);// second byte Setpoint Value
+
+        logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame),
+                soulissNodeIPAddressOnLAN);
+
+        send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+    }
+
+    /*
+     * T31 send force frame with command and setpoint float
+     */
+    public final void sendFORCEFrameT31SetPoint(@Nullable DatagramSocket datagramSocket,
+            @Nullable String soulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex, int idNode, int slot,
+            byte shortCommand, Byte byte1, Byte byte2) {
+        ArrayList<Byte> macacoFrame = new ArrayList<>();
+        macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_FORCE);
+
+        // PUTIN, STARTOFFEST, NUMBEROF
+        macacoFrame.add((byte) 0x0);// PUTIN
+        macacoFrame.add((byte) 0x0);// PUTIN
+
+        macacoFrame.add((byte) (idNode));// Start Offset
+        macacoFrame.add((byte) ((byte) slot + 5)); // Number Of byte of payload= command + set byte
+
+        for (int i = 0; i <= slot - 1; i++) {
+            macacoFrame.add((byte) 00); // pongo a zero i byte precedenti lo
+                                        // slot da modificare
+        }
+        macacoFrame.add(shortCommand);// PAYLOAD
+
+        macacoFrame.add((byte) 0x0);// Empty - Temperature Measured Value
+        macacoFrame.add((byte) 0x0);// Empty - Temperature Measured Value
+        macacoFrame.add(byte1);// Temperature Setpoint Value
+        macacoFrame.add(byte2);// Temperature Setpoint Value
+
+        logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame),
+                soulissNodeIPAddressOnLAN);
+        send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+    }
+
+    public final void sendDBStructFrame(@Nullable DatagramSocket socket, String soulissNodeIPAddressOnLAN,
+            byte nodeIndex, byte userIndex) {
+        ArrayList<Byte> macacoFrame = new ArrayList<>();
+        macacoFrame.add((byte) SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_DBSTRUCT_REQ);
+        macacoFrame.add((byte) 0x0);// PUTIN
+        macacoFrame.add((byte) 0x0);// PUTIN
+        macacoFrame.add((byte) 0x0);// Start Offset
+        macacoFrame.add((byte) 0x0); // Number Of
+
+        logger.debug("sendDBStructFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame),
+                soulissNodeIPAddressOnLAN);
+        send(socket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+
+        // Note:
+        // Structure of DBStructFrame:
+        // nodes = mac.get(5);
+        // maxnodes = mac.get(6);
+        // maxTypicalXnode = mac.get(7);
+        // maxrequests = mac.get(8);
+        // MaCacoIN_s = mac.get(9);
+        // MaCacoTyp_s = mac.get(10);
+        // MaCacoOUT_s = mac.get(11);
+    }
+
+    /*
+     * send UDP frame
+     */
+    private final void send(@Nullable DatagramSocket socket, ArrayList<Byte> macacoFrame,
+            @Nullable String sSoulissNodeIPAddressOnLAN, byte nodeIndex, byte userIndex) {
+        ArrayList<Byte> buf = buildVNetFrame(macacoFrame, sSoulissNodeIPAddressOnLAN, userIndex, nodeIndex);
+        byte[] merd = toByteArray(buf);
+
+        InetAddress serverAddr;
+        try {
+            serverAddr = InetAddress.getByName(sSoulissNodeIPAddressOnLAN);
+            DatagramPacket packet = new DatagramPacket(merd, merd.length, serverAddr,
+                    SoulissBindingUDPConstants.SOULISS_GATEWAY_DEFAULT_PORT);
+            SoulissBindingSendDispatcherJob.put(socket, packet, this.logger);
+        } catch (IOException e) {
+            logger.warn("Error: {} ", e.getMessage());
+        }
+    }
+
+    /*
+     * send UDP frame
+     */
+    private final void sendBroadcastNow(DatagramSocket socket, ArrayList<Byte> macacoFrame) {
+        byte iUserIndex = SoulissBindingNetworkParameters.DEFAULT_USER_INDEX;
+        byte iNodeIndex = SoulissBindingNetworkParameters.DEFAULT_NODE_INDEX;
+
+        // Broadcast the message over all the network interfaces
+        Enumeration<@Nullable NetworkInterface> interfaces;
+        try {
+            interfaces = NetworkInterface.getNetworkInterfaces();
+
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = interfaces.nextElement();
+                if (networkInterface != null) {
+                    if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+                        continue;
+                    }
+                    for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
+                        InetAddress[] broadcast = new InetAddress[3];
+                        broadcast[0] = InetAddress.getByName("224.0.0.1");
+                        broadcast[1] = InetAddress.getByName("255.255.255.255");
+                        broadcast[2] = interfaceAddress.getBroadcast();
+                        for (InetAddress bc : broadcast) {
+                            // Send the broadcast package!
+                            if (bc != null) {
+                                try {
+                                    ArrayList<Byte> buf = buildVNetFrame(macacoFrame, "255.255.255.255", iUserIndex,
+                                            iNodeIndex);
+                                    byte[] merd = toByteArray(buf);
+                                    DatagramPacket packet = new DatagramPacket(merd, merd.length, bc,
+                                            SoulissBindingUDPConstants.SOULISS_GATEWAY_DEFAULT_PORT);
+                                    socket.send(packet);
+
+                                } catch (IOException e) {
+                                    logger.debug("IO error: {}", e.getMessage());
+                                } catch (Exception e) {
+                                    logger.debug("{}", e.getMessage(), e);
+                                }
+                                logger.debug("Request packet sent to: {} Interface: {}", bc.getHostAddress(),
+                                        networkInterface.getDisplayName());
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            logger.warn("{}", e.getMessage());
+        } catch (UnknownHostException e) {
+            logger.warn("{}", e.getMessage());
+        }
+    }
+
+    /*
+     * Build VNet Frame
+     */
+    private final ArrayList<Byte> buildVNetFrame(ArrayList<Byte> macacoFrame2, @Nullable String soulissNodeIPAddress,
+            byte iUserIndex, byte iNodeIndex) {
+        if (soulissNodeIPAddress != null) {
+            ArrayList<Byte> frame = new ArrayList<>();
+            InetAddress ip;
+            try {
+                ip = InetAddress.getByName(soulissNodeIPAddress);
+            } catch (UnknownHostException e) {
+                logger.error("{}", e.getMessage());
+                return frame;
+            }
+            byte[] dude = ip.getAddress();
+
+            frame.add((byte) 23);// Port
+
+            frame.add((byte) (dude[3] & 0xFF));// es 192.168.1.XX BOARD
+
+            // n broadcast : La comunicazione avviene utilizzando l'indirizzo IP
+            // 255.255.255.255 a cui associare l'indirizzo vNet 0xFFFF.
+            frame.add(soulissNodeIPAddress.compareTo(SoulissBindingUDPConstants.BROADCASTADDR) == 0 ? dude[2] : 0);
+            // 192.168.XX.0
+
+            frame.add(iNodeIndex); // NODE INDEX - source vNet address User Interface
+            frame.add(iUserIndex);// USER INDEX - source vNet address User Interface
+
+            // aggiunge in testa il calcolo
+            frame.add(0, (byte) (frame.size() + macacoFrame2.size() + 1)); // Length
+            frame.add(0, (byte) (frame.size() + macacoFrame2.size() + 1));// Length Check 2
+
+            frame.addAll(macacoFrame2);
+            return frame;
+        } else {
+            throw new IllegalArgumentException("Cannot build VNet Frame ... Null Souliss IP address");
+        }
+    }
+
+    /**
+     * Builds old-school byte array
+     *
+     * @param buf
+     * @return
+     */
+    private static byte[] toByteArray(ArrayList<Byte> buf) {
+        byte[] merd = new byte[buf.size()];
+        for (int i = 0; i < buf.size(); i++) {
+            merd[i] = buf.get(i);
+        }
+        return merd;
+    }
+
+    /**
+     * Build MULTICAST FORCE Frame
+     */
+    public final void sendMULTICASTFORCEFrame(DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN,
+            byte nodeIndex, byte userIndex, byte typical, byte shortCommand) {
+        ArrayList<Byte> macacoFrame = new ArrayList<>();
+        macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_FORCE_MASSIVE);
+
+        // PUTIN, STARTOFFEST, NUMBEROF
+        macacoFrame.add((byte) 0x0);// PUTIN
+        macacoFrame.add((byte) 0x0);// PUTIN
+
+        macacoFrame.add(typical);// Start Offset
+        macacoFrame.add((byte) 1); // Number Of
+
+        macacoFrame.add(shortCommand);// PAYLOAD
+        logger.debug("sendMULTICASTFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame),
+                soulissNodeIPAddressOnLAN);
+        send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+    }
+
+    /**
+     * Build PING Frame
+     */
+    public final void sendPing(@Nullable DatagramSocket datagramSocket, @Nullable String soulissNodeIPAddressOnLAN,
+            byte nodeIndex, byte userIndex, byte putIn1, byte putIn2) {
+        if (soulissNodeIPAddressOnLAN != null && datagramSocket != null) {
+            ArrayList<Byte> macacoFrame = new ArrayList<>();
+            macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_PING_REQ);
+
+            // PUTIN, STARTOFFEST, NUMBEROF
+            macacoFrame.add(putIn1);// PUTIN
+            macacoFrame.add(putIn2);// PUTIN
+
+            macacoFrame.add((byte) 0x00);// Start Offset
+            macacoFrame.add((byte) 0x00); // Number Of
+            logger.debug("sendPing - {}, IP: {} to port {}", macacoToString(macacoFrame), soulissNodeIPAddressOnLAN,
+                    datagramSocket.getLocalPort());
+            send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+        } else {
+            logger.warn("Cannot send Souliss Ping - Datagram or Ip null");
+        }
+    }
+
+    /**
+     * Build BROADCAST PING Frame
+     */
+    public final void sendBroadcastGatewayDiscover(@Nullable DatagramSocket datagramSocket) {
+        if (datagramSocket != null) {
+            ArrayList<Byte> macacoFrame = new ArrayList<>();
+            macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_DISCOVER_GW_NODE_BCAST_REQ);
+
+            // PUTIN, STARTOFFEST, NUMBEROF
+            macacoFrame.add((byte) 0x05);// PUTIN
+            macacoFrame.add((byte) 0x00);// PUTIN
+
+            macacoFrame.add((byte) 0x00);// Start Offset
+            macacoFrame.add((byte) 0x00); // Number Of
+            logger.debug("sendBroadcastPing - {} to port {}", macacoToString(macacoFrame),
+                    datagramSocket.getLocalPort());
+            sendBroadcastNow(datagramSocket, macacoFrame);
+        } else {
+            logger.warn("Cannot send Broadcast for Gateway discover... DatagramSocket is null");
+        }
+    }
+
+    /**
+     * Build SUBSCRIPTION Frame
+     */
+    public final void sendSUBSCRIPTIONframe(@Nullable DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN,
+            byte nodeIndex, byte userIndex, int iNodes) {
+        if (datagramSocket != null) {
+            ArrayList<Byte> macacoFrame = new ArrayList<>();
+            macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_SUBSCRIBE_REQ);
+
+            // PUTIN, STARTOFFEST, NUMBEROF
+            macacoFrame.add((byte) 0x00);// PUTIN
+            macacoFrame.add((byte) 0x00);// PUTIN
+            macacoFrame.add((byte) 0x00);
+
+            macacoFrame.add((byte) iNodes);
+            logger.debug("sendSUBSCRIPTIONframe - {}, IP: {} - port: {}", macacoToString(macacoFrame),
+                    soulissNodeIPAddressOnLAN, datagramSocket.getLocalPort());
+            send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+        } else {
+            logger.warn("Cannot send subscription frame... DatagramSocket is null");
+        }
+    }
+
+    /**
+     * Build HEALTHY REQUEST Frame
+     */
+    public final void sendHealthyRequestFrame(@Nullable DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN,
+            byte nodeIndex, byte userIndex, int iNodes) {
+        if (datagramSocket != null) {
+            ArrayList<Byte> macacoFrame = new ArrayList<>();
+            macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_HEALTHY_REQ);
+
+            // PUTIN, STARTOFFEST, NUMBEROF
+            macacoFrame.add((byte) 0x00);// PUTIN
+            macacoFrame.add((byte) 0x00);// PUTIN
+            macacoFrame.add((byte) 0x00);
+            macacoFrame.add((byte) iNodes);
+            logger.debug("sendHealthyRequestFrame - {}, IP: {} - port: {}", macacoToString(macacoFrame),
+                    soulissNodeIPAddressOnLAN, datagramSocket.getLocalPort());
+            send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+        } else {
+            logger.warn("Cannot send Healthy Request Frame ... DatagramSocket is null");
+        }
+    }
+
+    /**
+     * Build TYPICAL REQUEST Frame
+     */
+    public final void sendTypicalRequestFrame(@Nullable DatagramSocket datagramSocket, String soulissNodeIPAddressOnLAN,
+            byte nodeIndex, byte userIndex, int nodes) {
+        if (datagramSocket != null) {
+            ArrayList<Byte> macacoFrame = new ArrayList<>();
+            macacoFrame.add(SoulissBindingUDPConstants.SOULISS_UDP_FUNCTION_TYP_REQ);
+            // PUTIN, STARTOFFEST, NUMBEROF
+            macacoFrame.add((byte) 0x00);// PUTIN
+            macacoFrame.add((byte) 0x00);// PUTIN
+            macacoFrame.add((byte) 0x00); // startOffset
+
+            macacoFrame.add((byte) nodes); // iNodes
+            logger.debug("sendTypicalRequestFrame - {}, IP: {} - port: {}", macacoToString(macacoFrame),
+                    soulissNodeIPAddressOnLAN, datagramSocket.getLocalPort());
+            send(datagramSocket, macacoFrame, soulissNodeIPAddressOnLAN, nodeIndex, userIndex);
+        } else {
+            logger.warn("Cannot send Typical Request Frame ... DatagramSocket is null");
+        }
+    }
+
+    static boolean flag = true;
+
+    private static String macacoToString(ArrayList<Byte> mACACOframe) {
+        // copio array per evitare modifiche concorrenti
+        ArrayList<Byte> mACACOframe2 = new ArrayList<>();
+        mACACOframe2.addAll(mACACOframe);
+        flag = false;
+        StringBuilder sb = new StringBuilder();
+        sb.append("HEX: [");
+        for (byte b : mACACOframe2) {
+            sb.append(String.format("%02X ", b));
+        }
+        sb.append("]");
+        flag = true;
+        return sb.toString();
+    }
+}
