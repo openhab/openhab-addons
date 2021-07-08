@@ -48,13 +48,27 @@ public class BroadlinkSocketModel3SHandler extends BroadlinkSocketModel2Handler 
         return 0D;
     }
 
+    // Reading between the lines at:
+    // https://github.com/mjg59/python-broadlink/issues/492
+    // It appears that this is basically BCD with the major part
+    // of the wattage as LSB in payload[7] and payload[6] and the decimal part in payload[5]
+    // so for example, with a payload: 0 0 0 0 0x33 0x75 0x00
+    // this actually should be interpreted as 75.33W!
+    // For a larger example:
+    // 0 0 0 0 0x44 0x66 0x02
+    // Would be 266.44W
     double deriveSP3sPowerConsumption(byte[] consumptionResponsePayload) {
-        if (consumptionResponsePayload.length > 6) {
-            // Bytes are little-endian, at positions 4,5 and 6
-            int intValue = (consumptionResponsePayload[6] << 16) + (consumptionResponsePayload[5] << 8)
-                    + consumptionResponsePayload[4];
-            return (double) intValue / 100; // Instead of 1000 in SP2S
+        if (consumptionResponsePayload.length > 7) {
+            return (fromBCD(consumptionResponsePayload[7]) * 100) + fromBCD(consumptionResponsePayload[6])
+                    + (fromBCD(consumptionResponsePayload[5]) / 100);
+
         }
         return 0D;
+    }
+
+    private double fromBCD(byte bcdDigit) {
+        int highNibble = ((int) bcdDigit & 0xF0) >> 4;
+        int lowNibble = bcdDigit & 0x0F;
+        return highNibble * 10 + lowNibble;
     }
 }

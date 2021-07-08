@@ -41,14 +41,6 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class BroadlinkSocketModel3SHandlerTest extends AbstractBroadlinkThingHandlerTest {
 
-    private final byte[] response = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x03, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
-
     private final BroadlinkSocketModel3SHandler model3s;
 
     public BroadlinkSocketModel3SHandlerTest() {
@@ -60,26 +52,45 @@ public class BroadlinkSocketModel3SHandlerTest extends AbstractBroadlinkThingHan
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
     }
 
     @Test
-    public void derivePowerConsumptionFromStatusByteTooShort() {
+    public void deriveSp3sPowerConsumptionTooShort() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x33 };
         double result = model3s.deriveSP3sPowerConsumption(payload);
         assertEquals(0D, result, 0.1D);
     }
 
     @Test
-    public void derivePowerConsumptionFromStatusByteCorrect() {
-        byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x19, 0x77, 0x00 };
+    public void deriveSp3sPowerConsumptionCorrectSmallValue() {
+        byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x19, 0x02, 0x00 };
         double result = model3s.deriveSP3sPowerConsumption(payload);
-        assertEquals(304.89D, result, 0.1D);
+        assertEquals(2.19D, result, 0.1D);
+    }
+
+    @Test
+    public void deriveSp3sPowerConsumptionCorrectMediumValue() {
+        byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x33, 0x75, 0x00 };
+        double result = model3s.deriveSP3sPowerConsumption(payload);
+        assertEquals(75.33D, result, 0.1D);
+    }
+
+    @Test
+    public void deriveSp3sPowerConsumptionCorrectLargeValue() {
+        byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0x99, (byte) 0x88, 0x07 };
+        double result = model3s.deriveSP3sPowerConsumption(payload);
+        assertEquals(788.99D, result, 0.1D);
     }
 
     @Test
     public void setsThePowerChannelAndConsumptionAfterGettingStatusOnSP3S() {
-        Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
+        // Power bytes are 5, 6, 7 (little-endian) in BCD
+        // So here it's 0x38291 => 38291, divided by 100 ==> 382.91W
+        byte[] payload = { 0x08, 0x00, 0x11, 0x22, 0x01, (byte) 0x91, (byte) 0x82, 0x3, 0x16, 0x27, 0x28, 0x01, 0x02,
+                0x04, 0x05, 0x16 };
+        byte[] responseMessage = generateReceivedBroadlinkMessage(payload);
+        Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString()))
+                .thenReturn(responseMessage);
         setMocksForTesting(model3s);
 
         reset(mockCallback);
@@ -101,7 +112,7 @@ public class BroadlinkSocketModel3SHandlerTest extends AbstractBroadlinkThingHan
         ChannelUID expectedConsumptionChannel = new ChannelUID(thing.getUID(), CHANNEL_POWER_CONSUMPTION);
         assertEquals(expectedConsumptionChannel, channels.get(1));
 
-        QuantityType<Power> expectedPower = new QuantityType<>(26222.97,
+        QuantityType<Power> expectedPower = new QuantityType<>(382.91,
                 BroadlinkBindingConstants.BROADLINK_POWER_CONSUMPTION_UNIT);
         assertEquals(expectedPower, states.get(1));
     }

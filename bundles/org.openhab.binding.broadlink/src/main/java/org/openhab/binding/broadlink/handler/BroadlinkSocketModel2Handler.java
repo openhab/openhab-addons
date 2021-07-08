@@ -64,7 +64,10 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
     double derivePowerConsumption(byte[] statusPayload) throws IOException {
         if (statusPayload.length > 6) {
             // Bytes are little-endian, at positions 4,5 and 6
-            int intValue = (statusPayload[6] << 16) + (statusPayload[5] << 8) + statusPayload[4];
+            int highByte = statusPayload[6] & 0xFF;
+            int midByte = statusPayload[5] & 0xFF;
+            int lowByte = statusPayload[4] & 0xFF;
+            int intValue = (highByte << 16) + (midByte << 8) + lowByte;
             return (double) intValue / 1000;
         }
         return 0D;
@@ -91,7 +94,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
 
     protected boolean getStatusFromDevice() {
         try {
-            logger.debug("SP2/SP2s getting status...");
+            logger.trace("SP2/SP2s getting status...");
             byte[] statusBytes = getStatusBytesFromDevice();
             updateState(COMMAND_POWER_ON, derivePowerStateFromStatusBytes(statusBytes));
             if (supportsPowerConsumptionMeasurement) {

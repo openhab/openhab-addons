@@ -14,8 +14,7 @@ package org.openhab.binding.broadlink.handler;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.broadlink.BroadlinkBindingConstants.CHANNEL_HUMIDITY;
-import static org.openhab.binding.broadlink.BroadlinkBindingConstants.CHANNEL_TEMPERATURE;
+import static org.openhab.binding.broadlink.BroadlinkBindingConstants.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -42,13 +41,16 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHandlerTest {
 
-    private byte[] response = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
+    private byte[] response = { (byte) 0x5a, (byte) 0xa5, (byte) 0xaa, (byte) 0x55, (byte) 0x5a, (byte) 0xa5,
+            (byte) 0xaa, (byte) 0x55, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+            (byte) 0x00, (byte) 0x00, (byte) 0xf6, (byte) 0xcd, (byte) 0x00, (byte) 0x00, (byte) 0x14, (byte) 0x27,
+            (byte) 0x6a, (byte) 0x00, (byte) 0x63, (byte) 0x00, (byte) 0x11, (byte) 0x22, (byte) 0x11, (byte) 0x22,
+            (byte) 0x11, (byte) 0x22, (byte) 0x11, (byte) 0x22, (byte) 0x11, (byte) 0x22, (byte) 0x00, (byte) 0xc0,
+            (byte) 0x00, (byte) 0x00, (byte) 0x09, (byte) 0x9a, (byte) 0x60, (byte) 0xfb, (byte) 0x72, (byte) 0x07,
+            (byte) 0x4f, (byte) 0x89, (byte) 0xf8, (byte) 0xb4, (byte) 0xdb, (byte) 0xb0, (byte) 0x72, (byte) 0xe7,
+            (byte) 0x1f, (byte) 0x86, };
 
     @Before
     public void setUp() {
@@ -100,10 +102,13 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
         byte[] sentBytes = byteCaptor.getValue();
         assertEquals(16, sentBytes.length);
 
-        assertEquals((byte) 0xd0, (byte) sentBytes[0]);
+        assertEquals((byte) 0x0e, (byte) sentBytes[0]);
         assertEquals(0x00, sentBytes[1]);
 
-        assertEquals(0x02, sentBytes[2]); // 0x00, 0x00, 0x00
+        assertEquals(0x02, sentBytes[2]);
+        assertEquals(0x00, sentBytes[3]);
+        assertEquals(0x00, sentBytes[4]);
+        assertEquals(0x00, sentBytes[5]);
 
         assertEquals(0x01, sentBytes[6]);
         assertEquals(0x02, sentBytes[7]);
@@ -136,12 +141,14 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
         byte[] sentBytes = byteCaptor.getValue();
         assertEquals(32, sentBytes.length);
 
-        assertEquals((byte) 0xd0, (byte) sentBytes[0]);
+        // Calculated length field is len(data) + 4 ===> 11 + 4 = 15 = 0x0f
+
+        assertEquals((byte) 0x0f, (byte) sentBytes[0]);
         assertEquals(0x00, sentBytes[1]);
 
-        assertEquals(0x02, sentBytes[2]); // 0x00, 0x00, 0x00
+        assertEquals(0x02, sentBytes[2]); // The "send code" command
 
-        assertEquals(0x01, sentBytes[6]);
+        assertEquals(0x01, sentBytes[6]); // The payload
         assertEquals(0x02, sentBytes[7]);
         assertEquals(0x03, sentBytes[8]);
         assertEquals(0x04, sentBytes[9]);
@@ -157,15 +164,6 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
 
     @Test
     public void setsTheTemperatureAndHumidityChannelsAfterGettingStatus() {
-        byte[] response = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x00, };
-        Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
         BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing, commandDescriptionProvider);
         setMocksForTesting(model4);
         reset(mockCallback);
@@ -182,15 +180,54 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
         ChannelUID expectedTemperatureChannel = new ChannelUID(thing.getUID(), CHANNEL_TEMPERATURE);
         assertEquals(expectedTemperatureChannel, channelCaptures.get(0));
 
-        QuantityType<Temperature> expectedTemperature = new QuantityType<>(4.88,
+        QuantityType<Temperature> expectedTemperature = new QuantityType<>(21.22,
                 BroadlinkBindingConstants.BROADLINK_TEMPERATURE_UNIT);
         assertEquals(expectedTemperature, stateCaptures.get(0));
 
         ChannelUID expectedHumidityChannel = new ChannelUID(thing.getUID(), CHANNEL_HUMIDITY);
         assertEquals(expectedHumidityChannel, channelCaptures.get(1));
 
-        QuantityType<Dimensionless> expectedHumidity = new QuantityType(51.3,
+        QuantityType<Dimensionless> expectedHumidity = new QuantityType(39.4,
                 BroadlinkBindingConstants.BROADLINK_HUMIDITY_UNIT);
         assertEquals(expectedHumidity, stateCaptures.get(1));
+    }
+
+    @Test
+    public void sendsExpectedBytesWhenEnteringLearnMode() throws IOException {
+        ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
+        ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing, commandDescriptionProvider);
+        setMocksForTesting(model4);
+
+        reset(trafficObserver);
+        model4.handleLearningCommand(LEARNING_CONTROL_COMMAND_LEARN);
+
+        verify(trafficObserver).onCommandSent(commandCaptor.capture());
+        assertEquals(0x6a, commandCaptor.getValue().byteValue());
+
+        verify(trafficObserver).onBytesSent(byteCaptor.capture());
+
+        byte[] sentBytes = byteCaptor.getValue();
+        assertEquals(16, sentBytes.length);
+
+        // Expecting:
+        // PLl, PLh, <commandByte> 0 0 0 then padding for the rest up to 16
+        // Where PL = length(data) + 4 - so in this case, 4
+        assertEquals(0x04, sentBytes[0]); // Low length byte
+        assertEquals(0x00, sentBytes[1]); // High length byte
+        assertEquals(0x03, sentBytes[2]);
+        assertEquals(0x00, sentBytes[3]);
+        assertEquals(0x00, sentBytes[4]);
+        assertEquals(0x00, sentBytes[5]);
+        assertEquals(0x00, sentBytes[6]);
+        assertEquals(0x00, sentBytes[7]);
+        assertEquals(0x00, sentBytes[8]);
+        assertEquals(0x00, sentBytes[9]);
+        assertEquals(0x00, sentBytes[10]);
+        assertEquals(0x00, sentBytes[11]);
+        assertEquals(0x00, sentBytes[12]);
+        assertEquals(0x00, sentBytes[13]);
+        assertEquals(0x00, sentBytes[14]);
+        assertEquals(0x00, sentBytes[15]);
     }
 }

@@ -40,8 +40,9 @@ import org.openhab.core.util.HexUtils;
 @NonNullByDefault
 public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
 
-    private static final byte[] ENTER_LEARNING = { 0x03, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    private static final byte[] CHECK_LEARNT_DATA = { 0x04, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    public static final byte COMMAND_BYTE_SEND_CODE = 0x02;
+    public static final byte COMMAND_BYTE_ENTER_LEARNING = 0x03;
+    public static final byte COMMAND_BYTE_CHECK_LEARNT_DATA = 0x04;
 
     private final BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider;
     private @Nullable BroadlinkMappingService mappingService;
@@ -65,56 +66,66 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         super.dispose();
     }
 
-    protected void sendCode(byte code[]) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    protected byte @Nullable [] sendCommand(byte commandByte, String purpose) {
+        return sendCommand(commandByte, new byte[0], purpose);
+    }
 
+    private byte @Nullable [] sendCommand(byte commandByte, byte[] codeBytes, String purpose) {
         try {
-            byte[] preamble = new byte[4];
-            preamble[0] = 2;
-            outputStream.write(preamble);
-            outputStream.write(code);
+            ByteArrayOutputStream outputStream = buildCommandMessage(commandByte, codeBytes);
             byte[] padded = Utils.padTo(outputStream.toByteArray(), 16);
             byte[] message = buildMessage((byte) 0x6a, padded);
-            sendAndReceiveDatagram(message, "remote code");
+            return sendAndReceiveDatagram(message, purpose);
         } catch (IOException e) {
-            logger.warn("Exception while sending code", e);
+            logger.warn("Exception while sending command", e);
         }
+
+        return null;
     }
 
-    protected void sendEnterLearningModeCommand() {
-        try {
-            byte[] message = buildMessage((byte) 0x6a, ENTER_LEARNING);
-            sendAndReceiveDatagram(message, "enter remote code learning mode");
-        } catch (IOException e) {
-            logger.warn("Exception while attempting to enter learn mode", e);
-        }
+    protected void sendCode(byte[] code) {
+        sendCommand(COMMAND_BYTE_SEND_CODE, code, "send remote code");
     }
 
-    protected void sendCheckDataCommandAndLog() {
+    protected ByteArrayOutputStream buildCommandMessage(byte commandByte, byte[] codeBytes) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        byte[] preamble = new byte[4];
+        preamble[0] = commandByte;
+        outputStream.write(preamble);
+        if (codeBytes.length > 0) {
+            outputStream.write(codeBytes);
+        }
+
+        return outputStream;
+    }
+
+    protected byte[] extractResponsePayload(byte[] responseBytes) throws IOException {
+        byte decryptedResponse[] = decodeDevicePacket(responseBytes);
+        // Interesting stuff begins at the fourth byte
+        return Utils.slice(decryptedResponse, 4, decryptedResponse.length);
+    }
+
+    private void sendCheckDataCommandAndLog() {
         try {
-            byte[] message = buildMessage((byte) 0x6a, CHECK_LEARNT_DATA);
-            byte[] response = sendAndReceiveDatagram(message, "send learnt code check command");
+            byte[] response = sendCommand(COMMAND_BYTE_CHECK_LEARNT_DATA, "send learnt code check command");
             if (response == null) {
                 logger.warn("Got nothing back while getting learnt code");
             } else {
-                byte decryptResponse[] = decodeDevicePacket(response);
-                // Interesting stuff begins at the fourth byte
-                String hexString = Utils.toHexString(Utils.slice(decryptResponse, 4, decryptResponse.length));
-                logger.info("BEGIN LAST LEARNT CODE ({} bytes)", decryptResponse.length - 4);
+                String hexString = Utils.toHexString(extractResponsePayload(response));
+                logger.info("BEGIN LAST LEARNT CODE");
                 logger.info("{}", hexString);
                 logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
             }
-
         } catch (IOException e) {
             logger.warn("Exception while attempting to check learnt code", e);
         }
     }
 
-    private void handleLearningCommand(String learningCommand) {
+    void handleLearningCommand(String learningCommand) {
         logger.trace("Sending learning-channel command {}", learningCommand);
         switch (learningCommand) {
             case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_LEARN:
-                sendEnterLearningModeCommand();
+                sendCommand(COMMAND_BYTE_ENTER_LEARNING, "enter remote code learning mode");
                 break;
             case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK:
                 sendCheckDataCommandAndLog();
@@ -134,6 +145,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             updateItemStatus();
             return;
         }
+
         Channel channel = thing.getChannel(channelUID.getId());
         if (channel == null) {
             logger.warn("Unexpected null channel while handling command {}", command.toFullString());
@@ -163,11 +175,6 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     }
 
     private byte @Nullable [] lookupCode(Command command, ChannelUID channelUID) {
-        if (command.toString() == null) {
-            logger.debug("Unable to perform transform on null command string");
-            return null;
-        }
-
         byte code[] = null;
         String value = this.mappingService.lookup(command.toString());
 

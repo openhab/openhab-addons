@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.broadlink.handler;
 
+import static org.openhab.binding.broadlink.BroadlinkBindingConstants.BROADLINK_AUTH_KEY;
+import static org.openhab.binding.broadlink.BroadlinkBindingConstants.BROADLINK_IV;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,14 +22,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.mockito.Mockito;
 import org.openhab.binding.broadlink.AbstractBroadlinkTest;
 import org.openhab.binding.broadlink.BroadlinkBindingConstants;
+import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.binding.broadlink.internal.socket.NetworkTrafficObserver;
 import org.openhab.binding.broadlink.internal.socket.RetryableSocket;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.internal.ThingImpl;
+import org.openhab.core.util.HexUtils;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract thing handler test.
@@ -39,6 +48,7 @@ public abstract class AbstractBroadlinkThingHandlerTest extends AbstractBroadlin
     protected Map<String, Object> properties = new HashMap<>();
     protected Configuration config = new Configuration();
     protected ThingImpl thing = new ThingImpl(BroadlinkBindingConstants.THING_TYPE_A1, "a1");
+
     protected RetryableSocket mockSocket = Mockito.mock(RetryableSocket.class);
     protected NetworkTrafficObserver trafficObserver = Mockito.mock(NetworkTrafficObserver.class);
     protected ThingHandlerCallback mockCallback = Mockito.mock(ThingHandlerCallback.class);
@@ -54,6 +64,7 @@ public abstract class AbstractBroadlinkThingHandlerTest extends AbstractBroadlin
 
         thing = new ThingImpl(thingTypeUID, thingId);
         thing.setConfiguration(config);
+        thing.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
     }
 
     protected void setMocksForTesting(BroadlinkBaseThingHandler handler) {
@@ -61,5 +72,12 @@ public abstract class AbstractBroadlinkThingHandlerTest extends AbstractBroadlin
         handler.setNetworkTrafficObserver(trafficObserver);
         handler.setCallback(mockCallback);
         handler.initialize();
+    }
+
+    protected byte[] generateReceivedBroadlinkMessage(byte[] payload) {
+        byte[] mac = { 0x11, 0x22, 0x11, 0x22, 0x11, 0x22 };
+        byte[] devId = { 0x11, 0x22, 0x11, 0x22 };
+        return BroadlinkProtocol.buildMessage((byte) 0x6a, payload, 99, mac, devId, HexUtils.hexToBytes(BROADLINK_IV),
+                HexUtils.hexToBytes(BROADLINK_AUTH_KEY), 0x2714, LoggerFactory.getLogger(getClass()));
     }
 }

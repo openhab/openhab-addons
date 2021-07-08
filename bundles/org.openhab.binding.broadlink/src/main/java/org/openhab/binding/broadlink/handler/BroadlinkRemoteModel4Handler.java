@@ -23,6 +23,14 @@ import org.openhab.core.thing.Thing;
 /**
  * Remote blaster handler, "generation" 4
  *
+ * These devices place a 6-byte preamble before their payload.
+ * The format is:
+ * Byte 00 01 02 03 04 05
+ * PLl PLh CMD 00 00 00
+ *
+ * Where PL is the 16-bit unsigned length of the payload PLUS 4 BYTES
+ * so PLl is the lower byte and PLh is the high byte
+ *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 @NonNullByDefault
@@ -41,25 +49,18 @@ public class BroadlinkRemoteModel4Handler extends BroadlinkRemoteHandler {
         try {
             // These devices use a 2-byte preamble to the normal protocol;
             // https://github.com/mjg59/python-broadlink/blob/0bd58c6f598fe7239246ad9d61508febea625423/broadlink/__init__.py#L666
-
-            byte payload[] = new byte[16];
-            payload[0] = 0x04;
-            payload[1] = 0x00;
-            payload[2] = 0x24; // Status check is now Ox24, not 0x01 as in earlier devices
-            byte message[] = buildMessage((byte) 0x6a, payload);
-            byte response[] = sendAndReceiveDatagram(message, "RM4 device status");
+            byte[] response = sendCommand((byte) 0x24, "RM4 device status"); // Status check is now Ox24, not 0x01 as in
+                                                                             // earlier devices
             if (response == null) {
                 logger.warn("response from RM4 device was null");
                 return false;
             }
-            byte decodedPayload[] = decodeDevicePacket(response);
+            byte decodedPayload[] = extractResponsePayload(response);
 
             // Temps and humidity get divided by 100 now, not 10
-            // Temperature and Humidity response fields are 2 bytes further into the response,
-            // mirroring the request
-            double temperature = ((double) (decodedPayload[6] * 100 + decodedPayload[7]) / 100D);
+            double temperature = ((double) (decodedPayload[0] * 100 + decodedPayload[1]) / 100D);
             updateTemperature(temperature);
-            double humidity = ((double) (decodedPayload[8] * 100 + decodedPayload[9]) / 100D);
+            double humidity = ((double) (decodedPayload[2] * 100 + decodedPayload[3]) / 100D);
             updateHumidity(humidity);
             return true;
         } catch (Exception e) {
@@ -68,24 +69,33 @@ public class BroadlinkRemoteModel4Handler extends BroadlinkRemoteHandler {
         }
     }
 
-    protected void sendCode(byte code[]) {
+    // These devices use a 6-byte sendCode preamble instead of the previous 4:
+    // https://github.com/mjg59/python-broadlink/blob/822b3c326631c1902b5892a83db126291acbf0b6/broadlink/remote.py#L78
+    @Override
+    protected ByteArrayOutputStream buildCommandMessage(byte commandByte, byte[] codeBytes) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-        try {
-            // These devices use a 6-byte sendCode preamble instead of the previous 4
-            // https://github.com/mjg59/python-broadlink/blob/0.13.0/broadlink/__init__.py#L50 add RM4 list
-
-            byte[] preamble = new byte[6];
-            preamble[0] = (byte) 0xd0;
-            preamble[2] = 2;
-            outputStream.write(preamble);
-            outputStream.write(code);
-
-            byte[] padded = Utils.padTo(outputStream.toByteArray(), 16);
-            byte[] message = buildMessage((byte) 0x6a, padded);
-            sendAndReceiveDatagram(message, "remote code");
-        } catch (IOException e) {
-            logger.warn("Exception while sending code", e);
+        byte[] preamble = new byte[6];
+        int length = codeBytes.length + 4;
+        preamble[0] = (byte) (length & 0xFF);
+        preamble[1] = (byte) ((length >> 8) & 0xFF);
+        preamble[2] = commandByte;
+        outputStream.write(preamble);
+        if (codeBytes.length > 0) {
+            outputStream.write(codeBytes);
         }
+
+        return outputStream;
+    }
+
+    // Interesting stuff begins at the 6th byte, and runs for the length indicated
+    // in the first two bytes of the response (little-endian) + 2, as opposed to
+    // whatever the "natural" decrypted length is
+    @Override
+    protected byte[] extractResponsePayload(byte[] responseBytes) throws IOException {
+        byte decryptedResponse[] = decodeDevicePacket(responseBytes);
+        int lsb = decryptedResponse[0] & 0xFF;
+        int msb = decryptedResponse[1] & 0xFF;
+        int payloadLength = (msb << 8) + lsb;
+        return Utils.slice(decryptedResponse, 6, payloadLength + 2);
     }
 }
