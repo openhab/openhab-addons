@@ -6,19 +6,30 @@ Wolf systems are connected with official gateways (Wolf Link Home or Wolf Link P
 ## Configuration via the UI
 
 1. Manually add a thing
+
     ![Manually add a thing](doc/images/step1.png "step 1 - Manually add a thing")
 2. Select the WolfSmartset Binding
+    
     ![Select the WolfSmartset Binding](doc/images/step2.png "step 2 - Select the WolfSmartset Binding")
 3. Select the WolfSmartset account
+    
     ![Select the WolfSmartset account](doc/images/step3.png "step 3 - Select the WolfSmartset account")
 4. Enter account credentials and create the system thing
+    
     ![Enter account credentials](doc/images/step4.png "step 4 - Enter account credentials")
 5. Wait until the the systems show up in the inbox. Select system from inbox and create thing.
+    
     ![Select system from inbox](doc/images/inbox-system.png "step 5 - Select system from inbox")
 5. Wait until the the units show up in the inbox. Select unit from inbox and create thing
+    
     ![Select unit from inbox](doc/images/inbox-units.png "step 5 - Select unit from inbox")
 6. Add points or equipment to your model
+    
     ![Add points or equipment to your model](doc/images/channels-unit.png "step 6 - Add points or equipment to your model")
+
+## Configuration via file
+
+Since the system bridge and the units require unique IDs from the Wolf-Smartset cloud-system, configuration via files is not recommended and therefore not documented.
 
 ## Supported Things
 
