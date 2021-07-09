@@ -69,7 +69,7 @@ public class D2_06_50 extends _VLDMessage {
     }
 
     protected State getCalibrationState() {
-        int calibrationState = bytes[2] >>> 6;
+        int calibrationState = bytes[1] >>> 6;
         if (calibrationState == 0x00) {
             return new StringType("OK");
         } else if (calibrationState == 0x01) {
@@ -82,29 +82,30 @@ public class D2_06_50 extends _VLDMessage {
     }
 
     protected State getCalibrationStep() {
-        int calibrationStep = bytes[2] & 0x3F;
-        if (calibrationStep == 0x00) {
-            return new StringType("NONE");
-        } else if (calibrationStep == 0x01) {
-            return new StringType("SASH CLOSED HANDLE CLOSED");
-        } else if (calibrationStep == 0x02) {
-            return new StringType("SASH CLOSED HANDLE OPEN");
-        } else if (calibrationStep == 0x03) {
-            return new StringType("SASH CLOSED HANDLE TILTED");
-        } else if (calibrationStep == 0x04) {
-            return new StringType("SASH OPEN HANDLE CLOSED");
-        } else if (calibrationStep == 0x05) {
-            return new StringType("SASH OPEN HANDLE OPEN");
-        } else if (calibrationStep == 0x06) {
-            return new StringType("SASH OPEN HANDLE TILTED");
-        } else if (calibrationStep == 0x07) {
-            return new StringType("SASH TILTED HANDLE CLOSED");
-        } else if (calibrationStep == 0x08) {
-            return new StringType("SASH TILTED HANDLE OPEN");
-        } else if (calibrationStep == 0x09) {
-            return new StringType("SASH TILTED HANDLE TILTED");
-        } else if (calibrationStep == 0x0A) {
-            return new StringType("FRAME MAGNET VALIDATION");
+        int calibrationStep = bytes[1] & 0x3F;
+        switch (calibrationStep) {
+            case 0x00:
+                return new StringType("NONE");
+            case 0x01:
+                return new StringType("SASH CLOSED HANDLE CLOSED");
+            case 0x02:
+                return new StringType("SASH CLOSED HANDLE OPEN");
+            case 0x03:
+                return new StringType("SASH CLOSED HANDLE TILTED");
+            case 0x04:
+                return new StringType("SASH OPEN HANDLE CLOSED");
+            case 0x05:
+                return new StringType("SASH OPEN HANDLE OPEN");
+            case 0x06:
+                return new StringType("SASH OPEN HANDLE TILTED");
+            case 0x07:
+                return new StringType("SASH TILTED HANDLE CLOSED");
+            case 0x08:
+                return new StringType("SASH TILTED HANDLE OPEN");
+            case 0x09:
+                return new StringType("SASH TILTED HANDLE TILTED");
+            case 0x0A:
+                return new StringType("FRAME MAGNET VALIDATION");
         }
 
         return UnDefType.UNDEF;
@@ -156,5 +157,4 @@ public class D2_06_50 extends _VLDMessage {
 
         return UnDefType.UNDEF;
     }
-
 }

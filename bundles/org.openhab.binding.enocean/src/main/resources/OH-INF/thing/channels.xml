@@ -190,7 +190,7 @@
 		<description>Calibration step that should be performed next</description>
 		<state readOnly="true">
 			<options>
-				<option value="NONE">Open</option>
+				<option value="NONE">None</option>
 				<option value="SASH CLOSED HANDLE CLOSED">Sash closed handle closed</option>
 				<option value="SASH CLOSED HANDLE OPEN">Sash closed handle open</option>
 				<option value="SASH CLOSED HANDLE TILTED">Sash closed handle tilted</option>
