@@ -87,8 +87,8 @@ public class WolfSmartsetSystemDiscoveryService extends AbstractDiscoveryService
         logger.debug("WolfSmartsetSystemDiscovery: Starting background discovery job");
         Future<?> localDiscoveryJob = discoveryJob;
         if (localDiscoveryJob == null || localDiscoveryJob.isCancelled()) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(this::backgroundDiscover, DISCOVERY_INITIAL_DELAY_SECONDS,
-                    DISCOVERY_INTERVAL_SECONDS, TimeUnit.SECONDS);
+            discoveryJob = scheduler.scheduleWithFixedDelay(() -> this.backgroundDiscover(),
+                    DISCOVERY_INITIAL_DELAY_SECONDS, DISCOVERY_INTERVAL_SECONDS, TimeUnit.SECONDS);
         }
     }
 

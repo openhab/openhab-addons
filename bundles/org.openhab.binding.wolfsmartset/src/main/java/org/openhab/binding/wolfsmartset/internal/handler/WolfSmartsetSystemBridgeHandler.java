@@ -128,7 +128,11 @@ public class WolfSmartsetSystemBridgeHandler extends BaseBridgeHandler {
      * @return
      */
     public @Nullable WolfSmartsetAccountBridgeHandler getAccountBridgeHandler() {
-        return (WolfSmartsetAccountBridgeHandler) this.getBridge().getHandler();
+        var bridgeHandler = this.getBridge();
+        if (bridgeHandler != null) {
+            return (WolfSmartsetAccountBridgeHandler) bridgeHandler.getHandler();
+        }
+        return null;
     }
 
     /**

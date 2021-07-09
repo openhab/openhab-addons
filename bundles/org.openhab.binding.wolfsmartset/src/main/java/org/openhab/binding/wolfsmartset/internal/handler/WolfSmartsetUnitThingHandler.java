@@ -77,7 +77,10 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
         unitId = getConfigAs(WolfSmartsetUnitConfiguration.class).unitId;
         logger.debug("UnitThing: Initializing unit '{}'", unitId);
         clearSavedState();
-        bridgeStatusChanged(getBridge().getStatusInfo());
+        var bridgeHandler = getBridge();
+        if (bridgeHandler != null) {
+            bridgeStatusChanged(bridgeHandler.getStatusInfo());
+        }
     }
 
     @Override
@@ -99,7 +102,6 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -146,7 +148,10 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
     public void updateConfiguration(SubMenuEntryDTO submenu, MenuItemTabViewDTO tabmenu) {
         this.submenu = submenu;
         this.tabmenu = tabmenu;
-        bridgeStatusChanged(getBridge().getStatusInfo());
+        var bridgeHandler = getBridge();
+        if (bridgeHandler != null) {
+            bridgeStatusChanged(bridgeHandler.getStatusInfo());
+        }
         lastRefreshTime = null;
 
         ThingBuilder thingBuilder = editThing();
