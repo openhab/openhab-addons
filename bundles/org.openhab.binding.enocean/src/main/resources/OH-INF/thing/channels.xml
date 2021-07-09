@@ -171,6 +171,40 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="windowCalibrationState">
+		<item-type>String</item-type>
+		<label>Window Calibration State</label>
+		<description>Describes the window calibration state</description>
+		<state readOnly="true">
+			<options>
+				<option value="OK">Ok</option>
+				<option value="ERROR">Error</option>
+				<option value="INVALID">Invalid</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="windowCalibrationStep">
+		<item-type>String</item-type>
+		<label>Window Calibration Step</label>
+		<description>Calibration step that should be performed next</description>
+		<state readOnly="true">
+			<options>
+				<option value="NONE">None</option>
+				<option value="SASH CLOSED HANDLE CLOSED">Sash closed handle closed</option>
+				<option value="SASH CLOSED HANDLE OPEN">Sash closed handle open</option>
+				<option value="SASH CLOSED HANDLE TILTED">Sash closed handle tilted</option>
+				<option value="SASH OPEN HANDLE CLOSED">Sash open handle closed</option>
+				<option value="SASH OPEN HANDLE OPEN">Sash open handle open</option>
+				<option value="SASH OPEN HANDLE TILTED">Sash open handle tilted</option>
+				<option value="SASH TILTED HANDLE CLOSED">Sash tilted handle closed</option>
+				<option value="SASH TILTED HANDLE OPEN">Sash tilted handle open</option>
+				<option value="SASH TILTED HANDLE TILTED">Sash tilted handle tilted</option>
+				<option value="FRAME MAGNET VALIDATION">Frame magnet validation</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="windowBreachEvent">
 		<kind>trigger</kind>
 		<label>Window Breach Event</label>

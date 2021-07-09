@@ -40,15 +40,15 @@ public class D2_06_50 extends _VLDMessage {
     }
 
     protected State getWindowSashState() {
-        int sashState = bytes[1] & 127;
-        if (sashState == 0) {
+        int sashState = bytes[1] & 0x7f;
+        if (sashState == 0x00) {
             return UnDefType.UNDEF;
         }
-        if (sashState < 4) {
+        if (sashState < 0x04) {
             return new StringType("CLOSED");
-        } else if (sashState < 7) {
+        } else if (sashState < 0x07) {
             return new StringType("OPEN");
-        } else if (sashState < 10) {
+        } else if (sashState < 0x0A) {
             return new StringType("TILTED");
         }
 
@@ -56,13 +56,56 @@ public class D2_06_50 extends _VLDMessage {
     }
 
     protected State getWindowHandleState() {
-        int handleState = bytes[1] & 127;
-        if (handleState == 1 || handleState == 4 || handleState == 7) {
+        int handleState = bytes[1] & 0x7f;
+        if (handleState == 0x01 || handleState == 0x04 || handleState == 0x07) {
             return new StringType("CLOSED");
-        } else if (handleState == 2 || handleState == 5 || handleState == 8) {
+        } else if (handleState == 0x02 || handleState == 0x05 || handleState == 0x08) {
             return new StringType("OPEN");
-        } else if (handleState == 3 || handleState == 6 || handleState == 9) {
+        } else if (handleState == 0x03 || handleState == 0x06 || handleState == 0x09) {
             return new StringType("TILTED");
+        }
+
+        return UnDefType.UNDEF;
+    }
+
+    protected State getCalibrationState() {
+        int calibrationState = bytes[1] >>> 6;
+        if (calibrationState == 0x00) {
+            return new StringType("OK");
+        } else if (calibrationState == 0x01) {
+            return new StringType("ERROR");
+        } else if (calibrationState == 0x02) {
+            return new StringType("INVALID");
+        }
+
+        return UnDefType.UNDEF;
+    }
+
+    protected State getCalibrationStep() {
+        int calibrationStep = bytes[1] & 0x3F;
+        switch (calibrationStep) {
+            case 0x00:
+                return new StringType("NONE");
+            case 0x01:
+                return new StringType("SASH CLOSED HANDLE CLOSED");
+            case 0x02:
+                return new StringType("SASH CLOSED HANDLE OPEN");
+            case 0x03:
+                return new StringType("SASH CLOSED HANDLE TILTED");
+            case 0x04:
+                return new StringType("SASH OPEN HANDLE CLOSED");
+            case 0x05:
+                return new StringType("SASH OPEN HANDLE OPEN");
+            case 0x06:
+                return new StringType("SASH OPEN HANDLE TILTED");
+            case 0x07:
+                return new StringType("SASH TILTED HANDLE CLOSED");
+            case 0x08:
+                return new StringType("SASH TILTED HANDLE OPEN");
+            case 0x09:
+                return new StringType("SASH TILTED HANDLE TILTED");
+            case 0x0A:
+                return new StringType("FRAME MAGNET VALIDATION");
         }
 
         return UnDefType.UNDEF;
@@ -71,10 +114,12 @@ public class D2_06_50 extends _VLDMessage {
     @Override
     protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
             Configuration config) {
-        if (bytes[0] == 2) {
+
+        // Alarm
+        if (bytes[0] == 0x02) {
             switch (channelId) {
                 case CHANNEL_WINDOWBREACHEVENT:
-                    if (bytes[1] == 1) {
+                    if (bytes[1] == 0x01) {
                         return "ALARM";
                     }
             }
@@ -86,16 +131,27 @@ public class D2_06_50 extends _VLDMessage {
     public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
             Configuration config) {
 
-        if (bytes[0] == 1) {
+        // Window status
+        if (bytes[0] == 0x01) {
             switch (channelId) {
                 case CHANNEL_WINDOWSASHSTATE:
                     return getWindowSashState();
                 case CHANNEL_WINDOWHANDLESTATE:
                     return getWindowHandleState();
                 case CHANNEL_BATTERY_LEVEL:
-                    return new DecimalType(bytes[6] & 127);
+                    return new DecimalType(bytes[6] & 0x7f);
                 case CHANNEL_BATTERYLOW:
                     return getBit(bytes[6], 7) ? OnOffType.ON : OnOffType.OFF;
+            }
+        }
+
+        // Calibration
+        if (bytes[0] == 0x11) {
+            switch (channelId) {
+                case CHANNEL_WINDOWCALIBRATIONSTATE:
+                    return getCalibrationState();
+                case CHANNEL_WINDOWCALIBRATIONSTEP:
+                    return getCalibrationStep();
             }
         }
 
