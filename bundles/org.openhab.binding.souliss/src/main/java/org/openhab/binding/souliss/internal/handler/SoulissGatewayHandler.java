@@ -14,7 +14,6 @@ package org.openhab.binding.souliss.internal.handler;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -53,8 +52,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     private ExecutorService udpExecutorService = Executors
             .newSingleThreadExecutor(new NamedThreadFactory("binding-souliss"));
 
-    private @Nullable Future<?> eventListenerJob;
-
     private @Nullable ScheduledFuture<?> pingScheduler;
     private @Nullable ScheduledFuture<?> subscriptionScheduler;
     private @Nullable ScheduledFuture<?> healthScheduler;
@@ -90,7 +87,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-
         gwConfig = getConfigAs(GatewayConfig.class);
 
         logger.debug("Starting UDP server on Souliss Default Port for Topics (Publish&Subcribe)");
@@ -205,13 +201,16 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         thereIsAThingDetection = false;
     }
 
+    public @Nullable SoulissGatewayDiscovery getDiscoveryService() {
+        return this.discoveryService;
+    }
+
     public void setDiscoveryService(SoulissGatewayDiscovery discoveryService) {
         this.discoveryService = discoveryService;
     }
 
     @Override
     public void dispose() {
-
         if (this.pingScheduler != null) {
             this.pingScheduler.cancel(true);
         }
