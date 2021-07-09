@@ -48,7 +48,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
     @Override
     public void deactivate() {
-        // TODO Auto-generated method stub
         super.deactivate();
     }
 

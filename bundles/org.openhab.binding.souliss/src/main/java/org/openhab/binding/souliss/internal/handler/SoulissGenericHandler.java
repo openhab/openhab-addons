@@ -68,8 +68,16 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         this.thingGeneric = thing;
 
         try {
-            iNode = Integer.parseInt(thing.getConfiguration().getProperties().get("node").toString());
-            iSlot = Integer.parseInt(thing.getConfiguration().getProperties().get("slot").toString());
+            var cfg = thing.getConfiguration();
+            var props = cfg.getProperties();
+
+            var pNode = props.get("node");
+            var pSlot = props.get("node");
+
+            if ((pNode != null) && (pSlot != null)) {
+                iNode = Integer.parseInt(pNode.toString());
+                iSlot = Integer.parseInt(pSlot.toString());
+            }
         } catch (Exception e) {
             logger.warn("Error getting node/slot from souliss typical (thing config).");
         }

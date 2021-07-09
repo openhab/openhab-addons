@@ -40,8 +40,9 @@ public class SoulissDiscoverJob implements Runnable {
 
     @Override
     public void run() {
-        if (this.gwHandler != null) {
-            soulissCommands.sendDBStructFrame(this.gwHandler.gwConfig);
+        var localGwHandler = this.gwHandler;
+        if (localGwHandler != null) {
+            soulissCommands.sendDBStructFrame(localGwHandler.gwConfig);
             logger.debug("Sending request to gateway for souliss network - Counter={}", resendCounter);
         } else {
             logger.debug("Gateway null - Skipped");
