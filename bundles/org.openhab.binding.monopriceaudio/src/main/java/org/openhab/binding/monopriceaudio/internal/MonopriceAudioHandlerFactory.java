@@ -16,6 +16,8 @@ import static org.openhab.binding.monopriceaudio.internal.MonopriceAudioBindingC
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,7 +42,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.monopriceaudio", service = ThingHandlerFactory.class)
 public class MonopriceAudioHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AMP);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_MP, THING_TYPE_MP70V, THING_TYPE_XT44, THING_TYPE_XT88).collect(Collectors.toSet()));
 
     private final SerialPortManager serialPortManager;
 

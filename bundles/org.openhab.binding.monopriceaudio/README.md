@@ -1,9 +1,6 @@
 # Monoprice Whole House Audio Binding
 
-This binding can be used to control the Monoprice MPR-SG6Z (10761) or Dayton Audio DAX66 whole house multi-zone amplifier.
-All controller functions available through the serial port interface can be controlled by the binding.
-Up to 18 zones can be controlled when 3 amplifiers are connected together (if not all zones on the amp are used they can be excluded via configuration).
-Activating the 'Page All Zones' feature can only be done through the +12v trigger input on the back of the amplifier.
+This binding can be used to control a Monoprice MPR-SG6Z (10761) & Dayton Audio DAX66, Monoprice 31028, or Xantech 4x4 & 8x8 whole house multi-zone amplifier system.
 
 The binding supports two different kinds of connections:
 
@@ -17,8 +14,10 @@ You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](ht
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents the amplifier controller.
-It has the `amplifier` id.
+Monoprice 10761 or Dayton Audio DAX66 Amplifiers use the `amplifier` id. Up to 18 zones with 3 linked amps.  
+Monoprice 31028 70V Amplifiers use the `monoprice70v` id. 6 zones per device, not linkable.  
+Xantech 4x4 Amplifiers use the `xantech44` id. 4 zones per device, not linkable.  
+Xantech 8x8 Amplifiers use the `xantech88` id. Up to 24 zones with 3 linked amps.  
 
 ## Discovery
 
@@ -52,6 +51,7 @@ The thing has the following configuration parameters:
 
 Some notes:
 
+* On the 10761 amp, activating the 'Page All Zones' feature can only be done through the +12v trigger input on the back of the amplifier.
 * On Linux, you may get an error stating the serial port cannot be opened when the MonopriceAudio binding tries to load.
 * You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
 * Also on Linux you may have issues with the USB if using two serial USB devices e.g. MonopriceAudio and RFXcom.
@@ -87,7 +87,7 @@ The following channels are available:
 
 monoprice.things:
 
-```java
+```
 //serial port connection
 monopriceaudio:amplifier:myamp "Monoprice WHA" [ serialPort="COM5", pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono"]
 
@@ -98,7 +98,7 @@ monopriceaudio:amplifier:myamp "Monoprice WHA" [ host="192.168.0.10", port=4444,
 
 monoprice.items:
 
-```java
+```
 Switch all_allpower "All Zones Power" { channel="monopriceaudio:amplifier:myamp:all#allpower" }
 Number all_source "Source Input [%s]" { channel="monopriceaudio:amplifier:myamp:all#allsource" }
 Dimmer all_volume "Volume [%d %%]" { channel="monopriceaudio:amplifier:myamp:all#allvolume" }
@@ -120,7 +120,7 @@ Switch z1_keypad "Keypad Connected: [%s]" { channel="monopriceaudio:amplifier:my
 
 monoprice.sitemap:
 
-```perl
+```
 sitemap monoprice label="Audio Control" {
     Frame label="All Zones" {
         Switch item=all_allpower label="All Zones On" mappings=[ON=" "]

@@ -4,9 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Monoprice Whole House Amplifier Thing -->
+	<!-- Monoprice 10761/DAX66 Amplifier Thing -->
 	<thing-type id="amplifier">
-		<label>Whole House Amplifier</label>
+		<label>Monoprice 10761 / DAX66 Amplifier</label>
 		<description>
 			A Multi-zone Whole House Amplifier System
 		</description>

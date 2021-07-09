@@ -18,8 +18,6 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,10 +41,6 @@ public abstract class MonopriceAudioConnector {
     public static final String KEY_ERROR = "error";
     public static final String MSG_VALUE_ON = "on";
 
-    private static final Pattern PATTERN = Pattern.compile("^.*#>(\\d{22})$", Pattern.DOTALL);
-    private static final String BEGIN_CMD = "<";
-    private static final String END_CMD = "\r";
-
     private final Logger logger = LoggerFactory.getLogger(MonopriceAudioConnector.class);
 
     /** The output stream */
@@ -57,6 +51,8 @@ public abstract class MonopriceAudioConnector {
 
     /** true if the connection is established, false if not */
     private boolean connected;
+
+    private AmplifierModel amp = AmplifierModel.AMPLIFIER;
 
     private @Nullable Thread readerThread;
 
@@ -78,6 +74,10 @@ public abstract class MonopriceAudioConnector {
      */
     protected void setConnected(boolean connected) {
         this.connected = connected;
+    }
+
+    public void setAmplifierModel(AmplifierModel amp) {
+        this.amp = amp;
     }
 
     /**
@@ -167,33 +167,43 @@ public abstract class MonopriceAudioConnector {
      *
      * @throws MonopriceAudioException - In case of any problem
      */
-    public void queryZone(MonopriceAudioZone zone) throws MonopriceAudioException {
-        sendCommand(zone, MonopriceAudioCommand.QUERY, null);
+    public void queryZone(String zoneId) throws MonopriceAudioException {
+        sendCommand(zoneId, amp.getQueryPrefix(), null);
+    }
+
+    public void queryBalanceTone(String zoneId) throws MonopriceAudioException {
+        sendCommand("", amp.getQueryPrefix() + zoneId + amp.getTrebleCmd(), null);
+        sendCommand("", amp.getQueryPrefix() + zoneId + amp.getBassCmd(), null);
+        sendCommand("", amp.getQueryPrefix() + zoneId + amp.getBalanceCmd(), null);
     }
 
     /**
      * Request the MonopriceAudio controller to execute a command
      *
-     * @param zone the zone for which the command is to be run
+     * @param zoneId the zone for which the command is to be run
      * @param cmd the command to execute
      * @param value the integer value to consider for volume, bass, treble, etc. adjustment
      *
      * @throws MonopriceAudioException - In case of any problem
      */
-    public void sendCommand(MonopriceAudioZone zone, MonopriceAudioCommand cmd, @Nullable Integer value)
-            throws MonopriceAudioException {
+    public void sendCommand(String zoneId, String cmd, @Nullable Integer value) throws MonopriceAudioException {
         String messageStr = "";
 
-        if (cmd == MonopriceAudioCommand.QUERY) {
+        if (cmd.startsWith(amp.getQueryPrefix())) {
             // query special case (ie: ? + zoneId)
-            messageStr = cmd.getValue() + zone.getZoneId();
+            messageStr = cmd + zoneId + amp.getQuerySuffix();
         } else if (value != null) {
             // if the command passed a value, append it to the messageStr
-            messageStr = BEGIN_CMD + zone.getZoneId() + cmd.getValue() + String.format("%02d", value);
+            messageStr = amp.getCmdPrefix() + zoneId + cmd;
+            if (amp.isPadNumbers()) {
+                messageStr += String.format("%02d", value);
+            } else {
+                messageStr += value;
+            }
         } else {
-            throw new MonopriceAudioException("Send command \"" + messageStr + "\" failed: passed in value is null");
+            messageStr = amp.getCmdPrefix() + cmd;
         }
-        messageStr += END_CMD;
+        messageStr += amp.getCmdSuffix();
         logger.debug("Send command {}", messageStr);
 
         OutputStream dataOut = this.dataOut;
@@ -204,7 +214,7 @@ public abstract class MonopriceAudioConnector {
             dataOut.write(messageStr.getBytes(StandardCharsets.US_ASCII));
             dataOut.flush();
         } catch (IOException e) {
-            throw new MonopriceAudioException("Send command \"" + cmd.getValue() + "\" failed: " + e.getMessage(), e);
+            throw new MonopriceAudioException("Send command \"" + cmd + "\" failed: " + e.getMessage(), e);
         }
     }
 
@@ -241,11 +251,8 @@ public abstract class MonopriceAudioConnector {
             return;
         }
 
-        // Amp controller sends status string: #>1200010000130809100601
-        Matcher matcher = PATTERN.matcher(message);
-        if (matcher.find()) {
-            // pull out just the digits and send them as an event
-            dispatchKeyValue(KEY_ZONE_UPDATE, matcher.group(1));
+        if (message.startsWith(amp.getRespPrefix())) {
+            dispatchKeyValue(KEY_ZONE_UPDATE, message.trim());
         } else {
             logger.debug("no match on message: {}", message);
         }
