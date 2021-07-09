@@ -162,7 +162,7 @@ public class SendDispatcherRunnable implements Runnable {
 
                 // confronta gli stati in memoria con i frame inviati. Se
                 // corrispondono cancella il frame dalla lista inviati
-                // safeSendCheck();
+                safeSendCheck();
 
                 resetTime();
             }
@@ -229,54 +229,54 @@ public class SendDispatcherRunnable implements Runnable {
                         if (this.gwHandler != null) {
                             localTyp = getHandler(node, iSlot, this.logger);
 
-                            if (localTyp == null) {
-                                break;
-                            }
+                            if (localTyp != null) {
 
-                            bExpected = localTyp.getExpectedRawState(packetsList.get(i).packet.getData()[j]);
+                                bExpected = localTyp.getExpectedRawState(packetsList.get(i).packet.getData()[j]);
 
-                            // se il valore atteso dal tipico è -1 allora vuol dire che il tipico non supporta la
-                            // funzione
-                            // secureSend
-                            if (bExpected < 0) {
-                                localTyp = null;
-                            }
-
-                            // traduce il comando inviato con lo stato previsto e
-                            // poi fa il confronto con lo stato attuale
-                            if (logger.isDebugEnabled() && localTyp != null) {
-                                sCmd = Integer.toHexString(packetsList.get(i).packet.getData()[j]);
-                                // comando inviato
-                                sCmd = sCmd.length() < 2 ? "0x0" + sCmd.toUpperCase() : "0x" + sCmd.toUpperCase();
-                                sExpected = Integer.toHexString(bExpected);
-                                sExpected = sExpected.length() < 2 ? "0x0" + sExpected.toUpperCase()
-                                        : "0x" + sExpected.toUpperCase();
-                                logger.debug(
-                                        "Compare. Node: {} Slot: {} Node Name: {} Command: {} Expected Souliss State: {} - Actual OH item State: {}",
-                                        node, iSlot, localTyp.getLabel(), sCmd, sExpected, localTyp.getRawState());
-                            }
-
-                            if (localTyp != null && checkExpectedState(localTyp.getRawState(), bExpected)) {
-                                // se il valore del tipico coincide con il valore
-                                // trasmesso allora pongo il byte a zero.
-                                // quando tutti i byte saranno uguale a zero allora
-                                // si
-                                // cancella il frame
-                                packetsList.get(i).packet.getData()[j] = 0;
-                                logger.debug("{} Node: {} Slot: {} - OK Expected State", localTyp.getLabel(), node,
-                                        iSlot);
-                            } else if (localTyp == null) {
+                                // se il valore atteso dal tipico è -1 allora vuol dire che il tipico non supporta la
+                                // funzione
+                                // secureSend
                                 if (bExpected < 0) {
-                                    // se il tipico non viene gestito allora metto a zero il byte del relativo
-                                    // slot
+                                    localTyp = null;
+                                }
+
+                                // traduce il comando inviato con lo stato previsto e
+                                // poi fa il confronto con lo stato attuale
+                                if (logger.isDebugEnabled() && localTyp != null) {
+                                    sCmd = Integer.toHexString(packetsList.get(i).packet.getData()[j]);
+                                    // comando inviato
+                                    sCmd = sCmd.length() < 2 ? "0x0" + sCmd.toUpperCase() : "0x" + sCmd.toUpperCase();
+                                    sExpected = Integer.toHexString(bExpected);
+                                    sExpected = sExpected.length() < 2 ? "0x0" + sExpected.toUpperCase()
+                                            : "0x" + sExpected.toUpperCase();
+                                    logger.debug(
+                                            "Compare. Node: {} Slot: {} Node Name: {} Command: {} Expected Souliss State: {} - Actual OH item State: {}",
+                                            node, iSlot, localTyp.getLabel(), sCmd, sExpected, localTyp.getRawState());
+                                }
+
+                                if (localTyp != null && checkExpectedState(localTyp.getRawState(), bExpected)) {
+                                    // se il valore del tipico coincide con il valore
+                                    // trasmesso allora pongo il byte a zero.
+                                    // quando tutti i byte saranno uguale a zero allora
+                                    // si
+                                    // cancella il frame
                                     packetsList.get(i).packet.getData()[j] = 0;
-                                } else {
-                                    // se allo slot j non esiste un tipico allora vuol dire che si tratta di uno slot
-                                    // collegato
-                                    // al precedente (es: RGB, T31,...)
-                                    // allora se lo slot j-1=0 allora anche j puÃ² essere messo a 0
-                                    if (packetsList.get(i).packet.getData()[j - 1] == 0) {
+                                    logger.debug("{} Node: {} Slot: {} - OK Expected State", localTyp.getLabel(), node,
+                                            iSlot);
+                                } else if (localTyp == null) {
+                                    if (bExpected < 0) {
+                                        // se il tipico non viene gestito allora metto a zero il byte del relativo
+                                        // slot
                                         packetsList.get(i).packet.getData()[j] = 0;
+                                    } else {
+                                        // se allo slot j non esiste un tipico allora vuol dire che si tratta di uno
+                                        // slot
+                                        // collegato
+                                        // al precedente (es: RGB, T31,...)
+                                        // allora se lo slot j-1=0 allora anche j puÃ² essere messo a 0
+                                        if (packetsList.get(i).packet.getData()[j - 1] == 0) {
+                                            packetsList.get(i).packet.getData()[j] = 0;
+                                        }
                                     }
                                 }
                             }
@@ -330,7 +330,9 @@ public class SendDispatcherRunnable implements Runnable {
                 SoulissGenericHandler handler = (SoulissGenericHandler) typ.getHandler();
                 if (handler != null) { // execute it only if binding is Souliss and update is for my
                                        // Gateway
-                    return handler;
+                    if (handler.getNode() == node && handler.getSlot() == slot) {
+                        return handler;
+                    }
                 }
             }
         }
