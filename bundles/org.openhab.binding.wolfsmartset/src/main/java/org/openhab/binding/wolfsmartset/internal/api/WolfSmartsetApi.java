@@ -73,6 +73,7 @@ public class WolfSmartsetApi {
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
     private static final DateTimeFormatter SESSION_TIME_STAMP = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    private Instant blockRequestsUntil = Instant.now();
     private String username;
     private String password;
     private String serviceToken = "";
@@ -114,12 +115,12 @@ public class WolfSmartsetApi {
             loginFailedCounter = 0;
             this.session = getCreateSession();
             if (this.session != null) {
-                logger.debug("login successfull, browserSessionId {}", session.getBrowserSessionId());
+                logger.debug("login successful, browserSessionId {}", session.getBrowserSessionId());
                 return true;
             } else {
                 loginFailedCounter++;
                 this.session = null;
-                logger.trace("Login succeded but failed to create session {}", loginFailedCounter);
+                logger.trace("Login succeeded but failed to create session {}", loginFailedCounter);
                 return false;
             }
 
@@ -254,7 +255,7 @@ public class WolfSmartsetApi {
             stopProcessJob();
             requestQueue.forEach(queueEntry -> queueEntry.future.completeExceptionally(new CancellationException()));
         } catch (Exception e) {
-            logger.debug("Error stopping httpclient :{}", e.getMessage(), e);
+            logger.debug("Error stopping request queue background processing:{}", e.getMessage(), e);
         }
     }
 
@@ -270,7 +271,7 @@ public class WolfSmartsetApi {
         this.delay = delay;
         stopProcessJob();
         if (delay != 0) {
-            processJob = scheduler.scheduleWithFixedDelay(this::processQueue, 0, delay, TimeUnit.MILLISECONDS);
+            processJob = scheduler.scheduleWithFixedDelay(() -> processQueue(), 0, delay, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -474,6 +475,7 @@ public class WolfSmartsetApi {
         // if no delay is set, return a completed CompletableFuture
         CompletableFuture<String> future = new CompletableFuture<>();
         RequestQueueEntry queueEntry = new RequestQueueEntry(buildRequest, future);
+
         if (delay == 0) {
             queueEntry.completeFuture((r) -> this.getResponse(r));
         } else {
@@ -493,9 +495,13 @@ public class WolfSmartsetApi {
     }
 
     private void processQueue() {
-        RequestQueueEntry queueEntry = requestQueue.poll();
-        if (queueEntry != null) {
-            queueEntry.completeFuture((r) -> this.getResponse(r));
+        if (blockRequestsUntil.isAfter(Instant.now())) {
+            // No new Requests until blockRequestsUntil recieved HttpStatus.TOO_MANY_REQUESTS_429
+        } else {
+            RequestQueueEntry queueEntry = requestQueue.poll();
+            if (queueEntry != null) {
+                queueEntry.completeFuture((r) -> this.getResponse(r));
+            }
         }
     }
 
@@ -516,7 +522,7 @@ public class WolfSmartsetApi {
             if (response.getStatus() == HttpStatus.NOT_FOUND_404) {
                 throw new WolfSmartsetCloudException("Invalid request, not found " + request.getURI());
             } else if (response.getStatus() == HttpStatus.TOO_MANY_REQUESTS_429) {
-                Thread.sleep(30000);
+                blockRequestsUntil = Instant.now().plusSeconds(30);
                 throw new WolfSmartsetCloudException("Error too many requests: " + response.getContentAsString());
             } else if (response.getStatus() >= HttpStatus.BAD_REQUEST_400
                     && response.getStatus() < HttpStatus.INTERNAL_SERVER_ERROR_500) {

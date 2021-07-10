@@ -127,7 +127,7 @@ public class WolfSmartsetAccountDiscoveryService extends AbstractDiscoveryServic
         logger.debug("WolfSmartsetDiscovery: Discovering systems");
         var registeredSytems = bridgeHandler.getRegisteredSystems();
         if (registeredSytems != null) {
-            for (GetSystemListDTO system : bridgeHandler.getRegisteredSystems()) {
+            for (GetSystemListDTO system : registeredSytems) {
                 String name = system.getName();
                 String identifier = null;
                 if (system.getId() != null) {

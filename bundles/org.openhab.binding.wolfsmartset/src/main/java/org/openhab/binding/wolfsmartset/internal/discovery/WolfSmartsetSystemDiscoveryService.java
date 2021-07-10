@@ -109,7 +109,8 @@ public class WolfSmartsetSystemDiscoveryService extends AbstractDiscoveryService
     }
 
     private void backgroundDiscover() {
-        if (!bridgeHandler.getAccountBridgeHandler().isBackgroundDiscoveryEnabled()) {
+        var accountBridgeHandler = bridgeHandler.getAccountBridgeHandler();
+        if (accountBridgeHandler == null || !accountBridgeHandler.isBackgroundDiscoveryEnabled()) {
             return;
         }
         discover();
