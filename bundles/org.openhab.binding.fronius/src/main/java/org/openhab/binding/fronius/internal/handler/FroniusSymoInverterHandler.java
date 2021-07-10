@@ -161,7 +161,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     private Object getInverterFlowValue(final String fieldName, final String number) {
         final Map<String, PowerFlowRealtimeInverter> inverters = powerFlowResponse.getBody().getData().getInverters();
         if ((inverters == null) || (inverters.get(number) == null)) {
-            logger.debug("No data for inverter '" + number + "' found.");
+            logger.debug("No data for inverter '{}' found.", number);
             return null;
         }
         switch (fieldName) {
