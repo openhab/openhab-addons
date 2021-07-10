@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="octopusenergy" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
+
+	<name>OctopusEnergy Binding</name>
+	<description>This binding interacts with Octopus Energy API to retrieve energy consumption and prices.</description>
+	<author>Rene Scherer</author>
+
+</binding:binding>
