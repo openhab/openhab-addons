@@ -12,19 +12,13 @@
  */
 package org.openhab.binding.fronius.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 /**
  * The {@link FroniusBridgeConfiguration} is the class used to match the
  * bridge configuration.
  *
  * @author Thomas Rokohl - Initial contribution
  */
-@NonNullByDefault
 public class FroniusBridgeConfiguration {
-    @Nullable
     public String hostname;
-    @Nullable
     public Integer refreshInterval;
 }

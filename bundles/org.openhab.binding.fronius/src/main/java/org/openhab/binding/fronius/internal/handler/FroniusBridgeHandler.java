@@ -18,8 +18,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Bridge;
@@ -38,13 +36,12 @@ import org.slf4j.LoggerFactory;
  * @author Thomas Rokohl - Refactoring to merge the concepts.
  *         Check if host is reachable.
  */
-@NonNullByDefault
 public class FroniusBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FroniusBridgeHandler.class);
     private static final int DEFAULT_REFRESH_PERIOD = 10;
     private final Set<FroniusBaseThingHandler> services = new HashSet<>();
-    private @Nullable ScheduledFuture<?> refreshJob;
+    private ScheduledFuture<?> refreshJob;
 
     public FroniusBridgeHandler(Bridge bridge) {
         super(bridge);
