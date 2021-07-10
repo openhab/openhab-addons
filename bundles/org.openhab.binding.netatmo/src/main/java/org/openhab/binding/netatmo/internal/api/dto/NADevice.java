@@ -33,10 +33,6 @@ public class NADevice extends NAThing {
         return modules;
     }
 
-    // public @Nullable NAThing getModule(String key) {
-    // return modules.get(key);
-    // }
-
     public long getDateSetup() {
         return dateSetup;
     }
@@ -56,8 +52,4 @@ public class NADevice extends NAThing {
     public boolean isCo2Calibrating() {
         return co2Calibrating;
     }
-
-    // public boolean containsModuleType(ModuleType searchedType) {
-    // return modules.values().stream().anyMatch(module -> module.getType() == searchedType);
-    // }
 }

@@ -324,15 +324,9 @@ All these channels are read only.
 
 **Supported channels for the thermostat relay device:**
 
-| Channel ID          | Item Type   | Description                                              |
-|---------------------|-------------|----------------------------------------------------------|
-| ConnectedBoiler     | Contact     | Plug connected boiler                                    |
-| last-seen            | DateTime    | Last plug seen                                           |
-| last-bilan           | DateTime    | Month of the last available thermostat bilan             |
-| signal-strength     | Number      | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
-| location            | Location    | Location of the device                                   |
-| setpoint-duration   | Number:Time | Default setpoint duration when manually set.             |
-| planning            | String      | Id of the currently active planning when mode = program  |
+| Channel ID        | Item Type   | Description                                                   |
+|-------------------|-------------|---------------------------------------------------------------|
+| signal-strength   | Number      | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
 All these channels are read only.
 
@@ -348,7 +342,6 @@ All these channels are read only.
 | setpoint-mode       | String             | Chosen setpoint_mode (program, away, hg, manual, off, max) |
 | ThermRelayCmd       | Switch             | Indicates whether the furnace is heating or not            |
 | anticipating   | Switch             | Indicates is anticipating the schedule                     |
-| ThermOrientation    | Number:Angle       | Physical orientation of the thermostat module              |
 | timestamp           | DateTime           | Timestamp when data was measured                           |
 | setpoint-end     | DateTime           | Thermostat goes back to schedule after that timestamp      |
 | last-message         | DateTime           | Last message emitted by the module                         |

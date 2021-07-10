@@ -154,33 +154,11 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
-	<channel-type id="orientation" advanced="true">
-		<item-type>Number:Angle</item-type>
-		<label>Orientation</label>
-		<description>Physical orientation of the thermostat module</description>
-		<category>niveau</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
-	</channel-type>
-
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
 		<label>Measurement Time</label>
 		<description>Timestamp when data was measured</description>
 		<category>time</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="last-bilan" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Available Bilan</label>
-		<description>Month of the last available thermostat bilan</description>
-		<category>time</category>
-		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY"/>
-	</channel-type>
-
-	<channel-type id="connected" advanced="true">
-		<item-type>Contact</item-type>
-		<label>Plug Connected Boiler</label>
 		<state readOnly="true"/>
 	</channel-type>
 

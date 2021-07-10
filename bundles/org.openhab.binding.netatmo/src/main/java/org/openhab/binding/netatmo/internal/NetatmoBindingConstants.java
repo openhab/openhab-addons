@@ -45,7 +45,6 @@ public class NetatmoBindingConstants {
     public static final String GROUP_RAIN = "rain";
     public static final String GROUP_WIND = "wind";
     public static final String GROUP_HEALTH = "health";
-    public static final String GROUP_PLUG = "plug";
     public static final String GROUP_HOME_ENERGY = "energy";
     public static final String GROUP_SIGNAL = "signal";
     public static final String GROUP_BATTERY = "battery";
@@ -88,8 +87,6 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_DATE_MAX_WIND_STRENGTH = "max-strength-date";
     public static final String CHANNEL_GUST_ANGLE = "gust-angle";
     public static final String CHANNEL_GUST_STRENGTH = "gust-strength";
-    public static final String CHANNEL_CONNECTED_BOILER = "connected";
-    public static final String CHANNEL_LAST_BILAN = "last-bilan";
     public static final String CHANNEL_SETPOINT_MODE = "mode";
     public static final String CHANNEL_SETPOINT_START_TIME = "start";
     public static final String CHANNEL_SETPOINT_END_TIME = "end";

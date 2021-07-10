@@ -28,14 +28,13 @@ import com.google.gson.annotations.SerializedName;
 
 @NonNullByDefault
 public class NAThing extends NAObject {
-    @SerializedName(value = "rf_status", alternate = { "wifi_status", "rf_strength" })
+    @SerializedName(value = "rf_status", alternate = { "wifi_status", "rf_strength", "wifi_strength" })
     private int radioStatus;
     @SerializedName(value = "last_seen", alternate = { "last_therm_seen", "last_status_store", "last_plug_seen",
             "last_message", "last_activity" })
     private @Nullable ZonedDateTime lastSeen;
     @SerializedName(value = "firmware", alternate = { "firmware_revision" })
     private int firmware = -1;
-    private @Nullable ZonedDateTime setupDate;
     private @NonNullByDefault({}) ModuleType type;
     private @Nullable String roomId;
     private @Nullable Boolean reachable;
@@ -71,10 +70,6 @@ public class NAThing extends NAObject {
 
     public @Nullable ZonedDateTime getLastSeen() {
         return lastSeen;
-    }
-
-    public @Nullable ZonedDateTime getSetupDate() {
-        return setupDate;
     }
 
     public @Nullable String getBridge() {

@@ -14,6 +14,9 @@ package org.openhab.binding.netatmo.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  *
@@ -23,21 +26,12 @@ import org.eclipse.jdt.annotation.Nullable;
 
 @NonNullByDefault
 public class NAThermostat extends NAModule {
-    private @Nullable NAThermMeasure measured;
-    private boolean anticipating;
-    private boolean boilerStatus;
+    private @Nullable OpenClosedType boilerStatus;
     private boolean boilerValveComfortBoost;
 
-    public @Nullable NAThermMeasure getMeasured() {
-        return measured;
-    }
-
-    public boolean isAnticipating() {
-        return anticipating;
-    }
-
-    public boolean getBoilerStatus() {
-        return boilerStatus;
+    public State getBoilerStatus() {
+        OpenClosedType status = boilerStatus;
+        return status != null ? status : UnDefType.NULL;
     }
 
     public boolean getBoilerValveComfortBoost() {

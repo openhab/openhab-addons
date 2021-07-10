@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAThermostat;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 
 /**
@@ -41,11 +40,8 @@ public class Therm1PropsChannelHelper extends AbstractChannelHelper {
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
         if (naThing instanceof NAThermostat) {
             NAThermostat thermostat = (NAThermostat) naThing;
-            switch (channelId) {
-                case CHANNEL_THERM_RELAY:
-                    return OnOffType.from(thermostat.getBoilerStatus());
-                case CHANNEL_ANTICIPATING:
-                    return OnOffType.from(thermostat.isAnticipating());
+            if (CHANNEL_THERM_RELAY.equals(channelId)) {
+                return thermostat.getBoilerStatus();
             }
         }
         return null;

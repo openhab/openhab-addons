@@ -333,7 +333,7 @@ public class NetatmoConstants {
         UNKNOWN;
     }
 
-    public enum BatteryLevel {
+    public enum BatteryState {
         @SerializedName("full")
         FULL(100),
         @SerializedName("high")
@@ -346,7 +346,7 @@ public class NetatmoConstants {
 
         private int level;
 
-        BatteryLevel(int i) {
+        BatteryState(int i) {
             this.level = i;
         }
 

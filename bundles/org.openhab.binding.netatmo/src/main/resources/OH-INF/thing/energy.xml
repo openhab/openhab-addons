@@ -7,8 +7,7 @@
 	<channel-group-type id="plug">
 		<label>Thermostat Plug</label>
 		<channels>
-			<channel id="connected" typeId="connected"/>
-			<channel id="last-bilan" typeId="last-bilan"/>
+			<channel id="boiler-status" typeId="boiler-status"/>
 		</channels>
 	</channel-group-type>
 
@@ -71,14 +70,9 @@
 	<channel-group-type id="th-properties">
 		<label>Thermostat</label>
 		<channels>
-			<!-- channel id="temperature" typeId="system.outdoor-temperature"/ -->
 			<channel id="relay-status" typeId="contact">
 				<label>Heating Status</label>
-				<description>Indicates whether the furnace is heating or not</description>
-			</channel>
-			<channel id="orientation" typeId="orientation"/>
-			<channel id="anticipating" typeId="contact">
-				<label>Anticipated heating</label>
+				<description>Indicates whether the furnace is heating or not (CLOSED = heating, OPEN = stopped)</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -105,10 +99,12 @@
 	<channel-group-type id="energy-battery">
 		<label>Battery</label>
 		<channels>
+			<channel id="value" typeId="system.battery-level"/>
 			<channel id="status" typeId="string-ro">
 				<label>Status</label>
 				<description>Status of battery</description>
 			</channel>
+			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 	</channel-group-type>
 

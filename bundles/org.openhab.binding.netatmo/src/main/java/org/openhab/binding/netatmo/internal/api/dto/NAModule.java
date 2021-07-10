@@ -13,7 +13,7 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.BatteryLevel;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.BatteryState;
 
 /**
  *
@@ -23,20 +23,21 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.BatteryLevel;
 
 @NonNullByDefault
 public class NAModule extends NAThing {
-    private BatteryLevel batteryState = BatteryLevel.UNKNOWN;
+    private BatteryState batteryState = BatteryState.UNKNOWN;
+
     private int batteryPercent = -1;
 
     public int getBatteryPercent() {
         if (batteryPercent != -1) {
             return batteryPercent;
         }
-        if (batteryState != BatteryLevel.UNKNOWN) {
+        if (batteryState != BatteryState.UNKNOWN) {
             return batteryState.getLevel();
         }
         return -1;
     }
 
-    public BatteryLevel getBatteryState() {
+    public BatteryState getBatteryState() {
         return this.batteryState;
     }
 }

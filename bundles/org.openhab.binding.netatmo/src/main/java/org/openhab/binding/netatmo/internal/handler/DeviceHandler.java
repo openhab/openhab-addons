@@ -174,8 +174,8 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
             NADevice localNaDevice = (NADevice) newData;
             localNaDevice.getModules().entrySet().forEach(entry -> {
                 DeviceHandler listener = getDataListeners().get(entry.getKey());
-                if (listener != null && newData instanceof NAThing) {
-                    listener.setNewData(newData);
+                if (listener != null) {
+                    listener.setNewData(entry.getValue());
                 }
             });
         }
