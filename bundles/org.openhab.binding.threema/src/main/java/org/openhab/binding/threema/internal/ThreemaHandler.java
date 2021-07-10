@@ -13,6 +13,7 @@
 package org.openhab.binding.threema.internal;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.threema.apitool.APIConnector;
-import ch.threema.apitool.PublicKeyStore;
 
 /**
  * The {@link ThreemaHandler} is responsible for handling commands, which are
@@ -38,73 +38,78 @@ import ch.threema.apitool.PublicKeyStore;
 @NonNullByDefault
 public class ThreemaHandler extends BaseThingHandler {
 
-	private final Logger logger = LoggerFactory.getLogger(ThreemaHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ThreemaHandler.class);
 
-	private @Nullable ThreemaConfiguration config;
-	private @Nullable APIConnector apiConnector;
+    private @Nullable ThreemaConfiguration config;
+    private @Nullable APIConnector apiConnector;
 
-	public ThreemaHandler(Thing thing) {
-		super(thing);
-	}
+    public ThreemaHandler(Thing thing) {
+        super(thing);
+    }
 
-	@Override
-	public void handleCommand(ChannelUID channelUID, Command command) {
-		// no commands to handle
-	}
+    public ThreemaHandler(Thing thing, APIConnector apiConnector) {
+        super(thing);
+        this.apiConnector = Objects.requireNonNull(apiConnector);
+    }
 
-	@Override
-	public void initialize() {
-		config = getConfigAs(ThreemaConfiguration.class);
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // no commands to handle
+    }
 
-		apiConnector = new APIConnector(config.gatewayId, config.secret, new PublicKeyStore() {
-			@Override
-			protected byte[] fetchPublicKey(String threemaId) {
-				// TODO: implement public key fetch
-				// (e.g. fetch from a locally saved file)
-				return null;
-			}
+    @Override
+    public void initialize() {
+        config = getConfigAs(ThreemaConfiguration.class);
 
-			@Override
-			protected void save(String threemaId, byte[] publicKey) {
-				// TODO: implement public key saving
-				// (e.g. save to a locally saved file)
-			}
-		});
-		
-		updateStatus(ThingStatus.UNKNOWN);
+        logger.info("Initialising Threema connector for {}", config.getGatewayId());
+        logger.info("Configured recipients: {}", config.getRecipientIds());
 
-		scheduler.execute(() -> {
-			try {
-				int credits = apiConnector.lookupCredits();
-				if (credits > 0) {
-					logger.info("{} Threema.Gateway credits available.", credits);
-					updateStatus(ThingStatus.ONLINE);
-				} else {
-					updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, "No more Threema.Gateway credits available.");
-				}
-			} catch (IOException e) {
-				logger.error("Failed to query credits", e);
-				updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-			}
-			
-		});
-	}
+        apiConnector = Optional.ofNullable(apiConnector)
+                .orElseGet(() -> new APIConnector(config.getGatewayId(), config.getSecret(), new ThreemaKeyStore()));
 
-	boolean sendTextMessageSimple(String threemaId, String textMessage) {
-		try {
-			apiConnector.sendTextMessageSimple(threemaId, textMessage);
-			return true;
-		} catch (IOException e) {
-			logger.error("Failed to send text message in basic mode to {}", threemaId, e);
-			updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-			return false;
-		}
-	}
+        updateStatus(ThingStatus.UNKNOWN);
 
-	boolean sendTextMessageSimple(String message) {
-		return Optional.ofNullable(config.recipientIds)
-				.map(recipientIds -> recipientIds.parallelStream()
-						.map(threemaId -> sendTextMessageSimple(threemaId, message)).allMatch(Boolean.TRUE::equals))
-				.orElse(false);
-	}
+        scheduler.execute(() -> {
+            int credits = lookupCredits();
+            if (credits > 0) {
+                logger.info("{} Threema.Gateway credits available.", credits);
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED,
+                        "No more Threema.Gateway credits available.");
+            }
+        });
+    }
+
+    @Override
+    public void dispose() {
+        apiConnector = null;
+        super.dispose();
+    }
+
+    public Integer lookupCredits() {
+        try {
+            return apiConnector.lookupCredits();
+        } catch (IOException e) {
+            logger.error("Failed to query credits", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            return -1;
+        }
+    }
+
+    public boolean sendTextMessageSimple(String threemaId, String textMessage) {
+        try {
+            apiConnector.sendTextMessageSimple(threemaId, textMessage);
+            return true;
+        } catch (IOException e) {
+            logger.error("Failed to send text message in basic mode to {}", threemaId, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            return false;
+        }
+    }
+
+    public boolean sendTextMessageSimple(String message) {
+        return config.getRecipientIds().parallelStream().map(threemaId -> sendTextMessageSimple(threemaId, message))
+                .allMatch(Boolean.TRUE::equals);
+    }
 }

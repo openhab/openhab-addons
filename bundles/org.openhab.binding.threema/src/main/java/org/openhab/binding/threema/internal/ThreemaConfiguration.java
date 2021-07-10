@@ -12,18 +12,33 @@
  */
 package org.openhab.binding.threema.internal;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link ThreemaConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link ThreemaConfiguration} class contains fields mapping thing
+ * configuration parameters.
  *
  * @author Kai K. - Initial contribution
  */
 public class ThreemaConfiguration {
 
-    public String gatewayId;
-    public String secret;
-    public @Nullable List<String> recipientIds;
+    private String gatewayId;
+    private String secret;
+    private @Nullable List<String> recipientIds;
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public String getSecret() {
+        return secret;
+    }
+
+    public List<String> getRecipientIds() {
+        return Optional.ofNullable(recipientIds).map(Collections::unmodifiableList).orElse(Collections.emptyList());
+    }
 }
