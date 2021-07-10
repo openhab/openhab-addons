@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.bluetooth;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.measure.quantity.Power;
@@ -24,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -37,18 +41,27 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.HexUtils;
 
 /**
  * This is a handler for generic Bluetooth devices in beacon-mode (i.e. not connected), which at the same time can be
  * used as a base implementation for more specific thing handlers.
  *
  * @author Kai Kreuzer - Initial contribution and API
+ * @author Peter Rosenberg - Add support for ServiceData
  */
 @NonNullByDefault
 public class BeaconBluetoothHandler extends BaseThingHandler implements BluetoothDeviceListener {
+
+    /**
+     * https://www.bluetooth.com/specifications/assigned-numbers/
+     * GATT Service: 0x181A: Environmental Sensing
+     */
+    public static final String SERVICE_UUID_ENVIRONMENTAL_SENSING = "0000181a-0000-1000-8000-00805f9b34fb";
 
     @NonNullByDefault({} /* non-null if initialized */)
     protected BluetoothAdapter adapter;
@@ -224,6 +237,75 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
         int rssi = scanNotification.getRssi();
         if (rssi != Integer.MIN_VALUE) {
             updateRSSI(rssi);
+        } else {
+            // we received a scan notification from this device so it is online
+            // TODO how can we detect if the underlying bluez stack is still receiving advertising packets when there
+            // are no changes?
+            updateStatus(ThingStatus.ONLINE);
+        }
+
+        handleServiceData(scanNotification);
+    }
+
+    /**
+     * Service data is specified in the Supplement to the Bluetooth Core Specification
+     * https://www.bluetooth.org/DocMan/handlers/DownloadDoc.ashx?doc_id=282152
+     * 1.11 SERVICE DATA
+     *
+     * Broadcast configuration to configure what to advertise in service data
+     * https://www.bluetooth.com/specifications/specs/core-specification-5-2/
+     * 2.7 CONFIGURED BROADCAST
+     *
+     * @param scanNotification to get serviceData from
+     */
+    private void handleServiceData(BluetoothScanNotification scanNotification) {
+        Map<String, byte[]> serviceData = scanNotification.getServiceData();
+        if (serviceData != null) {
+            // create new channels if required
+            ThingBuilder builder = editThing();
+            boolean changed = false;
+            for (String uuid : serviceData.keySet()) {
+                if (getThing().getChannel(uuid) == null) {
+                    final Channel channel;
+                    if (uuid.equalsIgnoreCase(SERVICE_UUID_ENVIRONMENTAL_SENSING)) {
+                        channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), uuid), "Number")
+                                .withType(new ChannelTypeUID(BluetoothBindingConstants.BINDING_ID,
+                                        "servicedata-environmental-sensing"))
+                                .build();
+                    } else {
+                        channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), uuid))
+                                .withType(
+                                        new ChannelTypeUID(BluetoothBindingConstants.BINDING_ID, "servicedata-unknown"))
+                                .build();
+                    }
+                    builder.withChannel(channel);
+                    changed = true;
+                }
+            }
+            if (changed) {
+                updateThing(builder.build());
+            }
+
+            // notify changes
+            for (String uuid : serviceData.keySet()) {
+                byte[] valueBytes = serviceData.get(uuid);
+                if (valueBytes != null) {
+                    if (uuid.equalsIgnoreCase(SERVICE_UUID_ENVIRONMENTAL_SENSING)) {
+                        ByteBuffer wrapped = ByteBuffer.wrap(valueBytes);
+                        // the bluetooth device sends the value as little endian
+                        wrapped.order(ByteOrder.LITTLE_ENDIAN);
+                        int valueInt = wrapped.getInt();
+                        // the value has an implied decimal exponent of -2
+                        double valueDouble = valueInt / 100.0;
+                        updateState(uuid, new DecimalType(valueDouble));
+                    } else {
+                        String hex = HexUtils.bytesToHex(valueBytes);
+                        updateState(uuid, new StringType(hex));
+                    }
+                } else {
+                    updateState(uuid, UnDefType.NULL);
+                }
+            }
         }
     }
 
