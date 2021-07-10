@@ -14,7 +14,6 @@ package org.openhab.binding.fronius.internal.handler;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
@@ -70,7 +69,7 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
             return null;
         }
 
-        final String[] fields = StringUtils.split(channelId, "#");
+        final String[] fields = channelId.split("#");
         if (fields.length < 1) {
             return null;
         }
@@ -150,7 +149,8 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
      * @return {MeterRealtimeResponse} the object representation of the json response
      */
     private MeterRealtimeResponseDTO getMeterRealtimeData(String ip, int deviceId) {
-        String location = FroniusBindingConstants.METER_REALTIME_DATA_URL.replace("%IP%", StringUtils.trimToEmpty(ip));
+        String location = FroniusBindingConstants.METER_REALTIME_DATA_URL.replace("%IP%",
+                (ip != null ? ip.trim() : ""));
         location = location.replace("%DEVICEID%", Integer.toString(deviceId));
         return collectDataFormUrl(MeterRealtimeResponseDTO.class, location);
     }

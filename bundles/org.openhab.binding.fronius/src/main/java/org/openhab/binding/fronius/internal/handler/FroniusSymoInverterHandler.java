@@ -14,7 +14,6 @@ package org.openhab.binding.fronius.internal.handler;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
@@ -77,7 +76,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      */
     @Override
     protected Object getValue(String channelId) {
-        final String[] fields = StringUtils.split(channelId, "#");
+        final String[] fields = channelId.split("#");
         if (fields.length < 1) {
             return null;
         }
@@ -190,7 +189,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @return {PowerFlowRealtimeResponse} the object representation of the json response
      */
     private PowerFlowRealtimeResponse getPowerFlowRealtime(String ip) {
-        String location = FroniusBindingConstants.POWERFLOW_REALTIME_DATA.replace("%IP%", StringUtils.trimToEmpty(ip));
+        String location = FroniusBindingConstants.POWERFLOW_REALTIME_DATA.replace("%IP%",
+                (ip != null ? ip.trim() : ""));
         return collectDataFormUrl(PowerFlowRealtimeResponse.class, location);
     }
 
@@ -203,7 +203,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      */
     private InverterRealtimeResponse getRealtimeData(String ip, int deviceId) {
         String location = FroniusBindingConstants.INVERTER_REALTIME_DATA_URL.replace("%IP%",
-                StringUtils.trimToEmpty(ip));
+                (ip != null ? ip.trim() : ""));
         location = location.replace("%DEVICEID%", Integer.toString(deviceId));
         return collectDataFormUrl(InverterRealtimeResponse.class, location);
     }
