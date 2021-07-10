@@ -211,7 +211,7 @@ public class CarNetServiceStatus extends ApiBaseService {
     }
 
     private boolean checkWindows(CNStatusField field, ChannelIdMapEntry definition) {
-        if ((definition.symbolicName.contains("WINDOWS") /* || definition.symbolicName.contains("_ROOF_") */)
+        if ((definition.symbolicName.contains("_WINDOW") /* || definition.symbolicName.contains("_ROOF_") */)
                 && definition.symbolicName.contains("STATE3") && !"3".equals(field.value) && !"0".equals(field.value)) {
             logger.debug("{}: Window {} is not closed ({})", thingId, definition.channelName, field.value);
             return false;

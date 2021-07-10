@@ -20,8 +20,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Base64;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -177,8 +175,11 @@ public class ApiHttpClient {
             fillPostData(request, data);
 
             // Do request and get response
-            logger.debug("HTTP {} {}\nBody/Data: {}", request.getMethod(), request.getURI(), data);
+            logger.debug("HTTP {} {}\n", request.getMethod(), request.getURI());
             logger.trace("  Headers: \n{}", request.getHeaders().toString());
+            if (!data.isEmpty()) {
+                logger.trace("  Body/Data: {}", data);
+            }
             // request.followRedirects(followRedirect);
             request.followRedirects(false);
             ContentResponse contentResponse = request.send();
@@ -384,16 +385,5 @@ public class ApiHttpClient {
         url = url.replace("%2D", "-");
         url = url.replace("%5F", "_");
         return url;
-    }
-
-    /**
-     * Generate a NONCE value
-     *
-     * @return new NONCE
-     */
-    public static String generateNonce() {
-        String dateTimeString = Long.toString(new Date().getTime());
-        byte[] nonceBytes = dateTimeString.getBytes();
-        return Base64.getEncoder().encodeToString(nonceBytes);
     }
 }

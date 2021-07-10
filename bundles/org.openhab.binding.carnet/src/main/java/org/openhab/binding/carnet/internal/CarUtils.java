@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.Date;
 
 import javax.measure.Unit;
@@ -277,5 +278,16 @@ public class CarUtils {
 
     public static <T> Class<T> wrap(Class<T> type) {
         return type;
+    }
+
+    /**
+     * Generate a NONCE value
+     *
+     * @return new NONCE
+     */
+    public static String generateNonce() {
+        String dateTimeString = Long.toString(new Date().getTime());
+        byte[] nonceBytes = dateTimeString.getBytes();
+        return Base64.getEncoder().encodeToString(nonceBytes);
     }
 }

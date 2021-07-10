@@ -14,7 +14,7 @@ package org.openhab.binding.carnet.internal.api;
 
 import static org.openhab.binding.carnet.internal.BindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarUtils.*;
-import static org.openhab.binding.carnet.internal.api.ApiHttpClient.*;
+import static org.openhab.binding.carnet.internal.api.ApiHttpClient.urlEncode;
 import static org.openhab.binding.carnet.internal.api.carnet.CarNetApiConstants.*;
 
 import java.io.UnsupportedEncodingException;
@@ -24,10 +24,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.ws.rs.core.HttpHeaders;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpHeader;
@@ -56,8 +57,8 @@ public class TokenManager {
     private CopyOnWriteArrayList<ApiToken> securityTokens = new CopyOnWriteArrayList<ApiToken>();
 
     private class TokenSet {
+        private ApiToken apiToken = new ApiToken();
         private ApiToken idToken = new ApiToken();
-        private ApiToken vwToken = new ApiToken();
         private String csrf = "";
         private ApiHttpClient http = new ApiHttpClient();
     }
@@ -84,15 +85,15 @@ public class TokenManager {
      */
     public String createAccessToken(CombinedConfig config) throws ApiException {
         TokenSet tokens = getTokenSet(config.tokenSetId);
-        if (tokens.vwToken.isValid() && !tokens.vwToken.isExpired()) {
+        if (tokens.apiToken.isValid() && !tokens.apiToken.isExpired()) {
             // Token is still valid
-            return tokens.vwToken.accessToken;
+            return tokens.apiToken.accessToken;
         }
 
         // First try to refresh token
-        if (!tokens.vwToken.refreshToken.isEmpty() && refreshToken(config, tokens.vwToken)) {
+        if (!tokens.apiToken.refreshToken.isEmpty() && refreshToken(config, tokens.apiToken)) {
             // successful, return new token, otherwise re-login
-            return tokens.vwToken.accessToken;
+            return tokens.apiToken.accessToken;
         }
 
         /*
@@ -110,13 +111,12 @@ public class TokenManager {
         String nonce = generateNonce();
         ApiResult res = new ApiResult();
 
-        OAuthFlow oauth = new OAuthFlow(tokens.http);
+        TokenOAuthFlow oauth = new TokenOAuthFlow(tokens.http);
         try {
             logger.debug("{}: Logging in, account={}", config.vehicle.vin, config.account.user);
             String authUrl = "";
             if (CNAPI_BRAND_VWID.equals(config.api.brand)) {
-                res = oauth.get(
-                        "https://login.apps.emea.vwapps.io/authorize?nonce=NZ2Q3T6jak0E5pDh&redirect_uri=weconnect://authenticated");
+                res = oauth.get(config.api.loginUrl);
                 authUrl = res.response;
                 url = res.getLocation();
             } else {
@@ -193,17 +193,14 @@ public class TokenManager {
             // Now we need to follow multiple redirects, required data is fetched from the redirect URLs
             // String userId = "";
             int count = 10;
-            String lastUrl = "";
             while (count-- > 0) {
                 res = oauth.follow(); // also fetches oauth fields from redirect urls
                 url = oauth.location; // Continue URL
                 if (url.isEmpty()) {
-                    break; // end of redirects
+                    break; // end of redirects -> failure
                 }
-                lastUrl = url;
-
                 if (url.contains(config.api.redirect_uri)) {
-                    break;
+                    break;// end of redirects -> expected/successful
                 }
             }
 
@@ -252,7 +249,6 @@ public class TokenManager {
                         .data("access_token", oauth.accessToken).data("authorizationCode", oauth.code) //
                         .post("https://login.apps.emea.vwapps.io/login/v1", true).response;
                 token = fromJson(gson, json, CNApiToken.class);
-                token.normalize();
             } else {
                 // Last step: Request the access token from the VW token management
                 // We save the generated tokens as tokenSet. Account handler and vehicle handler(s) are sharing the same
@@ -268,13 +264,14 @@ public class TokenManager {
                         .post(CNAPI_URL_GET_SEC_TOKEN).response;
                 token = fromJson(gson, json, CNApiToken.class);
             }
+            token.normalize();
             if ((token.accessToken == null) || token.accessToken.isEmpty()) {
                 throw new ApiSecurityException("Authentication failed: Unable to get access token!");
             }
-            tokens.vwToken = new ApiToken(token);
-            logger.debug("{}: accessToken was created, valid for {}sec", config.api.brand, tokens.vwToken.validity);
+            tokens.apiToken = new ApiToken(token);
+            logger.debug("{}: accessToken was created, valid for {}sec", config.api.brand, tokens.apiToken.validity);
             updateTokenSet(config.tokenSetId, tokens);
-            return tokens.vwToken.accessToken;
+            return tokens.apiToken.accessToken;
         } catch (ApiException e) {
             throw new ApiSecurityException("Unable to create API access token", e);
         }
@@ -285,7 +282,7 @@ public class TokenManager {
         if (!tokens.idToken.isValid() || tokens.idToken.isExpired()) {
             // Token got invalid, force recreation
             logger.debug("{}: idToken experied, re-login", config.vehicle.vin);
-            tokens.vwToken.invalidate();
+            tokens.apiToken.invalidate();
             createAccessToken(config);
         }
         return tokens.idToken.idToken;
@@ -397,7 +394,7 @@ public class TokenManager {
     public boolean refreshTokens(CombinedConfig config) throws ApiException {
         try {
             TokenSet tokens = getTokenSet(config.tokenSetId);
-            refreshToken(config, tokens.vwToken);
+            refreshToken(config, tokens.apiToken);
 
             Iterator<ApiToken> it = securityTokens.iterator();
             while (it.hasNext()) {
@@ -421,7 +418,7 @@ public class TokenManager {
     public boolean isAccessTokenValid(CombinedConfig config) {
         try {
             TokenSet tokens = getTokenSet(config.tokenSetId);
-            return tokens.vwToken.isValid();
+            return tokens.apiToken.isValid();
         } catch (IllegalArgumentException e) {
             logger.debug("Invalid token!");
             return false;
@@ -443,7 +440,7 @@ public class TokenManager {
 
         TokenSet tokens = getTokenSet(config.tokenSetId);
         ApiHttpClient http = tokens.http;
-        if (tokens.vwToken.refreshToken.isEmpty()) {
+        if (tokens.apiToken.refreshToken.isEmpty()) {
             logger.debug("{}: No refreshToken available, token is now invalid", config.vehicle.vin);
             token.invalidate();
             return false;
@@ -452,27 +449,33 @@ public class TokenManager {
         if (token.isExpired()) {
             logger.debug("{}: Refreshing Token {}", config.vehicle.vin, token.accessToken);
             try {
-                String url = "";
-                Map<String, String> data = new TreeMap<>();
-                url = CNAPI_VW_TOKEN_URL;
-                data.put("grant_type", "refresh_token");
-                data.put("refresh_token", tokens.vwToken.refreshToken);
-                data.put("scope", "sc2%3Afal");
-                String json = http.post(url, http.fillRefreshHeaders(), data, false).response;
+                String json = "";
+                if (CNAPI_BRAND_VWID.equals(config.api.brand)) {
+                    ApiHttpMap headers = new ApiHttpMap().header(HttpHeaders.AUTHORIZATION,
+                            "Bearer " + token.refreshToken);
+                    json = http.get(config.api.tokenRefreshUrl, headers.getHeaders()).response;
+                } else {
+                    ;
+                    ApiHttpMap data = new ApiHttpMap().data("grant_type", "refresh_token")
+                            .data("refresh_token", tokens.apiToken.refreshToken).data("scope", "sc2%3Afal");
+                    json = http.post(config.api.tokenRefreshUrl, http.fillRefreshHeaders(), data.getData(),
+                            false).response;
+                }
                 CNApiToken newToken = gson.fromJson(json, CNApiToken.class);
                 if (newToken == null) {
                     throw new ApiSecurityException("Unable to parse token information from JSON");
                 }
-                tokens.vwToken.accessToken = newToken.accessToken;
-                tokens.vwToken.setValidity(newToken.validity);
+                newToken.normalize();
+                tokens.apiToken.accessToken = newToken.accessToken;
+                tokens.apiToken.setValidity(getInteger(newToken.validity));
                 updateTokenSet(config.tokenSetId, tokens);
                 logger.debug("{}: Token refresh successful, valid for {} sec, new token={}", config.vehicle.vin,
-                        tokens.vwToken.validity, tokens.vwToken.accessToken);
+                        tokens.apiToken.validity, tokens.apiToken.accessToken);
             } catch (ApiException e) {
                 logger.debug("{}: Unable to refresh token: {}", config.vehicle.vin, e.toString());
                 // Invalidate token (triggers a new login when accessToken is required)
                 if (token.isExpired()) {
-                    tokens.vwToken.invalidate();
+                    tokens.apiToken.invalidate();
                     updateTokenSet(config.tokenSetId, tokens);
                     logger.debug("Token refresh failed and current accessToken is expired");
                 } else {

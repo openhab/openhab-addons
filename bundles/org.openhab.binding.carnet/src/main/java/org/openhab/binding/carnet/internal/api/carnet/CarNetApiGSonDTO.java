@@ -52,6 +52,8 @@ public class CarNetApiGSonDTO {
         // Login API
         @SerializedName("accessToken")
         public String accessToken2;
+        @SerializedName("idToken")
+        public String idToken2;
         @SerializedName("refreshToken")
         public String refreshToken2;
 
@@ -59,8 +61,15 @@ public class CarNetApiGSonDTO {
 
         public void normalize() {
             // Map We Connect format to generic one
-            accessToken = getString(accessToken2);
-            refreshToken = getString(refreshToken2);
+            if ((accessToken == null) && !getString(accessToken2).isEmpty()) {
+                accessToken = accessToken2;
+            }
+            if ((idToken == null) && !getString(idToken2).isEmpty()) {
+                idToken = idToken2;
+            }
+            if ((refreshToken == null) && !getString(refreshToken2).isEmpty()) {
+                refreshToken = getString(refreshToken2);
+            }
         }
     }
 

@@ -13,6 +13,7 @@
 package org.openhab.binding.carnet.internal.api.brand;
 
 import static org.openhab.binding.carnet.internal.BindingConstants.CNAPI_BRAND_VWID;
+import static org.openhab.binding.carnet.internal.CarUtils.generateNonce;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,10 +39,14 @@ public class BrandWeConnect extends WeConnectApi {
     @Override
     public BrandApiProperties getProperties() {
         BrandApiProperties properties = new BrandApiProperties();
+        String nonce = generateNonce();
         properties.brand = CNAPI_BRAND_VWID;
         properties.xcountry = "DE";
         properties.apiDefaultUrl = "https://mobileapi.apps.emea.vwapps.io";
-        properties.oidcConfigUrl = "https://identity.vwgroup.io/.well-known/openid-configuration";
+        properties.loginUrl = "https://login.apps.emea.vwapps.io/authorize?nonce=" + nonce
+                + "&redirect_uri=weconnect://authenticated";
+        properties.tokenUrl = properties.apiDefaultUrl + "/login/v1";
+        properties.tokenRefreshUrl = "https://login.apps.emea.vwapps.io/refresh/v1";
         properties.clientId = "a24fba63-34b3-4d43-b181-942111e6bda8@apps_vw-dilab_com";
         properties.xClientId = "1e63bd93-ce66-4aa3-b373-0ec56247e1d7";
         properties.authScope = "openid profile badge cars dealers vin";

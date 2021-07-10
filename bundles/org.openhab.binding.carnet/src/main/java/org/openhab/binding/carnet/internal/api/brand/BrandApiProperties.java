@@ -26,7 +26,9 @@ public class BrandApiProperties {
     public String oidcConfigUrl = "";
     public String issuerRegionMappingUrl = "https://identity.vwgroup.io";
     public String customerProfileServiceUrl = "https://customer-profile.apps.emea.vwapps.io/v3";
+    public String loginUrl = "";
     public String tokenUrl = "";
+    public String tokenRefreshUrl = "";
     public String brand = "";
     public String apiDefaultUrl = "";
     public String xcountry = "";

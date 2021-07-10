@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.carnet.internal.api;
 
-import static org.openhab.binding.carnet.internal.CarUtils.getString;
+import static org.openhab.binding.carnet.internal.BindingConstants.DEFAULT_TOKEN_VALIDITY_SEC;
+import static org.openhab.binding.carnet.internal.CarUtils.*;
 
 import java.util.Date;
 
@@ -53,7 +54,7 @@ public class ApiToken {
         refreshToken = getString(token.refreshToken);
         authType = getString(token.authType);
 
-        setValidity(token.validity != null ? token.validity : 3600);
+        setValidity(getInteger(token.validity));
     }
 
     public void updateToken(CNApiToken token) {
@@ -72,13 +73,12 @@ public class ApiToken {
         setValidity(token.validity);
     }
 
-    public void setValidity(int validity) {
+    public void setValidity(int expiresIn) {
         creationTime = new Date();
-        double offset = validity * 0.2;
-        this.validity = validity - (int) offset; // reduce by 20% treshhold
-        if (!isValid()) {
-            invalidate();
-        }
+        int value = expiresIn <= 0 ? DEFAULT_TOKEN_VALIDITY_SEC : expiresIn;
+        double offset = value * 0.2;
+        this.validity = value - (int) offset; // reduce by 20% treshhold
+        this.validity = 30;
     }
 
     public void setService(String service) {

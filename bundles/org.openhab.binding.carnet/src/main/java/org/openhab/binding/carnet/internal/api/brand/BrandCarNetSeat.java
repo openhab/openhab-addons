@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.carnet.internal.api.brand;
 
+import static org.openhab.binding.carnet.internal.api.carnet.CarNetApiConstants.CNAPI_VW_TOKEN_URL;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.carnet.internal.api.ApiEventListener;
@@ -40,6 +42,8 @@ public class BrandCarNetSeat extends CarNetApi {
         properties.clientId = "50f215ac-4444-4230-9fb1-fe15cd1a9bcc@apps_vw-dilab_com";
         properties.xClientId = "9dcc70f0-8e79-423a-a3fa-4065d99088b4";
         properties.authScope = "openid profile mbb cars birthdate nickname address phone";
+        properties.tokenUrl = CNAPI_VW_TOKEN_URL;
+        properties.tokenRefreshUrl = properties.tokenUrl;
         properties.redirect_uri = "seatconnect://identity-kit/login";
         properties.xrequest = "cz.skodaauto.connect";
         properties.responseType = "code id_token";

@@ -224,14 +224,29 @@ public class BindingConstants {
     public static final String CNAPI_BRAND_SEAT = "Seat";
     public static final String CNAPI_BRAND_NULL = "NULL";
 
+    public static final String API_REQUEST_SUCCESSFUL = "request_successful";
+    public static final String API_REQUEST_SUCCEEDED = "succeeded";
+    public static final String API_REQUEST_IN_PROGRESS = "request_in_progress";
+    public static final String API_REQUEST_NOT_FOUND = "request_not_found";
+    public static final String API_REQUEST_FAIL = "request_fail";
+    public static final String API_REQUEST_QUEUED = "queued"; // rclima
+    public static final String API_REQUEST_FETCHED = "fetched"; // rclima
+    public static final String API_REQUEST_STARTED = "request_started"; // rhonk
+    public static final String API_REQUEST_FAILED = "failed";
+    public static final String API_REQUEST_ERROR = "api_error";
+    public static final String API_REQUEST_TIMEOUT = "timoute";
+    public static final String API_REQUEST_REJECTED = "rejected";
+    public static final String API_REQUEST_UNSUPPORTED = "unsupported";
+
     public static final String CONTENT_TYPE_FORM_URLENC = "application/x-www-form-urlencoded";
     public static final String CONTENT_TYPE_JSON = "application/json";
 
     public static final int POLL_INTERVAL_SEC = 3; // poll cycle evey 3sec
-    public static final int API_TOKEN_REFRESH_INTERVAL_SEC = 5 * 60; // interval to check for valid token
+    public static final int API_TOKEN_REFRESH_INTERVAL_SEC = 1 * 60; // interval to check for valid token
     public static final int API_REQUEST_TIMEOUT_SEC = 120 + 5;
     public static final int API_REQUEST_CHECK_INT = 15 / POLL_INTERVAL_SEC; // interval for checking pending requests
     public static final int API_TIMEOUT_MS = 60 * 1000;
+    public static final int DEFAULT_TOKEN_VALIDITY_SEC = 3600;
 
     public static int VENT_DEFAULT_DURATION_MIN = 30;
     public static int HF_DEFAULT_DURATION_SEC = 10;

@@ -33,8 +33,8 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class OAuthFlow {
-    private final Logger logger = LoggerFactory.getLogger(OAuthFlow.class);
+public class TokenOAuthFlow {
+    private final Logger logger = LoggerFactory.getLogger(TokenOAuthFlow.class);
 
     public String location = "";
     public String relayState = "", csrf = "", hmac = "", state = "";
@@ -44,24 +44,24 @@ public class OAuthFlow {
     public ApiResult res = new ApiResult();
     private final ApiHttpClient http;
 
-    public OAuthFlow(ApiHttpClient http) {
+    public TokenOAuthFlow(ApiHttpClient http) {
         this.http = http;
         http.clearCookies();
     }
 
     ApiHttpMap map = new ApiHttpMap();
 
-    public OAuthFlow header(String header, String value) {
+    public TokenOAuthFlow header(String header, String value) {
         map.header(header, value);
         return this;
     }
 
-    public OAuthFlow header(HttpHeader header, String value) {
+    public TokenOAuthFlow header(HttpHeader header, String value) {
         map.header(header.toString(), value);
         return this;
     }
 
-    public OAuthFlow data(String attribute, String value) {
+    public TokenOAuthFlow data(String attribute, String value) {
         map.data(attribute, value);
         return this;
     }
@@ -163,12 +163,12 @@ public class OAuthFlow {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
     }
 
-    public OAuthFlow clearHeader() {
+    public TokenOAuthFlow clearHeader() {
         map.clearHeader();
         return this;
     }
 
-    public OAuthFlow clearData() {
+    public TokenOAuthFlow clearData() {
         map.clearData();
         return this;
     }

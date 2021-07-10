@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.carnet.internal.api.weconnect;
 
-import static org.openhab.binding.carnet.internal.CarUtils.fromJson;
+import static org.openhab.binding.carnet.internal.BindingConstants.API_REQUEST_STARTED;
 import static org.openhab.binding.carnet.internal.api.weconnect.WeConnectApiJsonDTO.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.measure.IncommensurableException;
 import javax.ws.rs.core.HttpHeaders;
@@ -29,15 +28,12 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.carnet.internal.api.ApiBase;
 import org.openhab.binding.carnet.internal.api.ApiDataTypesDTO.VehicleDetails;
 import org.openhab.binding.carnet.internal.api.ApiDataTypesDTO.VehicleStatus;
-import org.openhab.binding.carnet.internal.api.ApiErrorDTO;
 import org.openhab.binding.carnet.internal.api.ApiEventListener;
 import org.openhab.binding.carnet.internal.api.ApiException;
 import org.openhab.binding.carnet.internal.api.ApiHttpClient;
 import org.openhab.binding.carnet.internal.api.ApiHttpMap;
 import org.openhab.binding.carnet.internal.api.TokenManager;
 import org.openhab.binding.carnet.internal.api.brand.BrandAuthenticator;
-import org.openhab.binding.carnet.internal.api.weconnect.WeConnectApiJsonDTO.WCActionResponse;
-import org.openhab.binding.carnet.internal.api.weconnect.WeConnectApiJsonDTO.WCPendingRequest;
 import org.openhab.binding.carnet.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleList;
 import org.openhab.binding.carnet.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleList.WCVehicle;
 import org.openhab.binding.carnet.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleStatusData;
@@ -56,7 +52,6 @@ import org.slf4j.LoggerFactory;
 public class WeConnectApi extends ApiBase implements BrandAuthenticator {
     private final Logger logger = LoggerFactory.getLogger(WeConnectApi.class);
     private Map<String, WCVehicle> vehicleData = new HashMap<>();
-    private Map<String, WCPendingRequest> pendingRequests = new ConcurrentHashMap<>();
 
     public WeConnectApi(ApiHttpClient httpClient, TokenManager tokenManager, @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
@@ -171,134 +166,23 @@ public class WeConnectApi extends ApiBase implements BrandAuthenticator {
         ApiHttpMap headers = crerateParameters();
         String json = http.post("https://mobileapi.apps.emea.vwapps.io/vehicles/{2}/" + service + "/" + action,
                 headers.getHeaders(), body).response;
-        return queuePendingAction(service, action, json);
+        return API_REQUEST_STARTED;
     }
 
     private String sendSettings(String service, String body) throws ApiException {
         ApiHttpMap headers = crerateParameters();
         String json = http.put("https://mobileapi.apps.emea.vwapps.io/vehicles/{2}/" + service + "/settings",
                 headers.getHeaders(), body).response;
-        return queuePendingAction(service, "settings", json);
+        return API_REQUEST_STARTED;
     }
 
-    private String queuePendingAction(String service, String action, String json) throws ApiException {
-        WCActionResponse rsp = fromJson(gson, json, WCActionResponse.class);
-        WCPendingRequest pr = new WCPendingRequest(config.vehicle.vin, service, action, rsp.data.requestID);
-        if (eventListener != null) {
-            eventListener.onActionSent(service, action, pr.requestId);
-        }
-
-        // Check if action was accepted
-        String status = getRequestStatus(pr.requestId, "");
-        if (!WCAPI_REQUEST_SUCCESSFUL.equals(status)) {
-            pendingRequests.put(pr.requestId, pr);
-            logger.debug("{}: Request {} queued for status updates", pr.vin, pr.requestId);
-
-        }
-        return status;
-    }
-
+    @Override
     public void checkPendingRequests() {
-        if (!pendingRequests.isEmpty()) {
-            logger.debug("{}: Checking status for {} pending requets", thingId, pendingRequests.size());
-            for (Map.Entry<String, WCPendingRequest> e : pendingRequests.entrySet()) {
-                WCPendingRequest request = e.getValue();
-                try {
-                    request.status = getRequestStatus(request.requestId, "");
-                } catch (ApiException ex) {
-                    ApiErrorDTO error = ex.getApiResult().getApiError();
-                    if (error.isTechValidationError()) {
-                        // Id is no longer valid
-                        request.status = WCAPI_REQUEST_ERROR;
-                    }
-                }
-            }
-        }
+
     }
 
     public String getRequestStatus(String requestId, String rstatus) throws ApiException {
-        if (rstatus.isEmpty()) {
-            return WCAPI_REQUEST_SUCCESSFUL;
-        }
-        if (!pendingRequests.containsKey(requestId)) {
-            throw new IllegalArgumentException("Invalid requestId");
-        }
-
-        boolean remove = false;
-        String status = rstatus;
-        WCPendingRequest request = pendingRequests.get(requestId);
-        if (request == null) {
-            return "";
-        }
-        if (request.isExpired()) {
-            status = WCAPI_REQUEST_TIMEOUT;
-            remove = true;
-            if (eventListener != null) {
-                eventListener.onActionTimeout(request.service, request.action, request.requestId);
-            }
-        } else {
-            try {
-                int error = -1;
-                if (status.isEmpty()) {
-                    if (request.checkUrl.isEmpty()) {
-                        // this should not happen
-                        logger.warn("{}: Unable to check request {} status for action {}.{}; checkUrl is missing!",
-                                config.vehicle.vin, request.requestId, request.service, request.action);
-                    } else {
-                        logger.debug("{}: Check request {} status for action {}.{}; checkUrl={}", config.vehicle.vin,
-                                request.requestId, request.service, request.action, request.checkUrl);
-                        WCActionResponse rsp = callApi(request.checkUrl, "getRequestStatus", WCActionResponse.class);
-                        status = WCAPI_REQUEST_QUEUED;
-                    }
-                }
-
-                status = status.toLowerCase(); // Hon&Flash returns in upper case
-                String actionStatus = status;
-                switch (status) {
-                    case WCAPI_REQUEST_SUCCESSFUL:
-                        actionStatus = WCAPI_REQUEST_SUCCESSFUL; // normalize status
-                        remove = true;
-                        break;
-                    case WCAPI_REQUEST_QUEUED:
-                    case WCAPI_REQUEST_STARTED:
-                        actionStatus = WCAPI_REQUEST_STARTED; // normalize status
-                        break;
-                    case WCAPI_REQUEST_ERROR:
-                        logger.warn("{}: Action {}.{} failed with status {}, error={} (requestId={})",
-                                config.vehicle.vin, request.service, request.action, status, error, request.requestId);
-                        remove = true;
-                        actionStatus = WCAPI_REQUEST_ERROR; // normalize status
-                        break;
-                    default:
-                        logger.debug("{}: Request {} has unknown status: {}", config.vehicle.vin, requestId, status);
-                }
-
-                if (eventListener != null) {
-                    eventListener.onActionResult(request.service, request.action, request.requestId,
-                            actionStatus.toUpperCase(), status);
-                }
-            } catch (ApiException e) {
-                logger.debug("{}: Unable to validate request {}, {}", config.vehicle.vin, requestId, e.toString());
-            } catch (RuntimeException e) {
-                logger.debug("{}: Unable to validate request {}", config.vehicle.vin, requestId, e);
-            }
-        }
-
-        if (remove) {
-            logger.debug("{}: Remove request {} for action {}.{} from queue, status is {}", config.vehicle.vin,
-                    request.requestId, request.service, request.action, status);
-            pendingRequests.remove(request.requestId);
-        }
-        return status;
-    }
-
-    private boolean isRequestPending(String serviceId) {
-        for (Map.Entry<String, WCPendingRequest> r : pendingRequests.entrySet()) {
-            if (r.getValue().service.equals(serviceId)) {
-                return true;
-            }
-        }
-        return false;
+        return WCAPI_REQUEST_SUCCESSFUL;
     }
 
     private ApiHttpMap crerateParameters() throws ApiException {

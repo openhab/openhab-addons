@@ -327,7 +327,7 @@ public class CarNetApi extends ApiBase {
             return sendAction("bs/climatisation/v1/{0}/{1}/vehicles/{2}/climater/actions", CNAPI_SERVICE_REMOTE_HEATING,
                     CNAPI_ACTION_REMOTE_HEATING_QUICK_START, false, contentType, data);
         } catch (IncommensurableException e) {
-            return CNAPI_REQUEST_ERROR;
+            return API_REQUEST_ERROR;
         }
     }
 
@@ -509,7 +509,7 @@ public class CarNetApi extends ApiBase {
         if (eventListener != null) {
             eventListener.onActionNotification(service, action, message);
         }
-        return CNAPI_REQUEST_REJECTED;
+        return API_REQUEST_REJECTED;
     }
 
     public String getTripStats(String tripType) throws ApiException {
@@ -560,7 +560,7 @@ public class CarNetApi extends ApiBase {
                     ApiErrorDTO error = ex.getApiResult().getApiError();
                     if (error.isTechValidationError()) {
                         // Id is no longer valid
-                        request.status = CNAPI_REQUEST_ERROR;
+                        request.status = API_REQUEST_ERROR;
                     }
                 }
             }
@@ -584,7 +584,7 @@ public class CarNetApi extends ApiBase {
             return "";
         }
         if (request.isExpired()) {
-            status = CNAPI_REQUEST_TIMEOUT;
+            status = API_REQUEST_TIMEOUT;
             remove = true;
             if (eventListener != null) {
                 eventListener.onActionTimeout(request.service, request.action, request.requestId);
@@ -618,24 +618,24 @@ public class CarNetApi extends ApiBase {
                 status = status.toLowerCase(); // Hon&Flash returns in upper case
                 String actionStatus = status;
                 switch (status) {
-                    case CNAPI_REQUEST_SUCCESSFUL:
-                    case CNAPI_REQUEST_SUCCEEDED:
-                        actionStatus = CNAPI_REQUEST_SUCCESSFUL; // normalize status
+                    case API_REQUEST_SUCCESSFUL:
+                    case API_REQUEST_SUCCEEDED:
+                        actionStatus = API_REQUEST_SUCCESSFUL; // normalize status
                         remove = true;
                         break;
-                    case CNAPI_REQUEST_IN_PROGRESS:
-                    case CNAPI_REQUEST_QUEUED:
-                    case CNAPI_REQUEST_FETCHED:
-                    case CNAPI_REQUEST_STARTED:
-                        actionStatus = CNAPI_REQUEST_IN_PROGRESS; // normalize status
+                    case API_REQUEST_IN_PROGRESS:
+                    case API_REQUEST_QUEUED:
+                    case API_REQUEST_FETCHED:
+                    case API_REQUEST_STARTED:
+                        actionStatus = API_REQUEST_IN_PROGRESS; // normalize status
                         break;
-                    case CNAPI_REQUEST_NOT_FOUND:
-                    case CNAPI_REQUEST_FAIL:
-                    case CNAPI_REQUEST_FAILED:
+                    case API_REQUEST_NOT_FOUND:
+                    case API_REQUEST_FAIL:
+                    case API_REQUEST_FAILED:
                         logger.warn("{}: Action {}.{} failed with status {}, error={} (requestId={})",
                                 config.vehicle.vin, request.service, request.action, status, error, request.requestId);
                         remove = true;
-                        actionStatus = CNAPI_REQUEST_FAILED; // normalize status
+                        actionStatus = API_REQUEST_FAILED; // normalize status
                         break;
                     default:
                         logger.debug("{}: Request {} has unknown status: {}", config.vehicle.vin, requestId, status);

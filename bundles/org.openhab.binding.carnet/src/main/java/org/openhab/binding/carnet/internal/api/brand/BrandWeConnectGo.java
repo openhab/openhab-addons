@@ -42,6 +42,7 @@ public class BrandWeConnectGo extends WeConnectApi {
         properties.authScope = "openid profile";
         properties.redirect_uri = "vwconnect://de.volkswagen.vwconnect/oauth2redirec/identitykit";
         properties.tokenUrl = "https://dmp.apps.emea.vwapps.io/mobility-platform/token";
+        properties.tokenRefreshUrl = properties.tokenUrl;
         properties.xrequest = "com.volkswagen.weconnect";
         properties.responseType = "code id_token token";
         return properties;

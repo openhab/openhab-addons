@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.carnet.internal.api;
 
+import static org.openhab.binding.carnet.internal.BindingConstants.*;
 import static org.openhab.binding.carnet.internal.CarUtils.*;
 
 import java.io.File;
@@ -48,8 +49,8 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ApiBase implements BrandAuthenticator, ApiBrandInterface {
-    private static final String SUCCESSFUL = "successful";
-    private static final String UNSUPPORTED = "unsupported";
+    private static final String SUCCESSFUL = API_REQUEST_SUCCESSFUL;
+    private static final String UNSUPPORTED = API_REQUEST_UNSUPPORTED;
 
     private final Logger logger = LoggerFactory.getLogger(ApiBase.class);
 

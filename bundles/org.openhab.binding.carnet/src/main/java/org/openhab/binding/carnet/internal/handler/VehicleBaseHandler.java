@@ -387,13 +387,13 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
     @Override
     public void onActionSent(String service, String action, String requestId) {
         logger.debug("{}: Action {}.{} sent, ID={}", thingId, service, action, requestId);
-        updateActionStatus(service, action, CNAPI_REQUEST_STARTED);
+        updateActionStatus(service, action, API_REQUEST_STARTED);
     }
 
     @Override
     public void onActionTimeout(String service, String action, String requestId) {
         logger.debug("{}: Timeout on action {}.{} (ID {})", thingId, service, action, requestId);
-        updateActionStatus(service, action, CNAPI_REQUEST_TIMEOUT);
+        updateActionStatus(service, action, API_REQUEST_TIMEOUT);
     }
 
     @Override

@@ -23,7 +23,6 @@ import org.openhab.binding.carnet.internal.api.ApiBase;
 import org.openhab.binding.carnet.internal.api.ApiBaseService;
 import org.openhab.binding.carnet.internal.api.ApiException;
 import org.openhab.binding.carnet.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleStatusData.WCVehicleStatus;
-import org.openhab.binding.carnet.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleStatusData.WCVehicleStatus.WCCapabilityStatus.WCCapability;
 import org.openhab.binding.carnet.internal.handler.VehicleBaseHandler;
 import org.openhab.binding.carnet.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.DecimalType;
@@ -51,8 +50,6 @@ public class WCServiceStatus extends ApiBaseService {
         // Try to query status information from vehicle
         WCVehicleStatus status = api.getVehicleStatus().wcStatus;
 
-        addChannels(channels, true, CHANNEL_GENERAL_ACTION, CHANNEL_GENERAL_ACTION_STATUS,
-                CHANNEL_GENERAL_ACTION_PENDING);
         addChannels(channels, true, /* CHANNEL_STATUS_PBRAKE, CHANNEL_STATUS_LIGHTS, */ CHANNEL_STATUS_ERROR);
         addChannels(channels, status.rangeStatus != null, CHANNEL_RANGE_TOTAL, CHANNEL_RANGE_PRANGE,
                 CHANNEL_RANGE_PFUELTYPE);
@@ -81,10 +78,6 @@ public class WCServiceStatus extends ApiBaseService {
             logger.debug("{}: Vehicle Status:\n{}", thingId, status);
 
             String group = CHANNEL_GROUP_STATUS;
-            updated |= updateChannel(group, CHANNEL_STATUS_PBRAKE,
-                    getOnOff(getCapabilityStatus(status, "parkingBrake")));
-            updated |= updateChannel(group, CHANNEL_STATUS_LIGHTS,
-                    getOnOff(getCapabilityStatus(status, "vehicleLights")));
             updated |= updateChannel(group, CHANNEL_STATUS_ERROR, getStringType(status.error));
 
             updated |= updateRange(status);
@@ -127,8 +120,12 @@ public class WCServiceStatus extends ApiBaseService {
             if ("maximum".equalsIgnoreCase(maxCurrent)) {
                 maxCurrent = "255";
             }
-            updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MAXCURRENT,
-                    getDecimal(Integer.parseInt(maxCurrent)));
+            if (Character.isDigit(maxCurrent.charAt(0))) {
+                updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MAXCURRENT,
+                        getDecimal(Integer.parseInt(maxCurrent)));
+            } else {
+                logger.debug("{}: MaxCurrent returned String {}", thingId, maxCurrent);
+            }
         }
         if (status.batteryStatus != null) {
             updated |= updateChannel(group, CHANNEL_CHARGER_CHGLVL,
@@ -174,18 +171,5 @@ public class WCServiceStatus extends ApiBaseService {
             updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_WINHEAT, on ? OnOffType.ON : OnOffType.OFF);
         }
         return updated;
-    }
-
-    private int getCapabilityStatus(WCVehicleStatus status, String capability) {
-        for (WCCapability cap : status.capabilityStatus.capabilities) {
-            if (capability.equals(cap.id) && !cap.status.isEmpty()) {
-                return cap.status.get(0);
-            }
-        }
-        return -1;
-    }
-
-    private OnOffType getOnOff(int status) {
-        return (status != -1) || (status != 1011) ? OnOffType.ON : OnOffType.OFF;
     }
 }

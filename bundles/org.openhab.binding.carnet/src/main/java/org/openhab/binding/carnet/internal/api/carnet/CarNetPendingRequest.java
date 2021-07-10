@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.carnet.internal.api.carnet;
 
-import static org.openhab.binding.carnet.internal.BindingConstants.API_REQUEST_TIMEOUT_SEC;
+import static org.openhab.binding.carnet.internal.BindingConstants.*;
 import static org.openhab.binding.carnet.internal.api.carnet.CarNetApiConstants.*;
 
 import java.util.Date;
@@ -96,8 +96,8 @@ public class CarNetPendingRequest {
 
     public static boolean isInProgress(String status) {
         String st = status.toLowerCase();
-        return CNAPI_REQUEST_IN_PROGRESS.equals(st) || CNAPI_REQUEST_QUEUED.equals(st)
-                || CNAPI_REQUEST_FETCHED.equals(st) || CNAPI_REQUEST_STARTED.equals(st);
+        return API_REQUEST_IN_PROGRESS.equals(st) || API_REQUEST_QUEUED.equals(st) || API_REQUEST_FETCHED.equals(st)
+                || API_REQUEST_STARTED.equals(st);
     }
 
     public boolean isExpired() {

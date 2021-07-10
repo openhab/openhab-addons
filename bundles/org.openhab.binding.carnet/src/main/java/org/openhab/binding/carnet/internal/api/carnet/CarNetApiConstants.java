@@ -132,17 +132,4 @@ public class CarNetApiConstants {
     public static final String CNAPI_SERVICE_TRIPSTATS = "tripstatistics";
     public static final String CNAPI_TRIP_SHORT_TERM = "shortTerm";
     public static final String CNAPI_TRIP_LONG_TERM = "longTerm";
-
-    public static final String CNAPI_REQUEST_SUCCESSFUL = "request_successful";
-    public static final String CNAPI_REQUEST_SUCCEEDED = "succeeded";
-    public static final String CNAPI_REQUEST_IN_PROGRESS = "request_in_progress";
-    public static final String CNAPI_REQUEST_NOT_FOUND = "request_not_found";
-    public static final String CNAPI_REQUEST_FAIL = "request_fail";
-    public static final String CNAPI_REQUEST_QUEUED = "queued"; // rclima
-    public static final String CNAPI_REQUEST_FETCHED = "fetched"; // rclima
-    public static final String CNAPI_REQUEST_STARTED = "request_started"; // rhonk
-    public static final String CNAPI_REQUEST_FAILED = "failed";
-    public static final String CNAPI_REQUEST_ERROR = "api_error";
-    public static final String CNAPI_REQUEST_TIMEOUT = "timoute";
-    public static final String CNAPI_REQUEST_REJECTED = "rejected";
 }
