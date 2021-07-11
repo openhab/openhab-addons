@@ -133,6 +133,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             startWebsockets();
             initialized = true;
         } catch (Exception ex) {
+            dispose();
             throw new GardenaException(ex.getMessage(), ex);
         }
     }
