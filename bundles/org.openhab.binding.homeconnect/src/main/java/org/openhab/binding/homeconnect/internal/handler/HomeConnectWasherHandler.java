@@ -23,6 +23,7 @@ import org.openhab.binding.homeconnect.internal.client.HomeConnectApiClient;
 import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflineException;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
+import org.openhab.binding.homeconnect.internal.client.model.AvailableProgramOption;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -119,6 +120,79 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
         handlers.put(EVENT_WASHER_IDOS_2_DOSING_LEVEL,
                 event -> getThingChannel(CHANNEL_WASHER_IDOS2_LEVEL).ifPresent(channel -> updateState(channel.getUID(),
                         event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue()))));
+    }
+
+    @Override
+    protected void configureUnsupportedProgramOptions(Map<String, List<AvailableProgramOption>> programOptions) {
+        programOptions.put("LaundryCare.Washer.Program.Cotton.Eco4060", List.of( //
+                new AvailableProgramOption("LaundryCare.Washer.Option.Temperature",
+                        List.of("LaundryCare.Washer.EnumType.Temperature.Auto")),
+                new AvailableProgramOption("LaundryCare.Washer.Option.SpinSpeed", //
+                        List.of("LaundryCare.Washer.EnumType.SpinSpeed.RPM400",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM600",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM800",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM1200",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM1400"))));
+
+        programOptions.put("LaundryCare.Washer.Program.Cotton.Colour", List.of( //
+                new AvailableProgramOption("LaundryCare.Washer.Option.Temperature", //
+                        List.of("LaundryCare.Washer.EnumType.Temperature.Cold",
+                                "LaundryCare.Washer.EnumType.Temperature.GC20",
+                                "LaundryCare.Washer.EnumType.Temperature.GC30",
+                                "LaundryCare.Washer.EnumType.Temperature.GC40",
+                                "LaundryCare.Washer.EnumType.Temperature.GC60",
+                                "LaundryCare.Washer.EnumType.Temperature.GC90")),
+                new AvailableProgramOption("LaundryCare.Washer.Option.SpinSpeed", //
+                        List.of("LaundryCare.Washer.EnumType.SpinSpeed.RPM400",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM600",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM800",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM1200",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM1400"))));
+
+        // Auto30 is a supported program provided by the API but the API returns empty options, so we defined predefined
+        // values for this program
+        programOptions.put("LaundryCare.Washer.Program.Auto30", List.of( //
+                new AvailableProgramOption("LaundryCare.Washer.Option.Temperature",
+                        List.of("LaundryCare.Washer.EnumType.Temperature.Auto")),
+                new AvailableProgramOption("LaundryCare.Washer.Option.SpinSpeed",
+                        List.of("LaundryCare.Washer.EnumType.SpinSpeed.Auto"))));
+
+        programOptions.put("LaundryCare.Washer.Program.Super153045.Super1530", List.of( //
+                new AvailableProgramOption("LaundryCare.Washer.Option.Temperature", //
+                        List.of("LaundryCare.Washer.EnumType.Temperature.Cold",
+                                "LaundryCare.Washer.EnumType.Temperature.GC20",
+                                "LaundryCare.Washer.EnumType.Temperature.GC30",
+                                "LaundryCare.Washer.EnumType.Temperature.GC40")),
+                new AvailableProgramOption("LaundryCare.Washer.Option.SpinSpeed", //
+                        List.of("LaundryCare.Washer.EnumType.SpinSpeed.RPM400",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM600",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM800",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM1200"))));
+
+        programOptions.put("LaundryCare.Washer.Program.Rinse", List.of( //
+                new AvailableProgramOption("LaundryCare.Washer.Option.Temperature", List.of()),
+                new AvailableProgramOption("LaundryCare.Washer.Option.SpinSpeed", //
+                        List.of("LaundryCare.Washer.EnumType.SpinSpeed.Off",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM400",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM600",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM800",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM1200",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM1400"))));
+
+        programOptions.put("LaundryCare.Washer.Program.Spin.SpinDrain", List.of( //
+                new AvailableProgramOption("LaundryCare.Washer.Option.Temperature", List.of()),
+                new AvailableProgramOption("LaundryCare.Washer.Option.SpinSpeed", //
+                        List.of("LaundryCare.Washer.EnumType.SpinSpeed.Off",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM400",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM600",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM800",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM1200",
+                                "LaundryCare.Washer.EnumType.SpinSpeed.RPM1400"))));
+
+        programOptions.put("LaundryCare.Washer.Program.DrumClean", List.of( //
+                new AvailableProgramOption("LaundryCare.Washer.Option.Temperature", List.of()),
+                new AvailableProgramOption("LaundryCare.Washer.Option.SpinSpeed",
+                        List.of("LaundryCare.Washer.EnumType.SpinSpeed.RPM1200"))));
     }
 
     @Override
