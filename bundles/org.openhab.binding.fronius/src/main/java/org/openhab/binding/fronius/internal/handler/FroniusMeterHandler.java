@@ -14,7 +14,6 @@ package org.openhab.binding.fronius.internal.handler;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
@@ -23,18 +22,16 @@ import org.openhab.binding.fronius.internal.api.MeterRealtimeResponseDTO;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link FroniusMeterHandler} is responsible for updating the data, which are
  * sent to one of the channels.
  *
  * @author Jimmy Tanagra - Initial contribution
+ * @author Thomas Kordelle - Actually constants should be all upper case.
  */
 public class FroniusMeterHandler extends FroniusBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(FroniusMeterHandler.class);
     private MeterRealtimeBodyDataDTO meterRealtimeBodyData;
     private FroniusBaseDeviceConfiguration config;
 
@@ -72,42 +69,47 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
             return null;
         }
 
-        String[] fields = StringUtils.split(channelId, "#");
-        String fieldName = fields[0];
+        final String[] fields = channelId.split("#");
+        if (fields.length < 1) {
+            return null;
+        }
+        final String fieldName = fields[0];
 
         switch (fieldName) {
-            case FroniusBindingConstants.MeterEnable:
+            case FroniusBindingConstants.METER_ENABLE:
                 return meterRealtimeBodyData.getEnable();
-            case FroniusBindingConstants.MeterLocation:
+            case FroniusBindingConstants.METER_LOCATION:
                 return meterRealtimeBodyData.getMeterLocationCurrent();
-            case FroniusBindingConstants.MeterCurrentAcPhase1:
-                return new QuantityType(meterRealtimeBodyData.getCurrentACPhase1(), Units.AMPERE);
-            case FroniusBindingConstants.MeterCurrentAcPhase2:
-                return new QuantityType(meterRealtimeBodyData.getCurrentACPhase2(), Units.AMPERE);
-            case FroniusBindingConstants.MeterCurrentAcPhase3:
-                return new QuantityType(meterRealtimeBodyData.getCurrentACPhase3(), Units.AMPERE);
-            case FroniusBindingConstants.MeterVoltageAcPhase1:
-                return new QuantityType(meterRealtimeBodyData.getVoltageACPhase1(), Units.VOLT);
-            case FroniusBindingConstants.MeterVoltageAcPhase2:
-                return new QuantityType(meterRealtimeBodyData.getVoltageACPhase2(), Units.VOLT);
-            case FroniusBindingConstants.MeterVoltageAcPhase3:
-                return new QuantityType(meterRealtimeBodyData.getVoltageACPhase3(), Units.VOLT);
-            case FroniusBindingConstants.MeterPowerPhase1:
-                return new QuantityType(meterRealtimeBodyData.getPowerRealPPhase1(), Units.WATT);
-            case FroniusBindingConstants.MeterPowerPhase2:
-                return new QuantityType(meterRealtimeBodyData.getPowerRealPPhase2(), Units.WATT);
-            case FroniusBindingConstants.MeterPowerPhase3:
-                return new QuantityType(meterRealtimeBodyData.getPowerRealPPhase3(), Units.WATT);
-            case FroniusBindingConstants.MeterPowerFactorPhase1:
+            case FroniusBindingConstants.METER_CURRENT_AC_PHASE_1:
+                return new QuantityType<>(meterRealtimeBodyData.getCurrentACPhase1(), Units.AMPERE);
+            case FroniusBindingConstants.METER_CURRENT_AC_PHASE_2:
+                return new QuantityType<>(meterRealtimeBodyData.getCurrentACPhase2(), Units.AMPERE);
+            case FroniusBindingConstants.METER_CURRENT_AC_PHASE_3:
+                return new QuantityType<>(meterRealtimeBodyData.getCurrentACPhase3(), Units.AMPERE);
+            case FroniusBindingConstants.METER_VOLTAGE_AC_PHASE_1:
+                return new QuantityType<>(meterRealtimeBodyData.getVoltageACPhase1(), Units.VOLT);
+            case FroniusBindingConstants.METER_VOLTAGE_AC_PHASE_2:
+                return new QuantityType<>(meterRealtimeBodyData.getVoltageACPhase2(), Units.VOLT);
+            case FroniusBindingConstants.METER_VOLTAGE_AC_PHASE_3:
+                return new QuantityType<>(meterRealtimeBodyData.getVoltageACPhase3(), Units.VOLT);
+            case FroniusBindingConstants.METER_POWER_PHASE_1:
+                return new QuantityType<>(meterRealtimeBodyData.getPowerRealPPhase1(), Units.WATT);
+            case FroniusBindingConstants.METER_POWER_PHASE_2:
+                return new QuantityType<>(meterRealtimeBodyData.getPowerRealPPhase2(), Units.WATT);
+            case FroniusBindingConstants.METER_POWER_PHASE_3:
+                return new QuantityType<>(meterRealtimeBodyData.getPowerRealPPhase3(), Units.WATT);
+            case FroniusBindingConstants.METER_POWER_FACTOR_PHASE_1:
                 return meterRealtimeBodyData.getPowerFactorPhase1();
-            case FroniusBindingConstants.MeterPowerFactorPhase2:
+            case FroniusBindingConstants.METER_POWER_FACTOR_PHASE_2:
                 return meterRealtimeBodyData.getPowerFactorPhase2();
-            case FroniusBindingConstants.MeterPowerFactorPhase3:
+            case FroniusBindingConstants.METER_POWER_FACTOR_PHASE_3:
                 return meterRealtimeBodyData.getPowerFactorPhase3();
-            case FroniusBindingConstants.MeterEnergyRealSumConsumed:
-                return new QuantityType(meterRealtimeBodyData.getEnergyRealWACSumConsumed(), Units.WATT_HOUR);
-            case FroniusBindingConstants.MeterEnergyRealSumProduced:
-                return new QuantityType(meterRealtimeBodyData.getEnergyRealWACSumProduced(), Units.WATT_HOUR);
+            case FroniusBindingConstants.METER_ENERGY_REAL_SUM_CONSUMED:
+                return new QuantityType<>(meterRealtimeBodyData.getEnergyRealWACSumConsumed(), Units.WATT_HOUR);
+            case FroniusBindingConstants.METER_ENERGY_REAL_SUM_PRODUCED:
+                return new QuantityType<>(meterRealtimeBodyData.getEnergyRealWACSumProduced(), Units.WATT_HOUR);
+            default:
+                break;
         }
 
         return null;
@@ -120,8 +122,8 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
 
         Map<String, String> properties = editProperties();
 
-        properties.put(FroniusBindingConstants.MeterModel, meterRealtimeBodyData.getDetails().getModel());
-        properties.put(FroniusBindingConstants.MeterSerial, meterRealtimeBodyData.getDetails().getSerial());
+        properties.put(FroniusBindingConstants.METER_MODEL, meterRealtimeBodyData.getDetails().getModel());
+        properties.put(FroniusBindingConstants.METER_SERIAL, meterRealtimeBodyData.getDetails().getSerial());
 
         updateProperties(properties);
     }
@@ -147,7 +149,8 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
      * @return {MeterRealtimeResponse} the object representation of the json response
      */
     private MeterRealtimeResponseDTO getMeterRealtimeData(String ip, int deviceId) {
-        String location = FroniusBindingConstants.METER_REALTIME_DATA_URL.replace("%IP%", StringUtils.trimToEmpty(ip));
+        String location = FroniusBindingConstants.METER_REALTIME_DATA_URL.replace("%IP%",
+                (ip != null ? ip.trim() : ""));
         location = location.replace("%DEVICEID%", Integer.toString(deviceId));
         return collectDataFormUrl(MeterRealtimeResponseDTO.class, location);
     }
