@@ -47,10 +47,6 @@ public class TouchWandUnitFromJson {
             type = TYPE_UNKNOWN;
         }
 
-        if (!jsonUnit.has("currStatus") || (jsonUnit.get("currStatus") == null)) {
-            type = TYPE_UNKNOWN;
-        }
-
         switch (type) {
             case TYPE_WALLCONTROLLER:
                 touchWandUnit = gson.fromJson(jsonUnit, TouchWandUnitDataWallController.class);
@@ -69,6 +65,12 @@ public class TouchWandUnitFromJson {
                         .registerTypeAdapter(TouchWandUnitDataAlarmSensor.class, new AlarmSensorUnitDataDeserializer())
                         .create();
                 touchWandUnit = builder.fromJson(jsonUnit, TouchWandUnitDataAlarmSensor.class);
+                break;
+            case TYPE_BSENSOR:
+                touchWandUnit = gson.fromJson(jsonUnit, TouchWandBSensorUnitData.class);
+                break;
+            case TYPE_THERMOSTAT:
+                touchWandUnit = gson.fromJson(jsonUnit, TouchWandThermostatUnitData.class);
                 break;
             case TYPE_UNKNOWN:
                 touchWandUnit = new TouchWandUnknownTypeUnitData();

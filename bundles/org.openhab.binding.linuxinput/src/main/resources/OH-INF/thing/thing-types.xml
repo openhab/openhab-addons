@@ -30,7 +30,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="keypress">
+	<channel-type id="key-press">
 		<item-type>Contact</item-type>
 		<label>Key Pressed</label>
 		<state readOnly="true"/>

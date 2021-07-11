@@ -379,9 +379,6 @@ public class ShellyApiJsonDTO {
         public String pushLongUrl; // to access when roller stopped
         @SerializedName("shortpush_url")
         public String pushShortUrl; // to access when roller stopped
-
-        public Boolean schedule;
-        // ArrayList<ShellySettingsScheduleRules> schedule_rules;
     }
 
     public static class ShellySettingsDimmer {
@@ -442,8 +439,6 @@ public class ShellyApiJsonDTO {
         public Boolean isValid;
         @SerializedName("safety_switch")
         public Boolean safetySwitch;
-        public Boolean schedule;
-        // ArrayList<ShellySettingsScheduleRules> schedule_rules; // not used for now
         @SerializedName("obstacle_mode")
         public String obstaclMode; // SHELLY_OBSTMODE_
         @SerializedName("obstacle_action")
@@ -468,7 +463,8 @@ public class ShellyApiJsonDTO {
         public Boolean ison; // true: output is ON
         public Integer brightness;
         public Integer transition;
-        public String default_state;
+        @SerializedName("default_state")
+        public String defaultState;
         @SerializedName("auto_on")
         public Double autoOn; // Automatic flip back timer, seconds. Will engage after turning Shelly1 OFF.
         @SerializedName("auto_off")
@@ -543,7 +539,9 @@ public class ShellyApiJsonDTO {
         @SerializedName("wifi_sta1")
         public ShellySettingsWiFiNetwork wifiSta1;
         @SerializedName("wifirecovery_reboot_enabled")
-        public Boolean wifiRecoveryReboot;
+        public Boolean wifiRecoveryReboot; // FW 1.10+
+        @SerializedName("ap_roaming")
+        public ShellyApRoaming apRoaming; // FW 1.10+
 
         public ShellySettingsMqtt mqtt; // not used for now
         public ShellySettingsSntp sntp; // not used for now
@@ -563,19 +561,14 @@ public class ShellyApiJsonDTO {
         public ShellySensorSleepMode sleepMode; // FW 1.6
         @SerializedName("external_power")
         public Integer externalPower; // H&T FW 1.6, seems to be the same like charger for the Sense
+        @SerializedName("debug_enable") // FW 1.10+
+        public Boolean debugEnable;
 
         public String timezone;
         public Double lat;
         public Double lng;
         public Boolean tzautodetect;
         public String time;
-        // @SerializedName("tz_utc_offset")
-        // public Integer tzUTCOoffset; // FW 1.6+
-        // @SerializedName("tz_dst")
-        // public Boolean tzDdst; // FW 1.6+
-        // @SerializedName("tz_dst_auto")
-        // public Boolean tzDstAuto; // FW 1.6+
-        // public Long unixtime; // FW 1.6+
 
         public ShellySettingsHwInfo hwinfo;
         public String mode;
@@ -583,6 +576,9 @@ public class ShellyApiJsonDTO {
         public Double maxPower;
 
         public ArrayList<ShellySettingsRelay> relays;
+        public Double voltage; // AC voltage for Shelly 2.5
+        @SerializedName("supply_voltage")
+        public Long supplyVoltage; // Shelly 1PM/1L: 0=110V, 1=220V
         public ArrayList<ShellySettingsDimmer> dimmers;
         public ArrayList<ShellySettingsRgbwLight> lights;
         public ArrayList<ShellySettingsEMeter> emeters;
@@ -615,15 +611,6 @@ public class ShellyApiJsonDTO {
         public String closeUrl; // URL reports when DW contact is closed FW 1.6.5+
         @SerializedName("vibration_url")
         public String vibrationUrl; // URL reports when DW detects vibration FW 1.6.5+
-
-        // @SerializedName("tilt_enabled")
-        // public Boolean tiltEnabled; // Whether tilt monitoring is activated
-        // @SerializedName("tilt_calibrated")
-        // public Boolean tiltCalibrated; // Whether calibration data is valid
-        // @SerializedName("vibration_enabled")
-        // public Boolean vibrationEnabled; // Whether vibration monitoring is activated
-        // @SerializedName("reverse_open_close")
-        // public Boolean reverseOpenClose; // Whether to reverse which position the sensor consideres "open"
 
         // Gas FW 1.7
         @SerializedName("set_volume")
@@ -693,12 +680,12 @@ public class ShellyApiJsonDTO {
         public ShellyActionsStats astats;
 
         public ArrayList<ShellySettingsRelay> relays;
+        public Double voltage; // Shelly 2.5
+
         public ArrayList<ShellySettingsRoller> rollers;
         public Integer input; // RGBW2 has no JSON array
         public ArrayList<ShellyInputState> inputs;
         public ArrayList<ShellySettingsLight> lights;
-        // @SerializedName("night_mode") // FW 1.5.7+
-        // public ShellySettingsNightMode nightMode;
         public ArrayList<ShellyShortLightStatus> dimmers;
         public ArrayList<ShellySettingsMeter> meters;
         public ArrayList<ShellySettingsEMeter> emeters;
@@ -732,27 +719,6 @@ public class ShellyApiJsonDTO {
     public static class ShellySettingsInput {
         @SerializedName("btn_type")
         public String btnType;
-
-        // attributes not yet processed
-        // public String name;
-        // @SerializedName("btn_reverse")
-        // public Integer btnReverse;
-        // @SerializedName("btn_on_url")
-        // public String btnOnUrl;
-        // @SerializedName("btn_off_url")
-        // public String btnOffUrl;
-        // @SerializedName("shortpush_url")
-        // public String shortpushUrl;
-        // @SerializedName("longpush_url")
-        // public String longpushUrl;
-        // @SerializedName("double_shortpush_url")
-        // public String doubleShortpushUrl;
-        // @SerializedName("triple_shortpush_url")
-        // public String tripleShortpushUrl;
-        // @SerializedName("shortpush_longpush_url")
-        // public String shortpushLongpushUrl;
-        // @SerializedName("longpush_shortpush_url")
-        // public String longpushShortpushUrl;
     }
 
     public static class ShellyControlRelay {
@@ -788,12 +754,6 @@ public class ShellyApiJsonDTO {
         public Boolean ison; // Whether output channel is on or off
         public String mode; // color or white - valid only for Bulb and RGBW2 even Dimmer returns it also
         public Integer brightness; // brightness: 0.100%
-        // @SerializedName("has_timer")
-        // public Boolean hasTimer; // Whether a timer is currently armed for this channel
-        // @SerializedName("timer_remaining")
-        // public Integer timerRemaining;
-        // public Integer wgite;
-        // public Integer temp; // light temp
     }
 
     public static class ShellyStatusRelay {
@@ -801,10 +761,7 @@ public class ShellyApiJsonDTO {
 
         @SerializedName("wifi_sta")
         public ShellySettingsWiFiNetwork wifiSta; // WiFi status
-        // public ShellyStatusCloud cloud; // Cloud status
-        // public ShellyStatusMqtt mqtt; // mqtt status
         public ShellySettingsCoiot coiot; // Firmware 1.6+
-        // public String time; // current time
         public Integer serial;
         public String mac; // MAC
         public ArrayList<ShellyShortStatusRelay> relays; // relay status
@@ -818,30 +775,11 @@ public class ShellyApiJsonDTO {
 
         public Double temperature; // device temp acc. on the selected temp unit
         public ShellyStatusSensor.ShellySensorTmp tmp;
-
-        @SerializedName("has_update")
-        public Boolean hasUpdate; // If a newer firmware version is available
-        public ShellySettingsUpdate update; // /status/firmware value
-
-        @SerializedName("ram_total")
-        public Integer ramTotal; // Total and available amount of system memory in bytes
-        @SerializedName("ram_free")
-        public Integer ramFree;
-        @SerializedName("fs_size")
-        public Integer fsSize;
-        @SerializedName("fs_free")
-        public Integer fsFree; // Total and available amount of file system space in bytes
-        public Integer uptime; // econds elapsed since boot
     }
 
     public static class ShellyStatusDimmer {
         @SerializedName("wifi_sta")
         public ShellySettingsWiFiNetwork wifiSta; // WiFi status
-        // public ShellyStatusCloud cloud; // Cloud status
-        // public ShellyStatusMqtt mqtt; // mqtt status
-        public String time; // current time
-        public Integer serial;
-        public String mac; // MAC
         public ArrayList<ShellyShortLightStatus> lights; // relay status
         public ArrayList<ShellySettingsMeter> meters; // current meter value
 
@@ -850,21 +788,6 @@ public class ShellyApiJsonDTO {
 
         public Boolean loaderror;
         public Boolean overload;
-
-        @SerializedName("has_update")
-        public Boolean hasUpdate; // If a newer firmware version is available
-        public ShellySettingsUpdate update; // /status/firmware value
-
-        @SerializedName("ram_total")
-        public Integer ramTotal; // Total and available amount of system memory in
-                                 // bytes
-        @SerializedName("ram_free")
-        public Integer ramFree;
-        @SerializedName("fs_size")
-        public Integer fsSize;
-        @SerializedName("fs_free")
-        public Integer fsFree; // Total and available amount of file system space in bytes
-        public Integer uptime; // seconds elapsed since boot
     }
 
     public static class ShellyControlRoller {
@@ -889,6 +812,15 @@ public class ShellyApiJsonDTO {
         public Boolean positioning; // true when calibration was performed
         @SerializedName("current_pos")
         public Integer currentPos; // current position 0..100, 100=open
+    }
+
+    public class ShellyOtaCheckResult {
+        public String status;
+    }
+
+    public class ShellyApRoaming {
+        public Boolean enabled;
+        public Integer threshold;
     }
 
     public class ShellySensorSleepMode {

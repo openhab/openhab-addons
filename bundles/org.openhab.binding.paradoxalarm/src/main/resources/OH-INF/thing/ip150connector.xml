@@ -27,7 +27,6 @@
 				<label>IP150 Password</label>
 				<description>Password for accessing IP150</description>
 				<context>password</context>
-				<required>true</required>
 			</parameter>
 			<parameter name="pcPassword" type="text" required="true">
 				<label>PC Password</label>
@@ -39,7 +38,6 @@
 				<label>Network Address</label>
 				<description>IP address or host name of IP150</description>
 				<context>network-address</context>
-				<required>true</required>
 			</parameter>
 			<parameter name="port" type="integer" required="true">
 				<label>Port</label>

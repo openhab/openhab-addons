@@ -39,7 +39,7 @@ public class ICloudAccountDataRequest {
         @SuppressWarnings("unused")
         private boolean fmly = true;
         @SuppressWarnings("unused")
-        private String appVersion = "2.0";
+        private String appVersion = "3.0";
         @SuppressWarnings("unused")
         private String timezone = "US/Eastern";
         @SuppressWarnings("unused")
@@ -48,6 +48,8 @@ public class ICloudAccountDataRequest {
         private String apiVersion = "3.0";
         @SuppressWarnings("unused")
         private String webStats = "0:15";
+        @SuppressWarnings("unused")
+        private String productType = "iPhone6,1";
 
         private ClientContext() {
             // empty to hide constructor

@@ -2,7 +2,7 @@
 # Velux Binding
 
 This binding integrates the <B>Velux</B> devices with help of a gateway, the <B>Velux Bridge KLF200</B>, which is able to control 200 actuators.
-The Velux Binding interacts via the Velux Bridge with any [io-homecontrol](http://www.io-homecontrol.com/)-based
+The Velux Binding interacts via the Velux Bridge with any [io-homecontrol](https://www.io-homecontrol.com/)-based
 devices like window openers, shutters and others.
 
 ![Velux](doc/veluxlogo.jpg)
@@ -11,8 +11,8 @@ Based on the VELUX API this binding integrates <B>Velux</B> and other io-homecon
 
 For details about the features, see the following websites:
 
-- [Velux](http://www.velux.com)
-- [Velux API](http://www.velux.com/api/klf200)
+- [Velux](https://www.velux.com)
+- [Velux API](https://www.velux.com/api/klf200)
 
 ## Supported Things
 
@@ -361,7 +361,7 @@ log:tail
 This, of course, is possible on command line with the commands:
 
 ```
-% openhab-cli console log:set TRACE org.openhab.binding.velux 
+% openhab-cli console log:set TRACE org.openhab.binding.velux
 % openhab-cli console log:tail org.openhab.binding.velux
 ```
 

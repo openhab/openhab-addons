@@ -12,7 +12,13 @@
  */
 package org.openhab.binding.openwebnet.handler;
 
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.*;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_BRIGHTNESS;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_SWITCH;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_SWITCH_01;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_SWITCH_02;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.THING_TYPE_BUS_DIMMER;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.THING_TYPE_ZB_DIMMER;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS;
 
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -63,6 +69,12 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
 
     private static final int UNKNOWN_STATE = 1000;
 
+    private static long lastAllDevicesRefreshTS = -1; // timestamp when the last request for all device refresh was sent
+                                                      // for this handler
+
+    protected static final int ALL_DEVICES_REFRESH_INTERVAL_MSEC = 60000; // interval in msec before sending another all
+                                                                          // devices refresh request
+
     private long lastBrightnessChangeSentTS = 0; // timestamp when last brightness change was sent to the device
 
     private long lastStatusRequestSentTS = 0; // timestamp when last status request was sent to the device
@@ -91,7 +103,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 lastStatusRequestSentTS = System.currentTimeMillis();
                 Response res = send(Lighting.requestStatus(toWhere(channelId)));
                 if (res != null && res.isSuccess()) {
-                    // set thing online if not already
+                    // set thing online, if not already
                     ThingStatus ts = getThing().getStatus();
                     if (ThingStatus.ONLINE != ts && ThingStatus.REMOVING != ts && ThingStatus.REMOVED != ts) {
                         updateStatus(ThingStatus.ONLINE);
@@ -99,6 +111,37 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 }
             } catch (OWNException e) {
                 logger.warn("requestStatus() Exception while requesting light state: {}", e.getMessage());
+            }
+        } else {
+            logger.warn("Could not requestStatus(): deviceWhere is null");
+        }
+    }
+
+    @Override
+    protected void refreshDevice(boolean refreshAll) {
+        OpenWebNetBridgeHandler brH = bridgeHandler;
+        if (brH != null) {
+            if (brH.isBusGateway() && refreshAll) {
+                long now = System.currentTimeMillis();
+                if (now - lastAllDevicesRefreshTS > ALL_DEVICES_REFRESH_INTERVAL_MSEC) {
+                    try {
+                        send(Lighting.requestStatus(WhereLightAutom.GENERAL.value()));
+                        lastAllDevicesRefreshTS = now;
+                    } catch (OWNException e) {
+                        logger.warn("Excpetion while requesting all devices refresh: {}", e.getMessage());
+                    }
+                } else {
+                    logger.debug("Refresh all devices just sent...");
+                }
+            } else { // USB or BUS-single device
+                ThingTypeUID thingType = thing.getThingTypeUID();
+                if (THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS.equals(thingType)) {
+                    // Unfortunately using USB Gateway OpenWebNet both switch endpoints cannot be requested at the same
+                    // time using UNIT 00 because USB stick returns NACK, so we need to send a request status for both
+                    // endpoints
+                    requestStatus(CHANNEL_SWITCH_02);
+                }
+                requestStatus(""); // channel here does not make any difference, see {@link #toWhere()}
             }
         }
     }
@@ -267,7 +310,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
             if (msg.getWhat() != null) {
                 updateBrightnessState(msg);
             } else { // dimension notification
-                if (msg.getDim() == Lighting.DIM.DIMMER_LEVEL_100) {
+                if (msg.getDim() == Lighting.DimLighting.DIMMER_LEVEL_100) {
                     int newBrightness;
                     try {
                         newBrightness = msg.parseDimmerLevel100();
@@ -299,8 +342,8 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     private void updateBrightnessState(Lighting msg) {
         What w = msg.getWhat();
         if (w != null) {
-            if (Lighting.WHAT.ON.equals(w)) {
-                w = Lighting.WHAT.DIMMER_LEVEL_2; // levels start at 2
+            if (Lighting.WhatLighting.ON.equals(w)) {
+                w = Lighting.WhatLighting.DIMMER_LEVEL_2; // levels start at 2
             }
             int newBrightnessWhat = w.value();
             int brightnessWhat = UNKNOWN_STATE;
@@ -372,7 +415,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
      * @param channelId the channelId string
      **/
     @Nullable
-    protected String toWhere(String channelId) {
+    private String toWhere(String channelId) {
         Where w = deviceWhere;
         if (w != null) {
             OpenWebNetBridgeHandler brH = bridgeHandler;

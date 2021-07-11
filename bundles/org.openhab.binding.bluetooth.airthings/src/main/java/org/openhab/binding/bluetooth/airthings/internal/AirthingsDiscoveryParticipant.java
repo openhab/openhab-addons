@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.airthings.internal;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +32,7 @@ import org.osgi.service.component.annotations.Component;
  * This discovery participant is able to recognize Airthings devices and create discovery results for them.
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Kai Kreuzer - Added Airthings Wave Mini support
  *
  */
 @NonNullByDefault
@@ -42,10 +42,11 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
     private static final int AIRTHINGS_COMPANY_ID = 820; // Formerly Corentium AS
 
     private static final String WAVE_PLUS_MODEL = "2930";
+    private static final String WAVE_MINI_MODEL = "2920";
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(AirthingsBindingConstants.THING_TYPE_AIRTHINGS_WAVE_PLUS);
+        return AirthingsBindingConstants.SUPPORTED_THING_TYPES_UIDS;
     }
 
     @Override
@@ -53,6 +54,10 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
         if (isAirthingsDevice(device)) {
             if (WAVE_PLUS_MODEL.equals(device.getModel())) {
                 return new ThingUID(AirthingsBindingConstants.THING_TYPE_AIRTHINGS_WAVE_PLUS,
+                        device.getAdapter().getUID(), device.getAddress().toString().toLowerCase().replace(":", ""));
+            }
+            if (WAVE_MINI_MODEL.equals(device.getModel())) {
+                return new ThingUID(AirthingsBindingConstants.THING_TYPE_AIRTHINGS_WAVE_MINI,
                         device.getAdapter().getUID(), device.getAddress().toString().toLowerCase().replace(":", ""));
             }
         }
@@ -69,7 +74,10 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
             return null;
         }
         if (WAVE_PLUS_MODEL.equals(device.getModel())) {
-            return createWavePlus(device, thingUID);
+            return createResult(device, thingUID, "Airthings Wave Plus");
+        }
+        if (WAVE_MINI_MODEL.equals(device.getModel())) {
+            return createResult(device, thingUID, "Airthings Wave Mini");
         }
         return null;
     }
@@ -87,7 +95,7 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
         return false;
     }
 
-    private DiscoveryResult createWavePlus(BluetoothDiscoveryDevice device, ThingUID thingUID) {
+    private DiscoveryResult createResult(BluetoothDiscoveryDevice device, ThingUID thingUID, String label) {
         Map<String, Object> properties = new HashMap<>();
         properties.put(BluetoothBindingConstants.CONFIGURATION_ADDRESS, device.getAddress().toString());
         properties.put(Thing.PROPERTY_VENDOR, "Airthings AS");
@@ -116,6 +124,6 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
         // Create the discovery result and add to the inbox
         return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                 .withRepresentationProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS)
-                .withBridge(device.getAdapter().getUID()).withLabel("Airthings Wave+").build();
+                .withBridge(device.getAdapter().getUID()).withLabel(label).build();
     }
 }

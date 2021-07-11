@@ -168,7 +168,7 @@ public class HDPowerViewJUnitTests {
                 @Nullable
                 List<ShadeData> shadesData = shadesX.shadeData;
                 assertNotNull(shadesData);
-                assertTrue(shadesData.size() > 0);
+                assertTrue(!shadesData.isEmpty());
                 @Nullable
                 ShadeData shadeData;
                 shadeData = shadesData.get(0);
@@ -198,7 +198,7 @@ public class HDPowerViewJUnitTests {
                 @Nullable
                 List<Scene> scenesData = scenes.sceneData;
                 assertNotNull(scenesData);
-                assertTrue(scenesData.size() > 0);
+                assertTrue(!scenesData.isEmpty());
                 @Nullable
                 Scene sceneZero = scenesData.get(0);
                 assertNotNull(sceneZero);

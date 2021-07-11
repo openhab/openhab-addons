@@ -47,7 +47,7 @@ Note that this is prefixed by the hub the device is controlled from.
 In the thing file, this looks e.g. like
 
 ```java
-Bridge harmonyhub:hub:great [ name="Great Room"] {
+Bridge harmonyhub:hub:GreatRoom [ name="Great Room"] {
     device denon [ name="Denon AV Receiver"]
 }
 ```
@@ -55,12 +55,14 @@ Bridge harmonyhub:hub:great [ name="Great Room"] {
 or
 
 ```java
-Bridge harmonyhub:hub:great [ name="Great Room"] {
+Bridge harmonyhub:hub:GreatRoom [ name="Great Room"] {
     device denon [ id=176254]
 }
 ```
 
 ## Channels
+
+Note! Hubs cannot receive buttons pressed on the remote. The buttonPress channel described below is sent **to** the device only.
 
 Hubs can report and change the current activity:
 
@@ -81,10 +83,10 @@ String HarmonyHubGreatButton            { channel="harmonyhub:hub:GreatRoom:butt
 Player HarmonyHubGreatPlayer            { channel="harmonyhub:hub:GreatRoom:player" }
 ```
 
-Devices can be sent button commands directly, regardless if they are part of the current running activity or not.
+Devices can be sent button commands directly, regardless if they are part of the current running activity or not. Note that you must define a Harmony device thing for this to work.
 
 ```java
-String HarmonyGreatRoomDenon            "Denon Button Press" (gMain) { channel="harmonyhub:device:GreatRoom:29529817:buttonPress" }
+String HarmonyGreatRoomDenon            "Denon Button Press" (gMain) { channel="harmonyhub:device:GreatRoom:denon:buttonPress" }
 ```
 
 Hubs can also trigger events when a new activity is starting (activityStarting channel) and after it is started (activityStarted channel).

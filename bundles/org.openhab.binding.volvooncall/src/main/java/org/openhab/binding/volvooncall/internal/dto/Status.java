@@ -92,7 +92,7 @@ public class Status extends VocAnswer {
     }
 
     public boolean aFailedBulb() {
-        return bulbFailures.size() > 0;
+        return !bulbFailures.isEmpty();
     }
 
     /*

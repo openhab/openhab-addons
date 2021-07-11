@@ -7,5 +7,5 @@ contact_links:
     url: https://openhab.org/addons
     about: Official documentation
   - name: 📚 Translation feedback
-    url: https://crowdin.com/project/openhab2-addons
+    url: https://crowdin.com/project/openhab-addons
     about: Share feedback on translations

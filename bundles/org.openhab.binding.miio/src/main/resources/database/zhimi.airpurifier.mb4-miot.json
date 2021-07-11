@@ -71,7 +71,7 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\"]`"
 			},
 			{
 				"property": "pm2.5-density",

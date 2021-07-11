@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mielecloud"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="washer_dryer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>@text/thing-type.mielecloud.washer_dryer.label</label>
+		<description>@text/thing-type.mielecloud.washer_dryer.description</description>
+		<category>WhiteGood</category>
+
+		<channels>
+			<channel id="remote_control_can_be_started" typeId="remote_control_can_be_started"/>
+			<channel id="remote_control_can_be_stopped" typeId="remote_control_can_be_stopped"/>
+			<channel id="remote_control_can_be_switched_on" typeId="remote_control_can_be_switched_on"/>
+			<channel id="remote_control_can_be_switched_off" typeId="remote_control_can_be_switched_off"/>
+			<channel id="spinning_speed" typeId="spinning_speed"/>
+			<channel id="spinning_speed_raw" typeId="spinning_speed_raw"/>
+			<channel id="program_active" typeId="program_active"/>
+			<channel id="program_active_raw" typeId="program_active_raw"/>
+			<channel id="program_phase" typeId="program_phase"/>
+			<channel id="program_phase_raw" typeId="program_phase_raw"/>
+			<channel id="operation_state" typeId="operation_state"/>
+			<channel id="operation_state_raw" typeId="operation_state_raw"/>
+			<channel id="program_start_stop" typeId="program_start_stop"/>
+			<channel id="finish_state" typeId="finish_state"/>
+			<channel id="power_state_on_off" typeId="power_state_on_off"/>
+			<channel id="delayed_start_time" typeId="delayed_start_time"/>
+			<channel id="program_remaining_time" typeId="program_remaining_time"/>
+			<channel id="program_elapsed_time" typeId="program_elapsed_time"/>
+			<channel id="program_progress" typeId="program_progress"/>
+			<channel id="drying_target" typeId="drying_target"/>
+			<channel id="drying_target_raw" typeId="drying_target_raw"/>
+			<channel id="error_state" typeId="error_state"/>
+			<channel id="info_state" typeId="info_state"/>
+			<channel id="temperature_target" typeId="temperature_target"/>
+			<channel id="light_switch" typeId="light_switch"/>
+			<channel id="light_can_be_controlled" typeId="light_can_be_controlled"/>
+			<channel id="door_state" typeId="door_state"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Miele</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:mielecloud:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

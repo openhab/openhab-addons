@@ -33,19 +33,25 @@ import org.openhab.binding.avmfritz.internal.dto.DeviceModel;
 import org.openhab.binding.avmfritz.internal.dto.HeatingModel;
 import org.openhab.binding.avmfritz.internal.dto.HeatingModel.NextChangeModel;
 import org.openhab.binding.avmfritz.internal.dto.HumidityModel;
+import org.openhab.binding.avmfritz.internal.dto.LevelcontrolModel;
 import org.openhab.binding.avmfritz.internal.dto.PowerMeterModel;
+import org.openhab.binding.avmfritz.internal.dto.SimpleOnOffModel;
 import org.openhab.binding.avmfritz.internal.dto.SwitchModel;
 import org.openhab.binding.avmfritz.internal.dto.TemperatureModel;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaStatusListener;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetBlindTargetCallback.BlindCommand;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
@@ -73,6 +79,7 @@ import org.slf4j.LoggerFactory;
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
+ * @author Ulrich Mertin - Added support for HAN-FUN blinds
  */
 @NonNullByDefault
 public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implements FritzAhaStatusListener {
@@ -134,9 +141,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             if (device.isHeatingThermostat()) {
                 updateHeatingThermostat(device.getHkr());
             }
+            if (device.isHANFUNUnit() && device.isHANFUNOnOff()) {
+                updateSimpleOnOffUnit(device.getSimpleOnOffUnit());
+            }
             if (device instanceof DeviceModel) {
                 DeviceModel deviceModel = (DeviceModel) device;
-                if (deviceModel.isTempSensor()) {
+                if (deviceModel.isTemperatureSensor()) {
                     updateTemperatureSensor(deviceModel.getTemperature());
                 }
                 if (deviceModel.isHumiditySensor()) {
@@ -144,6 +154,9 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 }
                 if (deviceModel.isHANFUNAlarmSensor()) {
                     updateHANFUNAlarmSensor(deviceModel.getAlert());
+                }
+                if (deviceModel.isHANFUNBlinds()) {
+                    updateLevelcontrol(deviceModel.getLevelcontrol());
                 }
             }
         }
@@ -169,6 +182,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
         if (humidityModel != null) {
             updateThingChannelState(CHANNEL_HUMIDITY,
                     new QuantityType<>(humidityModel.getRelativeHumidity(), Units.PERCENT));
+        }
+    }
+
+    protected void updateLevelcontrol(@Nullable LevelcontrolModel levelcontrolModel) {
+        if (levelcontrolModel != null) {
+            updateThingChannelState(CHANNEL_ROLLERSHUTTER, new PercentType(levelcontrolModel.getLevelPercentage()));
         }
     }
 
@@ -210,8 +229,13 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
         if (lowBattery == null) {
             updateThingChannelState(CHANNEL_BATTERY_LOW, UnDefType.UNDEF);
         } else {
-            updateThingChannelState(CHANNEL_BATTERY_LOW,
-                    BatteryModel.BATTERY_ON.equals(lowBattery) ? OnOffType.ON : OnOffType.OFF);
+            updateThingChannelState(CHANNEL_BATTERY_LOW, OnOffType.from(BatteryModel.BATTERY_ON.equals(lowBattery)));
+        }
+    }
+
+    private void updateSimpleOnOffUnit(@Nullable SimpleOnOffModel simpleOnOffUnit) {
+        if (simpleOnOffUnit != null) {
+            updateThingChannelState(CHANNEL_ON_OFF, OnOffType.from(simpleOnOffUnit.state));
         }
     }
 
@@ -226,7 +250,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             if (state == null) {
                 updateThingChannelState(CHANNEL_OUTLET, UnDefType.UNDEF);
             } else {
-                updateThingChannelState(CHANNEL_OUTLET, SwitchModel.ON.equals(state) ? OnOffType.ON : OnOffType.OFF);
+                updateThingChannelState(CHANNEL_OUTLET, OnOffType.from(SwitchModel.ON.equals(state)));
             }
         }
     }
@@ -355,11 +379,9 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
                 break;
             case CHANNEL_OUTLET:
+            case CHANNEL_ON_OFF:
                 if (command instanceof OnOffType) {
                     fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
-                    if (state != null) {
-                        state.getSwitch().setState(OnOffType.ON.equals(command) ? SwitchModel.ON : SwitchModel.OFF);
-                    }
                 }
                 break;
             case CHANNEL_SETTEMP:
@@ -422,6 +444,29 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                         state.getHkr().setTsoll(targetTemperature);
                         updateState(CHANNEL_SETTEMP, new QuantityType<>(toCelsius(targetTemperature), SIUnits.CELSIUS));
                     }
+                }
+                break;
+            case CHANNEL_ROLLERSHUTTER:
+                if (command instanceof StopMoveType) {
+                    StopMoveType rollershutterCommand = (StopMoveType) command;
+                    if (StopMoveType.STOP.equals(rollershutterCommand)) {
+                        fritzBox.setBlind(ain, BlindCommand.STOP);
+                    } else {
+                        logger.debug("Received unknown rollershutter StopMove command MOVE");
+                    }
+                } else if (command instanceof UpDownType) {
+                    UpDownType rollershutterCommand = (UpDownType) command;
+                    if (UpDownType.UP.equals(rollershutterCommand)) {
+                        fritzBox.setBlind(ain, BlindCommand.OPEN);
+                    } else {
+                        fritzBox.setBlind(ain, BlindCommand.CLOSE);
+                    }
+                } else if (command instanceof PercentType) {
+                    PercentType rollershutterCommand = (PercentType) command;
+                    BigDecimal levelpercentage = rollershutterCommand.toBigDecimal();
+                    fritzBox.setLevelpercentage(ain, levelpercentage);
+                } else {
+                    logger.debug("Received unknown rollershutter command type '{}'", command.toString());
                 }
                 break;
             default:

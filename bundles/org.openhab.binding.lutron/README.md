@@ -1,6 +1,6 @@
 # Lutron Binding
 
-This binding integrates with [Lutron](http://www.lutron.com) lighting control and home automation systems.
+This binding integrates with [Lutron](https://www.lutron.com) lighting control and home automation systems.
 It contains support for four different types of Lutron systems via different bridge things:
 
 * RadioRA 2, HomeWorks QS, Caseta, RA2 Select, and other current systems that can be controlled via Lutron Integration Protocol (LIP) or LEAP
@@ -540,7 +540,7 @@ Thing cco relay1 [ integrationId=7, outputType="Maintained"]
 #### Shades
 
 Each Lutron shade, motorized drape, or QS motor controller output (LQSE-4M-D) is controlled by a **shade** thing.
-The only configuration parameter it accepts is `integrationId`. 
+The only configuration parameter it accepts is `integrationId`.
 
 A single channel *shadelevel* with item type Rollershutter and category Rollershutter will be created for each **shade** thing.
 It accepts Percent, Up, Down, Stop and Refresh commands.
@@ -794,7 +794,12 @@ end
 This binding integrates with the legacy Lutron RadioRA (Classic) lighting system.
 
 This binding depends on RS232 communication.
-It has only been tested using the Chronos time module but the RS232 module should work as well.
+It has only been tested using the Chronos System Bridge and Timeclock (RA-SBT-CHR) module, but Lutron's RA-RS232 or RB-RS232 module should work as well.
+
+Support has been added for bridged RadioRA systems.
+A system is considered “bridged” when a Chronos System Bridge and Timeclock is used to integrate two RadioRA Systems in a single residence.
+In a bridged system, the `system` parameter of each configured ra-dimmer, ra-switch, or ra-phantomButton thing should be set to indicate which RadioRA system it is a part of (i.e. 1 or 2).
+In a non-bridged system, these parameters should be left at their default of 0.
 
 ## Supported Things
 
@@ -808,17 +813,20 @@ This binding currently supports the following thing types:
 | ra-phantomButton | Thing   | Phantom Button to control multiple controls (Scenes) |
 
 
-## Thing Configurations
+## Thing Configuration Parameters
 
-| Thing            | Config       | Description                                                           |
-|------------------|--------------|-----------------------------------------------------------------------|
-| ra-rs232         | portName     | The serial port to use to communicate with Chronos or RS232 module    |
-|                  | baud         | (Optional) Baud Rate (defaults to 9600)                               |
-| ra-dimmer        | zoneNumber   | Assigned Zone Number within the Lutron RadioRA system                 |
-|                  | fadeOutSec   | (Optional) Time in seconds dimmer should take when lowering the level |
-|                  | fadeInSec    | (Optional) Time in seconds dimmer should take when lowering the level |
-| ra-switch        | zoneNumber   | Assigned Zone Number within the Lutron RadioRA system                 |
-| ra-phantomButton | buttonNumber | Phantom Button Number within the Lutron RadioRA system                |
+| Thing            | Parameter    | Description                                                            |
+|------------------|--------------|------------------------------------------------------------------------|
+| ra-rs232         | portName     | The serial port to use to communicate with Chronos or RS232 module     |
+|                  | baud         | (Optional) Baud Rate (defaults to 9600)                                |
+| ra-dimmer        | zoneNumber   | Assigned Zone Number within the Lutron RadioRA system                  |
+|                  | system       | (Optional) System number (1 or 2) in a bridged system. Default=0 (n/a) |
+|                  | fadeOutSec   | (Optional) Time in seconds dimmer should take when lowering the level  |
+|                  | fadeInSec    | (Optional) Time in seconds dimmer should take when lowering the level  |
+| ra-switch        | zoneNumber   | Assigned Zone Number within the Lutron RadioRA system                  |
+|                  | system       | (Optional) System number (1 or 2) in a bridged system. Default=0 (n/a) |
+| ra-phantomButton | buttonNumber | Phantom Button Number within the Lutron RadioRA system                 |
+|                  | system       | (Optional) System number (1 or 2) in a bridged system. Default=0 (n/a) |
 
 ## Channels
 
@@ -886,7 +894,7 @@ lutron:hwserialbridge:home [serialPort="/dev/ttyUSB1", baudRate="9600]
 Dimmers have one required parameter ``address`` that specifies the device address (e.g., [01:01:03:02:04]) and two optional parameters: ``fadeTime`` which sets the time it takes to set the light level when changed, and ``defaultLevel`` which sets the level to use for the dimmer when turning it on (with a switch rather than a slider).
 
 ```
-lutron:hwdimmer:dimmer1 [address="[01:01:03:02:04]", fadeTime="1", defaultLevel="75"] 
+lutron:hwdimmer:dimmer1 [address="[01:01:03:02:04]", fadeTime="1", defaultLevel="75"]
 ```
 
 ## Channels
@@ -974,11 +982,11 @@ lutron:grafikeye:home (lutron:prgbridge:home) [ controlUnit=1, fade=10, polling=
 * Sunset/sunrise will only be available if configured via the Liasion software
 * scenelock, sceneseq, zonelock cannot be determined from the API and will default to OFF on startup
 * Replace the "X" on zonelowerX, zoneraiseX, etc with the zone in question.  "zonelower1" will affect zone 1.  Specifying a zone larger than you have will have no effect (such as using zonelower8 on a Grafik Eye 3506 which only has 6 zones).
-* The zonefade value will only be used when zonelower/zonereaise/zoneintensity is issued. 
+* The zonefade value will only be used when zonelower/zonereaise/zoneintensity is issued.
 * zoneshade does not support PercentType nor StopMoveType.Move and those commands will be ignored
-* zoneintensity can be used on a shade zone if the intensity is from 0 to 5 and should be used if wanting to set a QED preset: 0=Stop, 1=Open, 2=Close, 3=Preset 1, 4=Preset 2, 5=Preset 3 
+* zoneintensity can be used on a shade zone if the intensity is from 0 to 5 and should be used if wanting to set a QED preset: 0=Stop, 1=Open, 2=Close, 3=Preset 1, 4=Preset 2, 5=Preset 3
 * If you started a zonelower or zoneraise, the only way to stop the action is by executing an all zone stop on the bridge (i.e. zonelowerstop or zoneraisestop).  The PRG API does not provide a way to stop the lowering/raising of any specific zone.
- 
+
 
 ## Example
 

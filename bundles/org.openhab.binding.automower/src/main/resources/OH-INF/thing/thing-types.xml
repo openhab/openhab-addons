@@ -12,8 +12,10 @@
 		<config-description>
 			<parameter name="appKey" type="text" required="true">
 				<label>Application Key</label>
-				<description>The Application Key is required to communication with the Automower Connect Api. It can be obtained by
-					registering an Application on the Husqvarna Website. This application also needs to be connected to the
+				<description>The Application Key is required to communication with the Automower Connect Api at
+					https://developer.husqvarnagroup.cloud/. It can be obtained by
+					registering an Application on the Husqvarna Website.
+					This application also needs to be connected to the
 					"Authentication API" and the "Automower Connect API"</description>
 			</parameter>
 			<parameter name="userName" type="text" required="true">
@@ -21,7 +23,7 @@
 				<description>The user name for which the application key has been issued</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
-				<context>Password</context>
+				<context>password</context>
 				<description>The password for the given user</description>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" required="false" unit="s">
@@ -48,9 +50,18 @@
 			<channel id="activity" typeId="activityType"/>
 			<channel id="state" typeId="stateType"/>
 			<channel id="last-update" typeId="lastUpdateType"/>
-			<channel id="battery" typeId="batteryType"/>
+			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="error-code" typeId="errorCodeType"/>
 			<channel id="error-timestamp" typeId="errorTimestampType"/>
+			<channel id="planner-next-start" typeId="plannerNextStartTimestampType"/>
+			<channel id="planner-override-action" typeId="plannerOverrideActionType"/>
+			<channel id="calendar-tasks" typeId="calendarTasksType"/>
+			<channel id="start" typeId="start"/>
+			<channel id="resume_schedule" typeId="resumeSchedule"/>
+			<channel id="pause" typeId="pause"/>
+			<channel id="park" typeId="park"/>
+			<channel id="park_until_next_schedule" typeId="parkUntilNextSchedule"/>
+			<channel id="park_until_further_notice" typeId="parkUntilFurtherNotice"/>
 		</channels>
 
 		<properties>
@@ -126,7 +137,11 @@
 				<option value="IN_OPERATION">Working</option>
 				<option value="WAIT_UPDATING">Downloading new firmware</option>
 				<option value="WAIT_POWER_UP">Booting mower</option>
-				<option value="RESTRICTED">Waiting</option>
+				<option value="RESTRICTED_NONE">Waiting</option>
+				<option value="RESTRICTED_WEEK_SCHEDULE">Restricted by week schedule</option>
+				<option value="RESTRICTED_PARK_OVERRIDE">Forced to park</option>
+				<option value="RESTRICTED_SENSOR">Restricted by sensor</option>
+				<option value="RESTRICTED_DAILY_LIMIT">Restricted by daily limit</option>
 				<option value="OFF">Off</option>
 				<option value="STOPPED">Stopped- Manual intervention required</option>
 				<option value="ERROR">Error</option>
@@ -162,6 +177,66 @@
 		<label>Error Time</label>
 		<description>The time when the error occurred</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="plannerNextStartTimestampType">
+		<item-type>DateTime</item-type>
+		<label>Next Auto Start</label>
+		<description>The channel providing the time for the next auto start. If the mower is charging then the value is the
+			estimated time when it will be leaving the charging station. If the mower is about to start now, the value is NULL.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="plannerOverrideActionType">
+		<item-type>String</item-type>
+		<label>Override Action</label>
+		<description>The channel providing an action that overrides current planner operation.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="calendarTasksType">
+		<item-type>String</item-type>
+		<label>Planner Info JSON</label>
+		<description>The channel providing a JSON with the information about the planner tasks.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="start">
+		<item-type>Number</item-type>
+		<label>Start with Duration</label>
+		<description>Start for a duration in minutes</description>
+		<state pattern="%d min" min="1" max="1440" step="1"/>
+	</channel-type>
+
+	<channel-type id="resumeSchedule">
+		<item-type>Switch</item-type>
+		<label>Resume Schedule</label>
+		<description>Resume schedule</description>
+	</channel-type>
+
+	<channel-type id="pause">
+		<item-type>Switch</item-type>
+		<label>Pause</label>
+		<description>Pause the mower now until manual resume</description>
+	</channel-type>
+
+	<channel-type id="park">
+		<item-type>Number</item-type>
+		<label>Park with Duration</label>
+		<description>Park for a duration in minutes</description>
+		<state pattern="%d min" min="1" max="1440" step="1"/>
+	</channel-type>
+
+	<channel-type id="parkUntilNextSchedule">
+		<item-type>Switch</item-type>
+		<label>Park Until Next Schedule</label>
+		<description>Park until next schedule</description>
+	</channel-type>
+
+	<channel-type id="parkUntilFurtherNotice">
+		<item-type>Switch</item-type>
+		<label>Park and Pause the Schedule</label>
+		<description>Park and pause the mower schedule until manual resume</description>
 	</channel-type>
 
 </thing:thing-descriptions>

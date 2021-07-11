@@ -61,7 +61,7 @@ public class Websocket {
 
     @OnWebSocketError
     public void onError(Throwable cause) {
-        logger.warn("WebSocketError {}", cause.getMessage());
+        logger.debug("WebSocketError {}", cause.getMessage());
         if (websocketHandler != null) {
             websocketHandler.onError(cause);
         }

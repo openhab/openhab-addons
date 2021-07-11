@@ -45,9 +45,10 @@ public class PushoverConfigOptionProvider implements ConfigOptionProvider, Thing
     @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
             @Nullable Locale locale) {
-        if (accountHandler != null && PUSHOVER_ACCOUNT.getAsString().equals(uri.getSchemeSpecificPart())
+        PushoverAccountHandler localAccountHandler = accountHandler;
+        if (localAccountHandler != null && PUSHOVER_ACCOUNT.getAsString().equals(uri.getSchemeSpecificPart())
                 && CONFIG_SOUND.equals(param)) {
-            List<Sound> sounds = accountHandler.getSounds();
+            List<Sound> sounds = localAccountHandler.getSounds();
             if (!sounds.isEmpty()) {
                 return sounds.stream().map(Sound::getAsParameterOption)
                         .sorted(Comparator.comparing(ParameterOption::getLabel))

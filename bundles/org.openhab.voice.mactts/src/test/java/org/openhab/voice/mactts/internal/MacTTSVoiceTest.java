@@ -19,7 +19,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,17 +38,12 @@ public class MacTTSVoiceTest {
     @Test
     public void testConstructor() throws IOException {
         assumeTrue("Mac OS X".equals(System.getProperty("os.name")));
-        BufferedReader bufferedReader = null;
-        try {
-            Process process = Runtime.getRuntime().exec("say -v ?");
-            InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
-            bufferedReader = new BufferedReader(inputStreamReader);
-
+        Process process = Runtime.getRuntime().exec("say -v ?");
+        try (InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
             String nextLine = bufferedReader.readLine();
             MacTTSVoice voiceMacOS = new MacTTSVoice(nextLine);
             assertNotNull(voiceMacOS, "The MacTTSVoice(String) constructor failed");
-        } finally {
-            IOUtils.closeQuietly(bufferedReader);
         }
     }
 
@@ -59,17 +53,12 @@ public class MacTTSVoiceTest {
     @Test
     public void getUIDTest() throws IOException {
         assumeTrue("Mac OS X".equals(System.getProperty("os.name")));
-        BufferedReader bufferedReader = null;
-        try {
-            Process process = Runtime.getRuntime().exec("say -v ?");
-            InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
-            bufferedReader = new BufferedReader(inputStreamReader);
-
+        Process process = Runtime.getRuntime().exec("say -v ?");
+        try (InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
             String nextLine = bufferedReader.readLine();
             MacTTSVoice macTTSVoice = new MacTTSVoice(nextLine);
             assertTrue(0 == macTTSVoice.getUID().indexOf("mactts:"), "The VoiceMacOS UID has an incorrect format");
-        } finally {
-            IOUtils.closeQuietly(bufferedReader);
         }
     }
 
@@ -79,17 +68,12 @@ public class MacTTSVoiceTest {
     @Test
     public void getLabelTest() throws IOException {
         assumeTrue("Mac OS X".equals(System.getProperty("os.name")));
-        BufferedReader bufferedReader = null;
-        try {
-            Process process = Runtime.getRuntime().exec("say -v ?");
-            InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
-            bufferedReader = new BufferedReader(inputStreamReader);
-
+        Process process = Runtime.getRuntime().exec("say -v ?");
+        try (InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
             String nextLine = bufferedReader.readLine();
             MacTTSVoice voiceMacOS = new MacTTSVoice(nextLine);
             assertNotNull(voiceMacOS.getLabel(), "The MacTTSVoice label has an incorrect format");
-        } finally {
-            IOUtils.closeQuietly(bufferedReader);
         }
     }
 
@@ -99,17 +83,12 @@ public class MacTTSVoiceTest {
     @Test
     public void getLocaleTest() throws IOException {
         assumeTrue("Mac OS X" == System.getProperty("os.name"));
-        BufferedReader bufferedReader = null;
-        try {
-            Process process = Runtime.getRuntime().exec("say -v ?");
-            InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
-            bufferedReader = new BufferedReader(inputStreamReader);
-
+        Process process = Runtime.getRuntime().exec("say -v ?");
+        try (InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
             String nextLine = bufferedReader.readLine();
             MacTTSVoice voiceMacOS = new MacTTSVoice(nextLine);
             assertNotNull(voiceMacOS.getLocale(), "The MacTTSVoice locale has an incorrect format");
-        } finally {
-            IOUtils.closeQuietly(bufferedReader);
         }
     }
 }

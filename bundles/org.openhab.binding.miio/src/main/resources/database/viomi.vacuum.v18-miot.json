@@ -163,7 +163,7 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping [\"start-sweep\"\u003d\"Sweep\",\"stop-sweeping\"\u003d\"Stop Sweep\",\"pause\"\u003d\"Pause\",\"start-charge\"\u003d\"Goto Dock\",\"stop-massage\"\u003d\"Stop Sweep\",\"start-mop\"\u003d\"Start Mop\",\"start-only-sweep\"\u003d\"Start Sweep Only\",\"start-sweep-mop\"\u003d\"Start Sweep Mop\"]"
+				"readmeComment": "Value mapping `[\"start-sweep\"\u003d\"Sweep\",\"stop-sweeping\"\u003d\"Stop Sweep\",\"pause\"\u003d\"Pause\",\"start-charge\"\u003d\"Goto Dock\",\"stop-massage\"\u003d\"Stop Sweep\",\"start-mop\"\u003d\"Start Mop\",\"start-only-sweep\"\u003d\"Start Sweep Only\",\"start-sweep-mop\"\u003d\"Start Sweep Mop\"]`"
 			},
 			{
 				"property": "status",
@@ -211,7 +211,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Sleep\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Go Charging\",\"4\"\u003d\"Charging\",\"5\"\u003d\"Sweeping\",\"6\"\u003d\"Sweeping and Mopping\",\"7\"\u003d\"Mopping\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Sleep\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Go Charging\",\"4\"\u003d\"Charging\",\"5\"\u003d\"Sweeping\",\"6\"\u003d\"Sweeping and Mopping\",\"7\"\u003d\"Mopping\"]`"
 			},
 			{
 				"property": "fault",
@@ -331,7 +331,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"No Error\",\"1\"\u003d\"Low Battery Find Charge\",\"2\"\u003d\"Low Bat Need Poweroff\",\"3\"\u003d\"Wheel Trap\",\"4\"\u003d\"Collision Error\",\"5\"\u003d\"Tile Do Task\",\"6\"\u003d\"Lidar Point Err\",\"7\"\u003d\"Front Wall Err\",\"8\"\u003d\"Along Wall Err\",\"9\"\u003d\"Mid Brush Err\",\"10\"\u003d\"Side Brush Err\",\"11\"\u003d\"Fan Err\",\"12\"\u003d\"Lidar Cover\",\"13\"\u003d\"Garbage Full\",\"14\"\u003d\"Garbage Out\",\"15\"\u003d\"Garbage Full Out\",\"16\"\u003d\"Trapped\",\"17\"\u003d\"Pick Up\",\"20\"\u003d\"Cannot Arrive\",\"21\"\u003d\"Start From Forbid\",\"22\"\u003d\"Drop\",\"23\"\u003d\"Kit Water Pump\",\"24\"\u003d\"Find Charge Failed\",\"18\"\u003d\"Garbage Out\",\"25\"\u003d\"No Mop Clean\",\"26\"\u003d\"Low Battery Cant Clean\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Error\",\"1\"\u003d\"Low Battery Find Charge\",\"2\"\u003d\"Low Bat Need Poweroff\",\"3\"\u003d\"Wheel Trap\",\"4\"\u003d\"Collision Error\",\"5\"\u003d\"Tile Do Task\",\"6\"\u003d\"Lidar Point Err\",\"7\"\u003d\"Front Wall Err\",\"8\"\u003d\"Along Wall Err\",\"9\"\u003d\"Mid Brush Err\",\"10\"\u003d\"Side Brush Err\",\"11\"\u003d\"Fan Err\",\"12\"\u003d\"Lidar Cover\",\"13\"\u003d\"Garbage Full\",\"14\"\u003d\"Garbage Out\",\"15\"\u003d\"Garbage Full Out\",\"16\"\u003d\"Trapped\",\"17\"\u003d\"Pick Up\",\"20\"\u003d\"Cannot Arrive\",\"21\"\u003d\"Start From Forbid\",\"22\"\u003d\"Drop\",\"23\"\u003d\"Kit Water Pump\",\"24\"\u003d\"Find Charge Failed\",\"18\"\u003d\"Garbage Out\",\"25\"\u003d\"No Mop Clean\",\"26\"\u003d\"Low Battery Cant Clean\"]`"
 			},
 			{
 				"property": "wdr-mode",
@@ -363,7 +363,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Mode 0\",\"1\"\u003d\"Mode 1\",\"2\"\u003d\"Mode 2\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Mode 0\",\"1\"\u003d\"Mode 1\",\"2\"\u003d\"Mode 2\"]`"
 			},
 			{
 				"property": "door-state",
@@ -395,7 +395,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Door 0\",\"1\"\u003d\"Door 1\",\"2\"\u003d\"Door 2\",\"3\"\u003d\"Door 3\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Door 0\",\"1\"\u003d\"Door 1\",\"2\"\u003d\"Door 2\",\"3\"\u003d\"Door 3\"]`"
 			},
 			{
 				"property": "contact-state",
@@ -419,7 +419,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]`"
 			},
 			{
 				"property": "contact-state1",
@@ -515,7 +515,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Total\",\"2\"\u003d\"Wall\",\"3\"\u003d\"Zone\",\"4\"\u003d\"Point\",\"5\"\u003d\"Control\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Total\",\"2\"\u003d\"Wall\",\"3\"\u003d\"Zone\",\"4\"\u003d\"Point\",\"5\"\u003d\"Control\"]`"
 			},
 			{
 				"property": "mode",
@@ -551,7 +551,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Silent\",\"1\"\u003d\"Basic\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Strong\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Silent\",\"1\"\u003d\"Basic\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Strong\"]`"
 			},
 			{
 				"property": "battery-level",
@@ -628,7 +628,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"C-Curved\",\"1\"\u003d\"Y-Route\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"C-Curved\",\"1\"\u003d\"Y-Route\"]`"
 			},
 			{
 				"property": "side-brush-life",
@@ -808,7 +808,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Silent\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Strong\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Silent\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Strong\"]`"
 			},
 			{
 				"property": "water-grade",
@@ -840,7 +840,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"1 Block\",\"1\"\u003d\"2 Blocks\",\"2\"\u003d\"3 Blocks\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"1 Block\",\"1\"\u003d\"2 Blocks\",\"2\"\u003d\"3 Blocks\"]`"
 			},
 			{
 				"property": "map-num",
@@ -976,7 +976,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Everywhere\",\"1\"\u003d\"Edges\",\"2\"\u003d\"Surface\",\"3\"\u003d\"Fixed Location\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Everywhere\",\"1\"\u003d\"Edges\",\"2\"\u003d\"Surface\",\"3\"\u003d\"Fixed Location\"]`"
 			},
 			{
 				"property": "clean-way",
@@ -1004,7 +1004,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Sweep Floor\",\"1\"\u003d\"Sweep\",\"2\"\u003d\"Mop\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Sweep Floor\",\"1\"\u003d\"Sweep\",\"2\"\u003d\"Mop\"]`"
 			},
 			{
 				"property": "cur-lang",
@@ -1093,7 +1093,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"No map in memory\",\"1\"\u003d\"Map in memory\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No map in memory\",\"1\"\u003d\"Map in memory\"]`"
 			},
 			{
 				"property": "has-newmap",
@@ -1121,7 +1121,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"None\",\"1\"\u003d\"New\",\"2\"\u003d\"Cover\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"New\",\"2\"\u003d\"Cover\"]`"
 			},
 			{
 				"property": "dust-collection",
@@ -1149,7 +1149,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Close\",\"1\"\u003d\"Open\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Close\",\"1\"\u003d\"Open\"]`"
 			},
 			{
 				"property": "dnd-enable",
@@ -1177,7 +1177,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Disabled\",\"1\"\u003d\"Enabled\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Disabled\",\"1\"\u003d\"Enabled\"]`"
 			},
 			{
 				"property": "dnd-start-hour",
@@ -1367,7 +1367,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Upload to url0\",\"1\"\u003d\"Upload to url1\",\"2\"\u003d\"Upload to url2\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Upload to url0\",\"1\"\u003d\"Upload to url1\",\"2\"\u003d\"Upload to url2\"]`"
 			},
 			{
 				"property": "map-id",
@@ -1511,7 +1511,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Free\",\"1\"\u003d\"Downloading\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Free\",\"1\"\u003d\"Downloading\"]`"
 			},
 			{
 				"property": "download-progress",

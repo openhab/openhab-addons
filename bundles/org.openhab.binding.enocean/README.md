@@ -14,7 +14,7 @@ First of all you have to configure an EnOcean transceiver (gateway).
 A directly connected USB300 can be auto discovered, an EnOceanPi has to be added manually to openHAB.
 Both gateways are represented by an _EnOcean gateway_ in openHAB.
 If you want to place the gateway for better reception apart from your openHAB server, you can forward its serial messages over TCP/IP (_ser2net_).
-In this case you have to define the path to the gateway like this rfc2217://x.x.x.x:3001.
+In this case you have to define the path to the gateway like this rfc2217://x.x.x.x:3001. When using _ser2net_ make sure to use _telnet_  instead of _raw_ in the _set2net_ config file.
 If everything is running fine you should see the _base id_ of your gateway in the properties of your bridge.
 
 Another way to improve sending and reception reliability is to setup a wired connection.
@@ -159,8 +159,8 @@ To set this SenderId to a specific one, you have to use the nextSenderId paramet
 
 ## Thing Configuration
 
-The pairing process of an openHAB thing and an EnOcean device has to be triggered within Paper UI.
-Therefore if you do not want to use Paper UI, a mixed mode configuration approach has to be done.
+The pairing process of an openHAB thing and an EnOcean device has to be triggered within the UI.
+Therefore if you do not want to use the UI, a mixed mode configuration approach has to be done.
 To determine the EEP and EnOceanId of the device and announce a SenderId to it, you first have to pair an openHAB thing with the EnOcean device.
 Afterwards you can delete this thing and manage it with its necessary parameters through a configuration file.
 If you change the SenderId of your thing, you have to pair again the thing with your device.
@@ -213,9 +213,9 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | suppressRepeating | Suppress repeating of msg   | true, false |
 | rollershutter                   | senderIdOffset    |                             | 1-127 |
 |                                 | enoceanId         | | |
-|                                 | sendingEEPId      |                             | A5_3F_7F_EltakoFSB, A5_38_08_07, D2_05_00 |
+|                                 | sendingEEPId      |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_38_08_07, D2_05_00 |
 |                                 | broadcastMessages |                             | true, false |
-|                                 | receivingEEPId¹   |                             | A5_3F_7F_EltakoFSB, A5_11_03, D2_05_00 |
+|                                 | receivingEEPId¹   |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_11_03, D2_05_00 |
 |                                 | suppressRepeating |                             | true, false |
 |                                 | pollingInterval   | Refresh interval in seconds | Integer |
 | measurementSwitch               | senderIdOffset    |                             | 1-127 |

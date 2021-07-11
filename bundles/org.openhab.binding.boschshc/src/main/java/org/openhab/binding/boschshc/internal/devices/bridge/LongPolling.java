@@ -37,7 +37,7 @@ import com.google.gson.Gson;
 
 /**
  * Handles the long polling to the Smart Home Controller.
- * 
+ *
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
@@ -100,7 +100,7 @@ public class LongPolling {
 
     /**
      * Subscribe to events and store the subscription ID needed for long polling.
-     * 
+     *
      * @param httpClient Http client to use for sending subscription request
      * @return Subscription id
      */
@@ -116,16 +116,21 @@ public class LongPolling {
             logger.debug("Subscribe: Got subscription ID: {} {}", response.getResult(), response.getJsonrpc());
             String subscriptionId = response.getResult();
             return subscriptionId;
-        } catch (TimeoutException | ExecutionException | InterruptedException e) {
+        } catch (TimeoutException | ExecutionException e) {
             throw new LongPollingFailedException(
                     String.format("Error on subscribe (Http client: %s): %s", httpClient.toString(), e.getMessage()),
+                    e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new LongPollingFailedException(
+                    String.format("Interrupted subscribe (Http client: %s): %s", httpClient.toString(), e.getMessage()),
                     e);
         }
     }
 
     /**
      * Create a new subscription for long polling.
-     * 
+     *
      * @param httpClient Http client to send requests to
      */
     private void resubscribe(BoschHttpClient httpClient) {
@@ -171,7 +176,7 @@ public class LongPolling {
 
     /**
      * This is the handler for responses of long poll requests.
-     * 
+     *
      * @param httpClient HTTP client which received the response
      * @param subscriptionId Id of subscription the response is for
      * @param result Complete result of the response

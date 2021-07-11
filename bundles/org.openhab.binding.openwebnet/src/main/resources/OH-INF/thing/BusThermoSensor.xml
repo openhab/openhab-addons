@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing for BUS Thermo Sensor -->
+	<thing-type id="bus_thermo_sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bus_gateway"/>
+		</supported-bridge-type-refs>
+		<label>Thermo Sensor</label>
+		<description>A OpenWebNet BUS/SCS thermo sensor (probe) for measuring temperature in a zone. BTicino models:
+			L/N/NT4577 etc.</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTI-L/N/NT4577 etc.</property>
+			<property name="ownDeviceType">---</property>
+		</properties>
+
+		<representation-property>ownId</representation-property>
+
+		<config-description>
+			<parameter name="where" type="text" required="true">
+				<label>OpenWebNet Device Address</label>
+				<description>Example: sensor 3 of zone 2 --> where=302. Sensor 5 of external zone 00 --> where=500</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+</thing:thing-descriptions>

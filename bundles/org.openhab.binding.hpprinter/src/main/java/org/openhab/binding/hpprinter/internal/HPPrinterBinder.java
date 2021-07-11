@@ -75,9 +75,11 @@ public class HPPrinterBinder {
     private @Nullable ScheduledFuture<?> usageScheduler;
     private @Nullable ScheduledFuture<?> offlineScheduler;
 
+    private boolean handlerDisposed;
+
     /**
      * Creates a new HP Printer Binder object
-     * 
+     *
      * @param handler {HPPrinterBinderEvent} The Event handler for the binder.
      * @param httpClient {HttpClient} The HttpClient object to use to perform HTTP
      *            requests.
@@ -95,6 +97,7 @@ public class HPPrinterBinder {
             throw new IllegalStateException("ip-address should have been validated already and may not be empty.");
         }
         printerClient = new HPWebServerClient(httpClient, ipAddress);
+        handlerDisposed = false;
     }
 
     public void retrieveProperties() {
@@ -107,7 +110,7 @@ public class HPPrinterBinder {
 
     public synchronized void channelsChanged() {
         logger.trace("Channels have been changed");
-        close();
+        closeInternal();
         open();
     }
 
@@ -548,9 +551,20 @@ public class HPPrinterBinder {
     }
 
     /**
-     * Close the connection to the Embedded Web Server
+     * Public method to close the connection to the Embedded Web Server
+     *
+     * Set handlerDisposed to prevent call-backs to the handler after it has been disposed
+     * Then call the closeinternal() method
      */
     public void close() {
+        handlerDisposed = true;
+        closeInternal();
+    }
+
+    /**
+     * Private (internal) method to close the connection to the Embedded Web Server
+     */
+    private void closeInternal() {
         stopBackgroundSchedules();
 
         final ScheduledFuture<?> localOfflineScheduler = offlineScheduler;
@@ -564,10 +578,10 @@ public class HPPrinterBinder {
     /**
      * The device has gone offline
      */
-    public void goneOffline() {
+    private void goneOffline() {
         handler.updateStatus(ThingStatus.OFFLINE);
 
-        close();
+        closeInternal();
         runOfflineScheduler();
     }
 
@@ -615,6 +629,9 @@ public class HPPrinterBinder {
     private void checkScannerStatus() {
         HPServerResult<HPScannerStatus> result = printerClient.getScannerStatus();
 
+        if (handlerDisposed) {
+            return;
+        }
         if (result.getStatus() == RequestStatus.SUCCESS) {
             handler.updateState(CGROUP_STATUS, CHANNEL_SCANNER_STATUS,
                     new StringType(result.getData().getScannerStatus()));
@@ -628,6 +645,9 @@ public class HPPrinterBinder {
     private void checkStatus() {
         HPServerResult<HPStatus> result = printerClient.getStatus();
 
+        if (handlerDisposed) {
+            return;
+        }
         if (result.getStatus() == RequestStatus.SUCCESS) {
             handler.updateState(CGROUP_STATUS, CHANNEL_STATUS, new StringType(result.getData().getPrinterStatus()));
             handler.updateState(CGROUP_STATUS, CHANNEL_TRAYEMPTYOROPEN,
@@ -648,6 +668,9 @@ public class HPPrinterBinder {
     private void checkUsage() {
         HPServerResult<HPUsage> result = printerClient.getUsage();
 
+        if (handlerDisposed) {
+            return;
+        }
         if (result.getStatus() == RequestStatus.SUCCESS) {
             // Inks
             handler.updateState(CGROUP_INK, CHANNEL_BLACK_LEVEL,
@@ -774,6 +797,9 @@ public class HPPrinterBinder {
     private void checkOnline() {
         HPServerResult<HPStatus> result = printerClient.getStatus();
 
+        if (handlerDisposed) {
+            return;
+        }
         if (result.getStatus() == RequestStatus.SUCCESS) {
             goneOnline();
         } else if (result.getStatus() == RequestStatus.TIMEOUT) {

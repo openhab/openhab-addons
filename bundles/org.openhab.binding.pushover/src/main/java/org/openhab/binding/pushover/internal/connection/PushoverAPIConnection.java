@@ -14,7 +14,6 @@ package org.openhab.binding.pushover.internal.connection;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +36,7 @@ import org.openhab.core.cache.ExpiringCacheMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -103,9 +102,8 @@ public class PushoverAPIConnection {
         final JsonObject sounds = json == null || !json.has("sounds") ? null : json.get("sounds").getAsJsonObject();
 
         return sounds == null ? List.of()
-                : Collections.unmodifiableList(sounds.entrySet().stream()
-                        .map(entry -> new Sound(entry.getKey(), entry.getValue().getAsString()))
-                        .collect(Collectors.toList()));
+                : sounds.entrySet().stream().map(entry -> new Sound(entry.getKey(), entry.getValue().getAsString()))
+                        .collect(Collectors.toUnmodifiableList());
     }
 
     private String buildURL(String url, Map<String, String> requestParams) {
@@ -130,11 +128,12 @@ public class PushoverAPIConnection {
         return executeRequest(HttpMethod.POST, url, body);
     }
 
-    private String executeRequest(HttpMethod httpMethod, String url, @Nullable ContentProvider body)
+    private synchronized String executeRequest(HttpMethod httpMethod, String url, @Nullable ContentProvider body)
             throws PushoverCommunicationException, PushoverConfigurationException {
         logger.trace("Pushover request: {} - URL = '{}'", httpMethod, url);
         try {
-            final Request request = httpClient.newRequest(url).method(httpMethod).timeout(10, TimeUnit.SECONDS);
+            final Request request = httpClient.newRequest(url).method(httpMethod).timeout(config.timeout,
+                    TimeUnit.SECONDS);
 
             if (body != null) {
                 if (logger.isTraceEnabled()) {
@@ -169,13 +168,11 @@ public class PushoverAPIConnection {
 
     private String getMessageError(String content) {
         final JsonObject json = JsonParser.parseString(content).getAsJsonObject();
-        if (json.has("errors")) {
-            final JsonArray errors = json.get("errors").getAsJsonArray();
-            if (errors != null) {
-                return errors.toString();
-            }
+        final JsonElement errorsElement = json.get("errors");
+        if (errorsElement != null && errorsElement.isJsonArray()) {
+            return errorsElement.getAsJsonArray().toString();
         }
-        return "Unknown error occured.";
+        return "@text/offline.conf-error-unknown";
     }
 
     private boolean getMessageStatus(String content) {

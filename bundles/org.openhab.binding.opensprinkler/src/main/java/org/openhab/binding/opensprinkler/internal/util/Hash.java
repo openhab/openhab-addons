@@ -14,12 +14,15 @@ package org.openhab.binding.opensprinkler.internal.util;
 
 import java.security.MessageDigest;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link Hash} class contains static methods for creating hashes
  * of strings. Usually for password hashing.
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 public class Hash {
     private static final String MD5_HASH_ALGORITHM = "MD5";
     private static final String UTF8_CHAR_SET = "UTF-8";
@@ -48,7 +51,8 @@ public class Hash {
 
             return digest;
         } catch (Exception exp) {
-            return null;
+            // Instead of null we return the unhashed password.
+            return unhashed;
         }
     }
 }

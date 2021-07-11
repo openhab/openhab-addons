@@ -13,7 +13,7 @@
 			<parameter name="endpointUrl" type="text" required="true">
 				<context>url</context>
 				<label>Endpoint URL</label>
-				<default>https://app1.haywardomnilogic.com/HAAPI/HomeAutomation/API.ashx</default>
+				<default>https://www.haywardomnilogic.com/HAAPI/HomeAutomation/API.ashx</default>
 				<description>The URL of the Hayward API Server</description>
 			</parameter>
 			<parameter name="username" type="text" required="true">

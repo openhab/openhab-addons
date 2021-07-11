@@ -371,7 +371,7 @@ public class SonosXMLParser {
                 int trackNumberVal = 0;
                 try {
                     trackNumberVal = Integer.parseInt(trackNumber.toString());
-                } catch (Exception e) {
+                } catch (NumberFormatException e) {
                 }
 
                 SonosResourceMetaData md = null;
@@ -877,6 +877,7 @@ public class SonosXMLParser {
                 case "SurroundMode":
                 case "SurroundLevel":
                 case "MusicSurroundLevel":
+                case "HeightChannelLevel":
                     val = attributes == null ? null : attributes.getValue("val");
                     if (val != null) {
                         changes.put(qName, val);

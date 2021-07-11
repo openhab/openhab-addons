@@ -1,0 +1,10 @@
+{
+  "results": {
+    "streamUrls": {
+      "rtspUrl": "rtsps://someurl.com/CjY5Y3VKaTZwR3o4Y19YbTVfMF...?auth=g.0.streamingToken"
+    },
+    "streamExtensionToken": "CjY5Y3VKaTZwR3o4Y19YbTVfMF...",
+    "streamToken": "g.0.streamingToken",
+    "expiresAt": "2018-01-04T18:30:00.000Z"
+  }
+}

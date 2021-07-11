@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link ChromecastActions} class defines rule actions for playing URLs
  *
- * @author Scott Hanson - Added Actions
+ * @author Scott Hanson - Initial contribution
  */
 @ThingActionsScope(name = "chromecast")
 @NonNullByDefault

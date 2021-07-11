@@ -7,24 +7,11 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.opensprinkler</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: OpenSprinkler Binding</name>
-
-  <properties>
-    <dep.noembedding>commons-net</dep.noembedding>
-  </properties>
-
-  <dependencies>
-    <dependency>
-      <groupId>commons-net</groupId>
-      <artifactId>commons-net</artifactId>
-      <version>${commons.net.version}</version>
-      <scope>compile</scope>
-    </dependency>
-  </dependencies>
 
 </project>
