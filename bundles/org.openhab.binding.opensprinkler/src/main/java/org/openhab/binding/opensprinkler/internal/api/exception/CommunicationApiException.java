@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.opensprinkler.internal.api.exception;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link CommunicationApiException} exception is thrown when result from the OpenSprinkler
  * API is problems communicating with the controller.
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 public class CommunicationApiException extends Exception {
     /**
      * Serial ID of this error class.

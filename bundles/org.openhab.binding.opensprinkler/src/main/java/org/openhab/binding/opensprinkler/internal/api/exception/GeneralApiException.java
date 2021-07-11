@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.opensprinkler.internal.api.exception;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link GeneralApiException} exception is thrown when problems
  * working with the OpenSprinkler API arise.
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 public class GeneralApiException extends Exception {
     /**
      * Serial ID of this error class.
