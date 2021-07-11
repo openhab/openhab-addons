@@ -148,7 +148,8 @@ public class PushsaferAPIConnection {
         return value == null ? "" : URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
-    private @Nullable String getFromCache(String url) {
+    private @Nullable String getFromCache(String url)
+            throws PushsaferCommunicationException, PushsaferConfigurationException {
         return cache.putIfAbsentAndGet(url, () -> get(url));
     }
 

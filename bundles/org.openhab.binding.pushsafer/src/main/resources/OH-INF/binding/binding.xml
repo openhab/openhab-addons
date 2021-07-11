@@ -4,6 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Pushsafer Binding</name>
-	<description>Pushsafer - Notifications.</description>
+	<description>With Pushsafer you can send &amp; receive push notifications in real time, easily and securely on your
+		iPhone, iPad, Android, Windows mobile or Windows desktop device as well as on your browser (Chrome, Firefox, Opera
+		&amp; Yandex)!</description>
 
 </binding:binding>

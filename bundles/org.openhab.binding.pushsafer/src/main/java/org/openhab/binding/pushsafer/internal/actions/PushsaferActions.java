@@ -17,6 +17,7 @@ import static org.openhab.binding.pushsafer.internal.connection.PushsaferMessage
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.pushsafer.internal.connection.PushsaferConfigurationException;
 import org.openhab.binding.pushsafer.internal.connection.PushsaferMessageBuilder;
 import org.openhab.binding.pushsafer.internal.handler.PushsaferAccountHandler;
 import org.openhab.core.automation.annotation.ActionInput;
@@ -207,7 +208,11 @@ public class PushsaferActions implements ThingActions {
             throw new IllegalArgumentException("Skip sending message as 'message' is null.");
         }
 
-        return accountHandler.getDefaultPushsaferMessageBuilder(message);
+        try {
+            return accountHandler.getDefaultPushsaferMessageBuilder(message);
+        } catch (PushsaferConfigurationException e) {
+            throw new IllegalArgumentException(e.getCause());
+        }
     }
 
     private Boolean send(PushsaferMessageBuilder builder, @Nullable String title) {

@@ -14,14 +14,12 @@ package org.openhab.binding.pushsafer.internal.connection;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentProvider;
 import org.eclipse.jetty.client.util.MultiPartContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -311,40 +310,36 @@ public class PushsaferMessageBuilder {
         body.addFieldPart(MESSAGE_KEY_TIME2LIVE, new StringContentProvider(String.valueOf(time2live)), null);
 
         if (attachment != null) {
-            if (attachment.startsWith("http")) {
-                try {
-                    URL url = new URL(attachment);
-                    URLConnection conn = url.openConnection();
+            final String encodedString;
+            try {
+                if (attachment.startsWith("http")) {
+                    Properties headers = new Properties();
+                    headers.put("User-Agent", "Mozilla/5.0");
                     if (!authentication.isBlank()) {
-                        conn.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().withoutPadding()
-                                .encodeToString(authentication.getBytes(StandardCharsets.UTF_8)));
+                        headers.put("Authorization", "Basic "
+                                + Base64.getEncoder().encodeToString(authentication.getBytes(StandardCharsets.UTF_8)));
                     }
-                    conn.setRequestProperty("User-Agent", "Mozilla/5.0");
-                    InputStream instream = conn.getInputStream();
-                    String encodedString = "data:image/png;base64,"
-                            + Base64.getEncoder().encodeToString(instream.readAllBytes());
-                    body.addFieldPart(MESSAGE_KEY_ATTACHMENT, new StringContentProvider(encodedString), null);
-                } catch (IOException e) {
-                    logger.debug("IOException occurred - skip sending message: {}", e.getLocalizedMessage(), e);
-                    throw new PushsaferCommunicationException(
-                            String.format("Skip sending the message: %s", e.getLocalizedMessage()), e);
-                }
-            } else {
-                File file = new File(attachment);
-                if (!file.exists()) {
-                    throw new IllegalArgumentException(
-                            String.format("Skip sending the message as file '%s' does not exist.", attachment));
-                }
-                try {
+                    String content = HttpUtil.executeUrl("GET", attachment, headers, null, null, 10);
+                    if (content == null) {
+                        throw new IllegalArgumentException(
+                                String.format("Skip sending the message as content '%s' does not exist.", attachment));
+                    }
+                    encodedString = "data:" + contentType + ";base64," + content;
+                } else {
+                    File file = new File(attachment);
+                    if (!file.exists()) {
+                        throw new IllegalArgumentException(
+                                String.format("Skip sending the message as file '%s' does not exist.", attachment));
+                    }
                     byte[] fileContent = Files.readAllBytes(file.toPath());
-                    String encodedString = "data:image/" + contentType + ";base64,"
+                    encodedString = "data:image/" + contentType + ";base64,"
                             + Base64.getEncoder().encodeToString(fileContent);
-                    body.addFieldPart(MESSAGE_KEY_ATTACHMENT, new StringContentProvider(encodedString), null);
-                } catch (IOException e) {
-                    logger.debug("IOException occurred - skip sending message: {}", e.getLocalizedMessage(), e);
-                    throw new PushsaferCommunicationException(
-                            String.format("Skip sending the message: %s", e.getLocalizedMessage()), e);
                 }
+                body.addFieldPart(MESSAGE_KEY_ATTACHMENT, new StringContentProvider(encodedString), null);
+            } catch (IOException e) {
+                logger.debug("IOException occurred - skip sending message: {}", e.getLocalizedMessage(), e);
+                throw new PushsaferCommunicationException(
+                        String.format("Skip sending the message: %s", e.getLocalizedMessage()), e);
             }
         }
 

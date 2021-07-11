@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.pushsafer.internal.connection.PushsaferConfigurationException;
 import org.openhab.binding.pushsafer.internal.connection.PushsaferMessageBuilder;
 import org.openhab.binding.pushsafer.internal.handler.PushsaferAccountHandler;
 import org.openhab.core.thing.binding.ThingActions;
@@ -64,7 +65,7 @@ public class PushsaferActionsTest {
     private PushsaferActions pushsaferThingActions;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws PushsaferConfigurationException {
         pushsaferThingActions = new PushsaferActions();
 
         when(mockPushsaferAccountHandler.getDefaultPushsaferMessageBuilder(any()))

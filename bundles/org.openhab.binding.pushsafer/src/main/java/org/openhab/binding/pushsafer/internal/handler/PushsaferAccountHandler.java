@@ -133,7 +133,8 @@ public class PushsaferAccountHandler extends BaseThingHandler {
      * @param message the message
      * @return a {@link PushsaferMessageBuilder} instance
      */
-    public PushsaferMessageBuilder getDefaultPushsaferMessageBuilder(String message) {
+    public PushsaferMessageBuilder getDefaultPushsaferMessageBuilder(String message)
+            throws PushsaferConfigurationException {
         PushsaferMessageBuilder builder = PushsaferMessageBuilder.getInstance(config.apikey, config.device)
                 .withMessage(message) //
                 .withTitle(config.title) //

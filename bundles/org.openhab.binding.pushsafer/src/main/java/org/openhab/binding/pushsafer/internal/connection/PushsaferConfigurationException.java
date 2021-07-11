@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Kevin Siml - Initial contribution, forked from Christoph Weitkamp
  */
 @NonNullByDefault
-public class PushsaferConfigurationException extends RuntimeException {
+public class PushsaferConfigurationException extends IllegalArgumentException {
 
     private static final long serialVersionUID = 1L;
 
