@@ -8,6 +8,10 @@
 		<label>Last Updated</label>
 		<description>The date and time when the sensor was last updated.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
@@ -15,6 +19,10 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Illuminance</label>
 		<description>Current illuminance.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -22,6 +30,10 @@
 		<item-type>Number</item-type>
 		<label>Light Level</label>
 		<description>Current light level.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
@@ -29,6 +41,10 @@
 		<item-type>Switch</item-type>
 		<label>Dark</label>
 		<description>Light level is below the darkness threshold.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -36,6 +52,10 @@
 		<item-type>Switch</item-type>
 		<label>Daylight</label>
 		<description>Light level is above the daylight threshold.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -43,6 +63,9 @@
 		<item-type>Number</item-type>
 		<label>Dimmer Switch State</label>
 		<description>The Button that was last pressed on the dimmer switch.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true" pattern="%d">
 			<options>
 				<option value="1000">On (Initial Press)</option>
@@ -95,6 +118,9 @@
 		<item-type>Number</item-type>
 		<label>Tap Switch State</label>
 		<description>The Button that was last pressed on the tap switch.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true" pattern="%d">
 			<options>
 				<option value="34">Button 1</option>
@@ -125,6 +151,10 @@
 		<label>Temperature</label>
 		<description>Current temperature.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -133,6 +163,10 @@
 		<item-type>String</item-type>
 		<label>Alert</label>
 		<description>The alert channel allows a temporary change to the bulb’s state.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="NONE">None</option>
@@ -148,6 +182,10 @@
 		<label>Color Loop</label>
 		<description>The effect channel allows putting the bulb in a color looping mode.</description>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<!-- CLIP Sensor -->
@@ -155,12 +193,18 @@
 		<item-type>Number</item-type>
 		<label>Status</label>
 		<description>Status of CLIP sensor.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="flag">
 		<item-type>Switch</item-type>
 		<label>Flag</label>
 		<description>Flag of CLIP sensor.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Scene Channel -->
@@ -168,5 +212,9 @@
 		<item-type>String</item-type>
 		<label>Scene</label>
 		<description>The scene channel allows recalling a scene to all lights that belong to the scene.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>
