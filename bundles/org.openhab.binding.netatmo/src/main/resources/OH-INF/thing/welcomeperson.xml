@@ -32,6 +32,11 @@
 		<item-type>DateTime</item-type>
 		<label>Last Seen</label>
 		<description>Time when this person was last seen</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -39,12 +44,18 @@
 		<item-type>Switch</item-type>
 		<label>At Home</label>
 		<description>Indicates if this person is known to be at home or not</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="person_eventmsg">
 		<item-type>String</item-type>
 		<label>Last Event Message</label>
 		<description>Last Event message from this person</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -52,6 +63,11 @@
 		<item-type>DateTime</item-type>
 		<label>Last Event Time</label>
 		<description>Last Event message time for this person</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -59,6 +75,9 @@
 		<item-type>String</item-type>
 		<label>Avatar URL</label>
 		<description>URL for the avatar of this person</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -66,6 +85,9 @@
 		<item-type>Image</item-type>
 		<label>Avatar</label>
 		<description>Avatar of this person</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -73,6 +95,9 @@
 		<item-type>Image</item-type>
 		<label>Last Event Picture</label>
 		<description>Picture of the last event for this person</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -80,6 +105,9 @@
 		<item-type>String</item-type>
 		<label>Last Event URL</label>
 		<description>URL for the picture of the last event for this person</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
