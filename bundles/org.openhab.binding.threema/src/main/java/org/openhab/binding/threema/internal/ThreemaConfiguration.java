@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -24,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Kai K. - Initial contribution
  */
+@NonNullByDefault
 public class ThreemaConfiguration {
 
     private String gatewayId;
