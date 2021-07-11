@@ -541,11 +541,9 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             } catch (CommunicationException e) {
                 logger.debug("API communication problem while trying to update! thing={}, haId={}, error={}",
                         getThingLabel(), getThingHaId(), e.getMessage());
-                updateState(channelUID, UnDefType.UNDEF);
             } catch (AuthorizationException e) {
                 logger.debug("Authentication problem while trying to update! thing={}, haId={}", getThingLabel(),
                         getThingHaId(), e);
-                updateState(channelUID, UnDefType.UNDEF);
                 handleAuthenticationError(e);
             }
         }
