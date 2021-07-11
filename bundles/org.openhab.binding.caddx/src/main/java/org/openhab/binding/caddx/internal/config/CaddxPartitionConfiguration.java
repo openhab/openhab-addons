@@ -30,16 +30,7 @@ public class CaddxPartitionConfiguration {
      */
     private int partitionNumber;
 
-    /**
-     * The User Number of the user that will execute commands against the partition.
-     */
-    private int userNumber;
-
     public int getPartitionNumber() {
         return partitionNumber;
-    }
-
-    public int getUserNumber() {
-        return userNumber;
     }
 }

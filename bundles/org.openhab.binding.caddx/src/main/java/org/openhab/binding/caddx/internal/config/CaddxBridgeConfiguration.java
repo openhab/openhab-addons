@@ -30,11 +30,13 @@ public class CaddxBridgeConfiguration {
     public static final String SERIAL_PORT = "serialPort";
     public static final String BAUD = "baud";
     public static final String MAX_ZONE_NUMBER = "maxZoneNumber";
+    public static final String IGNORE_ZONE_STATUS_TRANSITIONS = "ignoreZoneStatusTransitions";
 
     private CaddxProtocol protocol = CaddxProtocol.Binary;
     private @Nullable String serialPort;
     private int baudrate = 9600;
     private int maxZoneNumber = 16;
+    private boolean ignoreZoneStatusTransitions = false;
 
     public CaddxProtocol getProtocol() {
         return protocol;
@@ -50,5 +52,9 @@ public class CaddxBridgeConfiguration {
 
     public int getMaxZoneNumber() {
         return maxZoneNumber;
+    }
+
+    public boolean isIgnoreZoneStatusTransitions() {
+        return ignoreZoneStatusTransitions;
     }
 }

@@ -60,4 +60,18 @@ public class CaddxEvent extends EventObject {
     public @Nullable Integer getKeypad() {
         return keypad;
     }
+
+    /**
+     * Returns a string representation of a CaddxEvent.
+     *
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format("partition: %d, zone: %d, keypad: %d\r\n", partition, zone, keypad));
+        sb.append(caddxMessage.toString());
+
+        return sb.toString();
+    }
 }
