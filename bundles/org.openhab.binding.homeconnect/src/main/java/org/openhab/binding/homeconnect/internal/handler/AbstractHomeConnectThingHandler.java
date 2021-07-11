@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,6 +45,7 @@ import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflin
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
 import org.openhab.binding.homeconnect.internal.client.listener.HomeConnectEventListener;
+import org.openhab.binding.homeconnect.internal.client.model.AvailableProgram;
 import org.openhab.binding.homeconnect.internal.client.model.AvailableProgramOption;
 import org.openhab.binding.homeconnect.internal.client.model.Data;
 import org.openhab.binding.homeconnect.internal.client.model.Event;
@@ -83,6 +85,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Jonas Brüstel - Initial contribution
+ * @author Laurent Garnier - programs cache moved and enhanced to allow adding unsupported programs
  */
 @NonNullByDefault
 public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler implements HomeConnectEventListener {
@@ -105,7 +108,9 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     private final ExpiringStateMap expiringStateMap;
     private final AtomicBoolean accessible;
     private final Logger logger = LoggerFactory.getLogger(AbstractHomeConnectThingHandler.class);
+    private final List<AvailableProgram> programsCache;
     private final Map<String, List<AvailableProgramOption>> availableProgramOptionsCache;
+    private final Map<String, List<AvailableProgramOption>> unsupportedProgramOptions;
 
     public AbstractHomeConnectThingHandler(Thing thing,
             HomeConnectDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
@@ -115,10 +120,13 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         this.dynamicStateDescriptionProvider = dynamicStateDescriptionProvider;
         expiringStateMap = new ExpiringStateMap(Duration.ofSeconds(CACHE_TTL_SEC));
         accessible = new AtomicBoolean(false);
+        programsCache = new CopyOnWriteArrayList<>();
         availableProgramOptionsCache = new ConcurrentHashMap<>();
+        unsupportedProgramOptions = new ConcurrentHashMap<>();
 
         configureEventHandlers(eventHandlers);
         configureChannelUpdateHandlers(channelUpdateHandlers);
+        configureUnsupportedProgramOptions(unsupportedProgramOptions);
     }
 
     @Override
@@ -207,7 +215,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 logger.debug("Start custom program. command={} haId={}", command.toFullString(), getThingHaId());
                 apiClient.startCustomProgram(getThingHaId(), command.toFullString());
             }
-        } else if (command instanceof StringType && CHANNEL_SELECTED_PROGRAM_STATE.equals(channelUID.getId())) {
+        } else if (command instanceof StringType && CHANNEL_SELECTED_PROGRAM_STATE.equals(channelUID.getId())
+                && isProgramSupported(command.toFullString())) {
             apiClient.setSelectedProgram(getThingHaId(), command.toFullString());
         }
     }
@@ -347,20 +356,15 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             return;
         }
 
-        Optional<HomeConnectApiClient> apiClient = getApiClient();
-        if (apiClient.isPresent()) {
-            try {
-                List<StateOption> stateOptions = apiClient.get().getPrograms(getThingHaId()).stream()
-                        .map(p -> new StateOption(p.getKey(), mapStringType(p.getKey()))).collect(Collectors.toList());
+        try {
+            List<StateOption> stateOptions = getPrograms().stream()
+                    .map(p -> new StateOption(p.getKey(), mapStringType(p.getKey()))).collect(Collectors.toList());
 
-                getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE).ifPresent(
-                        channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), stateOptions));
-            } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
-                logger.debug("Could not fetch available programs. thing={}, haId={}, error={}", getThingLabel(),
-                        getThingHaId(), e.getMessage());
-                removeSelectedProgramStateDescription();
-            }
-        } else {
+            getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE).ifPresent(
+                    channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), stateOptions));
+        } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
+            logger.debug("Could not fetch available programs. thing={}, haId={}, error={}", getThingLabel(),
+                    getThingHaId(), e.getMessage());
             removeSelectedProgramStateDescription();
         }
     }
@@ -484,6 +488,9 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      * @param handlers Server-Sent-Event handlers
      */
     protected abstract void configureEventHandlers(final Map<String, EventHandler> handlers);
+
+    protected void configureUnsupportedProgramOptions(final Map<String, List<AvailableProgramOption>> programOptions) {
+    }
 
     protected boolean isChannelLinkedToProgramOptionNotFullySupportedByApi() {
         return false;
@@ -1473,12 +1480,31 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 try {
                     availableProgramOptions = apiClient.get().getProgramOptions(getThingHaId(), programKey);
                     if (availableProgramOptions == null) {
-                        // Program is unsupported, save in cache an empty list of options to avoid calling again the API
-                        // for this program
-                        availableProgramOptions = emptyList();
-                        logger.debug("Saving empty options in cache for unsupported program '{}'.", programKey);
+                        // Program is unsupported, to avoid calling again the API for this program, save in cache either
+                        // the predefined options provided by the binding if they exist, or an empty list of options
+                        if (unsupportedProgramOptions.containsKey(programKey)) {
+                            availableProgramOptions = unsupportedProgramOptions.get(programKey);
+                            availableProgramOptions = availableProgramOptions != null ? availableProgramOptions
+                                    : emptyList();
+                            logger.debug("Saving predefined options in cache for unsupported program '{}'.",
+                                    programKey);
+                        } else {
+                            availableProgramOptions = emptyList();
+                            logger.debug("Saving empty options in cache for unsupported program '{}'.", programKey);
+                        }
                         availableProgramOptionsCache.put(programKey, availableProgramOptions);
+
+                        // Add the unsupported program in programs cache and refresh the dynamic state description
+                        if (addUnsupportedProgramInCache(programKey)) {
+                            updateSelectedProgramStateDescription();
+                        }
                     } else {
+                        // If no options are returned by the API, using predefined options if available
+                        if (availableProgramOptions.isEmpty() && unsupportedProgramOptions.containsKey(programKey)) {
+                            availableProgramOptions = unsupportedProgramOptions.get(programKey);
+                            availableProgramOptions = availableProgramOptions != null ? availableProgramOptions
+                                    : emptyList();
+                        }
                         cacheToSet = true;
                     }
                 } catch (CommunicationException e) {
@@ -1598,5 +1624,50 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             reinitializationFuture.cancel(true);
             this.reinitializationFuture3 = null;
         }
+    }
+
+    protected List<AvailableProgram> getPrograms()
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        if (!programsCache.isEmpty()) {
+            logger.debug("Returning cached programs for '{}'.", getThingHaId());
+            return programsCache;
+        } else {
+            Optional<HomeConnectApiClient> apiClient = getApiClient();
+            if (apiClient.isPresent()) {
+                programsCache.addAll(apiClient.get().getPrograms(getThingHaId()));
+                return programsCache;
+            } else {
+                throw new CommunicationException("API not initialized");
+            }
+        }
+    }
+
+    /**
+     * Add an entry in the programs cache and mark it as unsupported
+     *
+     * @param programKey program id
+     * @return true if an entry was added in the cache
+     */
+    private boolean addUnsupportedProgramInCache(String programKey) {
+        Optional<AvailableProgram> prog = programsCache.stream().filter(program -> programKey.equals(program.getKey()))
+                .findFirst();
+        if (!prog.isPresent()) {
+            programsCache.add(new AvailableProgram(programKey, false));
+            logger.debug("{} added in programs cache as an unsupported program", programKey);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if a program is marked as supported in the programs cache
+     *
+     * @param programKey program id
+     * @return true if the program is in the cache and marked as supported
+     */
+    protected boolean isProgramSupported(String programKey) {
+        Optional<AvailableProgram> prog = programsCache.stream().filter(program -> programKey.equals(program.getKey()))
+                .findFirst();
+        return prog.isPresent() && prog.get().isSupported();
     }
 }
