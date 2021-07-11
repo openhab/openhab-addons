@@ -1026,7 +1026,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                                 updateState(channel.getUID(), UnDefType.UNDEF);
                             }
                         });
-
                     }
                     return OnOffType.from(enabled);
                 } else {
@@ -1458,54 +1457,66 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     }
 
     protected void updateProgramOptionsStateDescriptions(String programKey)
-            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+            throws AuthorizationException, ApplianceOfflineException {
         Optional<HomeConnectApiClient> apiClient = getApiClient();
         if (apiClient.isPresent()) {
+            boolean cacheToSet = false;
             List<AvailableProgramOption> availableProgramOptions;
             if (availableProgramOptionsCache.containsKey(programKey)) {
-                logger.debug("Returning cached options for '{}'.", programKey);
+                logger.debug("Returning cached options for program '{}'.", programKey);
                 availableProgramOptions = availableProgramOptionsCache.get(programKey);
                 availableProgramOptions = availableProgramOptions != null ? availableProgramOptions
                         : Collections.emptyList();
             } else {
-                availableProgramOptions = apiClient.get().getProgramOptions(getThingHaId(), programKey);
-                availableProgramOptionsCache.put(programKey, availableProgramOptions);
+                // Depending on the current program operation state, the APi request could trigger a
+                // CommunicationException exception due to returned status code 409
+                try {
+                    availableProgramOptions = apiClient.get().getProgramOptions(getThingHaId(), programKey);
+                    if (availableProgramOptions == null) {
+                        // Program is unsupported, save in cache an empty list of options to avoid calling again the API
+                        // for this program
+                        availableProgramOptions = emptyList();
+                        logger.debug("Saving empty options in cache for unsupported program '{}'.", programKey);
+                        availableProgramOptionsCache.put(programKey, availableProgramOptions);
+                    } else {
+                        cacheToSet = true;
+                    }
+                } catch (CommunicationException e) {
+                    availableProgramOptions = emptyList();
+                }
             }
 
             Optional<Channel> channelSpinSpeed = getThingChannel(CHANNEL_WASHER_SPIN_SPEED);
             Optional<Channel> channelTemperature = getThingChannel(CHANNEL_WASHER_TEMPERATURE);
             Optional<Channel> channelDryingTarget = getThingChannel(CHANNEL_DRYER_DRYING_TARGET);
 
-            if (availableProgramOptions.isEmpty()) {
-                channelSpinSpeed.ifPresent(
-                        channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), emptyList()));
-                channelTemperature.ifPresent(
-                        channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), emptyList()));
-                channelDryingTarget.ifPresent(
-                        channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), emptyList()));
+            Optional<AvailableProgramOption> optionsSpinSpeed = availableProgramOptions.stream()
+                    .filter(option -> OPTION_WASHER_SPIN_SPEED.equals(option.getKey())).findFirst();
+            Optional<AvailableProgramOption> optionsTemperature = availableProgramOptions.stream()
+                    .filter(option -> OPTION_WASHER_TEMPERATURE.equals(option.getKey())).findFirst();
+            Optional<AvailableProgramOption> optionsDryingTarget = availableProgramOptions.stream()
+                    .filter(option -> OPTION_DRYER_DRYING_TARGET.equals(option.getKey())).findFirst();
+
+            // Save options in cache only if we got options for all expected channels
+            if (cacheToSet && (!channelSpinSpeed.isPresent() || optionsSpinSpeed.isPresent())
+                    && (!channelTemperature.isPresent() || optionsTemperature.isPresent())
+                    && (!channelDryingTarget.isPresent() || optionsDryingTarget.isPresent())) {
+                logger.debug("Saving options in cache for program '{}'.", programKey);
+                availableProgramOptionsCache.put(programKey, availableProgramOptions);
             }
 
-            availableProgramOptions.forEach(option -> {
-                switch (option.getKey()) {
-                    case OPTION_WASHER_SPIN_SPEED: {
-                        channelSpinSpeed
-                                .ifPresent(channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(),
-                                        createStateOptions(option, this::convertWasherSpinSpeed)));
-                        break;
-                    }
-                    case OPTION_WASHER_TEMPERATURE: {
-                        channelTemperature
-                                .ifPresent(channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(),
-                                        createStateOptions(option, this::convertWasherTemperature)));
-                        break;
-                    }
-                    case OPTION_DRYER_DRYING_TARGET: {
-                        channelDryingTarget.ifPresent(channel -> dynamicStateDescriptionProvider
-                                .setStateOptions(channel.getUID(), createStateOptions(option, this::mapStringType)));
-                        break;
-                    }
-                }
-            });
+            channelSpinSpeed.ifPresent(channel -> optionsSpinSpeed.ifPresentOrElse(
+                    option -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(),
+                            createStateOptions(option, this::convertWasherSpinSpeed)),
+                    () -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), emptyList())));
+            channelTemperature.ifPresent(channel -> optionsTemperature.ifPresentOrElse(
+                    option -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(),
+                            createStateOptions(option, this::convertWasherTemperature)),
+                    () -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), emptyList())));
+            channelDryingTarget.ifPresent(channel -> optionsDryingTarget.ifPresentOrElse(
+                    option -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(),
+                            createStateOptions(option, this::mapStringType)),
+                    () -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), emptyList())));
         }
     }
 

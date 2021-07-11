@@ -548,7 +548,7 @@ public class HomeConnectApiClient {
      * Get active program of device.
      *
      * @param haId home appliance id
-     * @return {@link Data} or null if there is no active program
+     * @return {@link Program} or null if there is no active program
      * @throws CommunicationException API communication exception
      * @throws AuthorizationException oAuth authorization exception
      * @throws ApplianceOfflineException appliance is not connected to the cloud
@@ -562,7 +562,7 @@ public class HomeConnectApiClient {
      * Get selected program of device.
      *
      * @param haId home appliance id
-     * @return {@link Data} or null if there is no selected program
+     * @return {@link Program} or null if there is no selected program
      * @throws CommunicationException API communication exception
      * @throws AuthorizationException oAuth authorization exception
      * @throws ApplianceOfflineException appliance is not connected to the cloud
@@ -627,7 +627,17 @@ public class HomeConnectApiClient {
         return getAvailablePrograms(haId, BASE_PATH + haId + "/programs/available");
     }
 
-    public List<AvailableProgramOption> getProgramOptions(String haId, String programKey)
+    /**
+     * Get the available options of a program.
+     *
+     * @param haId home appliance id
+     * @param programKey program id
+     * @return list of {@link AvailableProgramOption} or null if the program is unsupported by the API
+     * @throws CommunicationException API communication exception
+     * @throws AuthorizationException oAuth authorization exception
+     * @throws ApplianceOfflineException appliance is not connected to the cloud
+     */
+    public @Nullable List<AvailableProgramOption> getProgramOptions(String haId, String programKey)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         Request request = createRequest(HttpMethod.GET, BASE_PATH + haId + "/programs/available/" + programKey);
         try {
@@ -644,8 +654,7 @@ public class HomeConnectApiClient {
                         responseBody == null ? "" : responseBody);
             }
 
-            return response.getStatus() == HttpStatus.OK_200 ? mapToAvailableProgramOption(responseBody, haId)
-                    : List.of();
+            return response.getStatus() == HttpStatus.OK_200 ? mapToAvailableProgramOption(responseBody, haId) : null;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Failed to get program options! haId={}, programKey={}, error={}", haId, programKey,
                     e.getMessage());
