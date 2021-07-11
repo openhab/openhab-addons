@@ -307,6 +307,9 @@
 		<item-type>String</item-type>
 		<label>Station Id</label>
 		<description>Id of the weather station or the city.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -314,6 +317,9 @@
 		<item-type>String</item-type>
 		<label>Station Name</label>
 		<description>Name of the weather station or the city.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -322,6 +328,10 @@
 		<label>Observation Time</label>
 		<description>Time of data observation.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
@@ -330,6 +340,10 @@
 		<label>Sunrise Time</label>
 		<description>Time of sunrise for the given day.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
@@ -338,6 +352,10 @@
 		<label>Sunset Time</label>
 		<description>Time of sunset for the given day.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
@@ -346,6 +364,10 @@
 		<label>Forecast Time</label>
 		<description>Time of data forecasted.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
@@ -354,6 +376,10 @@
 		<label>Forecast Date</label>
 		<description>Date of data forecasted.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
 
@@ -362,6 +388,9 @@
 		<label>Weather Condition</label>
 		<description>Current weather condition.</description>
 		<category>Sun_Clouds</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -370,6 +399,9 @@
 		<label>Forecasted Weather Condition</label>
 		<description>Forecasted weather condition.</description>
 		<category>Sun_Clouds</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -377,6 +409,9 @@
 		<item-type>String</item-type>
 		<label>Weather Condition Id</label>
 		<description>Id of the weather condition.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -384,6 +419,9 @@
 		<item-type>Image</item-type>
 		<label>Icon</label>
 		<description>Icon representing the weather condition.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -391,6 +429,9 @@
 		<item-type>String</item-type>
 		<label>Icon Id</label>
 		<description>Id of the icon to create the URL.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -399,6 +440,10 @@
 		<label>Forecasted Temperature</label>
 		<description>Forecasted outdoor temperature.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -407,6 +452,10 @@
 		<label>Minimum Temperature</label>
 		<description>Minimum forecasted outdoor temperature.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -415,6 +464,10 @@
 		<label>Maximum Temperature</label>
 		<description>Maximum forecasted outdoor temperature.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -423,6 +476,10 @@
 		<label>Day Temperature</label>
 		<description>Forecasted outdoor temperature for the day.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -431,6 +488,10 @@
 		<label>Morning Temperature</label>
 		<description>Forecasted outdoor temperature for the morning.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -439,6 +500,10 @@
 		<label>Evening Temperature</label>
 		<description>Forecasted outdoor temperature for the evening.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -447,6 +512,10 @@
 		<label>Night Temperature</label>
 		<description>Forecasted outdoor temperature for the night.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -455,6 +524,10 @@
 		<label>Apparent Temperature</label>
 		<description>Current apparent temperature.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -463,6 +536,10 @@
 		<label>Apparent Morning Temperature</label>
 		<description>Forecasted apparent temperature in the morning.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -471,6 +548,10 @@
 		<label>Apparent Day Temperature</label>
 		<description>Forecasted apparent temperature during the day.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -479,6 +560,10 @@
 		<label>Apparent Evening Temperature</label>
 		<description>Forecasted apparent temperature at the evening.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -487,6 +572,10 @@
 		<label>Apparent Night Temperature</label>
 		<description>Forecasted apparent temperature in the night.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -495,6 +584,10 @@
 		<label>Dew-Point Temperature</label>
 		<description>Forecasted dew-point temperature.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -502,7 +595,11 @@
 		<item-type>Number:Length</item-type>
 		<label>Precipitation</label>
 		<description>Precipitation volume of the related timespan.</description>
-		<category>Precipitation</category>
+		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -511,6 +608,10 @@
 		<label>Forecasted Apparent Temperature</label>
 		<description>Forecasted apparent temperature.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -519,6 +620,10 @@
 		<label>Forecasted Pressure</label>
 		<description>Forecasted barometric pressure.</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
@@ -527,6 +632,10 @@
 		<label>Forecasted Humidity</label>
 		<description>Forecasted atmospheric relative humidity.</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
@@ -535,6 +644,10 @@
 		<label>Forecasted Wind Speed</label>
 		<description>Forecasted wind speed.</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -543,6 +656,10 @@
 		<label>Forecasted Wind Direction</label>
 		<description>Forecasted wind direction expressed as an angle.</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -551,6 +668,10 @@
 		<label>Gust Speed</label>
 		<description>Current gust speed.</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -559,6 +680,10 @@
 		<label>Forecasted Gust Speed</label>
 		<description>Forecasted gust speed.</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -566,7 +691,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Cloudiness</label>
 		<description>Current cloudiness.</description>
-		<category>Clouds</category>
+		<category>Sun_Clouds</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -574,7 +702,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Forecasted Cloudiness</label>
 		<description>Forecasted cloudiness.</description>
-		<category>Clouds</category>
+		<category>Sun_Clouds</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -583,6 +714,10 @@
 		<label>Rain</label>
 		<description>Rain volume of the last hour.</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -591,6 +726,10 @@
 		<label>Forecasted Rain</label>
 		<description>Forecasted rain volume.</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -599,6 +738,10 @@
 		<label>Snow</label>
 		<description>Snow volume of the last hour.</description>
 		<category>Snow</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -607,6 +750,10 @@
 		<label>Forecasted Snow</label>
 		<description>Forecasted snow volume.</description>
 		<category>Snow</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -614,6 +761,10 @@
 		<item-type>Number</item-type>
 		<label>UV Index</label>
 		<description>Current UV Index.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Ultraviolet</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 
@@ -621,6 +772,10 @@
 		<item-type>Number</item-type>
 		<label>Forecasted UV Index</label>
 		<description>Forecasted UV Index.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Ultraviolet</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 
@@ -628,6 +783,9 @@
 		<item-type>Number</item-type>
 		<label>Air Quality Index</label>
 		<description>Current air quality index.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f">
 			<options>
 				<option value="1">Good</option>
@@ -643,6 +801,9 @@
 		<item-type>Number</item-type>
 		<label>Forecasted Air Quality Index</label>
 		<description>Forecasted air quality index.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f">
 			<options>
 				<option value="1">Good</option>
@@ -658,6 +819,9 @@
 		<item-type>Number:Density</item-type>
 		<label>Particulate Matter - PM2.5</label>
 		<description>Current density of particles less than 2.5 µm in diameter.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -665,6 +829,9 @@
 		<item-type>Number:Density</item-type>
 		<label>Forecasted Particulate Matter - PM2.5</label>
 		<description>Forecasted density of particles less than 2.5 µm in diameter.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -672,6 +839,9 @@
 		<item-type>Number:Density</item-type>
 		<label>Particulate Matter - PM10</label>
 		<description>Current density of particles less than 10 µm in diameter.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -679,6 +849,9 @@
 		<item-type>Number:Density</item-type>
 		<label>Forecasted Particulate Matter - PM10</label>
 		<description>Forecasted density of particles less than 10 µm in diameter.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -686,6 +859,10 @@
 		<item-type>Number:Density</item-type>
 		<label>Carbon Monoxide</label>
 		<description>Current concentration of carbon monoxide.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -693,6 +870,10 @@
 		<item-type>Number:Density</item-type>
 		<label>Forecasted Carbon Monoxide</label>
 		<description>Forecasted concentration of carbon monoxide.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -700,6 +881,9 @@
 		<item-type>Number:Density</item-type>
 		<label>Nitrogen Monoxide</label>
 		<description>Current concentration of nitrogen monoxide.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -707,6 +891,9 @@
 		<item-type>Number:Density</item-type>
 		<label>Forecasted Nitrogen Monoxide</label>
 		<description>Forecasted concentration of nitrogen monoxide.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -714,6 +901,9 @@
 		<item-type>Number:Density</item-type>
 		<label>Nitrogen Dioxide</label>
 		<description>Current concentration of nitrogen dioxide.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -721,6 +911,9 @@
 		<item-type>Number:Density</item-type>
 		<label>Forecasted Nitrogen Dioxide</label>
 		<description>Forecasted concentration of nitrogen dioxide.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -728,6 +921,9 @@
 		<item-type>Number:Density</item-type>
 		<label>Ozone</label>
 		<description>Current concentration of ozone.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -735,6 +931,9 @@
 		<item-type>Number:Density</item-type>
 		<label>Forecasted Ozone</label>
 		<description>Forecasted concentration of ozone.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -742,6 +941,9 @@
 		<item-type>Number:Density</item-type>
 		<label>Sulphur Dioxide</label>
 		<description>Current concentration of sulphur dioxide.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -749,6 +951,9 @@
 		<item-type>Number:Density</item-type>
 		<label>Forecasted Sulphur Dioxide</label>
 		<description>Forecasted concentration of sulphur dioxide.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -756,6 +961,9 @@
 		<item-type>Number:Density</item-type>
 		<label>Ammonia</label>
 		<description>Current concentration of ammonia.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -763,6 +971,9 @@
 		<item-type>Number:Density</item-type>
 		<label>Forecasted Ammonia</label>
 		<description>Forecasted concentration of ammonia.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -770,6 +981,9 @@
 		<item-type>Number:Length</item-type>
 		<label>Visibility</label>
 		<description>Current visibility.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -778,6 +992,10 @@
 		<label>Precipitation Probability</label>
 		<description>Forecasted precipitation probability.</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -785,6 +1003,9 @@
 		<item-type>String</item-type>
 		<label>Type</label>
 		<description>Type of the warning, e.g. FROST.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -792,6 +1013,9 @@
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>A detailed description of the alert.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -800,6 +1024,10 @@
 		<label>Valid From</label>
 		<description>Start Date and Time for which the warning is valid.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
@@ -808,6 +1036,10 @@
 		<label>Valid To</label>
 		<description>End Date and Time for which the warning is valid.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
@@ -815,6 +1047,9 @@
 		<item-type>String</item-type>
 		<label>Source</label>
 		<description>Source of the alert.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
