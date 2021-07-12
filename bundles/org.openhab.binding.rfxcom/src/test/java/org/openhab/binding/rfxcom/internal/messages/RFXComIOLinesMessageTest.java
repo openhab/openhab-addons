@@ -30,6 +30,6 @@ public class RFXComIOLinesMessageTest {
     @Test
     public void checkNotImplemented() {
         assertThrows(RFXComMessageNotImplementedException.class,
-                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.IO_LINES));
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.IO_LINES, null, null, null));
     }
 }

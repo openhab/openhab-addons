@@ -30,6 +30,6 @@ public class RFXComWaterMessageTest {
     @Test
     public void checkNotImplemented() {
         assertThrows(RFXComMessageNotImplementedException.class,
-                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.WATER));
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.WATER, null, null, null));
     }
 }

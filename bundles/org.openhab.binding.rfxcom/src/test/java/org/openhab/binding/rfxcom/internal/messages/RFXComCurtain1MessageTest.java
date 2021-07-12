@@ -12,11 +12,17 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.openhab.binding.rfxcom.internal.RFXComTestHelper.thingUID;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.CURTAIN1;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.rfxcom.internal.RFXComBindingConstants;
+import org.openhab.binding.rfxcom.internal.RFXComTestHelper;
+import org.openhab.binding.rfxcom.internal.config.RFXComGenericDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.thing.ChannelUID;
 
 /**
  * Test for RFXCom-binding
@@ -25,18 +31,23 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
  */
 @NonNullByDefault
 public class RFXComCurtain1MessageTest {
+    private static ChannelUID shutterChannelUID = new ChannelUID(thingUID, RFXComBindingConstants.CHANNEL_SHUTTER);
+    private static RFXComGenericDeviceConfiguration config = new RFXComGenericDeviceConfiguration();
+
+    static {
+        config.deviceId = "1.2";
+        config.subType = RFXComCurtain1Message.SubType.HARRISON.toString();
+    }
+
     @Test
     public void checkForSupportTest() throws RFXComException {
-        RFXComMessageFactoryImpl.INSTANCE.createMessage(CURTAIN1);
+        RFXComMessageFactoryImpl.INSTANCE.createMessage(CURTAIN1, config, shutterChannelUID, OpenClosedType.OPEN);
     }
 
     @Test
     public void basicBoundaryCheck() throws RFXComException {
         RFXComCurtain1Message message = (RFXComCurtain1Message) RFXComMessageFactoryImpl.INSTANCE
-                .createMessage(CURTAIN1);
-
-        message.subType = RFXComCurtain1Message.SubType.HARRISON;
-        message.command = RFXComCurtain1Message.Commands.OPEN;
+                .createMessage(CURTAIN1, config, shutterChannelUID, OpenClosedType.OPEN);
 
         RFXComTestHelper.basicBoundaryCheck(CURTAIN1, message);
     }

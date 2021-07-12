@@ -17,6 +17,7 @@ import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.rfxcom.internal.config.RFXComGenericDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComLighting1Message.Commands;
@@ -33,6 +34,12 @@ import org.openhab.core.util.HexUtils;
 @NonNullByDefault
 public class RFXComLighting1MessageTest {
     private final MockDeviceState deviceState = new MockDeviceState();
+    private static final RFXComGenericDeviceConfiguration config = new RFXComGenericDeviceConfiguration();
+
+    static {
+        config.deviceId = "A.1";
+        config.subType = RFXComLighting1Message.SubType.ARC.toString();
+    }
 
     private void testMessage(String hexMsg, RFXComLighting1Message.SubType subType, int seqNbr, String deviceId,
             byte signalLevel, Commands command, String commandString) throws RFXComException {
@@ -43,7 +50,11 @@ public class RFXComLighting1MessageTest {
         assertEquals(deviceId, msg.getDeviceId(), "Sensor Id");
         assertEquals(signalLevel, msg.signalLevel, "Signal Level");
         assertEquals(command, msg.command, "Command");
-        assertEquals(commandString, msg.convertToState(CHANNEL_COMMAND_STRING, deviceState).toString(),
+
+        RFXComGenericDeviceConfiguration config = new RFXComGenericDeviceConfiguration();
+        config.deviceId = deviceId;
+        config.subType = subType.toString();
+        assertEquals(commandString, msg.convertToState(CHANNEL_COMMAND_STRING, config, deviceState).toString(),
                 "Command String");
 
         byte[] decoded = msg.decodeMessage();
@@ -72,9 +83,9 @@ public class RFXComLighting1MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("OFF"));
 
-        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_COMMAND, deviceState));
-        assertEquals(OpenClosedType.CLOSED, msg.convertToState(CHANNEL_CONTACT, deviceState));
-        assertEquals(StringType.valueOf("OFF"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
+        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_COMMAND, config, deviceState));
+        assertEquals(OpenClosedType.CLOSED, msg.convertToState(CHANNEL_CONTACT, config, deviceState));
+        assertEquals(StringType.valueOf("OFF"), msg.convertToState(CHANNEL_COMMAND_STRING, config, deviceState));
     }
 
     @Test
@@ -83,9 +94,9 @@ public class RFXComLighting1MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("chime"));
 
-        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND, deviceState));
-        assertEquals(OpenClosedType.OPEN, msg.convertToState(CHANNEL_CONTACT, deviceState));
-        assertEquals(StringType.valueOf("CHIME"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
+        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND, config, deviceState));
+        assertEquals(OpenClosedType.OPEN, msg.convertToState(CHANNEL_CONTACT, config, deviceState));
+        assertEquals(StringType.valueOf("CHIME"), msg.convertToState(CHANNEL_COMMAND_STRING, config, deviceState));
     }
 
     @Test
@@ -94,9 +105,9 @@ public class RFXComLighting1MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("bright"));
 
-        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND, deviceState));
-        assertEquals(OpenClosedType.OPEN, msg.convertToState(CHANNEL_CONTACT, deviceState));
-        assertEquals(StringType.valueOf("BRIGHT"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
+        assertEquals(OnOffType.ON, msg.convertToState(CHANNEL_COMMAND, config, deviceState));
+        assertEquals(OpenClosedType.OPEN, msg.convertToState(CHANNEL_CONTACT, config, deviceState));
+        assertEquals(StringType.valueOf("BRIGHT"), msg.convertToState(CHANNEL_COMMAND_STRING, config, deviceState));
     }
 
     @Test
@@ -105,8 +116,8 @@ public class RFXComLighting1MessageTest {
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("dim"));
 
-        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_COMMAND, deviceState));
-        assertEquals(OpenClosedType.CLOSED, msg.convertToState(CHANNEL_CONTACT, deviceState));
-        assertEquals(StringType.valueOf("DIM"), msg.convertToState(CHANNEL_COMMAND_STRING, deviceState));
+        assertEquals(OnOffType.OFF, msg.convertToState(CHANNEL_COMMAND, config, deviceState));
+        assertEquals(OpenClosedType.CLOSED, msg.convertToState(CHANNEL_CONTACT, config, deviceState));
+        assertEquals(StringType.valueOf("DIM"), msg.convertToState(CHANNEL_COMMAND_STRING, config, deviceState));
     }
 }

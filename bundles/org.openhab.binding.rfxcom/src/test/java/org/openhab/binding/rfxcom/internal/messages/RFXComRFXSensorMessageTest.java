@@ -89,7 +89,7 @@ public class RFXComRFXSensorMessageTest {
 
     private @Nullable Double getChannelAsDouble(String channelId, RFXComRFXSensorMessage msg, DeviceState deviceState)
             throws RFXComException {
-        return getStateAsDouble(msg.convertToState(channelId, deviceState));
+        return getStateAsDouble(msg.convertToState(channelId, null, deviceState));
     }
 
     private @Nullable Double getStateAsDouble(State state) {
