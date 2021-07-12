@@ -9,6 +9,10 @@
 		<label>Last Status Store</label>
 		<description>Last Status Store</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -16,6 +20,9 @@
 		<item-type>Location</item-type>
 		<label>Location</label>
 		<description>Location of the device</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true" pattern="%2$s°N,%3$s°W, %1$s m"/>
 	</channel-type>
 
@@ -24,6 +31,10 @@
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -32,6 +43,10 @@
 		<label>Min Temp</label>
 		<description>Minimum Temperature on current day</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -40,6 +55,10 @@
 		<label>Min Temp This Week</label>
 		<description>Minimum Temperature this week</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -48,6 +67,10 @@
 		<label>Min Temp This Month</label>
 		<description>Minimum Temperature this month</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -56,6 +79,10 @@
 		<label>Max Temp</label>
 		<description>Maximum Temperature on current day</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -64,6 +91,10 @@
 		<label>Max Temp This Week</label>
 		<description>Maximum Temperature this week</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -72,6 +103,10 @@
 		<label>Max Temp This Month</label>
 		<description>Maximum Temperature this month</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -80,6 +115,10 @@
 		<label>Temp Trend</label>
 		<description>Temperature Evolution Trend</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="up">up</option>
@@ -94,6 +133,10 @@
 		<label>Setpoint</label>
 		<description>Thermostat temperature setpoint</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
@@ -101,6 +144,9 @@
 		<item-type>String</item-type>
 		<label>Setpoint Mode</label>
 		<description>Chosen setpoint_mode (program, away, hg, manual, off, max)</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="program">Following a weekly schedule</option>
@@ -117,6 +163,9 @@
 		<item-type>Switch</item-type>
 		<label>Heating Status</label>
 		<description>Indicates whether the furnace is heating or not</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -124,6 +173,9 @@
 		<item-type>Number</item-type>
 		<label>Orientation</label>
 		<description>Physical orientation of the thermostat module</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
@@ -132,6 +184,10 @@
 		<label>Measurement Time</label>
 		<description>Timestamp when data was measured</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -140,6 +196,10 @@
 		<label>Last Plug Seen</label>
 		<description>Last Plug Seen</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -148,6 +208,10 @@
 		<label>Date Min CO2</label>
 		<description>Date when minimum CO2 was reached on current day</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -156,6 +220,10 @@
 		<label>Date Min CO2 This Week</label>
 		<description>Date when minimum CO2 was reached this week</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -164,6 +232,10 @@
 		<label>Date Min CO2 This Month</label>
 		<description>Date when minimum CO2 was reached this month</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -172,6 +244,10 @@
 		<label>Date Max CO2</label>
 		<description>Date when maximum CO2 was reached on current day</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -180,6 +256,10 @@
 		<label>Date Max CO2 This Week</label>
 		<description>Date when maximum CO2 was reached this week</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -188,6 +268,10 @@
 		<label>Date Max CO2 This Month</label>
 		<description>Date when maximum CO2 was reached this month</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -196,6 +280,10 @@
 		<label>Date Min Temp</label>
 		<description>Date when minimum temperature was reached on current day</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -204,6 +292,10 @@
 		<label>Date Min Temp This Week</label>
 		<description>Date when minimum temperature was reached this week</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -212,6 +304,10 @@
 		<label>Date Min Temp This Month</label>
 		<description>Date when minimum temperature was reached this month</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -220,6 +316,10 @@
 		<label>Date Max Temp</label>
 		<description>Date when maximum temperature was reached on current day</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -228,6 +328,10 @@
 		<label>Date Max Temp This Week</label>
 		<description>Date when maximum temperature was reached this week</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -236,6 +340,10 @@
 		<label>Date Max Temp This Month</label>
 		<description>Date when maximum temperature was reached this month</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -244,6 +352,10 @@
 		<label>Date Min Humidity</label>
 		<description>Date when minimum humidity was reached on current day</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -252,6 +364,10 @@
 		<label>Date Min Humidity This Week</label>
 		<description>Date when minimum humidity was reached this week</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -260,6 +376,10 @@
 		<label>Date Min Humidity This Month</label>
 		<description>Date when minimum humidity was reached this month</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -268,6 +388,10 @@
 		<label>Date Max Humidity</label>
 		<description>Date when maximum humidity was reached on current day</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -276,6 +400,10 @@
 		<label>Date Max Humidity This Week</label>
 		<description>Date when maximum humidity was reached this week</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -284,6 +412,10 @@
 		<label>Date Max Humidity This Month</label>
 		<description>Date when maximum humidity was reached this month</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -292,6 +424,10 @@
 		<label>Date Min Noise</label>
 		<description>Date when minimum noise was reached on current day</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -300,6 +436,10 @@
 		<label>Date Min Noise This Week</label>
 		<description>Date when minimum noise was reached this week</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -308,6 +448,10 @@
 		<label>Date Min Noise This Month</label>
 		<description>Date when minimum noise was reached this month</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -316,6 +460,10 @@
 		<label>Date Max Noise</label>
 		<description>Date when maximum noise was reached on current day</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -324,6 +472,10 @@
 		<label>Date Max Noise This Week</label>
 		<description>Date when maximum noise was reached this week</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -332,6 +484,10 @@
 		<label>Date Max Noise This Month</label>
 		<description>Date when maximum noise was reached this month</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -340,6 +496,10 @@
 		<label>Date Min Pressure</label>
 		<description>Date when minimum pressure was reached on current day</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -348,6 +508,10 @@
 		<label>Date Min Pressure This Week</label>
 		<description>Date when minimum pressure was reached this week</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -356,6 +520,10 @@
 		<label>Date Min Pressure This Month</label>
 		<description>Date when minimum pressure was reached this month</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -364,6 +532,10 @@
 		<label>Date Max Pressure</label>
 		<description>Date when maximum pressure was reached on current day</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -372,6 +544,10 @@
 		<label>Date Max Pressure This Week</label>
 		<description>Date when maximum pressure was reached this week</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -380,6 +556,10 @@
 		<label>Date Max Pressure This Month</label>
 		<description>Date when maximum pressure was reached this month</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -388,12 +568,19 @@
 		<label>Available Bilan</label>
 		<description>Month of the last available thermostat bilan</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY"/>
 	</channel-type>
 
 	<channel-type id="connectedBoiler" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Plug Connected Boiler</label>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -402,6 +589,10 @@
 		<label>Last Message</label>
 		<description>Last Message emitted by the module</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -410,6 +601,10 @@
 		<label>Setpoint End</label>
 		<description>Thermostat goes back to schedule after that timestamp.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM"/>
 	</channel-type>
 
@@ -418,6 +613,10 @@
 		<label>Last Therm Seen</label>
 		<description>Last Them Seen</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -426,6 +625,10 @@
 		<label>CO2</label>
 		<description>Air Quality</description>
 		<category>Carbondioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -434,6 +637,10 @@
 		<label>Min Co2</label>
 		<description>Minimum CO2 on current day</description>
 		<category>Carbondioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -442,6 +649,10 @@
 		<label>Min Co2 This Week</label>
 		<description>Minimum CO2 this week</description>
 		<category>Carbondioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -450,6 +661,10 @@
 		<label>Min Co2 This Month</label>
 		<description>Minimum CO2 this month</description>
 		<category>Carbondioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -458,6 +673,10 @@
 		<label>Max Co2</label>
 		<description>Maximum CO2 on current day</description>
 		<category>Carbondioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -466,6 +685,10 @@
 		<label>Max Co2 This Week</label>
 		<description>Maximum CO2 this week</description>
 		<category>Carbondioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -474,6 +697,10 @@
 		<label>Max Co2 This Month</label>
 		<description>Maximum CO2 this month</description>
 		<category>Carbondioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -482,6 +709,10 @@
 		<label>Noise</label>
 		<description>Current Noise Level</description>
 		<category>Noise</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Noise</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -490,6 +721,10 @@
 		<label>Min Noise</label>
 		<description>Minimum Noise on current day</description>
 		<category>Noise</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Noise</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -498,6 +733,10 @@
 		<label>Min Noise This Week</label>
 		<description>Minimum Noise this week</description>
 		<category>Noise</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Noise</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -506,6 +745,10 @@
 		<label>Min Noise This Month</label>
 		<description>Minimum Noise this month</description>
 		<category>Noise</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Noise</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -514,6 +757,10 @@
 		<label>Max Noise</label>
 		<description>Maximum Noise on current day</description>
 		<category>Noise</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Noise</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -522,6 +769,10 @@
 		<label>Max Noise This Week</label>
 		<description>Maximum Noise this week</description>
 		<category>Noise</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Noise</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -530,6 +781,10 @@
 		<label>Max Noise This Month</label>
 		<description>Maximum Noise this month</description>
 		<category>Noise</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Noise</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -537,6 +792,9 @@
 		<item-type>String</item-type>
 		<label>Health Index</label>
 		<description>Health Index (healthy, fine, fair, poor, unhealthy)</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="healthy">healthy</option>
@@ -553,6 +811,10 @@
 		<label>Pressure</label>
 		<description>Current pressure</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
@@ -561,6 +823,10 @@
 		<label>Min Pressure</label>
 		<description>Minimum Pressure on current day</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
@@ -569,6 +835,10 @@
 		<label>Min Pressure This Week</label>
 		<description>Minimum Pressure this week</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
@@ -577,6 +847,10 @@
 		<label>Min Pressure This Month</label>
 		<description>Minimum Pressure this month</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
@@ -585,6 +859,10 @@
 		<label>Max Pressure</label>
 		<description>Maximum Pressure on current day</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
@@ -593,6 +871,10 @@
 		<label>Max Pressure This Week</label>
 		<description>Maximum Pressure this week</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
@@ -601,6 +883,10 @@
 		<label>Max Pressure This Month</label>
 		<description>Maximum Pressure this month</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
@@ -609,6 +895,10 @@
 		<label>Pressure Trend</label>
 		<description>Pressure evolution trend for last 12h (up, down, stable)</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="up">up</option>
@@ -622,6 +912,9 @@
 		<item-type>String</item-type>
 		<label>Planning</label>
 		<description>Heat planning currently used</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<state pattern="%s"/>
 	</channel-type>
 
@@ -630,6 +923,10 @@
 		<label>Abs Pressure</label>
 		<description>Absolute pressure</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
@@ -638,6 +935,10 @@
 		<label>Humidity</label>
 		<description>Current humidity</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -646,6 +947,10 @@
 		<label>Min Humidity</label>
 		<description>Minimum Humidity on current day</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -654,6 +959,10 @@
 		<label>Min Humidity This Week</label>
 		<description>Minimum Humidity this week</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -662,6 +971,10 @@
 		<label>Min Humidity This Month</label>
 		<description>Minimum Humidity this month</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -670,6 +983,10 @@
 		<label>Max Humidity</label>
 		<description>Maximum Humidity on current day</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -678,6 +995,10 @@
 		<label>Max Humidity This Week</label>
 		<description>Minimum Humidity this week</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -686,6 +1007,10 @@
 		<label>Max Humidity This Month</label>
 		<description>Maximum Humidity this month</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -693,7 +1018,9 @@
 		<item-type>Number</item-type>
 		<label>Humidex</label>
 		<description>Computed Humidex index</description>
-		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
@@ -702,6 +1029,10 @@
 		<label>Heat Index</label>
 		<description>Computed Heat Index</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -710,6 +1041,10 @@
 		<label>Dewpoint</label>
 		<description>Computed Dewpoint Temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -717,6 +1052,11 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Dewpoint Depression</label>
 		<description>Computed Dewpoint Depression</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -725,6 +1065,10 @@
 		<label>Rain</label>
 		<description>Quantity of water</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -733,6 +1077,10 @@
 		<label>Rain 1h</label>
 		<description>Quantity of water on last hour</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -741,6 +1089,10 @@
 		<label>Rain 24h</label>
 		<description>Quantity of water on last day</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -749,6 +1101,10 @@
 		<label>Rain This Week</label>
 		<description>Quantity of water this week</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -757,6 +1113,10 @@
 		<label>Rain This Month</label>
 		<description>Quantity of water this month</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -765,6 +1125,10 @@
 		<label>Wind Angle</label>
 		<description>Current 5 minutes average wind direction</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -773,6 +1137,10 @@
 		<label>Wind Strength</label>
 		<description>Current 5 minutes average wind speed</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -781,6 +1149,10 @@
 		<label>Max Wind Strength</label>
 		<description>Maximum wind strength recorded</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -789,6 +1161,10 @@
 		<label>Date Max Wind Strength</label>
 		<description>Timestamp when MaxWindStrength was recorded.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$td.%1$tm.%1$tY %1$tH:%1$tM"/>
 	</channel-type>
 
@@ -797,6 +1173,10 @@
 		<label>Gust Angle</label>
 		<description>Direction of the last 5 minutes highest gust wind</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -805,6 +1185,10 @@
 		<label>Gust Strength</label>
 		<description>Speed of the last 5 minutes highest gust wind</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
