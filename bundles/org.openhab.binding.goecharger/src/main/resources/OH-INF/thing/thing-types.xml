@@ -10,6 +10,7 @@
 
 		<channels>
 			<channel id="maxCurrent" typeId="current"/>
+			<channel id="maxCurrentTemporary" typeId="amx"/>
 			<channel id="pwmSignal" typeId="pwm"/>
 			<channel id="error" typeId="err"/>
 			<channel id="voltageL1" typeId="vl1"/>
@@ -21,13 +22,15 @@
 			<channel id="powerL1" typeId="pl1"/>
 			<channel id="powerL2" typeId="pl2"/>
 			<channel id="powerL3" typeId="pl3"/>
+			<channel id="powerAll" typeId="pall"/>
 			<channel id="phases" typeId="pha"/>
 			<channel id="sessionChargeEnergyLimit" typeId="scl"/>
 			<channel id="sessionChargedEnergy" typeId="scs"/>
 			<channel id="totalChargedEnergy" typeId="eto"/>
 			<channel id="allowCharging" typeId="alw"/>
 			<channel id="cableCurrent" typeId="cbl"/>
-			<channel id="temperature" typeId="tmp"/>
+			<channel id="tempTma1" typeId="tma1"/>
+			<channel id="tempTma2" typeId="tma2"/>
 			<channel id="firmware" typeId="fmw"/>
 			<channel id="accessConfiguration" typeId="ast"/>
 		</channels>
@@ -63,6 +66,12 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Maximum Current</label>
 		<description>Maximum current per phase allowed to use for charging</description>
+		<state pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="amx">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Maximum Current Temporary</label>
+		<description>Maximum current per phase not stored in EEPROM</description>
 		<state pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="pwm">
@@ -145,6 +154,12 @@
 		<description>Power on L3</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="pall">
+		<item-type>Number:Power</item-type>
+		<label>Power All</label>
+		<description>Power on all phases</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="pha">
 		<item-type>Number</item-type>
 		<label>Phases</label>
@@ -178,13 +193,19 @@
 	<channel-type id="cbl">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Cable Encoding</label>
-		<description>Specifies the max amps that can be charged with that cable</description>
+		<description>Specifies the maximal current that can be charged with that cable</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="tmp">
+	<channel-type id="tma1">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<description>Temperature of the Go-eCharger</description>
+		<label>Temperature_tma1</label>
+		<description>Temperature (tma1) of the Go-eCharger</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="tma2">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature_tma2</label>
+		<description>Temperature (tma2) of the Go-eCharger</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fmw">
