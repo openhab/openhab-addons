@@ -210,10 +210,14 @@
 		<label>Plugin Hybrid / Twin Engine info</label>
 		<channels>
 			<channel id="batteryLevel" typeId="batteryLevel"/>
+			<channel id="batteryLevelRaw" typeId="batteryLevelRaw"/>
 			<channel id="batteryDistanceToEmpty" typeId="odometer">
 				<label>Distance to battery empty</label>
 			</channel>
 			<channel id="chargeStatus" typeId="chargeStatus"/>
+			<channel id="chargeStatusCable" typeId="chargeStatusCable"/>
+			<channel id="chargeStatusCharging" typeId="chargeStatusCharging"/>
+			<channel id="chargeStatusFullyCharged" typeId="chargeStatusFullyCharged"/>
 			<channel id="timeToHVBatteryFullyCharged" typeId="timeToHVBatteryFullyCharged"/>
 			<channel id="chargingEnd" typeId="timestamp">
 				<label>Charging end</label>
@@ -385,15 +389,46 @@
 	<channel-type id="batteryLevel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Level</label>
-		<description>Indicates the level of power in the battery (in case of PHEV / Twin Engine)</description>
+		<description>Indicates the level of power in the battery, or unknown in situations the API is misleading (in case of
+			PHEV / Twin Engine)</description>
+		<category>batterylevel</category>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="batteryLevelRaw">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Level Raw</label>
+		<description>Indicates the level of power in the battery taken straight from the API, which can be misleading (in case
+			of PHEV / Twin Engine)</description>
 		<category>batterylevel</category>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="chargeStatus">
 		<item-type>String</item-type>
-		<label>Charging status</label>
+		<label>Charging status description</label>
 		<description>Status of charging (in case of PHEV / Twin Engine)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="chargeStatusCable">
+		<item-type>Switch</item-type>
+		<label>Charging cable status</label>
+		<description>Indicates if the charging cable is connected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="chargeStatusCharging">
+		<item-type>Switch</item-type>
+		<label>Charging status</label>
+		<description>Indicates if the car is currently charging</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="chargeStatusFullyCharged">
+		<item-type>Switch</item-type>
+		<label>Fully charged</label>
+		<description>Indicates if the car is fully charged</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
