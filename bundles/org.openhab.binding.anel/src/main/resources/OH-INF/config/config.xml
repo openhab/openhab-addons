@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:anel:config">
+		<parameter name="hostname" type="text" required="true">
+			<context>network-address</context>
+			<label>Hostname / IP address</label>
+			<default>net-control</default>
+			<description>Hostname or IP address of the device</description>
+		</parameter>
+		<parameter name="udpSendPort" type="integer" required="true">
+			<context>port-send</context>
+			<label>Send Port</label>
+			<default>75</default>
+			<description>UDP port to send data to the device (in the anel web UI, it's the receive port!)</description>
+		</parameter>
+		<parameter name="udpReceivePort" type="integer" required="true">
+			<context>port-receive</context>
+			<label>Receive Port</label>
+			<default>77</default>
+			<description>UDP port to receive data from the device (in the anel web UI, it's the send port!)</description>
+		</parameter>
+		<parameter name="user" type="text" required="true">
+			<context>user</context>
+			<label>User</label>
+			<default>user7</default>
+			<description>User to access the device (make sure it has rights to change relay / IO states!)</description>
+		</parameter>
+		<parameter name="password" type="text" required="true">
+			<context>password</context>
+			<label>Password</label>
+			<default>anel</default>
+			<description>Password to access the device</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
