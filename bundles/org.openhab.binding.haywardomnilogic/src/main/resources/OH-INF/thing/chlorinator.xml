@@ -47,7 +47,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Salt Output (%)</label>
 		<description>Current salt output setting for the chlorinator (%).</description>
-		<state min="0" max="100" step="1.0" pattern="%1f %unit%" readOnly="false"/>
+		<state min="0" max="100" step="1.0" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="scMode">
@@ -84,20 +84,20 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Average Salt Level</label>
 		<description>Average Salt Level</description>
-		<state pattern="%1f %unit%" readOnly="true"/>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="instantSaltLevel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Instant Salt Level</label>
 		<description>Instant Salt Level</description>
-		<state pattern="%1f %unit%" readOnly="true"/>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="status">
 		<item-type>Number</item-type>
 		<label>Status</label>
 		<description>Status</description>
-		<state pattern="%1f" readOnly="true"/>
+		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

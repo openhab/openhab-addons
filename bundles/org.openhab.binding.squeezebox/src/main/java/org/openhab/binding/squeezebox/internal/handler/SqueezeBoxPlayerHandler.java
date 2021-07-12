@@ -123,6 +123,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     private String likeCommand;
     private String unlikeCommand;
+    private boolean connected = false;
 
     /**
      * Creates SqueezeBox Player Handler
@@ -141,24 +142,31 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     public void initialize() {
         mac = getConfig().as(SqueezeBoxPlayerConfig.class).mac;
         timeCounter();
-        updateBridgeStatus();
+        updateThingStatus();
         logger.debug("player thing {} initialized with mac {}", getThing().getUID(), mac);
+        if (squeezeBoxServerHandler != null) {
+            // ensure we get an up-to-date connection state
+            squeezeBoxServerHandler.requestPlayers();
+        }
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        updateBridgeStatus();
+        updateThingStatus();
     }
 
-    private void updateBridgeStatus() {
+    private void updateThingStatus() {
         Thing bridge = getBridge();
         if (bridge != null) {
             squeezeBoxServerHandler = (SqueezeBoxServerHandler) bridge.getHandler();
             ThingStatus bridgeStatus = bridge.getStatus();
-            if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-            } else if (bridgeStatus == ThingStatus.OFFLINE) {
+
+            if (bridgeStatus == ThingStatus.OFFLINE) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            } else if (!this.connected) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+            } else if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not found");
@@ -524,6 +532,14 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             this.likeCommand = likeCommand;
             this.unlikeCommand = unlikeCommand;
             logger.trace("Player {} got a button change event: like='{}' unlike='{}'", mac, likeCommand, unlikeCommand);
+        }
+    }
+
+    @Override
+    public void connectedStateChangeEvent(String mac, boolean connected) {
+        if (isMe(mac)) {
+            this.connected = connected;
+            updateThingStatus();
         }
     }
 

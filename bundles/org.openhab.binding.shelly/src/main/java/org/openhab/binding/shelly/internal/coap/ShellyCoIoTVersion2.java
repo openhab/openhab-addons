@@ -193,7 +193,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 break;
             case "3118":
                 updateChannel(updates, mGroup, CHANNEL_SENSOR_VOLTAGE,
-                        toQuantityType(getDouble(s.value), DIGITS_VOLT, Units.VOLT));
+                        toQuantityType(getDouble(s.value), 2, Units.VOLT));
                 break;
 
             case "4101": // relay_0/light_0: P, power, W

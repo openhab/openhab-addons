@@ -1,0 +1,6 @@
+{
+  "command": "sdm.devices.commands.ThermostatMode.SetMode",
+  "params": {
+    "mode": "HEATCOOL"
+  }
+}

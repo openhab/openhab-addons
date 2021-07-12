@@ -186,7 +186,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
         status = evaluateXPath("/Response/Parameters//Parameter[@name='Status']/text()", xmlResponse).get(0);
 
-        if (!(status.equals("0"))) {
+        if (!("0".equals(status))) {
             logger.debug("Hayward Connection thing: Login XML response: {}", xmlResponse);
             return false;
         }
@@ -234,7 +234,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
         status = evaluateXPath("/Response/Parameters//Parameter[@name='Status']/text()", xmlResponse).get(0);
 
-        if (!(status.equals("0"))) {
+        if (!("0".equals(status))) {
             logger.debug("Hayward Connection thing: getSiteList XML response: {}", xmlResponse);
             return false;
         }

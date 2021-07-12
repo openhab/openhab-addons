@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nest"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Camera -->
+	<channel-group-type id="SDMChimeEvent">
+		<label>Chime Event</label>
+		<description>Information about the last chime event</description>
+		<channels>
+			<channel id="image" typeId="SDMCameraEventImage">
+				<label>Chime Event Image</label>
+				<description>Static image based on a chime event</description>
+			</channel>
+			<channel id="timestamp" typeId="SDMCameraEventTimestamp">
+				<label>Chime Event Timestamp</label>
+				<description>The last time that the door chime was pressed</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="SDMMotionEvent">
+		<label>Motion Event</label>
+		<description>Information about the last motion event</description>
+		<channels>
+			<channel id="image" typeId="SDMCameraEventImage">
+				<label>Motion Event Image</label>
+				<description>Static image based on a motion event</description>
+			</channel>
+			<channel id="timestamp" typeId="SDMCameraEventTimestamp">
+				<label>Motion Event Timestamp</label>
+				<description>The last time that motion was detected</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="SDMPersonEvent">
+		<label>Person Event</label>
+		<description>Information about the last person event</description>
+		<channels>
+			<channel id="image" typeId="SDMCameraEventImage">
+				<label>Person Event Image</label>
+				<description>Static image based on a person event</description>
+			</channel>
+			<channel id="timestamp" typeId="SDMCameraEventTimestamp">
+				<label>Person Event Timestamp</label>
+				<description>The last time that a person was detected</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="SDMSoundEvent">
+		<label>Sound Event</label>
+		<description>Information about the last sound event</description>
+		<channels>
+			<channel id="image" typeId="SDMCameraEventImage">
+				<label>Sound Event Image</label>
+				<description>Static image based on a sound event</description>
+			</channel>
+			<channel id="timestamp" typeId="SDMCameraEventTimestamp">
+				<label>Sound Event Timestamp</label>
+				<description>The last time that a sound was detected</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="SDMCameraEventImage">
+		<item-type>Image</item-type>
+		<label>Image</label>
+		<description>Static image based on a event</description>
+		<state readOnly="true"/>
+		<config-description-ref uri="channel-type:nest:sdm_camera_image"/>
+	</channel-type>
+
+	<channel-type id="SDMCameraEventTimestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>The time that the event occurred</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-group-type id="SDMLiveStream">
+		<label>Live Stream</label>
+		<description>Information for accessing the live stream</description>
+		<channels>
+			<channel id="url" typeId="SDMLiveStreamUrl"/>
+			<channel id="expiration_timestamp" typeId="SDMLiveStreamExpirationTimestamp"/>
+			<channel id="current_token" typeId="SDMLiveStreamCurrentToken"/>
+			<channel id="extension_token" typeId="SDMLiveStreamExtensionToken"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="SDMLiveStreamUrl">
+		<item-type>String</item-type>
+		<label>Live Stream URL</label>
+		<description>The RTSP video stream URL for the most recent event</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SDMLiveStreamExpirationTimestamp">
+		<item-type>DateTime</item-type>
+		<label>Live Stream Expiration Timestamp</label>
+		<description>Live stream token expiration time</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SDMLiveStreamCurrentToken">
+		<item-type>String</item-type>
+		<label>Live Stream Current Token</label>
+		<description>Live stream current token value</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SDMLiveStreamExtensionToken">
+		<item-type>String</item-type>
+		<label>Live Stream Extension Token</label>
+		<description>Live stream token extension value</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Thermostat -->
+	<channel-type id="SDMAmbientHumidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Ambient Humidity</label>
+		<description>Lists the current ambient humidity percentage from the thermostat</description>
+		<category>Humidity</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SDMAmbientTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Ambient Temperature</label>
+		<description>Lists the current ambient temperature from the thermostat</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SDMCurrentEcoMode">
+		<item-type>String</item-type>
+		<label>Current Eco Mode</label>
+		<description>Lists the current eco mode from the thermostat</description>
+		<state>
+			<options>
+				<option value="OFF">off</option>
+				<option value="MANUAL_ECO">manual eco</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="SDMCurrentMode">
+		<item-type>String</item-type>
+		<label>Current Mode</label>
+		<description>Lists the current mode from the thermostat</description>
+		<state>
+			<options>
+				<option value="OFF">off</option>
+				<option value="HEAT">heating</option>
+				<option value="COOL">cooling</option>
+				<option value="HEATCOOL">heat/cool</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="SDMFanTimerMode">
+		<item-type>Switch</item-type>
+		<label>Fan Timer Mode</label>
+		<description>Lists the current fan timer mode</description>
+		<config-description-ref uri="channel-type:nest:sdm_fan_timer_mode"/>
+	</channel-type>
+
+	<channel-type id="SDMFanTimerTimeout">
+		<item-type>DateTime</item-type>
+		<label>Fan Timer Timeout</label>
+		<description>Timestamp at which timer mode turns OFF</description>
+	</channel-type>
+
+	<channel-type id="SDMHVACStatus">
+		<item-type>String</item-type>
+		<label>HVAC Status</label>
+		<description>Provides the thermostat HVAC Status</description>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">off</option>
+				<option value="HEATING">heating</option>
+				<option value="COOLING">cooling</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="SDMMaximumTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Maximum Temperature Setting</label>
+		<description>Lists the maximum temperature setting from the thermostat</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" step="0.5"/>
+	</channel-type>
+
+	<channel-type id="SDMMinimumTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Minimum Temperature Setting</label>
+		<description>Lists the minimum temperature setting from the thermostat</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" step="0.5"/>
+	</channel-type>
+
+	<channel-type id="SDMTargetTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>Lists the target temperature setting from the thermostat</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" step="0.5"/>
+	</channel-type>
+
+	<channel-type id="SDMTemperatureCool">
+		<item-type>Number:Temperature</item-type>
+		<label>Cool Temperature</label>
+		<description>Lists the cool temperature setting from the thermostat</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SDMTemperatureHeat">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat Temperature</label>
+		<description>Lists the heat temperature setting from the thermostat</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

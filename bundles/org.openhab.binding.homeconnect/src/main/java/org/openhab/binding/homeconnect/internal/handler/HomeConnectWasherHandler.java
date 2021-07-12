@@ -67,9 +67,27 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
                 getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
         handlers.put(CHANNEL_WASHER_TEMPERATURE,
                 getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_IDOS1_LEVEL,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_IDOS2_LEVEL,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
         handlers.put(CHANNEL_WASHER_IDOS1,
                 getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
         handlers.put(CHANNEL_WASHER_IDOS2,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_VARIO_PERFECT,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_LESS_IRONING,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_PRE_WASH,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_RINSE_PLUS,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_SOAK,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_PROGRAM_ENERGY,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_PROGRAM_WATER,
                 getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
     }
 
@@ -84,7 +102,7 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
         handlers.put(EVENT_REMAINING_PROGRAM_TIME, defaultRemainingProgramTimeEventHandler());
         handlers.put(EVENT_PROGRAM_PROGRESS, defaultPercentQuantityTypeEventHandler(CHANNEL_PROGRAM_PROGRESS_STATE));
         handlers.put(EVENT_LOCAL_CONTROL_ACTIVE, defaultBooleanEventHandler(CHANNEL_LOCAL_CONTROL_ACTIVE_STATE));
-        handlers.put(EVENT_ACTIVE_PROGRAM, defaultActiveProgramEventHandler());
+        handlers.put(EVENT_ACTIVE_PROGRAM, updateProgramOptionsAndActiveProgramStateEventHandler());
         handlers.put(EVENT_OPERATION_STATE, defaultOperationStateEventHandler());
         handlers.put(EVENT_SELECTED_PROGRAM, updateProgramOptionsAndSelectedProgramStateEventHandler());
 
@@ -96,11 +114,24 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
                 event -> getThingChannel(CHANNEL_WASHER_SPIN_SPEED).ifPresent(channel -> updateState(channel.getUID(),
                         event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue()))));
         handlers.put(EVENT_WASHER_IDOS_1_DOSING_LEVEL,
-                event -> getThingChannel(CHANNEL_WASHER_IDOS1).ifPresent(channel -> updateState(channel.getUID(),
+                event -> getThingChannel(CHANNEL_WASHER_IDOS1_LEVEL).ifPresent(channel -> updateState(channel.getUID(),
                         event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue()))));
         handlers.put(EVENT_WASHER_IDOS_2_DOSING_LEVEL,
-                event -> getThingChannel(CHANNEL_WASHER_IDOS2).ifPresent(channel -> updateState(channel.getUID(),
+                event -> getThingChannel(CHANNEL_WASHER_IDOS2_LEVEL).ifPresent(channel -> updateState(channel.getUID(),
                         event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue()))));
+    }
+
+    @Override
+    protected boolean isChannelLinkedToProgramOptionNotFullySupportedByApi() {
+        return (getThingChannel(CHANNEL_WASHER_IDOS1).isPresent() && isLinked(CHANNEL_WASHER_IDOS1))
+                || (getThingChannel(CHANNEL_WASHER_IDOS2).isPresent() && isLinked(CHANNEL_WASHER_IDOS2))
+                || (getThingChannel(CHANNEL_WASHER_VARIO_PERFECT).isPresent() && isLinked(CHANNEL_WASHER_VARIO_PERFECT))
+                || (getThingChannel(CHANNEL_WASHER_LESS_IRONING).isPresent() && isLinked(CHANNEL_WASHER_LESS_IRONING))
+                || (getThingChannel(CHANNEL_WASHER_PRE_WASH).isPresent() && isLinked(CHANNEL_WASHER_PRE_WASH))
+                || (getThingChannel(CHANNEL_WASHER_RINSE_PLUS).isPresent() && isLinked(CHANNEL_WASHER_RINSE_PLUS))
+                || (getThingChannel(CHANNEL_WASHER_SOAK).isPresent() && isLinked(CHANNEL_WASHER_SOAK))
+                || (getThingChannel(CHANNEL_PROGRAM_ENERGY).isPresent() && isLinked(CHANNEL_PROGRAM_ENERGY))
+                || (getThingChannel(CHANNEL_PROGRAM_WATER).isPresent() && isLinked(CHANNEL_PROGRAM_WATER));
     }
 
     @Override
@@ -121,11 +152,11 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
                     apiClient.setProgramOptions(getThingHaId(), OPTION_WASHER_SPIN_SPEED, command.toFullString(), null,
                             false, false);
                     break;
-                case CHANNEL_WASHER_IDOS1:
+                case CHANNEL_WASHER_IDOS1_LEVEL:
                     apiClient.setProgramOptions(getThingHaId(), OPTION_WASHER_IDOS_1_DOSING_LEVEL,
                             command.toFullString(), null, false, false);
                     break;
-                case CHANNEL_WASHER_IDOS2:
+                case CHANNEL_WASHER_IDOS2_LEVEL:
                     apiClient.setProgramOptions(getThingHaId(), OPTION_WASHER_IDOS_2_DOSING_LEVEL,
                             command.toFullString(), null, false, false);
                     break;
@@ -150,8 +181,17 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
         if (offline) {
             getThingChannel(CHANNEL_WASHER_TEMPERATURE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
             getThingChannel(CHANNEL_WASHER_SPIN_SPEED).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_WASHER_IDOS1_LEVEL).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_WASHER_IDOS2_LEVEL).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
             getThingChannel(CHANNEL_WASHER_IDOS1).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
             getThingChannel(CHANNEL_WASHER_IDOS2).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_WASHER_VARIO_PERFECT).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_WASHER_LESS_IRONING).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_WASHER_PRE_WASH).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_WASHER_RINSE_PLUS).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_WASHER_SOAK).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_PROGRAM_ENERGY).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getThingChannel(CHANNEL_PROGRAM_WATER).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         }
     }
 }
