@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -63,6 +64,7 @@ import com.google.gson.JsonObject;
  *
  * @author Jonas Brüstel - Initial contribution
  * @author Laurent Garnier - Replace okhttp by the Jetty HTTP client provided by the openHAB core framework
+ * @author Laurent Garnier - programs cache enhanced to allow adding unsupported programs
  *
  */
 @NonNullByDefault
@@ -1112,5 +1114,46 @@ public class HomeConnectApiClient {
 
         return new HomeConnectResponse(response.getStatus(), headers,
                 responseBody != null ? formatJsonBody(responseBody) : null);
+    }
+
+    /**
+     * Add an entry in the programs cache for an unsupported program
+     *
+     * @param haId haId home appliance id
+     * @param programKey program id
+     * @return true if an entry was added in the cache for this program
+     */
+    public boolean addUnsupportedProgramInCache(String haId, String programKey) {
+        if (programsCache.containsKey(haId)) {
+            List<AvailableProgram> programs = programsCache.get(haId);
+            programs = programs != null ? programs : Collections.emptyList();
+            Optional<AvailableProgram> unsupportedProgram = programs.stream()
+                    .filter(program -> programKey.equals(program.getKey()) && !program.isSupported()).findFirst();
+            if (!unsupportedProgram.isPresent()) {
+                programs.add(new AvailableProgram(programKey, false));
+                logger.debug("{} added in programs cache as an unsupported program", programKey);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if a program is marked as supported in the programs cache
+     *
+     * @param haId haId home appliance id
+     * @param programKey program id
+     * @return true if the program is in the cache and marked as supported
+     */
+    public boolean isProgramSupported(String haId, String programKey) {
+        Optional<AvailableProgram> prog;
+        if (programsCache.containsKey(haId)) {
+            List<AvailableProgram> programs = programsCache.get(haId);
+            programs = programs != null ? programs : Collections.emptyList();
+            prog = programs.stream().filter(program -> programKey.equals(program.getKey())).findFirst();
+        } else {
+            prog = Optional.empty();
+        }
+        return prog.isPresent() && prog.get().isSupported();
     }
 }
