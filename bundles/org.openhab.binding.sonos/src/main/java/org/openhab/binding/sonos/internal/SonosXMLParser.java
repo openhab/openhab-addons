@@ -876,6 +876,7 @@ public class SonosXMLParser {
                 case "SurroundEnabled":
                 case "SurroundMode":
                 case "SurroundLevel":
+                case "HTAudioIn":
                 case "MusicSurroundLevel":
                 case "HeightChannelLevel":
                     val = attributes == null ? null : attributes.getValue("val");

@@ -45,6 +45,13 @@
 		<description>Suppress all songs from the current queue</description>
 	</channel-type>
 
+	<channel-type id="codec" advanced="true">
+		<item-type>String</item-type>
+		<label>Codec</label>
+		<description>Name of codec currently being decoded</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="coordinator" advanced="true">
 		<item-type>String</item-type>
 		<label>Coordinator</label>
