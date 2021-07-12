@@ -46,13 +46,21 @@ public abstract class SoulissGenericActionMessage extends BaseThingHandler {
     private String timestamp = "";
     private final Logger logger = LoggerFactory.getLogger(SoulissGenericActionMessage.class);
 
-    public SoulissGenericActionMessage(Thing pThing) {
+    protected SoulissGenericActionMessage(Thing pThing) {
         super(pThing);
         thingGenActMsg = pThing;
 
         try {
-            sTopicNumber = thingGenActMsg.getConfiguration().getProperties().get("number").toString();
-            sTopicVariant = thingGenActMsg.getConfiguration().getProperties().get("variant").toString();
+            var cfg = thingGenActMsg.getConfiguration();
+            var props = cfg.getProperties();
+            var pTopicNumber = props.get("number");
+            var pTopicVariant = props.get("number");
+            if (pTopicNumber != null) {
+                sTopicNumber = pTopicNumber.toString();
+            }
+            if (pTopicVariant != null) {
+                sTopicVariant = pTopicVariant.toString();
+            }
         } catch (Exception e) {
             logger.debug("Item Definition Error. Use ex:'souliss:t11:nodeNumber-slotNumber'");
         }
