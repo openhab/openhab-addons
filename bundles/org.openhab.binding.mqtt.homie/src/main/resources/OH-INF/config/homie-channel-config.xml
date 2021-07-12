@@ -42,6 +42,8 @@
 				<option value="string_">String</option>
 				<option value="enum_">Enumeration</option>
 				<option value="color_">Colour</option>
+				<option value="datetime_">DateTime</option>
+				<option value="duration_">Duration</option>
 			</options>
 		</parameter>
 	</config-description>
