@@ -137,6 +137,7 @@ import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_12;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_12_NodON;
 import org.openhab.binding.enocean.internal.eep.D2_03.D2_03_0A;
 import org.openhab.binding.enocean.internal.eep.D2_05.D2_05_00;
+import org.openhab.binding.enocean.internal.eep.D2_06.D2_06_50;
 import org.openhab.binding.enocean.internal.eep.D2_14.D2_14_30;
 import org.openhab.binding.enocean.internal.eep.D2_50.D2_50;
 import org.openhab.binding.enocean.internal.eep.D5_00.D5_00_01;
@@ -463,6 +464,11 @@ public enum EEPType {
             CHANNEL_GENERAL_SWITCHINGA, CHANNEL_GENERAL_SWITCHINGB),
 
     Rollershutter_D2(RORG.VLD, 0x05, 0x00, true, D2_05_00.class, THING_TYPE_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER),
+
+    WindowSashHandleSensor_50(RORG.VLD, 0x06, 0x50, false, "Siegenia", 0x005D, D2_06_50.class,
+            THING_TYPE_WINDOWSASHHANDLESENSOR, CHANNEL_WINDOWHANDLESTATE, CHANNEL_WINDOWSASHSTATE,
+            CHANNEL_BATTERY_LEVEL, CHANNEL_BATTERYLOW, CHANNEL_WINDOWBREACHEVENT, CHANNEL_WINDOWCALIBRATIONSTATE,
+            CHANNEL_WINDOWCALIBRATIONSTEP),
 
     MultiFunctionSensor_30(RORG.VLD, 0x14, 0x30, false, D2_14_30.class, THING_TYPE_MULTFUNCTIONSMOKEDETECTOR,
             CHANNEL_SMOKEDETECTION, CHANNEL_SENSORFAULT, CHANNEL_TIMESINCELASTMAINTENANCE, CHANNEL_BATTERY_LEVEL,
