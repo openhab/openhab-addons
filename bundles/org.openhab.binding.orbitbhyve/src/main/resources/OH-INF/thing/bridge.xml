@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="orbitbhyve"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://openhab.org/smarthome/schemas/thing-description/v1.0.0 http://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Bridge Type -->
+	<bridge-type id="bridge">
+		<label>Orbit B-Hyve Binding Bridge</label>
+		<description>Bridge for Orbit B-Hyve Binding</description>
+		<config-description-ref uri="bridge-type:orbitbhyve:bridge"/>
+	</bridge-type>
+
+</thing:thing-descriptions>
