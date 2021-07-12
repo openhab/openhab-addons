@@ -64,7 +64,7 @@ Advanced channels:
 | Channel ID                       | Type                 | Read-Only | Description                                                             |
 |----------------------------------|----------------------|-----------|-------------------------------------------------------------------------|
 | compressor_power                 | Number:Dimensionless | yes       | Percent Power Compressor                                                |
-| coolEnableTemp                   | Number:Temperature   | yes       | Temperature Cooling Enable                                              |
+| coolEnableTemp                   | Number:Temperature   | no        | Temperature Cooling Enable                                              |
 | date_day                         | Number:Dimensionless | yes       | Day                                                                     |
 | date_month                       | Number:Dimensionless | yes       | Month                                                                   |
 | date_year                        | Number:Dimensionless | yes       | Year                                                                    |
@@ -85,7 +85,7 @@ Advanced channels:
 | maxVLTemp                        | Number:Temperature   | yes       | maxVLTemp                                                               |
 | nviHeizkreisNorm                 | Number:Temperature   | no        | nviHeizkreisNorm                                                        |
 | nviNormAussen                    | Number:Temperature   | no        | nviNormAussen                                                           |
-| nviSollKuehlen                   | Number:Temperature   | yes       | nviSollKuehlen                                                          |
+| nviSollKuehlen                   | Number:Temperature   | no        | nviSollKuehlen                                                          |
 | nviTHeizgrenze                   | Number:Temperature   | no        | nviTHeizgrenze                                                          |
 | nviTHeizgrenzeSoll               | Number:Temperature   | no        | nviTHeizgrenze Setpoint                                                 |
 | operating_hours_circulation_pump | Number:Time          | yes       | Operating Hours Circulation Pump                                        |
