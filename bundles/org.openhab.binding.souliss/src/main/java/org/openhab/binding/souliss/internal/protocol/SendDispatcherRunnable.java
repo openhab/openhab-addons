@@ -154,10 +154,12 @@ public class SendDispatcherRunnable implements Runnable {
                     sender.setReuseAddress(true);
                     sender.setBroadcast(true);
 
-                    var sa = new InetSocketAddress(230);
-                    sender.bind(sa);
-
-                    sender.send(sp.packet);
+                    var localGwHandler = this.gwHandler;
+                    if (localGwHandler != null) {
+                        var sa = new InetSocketAddress(localGwHandler.gwConfig.preferredLocalPortNumber);
+                        sender.bind(sa);
+                        sender.send(sp.packet);
+                    }
                 }
 
                 // confronta gli stati in memoria con i frame inviati. Se

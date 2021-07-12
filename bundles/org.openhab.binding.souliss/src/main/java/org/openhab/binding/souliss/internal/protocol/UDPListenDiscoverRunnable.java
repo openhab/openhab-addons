@@ -22,6 +22,7 @@ import java.nio.channels.DatagramChannel;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.discovery.DiscoverResult;
+import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
 import org.openhab.core.thing.Bridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,11 @@ public class UDPListenDiscoverRunnable implements Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(UDPListenDiscoverRunnable.class);
 
+    @Nullable
+    private SoulissGatewayHandler gwHandler;
+
     public UDPListenDiscoverRunnable(Bridge bridge, @Nullable DiscoverResult pDiscoverResult) {
+        this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();
         decoder = new UDPDecoder(bridge, pDiscoverResult);
     }
 
@@ -59,22 +64,25 @@ public class UDPListenDiscoverRunnable implements Runnable {
                 socket.setReuseAddress(true);
                 socket.setBroadcast(true);
 
-                var sa = new InetSocketAddress(230);
-                socket.bind(sa);
+                var localGwHandler = this.gwHandler;
+                if (localGwHandler != null) {
+                    var sa = new InetSocketAddress(localGwHandler.gwConfig.preferredLocalPortNumber);
+                    socket.bind(sa);
 
-                var buf = new byte[200];
-                // receive request
-                final var packet = new DatagramPacket(buf, buf.length);
-                socket.setSoTimeout(60000);
-                socket.receive(packet);
-                buf = packet.getData();
+                    var buf = new byte[200];
+                    // receive request
+                    final var packet = new DatagramPacket(buf, buf.length);
+                    socket.setSoTimeout(60000);
+                    socket.receive(packet);
+                    buf = packet.getData();
 
-                // **************** DECODER ********************
-                logger.debug("Packet received (port {}) {}", socket.getLocalPort(), macacoToString(buf));
+                    // **************** DECODER ********************
+                    logger.debug("Packet received (port {}) {}", socket.getLocalPort(), macacoToString(buf));
 
-                var localDecoder = this.decoder;
-                if (localDecoder != null) {
-                    localDecoder.decodeVNetDatagram(packet);
+                    var localDecoder = this.decoder;
+                    if (localDecoder != null) {
+                        localDecoder.decodeVNetDatagram(packet);
+                    }
                 }
 
             } catch (BindException e) {

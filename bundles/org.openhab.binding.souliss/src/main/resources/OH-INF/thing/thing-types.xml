@@ -29,15 +29,16 @@
 				<label>Gateway Port</label>
 				<description>Default is 230 UDP.
 				</description>
+				<advanced>true</advanced>				
 				<default>230</default>
 				<required>true</required>
 			</parameter>
 			<parameter name="preferredLocalPortNumber" type="integer" required="true">
 				<label>Local Port Number</label>
-				<description>Default port is 0. It means that it is random.
+				<description>Default port is 23000
 				</description>
 				<default>23000</default>
-				<advanced>false</advanced>
+				<advanced>true</advanced>
 				<required>true</required>
 			</parameter>
 
