@@ -441,7 +441,7 @@
 		<description>Forecasted outdoor temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -453,7 +453,7 @@
 		<description>Minimum forecasted outdoor temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -465,7 +465,7 @@
 		<description>Maximum forecasted outdoor temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -477,7 +477,7 @@
 		<description>Forecasted outdoor temperature for the day.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -489,7 +489,7 @@
 		<description>Forecasted outdoor temperature for the morning.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -501,7 +501,7 @@
 		<description>Forecasted outdoor temperature for the evening.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -513,7 +513,7 @@
 		<description>Forecasted outdoor temperature for the night.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -537,7 +537,7 @@
 		<description>Forecasted apparent temperature in the morning.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -549,7 +549,7 @@
 		<description>Forecasted apparent temperature during the day.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -561,7 +561,7 @@
 		<description>Forecasted apparent temperature at the evening.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -573,7 +573,7 @@
 		<description>Forecasted apparent temperature in the night.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -609,7 +609,7 @@
 		<description>Forecasted apparent temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -621,7 +621,7 @@
 		<description>Forecasted barometric pressure.</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Pressure</tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
@@ -633,7 +633,7 @@
 		<description>Forecasted atmospheric relative humidity.</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Humidity</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
@@ -645,7 +645,7 @@
 		<description>Forecasted wind speed.</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Wind</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -657,7 +657,7 @@
 		<description>Forecasted wind direction expressed as an angle.</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Wind</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -681,7 +681,7 @@
 		<description>Forecasted gust speed.</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Wind</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -704,7 +704,7 @@
 		<description>Forecasted cloudiness.</description>
 		<category>Sun_Clouds</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
@@ -727,7 +727,7 @@
 		<description>Forecasted rain volume.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -751,7 +751,7 @@
 		<description>Forecasted snow volume.</description>
 		<category>Snow</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -773,7 +773,7 @@
 		<label>Forecasted UV Index</label>
 		<description>Forecasted UV Index.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Ultraviolet</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f"/>
@@ -802,7 +802,7 @@
 		<label>Forecasted Air Quality Index</label>
 		<description>Forecasted air quality index.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f">
 			<options>
@@ -830,7 +830,7 @@
 		<label>Forecasted Particulate Matter - PM2.5</label>
 		<description>Forecasted density of particles less than 2.5 µm in diameter.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -840,7 +840,7 @@
 		<label>Particulate Matter - PM10</label>
 		<description>Current density of particles less than 10 µm in diameter.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -871,7 +871,7 @@
 		<label>Forecasted Carbon Monoxide</label>
 		<description>Forecasted concentration of carbon monoxide.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>CO</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -892,7 +892,7 @@
 		<label>Forecasted Nitrogen Monoxide</label>
 		<description>Forecasted concentration of nitrogen monoxide.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -912,7 +912,7 @@
 		<label>Forecasted Nitrogen Dioxide</label>
 		<description>Forecasted concentration of nitrogen dioxide.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -932,7 +932,7 @@
 		<label>Forecasted Ozone</label>
 		<description>Forecasted concentration of ozone.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -952,7 +952,7 @@
 		<label>Forecasted Sulphur Dioxide</label>
 		<description>Forecasted concentration of sulphur dioxide.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -972,7 +972,7 @@
 		<label>Forecasted Ammonia</label>
 		<description>Forecasted concentration of ammonia.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -993,7 +993,7 @@
 		<description>Forecasted precipitation probability.</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Rain</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
