@@ -112,11 +112,11 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
     protected boolean handleCommandsChannels(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CHANNEL_COMMAND)) {
-            cmds.put(sendCommand(command.toString(), ""), command.toString());
+            cmds.put(sendCommand(command.toString()), channelUID.getId());
             return true;
         }
         if (channelUID.getId().equals(CHANNEL_RPC)) {
-            cmds.put(sendCommand(command.toString(), cloudServer), command.toString());
+            cmds.put(sendCommand(command.toString(), cloudServer), channelUID.getId());
             return true;
         }
         return false;
@@ -553,12 +553,11 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     break;
             }
             if (cmds.containsKey(response.getId())) {
-                if (response.getCloudServer().isBlank()) {
-                    updateState(CHANNEL_COMMAND, new StringType(response.getResponse().toString()));
-                } else {
-                    updateState(CHANNEL_RPC, new StringType(response.getResponse().toString()));
+                String channel = cmds.get(response.getId());
+                if (channel != null && (CHANNEL_COMMAND.contentEquals(channel) || CHANNEL_RPC.contentEquals(channel))) {
+                    updateState(channel, new StringType(response.getResponse().toString()));
+                    cmds.remove(response.getId());
                 }
-                cmds.remove(response.getId());
             }
         } catch (Exception e) {
             logger.debug("Error while handing message {}", response.getResponse(), e);
