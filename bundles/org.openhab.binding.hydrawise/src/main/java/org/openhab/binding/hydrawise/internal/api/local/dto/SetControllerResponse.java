@@ -10,20 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hydrawise.internal.api;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.hydrawise.internal.api.local.dto;
 
 /**
- * Thrown when command responses return a error message
+ * The {@link SetControllerResponse} class models the SetController response message
  *
  * @author Dan Cunningham - Initial contribution
  */
-@NonNullByDefault
-public class HydrawiseCommandException extends Exception {
-    private static final long serialVersionUID = 1L;
+public class SetControllerResponse extends Response {
 
-    public HydrawiseCommandException(String message) {
-        super(message);
-    }
+    public String name;
+
+    public String controllerId;
+
+    public String message;
 }

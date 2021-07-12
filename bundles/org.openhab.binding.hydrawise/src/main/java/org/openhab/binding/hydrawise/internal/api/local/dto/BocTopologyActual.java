@@ -10,20 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hydrawise.internal.api;
+package org.openhab.binding.hydrawise.internal.api.local.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import java.util.List;
 
 /**
- * Thrown when command responses return a error message
+ * The {@link BocTopologyDesired} class models the actual BocTopology
  *
  * @author Dan Cunningham - Initial contribution
  */
-@NonNullByDefault
-public class HydrawiseCommandException extends Exception {
-    private static final long serialVersionUID = 1L;
+public class BocTopologyActual {
 
-    public HydrawiseCommandException(String message) {
-        super(message);
-    }
+    public List<Object> bocGateways;
 }

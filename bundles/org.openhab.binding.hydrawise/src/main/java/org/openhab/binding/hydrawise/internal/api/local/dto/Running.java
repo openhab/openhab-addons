@@ -10,20 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hydrawise.internal.api;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.hydrawise.internal.api.local.dto;
 
 /**
- * Thrown when command responses return a error message
+ * The {@link Running} class models a running relay
  *
  * @author Dan Cunningham - Initial contribution
  */
-@NonNullByDefault
-public class HydrawiseCommandException extends Exception {
-    private static final long serialVersionUID = 1L;
+public class Running {
 
-    public HydrawiseCommandException(String message) {
-        super(message);
-    }
+    public String relay;
+
+    public String relayId;
+
+    public Integer timeLeft;
+
+    public String run;
 }

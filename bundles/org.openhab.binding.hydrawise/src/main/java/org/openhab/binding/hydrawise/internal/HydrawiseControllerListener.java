@@ -10,20 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hydrawise.internal.api;
+package org.openhab.binding.hydrawise.internal;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.hydrawise.internal.api.graphql.dto.Controller;
 
 /**
- * Thrown when command responses return a error message
  *
  * @author Dan Cunningham - Initial contribution
+ *
  */
 @NonNullByDefault
-public class HydrawiseCommandException extends Exception {
-    private static final long serialVersionUID = 1L;
-
-    public HydrawiseCommandException(String message) {
-        super(message);
-    }
+public interface HydrawiseControllerListener {
+    public void onData(List<Controller> controllers);
 }

@@ -14,6 +14,9 @@ package org.openhab.binding.hydrawise.internal;
 
 import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.*;
 
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,13 +24,21 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.hydrawise.internal.discovery.HydrawiseCloudControllerDiscoveryService;
+import org.openhab.binding.hydrawise.internal.handler.HydrawiseAccountHandler;
+import org.openhab.binding.hydrawise.internal.handler.HydrawiseControllerHandler;
+import org.openhab.binding.hydrawise.internal.handler.HydrawiseLocalHandler;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.annotations.Activate;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -40,16 +51,12 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.hydrawise", service = ThingHandlerFactory.class)
 public class HydrawiseHandlerFactory extends BaseThingHandlerFactory {
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(THING_TYPE_ACCOUNT, THING_TYPE_CONTROLLER, THING_TYPE_LOCAL).collect(Collectors.toSet());
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_CLOUD, THING_TYPE_LOCAL)
-            .collect(Collectors.toSet());
-
-    private final HttpClient httpClient;
-
-    @Activate
-    public HydrawiseHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private @NonNullByDefault({}) HttpClient httpClient;
+    private @NonNullByDefault({}) OAuthFactory oAuthFactory;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -60,8 +67,14 @@ public class HydrawiseHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_CLOUD.equals(thingTypeUID)) {
-            return new HydrawiseCloudHandler(thing, httpClient);
+        if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
+            HydrawiseAccountHandler handler = new HydrawiseAccountHandler((Bridge) thing, httpClient, oAuthFactory);
+            registerDiscoveryService(handler);
+            return handler;
+        }
+
+        if (THING_TYPE_CONTROLLER.equals(thingTypeUID)) {
+            return new HydrawiseControllerHandler(thing);
         }
 
         if (THING_TYPE_LOCAL.equals(thingTypeUID)) {
@@ -69,5 +82,46 @@ public class HydrawiseHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
+    }
+
+    @Reference
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = null;
+    }
+
+    @Reference
+    protected void setOAuthFactory(OAuthFactory oAuthFactory) {
+        this.oAuthFactory = oAuthFactory;
+    }
+
+    protected void unsetOAuthFactory(OAuthFactory oAuthFactory) {
+        this.oAuthFactory = null;
+    }
+
+    private synchronized void registerDiscoveryService(HydrawiseAccountHandler handler) {
+        HydrawiseCloudControllerDiscoveryService discoveryService = new HydrawiseCloudControllerDiscoveryService(
+                handler);
+        this.discoveryServiceRegs.put(handler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
+    }
+
+    @Override
+    protected synchronized void removeHandler(ThingHandler handler) {
+        if (handler instanceof HydrawiseAccountHandler) {
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(handler.getThing().getUID());
+            if (serviceReg != null) {
+                // remove discovery service, if bridge handler is removed
+                HydrawiseCloudControllerDiscoveryService service = (HydrawiseCloudControllerDiscoveryService) bundleContext
+                        .getService(serviceReg.getReference());
+                serviceReg.unregister();
+                if (service != null) {
+                    service.deactivate();
+                }
+            }
+        }
     }
 }

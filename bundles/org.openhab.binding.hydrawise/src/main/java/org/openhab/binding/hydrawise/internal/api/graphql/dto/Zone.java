@@ -10,20 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hydrawise.internal.api;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.hydrawise.internal.api.graphql.dto;
 
 /**
- * Thrown when command responses return a error message
- *
  * @author Dan Cunningham - Initial contribution
  */
-@NonNullByDefault
-public class HydrawiseCommandException extends Exception {
-    private static final long serialVersionUID = 1L;
-
-    public HydrawiseCommandException(String message) {
-        super(message);
-    }
+public class Zone {
+    public Integer id;
+    public String name;
+    public ZoneStatus status;
+    public Icon icon;
+    public ZoneNumber number;
+    public ScheduledRuns scheduledRuns;
+    public PastRuns pastRuns;
 }
