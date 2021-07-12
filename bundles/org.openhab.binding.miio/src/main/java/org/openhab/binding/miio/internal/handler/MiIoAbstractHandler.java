@@ -222,16 +222,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     protected int sendCommand(MiIoCommand command, String params) {
-        try {
-            final MiIoAsyncCommunication connection = getConnection();
-            return (connection != null)
-                    ? connection.queueCommand(command, processSubstitutions(params, deviceVariables), getCloudServer())
-                    : 0;
-        } catch (MiIoCryptoException | IOException e) {
-            logger.debug("Command {} for {} failed (type: {}): {}", command.toString(), getThing().getUID(),
-                    getThing().getThingTypeUID(), e.getLocalizedMessage());
-        }
-        return 0;
+        return sendCommand(command.getCommand(), processSubstitutions(params, deviceVariables), getCloudServer(), "");
     }
 
     protected int sendCommand(String commandString) {
@@ -249,20 +240,30 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
      * @return vacuum response
      */
     protected int sendCommand(String commandString, String cloudServer) {
-        final MiIoAsyncCommunication connection = getConnection();
+        String command = commandString.trim();
+        command = processSubstitutions(commandString.trim(), deviceVariables);
+        String param = "[]";
+        int sb = command.indexOf("[");
+        int cb = command.indexOf("{");
+        if (Math.max(sb, cb) > 0) {
+            int loc = (Math.min(sb, cb) > 0 ? Math.min(sb, cb) : Math.max(sb, cb));
+            param = command.substring(loc).trim();
+            command = command.substring(0, loc).trim();
+        }
+        return sendCommand(command, param, cloudServer, "");
+    }
+
+    protected int sendCommand(String command, String params, String cloudServer) {
+        return sendCommand(command, processSubstitutions(params, deviceVariables), cloudServer, "");
+    }
+
+    protected int sendCommand(String command, String params, String cloudServer, String sender) {
         try {
-            String command = commandString.trim();
-            command = processSubstitutions(command, deviceVariables);
-            String param = "[]";
-            int sb = command.indexOf("[");
-            int cb = command.indexOf("{");
-            if (Math.max(sb, cb) > 0) {
-                int loc = (Math.min(sb, cb) > 0 ? Math.min(sb, cb) : Math.max(sb, cb));
-                param = command.substring(loc).trim();
-                command = command.substring(0, loc).trim();
-            }
-            return (connection != null) ? connection.queueCommand(command, param, cloudServer) : 0;
+            final MiIoAsyncCommunication connection = getConnection();
+            return (connection != null) ? connection.queueCommand(command, params, cloudServer, sender) : 0;
         } catch (MiIoCryptoException | IOException e) {
+            logger.debug("Command {} for {} failed (type: {}): {}", command.toString(), getThing().getUID(),
+                    getThing().getThingTypeUID(), e.getLocalizedMessage());
             disconnected(e.getMessage());
         }
         return 0;

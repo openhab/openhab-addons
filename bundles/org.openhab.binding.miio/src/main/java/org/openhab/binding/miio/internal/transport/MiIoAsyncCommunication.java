@@ -129,16 +129,7 @@ public class MiIoAsyncCommunication {
         }
     }
 
-    public int queueCommand(MiIoCommand command, String cloudServer) throws MiIoCryptoException, IOException {
-        return queueCommand(command, "[]", cloudServer);
-    }
-
-    public int queueCommand(MiIoCommand command, String params, String cloudServer)
-            throws MiIoCryptoException, IOException {
-        return queueCommand(command.getCommand(), params, cloudServer);
-    }
-
-    public int queueCommand(String command, String params, String cloudServer)
+    public int queueCommand(String command, String params, String cloudServer, String sender)
             throws MiIoCryptoException, IOException, JsonSyntaxException {
         try {
             JsonObject fullCommand = new JsonObject();
