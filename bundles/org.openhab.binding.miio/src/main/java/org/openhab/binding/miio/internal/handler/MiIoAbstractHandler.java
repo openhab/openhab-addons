@@ -257,6 +257,15 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         return sendCommand(command, processSubstitutions(params, deviceVariables), cloudServer, "");
     }
 
+    /**
+     * Sends commands to the {@link MiIoAsyncCommunication} for transmission to the Mi devices or cloud
+     *
+     * @param command (method) to be queued for execution
+     * @param parameters to be send with the command
+     * @param cloud server to be used or empty string for direct sending to the device
+     * @param sending subdevice or empty string for regular device
+     * @return message id
+     */
     protected int sendCommand(String command, String params, String cloudServer, String sender) {
         try {
             final MiIoAsyncCommunication connection = getConnection();
