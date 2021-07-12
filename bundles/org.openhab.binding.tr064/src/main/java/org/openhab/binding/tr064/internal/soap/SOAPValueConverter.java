@@ -82,6 +82,7 @@ public class SOAPValueConverter {
                 return Optional.empty();
             }
             switch (dataType) {
+                case "ui1":
                 case "ui2":
                     return Optional.of(String.valueOf(value.shortValue()));
                 case "i4":
@@ -92,6 +93,7 @@ public class SOAPValueConverter {
         } else if (command instanceof DecimalType) {
             BigDecimal value = ((DecimalType) command).toBigDecimal();
             switch (dataType) {
+                case "ui1":
                 case "ui2":
                     return Optional.of(String.valueOf(value.shortValue()));
                 case "i4":
@@ -132,6 +134,7 @@ public class SOAPValueConverter {
                     return rawValue.equals("0") ? OnOffType.OFF : OnOffType.ON;
                 case "string":
                     return new StringType(rawValue);
+                case "ui1":
                 case "ui2":
                 case "i4":
                 case "ui4":
