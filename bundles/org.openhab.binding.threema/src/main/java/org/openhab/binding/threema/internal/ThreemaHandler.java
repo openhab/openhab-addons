@@ -66,15 +66,19 @@ public class ThreemaHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(ThreemaConfiguration.class);
-        String gatewayId = config.getGatewayId();
-        if (gatewayId == null || gatewayId.isBlank()) {
+        Optional<String> gatewayId = Optional.ofNullable(config).map(ThreemaConfiguration::getGatewayId)
+                .filter(Objects::nonNull).filter(str -> !str.isBlank());
+
+        if (!gatewayId.isPresent()) {
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Threema gateway ID not configured.");
             return;
         }
 
-        String secret = config.getSecret();
-        if (secret == null || secret.isBlank()) {
+        Optional<String> secret = Optional.ofNullable(config).map(ThreemaConfiguration::getSecret)
+                .filter(Objects::nonNull).filter(str -> !str.isBlank());
+
+        if (!secret.isPresent()) {
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Threema gateway secret not configured.");
             return;
@@ -84,7 +88,7 @@ public class ThreemaHandler extends BaseThingHandler {
         logger.info("Configured recipients: {}", config.getRecipientIds());
 
         apiConnector = Optional.ofNullable(apiConnector)
-                .orElseGet(() -> new APIConnector(gatewayId, secret, new ThreemaKeyStore()));
+                .orElseGet(() -> new APIConnector(gatewayId.get(), secret.get(), new ThreemaKeyStore()));
 
         updateStatus(ThingStatus.UNKNOWN);
 
