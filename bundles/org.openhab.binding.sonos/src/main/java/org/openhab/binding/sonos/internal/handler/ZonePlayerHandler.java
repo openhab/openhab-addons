@@ -1478,7 +1478,45 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public @Nullable String getCodec() {
-        return stateMap.get("HTAudioIn");
+        String codec = stateMap.get("HTAudioIn");
+        switch (codec) {
+            case "0":
+                codec = "No Signal";
+                break;
+            case "21":
+                codec = "No Signal";
+                break;
+            case "22":
+                codec = "Silence";
+                break;
+            case "32":
+                codec = "DTS";
+                break;
+            case "59":
+                codec = "Dolby Atmos";
+                break;
+            case "63":
+                codec = "Dolby Atmos";
+                break;
+            case "33554454":
+                codec = "Silence 2.0";
+                break;
+            case "33554434":
+                codec = "Dolby Digital 2.0";
+                break;
+            case "84934713":
+                codec = "Dolby Digital 5.1";
+                break;
+            case "84934714":
+                codec = "Dolby Digital Plus 5.1";
+                break;
+            case "84934718":
+                codec = "Dolby Multichannel PCM 5.1";
+                break;
+            default:
+                codec = "Unknown - " + codec;
+        }
+        return codec;
     }
 
     public @Nullable String getSubwooferEnabled() {
