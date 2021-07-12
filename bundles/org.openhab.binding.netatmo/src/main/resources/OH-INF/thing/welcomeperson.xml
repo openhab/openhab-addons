@@ -46,6 +46,7 @@
 		<description>Indicates if this person is known to be at home or not</description>
 		<tags>
 			<tag>Switch</tag>
+			<tag>Presence</tag>
 		</tags>
 	</channel-type>
 
