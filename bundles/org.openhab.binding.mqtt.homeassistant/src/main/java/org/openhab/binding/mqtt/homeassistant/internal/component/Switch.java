@@ -10,11 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal;
+package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.homeassistant.internal.config.AbstractChannelConfiguration;
 
 /**
  * A MQTT switch, following the https://www.home-assistant.io/components/switch.mqtt/ specification.
@@ -22,13 +23,13 @@ import org.openhab.binding.mqtt.generic.values.OnOffValue;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentSwitch extends AbstractComponent<ComponentSwitch.ChannelConfiguration> {
+public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
     public static final String switchChannelID = "switch"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class ChannelConfiguration extends BaseChannelConfiguration {
+    static class ChannelConfiguration extends AbstractChannelConfiguration {
         ChannelConfiguration() {
             super("MQTT Switch");
         }
@@ -47,7 +48,7 @@ public class ComponentSwitch extends AbstractComponent<ComponentSwitch.ChannelCo
         protected @Nullable String json_attributes_template;
     }
 
-    public ComponentSwitch(CFactory.ComponentConfiguration componentConfiguration) {
+    public Switch(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
         boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
@@ -66,8 +67,9 @@ public class ComponentSwitch extends AbstractComponent<ComponentSwitch.ChannelCo
                 channelConfiguration.payload_off);
 
         buildChannel(switchChannelID, value, "state", componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)
-                .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain, channelConfiguration.qos)
+                .stateTopic(channelConfiguration.state_topic, channelConfiguration.getValueTemplate())
+                .commandTopic(channelConfiguration.command_topic, channelConfiguration.isRetain(),
+                        channelConfiguration.getQos())
                 .build();
     }
 }

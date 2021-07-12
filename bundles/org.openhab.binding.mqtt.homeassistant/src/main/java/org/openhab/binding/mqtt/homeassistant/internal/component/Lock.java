@@ -10,11 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal;
+package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.homeassistant.internal.config.AbstractChannelConfiguration;
 
 /**
  * A MQTT lock, following the https://www.home-assistant.io/components/lock.mqtt/ specification.
@@ -22,13 +23,13 @@ import org.openhab.binding.mqtt.generic.values.OnOffValue;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentLock extends AbstractComponent<ComponentLock.ChannelConfiguration> {
+public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
     public static final String switchChannelID = "lock"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class ChannelConfiguration extends BaseChannelConfiguration {
+    static class ChannelConfiguration extends AbstractChannelConfiguration {
         ChannelConfiguration() {
             super("MQTT Lock");
         }
@@ -41,7 +42,7 @@ public class ComponentLock extends AbstractComponent<ComponentLock.ChannelConfig
         protected @Nullable String command_topic;
     }
 
-    public ComponentLock(CFactory.ComponentConfiguration componentConfiguration) {
+    public Lock(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
         // We do not support all HomeAssistant quirks
@@ -51,8 +52,10 @@ public class ComponentLock extends AbstractComponent<ComponentLock.ChannelConfig
 
         buildChannel(switchChannelID,
                 new OnOffValue(channelConfiguration.payload_lock, channelConfiguration.payload_unlock),
-                channelConfiguration.name, componentConfiguration.getUpdateListener())
-                        .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)
-                        .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain).build();
+                channelConfiguration.getName(), componentConfiguration.getUpdateListener())
+                        .stateTopic(channelConfiguration.state_topic, channelConfiguration.getValueTemplate())
+                        .commandTopic(channelConfiguration.command_topic, channelConfiguration.isRetain(),
+                                channelConfiguration.getQos())
+                        .build();
     }
 }

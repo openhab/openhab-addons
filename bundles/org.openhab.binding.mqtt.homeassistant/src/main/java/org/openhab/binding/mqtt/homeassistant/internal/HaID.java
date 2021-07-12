@@ -89,7 +89,7 @@ public class HaID {
         this.topic = createTopic(this);
     }
 
-    private static final String createTopic(HaID id) {
+    private static String createTopic(HaID id) {
         StringBuilder str = new StringBuilder();
         str.append(id.baseTopic).append('/').append(id.component).append('/');
         if (!id.nodeID.isBlank()) {
@@ -104,8 +104,8 @@ public class HaID {
      * <p>
      * <code>objectid</code>, <code>nodeid</code>, and <code>component</code> values are fetched from the configuration.
      *
-     * @param baseTopic
-     * @param config
+     * @param baseTopic base topic
+     * @param config config
      * @return newly created HaID
      */
     public static HaID fromConfig(String baseTopic, Configuration config) {
@@ -120,7 +120,7 @@ public class HaID {
      * <p>
      * <code>objectid</code>, <code>nodeid</code>, and <code>component</code> values are added to the configuration.
      *
-     * @param config
+     * @param config config
      * @return the modified configuration
      */
     public Configuration toConfig(Configuration config) {
@@ -139,7 +139,7 @@ public class HaID {
      * The <code>component</code> component in the resulting HaID will be set to <code>+</code>.
      * This enables the HaID to be used as an mqtt subscription topic.
      *
-     * @param config
+     * @param config config
      * @return newly created HaID
      */
     public static Collection<HaID> fromConfig(HandlerConfiguration config) {

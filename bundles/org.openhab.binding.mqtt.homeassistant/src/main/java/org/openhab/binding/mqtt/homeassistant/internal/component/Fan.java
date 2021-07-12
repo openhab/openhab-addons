@@ -10,11 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal;
+package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.homeassistant.internal.config.AbstractChannelConfiguration;
 
 /**
  * A MQTT Fan component, following the https://www.home-assistant.io/components/fan.mqtt/ specification.
@@ -24,13 +25,13 @@ import org.openhab.binding.mqtt.generic.values.OnOffValue;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentFan extends AbstractComponent<ComponentFan.ChannelConfiguration> {
+public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
     public static final String switchChannelID = "fan"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class ChannelConfiguration extends BaseChannelConfiguration {
+    static class ChannelConfiguration extends AbstractChannelConfiguration {
         ChannelConfiguration() {
             super("MQTT Fan");
         }
@@ -41,12 +42,14 @@ public class ComponentFan extends AbstractComponent<ComponentFan.ChannelConfigur
         protected String payload_off = "OFF";
     }
 
-    public ComponentFan(CFactory.ComponentConfiguration componentConfiguration) {
+    public Fan(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
         OnOffValue value = new OnOffValue(channelConfiguration.payload_on, channelConfiguration.payload_off);
-        buildChannel(switchChannelID, value, channelConfiguration.name, componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)
-                .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain).build();
+        buildChannel(switchChannelID, value, channelConfiguration.getName(), componentConfiguration.getUpdateListener())
+                .stateTopic(channelConfiguration.state_topic, channelConfiguration.getValueTemplate())
+                .commandTopic(channelConfiguration.command_topic, channelConfiguration.isRetain(),
+                        channelConfiguration.getQos())
+                .build();
     }
 }
