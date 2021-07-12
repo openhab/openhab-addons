@@ -134,19 +134,15 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             if (thing.getThingTypeUID().equals(SoulissBindingConstants.TOPICS_THING_TYPE)) {
                 continue;
             }
-            // String[] uuidStrings =
-            // thing.getUID().getAsString().split(SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR);
-            // String[] uuidNodeNumber = uuidStrings[0].split(SoulissBindingConstants.UUID_ELEMENTS_SEPARATOR);
-            //
-            // iPosNodeSlot = 2; // if uuid is of type souliss:gateway:[typical]:[node]-[slot] then node/slot is at
-            // // position 2
-            // if (uuidNodeNumber.length > 3) {
-            // iPosNodeSlot = 3;
-            // }
             var cfg = thing.getConfiguration();
-            int thingNode = Integer.parseInt(cfg.getProperties().get("node").toString());
-            if (thingNode > maxNode) {
-                maxNode = thingNode;
+            var props = cfg.getProperties();
+            var pNode = props.get("node");
+            if (pNode != null) {
+                int thingNode = Integer.parseInt(pNode.toString());
+
+                if (thingNode > maxNode) {
+                    maxNode = thingNode;
+                }
             }
             // alla fine la lunghezza della lista sarà uguale al numero di nodi presenti
         }
@@ -211,14 +207,17 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (this.pingScheduler != null) {
-            this.pingScheduler.cancel(true);
+        var localPingScheduler = this.pingScheduler;
+        if (localPingScheduler != null) {
+            localPingScheduler.cancel(true);
         }
-        if (this.subscriptionScheduler != null) {
-            this.subscriptionScheduler.cancel(true);
+        var localSubscriptionScheduler = this.subscriptionScheduler;
+        if (localSubscriptionScheduler != null) {
+            localSubscriptionScheduler.cancel(true);
         }
-        if (this.healthScheduler != null) {
-            this.healthScheduler.cancel(true);
+        var localHealthScheduler = this.healthScheduler;
+        if (localHealthScheduler != null) {
+            localHealthScheduler.cancel(true);
         }
         this.udpExecutorService.shutdownNow();
         super.dispose();

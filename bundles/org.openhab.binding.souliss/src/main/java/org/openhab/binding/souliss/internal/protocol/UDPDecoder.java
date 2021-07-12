@@ -79,8 +79,9 @@ public class UDPDecoder {
     public UDPDecoder(Bridge bridge, @Nullable DiscoverResult pDiscoverResult) {
         this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();
         this.discoverResult = pDiscoverResult;
-        if (this.gwHandler != null) {
-            this.lastByteGatewayIp = (byte) Integer.parseInt(this.gwHandler.gwConfig.gatewayLanAddress.split("\\.")[3]);
+        var localGwHandler = this.gwHandler;
+        if (localGwHandler != null) {
+            this.lastByteGatewayIp = (byte) Integer.parseInt(localGwHandler.gwConfig.gatewayLanAddress.split("\\.")[3]);
         }
     }
 
@@ -184,9 +185,9 @@ public class UDPDecoder {
         int putIn1 = mac.get(1); // not used
         int putIn2 = mac.get(2); // not used
         logger.debug("decodePing: putIn code: {}, {}", putIn1, putIn2);
-
-        if (this.gwHandler != null) {
-            this.gwHandler.gatewayDetected();
+        var localGwHandler = this.gwHandler;
+        if (localGwHandler != null) {
+            localGwHandler.gatewayDetected();
         }
     }
 
@@ -214,8 +215,9 @@ public class UDPDecoder {
      * @param mac
      */
     private void decodeTypRequest(byte lastByteGatewayIP, ArrayList<Byte> mac) {
-        if (this.gwHandler != null) {
-            int typXnodo = this.gwHandler.getMaxTypicalXnode();
+        var localGwHandler = this.gwHandler;
+        if (localGwHandler != null) {
+            int typXnodo = localGwHandler.getMaxTypicalXnode();
 
             byte tgtnode = mac.get(3);
             int numberOf = mac.get(4);
@@ -285,9 +287,9 @@ public class UDPDecoder {
                 fRet = HalfFloatUtils.toFloat(shifted + value[0]);
                 logger.debug("Topic Value (Payload 2 bytes): {}", fRet);
             }
-
-            if (this.gwHandler != null) {
-                var listThings = this.gwHandler.getThing().getThings();
+            var localGwHandler = this.gwHandler;
+            if (localGwHandler != null) {
+                var listThings = localGwHandler.getThing().getThings();
 
                 Boolean bIsPresent = false;
 
@@ -346,10 +348,10 @@ public class UDPDecoder {
         int numberOf = mac.get(4);
 
         for (var i = 5; i < 5 + numberOf; i++) {
-
-            if (this.gwHandler != null) {
+            var localGwHandler = this.gwHandler;
+            if (localGwHandler != null) {
                 // build an array containing healths
-                List<Thing> listaThings = this.gwHandler.getThing().getThings();
+                List<Thing> listaThings = localGwHandler.getThing().getThings();
 
                 ThingHandler handler = null;
                 for (Thing thing : listaThings) {
@@ -374,9 +376,9 @@ public class UDPDecoder {
         int tgtnode = mac.get(3);
 
         Iterator<Thing> thingsIterator = null;
-
-        if (this.gwHandler != null) {
-            thingsIterator = this.gwHandler.getThing().getThings().iterator();
+        var localGwHandler = this.gwHandler;
+        if (localGwHandler != null) {
+            thingsIterator = localGwHandler.getThing().getThings().iterator();
 
             var bFound = false;
             Thing typ = null;

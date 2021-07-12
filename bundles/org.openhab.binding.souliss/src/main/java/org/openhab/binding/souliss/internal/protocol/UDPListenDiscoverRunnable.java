@@ -72,8 +72,9 @@ public class UDPListenDiscoverRunnable implements Runnable {
                 // **************** DECODER ********************
                 logger.debug("Packet received (port {}) {}", socket.getLocalPort(), macacoToString(buf));
 
-                if (decoder != null) {
-                    decoder.decodeVNetDatagram(packet);
+                var localDecoder = this.decoder;
+                if (localDecoder != null) {
+                    localDecoder.decodeVNetDatagram(packet);
                 }
 
             } catch (BindException e) {
