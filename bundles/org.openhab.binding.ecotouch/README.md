@@ -64,7 +64,7 @@ Advanced channels:
 | Channel ID                       | Type                 | Read-Only | Description                                                             |
 |----------------------------------|----------------------|-----------|-------------------------------------------------------------------------|
 | compressor_power                 | Number:Dimensionless | yes       | Percent Power Compressor                                                |
-| coolEnableTemp                   | Number:Temperature   | yes       | Temperature Cooling Enable                                              |
+| coolEnableTemp                   | Number:Temperature   | no        | Temperature Cooling Enable                                              |
 | date_day                         | Number:Dimensionless | yes       | Day                                                                     |
 | date_month                       | Number:Dimensionless | yes       | Month                                                                   |
 | date_year                        | Number:Dimensionless | yes       | Year                                                                    |
