@@ -598,6 +598,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 case "SurroundLevel":
                     updateChannel(SURROUNDTVLEVEL);
                     break;
+                case "HTAudioIn":
+                    updateChannel(CODEC);
+                    break;
                 case "MusicSurroundLevel":
                     updateChannel(SURROUNDMUSICLEVEL);
                     break;
@@ -879,6 +882,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 value = getSurroundTvLevel();
                 if (value != null) {
                     newState = new DecimalType(value);
+                }
+                break;
+            case CODEC:
+                value = getCodec();
+                if (value != null) {
+                    newState = new StringType(value);
                 }
                 break;
             case HEIGHTLEVEL:
@@ -1466,6 +1475,10 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     public @Nullable String getSurroundMusicLevel() {
         return stateMap.get("MusicSurroundLevel");
+    }
+
+    public @Nullable String getCodec() {
+        return stateMap.get("HTAudioIn");
     }
 
     public @Nullable String getSubwooferEnabled() {
