@@ -85,7 +85,7 @@ Advanced channels:
 | maxVLTemp                        | Number:Temperature   | yes       | maxVLTemp                                                               |
 | nviHeizkreisNorm                 | Number:Temperature   | no        | nviHeizkreisNorm                                                        |
 | nviNormAussen                    | Number:Temperature   | no        | nviNormAussen                                                           |
-| nviSollKuehlen                   | Number:Temperature   | yes       | nviSollKuehlen                                                          |
+| nviSollKuehlen                   | Number:Temperature   | no        | nviSollKuehlen                                                          |
 | nviTHeizgrenze                   | Number:Temperature   | no        | nviTHeizgrenze                                                          |
 | nviTHeizgrenzeSoll               | Number:Temperature   | no        | nviTHeizgrenze Setpoint                                                 |
 | operating_hours_circulation_pump | Number:Time          | yes       | Operating Hours Circulation Pump                                        |
