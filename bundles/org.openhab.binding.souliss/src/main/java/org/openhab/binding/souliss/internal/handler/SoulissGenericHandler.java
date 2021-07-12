@@ -72,7 +72,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
             var props = cfg.getProperties();
 
             var pNode = props.get("node");
-            var pSlot = props.get("node");
+            var pSlot = props.get("slot");
 
             if ((pNode != null) && (pSlot != null)) {
                 iNode = Integer.parseInt(pNode.toString());
