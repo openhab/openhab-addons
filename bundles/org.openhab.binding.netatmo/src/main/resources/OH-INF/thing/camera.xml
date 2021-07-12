@@ -129,7 +129,8 @@
 		<label>Floodlight Auto-Mode</label>
 		<description>State of the floodlight auto-mode</description>
 		<tags>
-			<tag>Switch</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 
@@ -139,6 +140,7 @@
 		<description>State of the floodlight</description>
 		<tags>
 			<tag>Switch</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 
