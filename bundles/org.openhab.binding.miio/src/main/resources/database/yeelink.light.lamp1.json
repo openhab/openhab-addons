@@ -133,11 +133,11 @@
 							"label": "Default"
 						},
 						{
-							"value": "1",
+							"value": "2",
 							"label": "CT mode"
 						},
 						{
-							"value": "2",
+							"value": "1",
 							"label": "RGB mode"
 						},
 						{
@@ -172,7 +172,7 @@
 					"Control",
 					"Light"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Default\",\"1\"\u003d\"CT mode\",\"2\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\",\"5\"\u003d\"Night Light mode\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Default\",\"2\"\u003d\"CT mode\",\"1\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\",\"5\"\u003d\"Night Light mode\"]`"
 			},
 			{
 				"property": "name",

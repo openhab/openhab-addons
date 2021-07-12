@@ -183,7 +183,7 @@ public class MiIoBasicChannel {
 
     public Boolean getRefresh() {
         final @Nullable Boolean rf = refresh;
-        return rf != null && rf.booleanValue() && !getProperty().isEmpty();
+        return rf != null && rf.booleanValue();
     }
 
     public void setRefresh(@Nullable Boolean refresh) {
