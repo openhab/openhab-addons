@@ -205,7 +205,7 @@
 	</channel-type>
 	<channel-type id="rainForWeek" advanced="true">
 		<item-type>Number:Length</item-type>
-		<label>Rain For Week</label>
+		<label>Rain for Week</label>
 		<description>Weekly Rain</description>
 		<category>Rain</category>
 		<tags>
