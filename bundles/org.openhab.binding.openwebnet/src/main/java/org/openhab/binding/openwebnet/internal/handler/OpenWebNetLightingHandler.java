@@ -10,22 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openwebnet.handler;
+package org.openhab.binding.openwebnet.internal.handler;
 
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_BRIGHTNESS;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_SWITCH;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_SWITCH_01;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_SWITCH_02;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.THING_TYPE_BUS_DIMMER;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.THING_TYPE_ZB_DIMMER;
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
 
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
+import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
