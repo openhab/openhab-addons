@@ -52,8 +52,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class IpObserverDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
-            Arrays.asList(THING_WEATHER_STATION));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_WEATHER_STATION);
     private ExecutorService discoverySearchPool = scheduler;
     private HttpClient httpClient;
 
