@@ -24,9 +24,9 @@ The Twitter Account Thing requires you to create a Twitter App in the Twitter De
 
 ## Channels
 
-| channel    | type   | description                                |
-|------------|--------|--------------------------------------------|
-| lasttweet  | String | This channel provides Latest Tweet message |
+| channel    | type   | description                                    |
+|------------|--------|------------------------------------------------|
+| lasttweet  | String | This channel provides the Latest Tweet message |
 
 
 ## Full Example
