@@ -25,8 +25,6 @@ import org.openhab.core.thing.Bridge;
 @NonNullByDefault
 public class SoulissGatewayJobPing implements Runnable {
 
-    private final CommonCommands soulissCommands = new CommonCommands();
-
     @Nullable
     private SoulissGatewayHandler gwHandler;
 
@@ -52,7 +50,7 @@ public class SoulissGatewayJobPing implements Runnable {
         // sending ping packet
 
         if (soulissGwHandler.gwConfig.gatewayLanAddress.length() > 0) {
-            soulissCommands.sendPing(soulissGwHandler.gwConfig);
+            CommonCommands.sendPing(soulissGwHandler.gwConfig);
             // ping packet sent
         }
     }

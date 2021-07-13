@@ -231,7 +231,8 @@ public class SendDispatcherRunnable implements Runnable {
                         if (this.gwHandler != null) {
                             localTyp = getHandler(node, iSlot, this.logger);
 
-                            if (localTyp != null) {
+                            if (localTyp != null && localTyp.getThing().getThingTypeUID()
+                                    .equals(SoulissBindingConstants.T11_THING_TYPE)) {
                                 bExpected = localTyp.getExpectedRawState(packetsList.get(i).packet.getData()[j]);
 
                                 // se il valore atteso dal tipico è -1 allora vuol dire che il tipico non supporta la

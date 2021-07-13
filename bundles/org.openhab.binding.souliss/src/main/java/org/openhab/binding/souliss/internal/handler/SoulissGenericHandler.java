@@ -54,8 +54,6 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
 
     Thing thingGeneric;
 
-    private final CommonCommands soulissCommands = new CommonCommands();
-
     private int iSlot;
     private int iNode;
     private final Logger logger = LoggerFactory.getLogger(SoulissGenericHandler.class);
@@ -98,6 +96,13 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         return iNode;
     }
 
+    protected synchronized void commandReadNodeTypsStates() {
+        var gwConfig = getGatewayConfig();
+        if (gwConfig != null) {
+            CommonCommands.sendTypicalRequestFrame(gwConfig, this.getNode(), 1);
+        }
+    }
+
     /**
      * Send a command as hexadecimal, e.g.: SOULISS_T1N_ON_CMD = 0x02; short
      * SOULISS_T1N_OFF_CMD = 0x04;
@@ -107,28 +112,28 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     public void commandSEND(byte command) {
         var gwConfig = getGatewayConfig();
         if (gwConfig != null) {
-            soulissCommands.sendFORCEFrame(gwConfig, this.getNode(), this.getSlot(), command);
+            CommonCommands.sendFORCEFrame(gwConfig, this.getNode(), this.getSlot(), command);
         }
     }
 
     public void commandSendRgb(byte command, byte r, byte g, byte b) {
         var gwConfig = getGatewayConfig();
         if (gwConfig != null) {
-            soulissCommands.sendFORCEFrame(gwConfig, command, r, g, b);
+            CommonCommands.sendFORCEFrame(gwConfig, command, r, g, b);
         }
     }
 
     public void commandSEND(byte command, byte b1, byte b2) {
         var gwConfig = getGatewayConfig();
         if (gwConfig != null) {
-            soulissCommands.sendFORCEFrameT31SetPoint(gwConfig, this.getNode(), this.getSlot(), command, b1, b2);
+            CommonCommands.sendFORCEFrameT31SetPoint(gwConfig, this.getNode(), this.getSlot(), command, b1, b2);
         }
     }
 
     public void commandSEND(byte b1, byte b2) {
         var gwConfig = getGatewayConfig();
         if (gwConfig != null) {
-            soulissCommands.sendFORCEFrameT61SetPoint(gwConfig, this.getNode(), this.getSlot(), b1, b2);
+            CommonCommands.sendFORCEFrameT61SetPoint(gwConfig, this.getNode(), this.getSlot(), b1, b2);
         }
     }
 

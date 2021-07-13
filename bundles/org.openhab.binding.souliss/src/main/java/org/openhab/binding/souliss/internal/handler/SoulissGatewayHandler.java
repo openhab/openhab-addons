@@ -56,8 +56,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> subscriptionScheduler;
     private @Nullable ScheduledFuture<?> healthScheduler;
 
-    private CommonCommands soulissCommands = new CommonCommands();
-
     boolean bGatewayDetected = false;
 
     private @Nullable SoulissGatewayDiscovery discoveryService;
@@ -70,7 +68,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     private Bridge bridge;
 
     private int nodes;
-    private int maxTypicalXnode;
+    private int maxTypicalXnode = 24;
     private int countPingKo = 0;
 
     public GatewayConfig gwConfig = new GatewayConfig();
@@ -102,7 +100,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
                 TimeUnit.SECONDS);
         // JOB SUBSCRIPTION
         var soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(bridge);
-        subscriptionScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 5,
+        subscriptionScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 10,
                 this.gwConfig.subscriptionInterval, TimeUnit.SECONDS);
 
         // JOB HEALTH OF NODES
@@ -119,7 +117,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     }
 
     public void dbStructAnswerReceived() {
-        soulissCommands.sendTypicalRequestFrame(this.gwConfig, nodes);
+        CommonCommands.sendTypicalRequestFrame(this.gwConfig, nodes);
     }
 
     public void setNodes(int nodes) {
@@ -183,7 +181,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     public void sendSubscription() {
         if (this.gwConfig.gatewayLanAddress.length() > 0) {
             int totNodes = getNodes();
-            soulissCommands.sendSUBSCRIPTIONframe(this.gwConfig, totNodes);
+            CommonCommands.sendSUBSCRIPTIONframe(this.gwConfig, totNodes);
 
         }
         logger.debug("Sent subscription packet");
