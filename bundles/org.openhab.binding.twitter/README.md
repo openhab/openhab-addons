@@ -1,17 +1,17 @@
 # Twitter Binding
 
-The Twitter binding allows your home to Tweet, 280 characters at a time. It also supports direct messages and tweeting with media.
+The Twitter binding allows your home to Tweet 280 characters at a time. It also supports direct messages and tweeting with media.
 
 ## Supported Things
 
 ```
-Account - Twitter Account.
+account - Twitter Account.
 
 ```
 
 ## Thing Configuration
 
-The Twitter Account Thing requires you create a Twitter App in the Twitter Developer Page.
+The Twitter Account Thing requires you to create a Twitter App in the Twitter Developer Page.
 
 |   Property        | Default | Required | Description                       |
 |-------------------|---------|:--------:|-----------------------------------|
@@ -24,10 +24,10 @@ The Twitter Account Thing requires you create a Twitter App in the Twitter Devel
 
 ## Channels
 
-```
-Last Tweet - Latest Tweet.
+| channel    | type   | description                                |
+|------------|--------|--------------------------------------------|
+| lasttweet  | String | This channel provides Latest Tweet message |
 
-```
 
 ## Full Example
 

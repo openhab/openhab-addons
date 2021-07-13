@@ -4,6 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Twitter Binding</name>
-	<description>This is the binding for Twitter.</description>
+	<description>Supports adding Thing for getting the Last Tweet. Send Tweets and Pictures with Actions.</description>
 
 </binding:binding>

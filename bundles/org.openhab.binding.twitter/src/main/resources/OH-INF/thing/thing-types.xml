@@ -6,7 +6,7 @@
 
 	<thing-type id="account">
 		<label>Twitter Account</label>
-		<description>Use for sending Tweets</description>
+		<description>Account uses for sending Tweets</description>
 
 		<channels>
 			<channel id="lasttweet" typeId="lasttweet"/>
@@ -39,7 +39,7 @@
 
 	<channel-type id="lasttweet">
 		<item-type>String</item-type>
-		<label>Twitter Last Tweet</label>
+		<label>Last Tweet</label>
 		<description>Users Last Tweet</description>
 		<state readOnly="true"/>
 	</channel-type>

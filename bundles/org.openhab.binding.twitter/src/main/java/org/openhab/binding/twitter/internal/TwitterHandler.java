@@ -15,9 +15,11 @@ package org.openhab.binding.twitter.internal;
 import static org.openhab.binding.twitter.internal.TwitterBindingConstants.CHANNEL_LASTTWEET;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ScheduledFuture;
@@ -31,6 +33,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.twitter.internal.action.TwitterActions;
 import org.openhab.binding.twitter.internal.config.TwitterConfig;
+import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -92,9 +96,10 @@ public class TwitterHandler extends BaseThingHandler {
 
         try {
             // create a New Twitter Client
-            client = createClient();
+            Twitter localClient = createClient();
             // verify client is valid
-            if (client != null) {
+            if (localClient != null) {
+                client = localClient;
                 refresh();// Get latest status
                 isProperlyConfigured = true;
                 refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refresh, TimeUnit.MINUTES);
@@ -104,6 +109,14 @@ public class TwitterHandler extends BaseThingHandler {
             }
         } catch (UnhandledException e) {
             updateStatus(ThingStatus.OFFLINE);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        ScheduledFuture<?> localRefreshTask = refreshTask;
+        if (localRefreshTask != null) {
+            localRefreshTask.cancel(true);
         }
     }
 
@@ -125,7 +138,7 @@ public class TwitterHandler extends BaseThingHandler {
                 logger.debug("No Statuses Found");
             }
         } catch (TwitterException e) {
-            logger.info("Error when trying to refresh Twitter Account: {}", e.getMessage());
+            logger.debug("Error when trying to refresh Twitter Account: {}", e.getMessage());
         }
     }
 
@@ -200,19 +213,31 @@ public class TwitterHandler extends BaseThingHandler {
         File fileToAttach = null;
         boolean deleteTemporaryFile = false;
         if (StringUtils.startsWith(tweetPicture, "http://") || StringUtils.startsWith(tweetPicture, "https://")) {
-            // we have a remote url and need to download the remote file to a temporary location
-            String tDir = System.getProperty("java.io.tmpdir");
-            String path = tDir + File.separator + "openhab-twitter-remote_attached_file" + "."
-                    + FilenameUtils.getExtension(tweetPicture);
+
             try {
-                URL url = new URL(tweetPicture);
+                // we have a remote url and need to download the remote file to a temporary location
+                Path tDir = Files.createTempDirectory("TempDirectory");
+                String path = tDir + File.separator + "openhab-twitter-remote_attached_file" + "."
+                        + FilenameUtils.getExtension(tweetPicture);
+
+                // URL url = new URL(tweetPicture);
                 fileToAttach = new File(path);
                 deleteTemporaryFile = true;
-                FileUtils.copyURLToFile(url, fileToAttach);
-            } catch (MalformedURLException e) {
-                logger.warn("Can't read file from '{}'", tweetPicture, e);
-            } catch (IOException e) {
-                logger.warn("Can't save file from '{}' to '{}'", tweetPicture, path, e);
+
+                RawType tweet_picture = HttpUtil.downloadImage(tweetPicture);
+                if (tweet_picture != null) {
+                    try (FileOutputStream fos = new FileOutputStream(path)) {
+                        fos.write(tweet_picture.getBytes(), 0, tweet_picture.getBytes().length);
+                    } catch (FileNotFoundException ex) {
+                        logger.debug("Could not create {} in temp dir. {}", path, ex.getMessage());
+                    } catch (IOException ex) {
+                        logger.debug("Could not write {} to temp dir. {}", path, ex.getMessage());
+                    }
+                } else {
+                    logger.debug("Could not download tweet file from {}", tweetPicture);
+                }
+            } catch (IOException ex) {
+                logger.debug("Could not write {} to temp dir. {}", tweetPicture, ex.getMessage());
             }
         } else {
             // we have a local file and can just use it directly

@@ -47,7 +47,7 @@ public class TwitterActions implements ThingActions {
 
         final TwitterHandler handler = this.handler;
         if (handler == null) {
-            logger.info("Handler is null, cannot tweet.");
+            logger.debug("Handler is null, cannot tweet.");
             return false;
         } else {
             return handler.sendTweet(text);
@@ -68,7 +68,7 @@ public class TwitterActions implements ThingActions {
 
         final TwitterHandler handler = this.handler;
         if (handler == null) {
-            logger.info("Handler is null, cannot tweet.");
+            logger.debug("Handler is null, cannot tweet.");
             return false;
         } else {
             return handler.sendTweet(text, urlString);
@@ -90,7 +90,7 @@ public class TwitterActions implements ThingActions {
 
         final TwitterHandler handler = this.handler;
         if (handler == null) {
-            logger.info("Handler is null, cannot tweet.");
+            logger.debug("Handler is null, cannot tweet.");
             return false;
         } else {
             return handler.sendDirectMessage(recipient, text);
