@@ -239,17 +239,6 @@ public class WolfSmartsetApi {
         return parameterValues;
     }
 
-    private void startClient() throws WolfSmartsetCloudException {
-        if (!httpClient.isStarted()) {
-            try {
-                httpClient.start();
-            } catch (Exception e) {
-                throw new WolfSmartsetCloudException("No http client cannot be started: " + e.getMessage(), e);
-            }
-        }
-        setDelay(delay);
-    }
-
     public void stopRequestQueue() {
         try {
             stopProcessJob();
@@ -426,7 +415,6 @@ public class WolfSmartsetApi {
                 throw new WolfSmartsetCloudException("Cannot execute request. service token missing");
             }
             loginFailedCounterCheck();
-            startClient();
 
             var requestUrl = getApiUrl() + url;
             Request request = httpClient.newRequest(requestUrl).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
@@ -451,7 +439,6 @@ public class WolfSmartsetApi {
                 throw new WolfSmartsetCloudException("Cannot execute request. service token missing");
             }
             loginFailedCounterCheck();
-            startClient();
 
             var request = createPOSTRequest(url, json);
             request.header(HttpHeader.AUTHORIZATION, serviceToken);
@@ -495,9 +482,8 @@ public class WolfSmartsetApi {
     }
 
     private void processQueue() {
-        if (blockRequestsUntil.isAfter(Instant.now())) {
-            // No new Requests until blockRequestsUntil recieved HttpStatus.TOO_MANY_REQUESTS_429
-        } else {
+        // No new Requests until blockRequestsUntil, is set when recieved HttpStatus.TOO_MANY_REQUESTS_429
+        if (blockRequestsUntil.isBefore(Instant.now())) {
             RequestQueueEntry queueEntry = requestQueue.poll();
             if (queueEntry != null) {
                 queueEntry.completeFuture((r) -> this.getResponse(r));
@@ -553,7 +539,7 @@ public class WolfSmartsetApi {
 
     protected void loginRequest() throws WolfSmartsetCloudException {
         try {
-            startClient();
+            setDelay(delay);
             logger.trace("Wolf Smartset Login");
 
             String url = getApiUrl() + "connect/token";
