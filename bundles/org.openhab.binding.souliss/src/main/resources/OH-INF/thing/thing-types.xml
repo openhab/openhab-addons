@@ -29,7 +29,7 @@
 				<label>Gateway Port</label>
 				<description>Default is 230 UDP.
 				</description>
-				<advanced>true</advanced>				
+				<advanced>true</advanced>
 				<default>230</default>
 				<required>true</required>
 			</parameter>

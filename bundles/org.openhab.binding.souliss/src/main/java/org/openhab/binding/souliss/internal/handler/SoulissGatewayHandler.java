@@ -180,7 +180,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         }
     }
 
-    public synchronized void sendSubscription() {
+    public void sendSubscription() {
         if (this.gwConfig.gatewayLanAddress.length() > 0) {
             int totNodes = getNodes();
             soulissCommands.sendSUBSCRIPTIONframe(this.gwConfig, totNodes);
