@@ -132,6 +132,12 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         String webHookURI = getWebHookURI();
         if (servlet != null && webHookURI != null) {
             getWelcomeApi().ifPresent(api -> {
+                try {
+                    servlet.deactivate();
+                } catch (IllegalArgumentException ignore) {
+                    // There is no option to check if a servlet is already/still registered
+                    // and deactivate throws an IllegalArgumentException when it isn't registered...
+                }
                 servlet.activate(this);
                 logger.debug("Setting up Netatmo Welcome WebHook");
                 api.addwebhook(webHookURI, WEBHOOK_APP);
