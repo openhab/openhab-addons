@@ -13,8 +13,6 @@
 package org.openhab.binding.netatmo.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -23,30 +21,17 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ConnectionStatus {
-    private final Logger logger = LoggerFactory.getLogger(ConnectionStatus.class);
-    private final boolean isConnected;
+    public static ConnectionStatus SUCCESS = new ConnectionStatus("Connected to Netatmo API");
+    public static ConnectionStatus UNKNOWN = new ConnectionStatus("Connection not yet tried");
+
     private final String message;
 
-    private ConnectionStatus(boolean isConnected, String message) {
-        this.isConnected = isConnected;
+    private ConnectionStatus(String message) {
         this.message = message;
-        logger.debug(message);
     }
 
-    static ConnectionStatus Success() {
-        return new ConnectionStatus(true, "Successfully connected to Netatmo API");
-    }
-
-    static ConnectionStatus Failed(String format, Exception e) {
-        return new ConnectionStatus(false, String.format(format, e.getMessage()));
-    }
-
-    static ConnectionStatus Unknown() {
-        return new ConnectionStatus(false, "No connection tried yet.");
-    }
-
-    public boolean isConnected() {
-        return isConnected;
+    static ConnectionStatus Failed(String message, NetatmoException e) {
+        return new ConnectionStatus(String.format(message, e.getMessage()));
     }
 
     public String getMessage() {

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.VENDOR;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -35,10 +35,13 @@ import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.ModuleType.RefreshPolicy;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.dto.NADevice;
+import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
+import org.openhab.binding.netatmo.internal.api.dto.NAPlace;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.config.NetatmoThingConfiguration;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -67,7 +70,7 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
     private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
 
     protected final Map<String, DeviceHandler> dataListeners = new ConcurrentHashMap<>();
-    protected final List<AbstractChannelHelper> channelHelpers;
+    private final List<AbstractChannelHelper> channelHelpers;
 
     protected final NetatmoDescriptionProvider descriptionProvider;
     protected final ApiBridge apiBridge;
@@ -102,10 +105,10 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
     }
 
     @Override
-    public void notifyStatusChange(ConnectionStatus connectionStatus) {
-        if (connectionStatus.isConnected()) {
+    public void statusChanged(ConnectionStatus connectionStatus) {
+        if (connectionStatus == ConnectionStatus.SUCCESS) {
             updateStatus(ThingStatus.ONLINE);
-            scheduler.schedule(() -> scheduleRefreshJob(), 5, TimeUnit.SECONDS);
+            scheduler.schedule(() -> scheduleRefreshJob(), 3, TimeUnit.SECONDS);
         } else {
             freeRefreshJob();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, connectionStatus.getMessage());
@@ -211,9 +214,29 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
         if (firmware != -1) {
             Map<String, String> properties = editProperties();
             ModuleType modelId = naThing.getType();
+            // TODO : These properties will never change
             properties.put(Thing.PROPERTY_VENDOR, VENDOR);
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, Integer.toString(firmware));
             properties.put(Thing.PROPERTY_MODEL_ID, modelId.name());
+            // TODO : These properties can change
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, Integer.toString(firmware));
+            PointType point = null;
+            if (naThing instanceof NAHome) {
+                point = ((NAHome) naThing).getLocation();
+                NAPlace place = ((NAHome) naThing).getPlace();
+                if (place != null) {
+                    properties.put(PROPERTY_CITY, place.getCity());
+                    properties.put(PROPERTY_COUNTRY, place.getCountry());
+                    properties.put(PROPERTY_TIMEZONE, place.getTimezone());
+                }
+            } else if (naThing instanceof NADevice) {
+                NAPlace place = ((NADevice) naThing).getPlace();
+                if (place != null) {
+                    point = place.getLocation();
+                }
+            }
+            if (point != null) {
+                properties.put(PROPERTY_LOCATION, point.toString());
+            }
             updateProperties(properties);
         }
     }
@@ -225,7 +248,7 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
                 strategy.expireData();
             }
             scheduleRefreshJob();
-        }, 3, TimeUnit.SECONDS);
+        }, 2, TimeUnit.SECONDS);
     }
 
     protected void tryApiCall(Callable<Boolean> function) {
@@ -239,6 +262,7 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
 
     private void registerDataListener(String id, DeviceHandler dataListener) {
         getDataListeners().put(id, dataListener);
+        expireData();
     }
 
     private void unregisterDataListener(DeviceHandler dataListener) {
@@ -284,6 +308,6 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
     }
 
     public void reconnectApi() {
-        apiBridge.openConnection();
+        apiBridge.openConnection(null);
     }
 }

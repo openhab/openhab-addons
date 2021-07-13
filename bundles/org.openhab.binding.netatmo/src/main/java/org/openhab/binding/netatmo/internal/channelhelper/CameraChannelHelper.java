@@ -65,7 +65,7 @@ public class CameraChannelHelper extends AbstractChannelHelper {
         return vpnURL == null ? null : String.format("%s%s", vpnURL, LIVE_PICTURE);
     }
 
-    public @Nullable String getLiveStreamURL(NAWelcome camera) {
+    private @Nullable String getLiveStreamURL(NAWelcome camera) {
         String vpnURL = camera.getVpnUrl();
         return vpnURL == null ? null
                 : String.format("%s/live/%s.m3u8", vpnURL, camera.isLocal() ? "index_local" : "index");

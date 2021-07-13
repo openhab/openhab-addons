@@ -60,7 +60,7 @@ public class HomeEnergyChannelHelper extends AbstractChannelHelper {
                     case PROGRAM:
                     case HOME:
                     case SCHEDULE:
-                        NATimeTableItem currentProgramMode = getCurrentProgramMode(localThing.getActiveProgram());
+                        NATimeTableItem currentProgramMode = currentProgramMode(localThing.getActiveProgram());
                         if (currentProgram != null && currentProgramMode != null) {
                             NAZone zone = currentProgram.getZone(String.valueOf(currentProgramMode.getZoneId()));
                             if (zone != null) {
@@ -83,7 +83,7 @@ public class HomeEnergyChannelHelper extends AbstractChannelHelper {
                     case PROGRAM:
                     case HOME:
                     case SCHEDULE:
-                        return toDateTimeType(getNextProgramTime(localThing.getActiveProgram()));
+                        return toDateTimeType(nextProgramTime(localThing.getActiveProgram()));
                     case AWAY:
                     case MANUAL:
                     case FROST_GUARD:

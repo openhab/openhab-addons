@@ -15,7 +15,6 @@ package org.openhab.binding.netatmo.internal.api;
 import static org.openhab.core.library.unit.MetricPrefix.*;
 
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -151,9 +150,6 @@ public class NetatmoConstants {
         ONE_MONTH("1month"),
         UNKNOWN("");
 
-        // private static Map<String, MeasureScale> stringMap = Arrays.stream(values())
-        // .collect(Collectors.toMap(MeasureScale::getDescriptor, Function.identity()));
-
         private final String apiDescriptor;
 
         MeasureScale(String value) {
@@ -163,10 +159,6 @@ public class NetatmoConstants {
         public String getDescriptor() {
             return apiDescriptor;
         }
-
-        // public static @Nullable MeasureScale from(String descriptor) {
-        // return stringMap.get(descriptor);
-        // }
     }
 
     // Token scopes
@@ -227,11 +219,6 @@ public class NetatmoConstants {
 
         public Set<Scope> getScopes() {
             return scopes;
-        }
-
-        public static Set<Scope> allScopes() {
-            return EnumSet.allOf(FeatureArea.class).stream().map(FeatureArea::getScopes).flatMap(Set::stream)
-                    .collect(Collectors.toSet());
         }
     }
 

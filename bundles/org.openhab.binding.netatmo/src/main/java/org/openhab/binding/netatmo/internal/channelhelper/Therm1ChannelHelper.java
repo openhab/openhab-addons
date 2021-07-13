@@ -18,41 +18,31 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NADevice;
-import org.openhab.binding.netatmo.internal.api.dto.NAHome;
-import org.openhab.binding.netatmo.internal.api.dto.NAPlace;
+import org.openhab.binding.netatmo.internal.api.dto.NAThermostat;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.core.library.types.PointType;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link LocationChannelHelper} handle specific behavior
- * of modules using batteries
+ * The {@link Therm1ChannelHelper} handle specific behavior
+ * of the thermostat module
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class LocationChannelHelper extends AbstractChannelHelper {
+public class Therm1ChannelHelper extends AbstractChannelHelper {
 
-    public LocationChannelHelper() {
-        super(Set.of(GROUP_LOCATION));
+    public Therm1ChannelHelper() {
+        super(Set.of(GROUP_TH_PROPERTIES));
     }
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
-        if (CHANNEL_LOCATION.equals(channelId)) {
-            PointType point = null;
-            if (naThing instanceof NAHome) {
-                point = ((NAHome) naThing).getLocation();
-            } else if (naThing instanceof NADevice) {
-                NAPlace place = ((NADevice) naThing).getPlace();
-                if (place != null) {
-                    point = place.getLocation();
-                }
+        if (naThing instanceof NAThermostat) {
+            NAThermostat thermostat = (NAThermostat) naThing;
+            if (CHANNEL_THERM_RELAY.equals(channelId)) {
+                return thermostat.getBoilerStatus();
             }
-            return point != null ? point : UnDefType.UNDEF;
         }
         return null;
     }

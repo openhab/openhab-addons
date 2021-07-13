@@ -27,16 +27,16 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link BatteryHelper} handle specific behavior
+ * The {@link BatteryChannelHelper} handle specific behavior
  * of modules using batteries
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class BatteryHelper extends AbstractChannelHelper {
+public class BatteryChannelHelper extends AbstractChannelHelper {
 
-    public BatteryHelper() {
+    public BatteryChannelHelper() {
         super(Set.of(GROUP_BATTERY, GROUP_ENERGY_BATTERY));
     }
 

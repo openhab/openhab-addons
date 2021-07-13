@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 
 /**
  *
@@ -25,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 @NonNullByDefault
 public class NAThermProgram extends NAObject {
-    private List<NAZone> zones = List.of();
+    private NAObjectMap<NAZone> zones = new NAObjectMap<>();
     private List<NATimeTableItem> timetable = List.of();
     private boolean selected;
 
@@ -37,12 +38,7 @@ public class NAThermProgram extends NAObject {
         return selected;
     }
 
-    // TODO Remove unused code found by UCDetector
-    // public double getZoneTemperature(ThermostatZoneType zone) {
-    // return zones.stream().filter(z -> z.getType() == zone).findFirst().map(NAZone::getTemp).orElse(Double.NaN);
-    // }
-
     public @Nullable NAZone getZone(String id) {
-        return zones.stream().filter(r -> r.getId().equals(id)).findFirst().orElse(null);
+        return zones.get(id);
     }
 }

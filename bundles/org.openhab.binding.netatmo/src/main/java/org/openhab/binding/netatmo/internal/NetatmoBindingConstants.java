@@ -33,7 +33,10 @@ public class NetatmoBindingConstants {
 
     // Things properties
     public static final String PROPERTY_MAX_EVENT_TIME = "last-event";
-
+    public static final String PROPERTY_LOCATION = "location";
+    public static final String PROPERTY_CITY = "city";
+    public static final String PROPERTY_COUNTRY = "country";
+    public static final String PROPERTY_TIMEZONE = "timezone";
     // Channel group ids
     public static final String GROUP_TEMPERATURE = "temperature";
     public static final String GROUP_HUMIDITY = "humidity";
@@ -41,7 +44,6 @@ public class NetatmoBindingConstants {
     public static final String GROUP_NOISE = "noise";
     public static final String GROUP_PRESSURE = "pressure";
     public static final String GROUP_DEVICE = "device";
-    public static final String GROUP_LOCATION = "location";
     public static final String GROUP_RAIN = "rain";
     public static final String GROUP_WIND = "wind";
     public static final String GROUP_HEALTH = "health";
@@ -73,14 +75,12 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_DEWPOINT_DEP = "dewpoint-depression";
     public static final String CHANNEL_HEAT_INDEX = "heat-index";
     public static final String CHANNEL_ABSOLUTE_PRESSURE = "absolute";
-    public static final String CHANNEL_LOCATION = "location";
     public static final String CHANNEL_LAST_SEEN = "last-seen";
     public static final String CHANNEL_LOW_BATTERY = "low-battery";
     public static final String CHANNEL_BATTERY_STATUS = "status";
     public static final String CHANNEL_SIGNAL_STRENGTH = "strength";
     public static final String CHANNEL_SUM_RAIN1 = "sum-1";
     public static final String CHANNEL_SUM_RAIN24 = "sum-24";
-
     public static final String CHANNEL_WIND_ANGLE = "angle";
     public static final String CHANNEL_WIND_STRENGTH = "strength";
     public static final String CHANNEL_MAX_WIND_STRENGTH = "max-strength";
@@ -91,14 +91,10 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_SETPOINT_START_TIME = "start";
     public static final String CHANNEL_SETPOINT_END_TIME = "end";
     public static final String CHANNEL_THERM_RELAY = "relay-status";
-
     public static final String CHANNEL_ANTICIPATING = "anticipating";
     public static final String CHANNEL_ROOM_WINDOW_OPEN = "window-open";
     public static final String CHANNEL_ROOM_HEATING_POWER = "heating-power-request";
     public static final String CHANNEL_PLANNING = "planning";
-    public static final String CHANNEL_HOME_CITY = "city";
-    public static final String CHANNEL_HOME_COUNTRY = "country";
-    public static final String CHANNEL_HOME_TIMEZONE = "timezone";
     public static final String CHANNEL_HOME_PERSONCOUNT = "person-count";
     public static final String CHANNEL_HOME_UNKNOWNCOUNT = "unknown-count";
     public static final String CHANNEL_CAMERA_IS_MONITORING = "is-monitoring";
@@ -120,7 +116,6 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_PERSON_AT_HOME = "at-home";
     public static final String CHANNEL_PERSON_AVATAR = "avatar";
     public static final String CHANNEL_PERSON_AVATAR_URL = "avatar-url";
-
     public static final String CHANNEL_HOME_EVENT = "home-event";
     public static final String CHANNEL_SETPOINT_DURATION = "setpoint-duration";
 

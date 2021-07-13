@@ -92,7 +92,7 @@ public class ApiBridge {
 
     private NetatmoBindingConfiguration configuration = new NetatmoBindingConfiguration();
     private Map<Class<? extends RestManager>, Object> managers = new HashMap<>();
-    private ConnectionStatus connectionStatus = ConnectionStatus.Unknown();
+    private ConnectionStatus connectionStatus = ConnectionStatus.UNKNOWN;
     private List<Scope> grantedScopes = List.of();
 
     @Activate
@@ -124,33 +124,24 @@ public class ApiBridge {
                         })
                 .create();
 
-        modified(BindingUtils.ComponentContextToMap(componentContext));
+        openConnection(BindingUtils.ComponentContextToMap(componentContext));
     }
 
     @Modified
-    protected void modified(Map<String, Object> config) {
-        configuration.update(new Configuration(config).as(NetatmoBindingConfiguration.class));
-        logger.debug("Updated binding configuration to {}", configuration);
-        openConnection();
-    }
-
-    public void openConnection() {
+    public void openConnection(@Nullable Map<String, Object> config) {
         try {
-            configuration.checkIfValid();
+            configuration.update(
+                    config == null ? configuration : new Configuration(config).as(NetatmoBindingConfiguration.class));
+            logger.debug("Updated binding configuration to {}", configuration);
             connectApi.authenticate();
-            setConnectionStatus(ConnectionStatus.Success());
+            connectionStatus = ConnectionStatus.SUCCESS;
         } catch (NetatmoException e) {
-            setConnectionStatus(ConnectionStatus.Failed("Will retry to connect Netatmo API, this one failed : %s", e));
-            scheduler.schedule(() -> openConnection(), configuration.reconnectInterval, TimeUnit.SECONDS);
-        }
-    }
-
-    private void setConnectionStatus(ConnectionStatus status) {
-        connectionStatus = status;
-        if (!connectionStatus.isConnected()) {
+            connectionStatus = ConnectionStatus.Failed("Will retry to connect Netatmo API, this one failed : %s", e);
+            logger.debug(connectionStatus.getMessage());
             onAccessTokenResponse(null, List.of());
+            scheduler.schedule(() -> openConnection(config), configuration.reconnectInterval, TimeUnit.SECONDS);
         }
-        listeners.forEach(listener -> listener.notifyStatusChange(status));
+        listeners.forEach(listener -> listener.statusChanged(connectionStatus));
     }
 
     @SuppressWarnings("unchecked")
@@ -207,8 +198,7 @@ public class ApiBridge {
 
             if (payload != null && (HttpMethod.POST.equals(method) || HttpMethod.PUT.equals(method))) {
                 InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
-                try (final InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(
-                        stream)) {
+                try (InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(stream)) {
                     request.content(inputStreamContentProvider, null);
                 }
                 if (!NetatmoConstants.URL_API.contains(uri.getHost())) {
@@ -260,7 +250,7 @@ public class ApiBridge {
 
     public void addConnectionListener(ConnectionListener listener) {
         listeners.add(listener);
-        listener.notifyStatusChange(connectionStatus);
+        listener.statusChanged(connectionStatus);
     }
 
     public void removeConnectionListener(ConnectionListener listener) {

@@ -57,6 +57,10 @@
 		<item-type>Number</item-type>
 		<label>Person Count</label>
 		<description>Total number of Persons that are at home</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
@@ -159,6 +163,10 @@
 		<label>Measurement Time</label>
 		<description>Timestamp when data was measured</description>
 		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -167,6 +175,10 @@
 		<label>CO2</label>
 		<description>Air Quality</description>
 		<category>carbondioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -175,6 +187,10 @@
 		<label>Noise</label>
 		<description>Current Noise Level</description>
 		<category>soundvolume</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Noise</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -295,6 +311,10 @@
 		<label>Signal</label>
 		<description>Wi-Fi signal strength indicator.</description>
 		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 

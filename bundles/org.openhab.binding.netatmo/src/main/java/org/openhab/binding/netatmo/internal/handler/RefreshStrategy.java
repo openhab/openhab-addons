@@ -35,8 +35,8 @@ public class RefreshStrategy {
     private final Logger logger = LoggerFactory.getLogger(RefreshStrategy.class);
 
     private long dataValidityPeriod;
-    private @Nullable ZonedDateTime dataTimeStamp;
     private boolean searchRefreshInterval;
+    private @Nullable ZonedDateTime dataTimeStamp;
     private @Nullable ZonedDateTime dataTimestamp0;
 
     // By default we create dataTimeStamp to be outdated

@@ -13,7 +13,7 @@
 package org.openhab.binding.netatmo.internal.handler;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.utils.NetatmoCalendarUtils.getSetpointEndTimeFromNow;
+import static org.openhab.binding.netatmo.internal.utils.NetatmoCalendarUtils.setpointEndTimeFromNow;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -237,17 +237,14 @@ public class HomeHandler extends DeviceWithEventHandler {
     }
 
     public void callSetPersonAway(String personId, boolean away) {
-        if (away) {
-            tryApiCall(() -> homeApi.setpersonsaway(config.id, personId));
-        } else {
-            tryApiCall(() -> homeApi.setpersonshome(config.id, personId));
-        }
+        tryApiCall(
+                () -> away ? homeApi.setpersonsaway(config.id, personId) : homeApi.setpersonshome(config.id, personId));
     }
 
     public void callSetRoomThermMode(String roomId, SetpointMode targetMode) {
         energyApi.ifPresent(api -> {
             tryApiCall(() -> api.setRoomThermpoint(config.id, roomId, targetMode,
-                    targetMode == SetpointMode.MAX ? getSetpointEndTimeFromNow(getSetpointDefaultDuration()) : 0, 0));
+                    targetMode == SetpointMode.MAX ? setpointEndTimeFromNow(getSetpointDefaultDuration()) : 0, 0));
         });
     }
 
@@ -260,7 +257,7 @@ public class HomeHandler extends DeviceWithEventHandler {
     public void callSetRoomThermTemp(String roomId, double temperature) {
         energyApi.ifPresent(api -> {
             tryApiCall(() -> api.setRoomThermpoint(config.id, roomId, SetpointMode.MANUAL,
-                    getSetpointEndTimeFromNow(getSetpointDefaultDuration()), temperature));
+                    setpointEndTimeFromNow(getSetpointDefaultDuration()), temperature));
         });
     }
 

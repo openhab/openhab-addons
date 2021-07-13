@@ -154,7 +154,6 @@ Number Netatmo_Indoor_CO2 "CO2" <carbondioxide> { channel = "netatmo:NAMain:home
 | timestamp           | DateTime             | Timestamp when data was measured                         |
 | last-seen            | DateTime             | Last status store                                        |
 | signal-strength     | Number               | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
-| location            | Location             | Location of the device                                   |
 
 All these channels are read only.
 
@@ -315,7 +314,6 @@ String Netatmo_LivingRoom_HomeCoach_HealthIndex "Climate" { channel = "netatmo:N
 | timestamp           | DateTime             | Timestamp when data was measured                                        |
 | last-seen            | DateTime             | Last status store                                                       |
 | RadioStatus         | Number               | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
-| location            | Location             | Location of the device                                                  |
 
 All these channels are read only.
 
@@ -527,7 +525,6 @@ DateTime             Indoor_Min_Noise_TS               "Min Noise Today [%1$td.%
 DateTime             Indoor_Max_Noise_TS               "Max Noise Today [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"            <calendar>         { channel = "netatmo:NAMain:home:inside:DateMaxNoise" }
 Number               Indoor_RadioStatus                 "RadioStatus [%s]"                                            <signal>           { channel = "netatmo:NAMain:home:inside:RadioStatus" }
 DateTime             Indoor_TimeStamp                  "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                  <calendar>         { channel = "netatmo:NAMain:home:inside:timestamp" }
-Location             Indoor_Location                   "Location"                                                   <movecontrol>      { channel = "netatmo:NAMain:home:inside:location" }
 DateTime             Indoor_LastSeen            "LastSeen [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"            <text>             { channel = "netatmo:NAMain:home:inside:last-seen" }
 
 # Outdoor Module
@@ -591,7 +588,6 @@ sitemap netatmo label="Netatmo" {
         Text item=Indoor_Max_Noise_TS
         Text item=Indoor_WifiStatus
         Text item=Indoor_TimeStamp
-        Text item=Indoor_Location
         Text item=Indoor_LastSeen
     }
     Frame label="Outdoor" { 

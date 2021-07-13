@@ -35,50 +35,6 @@ public class SecurityApi extends RestManager {
         super(apiClient, FeatureArea.SECURITY);
     }
 
-    // /**
-    // *
-    // * Returns information about users homes and cameras.
-    // *
-    // * @param homeId Specify if you're looking for the events of a specific Home. (optional)
-    // * @param size Number of events to retrieve. Default is 30. (optional)
-    // * @return NAWelcomeHomeDataResponse
-    // * @throws NetatmoException If fail to call the API, e.g. server error or cannot deserialize the
-    // * response body
-    // */
-    // private NAObjectMap<NAHome> getWelcomeData(@Nullable String homeId) throws NetatmoException {
-    // // String req = "gethomedata";
-    // // if (homeId != null) {
-    // // req += "?home_id=" + homeId;
-    // // }
-    // // NAHomesDataResponse response = get(req, NAHomesDataResponse.class);
-    // // return response;
-    //
-    // UriBuilder apiUriBuilder = getApiUriBuilder();
-    // apiUriBuilder = apiUriBuilder.path(NA_GETHOMEDATA_SPATH);
-    //
-    // if (homeId != null) {
-    // apiUriBuilder.queryParam(NA_HOMEID_PARAM, homeId);
-    // }
-    // NAHomesDataResponse response = get(apiUriBuilder.build(), NAHomesDataResponse.class);
-    // return response.getBody();
-    // }
-
-    // public NAHome getWelcomeHomeData(String homeId) throws NetatmoException {
-    // // NAHomesDataResponse response = getWelcomeData(homeId);
-    // // return response.getBody().getHomes().get(0);
-    //
-    // NAObjectMap<NAHome> homeList = getHomeData(null);
-    // NAHome home = homeList.get(homeId);
-    // if (home != null) {
-    // return home;
-    // }
-    // throw new NetatmoException(String.format("Home %s was not found", homeId));
-    // }
-
-    // public NAHomeData getWelcomeDataBody() throws NetatmoException {
-    // return getWelcomeData(null).getBody();
-    // }
-
     /**
      *
      * Dissociates a webhook from a user.

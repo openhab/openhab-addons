@@ -25,17 +25,17 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
 /**
- * The {@link SignalHelper} handle specific behavior
+ * The {@link SignalChannelHelper} handle specific behavior
  * of WIFI or RF devices and modules
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class SignalHelper extends AbstractChannelHelper {
+public class SignalChannelHelper extends AbstractChannelHelper {
     private final int[] levels;
 
-    public SignalHelper(int[] signalLevels) {
+    public SignalChannelHelper(int[] signalLevels) {
         super(Set.of(GROUP_SIGNAL));
         this.levels = signalLevels;
     }

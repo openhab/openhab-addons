@@ -14,8 +14,10 @@ package org.openhab.binding.netatmo.internal.api;
 
 import static org.openhab.core.auth.oauth2client.internal.Keyword.*;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -24,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.api.dto.NAAccessTokenResponse;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
 import org.slf4j.Logger;
@@ -36,8 +39,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class AuthenticationApi extends RestManager {
-    private static final String ALL_SCOPES = FeatureArea.allScopes().stream().map(s -> s.name().toLowerCase())
-            .collect(Collectors.joining(" "));
+    private static final String ALL_SCOPES = EnumSet.allOf(FeatureArea.class).stream().map(FeatureArea::getScopes)
+            .flatMap(Set::stream).map(Scope::name).map(String::toLowerCase).collect(Collectors.joining(" "));
 
     private final Logger logger = LoggerFactory.getLogger(AuthenticationApi.class);
     private final NetatmoBindingConfiguration configuration;
@@ -51,10 +54,9 @@ class AuthenticationApi extends RestManager {
     }
 
     void authenticate() throws NetatmoException {
-        Map<String, @Nullable String> payload = new HashMap<>();
+        Map<String, @Nullable String> payload = new HashMap<>(Map.of(SCOPE, ALL_SCOPES));
         payload.put(PASSWORD, configuration.password);
         payload.put(USERNAME, configuration.username);
-        payload.put(SCOPE, ALL_SCOPES);
         requestToken(getPayload(PASSWORD, payload));
     }
 
@@ -67,7 +69,7 @@ class AuthenticationApi extends RestManager {
                 requestToken(getPayload(REFRESH_TOKEN, Map.of(REFRESH_TOKEN, answer.getRefreshToken())));
             } catch (NetatmoException e) {
                 logger.warn("Unable to refresh access token : {}, trying to reopen connection.", e);
-                apiHandler.openConnection();
+                apiHandler.openConnection(null);
             }
         }, Math.round(answer.getExpiresIn() * 0.8), TimeUnit.SECONDS);
     }

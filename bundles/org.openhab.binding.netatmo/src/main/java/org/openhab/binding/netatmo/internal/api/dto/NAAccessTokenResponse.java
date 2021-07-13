@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Objects;
 
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
 
@@ -24,29 +22,18 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public final class NAAccessTokenResponse implements Serializable, Cloneable {
-
-    /**
-     * For Serializable
-     */
-    private static final long serialVersionUID = 5512401378281693003L;
+public final class NAAccessTokenResponse {
 
     /**
      * The access token issued by the authorization server. It is used
      * by the client to gain access to a resource.
      *
-     * <p>
-     * This token must be confidential in transit and storage.
-     *
-     * @see <a href="https://tools.ietf.org/html/rfc6749#section-1.4">rfc6749 section-1.4</a>
-     * @see <a href="https://tools.ietf.org/html/rfc6749#section-10.3">rfc6749 section-10.3</a>
      */
     private String accessToken;
 
     /**
      * Number of seconds that this OAuthToken is valid for since the time it was created.
      *
-     * @see <a href="https://tools.ietf.org/html/rfc6749#section-4.2.2">rfc6749 section-4.2.2</a>
      */
     private long expiresIn;
 
@@ -56,11 +43,6 @@ public final class NAAccessTokenResponse implements Serializable, Cloneable {
      * intended for use only with authorization servers and are never sent
      * to resource servers.
      *
-     * <p>
-     * This token must be confidential in transit and storage.
-     *
-     * @see <a href="https://tools.ietf.org/html/rfc6749#section-1.5">rfc6749 section-1.5</a>
-     * @see <a href="https://tools.ietf.org/html/rfc6749#section-10.4">rfc6749 section-10.4</a>
      */
     private String refreshToken;
 
@@ -74,47 +56,12 @@ public final class NAAccessTokenResponse implements Serializable, Cloneable {
         return expiresIn;
     }
 
-    public void setExpiresIn(long expiresIn) {
-        this.expiresIn = expiresIn;
-    }
-
     public String getRefreshToken() {
         return refreshToken;
     }
 
     public List<Scope> getScope() {
         return scope;
-    }
-
-    @Override
-    public Object clone() {
-        try {
-            return super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new IllegalStateException("not possible", e);
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(accessToken, expiresIn, refreshToken, scope);
-    }
-
-    @Override
-    public boolean equals(Object thatAuthTokenObj) {
-        if (this == thatAuthTokenObj) {
-            return true;
-        }
-
-        // Exact match since class is final
-        if (thatAuthTokenObj == null || !this.getClass().equals(thatAuthTokenObj.getClass())) {
-            return false;
-        }
-
-        NAAccessTokenResponse that = (NAAccessTokenResponse) thatAuthTokenObj;
-
-        return Objects.equals(this.accessToken, that.accessToken) && Objects.equals(this.expiresIn, that.expiresIn)
-                && Objects.equals(this.refreshToken, that.refreshToken) && Objects.equals(this.scope, that.scope);
     }
 
     @Override

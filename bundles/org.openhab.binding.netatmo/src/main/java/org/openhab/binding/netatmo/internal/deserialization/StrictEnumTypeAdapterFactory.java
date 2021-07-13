@@ -26,30 +26,26 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 /**
- * This enforces a fallback to UNKNOWN when deserializing enum types, marked as
- *
- * @NonNull whereas they were valued to null if the appropriate value is absent.
- *          It will give more resilience to the binding when Netatmo API evolves.
+ * This enforces a fallback to UNKNOWN when deserializing enum types, marked as @NonNull whereas
+ * they were valued to null if the appropriate value is absent.
+ * It will give more resilience to the binding when Netatmo API evolves.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class StrictEnumTypeAdapterFactory implements TypeAdapterFactory {
+    private static final StringReader UNKNOWN = new StringReader("\"UNKNOWN\"");
 
     @Override
     public @Nullable <T> TypeAdapter<T> create(@NonNullByDefault({}) Gson gson,
             @NonNullByDefault({}) TypeToken<T> type) {
         @SuppressWarnings("unchecked")
         Class<T> rawType = (Class<T>) type.getRawType();
-        if (rawType.isEnum()) {
-            return newStrictEnumAdapter(gson.getDelegateAdapter(this, type));
-        }
-        return null;
+        return rawType.isEnum() ? newStrictEnumAdapter(gson.getDelegateAdapter(this, type)) : null;
     }
 
-    private <T> TypeAdapter<T> newStrictEnumAdapter(final TypeAdapter<T> delegateAdapter) {
+    private <T> TypeAdapter<T> newStrictEnumAdapter(TypeAdapter<T> delegateAdapter) {
         return new TypeAdapter<T>() {
-
             @Override
             public void write(JsonWriter out, @Nullable T value) throws IOException {
                 delegateAdapter.write(out, value);
@@ -57,13 +53,13 @@ public class StrictEnumTypeAdapterFactory implements TypeAdapterFactory {
 
             @Override
             public @Nullable T read(JsonReader in) throws IOException {
-                String enumValue = in.nextString();
-                JsonReader delegateReader = new JsonReader(new StringReader('"' + enumValue + '"'));
+                JsonReader delegateReader = new JsonReader(new StringReader('"' + in.nextString() + '"'));
                 T value = delegateAdapter.read(delegateReader);
-                if (value == null) {
-                    value = delegateAdapter.read(new JsonReader(new StringReader("\"UNKNOWN\"")));
-                }
                 delegateReader.close();
+                if (value == null) {
+                    UNKNOWN.reset();
+                    value = delegateAdapter.read(new JsonReader(UNKNOWN));
+                }
                 return value;
             }
         };

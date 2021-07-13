@@ -30,11 +30,4 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="location">
-		<label>Location Data</label>
-		<channels>
-			<channel id="location" typeId="system.location"/>
-		</channels>
-	</channel-group-type>
-
 </thing:thing-descriptions>

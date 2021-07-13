@@ -63,10 +63,6 @@ public class NAHome extends NADevice {
         return rooms;
     }
 
-    // public @Nullable NARoom getRoom(String id) {
-    // return rooms.stream().filter(r -> r.getId().equals(id)).findFirst().orElse(null);
-    // }
-
     public List<NAThermProgram> getThermSchedules() {
         return schedules;
     }

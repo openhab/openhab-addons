@@ -12,18 +12,6 @@
 				<label>Unknown Persons</label>
 				<description>Count how many Unknown Persons are at home</description>
 			</channel>
-			<channel id="city" typeId="string-ro">
-				<label>City</label>
-				<description>City of the home</description>
-			</channel>
-			<channel id="country" typeId="string-ro">
-				<label>Country</label>
-				<description>Country of the home</description>
-			</channel>
-			<channel id="timezone" typeId="string-ro">
-				<label>Timezone</label>
-				<description>Timezone of the home</description>
-			</channel>
 			<channel id="home-event" typeId="home-event"/>
 		</channels>
 	</channel-group-type>

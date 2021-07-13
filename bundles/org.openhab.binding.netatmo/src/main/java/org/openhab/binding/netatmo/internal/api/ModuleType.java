@@ -30,7 +30,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThermostat;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.api.dto.NAWelcome;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
-import org.openhab.binding.netatmo.internal.channelhelper.BatteryHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.BatteryChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.CameraChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.Co2ChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.DeviceChannelHelper;
@@ -38,7 +38,6 @@ import org.openhab.binding.netatmo.internal.channelhelper.HomeCoachChannelHelper
 import org.openhab.binding.netatmo.internal.channelhelper.HomeEnergyChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.HomeSecurityChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.HumidityChannelHelper;
-import org.openhab.binding.netatmo.internal.channelhelper.LocationChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.MeasuresChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.NoiseChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.PersonChannelHelper;
@@ -48,7 +47,7 @@ import org.openhab.binding.netatmo.internal.channelhelper.RainChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.RoomChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.RoomSetpointChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.TemperatureChannelHelper;
-import org.openhab.binding.netatmo.internal.channelhelper.Therm1PropsChannelHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.Therm1ChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.WindChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.CameraHandler;
 import org.openhab.binding.netatmo.internal.handler.DeviceHandler;
@@ -89,25 +88,25 @@ public enum ModuleType {
     NAMain(MainHandler.class, RefreshPolicy.AUTO, FeatureArea.WEATHER, null, List.of("measure", "measure-timestamp"),
             List.of(PressureChannelHelper.class, NoiseChannelHelper.class, HumidityChannelHelper.class,
                     TemperatureChannelHelper.class, Co2ChannelHelper.class, DeviceChannelHelper.class,
-                    MeasuresChannelHelper.class, LocationChannelHelper.class),
+                    MeasuresChannelHelper.class),
             List.of(GROUP_TEMPERATURE, GROUP_HUMIDITY, GROUP_CO2, GROUP_NOISE, GROUP_PRESSURE, GROUP_DEVICE,
-                    GROUP_SIGNAL, GROUP_LOCATION),
+                    GROUP_SIGNAL),
             NAThing.class),
     NAModule1(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain,
             List.of("measure", "measure-timestamp"),
-            List.of(HumidityChannelHelper.class, TemperatureChannelHelper.class, BatteryHelper.class,
+            List.of(HumidityChannelHelper.class, TemperatureChannelHelper.class, BatteryChannelHelper.class,
                     MeasuresChannelHelper.class),
             List.of(GROUP_TEMPERATURE, GROUP_HUMIDITY, GROUP_SIGNAL, GROUP_BATTERY), NAModule.class),
     NAModule2(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain, List.of(),
-            List.of(WindChannelHelper.class, BatteryHelper.class), List.of(GROUP_WIND, GROUP_SIGNAL, GROUP_BATTERY),
-            NAModule.class),
+            List.of(WindChannelHelper.class, BatteryChannelHelper.class),
+            List.of(GROUP_WIND, GROUP_SIGNAL, GROUP_BATTERY), NAModule.class),
     NAModule3(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain, List.of("sum-rain"),
-            List.of(RainChannelHelper.class, BatteryHelper.class, MeasuresChannelHelper.class),
+            List.of(RainChannelHelper.class, BatteryChannelHelper.class, MeasuresChannelHelper.class),
             List.of(GROUP_RAIN, GROUP_SIGNAL, GROUP_BATTERY), NAModule.class),
     NAModule4(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain,
             List.of("measure", "measure-timestamp"),
             List.of(HumidityChannelHelper.class, TemperatureChannelHelper.class, Co2ChannelHelper.class,
-                    BatteryHelper.class, MeasuresChannelHelper.class),
+                    BatteryChannelHelper.class, MeasuresChannelHelper.class),
             List.of(GROUP_TEMPERATURE, GROUP_HUMIDITY, GROUP_CO2, GROUP_SIGNAL, GROUP_BATTERY), NAModule.class),
 
     // Aircare Features
@@ -123,13 +122,13 @@ public enum ModuleType {
     NAPlug(DeviceHandler.class, RefreshPolicy.PARENT, FeatureArea.ENERGY, NAHome, List.of(), List.of(),
             List.of(GROUP_SIGNAL), NAModule.class),
     NATherm1(DeviceHandler.class, RefreshPolicy.CONFIG, FeatureArea.ENERGY, NAHome, List.of(),
-            List.of(Therm1PropsChannelHelper.class, BatteryHelper.class),
+            List.of(Therm1ChannelHelper.class, BatteryChannelHelper.class),
             List.of(GROUP_TH_PROPERTIES, GROUP_SIGNAL, GROUP_ENERGY_BATTERY), NAThermostat.class),
     NARoom(RoomHandler.class, RefreshPolicy.PARENT, FeatureArea.ENERGY, NAHome, List.of(),
             List.of(RoomChannelHelper.class, RoomSetpointChannelHelper.class),
             List.of(GROUP_ROOM_PROPERTIES, GROUP_TH_SETPOINT, GROUP_ROOM_TEMPERATURE), NARoom.class),
-    NRV(DeviceHandler.class, RefreshPolicy.CONFIG, FeatureArea.ENERGY, NAHome, List.of(), List.of(BatteryHelper.class),
-            List.of(GROUP_ENERGY_BATTERY, GROUP_SIGNAL), NAModule.class),
+    NRV(DeviceHandler.class, RefreshPolicy.CONFIG, FeatureArea.ENERGY, NAHome, List.of(),
+            List.of(BatteryChannelHelper.class), List.of(GROUP_ENERGY_BATTERY, GROUP_SIGNAL), NAModule.class),
 
     // Left for future implementation
     // NACamDoorTag : self explaining

@@ -40,15 +40,6 @@ public abstract class RestManager {
     private final Set<Scope> requiredScopes;
     protected final ApiBridge apiHandler;
 
-    // public RestManager(ApiBridge apiHandler) {
-    // this(apiHandler, Collections.emptySet());
-    // }
-
-    // public RestManager(ApiBridge apiHandler, Set<Scope> requiredScopes) {
-    // this.apiHandler = apiHandler;
-    // this.requiredScopes = requiredScopes;
-    // }
-
     public RestManager(ApiBridge apiHandler, FeatureArea features) {
         this.apiHandler = apiHandler;
         this.requiredScopes = features.getScopes();

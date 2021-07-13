@@ -32,7 +32,7 @@ public class NetatmoBindingConfiguration {
     public int reconnectInterval = 5400;
     private boolean backgroundDiscovery;
 
-    public void update(NetatmoBindingConfiguration newConfiguration) {
+    public void update(NetatmoBindingConfiguration newConfiguration) throws NetatmoException {
         this.clientId = newConfiguration.clientId;
         this.clientSecret = newConfiguration.clientSecret;
         this.username = newConfiguration.username;
@@ -40,24 +40,15 @@ public class NetatmoBindingConfiguration {
         this.webHookUrl = newConfiguration.webHookUrl;
         this.reconnectInterval = newConfiguration.reconnectInterval;
         this.backgroundDiscovery = newConfiguration.backgroundDiscovery;
+        checkMandatory(clientId, "@text/conf-error-no-client-id");
+        checkMandatory(username, "@text/conf-error-no-username");
+        checkMandatory(password, "@text/conf-error-no-password");
+        checkMandatory(clientSecret, "@text/conf-error-no-client-secret");
     }
 
-    public void checkIfValid() throws NetatmoException {
-        String clientId = this.clientId;
-        if (clientId == null || clientId.isEmpty()) {
-            throw new NetatmoException("@text/conf-error-no-client-id");
-        }
-        String username = this.username;
-        if (username == null || username.isEmpty()) {
-            throw new NetatmoException("@text/conf-error-no-username");
-        }
-        String password = this.password;
-        if (password == null || password.isEmpty()) {
-            throw new NetatmoException("@text/conf-error-no-password");
-        }
-        String clientSecret = this.clientSecret;
-        if (clientSecret == null || clientSecret.isEmpty()) {
-            throw new NetatmoException("@text/conf-error-no-client-secret");
+    private void checkMandatory(@Nullable String confElement, String error) throws NetatmoException {
+        if (confElement == null || confElement.isEmpty()) {
+            throw new NetatmoException(error);
         }
     }
 }

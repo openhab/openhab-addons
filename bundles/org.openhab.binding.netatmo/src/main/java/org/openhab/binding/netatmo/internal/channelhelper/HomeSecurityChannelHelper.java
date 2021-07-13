@@ -13,7 +13,6 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
 
 import java.util.List;
 import java.util.Set;
@@ -23,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAPerson;
-import org.openhab.binding.netatmo.internal.api.dto.NAPlace;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
@@ -72,12 +70,6 @@ public class HomeSecurityChannelHelper extends AbstractChannelHelper {
         } else if (CHANNEL_HOME_UNKNOWNCOUNT.equals(channelId)) {
             return unknowns != -1 ? new DecimalType(unknowns) : UnDefType.UNDEF;
         }
-
-        NAHome localThing = (NAHome) naThing;
-        NAPlace place = localThing.getPlace();
-        return place == null ? null
-                : CHANNEL_HOME_CITY.equals(channelId) ? toStringType(place.getCity())
-                        : CHANNEL_HOME_COUNTRY.equals(channelId) ? toStringType(place.getCountry())
-                                : CHANNEL_HOME_TIMEZONE.equals(channelId) ? toStringType(place.getTimezone()) : null;
+        return null;
     }
 }

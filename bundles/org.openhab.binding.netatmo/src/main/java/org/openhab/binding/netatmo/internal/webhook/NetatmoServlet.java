@@ -166,11 +166,7 @@ public class NetatmoServlet extends HttpServlet {
     }
 
     public void unregisterDataListener(DeviceWithEventHandler dataListener) {
-        dataListeners.entrySet().forEach(entry -> {
-            if (entry.getValue().equals(dataListener)) {
-                dataListeners.remove(entry.getKey());
-            }
-        });
+        dataListeners.entrySet().removeIf(entry -> entry.getValue().equals(dataListener));
     }
 
     private String inputStreamToString(InputStream is) throws IOException {
