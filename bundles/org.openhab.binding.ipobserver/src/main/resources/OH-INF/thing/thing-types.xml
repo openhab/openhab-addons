@@ -177,14 +177,14 @@
 	<channel-type id="windMaxGust" advanced="true">
 		<item-type>Number:Speed</item-type>
 		<label>Wind Max Gust</label>
-		<description>Max wind gust for today.</description>
+		<description>Max wind gust for today</description>
 		<category>Wind</category>
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainHourlyRate">
 		<item-type>Number:Length</item-type>
 		<label>Rain Hourly Rate</label>
-		<description>How much rain will fall in an Hour if the rate continues.</description>
+		<description>How much rain will fall in an Hour if the rate continues</description>
 		<category>Rain</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -216,8 +216,8 @@
 	</channel-type>
 	<channel-type id="rainForMonth" advanced="true">
 		<item-type>Number:Length</item-type>
-		<label>Rain For Month</label>
-		<description>Rain since 12:00 on the 1st of this month.</description>
+		<label>Rain for Month</label>
+		<description>Rain since 12:00 on the 1st of this month</description>
 		<category>Rain</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -227,8 +227,8 @@
 	</channel-type>
 	<channel-type id="rainForYear">
 		<item-type>Number:Length</item-type>
-		<label>Rain For Year</label>
-		<description>Total rain since 12:00 on 1st Jan.</description>
+		<label>Rain for Year</label>
+		<description>Total rain since 12:00 on 1st Jan</description>
 		<category>Rain</category>
 		<tags>
 			<tag>Measurement</tag>
