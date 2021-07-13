@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -61,6 +62,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -479,8 +481,17 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     protected String processSubstitutions(String cmd, Map<String, Object> deviceVariables) {
-        String returnCmd = cmd;
+        if (!cmd.contains("$")) {
+            return cmd;
+        }
+        String returnCmd = cmd.replace("\"$", "$").replace("$\"", "$");
         String cmdParts[] = cmd.split("\\$");
+        if (logger.isTraceEnabled()) {
+            logger.debug("processSubstitutions {} ", cmd);
+            for (Entry<String, Object> e : deviceVariables.entrySet()) {
+                logger.debug("key, value:  {}  -> {}", e.getKey(), e.getValue());
+            }
+        }
         for (String substitute : cmdParts) {
             if (deviceVariables.containsKey(substitute)) {
                 String replacementString = "";
@@ -492,6 +503,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 if (replacement instanceof Integer || replacement instanceof Long || replacement instanceof Double
                         || replacement instanceof BigDecimal || replacement instanceof Boolean) {
                     replacementString = replacement.toString();
+                } else if (replacement instanceof JsonPrimitive) {
+                    replacementString = ((JsonPrimitive) replacement).getAsString();
                 } else if (replacement instanceof String) {
                     replacementString = "\"" + (String) replacement + "\"";
                 } else {

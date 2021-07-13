@@ -157,14 +157,38 @@
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_power",
-						"parameterType": "NUMBER",
+						"command": "set_rgb",
+						"parameterType": "NONE",
 						"parameters": [
-							"on",
+							"$rgb$",
 							"smooth",
-							500,
-							"$value$"
-						]
+							500
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "1"
+								}
+							]
+						}
+					},
+					{
+						"command": "set_ct_abx",
+						"parameterType": "NONE",
+						"parameters": [
+							"$ct$",
+							"smooth",
+							500
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "2"
+								}
+							]
+						}
 					}
 				],
 				"category": "settings",
@@ -172,7 +196,7 @@
 					"Control",
 					"Light"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Default\",\"2\"\u003d\"CT mode\",\"1\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\",\"5\"\u003d\"Night Light mode\"]`"
+				"readmeComment": "Note, currently only supporting switching to RGB or CT mode. Value mapping `[\"0\"\u003d\"Default\",\"2\"\u003d\"CT mode\",\"1\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\",\"5\"\u003d\"Night Light mode\"]`"
 			},
 			{
 				"property": "name",
