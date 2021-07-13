@@ -195,7 +195,7 @@
 	<channel-type id="rainToday">
 		<item-type>Number:Length</item-type>
 		<label>Rain Today</label>
-		<description>Rain since Midnight.</description>
+		<description>Rain since Midnight</description>
 		<category>Rain</category>
 		<tags>
 			<tag>Measurement</tag>
