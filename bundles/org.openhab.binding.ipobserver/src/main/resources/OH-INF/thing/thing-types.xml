@@ -112,7 +112,7 @@
 			<tag>Measurement</tag>
 			<tag>Pressure</tag>
 		</tags>
-		<state pattern="%.0f" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pressureRelative">
 		<item-type>Number:Pressure</item-type>
