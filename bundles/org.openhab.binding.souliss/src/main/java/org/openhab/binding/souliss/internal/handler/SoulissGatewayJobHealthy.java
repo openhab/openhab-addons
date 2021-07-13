@@ -25,8 +25,6 @@ import org.openhab.core.thing.Bridge;
 @NonNullByDefault
 public class SoulissGatewayJobHealthy implements Runnable {
 
-    private final CommonCommands soulissCommands = new CommonCommands();
-
     @Nullable
     private SoulissGatewayHandler gwHandler;
 
@@ -44,7 +42,7 @@ public class SoulissGatewayJobHealthy implements Runnable {
         if (localGwHandler != null) {
             // sending healthy packet
             if (localGwHandler.gwConfig.gatewayLanAddress.length() > 0) {
-                soulissCommands.sendHealthyRequestFrame(localGwHandler.gwConfig, localGwHandler.getNodes());
+                CommonCommands.sendHealthyRequestFrame(localGwHandler.gwConfig, localGwHandler.getNodes());
                 // healthy packet sent
             }
         }

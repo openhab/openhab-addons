@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SoulissDiscoverJob implements Runnable {
-    private CommonCommands soulissCommands = new CommonCommands();
 
     private final Logger logger = LoggerFactory.getLogger(SoulissDiscoverJob.class);
 
@@ -42,7 +41,7 @@ public class SoulissDiscoverJob implements Runnable {
     public void run() {
         var localGwHandler = this.gwHandler;
         if (localGwHandler != null) {
-            soulissCommands.sendDBStructFrame(localGwHandler.gwConfig);
+            CommonCommands.sendDBStructFrame(localGwHandler.gwConfig);
             logger.debug("Sending request to gateway for souliss network - Counter={}", resendCounter);
         } else {
             logger.debug("Gateway null - Skipped");
