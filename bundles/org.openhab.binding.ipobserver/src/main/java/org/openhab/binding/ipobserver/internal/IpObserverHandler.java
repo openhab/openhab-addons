@@ -304,7 +304,6 @@ public class IpObserverHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         channelHandlers.clear();
-        @Nullable
         ScheduledFuture<?> localFuture = pollingFuture;
         if (localFuture != null) {
             localFuture.cancel(true);
