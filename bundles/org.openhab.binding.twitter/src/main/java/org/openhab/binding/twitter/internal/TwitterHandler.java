@@ -213,7 +213,6 @@ public class TwitterHandler extends BaseThingHandler {
         File fileToAttach = null;
         boolean deleteTemporaryFile = false;
         if (StringUtils.startsWith(tweetPicture, "http://") || StringUtils.startsWith(tweetPicture, "https://")) {
-
             try {
                 // we have a remote url and need to download the remote file to a temporary location
                 Path tDir = Files.createTempDirectory("TempDirectory");
@@ -224,10 +223,10 @@ public class TwitterHandler extends BaseThingHandler {
                 fileToAttach = new File(path);
                 deleteTemporaryFile = true;
 
-                RawType tweet_picture = HttpUtil.downloadImage(tweetPicture);
-                if (tweet_picture != null) {
+                RawType rawPicture = HttpUtil.downloadImage(tweetPicture);
+                if (rawPicture != null) {
                     try (FileOutputStream fos = new FileOutputStream(path)) {
-                        fos.write(tweet_picture.getBytes(), 0, tweet_picture.getBytes().length);
+                        fos.write(rawPicture.getBytes(), 0, rawPicture.getBytes().length);
                     } catch (FileNotFoundException ex) {
                         logger.debug("Could not create {} in temp dir. {}", path, ex.getMessage());
                     } catch (IOException ex) {
