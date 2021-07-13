@@ -57,11 +57,11 @@
 				<advanced>true</advanced>
 				<required>true</required>
 			</parameter>
-			<parameter name="healthyInterval" type="integer" min="1" max="60">
+			<parameter name="healthyInterval" type="integer" min="1" max="240">
 				<label>Healthy Interval</label>
 				<description>Interval in seconds to send nodes healthy.
 				</description>
-				<default>35</default>
+				<default>60</default>
 				<advanced>true</advanced>
 				<required>true</required>
 			</parameter>
@@ -71,7 +71,7 @@
 				<description>Interval in milliseconds to get packet from binding queue and send it to Souliss. First packet is sent
 					immediately.
 				</description>
-				<default>1000</default>
+				<default>30</default>
 				<advanced>true</advanced>
 				<required>true</required>
 			</parameter>
