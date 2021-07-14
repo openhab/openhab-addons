@@ -28,6 +28,8 @@ public class SoulissGatewayJobPing implements Runnable {
     @Nullable
     private SoulissGatewayHandler gwHandler;
 
+    private final CommonCommands commonCommands = new CommonCommands();
+
     public SoulissGatewayJobPing(Bridge bridge) {
         var bridgeHandler = bridge.getHandler();
         if (bridgeHandler != null) {
@@ -50,7 +52,7 @@ public class SoulissGatewayJobPing implements Runnable {
         // sending ping packet
 
         if (soulissGwHandler.gwConfig.gatewayLanAddress.length() > 0) {
-            CommonCommands.sendPing(soulissGwHandler.gwConfig);
+            commonCommands.sendPing(soulissGwHandler.gwConfig);
             // ping packet sent
         }
     }
