@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal.config;
+package org.openhab.binding.mqtt.homeassistant.internal.config.dto;
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.homeassistant.internal.config.ListOrStringDeserializer;
 
 import com.google.gson.annotations.JsonAdapter;
 
@@ -24,7 +24,6 @@ import com.google.gson.annotations.JsonAdapter;
  *
  * @author Jochen Klein - Initial contribution
  */
-@NonNullByDefault
 public class Device {
     @JsonAdapter(ListOrStringDeserializer.class)
     protected @Nullable List<String> identifiers;

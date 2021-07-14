@@ -14,6 +14,8 @@ package org.openhab.binding.mqtt.homeassistant.internal.config;
 
 import java.lang.reflect.Type;
 
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Connection;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

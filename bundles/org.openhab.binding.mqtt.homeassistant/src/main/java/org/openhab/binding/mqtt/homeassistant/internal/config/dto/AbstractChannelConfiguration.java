@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal.config;
+package org.openhab.binding.mqtt.homeassistant.internal.config.dto;
 
 import java.util.List;
 import java.util.Map;
@@ -164,6 +164,10 @@ public abstract class AbstractChannelConfiguration {
     @Nullable
     public List<Availability> getAvailability() {
         return availability;
+    }
+
+    public String getTilde() {
+        return tilde;
     }
 
     public AvailabilityMode getAvailabilityMode() {

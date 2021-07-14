@@ -30,7 +30,7 @@ import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConsta
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory.ComponentConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.config.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.type.ChannelDefinition;

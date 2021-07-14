@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal.config;
+package org.openhab.binding.mqtt.homeassistant.internal.config.dto;
 
 /**
  * MQTT topic subscribed to receive availability (online/offline) updates. Must not be used together with

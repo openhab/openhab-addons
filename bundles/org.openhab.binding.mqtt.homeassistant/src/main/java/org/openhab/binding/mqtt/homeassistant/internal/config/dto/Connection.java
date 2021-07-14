@@ -10,9 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal.config;
+package org.openhab.binding.mqtt.homeassistant.internal.config.dto;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.homeassistant.internal.config.ConnectionDeserializer;
 
 import com.google.gson.annotations.JsonAdapter;
 

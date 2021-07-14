@@ -24,10 +24,10 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.mqtt.homeassistant.internal.config.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
-import org.openhab.binding.mqtt.homeassistant.internal.config.Connection;
-import org.openhab.binding.mqtt.homeassistant.internal.config.Device;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Connection;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Device;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -18,6 +18,8 @@ import java.lang.reflect.Field;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.homeassistant.internal.MappingJsonReader;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Device;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
@@ -31,14 +33,14 @@ import com.google.gson.stream.JsonWriter;
  *
  * <p>
  * It will create a type adapter for every class derived from {@link
- * org.openhab.binding.mqtt.homeassistant.internal.config.AbstractChannelConfiguration} and ensures,
+ * AbstractChannelConfiguration} and ensures,
  * that abbreviated names are replaces with their long versions during the read.
  *
  * <p>
  * In elements, whose name end in'_topic' '~' replacement is performed.
  *
  * <p>
- * The adapters also handle {@link org.openhab.binding.mqtt.homeassistant.internal.config.Device}
+ * The adapters also handle {@link Device}
  *
  * @author Jochen Klein - Initial contribution
  */
@@ -62,7 +64,7 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
 
     /**
      * Handle {@link
-     * org.openhab.binding.mqtt.homeassistant.internal.config.AbstractChannelConfiguration}
+     * AbstractChannelConfiguration}
      *
      * @param gson parser
      * @param type type
@@ -111,7 +113,7 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
     private void expandTidleInTopics(AbstractChannelConfiguration config) {
         Class<?> type = config.getClass();
 
-        String tilde = config.tilde;
+        String tilde = config.getTilde();
 
         while (type != Object.class) {
             Field[] fields = type.getDeclaredFields();
