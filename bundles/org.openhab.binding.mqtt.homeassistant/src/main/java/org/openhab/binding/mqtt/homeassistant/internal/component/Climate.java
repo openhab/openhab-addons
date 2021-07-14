@@ -34,6 +34,7 @@ import org.openhab.core.types.State;
  * A MQTT climate component, following the https://www.home-assistant.io/components/climate.mqtt/ specification.
  *
  * @author David Graeff - Initial contribution
+ * @author Anton Kharuzhy - Implementation
  */
 @NonNullByDefault
 public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
