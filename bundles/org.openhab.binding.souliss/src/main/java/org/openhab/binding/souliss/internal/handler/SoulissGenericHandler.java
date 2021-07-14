@@ -58,6 +58,8 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     private int iNode;
     private final Logger logger = LoggerFactory.getLogger(SoulissGenericHandler.class);
 
+    private final CommonCommands commonCommands = new CommonCommands();
+
     boolean bSecureSend = false; // 0 means that Secure Send is disabled
     boolean bExpectedValueSameAsSet = false; // true means that expected value is setpoint (only for T31, T19 and T6x)
 
@@ -99,7 +101,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     protected synchronized void commandReadNodeTypsStates() {
         var gwConfig = getGatewayConfig();
         if (gwConfig != null) {
-            CommonCommands.sendTypicalRequestFrame(gwConfig, this.getNode(), 1);
+            commonCommands.sendTypicalRequestFrame(gwConfig, this.getNode(), 1);
         }
     }
 
@@ -112,28 +114,28 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     public void commandSEND(byte command) {
         var gwConfig = getGatewayConfig();
         if (gwConfig != null) {
-            CommonCommands.sendFORCEFrame(gwConfig, this.getNode(), this.getSlot(), command);
+            commonCommands.sendFORCEFrame(gwConfig, this.getNode(), this.getSlot(), command);
         }
     }
 
     public void commandSendRgb(byte command, byte r, byte g, byte b) {
         var gwConfig = getGatewayConfig();
         if (gwConfig != null) {
-            CommonCommands.sendFORCEFrame(gwConfig, command, r, g, b);
+            commonCommands.sendFORCEFrame(gwConfig, command, r, g, b);
         }
     }
 
     public void commandSEND(byte command, byte b1, byte b2) {
         var gwConfig = getGatewayConfig();
         if (gwConfig != null) {
-            CommonCommands.sendFORCEFrameT31SetPoint(gwConfig, this.getNode(), this.getSlot(), command, b1, b2);
+            commonCommands.sendFORCEFrameT31SetPoint(gwConfig, this.getNode(), this.getSlot(), command, b1, b2);
         }
     }
 
     public void commandSEND(byte b1, byte b2) {
         var gwConfig = getGatewayConfig();
         if (gwConfig != null) {
-            CommonCommands.sendFORCEFrameT61SetPoint(gwConfig, this.getNode(), this.getSlot(), b1, b2);
+            commonCommands.sendFORCEFrameT61SetPoint(gwConfig, this.getNode(), this.getSlot(), b1, b2);
         }
     }
 

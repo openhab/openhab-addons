@@ -50,6 +50,8 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SoulissGatewayHandler.class);
 
+    private final CommonCommands commonCommands = new CommonCommands();
+
     private ExecutorService udpExecutorService = Executors
             .newSingleThreadExecutor(new NamedThreadFactory("binding-souliss"));
 
@@ -94,7 +96,8 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         // new runnable udp listener
         var udpServerDefaultPortRunnableClass = new UDPListenDiscoverRunnable(this.bridge, this.discoverResult);
         // and exec on thread
-        if (udpListenerJob == null || udpListenerJob.isCancelled()) {
+        var localUdpListenerJob = this.udpListenerJob;
+        if (localUdpListenerJob == null || localUdpListenerJob.isCancelled()) {
             this.udpExecutorService.submit(udpServerDefaultPortRunnableClass);
         }
 
@@ -121,7 +124,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     }
 
     public void dbStructAnswerReceived() {
-        CommonCommands.sendTypicalRequestFrame(this.gwConfig, nodes);
+        commonCommands.sendTypicalRequestFrame(this.gwConfig, nodes);
     }
 
     public void setNodes(int nodes) {
@@ -185,7 +188,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     public void sendSubscription() {
         if (this.gwConfig.gatewayLanAddress.length() > 0) {
             int totNodes = getNodes();
-            CommonCommands.sendSUBSCRIPTIONframe(this.gwConfig, totNodes);
+            commonCommands.sendSUBSCRIPTIONframe(this.gwConfig, totNodes);
 
         }
         logger.debug("Sent subscription packet");
@@ -226,9 +229,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             localUdpListenerJob.cancel(true);
         }
         var localUdpExecutorService = this.udpExecutorService;
-        if (localUdpExecutorService != null) {
-            localUdpExecutorService.shutdownNow();
-        }
+        localUdpExecutorService.shutdownNow();
         super.dispose();
     }
 }

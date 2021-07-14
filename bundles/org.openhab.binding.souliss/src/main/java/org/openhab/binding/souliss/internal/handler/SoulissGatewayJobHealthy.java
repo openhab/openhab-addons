@@ -28,6 +28,8 @@ public class SoulissGatewayJobHealthy implements Runnable {
     @Nullable
     private SoulissGatewayHandler gwHandler;
 
+    private final CommonCommands commonCommands = new CommonCommands();
+
     public SoulissGatewayJobHealthy(Bridge bridge) {
         this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();
     }
@@ -42,7 +44,7 @@ public class SoulissGatewayJobHealthy implements Runnable {
         if (localGwHandler != null) {
             // sending healthy packet
             if (localGwHandler.gwConfig.gatewayLanAddress.length() > 0) {
-                CommonCommands.sendHealthyRequestFrame(localGwHandler.gwConfig, localGwHandler.getNodes());
+                commonCommands.sendHealthyRequestFrame(localGwHandler.gwConfig, localGwHandler.getNodes());
                 // healthy packet sent
             }
         }

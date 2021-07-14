@@ -42,9 +42,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class CommonCommands {
 
-    private static final Logger logger = LoggerFactory.getLogger(CommonCommands.class);
+    private final Logger logger = LoggerFactory.getLogger(CommonCommands.class);
 
-    public static final void sendFORCEFrame(GatewayConfig gwConfig, int idNode, int slot, byte shortCommand) {
+    public final void sendFORCEFrame(GatewayConfig gwConfig, int idNode, int slot, byte shortCommand) {
         sendFORCEFrame(gwConfig, idNode, slot, shortCommand, null, null, null);
     }
 
@@ -52,15 +52,14 @@ public class CommonCommands {
      * used for set dimmer value. It set command at first byte and dimmerVal to
      * second byte
      */
-    public static final void sendFORCEFrame(GatewayConfig gwConfig, int idNode, int slot, byte shortCommand,
-            byte lDimmer) {
+    public final void sendFORCEFrame(GatewayConfig gwConfig, int idNode, int slot, byte shortCommand, byte lDimmer) {
         sendFORCEFrame(gwConfig, idNode, slot, shortCommand, lDimmer, null, null);
     }
 
     /*
      * send force frame with command and RGB value
      */
-    public static final void sendFORCEFrame(GatewayConfig gwConfig, int idNode, int slot, byte shortCommand,
+    public final void sendFORCEFrame(GatewayConfig gwConfig, int idNode, int slot, byte shortCommand,
             @Nullable Byte byte1, @Nullable Byte byte2, @Nullable Byte byte3) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE);
@@ -105,8 +104,7 @@ public class CommonCommands {
      * T61 send framte to push the setpoint value
      */
 
-    public static final void sendFORCEFrameT61SetPoint(GatewayConfig gwConfig, int idNode, int slot, Byte byte1,
-            Byte byte2) {
+    public final void sendFORCEFrameT61SetPoint(GatewayConfig gwConfig, int idNode, int slot, Byte byte1, Byte byte2) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE);
 
@@ -133,7 +131,7 @@ public class CommonCommands {
     /*
      * T31 send force frame with command and setpoint float
      */
-    public static final void sendFORCEFrameT31SetPoint(GatewayConfig gwConfig, int idNode, int slot, byte shortCommand,
+    public final void sendFORCEFrameT31SetPoint(GatewayConfig gwConfig, int idNode, int slot, byte shortCommand,
             Byte byte1, Byte byte2) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE);
@@ -160,7 +158,7 @@ public class CommonCommands {
         queueToDispatcher(macacoFrame, gwConfig);
     }
 
-    public static final void sendDBStructFrame(GatewayConfig gwConfig) {
+    public final void sendDBStructFrame(GatewayConfig gwConfig) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add((byte) SoulissUDPConstants.SOULISS_UDP_FUNCTION_DBSTRUCT_REQ);
         macacoFrame.add((byte) 0x0);// PUTIN
@@ -185,7 +183,7 @@ public class CommonCommands {
     /*
      * Queue command to Dispatcher (for securesend retransmission)
      */
-    private static final void queueToDispatcher(ArrayList<Byte> macacoFrame, GatewayConfig gwConfig) {
+    private final void queueToDispatcher(ArrayList<Byte> macacoFrame, GatewayConfig gwConfig) {
         ArrayList<Byte> buf = buildVNetFrame(macacoFrame, gwConfig.gatewayLanAddress, (byte) gwConfig.userIndex,
                 (byte) gwConfig.nodeIndex);
         byte[] merd = toByteArray(buf);
@@ -205,7 +203,7 @@ public class CommonCommands {
     /*
      * send broadcast UDP frame - unused in this version - to Test
      */
-    private static final void sendBroadcastNow(ArrayList<Byte> macacoFrame) {
+    private final void sendBroadcastNow(ArrayList<Byte> macacoFrame) {
         byte iUserIndex = (byte) 120;
         byte iNodeIndex = (byte) 70;
 
@@ -270,8 +268,8 @@ public class CommonCommands {
     /*
      * Build VNet Frame
      */
-    private static final ArrayList<Byte> buildVNetFrame(ArrayList<Byte> macacoFrame2,
-            @Nullable String gatewayLanAddress, byte iUserIndex, byte iNodeIndex) {
+    private final ArrayList<Byte> buildVNetFrame(ArrayList<Byte> macacoFrame2, @Nullable String gatewayLanAddress,
+            byte iUserIndex, byte iNodeIndex) {
         if (gatewayLanAddress != null) {
             ArrayList<Byte> frame = new ArrayList<>();
             InetAddress ip;
@@ -312,7 +310,7 @@ public class CommonCommands {
      * @param buf
      * @return
      */
-    private static final byte[] toByteArray(ArrayList<Byte> buf) {
+    private final byte[] toByteArray(ArrayList<Byte> buf) {
         var merd = new byte[buf.size()];
         for (var i = 0; i < buf.size(); i++) {
             merd[i] = buf.get(i);
@@ -323,7 +321,7 @@ public class CommonCommands {
     /**
      * Build MULTICAST FORCE Frame
      */
-    public static final void sendMULTICASTFORCEFrame(GatewayConfig gwConfig, byte typical, byte shortCommand) {
+    public final void sendMULTICASTFORCEFrame(GatewayConfig gwConfig, byte typical, byte shortCommand) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE_MASSIVE);
 
@@ -343,7 +341,7 @@ public class CommonCommands {
     /**
      * Build PING Frame
      */
-    public static final void sendPing(@Nullable GatewayConfig gwConfig) {
+    public final void sendPing(@Nullable GatewayConfig gwConfig) {
         if (gwConfig != null) {
             ArrayList<Byte> macacoFrame = new ArrayList<>();
             macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_PING_REQ);
@@ -364,7 +362,7 @@ public class CommonCommands {
     /**
      * Build BROADCAST PING Frame
      */
-    public static final void sendBroadcastGatewayDiscover() {
+    public final void sendBroadcastGatewayDiscover() {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_DISCOVER_GW_NODE_BCAST_REQ);
 
@@ -381,7 +379,7 @@ public class CommonCommands {
     /**
      * Build SUBSCRIPTION Frame
      */
-    public static final void sendSUBSCRIPTIONframe(GatewayConfig gwConfig, int iNodes) {
+    public final void sendSUBSCRIPTIONframe(GatewayConfig gwConfig, int iNodes) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_SUBSCRIBE_REQ);
 
@@ -398,7 +396,7 @@ public class CommonCommands {
     /**
      * Build HEALTHY REQUEST Frame
      */
-    public static final void sendHealthyRequestFrame(GatewayConfig gwConfig, int iNodes) {
+    public final void sendHealthyRequestFrame(GatewayConfig gwConfig, int iNodes) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_HEALTHY_REQ);
 
@@ -414,7 +412,7 @@ public class CommonCommands {
     /**
      * Build TYPICAL REQUEST Frame
      */
-    public static final void sendTypicalRequestFrame(GatewayConfig gwConfig, int nodes) {
+    public final void sendTypicalRequestFrame(GatewayConfig gwConfig, int nodes) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_TYP_REQ);
         // PUTIN, STARTOFFEST, NUMBEROF
@@ -430,7 +428,7 @@ public class CommonCommands {
     /**
      * Build TYPICAL REQUEST Frame with start offset
      */
-    public static final void sendTypicalRequestFrame(GatewayConfig gwConfig, int start, int nodes) {
+    public final void sendTypicalRequestFrame(GatewayConfig gwConfig, int start, int nodes) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_TYP_REQ);
         // PUTIN, STARTOFFEST, NUMBEROF
@@ -443,9 +441,9 @@ public class CommonCommands {
         queueToDispatcher(macacoFrame, gwConfig);
     }
 
-    static boolean flag = true;
+    boolean flag = true;
 
-    private static final String macacoToString(ArrayList<Byte> mACACOframe) {
+    private final String macacoToString(ArrayList<Byte> mACACOframe) {
         // copio array per evitare modifiche concorrenti
         ArrayList<Byte> mACACOframe2 = new ArrayList<>();
         mACACOframe2.addAll(mACACOframe);
