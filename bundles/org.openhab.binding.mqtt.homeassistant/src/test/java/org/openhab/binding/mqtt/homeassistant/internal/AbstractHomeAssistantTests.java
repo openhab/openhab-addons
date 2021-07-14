@@ -45,6 +45,7 @@ import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.handler.BrokerHandler;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -68,7 +69,7 @@ import org.openhab.transform.jinja.internal.profiles.JinjaTransformationProfile;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
 @NonNullByDefault
-public abstract class AbstractHomeAssistantTests {
+public abstract class AbstractHomeAssistantTests extends JavaTest {
     public static final String BINDING_ID = "mqtt";
 
     public static final String BRIDGE_TYPE_ID = "broker";
