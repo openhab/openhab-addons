@@ -153,7 +153,7 @@ abstract public class AbstractAirthingsHandler extends BeaconBluetoothHandler {
         if (!device.disconnect()) {
             errorDisconnectCounter++;
             if (errorDisconnectCounter < 6) {
-                logger.warn("Disconnect from device {} failed", address);
+                logger.warn("Disconnect from device {} failed {} times", address, errorDisconnectCounter);
             } else {
                 logger.error("ERROR:  Controller reset needed.  Disconnect from device {} failed {} times", address,
                         errorDisconnectCounter);
@@ -208,7 +208,7 @@ abstract public class AbstractAirthingsHandler extends BeaconBluetoothHandler {
                         }
                         break;
                     default:
-                        logger.error("Unhandled Resolved readState {} on device {}", readState, address);
+                        logger.debug("Unhandled Resolved readState {} on device {}", readState, address);
                         break;
                 }
                 break;
