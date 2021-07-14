@@ -14,6 +14,7 @@ package org.openhab.binding.souliss.internal.handler;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -52,6 +53,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     private ExecutorService udpExecutorService = Executors
             .newSingleThreadExecutor(new NamedThreadFactory("binding-souliss"));
 
+    private @Nullable Future<?> udpListenerJob;
     private @Nullable ScheduledFuture<?> pingScheduler;
     private @Nullable ScheduledFuture<?> subscriptionScheduler;
     private @Nullable ScheduledFuture<?> healthScheduler;
@@ -92,7 +94,9 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         // new runnable udp listener
         var udpServerDefaultPortRunnableClass = new UDPListenDiscoverRunnable(this.bridge, this.discoverResult);
         // and exec on thread
-        this.udpExecutorService.execute(udpServerDefaultPortRunnableClass);
+        if (udpListenerJob == null || udpListenerJob.isCancelled()) {
+            this.udpExecutorService.submit(udpServerDefaultPortRunnableClass);
+        }
 
         // JOB PING
         var soulissGatewayJobPingRunnable = new SoulissGatewayJobPing(this.bridge);
@@ -217,7 +221,14 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         if (localHealthScheduler != null) {
             localHealthScheduler.cancel(true);
         }
-        this.udpExecutorService.shutdownNow();
+        var localUdpListenerJob = this.udpListenerJob;
+        if (localUdpListenerJob != null) {
+            localUdpListenerJob.cancel(true);
+        }
+        var localUdpExecutorService = this.udpExecutorService;
+        if (localUdpExecutorService != null) {
+            localUdpExecutorService.shutdownNow();
+        }
         super.dispose();
     }
 }
