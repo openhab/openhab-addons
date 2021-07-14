@@ -112,7 +112,6 @@
 		<category>text</category>
 		<tags>
 			<tag>Status</tag>
-			<tag>Water</tag>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -123,7 +122,6 @@
 		<description>Official pictogram associated to alert level.</description>
 		<tags>
 			<tag>Status</tag>
-			<tag>Water</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
