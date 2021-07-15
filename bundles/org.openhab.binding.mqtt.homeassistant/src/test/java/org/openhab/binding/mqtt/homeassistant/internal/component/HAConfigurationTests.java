@@ -85,7 +85,7 @@ public class HAConfigurationTests {
             }
             assertThat(device.getName(), is("J"));
             assertThat(device.getModel(), is("K"));
-            assertThat(device.getSw_version(), is("L"));
+            assertThat(device.getSwVersion(), is("L"));
             assertThat(device.getManufacturer(), is("M"));
         }
     }
@@ -156,7 +156,7 @@ public class HAConfigurationTests {
         assertThat(config.getDevice().getManufacturer(), is("TuYa"));
         assertThat(config.getDevice().getModel(), is("Radiator valve with thermostat (TS0601_thermostat)"));
         assertThat(config.getDevice().getName(), is("th1"));
-        assertThat(config.getDevice().getSw_version(), is("Zigbee2MQTT 1.18.2"));
+        assertThat(config.getDevice().getSwVersion(), is("Zigbee2MQTT 1.18.2"));
 
         assertThat(config.action_template, is(
                 "{% set values = {'idle':'off','heat':'heating','cool':'cooling','fan only':'fan'} %}{{ values[value_json.running_state] }}"));

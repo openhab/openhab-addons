@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.homeassistant.internal.config.ListOrStringDeserializer;
 
 import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Device configuration
@@ -31,7 +32,9 @@ public class Device {
     protected @Nullable String manufacturer;
     protected @Nullable String model;
     protected @Nullable String name;
-    protected @Nullable String sw_version;
+
+    @SerializedName("sw_version")
+    protected @Nullable String swVersion;
 
     public @Nullable String getId() {
         List<String> identifiers = this.identifiers;
@@ -59,8 +62,8 @@ public class Device {
     }
 
     @Nullable
-    public String getSw_version() {
-        return sw_version;
+    public String getSwVersion() {
+        return swVersion;
     }
 
     @Nullable

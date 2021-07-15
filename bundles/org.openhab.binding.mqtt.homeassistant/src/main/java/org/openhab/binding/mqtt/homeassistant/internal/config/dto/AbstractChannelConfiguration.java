@@ -110,7 +110,7 @@ public abstract class AbstractChannelConfiguration {
         if (model != null) {
             properties.put(Thing.PROPERTY_MODEL_ID, model);
         }
-        final String sw_version = device_.sw_version;
+        final String sw_version = device_.swVersion;
         if (sw_version != null) {
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, sw_version);
         }
