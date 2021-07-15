@@ -26,16 +26,92 @@ The binding uses the following configuration parameters.
 
 | Channel ID      | Item Type          | Description                                            | Possible Values                                         |
 |-----------------|--------------------|--------------------------------------------------------|---------------------------------------------------------|
-| action          | Number             | This indicates whether access was granted (value=0) or denied (value=-1). According to the ekey documentation there are six more values possible as you can see in the .map file below.  | 0,-1                                                  |
+| action          | Number             | This indicates whether access was granted (value=0) or denied (value=-1).   | 0,-1 (136 and 137 with RARE protocol                                                 |
 | fingerId        | Number             | This indicates the finger that was used by a person. | 0-9,-1                                  |
 | inputId         | Number             | This indicates which of the four digital inputs was triggered. Value is number of Input. "-1" indicates that no input was triggered. | 0-4,-1                                               |
 | keyId           | Number             | This indicates which of the four keys was used. See ekey documentation on "keys". | 0-4,-1                               |
 | relayId         | Number             | This indicates which relay has been switched. | 0-3,-1                               |
 | terminalId      | Number | This provides the serial number of the packet source. The source can be a fingerprint terminal or the controller (in case of digital inputs). The Serial number has a length of 13. When using RARE mode, only the trailing 8 digits can be returned. |                              |
 | terminalName    | String |  This returns the 4-character-long name that was specified on the controller for the specific terminals. |                                                         |
-| userId | Number | This indicates which user has been detected on the terminal. The value is the numerical order of the user as it was specified on the controller. | 0-99,-                                                        |
+| userId | Number | This indicates which user has been detected on the terminal. The value is the numerical order of the user as it was specified on the controller. | 0-99,-1                                                        |
 | userName        | String             | This returns the ten-character-long name of the person that has been recognized on the terminal. The name that is returned must have been previously specified on the controller. |                                                   |
 | userStatus      | Number             | This indicates the status of the user (-1=undefined, 1=enabled, 0= disabled) | 0,1,-1                                          |
 
 ## Examples
-tbd.
+
+rare.items
+```
+Number Action "Last action [MAP(ekey_action.map):%d]"                          { channel="ekey:cvlan:de3b8db06e:action" }
+Number FingerID "User used finger [MAP(ekey_finger.map):%d]"                   { channel="ekey:cvlan:de3b8db06e:fingerid" }
+Number RelayID "Last relay that has been swiched [%d]"                         { channel="ekey:cvlan:de3b8db06e:relayId" }
+Number Serialnumber "Serialnumber [%d]"                                        { channel="ekey:cvlan:de3b8db06e:fsSerial" }
+Number TerminalID "Last used terminal [MAP(ekey_terminal.map):%d]"             { channel="ekey:cvlan:de3b8db06e:terminalid" }
+Number UserID "Last user that accessed the house was [MAP(ekey_names.map):%d]" { channel="ekey:cvlan:de3b8db06e:userId" }
+```
+multi.items
+```
+Number Action "Last action [MAP(ekey_action.map):%d]"                          { channel="ekey:cvlan:de3b8db06e:action" }
+Number FingerID "User used finger [MAP(ekey_finger.map):%d]"                   { channel="ekey:cvlan:de3b8db06e:fingerid" }
+String FsName "Name of Scanner [%s]                                            { channel="ekey:cvlan:de3b8db06e:fsName" }
+Number FsSerial "Serialnumber [%d]"                                            { channel="ekey:cvlan:de3b8db06e:fsSerial" }
+Number InputID "Last input that has been triggered [%d]"                       { channel="ekey:cvlan:de3b8db06e:inputId" }
+Number KeyID  "Last key that has been used [%d]"                               { channel="ekey:cvlan:de3b8db06e:keyId" }
+Number UserID "Last user that accessed the house was [MAP(ekey_names.map):%d]" { channel="ekey:cvlan:de3b8db06e:userId" }
+String UserName " Name of Last user that accessed the house was : [%d]"        { channel="ekey:cvlan:de3b8db06e:userName" }
+Number UserStatus "Last user that accessed the house was [MAP(ekey_names.map):%d]" { channel="ekey:cvlan:de3b8db06e:userStatus" }
+```
+home.items
+```
+Number Action "Last action [MAP(ekey_action.map):%d]"                          { channel="ekey:cvlan:de3b8db06e:action" }
+Number FingerID "User used finger [MAP(ekey_finger.map):%d]"                   { channel="ekey:cvlan:de3b8db06e:fingerid" }
+Number RelayID "Last relay that has been swiched [%d]"                         { channel="ekey:cvlan:de3b8db06e:relayId" }
+Number Serialnumber "Serialnumber [%d]"                                        { channel="ekey:cvlan:de3b8db06e:fsSerial" }
+Number UserID "Last user that accessed the house was [MAP(ekey_names.map):%d]" { channel="ekey:cvlan:de3b8db06e:userId" }
+```
+
+transform/ekey_finger.map [This is just an example, as there is no strict rule what finger belongs to what number]
+
+```javascript
+0=leftlittle
+1=leftring
+2=leftmiddle
+3=leftindex
+4=leftthumb
+5=rightthumb
+6=rightindex
+7=rightmiddle
+8=rightring
+9=rightlittle
+-1=unknown
+```
+
+transform/ekey_names.map [NO spaces allowed]
+```javascript
+-1=Unspecified
+1=JohnDoe
+2=JaneDoe
+```
+transform/ekey_terminal.map
+```javascript
+80156839130911=Front
+80156839130914=Back
+```
+transform/ekey_multi_action.map
+```javascript
+0=granted
+-1=rejected
+1=timeoutA
+2=timeoutB
+3=inactive
+4=alwaysuser
+5=notcoupled
+6=digitalinput
+```
+transform/ekey_rare_action.map
+```javascript
+136=granted
+137=rejected
+```
+
+
+
