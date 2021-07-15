@@ -18,8 +18,13 @@
 		<config-description>
 			<parameter name="gatewayId" type="text" required="true">
 				<label>From</label>
-				<description>The senders Threema ID. Threema Gateway lets you request your personal, custom ID.<br/>All IDs that are
-					used on Threema Gateway start with an asterisk (*) and consist of 8 characters in total. Example ID: *THREEMA.</description>
+				<description>
+					The senders Threema ID. Threema Gateway lets you request your personal, custom ID.
+					<br/>
+					All IDs that are
+					used on Threema Gateway start with an asterisk (*) and consist of 8 characters in total. Example
+					ID: *THREEMA.
+				</description>
 			</parameter>
 			<parameter name="secret" type="text" required="true">
 				<context>password</context>
@@ -32,12 +37,12 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<channel-type id="credits">
 		<item-type>Number</item-type>
 		<label>Credits</label>
 		<description>The remaining credits to send messages.</description>
 		<state readOnly="true" min="0"/>
 	</channel-type>
-	
+
 </thing:thing-descriptions>
