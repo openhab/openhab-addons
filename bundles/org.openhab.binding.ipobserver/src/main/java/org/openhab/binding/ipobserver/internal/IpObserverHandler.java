@@ -14,9 +14,13 @@ package org.openhab.binding.ipobserver.internal;
 
 import static org.openhab.binding.ipobserver.internal.IpObserverBindingConstants.*;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +39,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -96,6 +101,17 @@ public class IpObserverHandler extends BaseThingHandler {
         public void processValue(String sensorValue) {
             if (!sensorValue.equals(previousValue)) {
                 previousValue = sensorValue;
+                if (LAST_UPDATED_TIME.equals(channel.getUID().getId())) {
+                    try {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm MM/dd/yyyy")
+                                .withZone(TimeZone.getDefault().toZoneId());
+                        ZonedDateTime zonedDateTime = ZonedDateTime.parse(sensorValue, formatter);
+                        this.handler.updateState(this.channel.getUID(), new DateTimeType(zonedDateTime));
+                    } catch (DateTimeParseException e) {
+                        logger.debug("Could not parse {} as a valid dateTime", sensorValue);
+                    }
+                    return;
+                }
                 State state = TypeParser.parseState(this.acceptedDataTypes, sensorValue);
                 if (state == null) {
                     return;
@@ -300,7 +316,7 @@ public class IpObserverHandler extends BaseThingHandler {
         createChannelHandler(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "outBattSta");
         createChannelHandler(OUTDOOR_BATTERY, StringType.class, Units.PERCENT, "outBattSta1");
         createChannelHandler(INDOOR_BATTERY, StringType.class, Units.PERCENT, "inBattSta");
-        createChannelHandler(LAST_UPDATED_TIME, StringType.class, SIUnits.CELSIUS, "CurrTime");
+        createChannelHandler(LAST_UPDATED_TIME, DateTimeType.class, SIUnits.CELSIUS, "CurrTime");
     }
 
     @Override

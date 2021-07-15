@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class IpObserverConfiguration {
-    // bindings config
     public String address = "";
     public int pollTime = 20;
     public int autoReboot = 2000;
