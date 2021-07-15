@@ -178,7 +178,7 @@ public abstract class MonopriceAudioConnector {
     }
 
     /**
-     * Request the MonopriceAudio controller to execute a command
+     * Request the MonopriceAudio amplifier to execute a command
      *
      * @param zoneId the zone for which the command is to be run
      * @param cmd the command to execute

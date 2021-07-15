@@ -65,7 +65,7 @@
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
 				<label>Polling Interval</label>
-				<description>Configures How Often to Poll the Controller to Check for Zone Updates (5-60; Default 30)</description>
+				<description>Configures How Often to Poll the Amplifier to Check for Zone Updates (5-60; Default 30)</description>
 				<default>30</default>
 			</parameter>
 			<parameter name="ignoreZones" type="text" required="false">

@@ -1,6 +1,6 @@
 # Monoprice Whole House Audio Binding
 
-This binding can be used to control a Monoprice MPR-SG6Z (10761) & Dayton Audio DAX66, Monoprice 31028, or Xantech 4x4 & 8x8 whole house multi-zone amplifier system.
+This binding can be used to control a Monoprice MPR-SG6Z (10761), Monoprice Passive Matrix (39261) & Dayton Audio DAX66, Monoprice 31028, or Xantech 4x4 & 8x8 whole house multi-zone amplifier system.
 
 The binding supports two different kinds of connections:
 
@@ -14,7 +14,7 @@ You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](ht
 
 ## Supported Things
 
-Monoprice 10761 or Dayton Audio DAX66 Amplifiers use the `amplifier` id. Up to 18 zones with 3 linked amps.  
+Monoprice 10761 & 39261 or Dayton Audio DAX66 Amplifiers use the `amplifier` id. Up to 18 zones with 3 linked amps.  
 Monoprice 31028 70V Amplifiers use the `monoprice70v` id. 6 zones per device, not linkable.  
 Xantech 4x4 Amplifiers use the `xantech44` id. 4 zones per device, not linkable.  
 Xantech 8x8 Amplifiers use the `xantech88` id. Up to 24 zones with 3 linked amps.  
@@ -39,7 +39,7 @@ The thing has the following configuration parameters:
 | Address              | host             | Host name or IP address of the machine connected to the Monoprice whole house amplifier device (serial over IP)                | Host name or IP  |
 | Port                 | port             | Communication port (serial over IP).                                                                                           | TCP port number  |
 | Number of Zones      | numZones         | (Optional) Number of amplifier zones to utilize in the binding (up to 18 zones with 3 amplifiers connected together)           | 1-18; default 6  |
-| Polling Interval     | pollingInterval  | (Optional) Configures how often (in seconds) to poll the controller to check for zone updates                                  | 5-60; default 15 |
+| Polling Interval     | pollingInterval  | (Optional) Configures how often (in seconds) to poll the amplifier to check for zone updates                                   | 5-60; default 15 |
 | Ignore Zones         | ignoreZones      | (Optional) A comma seperated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | ie: "1,6,10"     |
 | Initial All Volume   | initialAllVolume | (Optional) When 'All' zones are activated, the volume will reset to this value to prevent excessive blaring of sound ;)        | 1-30; default 10 |
 | Source 1 Input Label | inputLabel1      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 1") | A free text name |
@@ -66,29 +66,29 @@ Some notes:
 
 The following channels are available:
 
-| Channel ID                    | Item Type | Description                                                                                                   |
-|-------------------------------|-----------|---------------------------------------------------------------------------------------------------------------|
-| all#allpower                  | Switch    | Turn all zones on or off simultaneously (those specified by the ignoreZones config option will not turn on)   |
-| all#allsource                 | Number    | Select the input source for all zones simultaneously (1-6) (except ignoreZones)                               |
-| all#allvolume                 | Dimmer    | Control the volume for all zones simultaneously (0-100%) [translates to 0-38] (except ignoreZones)            |
-| all#allmute                   | Switch    | Mute or unmute all zones simultaneously (except ignoreZones)                                                  |
-| zoneN#power (where N= 1-18)   | Switch    | Turn the power for a zone on or off                                                                           |
-| zoneN#source (where N= 1-18)  | Number    | Select the input source for a zone (1-6)                                                                      |
-| zoneN#volume (where N= 1-18)  | Dimmer    | Control the volume for a zone (0-100%) [translates to 0-38]                                                   |
-| zoneN#mute (where N= 1-18)    | Switch    | Mute or unmute a zone                                                                                         |
-| zoneN#treble (where N= 1-18)  | Number    | Adjust the treble control for a zone (-7 to 7) -7=none, 0=flat, 7=full                                        |
-| zoneN#bass (where N= 1-18)    | Number    | Adjust the bass control for a zone (-7 to 7) -7=none, 0=flat, 7=full                                          |
-| zoneN#balance (where N= 1-18) | Number    | Adjust the balance control for a zone (-10 to 10) -10=left, 0=center, 10=right                                |
-| zoneN#dnd (where N= 1-18)     | Switch    | Turn on or off the Do Not Disturb for the zone (for when the controller's external page trigger is activated) |
-| zoneN#page (where N= 1-18)    | Contact   | Indicates if the page input is activated for the zone                                                         |
-| zoneN#keypad (where N= 1-18)  | Contact   | Indicates if the physical keypad is attached to a zone                                                        |
+| Channel ID                    | Item Type | Description                                                                                                  |
+|-------------------------------|-----------|--------------------------------------------------------------------------------------------------------------|
+| all#allpower                  | Switch    | Turn all zones on or off simultaneously (those specified by the ignoreZones config option will not turn on)  |
+| all#allsource                 | Number    | Select the input source for all zones simultaneously (1-6) (except ignoreZones)                              |
+| all#allvolume                 | Dimmer    | Control the volume for all zones simultaneously (0-100%) [translates to 0-38] (except ignoreZones)           |
+| all#allmute                   | Switch    | Mute or unmute all zones simultaneously (except ignoreZones)                                                 |
+| zoneN#power (where N= 1-18)   | Switch    | Turn the power for a zone on or off                                                                          |
+| zoneN#source (where N= 1-18)  | Number    | Select the input source for a zone (1-6)                                                                     |
+| zoneN#volume (where N= 1-18)  | Dimmer    | Control the volume for a zone (0-100%) [translates to 0-38]                                                  |
+| zoneN#mute (where N= 1-18)    | Switch    | Mute or unmute a zone                                                                                        |
+| zoneN#treble (where N= 1-18)  | Number    | Adjust the treble control for a zone (-7 to 7) -7=none, 0=flat, 7=full                                       |
+| zoneN#bass (where N= 1-18)    | Number    | Adjust the bass control for a zone (-7 to 7) -7=none, 0=flat, 7=full                                         |
+| zoneN#balance (where N= 1-18) | Number    | Adjust the balance control for a zone (-10 to 10) -10=left, 0=center, 10=right                               |
+| zoneN#dnd (where N= 1-18)     | Switch    | Turn on or off the Do Not Disturb for the zone (for when the amplifier's external page trigger is activated) |
+| zoneN#page (where N= 1-18)    | Contact   | Indicates if the page input is activated for the zone                                                        |
+| zoneN#keypad (where N= 1-18)  | Contact   | Indicates if the physical keypad is attached to a zone                                                       |
 
 ## Full Example
 
 monoprice.things:
 
 ```
-//serial port connection
+// serial port connection
 monopriceaudio:amplifier:myamp "Monoprice WHA" [ serialPort="COM5", pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono"]
 
 // serial over IP connection
@@ -115,7 +115,7 @@ Switch z1_dnd "Do Not Disturb" { channel="monopriceaudio:amplifier:myamp:zone1#d
 Switch z1_page "Page Active: [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#page" }
 Switch z1_keypad "Keypad Connected: [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#keypad" }
 
-//repeat for zones 2-18 (substitute z1 and zone1)
+// repeat for zones 2-18 (substitute z1 and zone1)
 ```
 
 monoprice.sitemap:
@@ -133,7 +133,7 @@ sitemap monoprice label="Audio Control" {
     Frame label="Zone 1" {
         Switch item=z1_power
         Selection item=z1_source visibility=[z1_power==ON]
-        //Volume can be a Slider also
+        // Volume can be a Slider also
         Setpoint item=z1_volume minValue=0 maxValue=100 step=1 visibility=[z1_power==ON]
         Switch item=z1_mute visibility=[z1_power==ON]
         Setpoint item=z1_treble label="Treble Adjustment [%d]" minValue=-7 maxValue=7 step=1 visibility=[z1_power==ON]
@@ -144,6 +144,6 @@ sitemap monoprice label="Audio Control" {
         Text item=z1_keypad label="Keypad Connected: [%s]" visibility=[z1_power==ON]
     }
     
-    //repeat for zones 2-18 (substitute z1)
+    // repeat for zones 2-18 (substitute z1)
 }
 ```

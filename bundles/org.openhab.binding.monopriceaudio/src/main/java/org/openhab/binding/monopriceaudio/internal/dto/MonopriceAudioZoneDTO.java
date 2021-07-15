@@ -143,7 +143,7 @@ public class MonopriceAudioZoneDTO {
 
     @Override
     public String toString() {
-        // Re-construct the original status message from the controller
+        // Re-construct the original status message from the amplifier
         // This is used to determine if something changed from the last polling update
         return zone + page + power + mute + dnd + (String.format("%02d", volume)) + (String.format("%02d", treble))
                 + (String.format("%02d", bass)) + (String.format("%02d", balance)) + source + keypad;
