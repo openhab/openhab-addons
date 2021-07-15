@@ -245,22 +245,22 @@ public class IpObserverHandler extends BaseThingHandler {
             createChannelHandler(YEARLY_RAIN, QuantityType.class, MetricPrefix.MILLI(SIUnits.METRE), "rainofyearly");
         }
 
-        if (windUnit.equals("5")) {
+        if ("5".equals(windUnit)) {
             createChannelHandler(WIND_AVERAGE_SPEED, QuantityType.class, Units.KNOT, "avgwind");
             createChannelHandler(WIND_SPEED, QuantityType.class, Units.KNOT, "windspeed");
             createChannelHandler(WIND_GUST, QuantityType.class, Units.KNOT, "gustspeed");
             createChannelHandler(WIND_MAX_GUST, QuantityType.class, Units.KNOT, "dailygust");
-        } else if (windUnit.equals("4")) {
+        } else if ("4".equals(windUnit)) {
             createChannelHandler(WIND_AVERAGE_SPEED, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "avgwind");
             createChannelHandler(WIND_SPEED, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "windspeed");
             createChannelHandler(WIND_GUST, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "gustspeed");
             createChannelHandler(WIND_MAX_GUST, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "dailygust");
-        } else if (windUnit.equals("1")) {
+        } else if ("1".equals(windUnit)) {
             createChannelHandler(WIND_AVERAGE_SPEED, QuantityType.class, SIUnits.KILOMETRE_PER_HOUR, "avgwind");
             createChannelHandler(WIND_SPEED, QuantityType.class, SIUnits.KILOMETRE_PER_HOUR, "windspeed");
             createChannelHandler(WIND_GUST, QuantityType.class, SIUnits.KILOMETRE_PER_HOUR, "gustspeed");
             createChannelHandler(WIND_MAX_GUST, QuantityType.class, SIUnits.KILOMETRE_PER_HOUR, "dailygust");
-        } else if (windUnit.equals("0")) {
+        } else if ("0".equals(windUnit)) {
             createChannelHandler(WIND_AVERAGE_SPEED, QuantityType.class, Units.METRE_PER_SECOND, "avgwind");
             createChannelHandler(WIND_SPEED, QuantityType.class, Units.METRE_PER_SECOND, "windspeed");
             createChannelHandler(WIND_GUST, QuantityType.class, Units.METRE_PER_SECOND, "gustspeed");
@@ -270,22 +270,22 @@ public class IpObserverHandler extends BaseThingHandler {
                     "The IP Observer is sending a wind format the binding does not support. Select one of the other units.");
         }
 
-        if (solarUnit.equals("1")) {
+        if ("1".equals(solarUnit)) {
             createChannelHandler(SOLAR_RADIATION, QuantityType.class, Units.IRRADIANCE, "solarrad");
-        } else if (solarUnit.equals("0")) {
+        } else if ("0".equals(solarUnit)) {
             createChannelHandler(SOLAR_RADIATION, QuantityType.class, Units.LUX, "solarrad");
         } else {
             logger.warn(
                     "The IP Observer is sending fc (Foot Candles) for the solar radiation. Select one of the other units.");
         }
 
-        if (pressureUnit.equals("0")) {
+        if ("0".equals(pressureUnit)) {
             createChannelHandler(ABS_PRESSURE, QuantityType.class, MetricPrefix.HECTO(SIUnits.PASCAL), "AbsPress");
             createChannelHandler(REL_PRESSURE, QuantityType.class, MetricPrefix.HECTO(SIUnits.PASCAL), "RelPress");
-        } else if (pressureUnit.equals("1")) {
+        } else if ("1".equals(pressureUnit)) {
             createChannelHandler(ABS_PRESSURE, QuantityType.class, ImperialUnits.INCH_OF_MERCURY, "AbsPress");
             createChannelHandler(REL_PRESSURE, QuantityType.class, ImperialUnits.INCH_OF_MERCURY, "RelPress");
-        } else if (pressureUnit.equals("2")) {
+        } else if ("2".equals(pressureUnit)) {
             createChannelHandler(ABS_PRESSURE, QuantityType.class, Units.MILLIMETRE_OF_MERCURY, "AbsPress");
             createChannelHandler(REL_PRESSURE, QuantityType.class, Units.MILLIMETRE_OF_MERCURY, "RelPress");
         }

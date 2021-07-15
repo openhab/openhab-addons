@@ -137,6 +137,10 @@
 		<label>Solar Radiation</label>
 		<description>Solar Radiation</description>
 		<category>Sun</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
 		<state pattern="%.2f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="uv" advanced="true">
@@ -144,6 +148,10 @@
 		<label>UV</label>
 		<description>UV</description>
 		<category>Sun</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="uvIndex" advanced="true">
@@ -151,6 +159,10 @@
 		<label>UV Index</label>
 		<description>UV Index</description>
 		<category>Sun</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="windAverageSpeed">
@@ -158,6 +170,10 @@
 		<label>Wind Average Speed</label>
 		<description>Average Wind Speed</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="windSpeed" advanced="true">
@@ -165,6 +181,10 @@
 		<label>Wind Speed</label>
 		<description>Wind Speed</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="windGust" advanced="true">
@@ -172,6 +192,10 @@
 		<label>Wind Gust</label>
 		<description>Wind Gust</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="windMaxGust" advanced="true">
@@ -179,6 +203,10 @@
 		<label>Wind Max Gust</label>
 		<description>Max wind gust for today</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainHourlyRate">
