@@ -25,14 +25,4 @@ public class IpObserverConfiguration {
     public String address = "";
     public int pollTime = 20;
     public int autoReboot = 2000;
-
-    // Config settings parsed from weather station.
-    public boolean imperialTemperature = false;
-    public boolean imperialRain = false;
-    // 0=lux, 1=w/m2, 2=fc
-    public String solarUnit = "0";
-    // 0=m/s, 1=km/h, 2=ft/s, 3=bft, 4=mph, 5=knot
-    public String windUnit = "0";
-    // 0=hpa, 1=inhg, 2=mmhg
-    public String pressureUnit = "0";
 }

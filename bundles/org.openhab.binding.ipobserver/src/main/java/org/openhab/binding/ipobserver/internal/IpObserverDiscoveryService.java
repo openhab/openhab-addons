@@ -20,10 +20,8 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -53,7 +51,7 @@ import org.slf4j.LoggerFactory;
 public class IpObserverDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_WEATHER_STATION);
-    private ExecutorService discoverySearchPool = scheduler;
+    private ExecutorService discoverySearchPool = Executors.newFixedThreadPool(DISCOVERY_THREAD_POOL_SIZE);
     private HttpClient httpClient;
 
     @Activate
@@ -118,6 +116,12 @@ public class IpObserverDiscoveryService extends AbstractDiscoveryService {
             logger.debug("IpObserver discovery service encountered an error while scanning for devices: {}",
                     exp.getMessage());
         }
+    }
+
+    @Override
+    protected void stopScan() {
+        discoverySearchPool.shutdown();
+        super.stopScan();
     }
 
     private void ipAddressScan() {
