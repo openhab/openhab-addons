@@ -5,31 +5,37 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
-	<thing-type id="sender">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="ThreemaBridge" />
-			</supported-bridge-type-refs>
-		-->
+	<thing-type id="basic">
 
-		<label>Threema Sender</label>
-		<description>A thing to send notifications via Threema.Gateway</description>
+		<label>Basic Message Transmitter</label>
+		<description>This thing can be used to send messages to any Threema user.</description>
+		<category>WebService</category>
+
+		<channels>
+			<channel id="credits" typeId="credits"/>
+		</channels>
 
 		<config-description>
 			<parameter name="gatewayId" type="text" required="true">
-				<context>network-address</context>
-				<label>Gateway ID</label>
-				<description>The sender Threema.Gateway ID</description>
+				<label>From</label>
+				<description>The senders Threema ID. Threema Gateway lets you request your personal, custom ID. All IDs that are
+					used on Threema Gateway start with an asterisk (*) and consist of 8 characters in total. Example ID: *THREEMA.</description>
 			</parameter>
 			<parameter name="secret" type="text" required="true">
 				<context>password</context>
 				<label>Secret</label>
-				<description>Your Threema.Gateway secret to access the API.</description>
+				<description>The private key associated with the senders Threema ID.</description>
 			</parameter>
 			<parameter name="recipientIds" type="text" required="false" multiple="true">
-				<label>Recipient ID(s)</label>
-				<description>One or more Threema ID(s) (optional).</description>
+				<label>To</label>
+				<description>A list of Threema IDs of recipients to send messages to. (Optional)</description>
 			</parameter>
 		</config-description>
 	</thing-type>
+	<channel-type id="credits">
+		<item-type>Decimal</item-type>
+		<label>Credits</label>
+		<description>The remaining credits to send messages.</description>
+		<state readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

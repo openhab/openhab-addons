@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.threema.internal;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.annotation.ActionInput;
@@ -25,13 +27,13 @@ import org.openhab.core.thing.binding.ThingHandler;
  */
 @ThingActionsScope(name = "threema")
 @NonNullByDefault
-public class ThreemaActions implements ThingActions {
+public class ThreemaBasicActions implements ThingActions {
 
-    private ThreemaHandler handler;
+    private @Nullable ThreemaBasicHandler handler;
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        this.handler = (ThreemaHandler) handler;
+        this.handler = (ThreemaBasicHandler) handler;
     }
 
     @Override
@@ -41,12 +43,25 @@ public class ThreemaActions implements ThingActions {
 
     @RuleAction(label = "send a message (basic mode)", description = "Send a message using the Threema.Gateway in basic mode.")
     public boolean sendTextMessageSimple(@ActionInput(name = "message") String message) {
-        return handler.sendTextMessageSimple(message);
+        return Optional.ofNullable(this.handler).map(handler -> handler.sendTextMessageSimple(message)).orElse(false);
     }
 
     @RuleAction(label = "send a message (basic mode)", description = "Send a message using the Threema.Gateway in basic mode.")
     public boolean sendTextMessageSimple(@ActionInput(name = "threemaId") String threemaId,
             @ActionInput(name = "message") String message) {
-        return handler.sendTextMessageSimple(threemaId, message);
+        return Optional.ofNullable(this.handler).map(handler -> handler.sendTextMessageSimple(threemaId, message))
+                .orElse(false);
+    }
+
+    public static boolean sendTextMessageSimple(ThingActions actions, String message) {
+        return Optional.ofNullable(actions).filter(ThreemaBasicActions.class::isInstance)
+                .map(ThreemaBasicActions.class::cast).map(threema -> threema.sendTextMessageSimple(message))
+                .orElseThrow(() -> new IllegalArgumentException("Instance is not an ThreemaActions class."));
+    }
+
+    public static boolean sendTextMessageSimple(ThingActions actions, String threemaId, String message) {
+        return Optional.ofNullable(actions).filter(ThreemaBasicActions.class::isInstance)
+                .map(ThreemaBasicActions.class::cast).map(threema -> threema.sendTextMessageSimple(threemaId, message))
+                .orElseThrow(() -> new IllegalArgumentException("Instance is not an ThreemaActions class."));
     }
 }

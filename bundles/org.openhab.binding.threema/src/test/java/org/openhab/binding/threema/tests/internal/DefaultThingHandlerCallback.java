@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.threema;
+package org.openhab.binding.threema.tests.internal;
 
 import java.util.List;
 import java.util.Map;

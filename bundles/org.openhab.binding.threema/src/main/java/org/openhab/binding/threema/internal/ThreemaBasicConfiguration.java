@@ -20,23 +20,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link ThreemaConfiguration} class contains fields mapping thing
- * configuration parameters.
+ * The {@link ThreemaBasicConfiguration} class contains fields mapping thing
+ * configuration parameters to send messages in basic mode.
  *
  * @author Kai K. - Initial contribution
  */
 @NonNullByDefault
-public class ThreemaConfiguration {
+public class ThreemaBasicConfiguration {
 
-    private String gatewayId;
-    private String secret;
+    private @Nullable String gatewayId;
+    private @Nullable String secret;
     private @Nullable List<String> recipientIds;
 
-    public String getGatewayId() {
+    public @Nullable String getGatewayId() {
         return gatewayId;
     }
 
-    public String getSecret() {
+    public @Nullable String getSecret() {
         return secret;
     }
 

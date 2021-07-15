@@ -10,51 +10,55 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.threema;
+package org.openhab.binding.threema.tests.internal;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.threema.internal.ThreemaBindingConstants.THING_TYPE_BASIC;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.mockito.Mockito;
-import org.openhab.binding.threema.internal.ThreemaConfiguration;
+import org.openhab.binding.threema.internal.ThreemaBasicConfiguration;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingUID;
 
 import ch.threema.apitool.APIConnector;
+import io.micrometer.core.lang.NonNull;
 
 /**
  * @author Kai K. - Initial contribution
  */
-@NonNullByDefault
+@SuppressWarnings("null")
 class Mocks {
-    public static ThreemaConfiguration createThreemaConfiguration(String gatewayID, String secret,
+    public static @NonNull ThreemaBasicConfiguration createThreemaConfiguration(String gatewayID, String secret,
             List<String> recipientIds) {
-        ThreemaConfiguration threemaConfig = mock(ThreemaConfiguration.class);
+        ThreemaBasicConfiguration threemaConfig = mock(ThreemaBasicConfiguration.class);
         when(threemaConfig.getGatewayId()).thenReturn(gatewayID);
         when(threemaConfig.getSecret()).thenReturn(secret);
         when(threemaConfig.getRecipientIds()).thenReturn(recipientIds);
         return threemaConfig;
     }
 
-    public static Configuration createConfiguration(String gatewayID, String secret, List<String> recipientIds) {
+    public static @NonNull Configuration createConfiguration(String gatewayID, String secret,
+            List<String> recipientIds) {
         Configuration config = mock(Configuration.class);
-        ThreemaConfiguration threemaConfiguration = createThreemaConfiguration(gatewayID, secret, recipientIds);
-        when(config.as(ThreemaConfiguration.class)).thenReturn(threemaConfiguration);
+        ThreemaBasicConfiguration threemaConfiguration = createThreemaConfiguration(gatewayID, secret, recipientIds);
+        when(config.as(ThreemaBasicConfiguration.class)).thenReturn(threemaConfiguration);
         return config;
     }
 
-    public static Thing createThing(String gatewayID, String secret, List<String> recipientIds) {
+    public static @NonNull Thing createThing(String gatewayID, String secret, List<String> recipientIds) {
         Thing thing = mock(Thing.class);
         Configuration configuration = createConfiguration(gatewayID, secret, recipientIds);
         when(thing.getConfiguration()).thenReturn(configuration);
+        when(thing.getUID()).thenReturn(new ThingUID(THING_TYPE_BASIC, "uid123"));
         return thing;
     }
 
-    public static APIConnector createApiConnector() throws IOException {
+    public static @NonNull APIConnector createApiConnector() throws IOException {
         APIConnector apiConnector = mock(APIConnector.class);
         when(apiConnector.lookupCredits()).thenReturn(1);
         when(apiConnector.sendTextMessageSimple(Mockito.anyString(), Mockito.anyString())).thenReturn("12343");

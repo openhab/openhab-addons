@@ -12,14 +12,12 @@
  */
 package org.openhab.binding.threema.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import ch.threema.apitool.PublicKeyStore;
 
 /**
  * @author Kai K. - Initial contribution
  */
-@NonNullByDefault
+@SuppressWarnings("null")
 final class ThreemaKeyStore extends PublicKeyStore {
     @Override
     protected byte[] fetchPublicKey(String threemaId) {
