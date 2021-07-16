@@ -61,7 +61,6 @@
 			</parameter>
 
 			<parameter name="ignoreZoneStatusTransitions" type="boolean" required="true">
-				<context>ignoreZoneStatusTransitions</context>
 				<label>Ignore Zone Status Transitions</label>
 				<description>Flag specifying if the Zone Status Transitions should be ignored</description>
 				<default>false</default>
