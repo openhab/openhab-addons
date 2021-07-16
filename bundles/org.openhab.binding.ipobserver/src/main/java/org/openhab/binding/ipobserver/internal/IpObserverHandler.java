@@ -41,6 +41,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -101,16 +102,25 @@ public class IpObserverHandler extends BaseThingHandler {
         public void processValue(String sensorValue) {
             if (!sensorValue.equals(previousValue)) {
                 previousValue = sensorValue;
-                if (LAST_UPDATED_TIME.equals(channel.getUID().getId())) {
-                    try {
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm MM/dd/yyyy")
-                                .withZone(TimeZone.getDefault().toZoneId());
-                        ZonedDateTime zonedDateTime = ZonedDateTime.parse(sensorValue, formatter);
-                        this.handler.updateState(this.channel.getUID(), new DateTimeType(zonedDateTime));
-                    } catch (DateTimeParseException e) {
-                        logger.debug("Could not parse {} as a valid dateTime", sensorValue);
-                    }
-                    return;
+                switch (channel.getUID().getId()) {
+                    case LAST_UPDATED_TIME:
+                        try {
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm MM/dd/yyyy")
+                                    .withZone(TimeZone.getDefault().toZoneId());
+                            ZonedDateTime zonedDateTime = ZonedDateTime.parse(sensorValue, formatter);
+                            this.handler.updateState(this.channel.getUID(), new DateTimeType(zonedDateTime));
+                        } catch (DateTimeParseException e) {
+                            logger.debug("Could not parse {} as a valid dateTime", sensorValue);
+                        }
+                        return;
+                    case INDOOR_BATTERY:
+                    case OUTDOOR_BATTERY:
+                        if ("1".equals(sensorValue)) {
+                            handler.updateState(this.channel.getUID(), OnOffType.ON);
+                        } else {
+                            handler.updateState(this.channel.getUID(), OnOffType.OFF);
+                        }
+                        return;
                 }
                 State state = TypeParser.parseState(this.acceptedDataTypes, sensorValue);
                 if (state == null) {
@@ -119,7 +129,7 @@ public class IpObserverHandler extends BaseThingHandler {
                     handler.updateState(this.channel.getUID(),
                             QuantityType.valueOf(Double.parseDouble(sensorValue), unit));
                 } else {
-                    this.handler.updateState(this.channel.getUID(), state);
+                    handler.updateState(this.channel.getUID(), state);
                 }
             }
         }
@@ -194,11 +204,11 @@ public class IpObserverHandler extends BaseThingHandler {
                     logger.debug("Finding out which units of measurement the weather station is using.");
                     sendGetRequest(STATION_SETTINGS_URL);
                 }
-                updateState(RESPONSE_TIME, new QuantityType<>(responseTime, MetricPrefix.MILLI(Units.SECOND)));
                 if (url == STATION_SETTINGS_URL) {
                     parseSettings(contentResponse.getContentAsString());
                     setupChannels();
                 } else {
+                    updateState(RESPONSE_TIME, new QuantityType<>(responseTime, MetricPrefix.MILLI(Units.SECOND)));
                     parseAndUpdate(contentResponse.getContentAsString());
                 }
                 if (config.autoReboot > 0 && responseTime > config.autoReboot) {

@@ -35,7 +35,7 @@ Auto discovery is supported and may take a while to complete as it scans all IP 
 | humidityOutdoor       | Number:Dimensionless  | The humidity outdoors. |
 | pressureAbsolute      | Number:Pressure       | The atmospheric pressure directly measured by the sensor. |
 | pressureRelative      | Number:Pressure       | The pressure adjusted to sea level to allow easier comparisons between different locations. |
-| windDirection         | Number:Angle          | The angle in degrees that the wind is comming from. |
+| windDirection         | Number:Angle          | The angle in degrees that the wind is coming from. |
 | windAverageSpeed      | Number:Speed          | The average wind speed. |
 | windSpeed             | Number:Speed          | The exact wind speed. Not all stations send this data. |
 | windGust              | Number:Speed          | The recent wind gust speed. |
@@ -48,7 +48,7 @@ Auto discovery is supported and may take a while to complete as it scans all IP 
 | rainForWeek           | Number:Length         | Amount of rain for the week. |
 | rainForMonth          | Number:Length         | Amount of rain for the month. |
 | rainForYear           | Number:Length         | Amount of rain for the year. |
-| batteryIndoor         | String                | Battery status, if it is low or normal. |
-| batteryOutdoor        | String                | Battery status, if it is low or normal. |
-| responseTime          | Number:Time           | How long it took the weather station to reply to a request for the data. |
-| lastUpdatedTime       | String                | The time scraped from the weather station when it last read the sensors. |
+| batteryIndoor         | Switch                | Battery status, ON if battery is low. |
+| batteryOutdoor        | Switch                | Battery status, OFF if battery is normal. |
+| responseTime          | Number:Time           | How long it took the weather station to reply to a request for the live data. |
+| lastUpdatedTime       | DateTime              | The time scraped from the weather station when it last read the sensors. |
