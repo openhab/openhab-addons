@@ -70,17 +70,17 @@
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	   <channel-type id="humidityIndoor">
-        <item-type>Number:Dimensionless</item-type>
-        <label>Indoor Humidity</label>
-        <description>Current Humidity Indoors</description>
-        <category>Humidity</category>
-        <tags>
-            <tag>Measurement</tag>
-            <tag>Humidity</tag>
-        </tags>
-        <state pattern="%.0f %%" readOnly="true"/>
-    </channel-type>
+	<channel-type id="humidityIndoor">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Indoor Humidity</label>
+		<description>Current Humidity Indoors</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="pressureAbsolute">
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure Absolute</label>
@@ -104,7 +104,7 @@
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="solarRadiation">
-		<item-type>Number</item-type>
+		<item-type>Number:Intensity</item-type>
 		<label>Solar Radiation</label>
 		<description>Solar Radiation</description>
 		<category>Sun</category>
@@ -112,7 +112,7 @@
 			<tag>Measurement</tag>
 			<tag>Light</tag>
 		</tags>
-		<state pattern="%.2f" readOnly="true"/>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="uv" advanced="true">
 		<item-type>Number</item-type>

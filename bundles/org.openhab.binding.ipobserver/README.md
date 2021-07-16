@@ -40,7 +40,7 @@ Auto discovery is supported and may take a while to complete as it scans all IP 
 | windSpeed             | Number:Speed          | The exact wind speed. Not all stations send this data. |
 | windGust              | Number:Speed          | The recent wind gust speed. |
 | windMaxGust           | Number:Speed          | The recent max wind gust speed. |
-| solarRadiation        | Number                | Solar radiation. |
+| solarRadiation        | Number:Intensity      | Solar radiation. |
 | uv                    | Number                | UV measurement. |
 | uvIndex               | Number                | The UV index. |
 | rainHourlyRate        | Number:Length         | The amount of rain that will fall, if it continues to fall at the same rate for an hour. Measures how heavy the current rain is falling. |
