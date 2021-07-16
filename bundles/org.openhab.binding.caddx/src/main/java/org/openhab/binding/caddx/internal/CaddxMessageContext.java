@@ -15,11 +15,13 @@ package org.openhab.binding.caddx.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Panel listener interface
+ * Used to map thing types from the binding string to a ENUM value.
  *
  * @author Georgios Moutsos - Initial contribution
  */
 @NonNullByDefault
-public interface CaddxPanelListener {
-    public void caddxMessage(CaddxMessage message);
+public enum CaddxMessageContext {
+    NONE,
+    DISCOVERY,
+    COMMAND;
 }
