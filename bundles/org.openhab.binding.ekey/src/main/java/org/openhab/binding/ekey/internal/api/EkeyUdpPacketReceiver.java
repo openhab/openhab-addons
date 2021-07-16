@@ -94,7 +94,9 @@ public class EkeyUdpPacketReceiver {
         public void run() {
             logger.debug("Starting ekey Packet Receiver");
 
-            if (socket == null) {
+            DatagramSocket localSocket = socket;
+
+            if (localSocket == null) {
                 throw new IllegalStateException("Cannot access socket.");
             }
 
@@ -105,10 +107,8 @@ public class EkeyUdpPacketReceiver {
             while (isConnected()) {
                 try {
                     logger.trace("Listen for incoming packet");
-                    if (socket != null) {
-                        socket.receive(packet);
-                        logger.info("Packet received - {}", packet.getData());
-                    }
+                    localSocket.receive(packet);
+                    logger.trace("Packet received - {}", packet.getData());
                 } catch (IOException exception) {
                     logger.debug("Exception during packet read - {}", exception.getMessage());
                 }

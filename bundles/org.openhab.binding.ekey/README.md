@@ -40,6 +40,7 @@ The binding uses the following configuration parameters.
 ## Examples
 
 rare.items
+
 ```
 Number Action "Last action [MAP(ekey_action.map):%d]"                          { channel="ekey:cvlan:de3b8db06e:action" }
 Number FingerID "User used finger [MAP(ekey_finger.map):%d]"                   { channel="ekey:cvlan:de3b8db06e:fingerid" }
@@ -48,7 +49,9 @@ Number Serialnumber "Serialnumber [%d]"                                        {
 Number TerminalID "Last used terminal [MAP(ekey_terminal.map):%d]"             { channel="ekey:cvlan:de3b8db06e:terminalid" }
 Number UserID "Last user that accessed the house was [MAP(ekey_names.map):%d]" { channel="ekey:cvlan:de3b8db06e:userId" }
 ```
+
 multi.items
+
 ```
 Number Action "Last action [MAP(ekey_action.map):%d]"                          { channel="ekey:cvlan:de3b8db06e:action" }
 Number FingerID "User used finger [MAP(ekey_finger.map):%d]"                   { channel="ekey:cvlan:de3b8db06e:fingerid" }
@@ -60,7 +63,9 @@ Number UserID "Last user that accessed the house was [MAP(ekey_names.map):%d]" {
 String UserName " Name of Last user that accessed the house was : [%d]"        { channel="ekey:cvlan:de3b8db06e:userName" }
 Number UserStatus "Last user that accessed the house was [MAP(ekey_names.map):%d]" { channel="ekey:cvlan:de3b8db06e:userStatus" }
 ```
+
 home.items
+
 ```
 Number Action "Last action [MAP(ekey_action.map):%d]"                          { channel="ekey:cvlan:de3b8db06e:action" }
 Number FingerID "User used finger [MAP(ekey_finger.map):%d]"                   { channel="ekey:cvlan:de3b8db06e:fingerid" }
@@ -86,17 +91,22 @@ transform/ekey_finger.map [This is just an example, as there is no strict rule w
 ```
 
 transform/ekey_names.map [NO spaces allowed]
+
 ```javascript
 -1=Unspecified
 1=JohnDoe
 2=JaneDoe
 ```
+
 transform/ekey_terminal.map
+
 ```javascript
 80156839130911=Front
 80156839130914=Back
 ```
+
 transform/ekey_multi_action.map
+
 ```javascript
 0=granted
 -1=rejected
@@ -107,7 +117,9 @@ transform/ekey_multi_action.map
 5=notcoupled
 6=digitalinput
 ```
+
 transform/ekey_rare_action.map
+
 ```javascript
 136=granted
 137=rejected
