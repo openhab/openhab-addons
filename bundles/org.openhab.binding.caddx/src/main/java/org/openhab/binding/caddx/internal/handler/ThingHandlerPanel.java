@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxEvent;
 import org.openhab.binding.caddx.internal.CaddxMessage;
+import org.openhab.binding.caddx.internal.CaddxMessageContext;
 import org.openhab.binding.caddx.internal.CaddxMessageType;
 import org.openhab.binding.caddx.internal.CaddxProperty;
 import org.openhab.binding.caddx.internal.action.CaddxPanelActions;
@@ -49,6 +50,20 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
 
     public ThingHandlerPanel(Thing thing) {
         super(thing, CaddxThingType.PANEL);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        CaddxBridgeHandler bridgeHandler = getCaddxBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+
+        String cmd = CaddxBindingConstants.PANEL_SYSTEM_STATUS_REQUEST;
+        String data = "";
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd, data);
     }
 
     @Override
@@ -82,13 +97,13 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
                 data = "";
             } else if (System.currentTimeMillis() - lastRefreshTime > 2000) {
                 // Refresh only if 2 seconds have passed from the last refresh
-                cmd = CaddxBindingConstants.PANEL_INTERFACE_CONFIGURATION_REQUEST;
+                cmd = CaddxBindingConstants.PANEL_SYSTEM_STATUS_REQUEST;
                 data = "";
             } else {
                 return;
             }
 
-            bridgeHandler.sendCommand(cmd, data);
+            bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd, data);
             lastRefreshTime = System.currentTimeMillis();
         } else {
             logger.debug("Unknown command {}", command);
@@ -104,19 +119,22 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
             CaddxMessageType mt = message.getCaddxMessageType();
             ChannelUID channelUID = null;
 
+            for (CaddxProperty p : mt.properties) {
+                if (!p.getId().isEmpty()) {
+                    String value = message.getPropertyById(p.getId());
+                    channelUID = new ChannelUID(getThing().getUID(), p.getId());
+                    updateChannel(channelUID, value);
+                    logger.trace("Updating panel channel: {}", channelUID.getAsString());
+                }
+            }
+
             // Log event messages have special handling
             if (CaddxMessageType.SYSTEM_STATUS_MESSAGE.equals(mt)) {
                 handleSystemStatusMessage(message);
             } else if (CaddxMessageType.LOG_EVENT_MESSAGE.equals(mt)) {
                 handleLogEventMessage(message);
-            } else {
-                for (CaddxProperty p : mt.properties) {
-                    if (!p.getId().isEmpty()) {
-                        String value = message.getPropertyById(p.getId());
-                        channelUID = new ChannelUID(getThing().getUID(), p.getId());
-                        updateChannel(channelUID, value);
-                    }
-                }
+            } else if (CaddxMessageType.ZONES_SNAPSHOT_MESSAGE.equals(mt)) {
+                handleZonesSnapshotMessage(message);
             }
 
             updateStatus(ThingStatus.ONLINE);
@@ -140,7 +158,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
         // build map of log message channels to event numbers
         HashMap<String, String> map = new HashMap<String, String>();
         map.put(pointer, CaddxBindingConstants.PANEL_LOG_MESSAGE_N_0);
-        bridgeHandler.sendCommand(CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST, pointer);
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST, pointer);
         panelLogMessagesMap = map;
     }
 
@@ -190,11 +208,51 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
                 }
 
                 map.put(Integer.toString(eventNumber), "panel_log_message_n_" + i);
-                bridgeHandler.sendCommand(CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST, Integer.toString(eventNumber));
+                bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST,
+                        Integer.toString(eventNumber));
             }
 
             communicatorStackPointer = null;
             panelLogMessagesMap = map;
+        }
+    }
+
+    private void handleZonesSnapshotMessage(CaddxMessage message) {
+        // Get the bridge handler
+        CaddxBridgeHandler bridgeHandler = getCaddxBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+
+        int zoneOffset = Integer.parseInt(message.getPropertyById("zone_offset"));
+
+        for (int i = 1; i <= 16; i++) {
+            int zoneNumber = zoneOffset * 16 + i;
+
+            String zoneFaulted = message.getPropertyById("zone_" + i + "_faulted");
+            String zoneBypassed = message.getPropertyById("zone_" + i + "_bypassed");
+            String zoneTrouble = message.getPropertyById("zone_" + i + "_trouble");
+            String zoneAlarmMemory = message.getPropertyById("zone_" + i + "_alarm_memory");
+
+            logger.debug("Flags for zone {}. faulted:{}, bypassed:{}, trouble:{}, alarm_memory:{}", zoneNumber,
+                    zoneFaulted, zoneBypassed, zoneTrouble, zoneAlarmMemory);
+
+            // Get thing
+            Thing thing = bridgeHandler.findThing(CaddxThingType.ZONE, null, zoneNumber, null);
+            if (thing != null) {
+                ChannelUID channelUID;
+
+                logger.debug("Thing found for zone {}.", zoneNumber);
+
+                channelUID = new ChannelUID(thing.getUID(), "zone_faulted");
+                updateChannel(channelUID, zoneFaulted);
+                channelUID = new ChannelUID(thing.getUID(), "zone_bypassed");
+                updateChannel(channelUID, zoneBypassed);
+                channelUID = new ChannelUID(thing.getUID(), "zone_trouble");
+                updateChannel(channelUID, zoneTrouble);
+                channelUID = new ChannelUID(thing.getUID(), "zone_alarm_memory");
+                updateChannel(channelUID, zoneAlarmMemory);
+            }
         }
     }
 
@@ -216,7 +274,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
         if (bridgeHandler == null) {
             return;
         }
-        bridgeHandler.sendCommand(cmd, sb.toString());
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd, sb.toString());
     }
 
     private void sendSecondaryCommand(String function) {
@@ -230,7 +288,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
         if (bridgeHandler == null) {
             return;
         }
-        bridgeHandler.sendCommand(cmd, sb.toString());
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd, sb.toString());
     }
 
     public void turnOffAnySounderOrAlarm(String pin) {
