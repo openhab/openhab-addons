@@ -218,8 +218,6 @@ The retained argument is optional and if not supplied defaults to `false`.
 
 ## Configuration via Text Files
 
-You find all examples in this blog post performed via Paper UI. You can of course still setup every aspect via text files, like in the following examples.
-
 *broker.things* file:
 
 ```
