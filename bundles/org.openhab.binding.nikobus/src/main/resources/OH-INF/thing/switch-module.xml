@@ -51,7 +51,7 @@
 			</channel>
 		</channels>
 
-		<config-description-ref uri="module:address:config"/>
+		<config-description-ref uri="thing-type:nikobus:module"/>
 	</thing-type>
 
 	<channel-type id="switch-output">
