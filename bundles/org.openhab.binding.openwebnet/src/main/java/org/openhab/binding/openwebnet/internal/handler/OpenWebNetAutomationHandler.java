@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openwebnet.handler;
+package org.openhab.binding.openwebnet.internal.handler;
 
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CHANNEL_SHUTTER;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_SHUTTER;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
+import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
