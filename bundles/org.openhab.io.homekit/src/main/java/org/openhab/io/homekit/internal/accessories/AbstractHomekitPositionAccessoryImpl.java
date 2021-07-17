@@ -24,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.NumberItem;
@@ -84,12 +85,19 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
         getCharacteristic(TARGET_POSITION).ifPresentOrElse(taggedItem -> {
             final Item item = taggedItem.getItem();
             final int targetPosition = convertPosition(value, openPosition);
+
             if (item instanceof RollershutterItem) {
                 ((RollershutterItem) item).send(new PercentType(targetPosition));
             } else if (item instanceof DimmerItem) {
                 ((DimmerItem) item).send(new PercentType(targetPosition));
             } else if (item instanceof NumberItem) {
                 ((NumberItem) item).send(new DecimalType(targetPosition));
+            } else if (item instanceof GroupItem && ((GroupItem) item).getBaseItem() instanceof RollershutterItem) {
+                ((GroupItem) item).send(new PercentType(targetPosition));
+            } else if (item instanceof GroupItem && ((GroupItem) item).getBaseItem() instanceof DimmerItem) {
+                ((GroupItem) item).send(new PercentType(targetPosition));
+            } else if (item instanceof GroupItem && ((GroupItem) item).getBaseItem() instanceof NumberItem) {
+                ((GroupItem) item).send(new DecimalType(targetPosition));
             } else {
                 logger.warn(
                         "Unsupported item type for characteristic {} at accessory {}. Expected Rollershutter, Dimmer or Number item, got {}",
