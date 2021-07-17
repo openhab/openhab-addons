@@ -129,6 +129,7 @@
 /bundles/org.openhab.binding.insteon/ @robnielsen
 /bundles/org.openhab.binding.intesis/ @hmerk
 /bundles/org.openhab.binding.ipcamera/ @Skinah
+/bundles/org.openhab.binding.ipobserver/ @Skinah
 /bundles/org.openhab.binding.ipp/ @peuter
 /bundles/org.openhab.binding.irobot/ @Sonic-Amiga
 /bundles/org.openhab.binding.irtrans/ @kgoderis
