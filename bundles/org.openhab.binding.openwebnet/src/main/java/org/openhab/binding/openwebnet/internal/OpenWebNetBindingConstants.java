@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openwebnet;
+package org.openhab.binding.openwebnet.internal;
 
 import java.util.Collection;
 import java.util.HashSet;
