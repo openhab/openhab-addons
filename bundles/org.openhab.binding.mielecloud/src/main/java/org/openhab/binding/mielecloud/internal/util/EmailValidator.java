@@ -23,7 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public final class EmailValidator {
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$");
+    private static final Pattern EMAIL_PATTERN = Pattern
+            .compile("^[a-zA-Z_0-9\\.+%-]{3,}\\@([a-zA-Z_0-9-]+\\.)+[a-z]+$");
 
     private EmailValidator() {
         throw new UnsupportedOperationException();
