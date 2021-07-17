@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openwebnet.handler;
+package org.openhab.binding.openwebnet.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -31,7 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Test class for {@link OpenWebNetBridgeHandler#ownID} and ThingID calculation using {@link OpenWebNetBridgeHandler}
+ * Test class for {@link OpenWebNetBridgeHandler#ownID} and ThingID
+ * calculation using {@link OpenWebNetBridgeHandler}
  * methods: normalizeWhere(), ownIdFromWhoWhere(), ownIdFromMessage(), thingIdFromWhere()
  *
  * @author Massimo Valla - Initial contribution

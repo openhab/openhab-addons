@@ -18,8 +18,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
-import org.openhab.binding.openwebnet.handler.OpenWebNetBridgeHandler;
+import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
