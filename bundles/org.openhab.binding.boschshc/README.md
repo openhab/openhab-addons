@@ -111,6 +111,12 @@ This certificate is used for pairing between the Bridge and the Bosch Smart Home
 
 Bosch IDs for found devices are displayed in the openHAB log on bootup (`OPENHAB_FOLDER/userdata/logs/openhab.log`)
 
+The log can also be called using the following command.
+```
+tail -f /var/log/openhab/openhab.log /var/log/openhab/events.log
+```
+Alternatively, the log can be viewed using the OpenHab Log Viewer (frontail) via http://openhab:9001.
+
 Example:
 
 ```
