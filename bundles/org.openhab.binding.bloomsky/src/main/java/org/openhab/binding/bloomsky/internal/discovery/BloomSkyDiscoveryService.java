@@ -106,7 +106,7 @@ public class BloomSkyDiscoveryService extends AbstractDiscoveryService {
 
                 thingDiscovered(skyDiscoveryResult);
                 // Check for STORM device associated with this SKY weather station
-                if (!device.getStorm().getuVIndex().isBlank() && !device.getStorm().getWindDirection().isBlank()) {
+                if (!(device.getStorm().getuVIndex() == null) && !(device.getStorm().getWindDirection() == null)) {
                     logger.debug("scanForNewDevices found a STORM associated with the SKY device called: {}",
                             device.getDeviceName());
 
