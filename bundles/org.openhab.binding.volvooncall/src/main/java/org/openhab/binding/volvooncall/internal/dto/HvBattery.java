@@ -27,8 +27,17 @@ import org.openhab.core.library.types.StringType;
 public class HvBattery {
     public int hvBatteryLevel = UNDEFINED;
     public int distanceToHVBatteryEmpty = UNDEFINED;
+    /**
+     * Observed values:
+     * - CableNotPluggedInCar
+     * - CablePluggedInCar_ChargingPaused
+     * - CablePluggedInCar_Charging
+     * - CablePluggedInCar_ChargingInterrupted
+     * - CablePluggedInCar_FullyCharged
+     */
     public @NonNullByDefault({}) StringType hvBatteryChargeStatusDerived;
     public int timeToHVBatteryFullyCharged = UNDEFINED;
+
     /*
      * Currently unused in the binding, maybe interesting in the future
      * private ZonedDateTime timestamp;
