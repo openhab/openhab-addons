@@ -13,18 +13,18 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.binding.rfxcom.internal.RFXComTestHelper.commandChannelUID;
 
 import java.nio.ByteBuffer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.rfxcom.internal.RFXComBindingConstants;
 import org.openhab.binding.rfxcom.internal.config.RFXComRawDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.types.Type;
+import org.openhab.core.types.Command;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -34,7 +34,6 @@ import org.openhab.core.util.HexUtils;
  */
 @NonNullByDefault
 public class RFXComRawMessageTest {
-
     private void testMessageRx(String hexMsg, RFXComRawMessage.SubType subType, int seqNbr, int repeat, String pulses)
             throws RFXComException {
         final RFXComRawMessage msg = (RFXComRawMessage) RFXComMessageFactoryImpl.INSTANCE
@@ -53,11 +52,10 @@ public class RFXComRawMessageTest {
         testMessageRx("087F0027051356ECC0", RFXComRawMessage.SubType.RAW_PACKET1, 0x27, 5, "1356ECC0");
     }
 
-    private void testMessageTx(RFXComRawDeviceConfiguration config, Type command, String hexMsg)
+    private void testMessageTx(RFXComRawDeviceConfiguration config, Command command, String hexMsg)
             throws RFXComException {
-        RFXComRawMessage msg = (RFXComRawMessage) RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.RAW);
-        msg.setConfig(config);
-        msg.convertFromState(RFXComBindingConstants.CHANNEL_COMMAND, command);
+        RFXComRawMessage msg = (RFXComRawMessage) RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.RAW,
+                config, commandChannelUID, command);
         byte[] decoded = msg.decodeMessage();
 
         assertEquals(hexMsg, HexUtils.bytesToHex(decoded), "Transmitted message");
