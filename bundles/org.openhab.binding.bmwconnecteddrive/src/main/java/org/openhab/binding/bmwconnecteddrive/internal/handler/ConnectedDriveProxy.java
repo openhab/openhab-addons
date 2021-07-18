@@ -20,7 +20,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -331,20 +330,33 @@ public class ConnectedDriveProxy {
 
         req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
         req.header(HttpHeader.CONNECTION, KEEP_ALIVE);
-        req.header(HttpHeader.HOST, BimmerConstants.SERVER_MAP.get(configuration.region));
+        req.header(HttpHeader.HOST, BimmerConstants.AUTH_SERVER_MAP.get(configuration.region));
         req.header(HttpHeader.AUTHORIZATION, BimmerConstants.AUTHORIZATION_VALUE_MAP.get(configuration.region));
         req.header(CREDENTIALS, BimmerConstants.CREDENTIAL_VALUES);
+        logger.info("Post Uri: {}, Headers adapted {}", req.getURI(), req.getHeaders().size());
 
-        MultiMap<String> dataMap = new MultiMap<String>();
-        dataMap.add(CLIENT_ID, clientId);
-        dataMap.add(RESPONSE_TYPE, TOKEN);
-        dataMap.add(REDIRECT_URI, BimmerConstants.REDIRECT_URI_VALUE);
-        dataMap.add(SCOPE, BimmerConstants.SCOPE_VALUES);
-        dataMap.add(USERNAME, configuration.userName);
-        dataMap.add(PASSWORD, configuration.password);
-        String urlEncodedData = UrlEncoded.encode(dataMap, Charset.defaultCharset(), false);
-        req.header(CONTENT_LENGTH, Integer.toString(urlEncodedData.length()));
-        req.content(new StringContentProvider(urlEncodedData));
+        req.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED, getAuthEncodedData(), StandardCharsets.UTF_8));
+        // String urlEncodedData = UrlEncoded.encode(dataMap, Charset.defaultCharset(), false);
+        // req.header(CONTENT_LENGTH, Integer.toString(urlEncodedData.length()));
+        // req.content(new StringContentProvider(urlEncodedData));
+        // logger.info("Header: {}, URL: {}", req.getHeaders(), urlEncodedData);
+
+        // req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send(new BufferingResponseListener() {
+        // @NonNullByDefault({})
+        // @Override
+        // public void onComplete(Result result) {
+        // if (result.getResponse().getStatus() == 302) {
+        // HttpFields fields = result.getResponse().getHeaders();
+        // HttpField field = fields.getField(HttpHeader.LOCATION);
+        // tokenFromUrl(field.getValue());
+        // logger.info("Jetty Auth succeeded!");
+        // } else {
+        // logger.debug("Authorization status {} reason {}", result.getResponse().getStatus(),
+        // result.getResponse().getReason());
+        // }
+        // }
+        // });
+
         try {
             ContentResponse contentResponse = req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
             // Status needs to be 302 - Response is stored in Header
@@ -353,8 +365,8 @@ public class ConnectedDriveProxy {
                 HttpField field = fields.getField(HttpHeader.LOCATION);
                 tokenFromUrl(field.getValue());
             } else {
-                logger.debug("Authorization status {} reason {}", contentResponse.getStatus(),
-                        contentResponse.getReason());
+                logger.info("Authorization status {} reason {} content {}", contentResponse.getStatus(),
+                        contentResponse.getHeaders(), new String(contentResponse.getContent(), StandardCharsets.UTF_8));
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.debug("Authorization exception: {}", e.getMessage());
@@ -372,38 +384,31 @@ public class ConnectedDriveProxy {
             HttpURLConnection.setFollowRedirects(false);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
-
             con.setRequestProperty(HttpHeader.CONTENT_TYPE.toString(), CONTENT_TYPE_URL_ENCODED);
             con.setRequestProperty(HttpHeader.CONNECTION.toString(), KEEP_ALIVE);
-            con.setRequestProperty(HttpHeader.HOST.toString(),
-                    BimmerConstants.SERVER_MAP.get(BimmerConstants.SERVER_ROW));
+            con.setRequestProperty(HttpHeader.HOST.toString(), BimmerConstants.SERVER_MAP.get(configuration.region));
             con.setRequestProperty(HttpHeader.AUTHORIZATION.toString(),
                     BimmerConstants.AUTHORIZATION_VALUE_MAP.get(configuration.region));
             con.setRequestProperty(CREDENTIALS, BimmerConstants.CREDENTIAL_VALUES);
             con.setDoOutput(true);
 
-            MultiMap<String> dataMap = new MultiMap<String>();
-            dataMap.add(CLIENT_ID, clientId);
-            dataMap.add(RESPONSE_TYPE, TOKEN);
-            dataMap.add(REDIRECT_URI, BimmerConstants.REDIRECT_URI_VALUE);
-            dataMap.add(SCOPE, BimmerConstants.SCOPE_VALUES);
-            dataMap.add(USERNAME, configuration.userName);
-            dataMap.add(PASSWORD, configuration.password);
-            String urlEncodedData = UrlEncoded.encode(dataMap, Charset.defaultCharset(), false);
+            // logger.info("Header: {}, URL: {}", con.getHeaderFields(), urlEncodedData);
+
             OutputStream os = con.getOutputStream();
-            byte[] input = urlEncodedData.getBytes("utf-8");
+            byte[] input = getAuthEncodedData().getBytes("utf-8");
             os.write(input, 0, input.length);
+
             BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
             StringBuilder response = new StringBuilder();
             String responseLine = null;
             while ((responseLine = br.readLine()) != null) {
                 response.append(responseLine.trim());
             }
-            logger.info("Response Code {} Message {} ", con.getResponseCode(), con.getResponseMessage());
+            logger.info("Headers adapted {}", con.getHeaderFields());
+            logger.info("Auth Response Code {} Message {} ", con.getResponseCode(), con.getResponseMessage());
             tokenFromUrl(con.getHeaderField(HttpHeader.LOCATION.toString()));
         } catch (IOException e) {
             logger.warn("{}", e.getMessage());
-            updateLegacyToken();
         }
     }
 
@@ -422,5 +427,16 @@ public class ConnectedDriveProxy {
                 }
             }
         });
+    }
+
+    private String getAuthEncodedData() {
+        MultiMap<String> dataMap = new MultiMap<String>();
+        dataMap.add(CLIENT_ID, clientId);
+        dataMap.add(RESPONSE_TYPE, TOKEN);
+        dataMap.add(REDIRECT_URI, BimmerConstants.REDIRECT_URI_VALUE);
+        dataMap.add(SCOPE, BimmerConstants.SCOPE_VALUES);
+        dataMap.add(USERNAME, configuration.userName);
+        dataMap.add(PASSWORD, configuration.password);
+        return UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false);
     }
 }
