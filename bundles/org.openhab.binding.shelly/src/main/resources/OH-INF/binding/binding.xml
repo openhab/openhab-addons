@@ -7,7 +7,7 @@
 	<description>This binding supports the Shelly series of devices.</description>
 	<author>Markus Michels</author>
 
-	<config-description uri="binding:shelly">
+	<config-description>
 		<parameter name="defaultUserId" type="text">
 			<default>admin</default>
 			<label>@text/binding.shelly.config.defaultUserId.label</label>
