@@ -21,7 +21,7 @@
 			<channel id="vehicle" typeId="plugvehicle"/>
 			<channel id="locked" typeId="locked"/>
 			<channel id="maxpilotcurrent" typeId="pilotcurrent"/>
-			<channel id="pwmpilotcurrent" typeId="pilotrange"/>
+			<channel id="maxpilotcurrentdutycyle" typeId="pilotcurrentdutycyle"/>
 			<channel id="maxsystemcurrent" typeId="maxcurrent"/>
 			<channel id="failsafecurrent" typeId="failsafecurrent"/>
 			<channel id="output" typeId="x2"/>
@@ -64,7 +64,7 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false">
 				<label>Refresh Interval</label>
-				<description>Specifies the refresh interval in seconds.</description>
+				<description>Specifies the refresh interval in seconds</description>
 				<default>15</default>
 			</parameter>
 		</config-description>
@@ -134,82 +134,82 @@
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="current_settable">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>Preset Current</label>
-		<description>Preset Current in mA</description>
-		<state pattern="%d mA" readOnly="false"></state>
+		<description>Preset Current</description>
+		<state pattern="%.3f %unit%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="current" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
-		<description>Current in mA</description>
-		<state pattern="%d mA" readOnly="true"></state>
+		<description>Current</description>
+		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="maxcurrent" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>Max. System Current</label>
-		<description>Maximal System Current in mA</description>
-		<state pattern="%d mA" readOnly="true"></state>
+		<description>Maximal System Current</description>
+		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="failsafecurrent" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>Failsafe Current</label>
-		<description>Failsafe Current in mA (if network is lost)</description>
-		<state pattern="%d mA" readOnly="true"></state>
+		<description>Failsafe Current (if network is lost)</description>
+		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="range" advanced="true">
-		<item-type>Dimmer</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Rel. Current</label>
-		<description>Current in % of the 6000-63000 mA range accepted by the wallbox</description>
-		<state pattern="%d %%" readOnly="false"></state>
+		<description>Current in % of the 6-63 A range accepted by the wallbox</description>
+		<state pattern="%.1f %%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="pilotcurrent" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>Pilot Current</label>
-		<description>Current preset value via Control pilot in mA</description>
-		<state pattern="%d mA" readOnly="true"></state>
+		<description>Current value offered to the vehicle via control pilot signalization (PWM)</description>
+		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="pilotrange" advanced="true">
-		<item-type>Number</item-type>
-		<label>Pilot Range</label>
-		<description>Current preset value via Control pilot in 0,1% of the PWM value</description>
-		<state pattern="%d" readOnly="true"></state>
+	<channel-type id="pilotcurrentdutycyle" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Pilot Current Duty Cycle</label>
+		<description>Duty cycle of the control pilot signal</description>
+		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="uptime" advanced="true">
-		<item-type>DateTime</item-type>
+		<item-type>Number:Time</item-type>
 		<label>System Uptime</label>
 		<description>System uptime since the last reset of the wallbox</description>
-		<state readOnly="true"></state>
+		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="voltage" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
-		<description>Voltage in V</description>
-		<state pattern="%d V" readOnly="true"></state>
+		<description>Voltage</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="power">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power</label>
-		<description>Active Power in W</description>
-		<state pattern="%d W" readOnly="true"></state>
+		<description>Active Power</description>
+		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="powerfactor" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Power Factor</label>
 		<description>Power factor (cosphi)</description>
-		<state readOnly="true"></state>
+		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="energy" advanced="true">
-		<item-type>Number</item-type>
-		<label>Energy</label>
-		<description>Power consumption in Wh.</description>
-		<state pattern="%d Wh" readOnly="true"></state>
+		<item-type>Number:Energy</item-type>
+		<label>Energy Session</label>
+		<description>Power consumption</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="totalenergy" advanced="true">
-		<item-type>Number</item-type>
-		<label>Energy</label>
+		<item-type>Number:Energy</item-type>
+		<label>Energy Total</label>
 		<description>Total energy consumption is added up after each completed charging session</description>
-		<state pattern="%d Wh" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="display" advanced="true">
 		<item-type>String</item-type>
@@ -248,10 +248,10 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="setenergylimit">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Energy Limit</label>
-		<description>An energy limit for an already running or the next charging session.</description>
-		<state pattern="%d Wh" readOnly="false"></state>
+		<description>An energy limit for an already running or the next charging session</description>
+		<state pattern="%.1f %unit%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="authenticate">
 		<item-type>String</item-type>

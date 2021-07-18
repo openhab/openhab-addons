@@ -4,20 +4,18 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="enocean:genericChannel:config">
-		<parameter name="transformationType" type="text">
+	<config-description uri="channel-type:enocean:genericChannel">
+		<parameter name="transformationType" type="text" required="true">
 			<label>Transformation Type</label>
 			<description>The type of the transformation, e.g. "MAP"</description>
-			<required>true</required>
 		</parameter>
-		<parameter name="transformationFunction" type="text">
+		<parameter name="transformationFunction" type="text" required="true">
 			<label>Transformation Function</label>
 			<description>The transformation function, e.g. for transformation type map => filename of mapping file</description>
-			<required>true</required>
 		</parameter>
 	</config-description>
 
-	<config-description uri="enocean:listeningRockerChannel:config">
+	<config-description uri="channel-type:enocean:listeningRockerChannel">
 		<parameter name="enoceanId" type="text">
 			<label>EnOceanId</label>
 			<description>EnOcean Id to listen to</description>
@@ -42,7 +40,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="enocean:virtualRockerChannel:config">
+	<config-description uri="channel-type:enocean:virtualRockerChannel">
 		<parameter name="duration" type="integer" unit="ms">
 			<label>Time Between Press and Release Message</label>
 			<default>250</default>

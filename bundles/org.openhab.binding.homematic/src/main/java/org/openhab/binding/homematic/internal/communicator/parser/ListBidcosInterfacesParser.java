@@ -64,7 +64,7 @@ public class ListBidcosInterfacesParser extends CommonRpcParser<Object[], ListBi
      * Returns the firmware version.
      */
     public String getFirmware() {
-        return firmware;
+        return firmware == null ? "" : firmware;
     }
 
     /**

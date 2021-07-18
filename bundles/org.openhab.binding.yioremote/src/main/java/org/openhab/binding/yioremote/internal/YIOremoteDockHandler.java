@@ -81,6 +81,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     private AuthenticationMessage authenticationMessageHandler = new AuthenticationMessage();
     private IRReceiverMessage irReceiverMessageHandler = new IRReceiverMessage();
     private PingMessage pingMessageHandler = new PingMessage();
+    private int reconnectionCounter = 0;
 
     public YIOremoteDockHandler(Thing thing) {
         super(thing);
@@ -122,6 +123,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                                     authenticateWebsocket();
                                     break;
                                 case COMMUNICATION_ERROR:
+                                    disposeWebsocketPollingJob();
                                     reconnectWebsocket();
                                     break;
                                 case AUTHENTICATION_COMPLETE:
@@ -142,12 +144,14 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
                 @Override
                 public void onClose() {
+                    logger.debug("onClose");
                     disposeWebsocketPollingJob();
                     reconnectWebsocket();
                 }
 
                 @Override
                 public void onError(Throwable cause) {
+                    logger.debug("onError");
                     disposeWebsocketPollingJob();
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -224,8 +228,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
     private JsonObject convertStringToJsonObject(String jsonString) {
         try {
-            JsonParser parser = new JsonParser();
-            JsonElement jsonElement = parser.parse(jsonString);
+            JsonElement jsonElement = JsonParser.parseString(jsonString);
             JsonObject result;
 
             if (jsonElement instanceof JsonObject) {
@@ -255,14 +258,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         disposeWebsocketPollingJob();
-        if (webSocketReconnectionPollingJob != null) {
-            if (!webSocketReconnectionPollingJob.isCancelled() && webSocketReconnectionPollingJob != null) {
-                webSocketReconnectionPollingJob.cancel(true);
-                authenticationOk = false;
-                heartBeat = false;
-            }
-            webSocketReconnectionPollingJob = null;
-        }
+        disposeWebSocketReconnectionPollingJob();
     }
 
     @Override
@@ -325,10 +321,12 @@ public class YIOremoteDockHandler extends BaseThingHandler {
             case AUTHENTICATION_PROCESS:
                 if (authenticationOk) {
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.AUTHENTICATION_COMPLETE;
+                    disposeWebSocketReconnectionPollingJob();
+                    reconnectionCounter = 0;
                     updateStatus(ThingStatus.ONLINE);
                     updateState(STATUS_STRING_CHANNEL, StringType.EMPTY);
                     updateState(RECEIVER_SWITCH_CHANNEL, OnOffType.OFF);
-                    webSocketPollingJob = scheduler.scheduleWithFixedDelay(this::pollingWebsocketJob, 0, 60,
+                    webSocketPollingJob = scheduler.scheduleWithFixedDelay(this::pollingWebsocketJob, 0, 40,
                             TimeUnit.SECONDS);
                 } else {
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.AUTHENTICATION_FAILED;
@@ -350,6 +348,17 @@ public class YIOremoteDockHandler extends BaseThingHandler {
             }
             webSocketPollingJob = null;
         }
+    }
+
+    private void disposeWebSocketReconnectionPollingJob() {
+        if (webSocketReconnectionPollingJob != null) {
+            if (!webSocketReconnectionPollingJob.isCancelled() && webSocketReconnectionPollingJob != null) {
+                webSocketReconnectionPollingJob.cancel(true);
+            }
+        }
+        webSocketReconnectionPollingJob = null;
+        logger.debug("disposereconnection");
+        reconnectionCounter = 0;
     }
 
     private void pollingWebsocketJob() {
@@ -396,13 +405,30 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     }
 
     public void reconnectWebsocket() {
+        yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
         if (webSocketReconnectionPollingJob == null) {
             webSocketReconnectionPollingJob = scheduler.scheduleWithFixedDelay(this::reconnectWebsocketJob, 0, 30,
                     TimeUnit.SECONDS);
+        } else if (reconnectionCounter == 5) {
+            reconnectionCounter = 0;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Connection lost no ping from YIO DOCK");
+            if (webSocketReconnectionPollingJob == null) {
+                webSocketReconnectionPollingJob = scheduler.scheduleWithFixedDelay(this::reconnectWebsocketJob, 0, 1,
+                        TimeUnit.MINUTES);
+            } else {
+                disposeWebSocketReconnectionPollingJob();
+                if (webSocketReconnectionPollingJob == null) {
+                    webSocketReconnectionPollingJob = scheduler.scheduleWithFixedDelay(this::reconnectWebsocketJob, 0,
+                            5, TimeUnit.MINUTES);
+                }
+            }
+        } else {
         }
     }
 
     public void reconnectWebsocketJob() {
+        reconnectionCounter++;
         switch (yioRemoteDockActualStatus) {
             case COMMUNICATION_ERROR:
                 logger.debug("Reconnecting YIORemoteHandler");
@@ -432,12 +458,8 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 }
                 break;
             case AUTHENTICATION_COMPLETE:
-                if (webSocketReconnectionPollingJob != null) {
-                    if (!webSocketReconnectionPollingJob.isCancelled() && webSocketReconnectionPollingJob != null) {
-                        webSocketReconnectionPollingJob.cancel(true);
-                    }
-                    webSocketReconnectionPollingJob = null;
-                }
+                disposeWebSocketReconnectionPollingJob();
+                reconnectionCounter = 0;
                 break;
             default:
                 break;

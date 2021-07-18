@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.opensprinkler.internal.api.exception;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link MismatchApiException} exception is thrown when result from the OpenSprinkler
  * API is "result" : 3.
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 public class MismatchApiException extends GeneralApiException {
     /**
      * Serial ID of this error class.

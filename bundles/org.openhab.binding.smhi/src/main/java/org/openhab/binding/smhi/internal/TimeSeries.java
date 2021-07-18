@@ -72,8 +72,14 @@ public class TimeSeries implements Iterable<Forecast> {
         return Optional.empty();
     }
 
+    /**
+     * Get all Forecasts for the n:th day after the start of the TimeSeries
+     *
+     * @param dayOffset
+     * @return
+     */
     public List<Forecast> getDay(int dayOffset) {
-        ZonedDateTime day = referenceTime.plusDays(dayOffset);
+        ZonedDateTime day = referenceTime.plusDays(dayOffset).plusHours(1);
         return forecasts.stream().filter(forecast -> forecast.getValidTime().getDayOfMonth() == day.getDayOfMonth())
                 .collect(Collectors.toList());
     }

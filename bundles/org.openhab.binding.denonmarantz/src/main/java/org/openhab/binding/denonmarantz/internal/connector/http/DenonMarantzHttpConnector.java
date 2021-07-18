@@ -33,8 +33,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.util.StreamReaderDelegate;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Response;
@@ -169,7 +167,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
     @Override
     protected void internalSendCommand(String command) {
         logger.debug("Sending command '{}'", command);
-        if (StringUtils.isBlank(command)) {
+        if (command == null || command.isBlank()) {
             logger.warn("Trying to send empty command");
             return;
         }
@@ -306,12 +304,13 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             String result = HttpUtil.executeUrl("GET", uri, REQUEST_TIMEOUT_MS);
             logger.trace("result of getDocument for uri '{}':\r\n{}", uri, result);
 
-            if (StringUtils.isNotBlank(result)) {
+            if (result != null && !result.isBlank()) {
                 JAXBContext jc = JAXBContext.newInstance(response);
                 XMLInputFactory xif = XMLInputFactory.newInstance();
                 xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
                 xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-                XMLStreamReader xsr = xif.createXMLStreamReader(IOUtils.toInputStream(result));
+                XMLStreamReader xsr = xif
+                        .createXMLStreamReader(new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8)));
                 xsr = new PropertyRenamerDelegate(xsr);
 
                 @SuppressWarnings("unchecked")
@@ -341,11 +340,12 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(sw.toString().getBytes(StandardCharsets.UTF_8));
             String result = HttpUtil.executeUrl("POST", uri, inputStream, CONTENT_TYPE_XML, REQUEST_TIMEOUT_MS);
 
-            if (StringUtils.isNotBlank(result)) {
+            if (result != null && !result.isBlank()) {
                 JAXBContext jcResponse = JAXBContext.newInstance(response);
 
                 @SuppressWarnings("unchecked")
-                T obj = (T) jcResponse.createUnmarshaller().unmarshal(IOUtils.toInputStream(result));
+                T obj = (T) jcResponse.createUnmarshaller()
+                        .unmarshal(new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8)));
 
                 return obj;
             }

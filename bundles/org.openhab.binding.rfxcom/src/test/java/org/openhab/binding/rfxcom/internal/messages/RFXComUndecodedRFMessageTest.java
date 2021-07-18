@@ -32,7 +32,7 @@ public class RFXComUndecodedRFMessageTest {
 
     private void testMessage(String hexMsg, RFXComUndecodedRFMessage.SubType subType, int seqNbr, String rawPayload)
             throws RFXComException {
-        final RFXComUndecodedRFMessage msg = (RFXComUndecodedRFMessage) RFXComMessageFactory
+        final RFXComUndecodedRFMessage msg = (RFXComUndecodedRFMessage) RFXComMessageFactoryImpl.INSTANCE
                 .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals(subType, msg.subType, "SubType");
         assertEquals(seqNbr, (short) (msg.seqNbr & 0xFF), "Seq Number");
@@ -51,7 +51,7 @@ public class RFXComUndecodedRFMessageTest {
 
     @Test
     public void testLongMessage() throws RFXComException {
-        RFXComUndecodedRFMessage msg = (RFXComUndecodedRFMessage) RFXComMessageFactory
+        RFXComUndecodedRFMessage msg = (RFXComUndecodedRFMessage) RFXComMessageFactoryImpl.INSTANCE
                 .createMessage(PacketType.UNDECODED_RF_MESSAGE);
         msg.subType = RFXComUndecodedRFMessage.SubType.ARC;
         msg.seqNbr = 1;

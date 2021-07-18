@@ -840,11 +840,11 @@ public class HueBridge {
             @Override
             protected Result doNetwork(String address, String requestMethod, @Nullable String body) throws IOException {
                 // GET requests cannot be scheduled, so will continue working normally for convenience
-                if (requestMethod.equals("GET")) {
+                if ("GET".equals(requestMethod)) {
                     return super.doNetwork(address, requestMethod, body);
                 } else {
                     String extractedAddress = Util.quickMatch("^http://[^/]+(.+)$", address);
-                    JsonElement commandBody = new JsonParser().parse(body);
+                    JsonElement commandBody = body == null ? null : JsonParser.parseString(body);
                     scheduleCommand = new ScheduleCommand(extractedAddress, requestMethod, commandBody);
 
                     // Return a fake result that will cause an exception and the callback to end

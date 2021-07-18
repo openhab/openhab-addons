@@ -218,7 +218,7 @@ public class InsteonCommandExtension extends AbstractConsoleCommandExtension imp
     }
 
     private void startMonitoring(Console console, String addr) {
-        if (addr.equalsIgnoreCase("all")) {
+        if ("all".equalsIgnoreCase(addr)) {
             if (!monitorAllDevices) {
                 monitorAllDevices = true;
                 monitoredAddresses.clear();
@@ -255,7 +255,7 @@ public class InsteonCommandExtension extends AbstractConsoleCommandExtension imp
             return;
         }
 
-        if (addr.equalsIgnoreCase("all")) {
+        if ("all".equalsIgnoreCase(addr)) {
             if (monitorAllDevices) {
                 monitorAllDevices = false;
                 console.println("Stopped monitoring all devices.");

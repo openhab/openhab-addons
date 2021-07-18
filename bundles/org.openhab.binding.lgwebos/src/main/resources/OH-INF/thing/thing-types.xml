@@ -9,12 +9,12 @@
 		<description>WebOS based smart TV</description>
 
 		<channels>
-			<channel id="power" typeId="powerType"/>
-			<channel id="mute" typeId="muteType"/>
-			<channel id="volume" typeId="volumeType"/>
+			<channel id="power" typeId="system.power"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="volume" typeId="system.volume"/>
 			<channel id="channel" typeId="channelType"/>
 			<channel id="toast" typeId="toastType"/>
-			<channel id="mediaPlayer" typeId="mediaPlayerType"/>
+			<channel id="mediaPlayer" typeId="system.media-control"/>
 			<channel id="mediaStop" typeId="mediaStopType"/>
 			<channel id="appLauncher" typeId="appLauncherChannelType"/>
 			<channel id="rcButton" typeId="rcButtonType"/>
@@ -33,24 +33,6 @@
 		<config-description-ref uri="thing-type:lgwebos:WebOSTV"/>
 	</thing-type>
 
-	<channel-type id="powerType">
-		<item-type>Switch</item-type>
-		<label>Power</label>
-		<description>Via this binding TV can only be powered off, not on.</description>
-	</channel-type>
-	<channel-type id="muteType">
-		<item-type>Switch</item-type>
-		<label>Mute</label>
-		<description>Current Mute Setting</description>
-		<category>SoundVolume</category>
-	</channel-type>
-	<channel-type id="volumeType">
-		<item-type>Dimmer</item-type>
-		<label>Volume</label>
-		<description>Current Volume Setting</description>
-		<category>SoundVolume</category>
-		<state min="0" max="100" step="1"></state>
-	</channel-type>
 	<channel-type id="channelType">
 		<item-type>String</item-type>
 		<label>Channel</label>
@@ -60,12 +42,6 @@
 		<item-type>String</item-type>
 		<label>Toast</label>
 		<description>Send a message onto the TV screen.</description>
-	</channel-type>
-	<channel-type id="mediaPlayerType">
-		<item-type>Player</item-type>
-		<label>Media Control</label>
-		<description>Control media (e.g. audio or video) playback</description>
-		<category>MediaControl</category>
 	</channel-type>
 	<channel-type id="mediaStopType">
 		<item-type>Switch</item-type>

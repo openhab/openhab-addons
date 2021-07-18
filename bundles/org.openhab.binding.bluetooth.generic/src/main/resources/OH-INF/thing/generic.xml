@@ -25,6 +25,11 @@
 				<description>The frequency at which readable characteristics refreshed</description>
 				<default>30</default>
 			</parameter>
+			<parameter name="alwaysConnected" type="boolean">
+				<label>Connect Automatically</label>
+				<description>If enabled, will automatically connect to the device and reconnect if connection is lost.</description>
+				<default>true</default>
+			</parameter>
 		</config-description>
 
 	</thing-type>

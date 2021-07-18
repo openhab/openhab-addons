@@ -14,7 +14,6 @@
 			<parameter name="deviceId" type="text" required="true">
 				<label>MAC Address</label>
 				<description>The MAC address identifies a specific S20 Socket.</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 

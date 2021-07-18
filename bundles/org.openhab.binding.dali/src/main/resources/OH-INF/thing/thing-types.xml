@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dali"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="daliserver">
+		<label>Daliserver</label>
+		<description>A running daliserver.</description>
+
+		<config-description-ref uri="thing-type:dali:daliserver"/>
+	</bridge-type>
+
+	<!-- Single Device Type -->
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="daliserver"/>
+		</supported-bridge-type-refs>
+		<label>DALI Device</label>
+		<description>Controls a single device/ballast</description>
+		<channels>
+			<channel id="dimAtFadeRate" typeId="system.brightness"/>
+			<channel id="dimImmediately" typeId="system.brightness"/>
+		</channels>
+
+		<config-description>
+			<parameter name="targetId" type="integer" required="true" min="0" max="63">
+				<label>Device ID</label>
+				<description>Address of the device in the DALI bus</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Group Device Type -->
+	<thing-type id="group">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="daliserver"/>
+		</supported-bridge-type-refs>
+		<label>DALI Group</label>
+		<description>Controls a group of devices/ballasts</description>
+		<channels>
+			<channel id="dimAtFadeRate" typeId="system.brightness"/>
+			<channel id="dimImmediately" typeId="system.brightness"/>
+		</channels>
+
+		<config-description>
+			<parameter name="targetId" type="integer" required="true" min="0" max="31">
+				<label>Group ID</label>
+				<description>Address of the group in the DALI bus</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- RGB Type -->
+	<thing-type id="rgb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="daliserver"/>
+		</supported-bridge-type-refs>
+		<label>DALI RGB Device</label>
+		<description>Controls three DALI devices representing R,G,B lighting channels</description>
+		<channels>
+			<channel id="color" typeId="system.color"/>
+		</channels>
+
+		<config-description>
+			<parameter name="targetIdR" type="integer" required="true" min="0" max="63">
+				<label>R Device ID</label>
+				<description>Address of the device in the DALI bus</description>
+			</parameter>
+			<parameter name="targetIdG" type="integer" required="true" min="0" max="63">
+				<label>G Device ID</label>
+				<description>Address of the device in the DALI bus</description>
+			</parameter>
+			<parameter name="targetIdB" type="integer" required="true" min="0" max="63">
+				<label>B Device ID</label>
+				<description>Address of the device in the DALI bus</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

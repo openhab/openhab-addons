@@ -32,18 +32,17 @@ import java.util.concurrent.TimeUnit;
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.iaqualink.internal.IAqualinkBindingConstants;
 import org.openhab.binding.iaqualink.internal.api.IAqualinkClient;
 import org.openhab.binding.iaqualink.internal.api.IAqualinkClient.NotAuthorizedException;
-import org.openhab.binding.iaqualink.internal.api.model.AccountInfo;
-import org.openhab.binding.iaqualink.internal.api.model.Auxiliary;
-import org.openhab.binding.iaqualink.internal.api.model.Device;
-import org.openhab.binding.iaqualink.internal.api.model.Home;
-import org.openhab.binding.iaqualink.internal.api.model.OneTouch;
+import org.openhab.binding.iaqualink.internal.api.dto.AccountInfo;
+import org.openhab.binding.iaqualink.internal.api.dto.Auxiliary;
+import org.openhab.binding.iaqualink.internal.api.dto.Device;
+import org.openhab.binding.iaqualink.internal.api.dto.Home;
+import org.openhab.binding.iaqualink.internal.api.dto.OneTouch;
 import org.openhab.binding.iaqualink.internal.config.IAqualinkConfiguration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -268,7 +267,7 @@ public class IAqualinkHandler extends BaseThingHandler {
         String confSerialId = configuration.serialId;
         String confApiKey = configuration.apiKey;
 
-        if (StringUtils.isNotBlank(confApiKey)) {
+        if (confApiKey != null && !confApiKey.isBlank()) {
             this.apiKey = confApiKey;
         } else {
             this.apiKey = DEFAULT_API_KEY;
@@ -291,7 +290,7 @@ public class IAqualinkHandler extends BaseThingHandler {
                 return;
             }
 
-            if (StringUtils.isNotBlank(confSerialId)) {
+            if (confSerialId != null && !confSerialId.isBlank()) {
                 serialNumber = confSerialId.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
                 if (!Arrays.stream(devices).anyMatch(device -> device.getSerialNumber().equals(serialNumber))) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -438,8 +437,7 @@ public class IAqualinkHandler extends BaseThingHandler {
      */
     private State toState(String name, @Nullable String type, @Nullable String value) {
         try {
-            // @nullable checker does not recognize isBlank as checking null here, so must use == null to make happy
-            if (value == null || StringUtils.isBlank(value)) {
+            if (value == null || value.isBlank()) {
                 return UnDefType.UNDEF;
             }
 
@@ -459,7 +457,7 @@ public class IAqualinkHandler extends BaseThingHandler {
                 default:
                     return StringType.valueOf(value);
             }
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             return UnDefType.UNDEF;
         }
     }

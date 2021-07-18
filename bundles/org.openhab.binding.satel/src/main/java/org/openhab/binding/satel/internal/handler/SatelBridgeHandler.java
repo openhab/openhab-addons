@@ -26,7 +26,6 @@ import org.openhab.binding.satel.internal.event.ConnectionStatusEvent;
 import org.openhab.binding.satel.internal.event.SatelEventListener;
 import org.openhab.binding.satel.internal.protocol.SatelModule;
 import org.openhab.binding.satel.internal.types.IntegraType;
-import org.openhab.binding.satel.internal.util.StringUtils;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -164,7 +163,7 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
      * @return current user code, either from the configuration or set later using {@link #setUserCode(String)}
      */
     public String getUserCode() {
-        if (StringUtils.isNotEmpty(userCodeOverride)) {
+        if (!userCodeOverride.isEmpty()) {
             return userCodeOverride;
         } else {
             return config.getUserCode();

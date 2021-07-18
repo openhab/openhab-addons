@@ -10,7 +10,6 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
-				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -29,7 +28,7 @@
 				"friendlyName": "Target Temperature",
 				"channel": "target_temperature",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"stateDescription": {
 					"pattern": "%.1f %unit%",
 					"readOnly": true
@@ -69,7 +68,6 @@
 				"property": "buzzer",
 				"friendlyName": "Buzzer Status",
 				"channel": "buzzer",
-				"channelType": "buzzer",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -96,7 +94,6 @@
 				"property": "child_lock",
 				"friendlyName": "Child Lock",
 				"channel": "childlock",
-				"channelType": "childlock",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -124,7 +121,7 @@
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"stateDescription": {
 					"pattern": "%.1f %unit%",
 					"readOnly": true
@@ -141,7 +138,6 @@
 				"property": "use_time",
 				"friendlyName": "Run Time",
 				"channel": "usedhours",
-				"channelType": "usedhours",
 				"type": "Number:Time",
 				"unit": "hours",
 				"refresh": true,

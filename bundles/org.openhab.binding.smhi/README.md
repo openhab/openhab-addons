@@ -30,39 +30,46 @@ You can also choose for which hours and which days you would like to get forecas
 The channels are the same for all forecasts, but the daily forecast provides some additional aggregated values.
 For the other daily forecast channels, the values are for 12:00 UTC.
 
+The complete channel identifier is the channel group id (`hour_<offset>` or `day_<offset>`, where offset is 0 for the current hour/day
+or the number of hours/days from now) + the channel id, concatenated with a `#`.
+
+Examples:
+* Temperature for the current hour: `hour_0#t`
+* Total precipitation 3 days from now: `day_3#ptotal`
+
 #### Basic channels
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| Temperature  | Number:Temperature | Temperature in Celsius  |
-| Max Temperature  | Number:Temperature | Highest temperature of the day (daily forecast only)  |
-| Min Temperature  | Number:Temperature | Lowest temperature of the day (daily forecast only)  |
-| Wind direction  | Number:Angle | Wind direction in degrees  |
-| Wind Speed  | Number:Speed | Wind speed in m/s  |
-| Max Wind Speed  | Number:Speed | Highest wind speed of the day (daily forecast only)  |
-| Min Wind Speed  | Number:Speed | Lowest wind speed of the day (daily forecast only)  |
-| Wind gust speed  | Number:Speed | Wind gust speed in m/s  |
-| Minimum precipitation  | Number:Speed | Minimum precipitation intensity in mm/h  |
-| Maximum precipitation  | Number:Speed | Maximum precipitation intensity in mm/h  |
-| Total precipitation  | Number:Length | Total amount of precipitation during the day, in mm (daily forecast only)  |
-| Precipitation category*  | Number | Type of precipitation  |
-| Air pressure  | Number:Pressure | Air pressure in hPa  |
-| Relative humidity  | Number:Dimensionless | Relative humidity in percent  |
-| Total cloud cover  | Number:Dimensionless | Mean value of total cloud cover in percent  |
-| Weather condition**  | Number | Short description of the weather conditions  |
+| channel  | type   | channel id | description                  |
+|----------|--------|------------|------------------------------|
+| Temperature  | Number:Temperature | t | Temperature in Celsius  |
+| Max Temperature  | Number:Temperature | tmax | Highest temperature of the day (daily forecast only)  |
+| Min Temperature  | Number:Temperature | tmin | Lowest temperature of the day (daily forecast only)  |
+| Wind direction  | Number:Angle | wd | Wind direction in degrees  |
+| Wind Speed  | Number:Speed | ws | Wind speed in m/s  |
+| Max Wind Speed  | Number:Speed | wsmax | Highest wind speed of the day (daily forecast only)  |
+| Min Wind Speed  | Number:Speed | wsmin | Lowest wind speed of the day (daily forecast only)  |
+| Wind gust speed  | Number:Speed | gust | Wind gust speed in m/s  |
+| Minimum precipitation  | Number:Speed | pmin | Minimum precipitation intensity in mm/h  |
+| Maximum precipitation  | Number:Speed | pmax | Maximum precipitation intensity in mm/h  |
+| Total precipitation  | Number:Length | ptotal | Total amount of precipitation during the day, in mm (daily forecast only)  |
+| Precipitation category*  | Number | pcat | Type of precipitation  |
+| Air pressure  | Number:Pressure | msl | Air pressure in hPa  |
+| Relative humidity  | Number:Dimensionless | r | Relative humidity in percent  |
+| Total cloud cover  | Number:Dimensionless | tcc_mean | Mean value of total cloud cover in percent  |
+| Weather condition**  | Number | wsymb2 | Short description of the weather conditions  |
 
 #### Advanced channels
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| Visibility  | Number:Length | Horizontal visibility in km  |
-| Thunder probability  | Number:Dimensionless | Probability of thunder in percent  |
-| Frozen precipitation  | Number:Dimensionless | Percent of precipitation in frozen form (will be set to UNDEF if there's no precipitation)  |
-| Low level cloud cover  | Number:Dimensionless | Mean value of low level cloud cover (0-2500 m) in percent  |
-| Medium level cloud cover  | Number:Dimensionless | Mean value of medium level cloud cover (2500-6000 m) in percent  |
-| High level cloud cover  | Number:Dimensionless | Mean value of high level cloud cover (> 6000 m) in percent  |
-| Mean precipitation  | Number:Speed | Mean precipitation intensity in mm/h  |
-| Median precipitation  | Number:Speed | Median precipitation intensity in mm/h  |
+| channel  | type   | channel id | description                  |
+|----------|--------|------------|------------------------------|
+| Visibility  | Number:Length | vis | Horizontal visibility in km  |
+| Thunder probability  | Number:Dimensionless | tstm | Probability of thunder in percent  |
+| Frozen precipitation  | Number:Dimensionless | spp | Percent of precipitation in frozen form (will be set to UNDEF if there's no precipitation)  |
+| Low level cloud cover  | Number:Dimensionless | lcc_mean | Mean value of low level cloud cover (0-2500 m) in percent  |
+| Medium level cloud cover  | Number:Dimensionless | mcc_mean | Mean value of medium level cloud cover (2500-6000 m) in percent  |
+| High level cloud cover  | Number:Dimensionless | hcc_mean | Mean value of high level cloud cover (> 6000 m) in percent  |
+| Mean precipitation  | Number:Speed | pmean | Mean precipitation intensity in mm/h  |
+| Median precipitation  | Number:Speed | pmedian | Median precipitation intensity in mm/h  |
 
 \* The precipitation category can have a value from 0-6, representing different types of precipitaion:
 

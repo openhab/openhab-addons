@@ -46,10 +46,8 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
     public HomekitLockImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        final String invertedConfig = getAccessoryConfiguration(HomekitTaggedItem.INVERTED, "false");
-        final boolean inverted = invertedConfig.equalsIgnoreCase("yes") || invertedConfig.equalsIgnoreCase("true");
-        securedState = inverted ? OnOffType.OFF : OnOffType.ON;
-        unsecuredState = inverted ? OnOffType.ON : OnOffType.OFF;
+        securedState = taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON;
+        unsecuredState = taggedItem.isInverted() ? OnOffType.ON : OnOffType.OFF;
         getServices().add(new LockMechanismService(this));
     }
 
@@ -62,7 +60,7 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
             if (state instanceof DecimalType) {
                 lockState = LockCurrentStateEnum.fromCode(((DecimalType) state).intValue());
             } else if (state instanceof OnOffType) {
-                lockState = state == securedState ? LockCurrentStateEnum.SECURED : LockCurrentStateEnum.UNSECURED;
+                lockState = state.equals(securedState) ? LockCurrentStateEnum.SECURED : LockCurrentStateEnum.UNSECURED;
             }
         }
         return CompletableFuture.completedFuture(lockState);

@@ -17,6 +17,7 @@ import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.SubType.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
 
@@ -216,7 +217,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
      */
     public static int getDimLevelFromPercentType(PercentType pt) {
         return pt.toBigDecimal().multiply(BigDecimal.valueOf(31))
-                .divide(PercentType.HUNDRED.toBigDecimal(), 0, BigDecimal.ROUND_UP).intValue();
+                .divide(PercentType.HUNDRED.toBigDecimal(), 0, RoundingMode.UP).intValue();
     }
 
     /**
@@ -229,7 +230,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
         value = Math.min(value, 31);
 
         return new PercentType(BigDecimal.valueOf(value).multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(31), 0, BigDecimal.ROUND_UP).intValue());
+                .divide(BigDecimal.valueOf(31), 0, RoundingMode.UP).intValue());
     }
 
     @Override

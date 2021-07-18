@@ -14,6 +14,7 @@ package org.openhab.binding.darksky.internal.config;
 
 import java.time.Duration;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -85,11 +86,14 @@ public class DarkSkyChannelConfiguration {
                     throw new NumberFormatException();
                 } else {
                     String[] splittedConfigTime = time.split(TIME_SEPARATOR);
+                    if (splittedConfigTime.length < 2) {
+                        throw new NumberFormatException();
+                    }
                     int hour = Integer.parseInt(splittedConfigTime[0]);
                     int minutes = Integer.parseInt(splittedConfigTime[1]);
                     return Duration.ofMinutes(minutes).plusHours(hour).toMinutes();
                 }
-            } catch (Exception ex) {
+            } catch (PatternSyntaxException | NumberFormatException | ArithmeticException ex) {
                 logger.warn("Cannot parse channel configuration '{}' to hour and minutes, use pattern hh:mm, ignoring!",
                         time);
             }

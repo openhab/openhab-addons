@@ -14,9 +14,9 @@ package org.openhab.binding.heos.internal.handler;
 
 import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
 import static org.openhab.binding.heos.internal.handler.FutureUtil.cancel;
-import static org.openhab.binding.heos.internal.json.dto.HeosCommandGroup.GROUP;
-import static org.openhab.binding.heos.internal.json.dto.HeosCommandGroup.PLAYER;
+import static org.openhab.binding.heos.internal.json.dto.HeosCommandGroup.*;
 import static org.openhab.binding.heos.internal.json.dto.HeosCommunicationAttribute.*;
+import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 import static org.openhab.core.thing.ThingStatus.*;
 
 import java.io.IOException;
@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Time;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.heos.internal.HeosChannelHandlerFactory;
@@ -38,15 +37,31 @@ import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.exception.HeosFunctionalException;
 import org.openhab.binding.heos.internal.exception.HeosNotConnectedException;
 import org.openhab.binding.heos.internal.exception.HeosNotFoundException;
-import org.openhab.binding.heos.internal.json.dto.*;
+import org.openhab.binding.heos.internal.json.dto.HeosCommandTuple;
+import org.openhab.binding.heos.internal.json.dto.HeosCommunicationAttribute;
+import org.openhab.binding.heos.internal.json.dto.HeosError;
+import org.openhab.binding.heos.internal.json.dto.HeosEvent;
+import org.openhab.binding.heos.internal.json.dto.HeosEventObject;
+import org.openhab.binding.heos.internal.json.dto.HeosObject;
+import org.openhab.binding.heos.internal.json.dto.HeosResponseObject;
 import org.openhab.binding.heos.internal.json.payload.Media;
 import org.openhab.binding.heos.internal.json.payload.Player;
 import org.openhab.binding.heos.internal.resources.HeosEventListener;
 import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 import org.openhab.core.io.net.http.HttpUtil;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -474,16 +489,17 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     }
 
     private void handleImageUrl(Media info) {
-        if (StringUtils.isNotBlank(info.imageUrl)) {
+        String imageUrl = info.imageUrl;
+        if (imageUrl != null && !imageUrl.isBlank()) {
             try {
-                URL url = new URL(info.imageUrl); // checks if String is proper URL
+                URL url = new URL(imageUrl); // checks if String is proper URL
                 RawType cover = HttpUtil.downloadImage(url.toString());
                 if (cover != null) {
                     updateState(CH_ID_COVER, cover);
                     return;
                 }
             } catch (MalformedURLException e) {
-                logger.debug("Cover can't be loaded. No proper URL: {}", info.imageUrl, e);
+                logger.debug("Cover can't be loaded. No proper URL: {}", imageUrl, e);
             }
         }
         updateState(CH_ID_COVER, UnDefType.NULL);

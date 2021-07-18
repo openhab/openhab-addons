@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.HOME_CONFORT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +31,8 @@ import org.openhab.core.util.HexUtils;
 @NonNullByDefault
 public class RFXComHomeConfortTest {
     private void testMessage(SubType subType, Commands command, String deviceId, String data) throws RFXComException {
-        RFXComHomeConfortMessage message = (RFXComHomeConfortMessage) RFXComMessageFactory.createMessage(HOME_CONFORT);
+        RFXComHomeConfortMessage message = (RFXComHomeConfortMessage) RFXComMessageFactoryImpl.INSTANCE
+                .createMessage(HOME_CONFORT);
         message.setSubType(subType);
         message.command = command;
         message.setDeviceId(deviceId);

@@ -202,11 +202,11 @@ You must give each of your data Things a reference (thing ID) that is unique for
 | ------------------------------------------- | ------- | -------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `readValueType`                             | text    |          | (empty)            | How data is read from modbus. Use empty for write-only things.<br /><br />Bit value type must be used with coils and discrete inputs. With registers all value types are applicable. Valid values are: `"int64"`, `"int64_swap"`, `"uint64"`, `"uint64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"uint32"`, `"uint32_swap"`, `"int16"`, `"uint16"`, `"int8"`, `"uint8"`, or `"bit"`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                               |
 | `readStart`                                 | text    |          | (empty)            | Start address to start reading the value. Use empty for write-only things. <br /><br />Input as zero-based index number, e.g. in place of `400001` (first holding register), use the address `"0"`.  Must be between (poller start) and (poller start + poller length - 1) (inclusive).<br /><br />With registers and value type less than 16 bits, you must use `"X.Y"` format where `Y` specifies the sub-element to read from the 16 bit register:<ul> <li>For example, `"3.1"` would mean pick second bit from register index `3` with bit value type. </li><li>With int8 valuetype, it would pick the high byte of register index `3`.</li></ul> |
-| `readTransform`                             | text    |          | `"default"`        | Transformation to apply to polled data, after it has been converted to number using `readValueType`. <br /><br />Use "default" to communicate that no transformation is done and value should be passed as is.<br />Use `"SERVICENAME:ARG"` or `"SERVICENAME(ARG)"` (old syntax) to use transformation service `SERVICENAME` with argument `ARG`. <br />Any other value than the above types will be interpreted as static text, in which case the actual content of the polled value is ignored. ou can chain many transformations with ∩, for example `"SERVICE1:ARG1∩SERVICE2:ARG2"`.                                                                           |
-| `writeValueType`                            | text    |          | (empty)            | How data is written to modbus. Only applicable to registers. Valid values are: `"int64"`, `"int64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"int16"`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                                                                                                                                                                                                                                                              |
-| `writeStart`                                | text    |          | (empty)            | Start address of the first holding register or coil in the write. Use empty for read-only things. <br />Use zero based address, e.g. in place of `400001` (first holding register), use the address `"0"`. This address is passed to data frame as is.                                                                                                                                                                                                                                                                                                                                                                                                |
+| `readTransform`                             | text    |          | `"default"`        | Transformation to apply to polled data, after it has been converted to number using `readValueType`. <br /><br />Use "default" to communicate that no transformation is done and value should be passed as is.<br />Use `"SERVICENAME:ARG"` or `"SERVICENAME(ARG)"` (old syntax) to use transformation service `SERVICENAME` with argument `ARG`. <br />Any other value than the above types will be interpreted as static text, in which case the actual content of the polled value is ignored. You can chain many transformations with ∩, for example `"SERVICE1:ARG1∩SERVICE2:ARG2"`.                                                             |
+| `writeValueType`                            | text    |          | (empty)            | How data is written to modbus. Only applicable to registers. Valid values are: `"int64"`, `"int64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"int16"`. See also [Value types on read and write](#value-types-on-read-and-write). Value of `"bit"` can be used with registers as well when `writeStart` is of format `"X.Y"` (see below). See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                                                                            |
+| `writeStart`                                | text    |          | (empty)            | Start address of the first holding register or coil in the write. Use empty for read-only things. <br />Use zero based address, e.g. in place of `400001` (first holding register), use the address `"0"`. This address is passed to data frame as is. One can use `"X.Y"` to write individual bit `Y` of an holding `X` (analogous to `readStart`).                                                                                                                                                                                                                                                                                                  |
 | `writeType`                                 | text    |          | (empty)            | Type of data to write. Use empty for read-only things. Valid values: `"coil"` or `"holding"`.<br /><br /> Coil uses function code (FC) FC05 or FC15. Holding register uses FC06 or FC16. See `writeMultipleEvenWithSingleRegisterOrCoil` parameter.                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `writeTransform`                            | text    |          | `"default"`        | Transformation to apply to received commands.<br /><br />Use `"default"` to communicate that no transformation is done and value should be passed as is.    <br />Use `"SERVICENAME:ARG"` or `"SERVICENAME(ARG)"` (old syntax)  to use transformation service `SERVICENAME` with argument `ARG`.    <br />Any other value than the above types will be interpreted as static text, in which case the actual content of the command value is ignored. You can chain many transformations with ∩, for example `"SERVICE1:ARG1∩SERVICE2:ARG2"`.                                                                                                                       |
+| `writeTransform`                            | text    |          | `"default"`        | Transformation to apply to received commands.<br /><br />Use `"default"` to communicate that no transformation is done and value should be passed as is. <br />Use `"SERVICENAME:ARG"` or `"SERVICENAME(ARG)"` (old syntax) to use transformation service `SERVICENAME` with argument `ARG`. <br />Any other value than the above types will be interpreted as static text, in which case the actual content of the command value is ignored. You can chain many transformations with ∩, for example `"SERVICE1:ARG1∩SERVICE2:ARG2"`.                                                                                                                 |
 | `writeMultipleEvenWithSingleRegisterOrCoil` | boolean |          | `false`            | Controls how single register / coil of data is written.<br /> By default, or when 'false, FC06 ("Write single holding register") / FC05 ("Write single coil"). Or when 'true', using FC16 ("Write Multiple Holding Registers") / FC15 ("Write Multiple Coils").                                                                                                                                                                                                                                                                                                                                                                                       |
 | `writeMaxTries`                             | integer |          | `3`                | Maximum tries when writing <br /><br />Number of tries when writing data, if some of the writes fail. For single try, enter `1`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `updateUnchangedValuesEveryMillis`          | integer |          | `1000`             | Interval to update unchanged values. <br /><br />Modbus binding by default is not updating the item and channel state every time new data is polled from a slave, for performance reasons. Instead, the state is updated whenever it differs from previously updated state, or when enough time has passed since the last update. The time interval can be adjusted using this parameter. Use value of `0` if you like to update state with every poll, even though the value has not changed. In milliseconds.                                                                                                                                       |
@@ -310,6 +310,21 @@ Number  Temperature_Modbus_Livingroom                       "Temperature Living 
 
 Main documentation on `autoupdate` in [Items section of openHAB docs](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax).
 
+### Profiles
+
+#### `modbus:gainOffset`
+
+This profile is meant for simple scaling and offsetting of values received from the Modbus slave.
+The profile works also in the reverse direction, when commanding items.
+
+In addition, the profile allows attaching units to the raw numbers, as well as converting the quantity-aware numbers to bare numbers on write.
+
+Profile has two parameters, `gain` (bare number or number with unit) and `pre-gain-offset` (bare number), both of which must be provided.
+
+When reading from Modbus, the result will be `updateTowardsItem = (raw_value_from_modbus + preOffset) * gain`.
+When applying command, the calculation goes in reverse.
+
+See examples for concrete use case with value scaling.
 ### Discovery
 
 Device specific modbus bindings can take part in the discovery of things, and detect devices automatically. The discovery is initiated by the `tcp` and `serial` bridges when they have `enableDiscovery` setting enabled.
@@ -551,7 +566,7 @@ For example, `openhab-transformation-javascript` feature provides the javascript
 There are three different format to specify the configuration:
 
 1. String `"default"`, in which case the default transformation is used. The default is to convert non-zero numbers to `ON`/`OPEN`, and zero numbers to `OFF`/`CLOSED`, respectively. If the item linked to the data channel does not accept these states, the number is converted to best-effort-basis to the states accepted by the item. For example, the extracted number is passed as-is for `Number` items, while `ON`/`OFF` would be used with `DimmerItem`.
-1. `"SERVICENAME:ARG"` for calling a transformation service. The transformation receives the extracted number as input. This is useful for example scaling (divide by x) the polled data before it is used in openHAB. See examples for more details.
+1. `"SERVICENAME:ARG"` for calling a transformation service. The transformation receives the extracted number as input. This is useful for applying complex arithmetic of the polled data before it is used in openHAB. See examples for more details.
 1. Any other value is interpreted as static text, in which case the actual content of the polled value is ignored. Transformation result is always the same. The transformation output is converted to best-effort-basis to the states accepted by the item.
 
 Consult [background documentation on items](https://www.openhab.org/docs/concepts/items.html) to understand accepted data types (state) by each item.
@@ -563,42 +578,8 @@ Consult [background documentation on items](https://www.openhab.org/docs/concept
 There are three different format to specify the configuration:
 
 1. String `"default"`, in which case the default transformation is used. The default is to do no conversion to the command.
-1. `"SERVICENAME:ARG"` for calling a transformation service. The transformation receives the command as input. This is useful for example scaling ("multiply by x") commands before the data is written to Modbus. See examples for more details.
+1. `"SERVICENAME:ARG"` for calling a transformation service. The transformation receives the command as input. This is useful for applying complex arithmetic for commands before the data is written to Modbus. See examples for more details.
 1. Any other value is interpreted as static text, in which case the actual command is ignored. Transformation result is always the same.
-
-#### Transformation Example: Scaling
-
-Typical use case for transformations is scaling of numbers.
-The data in Modbus slaves is quite commonly encoded as integers, and thus scaling is necessary to convert them to useful float numbers.
-
-`transform/multiply10.js`:
-
-```javascript
-// Wrap everything in a function (no global variable pollution)
-// variable "input" contains data passed by openHAB
-(function(inputData) {
-    // on read: the polled number as string
-    // on write: openHAB command as string
-    var MULTIPLY_BY = 10;
-    return Math.round(parseFloat(inputData, 10) * MULTIPLY_BY);
-})(input)
-```
-
-`transform/divide10.js`:
-
-```javascript
-// Wrap everything in a function (no global variable pollution)
-// variable "input" contains data passed by openHAB
-(function(inputData) {
-    // on read: the polled number as string
-    // on write: openHAB command as string
-    var DIVIDE_BY = 10;
-    return parseFloat(inputData) / DIVIDE_BY;
-})(input)
-```
-
-See [Scaling example](#scaling-example) for full example with things, items and a sitemap.
-
 #### Example: Inverting Binary Data On Read And Write
 
 This example transformation is able to invert "boolean" input.
@@ -630,7 +611,7 @@ Please refer to the comments for more explanations.
 
 `things/modbus_ex1.things`:
 
-```xtend
+```
 Bridge modbus:tcp:localhostTCP [ host="127.0.0.1", port=502, id=2 ] {
 
     // read-write for coils. Reading 4 coils, with index 4, and 5.
@@ -678,7 +659,7 @@ Bridge modbus:tcp:localhostTCP [ host="127.0.0.1", port=502, id=2 ] {
 
 `items/modbus_ex1.items`:
 
-```xtend
+```
 Switch DO4            "Digital Output index 4 [%d]"    { channel="modbus:data:localhostTCP:coils:do4:switch" }
 Switch DO5            "Digital Output index 5 [%d]"    { channel="modbus:data:localhostTCP:coils:do5:switch" }
 
@@ -696,7 +677,7 @@ Number Holding5writeonly            "Holding index 5 [%.1f]"    { channel="modbu
 
 `sitemaps/modbus_ex1.sitemap`:
 
-```xtend
+```
 sitemap modbus_ex1 label="modbus_ex1"
 {
     Frame {
@@ -728,7 +709,7 @@ Toggling these switches always have the same effect: either setting or resetting
 
 `things/modbus_ex2.things`:
 
-```xtend
+```
 Bridge modbus:tcp:localhostTCPex2 [ host="127.0.0.1", port=502 ] {
 
     Bridge poller items [ start=4, length=2, refresh=1000, type="discrete" ] {
@@ -746,7 +727,7 @@ Bridge modbus:tcp:localhostTCPex2 [ host="127.0.0.1", port=502 ] {
 
 `items/modbus_ex2.items`:
 
-```xtend
+```
 Switch ReadDI4WriteDO5            "Coil 4/5 mix [%d]"    { channel="modbus:data:localhostTCPex2:items:readDiscrete4WriteCoil5:switch" }
 Switch ResetDO5            "Flip to turn Coil 5 OFF [%d]"    { channel="modbus:data:localhostTCPex2:items:resetCoil5:switch" }
 Switch SetDO5            "Flip to turn Coil 5 ON [%d]"    { channel="modbus:data:localhostTCPex2:items:setCoil5:switch" }
@@ -756,7 +737,7 @@ Contact Coil5            "Coil 5 [%d]"    { channel="modbus:data:localhostTCPex2
 
 `sitemaps/modbus_ex2.sitemap`:
 
-```xtend
+```
 sitemap modbus_ex2 label="modbus_ex2"
 {
     Frame {
@@ -770,37 +751,83 @@ sitemap modbus_ex2 label="modbus_ex2"
 
 ### Scaling Example
 
-This example divides value on read, and multiplies them on write, using JS transforms.
+Often Modbus slave might have the numbers stored as integers, with no information of the measurement unit.
+In openHAB, it is recommended to scale and attach units for the read data.
+
+In the below example, modbus data needs to be multiplied by `0.1` to convert the value to Celsius.
+For example, raw modbus register value of `45` corresponds to `4.5 °C`.
+
+Note how that unit can be specified within the `gain` parameter of `modbus:gainOffset` profile.
+This enables the use of quantity-aware `Number` item `Number:Temperature`.
+
+The profile also works the other way round, scaling the commands sent to the item to bare-numbers suitable for Modbus.
 
 `things/modbus_ex_scaling.things`:
 
-```xtend
+```
 Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
     Bridge poller holdingPoller [ start=5, length=1, refresh=5000, type="holding" ] {
-        Thing data holding5Scaled [ readStart="5", readValueType="int16", readTransform="JS:divide10.js", writeStart="5", writeValueType="int16", writeType="holding", writeTransform="JS:multiply10.js" ]
+        Thing data temperatureDeciCelsius [ readStart="5", readValueType="int16", writeStart="5", writeValueType="int16", writeType="holding" ]
     }
 }
 ```
 
 `items/modbus_ex_scaling.items`:
 
-```xtend
-Number Holding5Scaled            "Holding index 5 scaled [%.1f]"   { channel="modbus:data:localhostTCP3:holdingPoller:holding5Scaled:number" }
+```
+Number:Temperature TemperatureItem            "Temperature [%.1f °C]"   { channel="modbus:data:localhostTCP3:holdingPoller:temperatureDeciCelsius:number"[ profile="modbus:gainOffset", gain="0.1 °C", pre-gain-offset="0" ] }
 ```
 
 `sitemaps/modbus_ex_scaling.sitemap`:
 
-```xtend
+```
 sitemap modbus_ex_scaling label="modbus_ex_scaling"
 {
     Frame {
-        Text item=Holding5Scaled
-        Setpoint item=Holding5Scaled minValue=0 maxValue=100 step=20
+        Text item=TemperatureItem
+        Setpoint item=TemperatureItem minValue=0 maxValue=100 step=20
     }
 }
 ```
 
-See [transformation example](#transformation-example-scaling) for the `divide10.js` and `multiply10.js`.
+
+### Commanding Individual Bits
+
+In Modbus, holding registers represent 16 bits of data. The protocol allow to write the whole register at once.
+
+The binding provides convenience functionality to command individual bits of a holding register by keeping a cache of the register internally.
+
+In order to use this feature, one specifies `writeStart="X.Y"` (register `X`, bit `Y`) with `writeValueType="bit"` and `writeType="holding"`.
+
+`things/modbus_ex_command_bit.things`:
+
+```
+Bridge modbus:tcp:localhostTCP3 [ host="127.0.0.1", port=502 ] {
+    Bridge poller holdingPoller [ start=5, length=1, refresh=5000, type="holding" ] {
+        Thing data register5 [ readStart="5.1", readValueType="bit", writeStart="5.1", writeValueType="bit", writeType="holding" ]
+        Thing data register5Bit1 [ readStart="5.1", readValueType="bit" ]
+    }
+}
+```
+
+`items/modbus_ex_command_bit.items`:
+
+```
+Switch SecondLeastSignificantBit            "2nd least significant bit write switch [%d]"   { channel="modbus:data:localhostTCP3:holdingPoller:register5:switch" }
+Number SecondLeastSignificantBitAltRead            "2nd least significant bit is now [%d]"   { channel="modbus:data:localhostTCP3:holdingPoller:register5Bit1:number" }
+```
+
+`sitemaps/modbus_ex_command_bit.sitemap`:
+
+```
+sitemap modbus_ex_command_bit label="modbus_ex_command_bit"
+{
+    Frame {
+        Text item=SecondLeastSignificantBitAltRead
+        Switch item=SecondLeastSignificantBit
+    }
+}
+```
 
 ### Dimmer Example
 
@@ -812,7 +839,7 @@ Example for a dimmer device where 255 register value = 100% for fully ON:
 
 `things/modbus_ex_dimmer.things`:
 
-```xtend
+```
 Bridge modbus:tcp:remoteTCP [ host="192.168.0.10", port=502 ]  {
    Bridge poller MBDimmer [ start=4700, length=2, refresh=1000, type="holding" ]  {
 	         Thing data DimmerReg [ readStart="4700", readValueType="uint16", readTransform="JS:dimread255.js", writeStart="4700", writeValueType="uint16", writeType="holding", writeTransform="JS:dimwrite255.js" ]
@@ -821,13 +848,13 @@ Bridge modbus:tcp:remoteTCP [ host="192.168.0.10", port=502 ]  {
 ```
 
 `items/modbus_ex_dimmer.items`:
-```xtend
+```
 Dimmer myDimmer "My Dimmer d2 [%.1f]"   { channel="modbus:data:remoteTCP:MBDimmer:DimmerReg:dimmer" }
 ```
 
 `sitemaps/modbus_ex_dimmer.sitemap`:
 
-```xtend
+```
 sitemap modbus_ex_dimmer label="modbus_ex_dimmer"
 {
     Frame {
@@ -890,7 +917,7 @@ The logic of processing commands are summarized in the table
 
 `things/modbus_ex_rollershutter.things`:
 
-```xtend
+```
 Bridge modbus:tcp:localhostTCPRollerShutter [ host="127.0.0.1", port=502 ] {
     Bridge poller holding [ start=0, length=3, refresh=1000, type="holding" ] {
         // Since we are using advanced transformation outputting JSON,
@@ -907,7 +934,7 @@ Bridge modbus:tcp:localhostTCPRollerShutter [ host="127.0.0.1", port=502 ] {
 
 `items/modbus_ex_rollershutter.items`:
 
-```xtend
+```
 // We disable auto-update to make sure that rollershutter position is updated from the slave, not "automatically" via commands
 Rollershutter RollershutterItem "Roller shutter position [%.1f]" <temperature> { autoupdate="false", channel="modbus:data:localhostTCPRollerShutter:holding:rollershutterData:rollershutter" }
 
@@ -919,7 +946,7 @@ Number RollershutterItemDebug2 "Roller shutter Debug 2 [%d]" <temperature> { cha
 
 `sitemaps/modbus_ex_rollershutter.sitemap`:
 
-```xtend
+```
 sitemap modbus_ex_rollershutter label="modbus_ex_rollershutter" {
     Switch item=RollershutterItem label="Roller shutter [(%d)]" mappings=[UP="up", STOP="X", DOWN="down", MOVE="move"]
 

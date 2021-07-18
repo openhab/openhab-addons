@@ -239,7 +239,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
      *
      * @param channelUID the channel sending the command
      * @param command the command received
-     * 
+     *
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -306,8 +306,9 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                             int value = ((DecimalType) command).intValue();
                             if (value >= MIN_EQ && value <= MAX_EQ) {
                                 // device can only accept even values
-                                if (value % 2 == 1)
+                                if (value % 2 == 1) {
                                     value++;
+                                }
                                 logger.debug("Got treble command {} zone {}", value, target);
                                 connector.sendCfgCommand(target, NuvoCommand.TREBLE, String.valueOf(value));
                             }
@@ -317,8 +318,9 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         if (command instanceof DecimalType) {
                             int value = ((DecimalType) command).intValue();
                             if (value >= MIN_EQ && value <= MAX_EQ) {
-                                if (value % 2 == 1)
+                                if (value % 2 == 1) {
                                     value++;
+                                }
                                 logger.debug("Got bass command {} zone {}", value, target);
                                 connector.sendCfgCommand(target, NuvoCommand.BASS, String.valueOf(value));
                             }
@@ -328,8 +330,9 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         if (command instanceof DecimalType) {
                             int value = ((DecimalType) command).intValue();
                             if (value >= MIN_EQ && value <= MAX_EQ) {
-                                if (value % 2 == 1)
+                                if (value % 2 == 1) {
                                     value++;
+                                }
                                 logger.debug("Got balance command {} zone {}", value, target);
                                 connector.sendCfgCommand(target, NuvoCommand.BALANCE,
                                         NuvoStatusCodes.getBalanceFromInt(value));

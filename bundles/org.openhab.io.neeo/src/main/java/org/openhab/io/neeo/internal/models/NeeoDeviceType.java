@@ -14,7 +14,6 @@ package org.openhab.io.neeo.internal.models;
 
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -51,7 +50,7 @@ public class NeeoDeviceType {
      */
     private NeeoDeviceType(final String text) {
         Objects.requireNonNull(text, "text is required");
-        this.text = StringUtils.equalsIgnoreCase(text, ACCESSORY) ? ACCESSOIRE.text : text;
+        this.text = text.equalsIgnoreCase(ACCESSORY) ? ACCESSOIRE.text : text;
     }
 
     /**
@@ -61,11 +60,11 @@ public class NeeoDeviceType {
      * @return the possibly null NeeoDeviceType
      */
     public static NeeoDeviceType parse(final String text) {
-        if (StringUtils.isEmpty(text)) {
+        if (text.isEmpty()) {
             return EXCLUDE;
         }
 
-        if (StringUtils.equalsIgnoreCase(text, ACCESSOIRE.text) || StringUtils.equalsIgnoreCase(text, ACCESSORY)) {
+        if (text.equalsIgnoreCase(ACCESSOIRE.text) || text.equalsIgnoreCase(ACCESSORY)) {
             return ACCESSOIRE;
         }
 
@@ -82,7 +81,7 @@ public class NeeoDeviceType {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        return StringUtils.equals(text, ((NeeoDeviceType) obj).text);
+        return text.equals(((NeeoDeviceType) obj).text);
     }
 
     @Override

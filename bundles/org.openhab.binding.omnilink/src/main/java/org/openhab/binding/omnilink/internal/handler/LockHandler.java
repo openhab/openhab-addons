@@ -14,13 +14,13 @@ package org.openhab.binding.omnilink.internal.handler;
 
 import static org.openhab.binding.omnilink.internal.OmnilinkBindingConstants.*;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.omnilink.internal.discovery.ObjectPropertyRequest;
 import org.openhab.binding.omnilink.internal.discovery.ObjectPropertyRequests;
+import org.openhab.binding.omnilink.internal.exceptions.BridgeOfflineException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digitaldan.jomnilinkII.Message;
+import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.properties.AccessControlReaderProperties;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ExtendedAccessControlReaderLockStatus;
@@ -73,9 +74,7 @@ public class LockHandler extends AbstractOmnilinkStatusHandler<ExtendedAccessCon
                 .builder(bridgeHandler, ObjectPropertyRequests.LOCK, thingID, 0).selectNamed().build();
 
         for (AccessControlReaderProperties lockProperties : objectPropertyRequest) {
-            Map<String, String> properties = editProperties();
-            properties.put(THING_PROPERTIES_NAME, lockProperties.getName());
-            updateProperties(properties);
+            updateProperty(THING_PROPERTIES_NAME, lockProperties.getName());
         }
     }
 
@@ -92,8 +91,8 @@ public class LockHandler extends AbstractOmnilinkStatusHandler<ExtendedAccessCon
         switch (channelUID.getId()) {
             case CHANNEL_LOCK_SWITCH:
                 if (command instanceof OnOffType) {
-                    sendOmnilinkCommand(OnOffType.OFF.equals(command) ? OmniLinkCmd.CMD_UNLOCK_DOOR.getNumber()
-                            : OmniLinkCmd.CMD_LOCK_DOOR.getNumber(), 0, thingID);
+                    sendOmnilinkCommand(OnOffType.OFF.equals(command) ? CommandMessage.CMD_UNLOCK_DOOR
+                            : CommandMessage.CMD_LOCK_DOOR, 0, thingID);
                 } else {
                     logger.debug("Invalid command {}, must be OnOffType", command);
                 }

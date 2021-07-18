@@ -24,7 +24,6 @@ import org.openhab.core.items.Item;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitSettings;
@@ -50,7 +49,7 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
     public HomekitGarageDoorOpenerImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        obstructionReader = createBooleanReader(OBSTRUCTION_STATUS, OnOffType.ON, OpenClosedType.OPEN);
+        obstructionReader = createBooleanReader(OBSTRUCTION_STATUS);
         getServices().add(new GarageDoorOpenerService(this));
     }
 

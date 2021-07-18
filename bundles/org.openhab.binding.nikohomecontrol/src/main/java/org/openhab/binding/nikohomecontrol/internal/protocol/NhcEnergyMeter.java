@@ -56,7 +56,7 @@ public abstract class NhcEnergyMeter {
     public void updateState(int power) {
         NhcEnergyMeterEvent handler = eventHandler;
         if (handler != null) {
-            logger.debug("Niko Home Control: update channel for {}", id);
+            logger.debug("update channel for {}", id);
             handler.energyMeterEvent(power);
         }
     }
@@ -65,7 +65,7 @@ public abstract class NhcEnergyMeter {
      * Method called when energyMeters meter is removed from the Niko Home Control Controller.
      */
     public void energyMeterRemoved() {
-        logger.warn("Niko Home Control: action removed {}, {}", id, name);
+        logger.debug("action removed {}, {}", id, name);
         NhcEnergyMeterEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
             eventHandler.energyMeterRemoved();
@@ -117,7 +117,7 @@ public abstract class NhcEnergyMeter {
         this.power = power;
         NhcEnergyMeterEvent handler = eventHandler;
         if (handler != null) {
-            logger.debug("Niko Home Control: update power channel for {} with {}", id, power);
+            logger.debug("update power channel for {} with {}", id, power);
             handler.energyMeterEvent(power);
         }
     }

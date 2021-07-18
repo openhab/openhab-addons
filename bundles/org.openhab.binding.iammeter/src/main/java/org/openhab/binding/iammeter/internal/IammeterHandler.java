@@ -37,7 +37,7 @@ public class IammeterHandler extends IammeterBaseHandler {
 
     @Override
     protected void resolveData(String response) {
-        JsonElement iammeterDataElement = new JsonParser().parse(response);
+        JsonElement iammeterDataElement = JsonParser.parseString(response);
         JsonObject iammeterData = iammeterDataElement.getAsJsonObject();
         String keyWord = "Data";
         if (iammeterData.has("data") || (iammeterData.has("Data") && iammeterData.has("SN"))) {

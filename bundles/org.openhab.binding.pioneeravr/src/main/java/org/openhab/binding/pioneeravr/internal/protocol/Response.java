@@ -15,7 +15,7 @@ package org.openhab.binding.pioneeravr.internal.protocol;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrConnectionException;
 import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrResponse;
 
@@ -37,15 +37,16 @@ public class Response implements AvrResponse {
         INPUT_SOURCE_CHANNEL("[0-9]{2}", "FN", "Z2F", "Z3F", "ZEA"),
         LISTENING_MODE("[0-9]{4}", "SR"),
         PLAYING_LISTENING_MODE("[0-9a-f]{4}", "LM"),
-        DISPLAY_INFORMATION("[0-9a-fA-F]{30}", "FL");
+        DISPLAY_INFORMATION("[0-9a-fA-F]{30}", "FL"),
+        MCACC_MEMORY("[1-6]{1}", "MC");
 
         private String[] responsePrefixZone;
 
-        private String parameterPattern;
+        private @Nullable String parameterPattern;
 
         private Pattern[] matchPatternZone;
 
-        private ResponseType(String parameterPattern, String... responsePrefixZone) {
+        private ResponseType(@Nullable String parameterPattern, String... responsePrefixZone) {
             this.responsePrefixZone = responsePrefixZone;
             this.parameterPattern = parameterPattern;
 
@@ -53,8 +54,8 @@ public class Response implements AvrResponse {
 
             for (int zoneIndex = 0; zoneIndex < responsePrefixZone.length; zoneIndex++) {
                 String responsePrefix = responsePrefixZone[zoneIndex];
-                matchPatternZone[zoneIndex] = Pattern.compile(responsePrefix + "("
-                        + (StringUtils.isNotEmpty(parameterPattern) ? parameterPattern : "") + ")");
+                matchPatternZone[zoneIndex] = Pattern
+                        .compile(responsePrefix + "(" + (parameterPattern == null ? "" : parameterPattern) + ")");
             }
         }
 
@@ -65,11 +66,11 @@ public class Response implements AvrResponse {
 
         @Override
         public boolean hasParameter() {
-            return StringUtils.isNotEmpty(parameterPattern);
+            return parameterPattern != null && !parameterPattern.isEmpty();
         }
 
         @Override
-        public String getParameterPattern() {
+        public @Nullable String getParameterPattern() {
             return parameterPattern;
         }
 
@@ -115,7 +116,7 @@ public class Response implements AvrResponse {
     private String parameter;
 
     public Response(String responseData) throws AvrConnectionException {
-        if (StringUtils.isEmpty(responseData)) {
+        if (responseData == null || responseData.isEmpty()) {
             throw new AvrConnectionException("responseData is empty. Cannot parse the response.");
         }
 

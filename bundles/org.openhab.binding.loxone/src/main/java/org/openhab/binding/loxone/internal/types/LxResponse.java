@@ -39,6 +39,8 @@ public class LxResponse {
     public class LxResponseCfgApi {
         public String snr;
         public String version;
+        public String key;
+        public Integer httpsStatus;
     }
 
     /**

@@ -38,12 +38,12 @@ public class RFXComFanMessageTest {
 
     @Test
     public void checkForSupportTest() throws RFXComException {
-        RFXComMessageFactory.createMessage(FAN);
+        RFXComMessageFactoryImpl.INSTANCE.createMessage(FAN);
     }
 
     @Test
     public void basicBoundaryCheck() throws RFXComException {
-        RFXComFanMessage message = (RFXComFanMessage) RFXComMessageFactory.createMessage(FAN);
+        RFXComFanMessage message = (RFXComFanMessage) RFXComMessageFactoryImpl.INSTANCE.createMessage(FAN);
 
         message.setSubType(RFXComFanMessage.SubType.CASAFAN);
         message.convertFromState(CHANNEL_FAN_SPEED, StringType.valueOf("OFF"));
@@ -54,7 +54,8 @@ public class RFXComFanMessageTest {
     private void testMessage(String hexMsg, int seqNbr, String deviceId, int signalLevel,
             @Nullable State expectedCommand, State expectedLightCommand, @Nullable State expectedFanSpeed,
             RFXComBaseMessage.PacketType packetType) throws RFXComException {
-        final RFXComFanMessage msg = (RFXComFanMessage) RFXComMessageFactory.createMessage(HexUtils.hexToBytes(hexMsg));
+        final RFXComFanMessage msg = (RFXComFanMessage) RFXComMessageFactoryImpl.INSTANCE
+                .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals(seqNbr, (short) (msg.seqNbr & 0xFF), "Seq Number");
         assertEquals(deviceId, msg.getDeviceId(), "Sensor Id");
         assertEquals(signalLevel, msg.signalLevel, "Signal Level");

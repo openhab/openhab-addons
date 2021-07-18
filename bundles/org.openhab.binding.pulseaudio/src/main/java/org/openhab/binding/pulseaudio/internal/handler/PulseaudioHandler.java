@@ -14,19 +14,26 @@ package org.openhab.binding.pulseaudio.internal.handler;
 
 import static org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants.*;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.pulseaudio.internal.PulseAudioAudioSink;
+import org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
 import org.openhab.binding.pulseaudio.internal.items.Sink;
 import org.openhab.binding.pulseaudio.internal.items.SinkInput;
+import org.openhab.core.audio.AudioSink;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -45,6 +52,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,8 +78,17 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
 
     private String name;
 
-    public PulseaudioHandler(Thing thing) {
+    private PulseAudioAudioSink audioSink;
+
+    private Integer savedVolume;
+
+    private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
+
+    private BundleContext bundleContext;
+
+    public PulseaudioHandler(Thing thing, BundleContext bundleContext) {
         super(thing);
+        this.bundleContext = bundleContext;
     }
 
     @Override
@@ -81,6 +99,44 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
         // until we get an update put the Thing offline
         updateStatus(ThingStatus.OFFLINE);
         deviceOnlineWatchdog();
+
+        // if it's a SINK thing, then maybe we have to activate the audio sink
+        if (PulseaudioBindingConstants.SINK_THING_TYPE.equals(thing.getThingTypeUID())) {
+            // check the property to see if we it's enabled :
+            Boolean sinkActivated = (Boolean) thing.getConfiguration()
+                    .get(PulseaudioBindingConstants.DEVICE_PARAMETER_AUDIO_SINK_ACTIVATION);
+            if (sinkActivated != null && sinkActivated) {
+                audioSinkSetup();
+            }
+        }
+    }
+
+    private void audioSinkSetup() {
+        final PulseaudioHandler thisHandler = this;
+        scheduler.submit(new Runnable() {
+            @Override
+            public void run() {
+                // Register the sink as an audio sink in openhab
+                logger.trace("Registering an audio sink for pulse audio sink thing {}", thing.getUID());
+                PulseAudioAudioSink audioSink = new PulseAudioAudioSink(thisHandler, scheduler);
+                setAudioSink(audioSink);
+                try {
+                    audioSink.connectIfNeeded();
+                } catch (IOException e) {
+                    logger.warn("pulseaudio binding cannot connect to the module-simple-protocol-tcp on {} ({})",
+                            getHost(), e.getMessage());
+                } catch (InterruptedException i) {
+                    logger.info("Interrupted during sink audio connection: {}", i.getMessage());
+                    return;
+                } finally {
+                    audioSink.scheduleDisconnect();
+                }
+                @SuppressWarnings("unchecked")
+                ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
+                        .registerService(AudioSink.class.getName(), audioSink, new Hashtable<>());
+                audioSinkRegistrations.put(thing.getUID().toString(), reg);
+            }
+        });
     }
 
     @Override
@@ -90,9 +146,21 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
             refreshJob = null;
         }
         updateStatus(ThingStatus.OFFLINE);
+        bridgeHandler.unregisterDeviceStatusListener(this);
         bridgeHandler = null;
         logger.trace("Thing {} {} disposed.", getThing().getUID(), name);
         super.dispose();
+
+        if (audioSink != null) {
+            audioSink.disconnect();
+        }
+
+        // Unregister the potential pulse audio sink's audio sink
+        ServiceRegistration<AudioSink> reg = audioSinkRegistrations.remove(getThing().getUID().toString());
+        if (reg != null) {
+            logger.trace("Unregistering the audio sync service for pulse audio sink thing {}", getThing().getUID());
+            reg.unregister();
+        }
     }
 
     private void deviceOnlineWatchdog() {
@@ -163,15 +231,15 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
                     // refresh to get the current volume level
                     bridge.getClient().update();
                     device = bridge.getDevice(name);
-                    int volume = device.getVolume();
+                    savedVolume = device.getVolume();
                     if (command.equals(IncreaseDecreaseType.INCREASE)) {
-                        volume = Math.min(100, volume + 5);
+                        savedVolume = Math.min(100, savedVolume + 5);
                     }
                     if (command.equals(IncreaseDecreaseType.DECREASE)) {
-                        volume = Math.max(0, volume - 5);
+                        savedVolume = Math.max(0, savedVolume - 5);
                     }
-                    bridge.getClient().setVolumePercent(device, volume);
-                    updateState = new PercentType(volume);
+                    bridge.getClient().setVolumePercent(device, savedVolume);
+                    updateState = new PercentType(savedVolume);
                 } else if (command instanceof PercentType) {
                     DecimalType volume = (DecimalType) command;
                     bridge.getClient().setVolumePercent(device, volume.intValue());
@@ -228,12 +296,37 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
         }
     }
 
+    /**
+     * Use last checked volume for faster access
+     *
+     * @return
+     */
+    public int getLastVolume() {
+        if (savedVolume == null) {
+            PulseaudioBridgeHandler bridge = getPulseaudioBridgeHandler();
+            AbstractAudioDeviceConfig device = bridge.getDevice(name);
+            // refresh to get the current volume level
+            bridge.getClient().update();
+            device = bridge.getDevice(name);
+            savedVolume = device.getVolume();
+        }
+        return savedVolume == null ? 50 : savedVolume;
+    }
+
+    public void setVolume(int volume) {
+        PulseaudioBridgeHandler bridge = getPulseaudioBridgeHandler();
+        AbstractAudioDeviceConfig device = bridge.getDevice(name);
+        bridge.getClient().setVolumePercent(device, volume);
+        updateState(VOLUME_CHANNEL, new PercentType(volume));
+    }
+
     @Override
     public void onDeviceStateChanged(ThingUID bridge, AbstractAudioDeviceConfig device) {
         if (device.getPaName().equals(name)) {
             updateStatus(ThingStatus.ONLINE);
             logger.debug("Updating states of {} id: {}", device, VOLUME_CHANNEL);
-            updateState(VOLUME_CHANNEL, new PercentType(device.getVolume()));
+            savedVolume = device.getVolume();
+            updateState(VOLUME_CHANNEL, new PercentType(savedVolume));
             updateState(MUTE_CHANNEL, device.isMuted() ? OnOffType.ON : OnOffType.OFF);
             updateState(STATE_CHANNEL,
                     device.getState() != null ? new StringType(device.getState().toString()) : new StringType("-"));
@@ -244,10 +337,41 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
                                 : new StringType("-"));
             }
             if (device instanceof Sink && ((Sink) device).isCombinedSink()) {
-                updateState(SLAVES_CHANNEL,
-                        new StringType(StringUtils.join(((Sink) device).getCombinedSinkNames(), ",")));
+                updateState(SLAVES_CHANNEL, new StringType(String.join(",", ((Sink) device).getCombinedSinkNames())));
             }
         }
+    }
+
+    public String getHost() {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            return (String) bridge.getConfiguration().get(PulseaudioBindingConstants.BRIDGE_PARAMETER_HOST);
+        } else {
+            logger.error("A bridge must be configured for this pulseaudio thing");
+            return "null";
+        }
+    }
+
+    /**
+     * This method will scan the pulseaudio server to find the port on which the module/sink is listening
+     * If no module is listening, then it will command the module to load on the pulse audio server,
+     *
+     * @return the port on which the pulseaudio server is listening for this sink
+     * @throws InterruptedException when interrupted during the loading module wait
+     */
+    public int getSimpleTcpPort() throws InterruptedException {
+        Integer simpleTcpPortPref = ((BigDecimal) getThing().getConfiguration()
+                .get(PulseaudioBindingConstants.DEVICE_PARAMETER_AUDIO_SINK_PORT)).intValue();
+
+        PulseaudioBridgeHandler bridgeHandler = getPulseaudioBridgeHandler();
+        AbstractAudioDeviceConfig device = bridgeHandler.getDevice(name);
+        return getPulseaudioBridgeHandler().getClient().loadModuleSimpleProtocolTcpIfNeeded(device, simpleTcpPortPref)
+                .orElse(simpleTcpPortPref);
+    }
+
+    public int getIdleTimeout() {
+        return ((BigDecimal) getThing().getConfiguration()
+                .get(PulseaudioBindingConstants.DEVICE_PARAMETER_AUDIO_SINK_IDLE_TIMEOUT)).intValue();
     }
 
     @Override
@@ -255,6 +379,8 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
         if (device.getPaName().equals(name)) {
             bridgeHandler.unregisterDeviceStatusListener(this);
             bridgeHandler = null;
+            audioSink.disconnect();
+            audioSink = null;
             updateStatus(ThingStatus.OFFLINE);
         }
     }
@@ -262,5 +388,9 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
     @Override
     public void onDeviceAdded(Bridge bridge, AbstractAudioDeviceConfig device) {
         logger.trace("new device discovered {} by {}", device, bridge);
+    }
+
+    public void setAudioSink(PulseAudioAudioSink audioSink) {
+        this.audioSink = audioSink;
     }
 }

@@ -35,7 +35,7 @@
 			<channel id="hhphc" typeId="hhphcType"/>
 		</channels>
 
-		<config-description-ref uri="binding:teleinfo:adco"/>
+		<config-description-ref uri="thing-type:teleinfo:adco"/>
 
 	</thing-type>
 

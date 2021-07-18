@@ -65,7 +65,7 @@ public class AutelisDiscoveryParticipant implements UpnpDiscoveryParticipant {
             properties.put("host", url.getHost());
             properties.put("user", "admin");
             properties.put("password", "admin");
-            properties.put("port", new Integer(port));
+            properties.put("port", Integer.valueOf(port));
 
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
                     .build();

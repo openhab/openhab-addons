@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +38,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxServerConfig;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTO;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTODeserializer;
@@ -301,6 +301,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
     }
 
+    public void sleep(String mac, Duration sleepDuration) {
+        sendCommand(mac + " sleep " + String.valueOf(sleepDuration.toSeconds()));
+    }
+
     /**
      * Send a generic command to a given player
      *
@@ -329,7 +333,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
      * Login to server
      */
     public void login() {
-        if (StringUtils.isEmpty(userId)) {
+        if (userId.isEmpty()) {
             return;
         }
         // Create basic auth string for jsonrpc interface
@@ -386,7 +390,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         this.userId = config.userId;
         this.password = config.password;
 
-        if (StringUtils.isEmpty(this.host)) {
+        if (host.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "host is not set");
             return;
         }
@@ -532,6 +536,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private void handlePlayersList(String message) {
+            final Set<String> connectedPlayers = new HashSet<>();
+
             // Split out players
             String[] playersList = message.split("playerindex\\S*\\s");
             for (String playerParams : playersList) {
@@ -568,6 +574,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                         player.setName(parameter.substring(parameter.indexOf(":") + 1));
                     } else if (parameter.startsWith("model:")) {
                         player.setModel(parameter.substring(parameter.indexOf(":") + 1));
+                    } else if (parameter.startsWith("connected:")) {
+                        if ("1".equals(parameter.substring(parameter.indexOf(":") + 1))) {
+                            connectedPlayers.add(macAddress);
+                        }
                     }
                 }
 
@@ -584,6 +594,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     sendCommand(player.getMacAddress() + " status - 1 subscribe:10 tags:yagJlNKjc");
                 }
             }
+            for (final SqueezeBoxPlayer player : players.values()) {
+                final String mac = player.getMacAddress();
+                final boolean connected = connectedPlayers.contains(mac);
+                updatePlayer(listener -> listener.connectedStateChangeEvent(mac, connected));
+            }
         }
 
         private void handlePlayerUpdate(String message) {
@@ -598,6 +613,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             // get the message type
             String messageType = messageParts[1];
             switch (messageType) {
+                case "client":
+                    handleClientMessage(mac, messageParts);
+                    break;
                 case "status":
                     handleStatusMessage(mac, messageParts);
                     break;
@@ -657,6 +675,26 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     logger.trace("Unhandled mixer message type '{}'", Arrays.toString(messageParts));
 
             }
+        }
+
+        private void handleClientMessage(final String mac, String[] messageParts) {
+            if (messageParts.length < 3) {
+                return;
+            }
+
+            String action = messageParts[2];
+            final boolean connected;
+
+            if ("new".equals(action) || "reconnect".equals(action)) {
+                connected = true;
+            } else if ("disconnect".equals(action) || "forget".equals(action)) {
+                connected = false;
+            } else {
+                logger.trace("Unhandled client message type '{}'", Arrays.toString(messageParts));
+                return;
+            }
+
+            updatePlayer(listener -> listener.connectedStateChangeEvent(mac, connected));
         }
 
         private void handleStatusMessage(final String mac, String[] messageParts) {
@@ -832,7 +870,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
         private String constructCoverArtUrl(String mac, boolean coverart, String coverid, String artwork_url) {
             String hostAndPort;
-            if (StringUtils.isNotEmpty(userId)) {
+            if (!userId.isEmpty()) {
                 hostAndPort = "http://" + encode(userId) + ":" + encode(password) + "@" + host + ":" + webport;
             } else {
                 hostAndPort = "http://" + host + ":" + webport;
@@ -957,12 +995,14 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
             List<Favorite> favorites = new ArrayList<>();
             Favorite f = null;
+            boolean isTypePlaylist = false;
             for (String part : messageParts) {
                 // Favorite ID (in form xxxxxxxxx.n)
                 if (part.startsWith("id%3A")) {
                     String id = part.substring("id%3A".length());
                     f = new Favorite(id);
                     favorites.add(f);
+                    isTypePlaylist = false;
                 }
                 // Favorite name
                 else if (part.startsWith("name%3A")) {
@@ -970,12 +1010,15 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     if (f != null) {
                         f.name = name;
                     }
+                } else if (part.equals("type%3Aplaylist")) {
+                    isTypePlaylist = true;
                 }
                 // When "1", favorite is a submenu with additional favorites
                 else if (part.startsWith("hasitems%3A")) {
                     boolean hasitems = "1".matches(part.substring("hasitems%3A".length()));
                     if (f != null) {
-                        if (hasitems) {
+                        // Except for some favorites (e.g. Spotify) use hasitems:1 and type:playlist
+                        if (hasitems && isTypePlaylist == false) {
                             // Skip subfolders
                             favorites.remove(f);
                             f = null;

@@ -104,6 +104,7 @@ public class VerisureBindingConstants {
     public static final String CHANNEL_NIGHT_CONTROL_TRIGGER_CHANNEL = "nightControlTriggerChannel";
     public static final String CHANNEL_DOOR_WINDOW_TRIGGER_CHANNEL = "doorWindowTriggerChannel";
     public static final String CHANNEL_GATEWAY_TRIGGER_CHANNEL = "gatewayTriggerChannel";
+    public static final String CHANNEL_BATTERY_STATUS = "lowBattery";
 
     // Trigger channel events
     public static final String TRIGGER_EVENT_LOCK = "LOCK";
@@ -162,4 +163,5 @@ public class VerisureBindingConstants {
     public static final String TEMPERATURE_CONTROL_PATH = "/overview/temperaturecontrol";
     public static final String MOUSEDETECTION_PATH = "/overview/mousedetection";
     public static final String CAMERA_PATH = "/overview/camera";
+    public static final String BATTERY_STATUS = "/batterywizard/choose/device?_";
 }

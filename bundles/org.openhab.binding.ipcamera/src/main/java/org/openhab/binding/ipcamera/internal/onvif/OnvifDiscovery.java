@@ -124,9 +124,9 @@ public class OnvifDiscovery {
 
     void processCameraReplys() {
         for (DatagramPacket packet : listOfReplys) {
-            logger.trace("Device replied to discovery with:{}", packet.toString());
             String xml = packet.content().toString(CharsetUtil.UTF_8);
-            String xAddr = Helper.fetchXML(xml, "", "<d:XAddrs>");
+            logger.trace("Device replied to discovery with:{}", xml);
+            String xAddr = Helper.fetchXML(xml, "", "d:XAddrs>");// Foscam <wsdd:XAddrs> and all other brands <d:XAddrs>
             if (!xAddr.equals("")) {
                 searchReply(xAddr, xml);
             } else if (xml.contains("onvif")) {

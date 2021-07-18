@@ -10,14 +10,30 @@
 		<description>Senec Home</description>
 
 		<channels>
+			<!-- SenecHomePower -->
 			<channel id="powerLimitation" typeId="powerLimitation"/>
 			<channel id="powerLimitationState" typeId="powerLimitationState"/>
+			<channel id="currentMpp1" typeId="currentMpp1"/>
+			<channel id="currentMpp2" typeId="currentMpp2"/>
+			<channel id="currentMpp3" typeId="currentMpp3"/>
+			<channel id="powerMpp1" typeId="powerMpp1"/>
+			<channel id="powerMpp2" typeId="powerMpp2"/>
+			<channel id="powerMpp3" typeId="powerMpp3"/>
+			<channel id="voltageMpp1" typeId="voltageMpp1"/>
+			<channel id="voltageMpp2" typeId="voltageMpp2"/>
+			<channel id="voltageMpp3" typeId="voltageMpp3"/>
+
+			<!-- SenecHomeEnergy -->
 			<channel id="houseConsumption" typeId="houseConsumption"/>
 			<channel id="energyProduction" typeId="energyProduction"/>
 			<channel id="batteryPower" typeId="batteryPower"/>
+			<channel id="batteryCurrent" typeId="batteryCurrent"/>
+			<channel id="batteryVoltage" typeId="batteryVoltage"/>
 			<channel id="batteryFuelCharge" typeId="batteryFuelCharge"/>
-			<channel id="batteryState" typeId="batteryState"/>
-			<channel id="batteryStateValue" typeId="batteryStateValue"/>
+			<channel id="systemState" typeId="systemState"/>
+			<channel id="systemStateValue" typeId="systemStateValue"/>
+
+			<!-- SenecHomeGrid -->
 			<channel id="gridPower" typeId="gridPower"/>
 			<channel id="gridPowerSupply" typeId="gridPowerSupply"/>
 			<channel id="gridPowerDraw" typeId="gridPowerDraw"/>
@@ -31,11 +47,58 @@
 			<channel id="gridVoltagePhase2" typeId="gridVoltagePhase2"/>
 			<channel id="gridVoltagePhase3" typeId="gridVoltagePhase3"/>
 			<channel id="gridFrequency" typeId="gridFrequency"/>
-			<channel id="batteryVoltage" typeId="batteryVoltage"/>
+
+			<!-- SenecHomeStatistics -->
 			<channel id="liveBatCharge" typeId="liveBatCharge"/>
 			<channel id="liveBatDischarge" typeId="liveBatDischarge"/>
 			<channel id="liveGridImport" typeId="liveGridImport"/>
 			<channel id="liveGridExport" typeId="liveGridExport"/>
+			<channel id="liveHouseConsumption" typeId="liveHouseConsumption"/>
+			<channel id="livePowerGenerator" typeId="livePowerGenerator"/>
+			<channel id="liveEnergyWallbox1" typeId="liveEnergyWallbox1"/>
+
+			<!-- SenecHomeBattery -->
+			<channel id="chargedEnergyPack1" typeId="chargedEnergyPack1"/>
+			<channel id="chargedEnergyPack2" typeId="chargedEnergyPack2"/>
+			<channel id="chargedEnergyPack3" typeId="chargedEnergyPack3"/>
+			<channel id="chargedEnergyPack4" typeId="chargedEnergyPack4"/>
+			<channel id="dischargedEnergyPack1" typeId="dischargedEnergyPack1"/>
+			<channel id="dischargedEnergyPack2" typeId="dischargedEnergyPack2"/>
+			<channel id="dischargedEnergyPack3" typeId="dischargedEnergyPack3"/>
+			<channel id="dischargedEnergyPack4" typeId="dischargedEnergyPack4"/>
+			<channel id="cyclesPack1" typeId="cyclesPack1"/>
+			<channel id="cyclesPack2" typeId="cyclesPack2"/>
+			<channel id="cyclesPack3" typeId="cyclesPack3"/>
+			<channel id="cyclesPack4" typeId="cyclesPack4"/>
+			<channel id="currentPack1" typeId="currentPack1"/>
+			<channel id="currentPack2" typeId="currentPack2"/>
+			<channel id="currentPack3" typeId="currentPack3"/>
+			<channel id="currentPack4" typeId="currentPack4"/>
+			<channel id="voltagePack1" typeId="voltagePack1"/>
+			<channel id="voltagePack2" typeId="voltagePack2"/>
+			<channel id="voltagePack3" typeId="voltagePack3"/>
+			<channel id="voltagePack4" typeId="voltagePack4"/>
+			<channel id="maxCellVoltagePack1" typeId="maxCellVoltagePack1"/>
+			<channel id="maxCellVoltagePack2" typeId="maxCellVoltagePack2"/>
+			<channel id="maxCellVoltagePack3" typeId="maxCellVoltagePack3"/>
+			<channel id="maxCellVoltagePack4" typeId="maxCellVoltagePack4"/>
+			<channel id="minCellVoltagePack1" typeId="minCellVoltagePack1"/>
+			<channel id="minCellVoltagePack2" typeId="minCellVoltagePack2"/>
+			<channel id="minCellVoltagePack3" typeId="minCellVoltagePack3"/>
+			<channel id="minCellVoltagePack4" typeId="minCellVoltagePack4"/>
+
+			<!-- SenecHomeTemperature -->
+			<channel id="batteryTemperature" typeId="batteryTemperature"/>
+			<channel id="caseTemperature" typeId="caseTemperature"/>
+			<channel id="mcuTemperature" typeId="mcuTemperature"/>
+
+			<!-- SenecHomeWallbox -->
+			<channel id="wallbox1State" typeId="wallbox1State"/>
+			<channel id="wallbox1StateValue" typeId="wallbox1StateValue"/>
+			<channel id="wallbox1ChargingCurrentPhase1" typeId="wallbox1ChargingCurrentPhase1"/>
+			<channel id="wallbox1ChargingCurrentPhase2" typeId="wallbox1ChargingCurrentPhase2"/>
+			<channel id="wallbox1ChargingCurrentPhase3" typeId="wallbox1ChargingCurrentPhase3"/>
+			<channel id="wallbox1ChargingPower" typeId="wallbox1ChargingPower"/>
 		</channels>
 
 		<config-description>
@@ -66,58 +129,120 @@
 	<channel-type id="powerLimitation">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Power Limitation</label>
-		<category>Energy</category>
+		<category>Number</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
-
 	<channel-type id="powerLimitationState">
 		<item-type>Switch</item-type>
 		<label>Limitation State</label>
-		<category>Energy</category>
+		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
-
-	<channel-type id="houseConsumption">
+	<channel-type id="currentMpp1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current MPP1</label>
+		<category>Current</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="currentMpp2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current MPP2</label>
+		<category>Current</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="currentMpp3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current MPP3</label>
+		<category>Current</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="powerMpp1">
 		<item-type>Number:Power</item-type>
-		<label>Home Power Consumption</label>
+		<label>Power MPP1</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
+	<channel-type id="powerMpp2">
+		<item-type>Number:Power</item-type>
+		<label>Power MPP2</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="powerMpp3">
+		<item-type>Number:Power</item-type>
+		<label>Power MPP3</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="voltageMpp1">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage MPP1</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="voltageMpp2">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage MPP2</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="voltageMpp3">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage MPP3</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
 
+
+	<channel-type id="houseConsumption">
+		<item-type>Number:Power</item-type>
+		<label>House Power Consumption</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="energyProduction">
+		<item-type>Number:Power</item-type>
+		<label>Solar Production</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
 	<channel-type id="batteryPower">
 		<item-type>Number:Power</item-type>
 		<label>Battery Power</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
+	<channel-type id="batteryCurrent">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Battery Current</label>
+		<category>Current</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="batteryVoltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
 	<channel-type id="batteryFuelCharge">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Fuel</label>
-		<category>Battery</category>
+		<category>BatteryLevel</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
-
-	<channel-type id="batteryState">
+	<channel-type id="systemState">
 		<item-type>String</item-type>
-		<label>Battery State</label>
-		<category>Battery</category>
+		<label>System State</label>
+		<category>Text</category>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-
-	<channel-type id="batteryStateValue">
+	<channel-type id="systemStateValue">
 		<item-type>Number</item-type>
-		<label>Battery State Value</label>
-		<category>Battery</category>
+		<label>System State Value</label>
+		<category>Number</category>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="energyProduction">
-		<item-type>Number:Power</item-type>
-		<label>Solar Production</label>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.0f %unit%"/>
-	</channel-type>
 
 	<channel-type id="gridPower">
 		<item-type>Number:Power</item-type>
@@ -125,84 +250,72 @@
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="gridPowerSupply">
 		<item-type>Number:Power</item-type>
 		<label>Grid Supply</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="gridPowerDraw">
 		<item-type>Number:Power</item-type>
 		<label>Grid Draw</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="gridPowerPhase1">
 		<item-type>Number:Power</item-type>
 		<label>Grid Power Phase 1</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="gridPowerPhase2">
 		<item-type>Number:Power</item-type>
 		<label>Grid Power Phase 2</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="gridPowerPhase3">
 		<item-type>Number:Power</item-type>
 		<label>Grid Power Phase 3</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="gridCurrentPhase1">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Grid Current Phase 1</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="gridCurrentPhase2">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Grid Current Phase 2</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="gridCurrentPhase3">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Grid Current Phase 3</label>
 		<category>Current</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="gridVoltagePhase1">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Grid Voltage Phase 1</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="gridVoltagePhase2">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Grid Voltage Phase 2</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="gridVoltagePhase3">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Grid Voltage Phase 3</label>
 		<category>Voltage</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="gridFrequency">
 		<item-type>Number:Frequency</item-type>
 		<label>Grid Frequency</label>
@@ -210,38 +323,275 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
+
 	<channel-type id="liveBatCharge">
 		<item-type>Number:Energy</item-type>
 		<label>Live Bat Charge</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="liveBatDischarge">
 		<item-type>Number:Energy</item-type>
 		<label>Live Bat Discharge</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="liveGridImport">
 		<item-type>Number:Energy</item-type>
 		<label>Live Grid Import</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
 	<channel-type id="liveGridExport">
 		<item-type>Number:Energy</item-type>
 		<label>Live Grid Export</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
+	<channel-type id="liveHouseConsumption">
+		<item-type>Number:Energy</item-type>
+		<label>Live House Consumption</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="livePowerGenerator">
+		<item-type>Number:Energy</item-type>
+		<label>Live Power Generator</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="liveEnergyWallbox1">
+		<item-type>Number:Energy</item-type>
+		<label>Live Wallbox 1 charged Energy</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
 
-	<channel-type id="batteryVoltage">
+
+	<channel-type id="chargedEnergyPack1" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Total charged energy battery pack 1</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="chargedEnergyPack2" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Total charged energy battery pack 2</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="chargedEnergyPack3" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Total charged energy battery pack 3</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="chargedEnergyPack4" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Total charged energy battery pack 4</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="dischargedEnergyPack1" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Total discharged energy battery pack 1</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="dischargedEnergyPack2" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Total discharged energy battery pack 2</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="dischargedEnergyPack3" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Total discharged energy battery pack 3</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="dischargedEnergyPack4" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Total discharged energy battery pack 4</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="cyclesPack1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cycles battery pack 1</label>
+		<category>Number</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="cyclesPack2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cycles battery pack 2</label>
+		<category>Number</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="cyclesPack3" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cycles battery pack 3</label>
+		<category>Number</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="cyclesPack4" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cycles battery pack 4</label>
+		<category>Number</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="currentPack1" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current battery pack 1</label>
+		<category>Current</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="currentPack2" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current battery pack 2</label>
+		<category>Current</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="currentPack3" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current battery pack 3</label>
+		<category>Current</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="currentPack4" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current battery pack 4</label>
+		<category>Current</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="voltagePack1" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>Battery Voltage</label>
+		<label>Voltage battery pack 1</label>
 		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="voltagePack2" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage battery pack 2</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="voltagePack3" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage battery pack 3</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="voltagePack4" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage battery pack 4</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="maxCellVoltagePack1" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Maximum cell voltage battery pack 1</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+	<channel-type id="maxCellVoltagePack2" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Maximum cell voltage battery pack 2</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+	<channel-type id="maxCellVoltagePack3" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Maximum cell voltage battery pack 3</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+	<channel-type id="maxCellVoltagePack4" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Maximum cell voltage battery pack 4</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+	<channel-type id="minCellVoltagePack1" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Minimum cell voltage battery pack 1</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+	<channel-type id="minCellVoltagePack2" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Minimum cell voltage battery pack 2</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+	<channel-type id="minCellVoltagePack3" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Minimum cell voltage battery pack 3</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+	<channel-type id="minCellVoltagePack4" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Minimum cell voltage battery pack 4</label>
+		<category>Voltage</category>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+
+
+	<channel-type id="batteryTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Temperature</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="caseTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Case Temperature</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="mcuTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>MCU Temperature</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+
+	<channel-type id="wallbox1State">
+		<item-type>String</item-type>
+		<label>Wallbox 1 State</label>
+		<category>Text</category>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="wallbox1StateValue">
+		<item-type>Number</item-type>
+		<label>Wallbox 1 State Value</label>
+		<category>Number</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="wallbox1ChargingCurrentPhase1" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Wallbox 1 charging Current Phase 1</label>
+		<category>Current</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="wallbox1ChargingCurrentPhase2" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Wallbox 1 charging Current Phase 2</label>
+		<category>Current</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="wallbox1ChargingCurrentPhase3" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Wallbox 1 charging Current Phase 3</label>
+		<category>Current</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="wallbox1ChargingPower">
+		<item-type>Number:Energy</item-type>
+		<label>Wallbox 1 charging Power</label>
+		<category>Power</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>
