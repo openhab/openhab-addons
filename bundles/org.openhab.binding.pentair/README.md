@@ -207,8 +207,11 @@ sitemap pool label="Pool stuff" {
 ## References
 
 Setting up RS485 and basic protocol - https://www.sdyoung.com/home/decoding-the-pentair-easytouch-rs-485-protocol/
+
 ser2sock GitHub - https://github.com/nutechsoftware/ser2sock
+
 Alternative Linux daemon to control Aqualink RS pool controllers.
+
 Provides web UI, MQTT client & HTTP API endpoints - https://github.com/sfeakes/AqualinkD
 
 ## Future Enhancements
