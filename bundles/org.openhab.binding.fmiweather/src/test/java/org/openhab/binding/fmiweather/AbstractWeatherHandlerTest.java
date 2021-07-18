@@ -128,6 +128,9 @@ public class AbstractWeatherHandlerTest {
                 { "null at end #2", 2, new BigDecimal[] { bd(1), bd(2), bd(2), null } }, //
                 { "null in middle", 3, new BigDecimal[] { bd(1), bd(2), null, bd(3) } }, //
                 { "null in beginning and middle", 3, new BigDecimal[] { null, bd(2), null, bd(3) } }, //
+                { "all null #1", -1, new BigDecimal[] { null, null, } }, //
+                { "all null #2", -1, new BigDecimal[] { null, null, null, } }, //
+                { "all null #3", -1, new BigDecimal[] { null, null, null, null } }, //
         });
     }
 
