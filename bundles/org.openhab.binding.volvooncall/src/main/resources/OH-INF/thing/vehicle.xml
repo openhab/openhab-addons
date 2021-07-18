@@ -210,13 +210,17 @@
 		<label>Plugin Hybrid / Twin Engine info</label>
 		<channels>
 			<channel id="batteryLevel" typeId="batteryLevel"/>
+			<channel id="batteryLevelRaw" typeId="batteryLevelRaw"/>
 			<channel id="batteryDistanceToEmpty" typeId="odometer">
-				<label>Distance to battery empty</label>
+				<label>Distance Left (Battery)</label>
 			</channel>
 			<channel id="chargeStatus" typeId="chargeStatus"/>
+			<channel id="chargeStatusCable" typeId="chargeStatusCable"/>
+			<channel id="chargeStatusCharging" typeId="chargeStatusCharging"/>
+			<channel id="chargeStatusFullyCharged" typeId="chargeStatusFullyCharged"/>
 			<channel id="timeToHVBatteryFullyCharged" typeId="timeToHVBatteryFullyCharged"/>
 			<channel id="chargingEnd" typeId="timestamp">
-				<label>Charging end</label>
+				<label>Charging End</label>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -237,7 +241,7 @@
 
 	<channel-type id="window">
 		<item-type>Contact</item-type>
-		<label>Window Status</label>
+		<label>Window</label>
 		<description>Indicates if the window is opened</description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -251,7 +255,7 @@
 
 	<channel-type id="averageSpeed">
 		<item-type>Number:Speed</item-type>
-		<label>Average speed</label>
+		<label>Average Speed</label>
 		<description>Average speed of the vehicle</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -316,7 +320,7 @@
 	<channel-type id="carLocked">
 		<item-type>Switch</item-type>
 		<label>Locked</label>
-		<description>Car locking status</description>
+		<description>Lock status</description>
 		<category>lock</category>
 	</channel-type>
 
@@ -343,7 +347,7 @@
 	<channel-type id="bulbFailure">
 		<item-type>Switch</item-type>
 		<label>Bulb Failure</label>
-		<description>At least on bulb is reported as dead</description>
+		<description>At least one bulb is reported as dead</description>
 		<category>alarm</category>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -364,7 +368,7 @@
 
 	<channel-type id="tyrePressure">
 		<item-type>Number</item-type>
-		<label>Tyre pressure</label>
+		<label>Tyre Pressure</label>
 		<category>alarm</category>
 		<state readOnly="true">
 			<options>
@@ -377,7 +381,7 @@
 	<channel-type id="serviceWarningStatus">
 		<item-type>String</item-type>
 		<label>Service Warning</label>
-		<description>Is car service needed ?</description>
+		<description>Is a car service needed?</description>
 		<category>alarm</category>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -385,21 +389,52 @@
 	<channel-type id="batteryLevel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Level</label>
-		<description>Indicates the level of power in the battery (in case of PHEV / Twin Engine)</description>
+		<description>Indicates the level of power in the battery, or unknown in situations the API is misleading (in case of
+			PHEV / Twin Engine)</description>
+		<category>batterylevel</category>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="batteryLevelRaw">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Level (Raw)</label>
+		<description>Indicates the level of power in the battery taken straight from the API, which can be misleading (in case
+			of PHEV / Twin Engine)</description>
 		<category>batterylevel</category>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="chargeStatus">
 		<item-type>String</item-type>
-		<label>Charging status</label>
+		<label>Charging Status</label>
 		<description>Status of charging (in case of PHEV / Twin Engine)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="chargeStatusCable">
+		<item-type>Switch</item-type>
+		<label>Plugged In</label>
+		<description>Indicates if the charging cable is connected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="chargeStatusCharging">
+		<item-type>Switch</item-type>
+		<label>Charging</label>
+		<description>Indicates if the car is currently charging</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="chargeStatusFullyCharged">
+		<item-type>Switch</item-type>
+		<label>Fully Charged</label>
+		<description>Indicates if the car is fully charged</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="timeToHVBatteryFullyCharged">
 		<item-type>Number:Time</item-type>
-		<label>Time to battery fully charged</label>
+		<label>Remaining Charging Time</label>
 		<description>Time in seconds until the battery is fully charged (in case of PHEV / Twin Engine)</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
