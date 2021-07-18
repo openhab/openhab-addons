@@ -72,7 +72,7 @@ public class SensorTests extends AbstractComponentTests {
         assertThat(component.getChannel(Sensor.sensorChannelID).getState().getCache().createStateDescription(true)
                 .build().getPattern(), is("%s W"));
 
-        waitForAssert(() -> assertState(component, Sensor.sensorChannelID, UnDefType.UNDEF), 2000, 100);
+        waitForAssert(() -> assertState(component, Sensor.sensorChannelID, UnDefType.UNDEF), 10000, 200);
     }
 
     protected Set<String> getConfigTopics() {
