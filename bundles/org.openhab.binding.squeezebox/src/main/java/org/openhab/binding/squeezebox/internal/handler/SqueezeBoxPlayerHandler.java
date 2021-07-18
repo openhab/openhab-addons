@@ -577,83 +577,52 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * @return
      */
     int currentVolume() {
-        if (stateMap.containsKey(CHANNEL_VOLUME)) {
-            return ((DecimalType) stateMap.get(CHANNEL_VOLUME)).intValue();
-        } else {
-            return 0;
-        }
+        return cachedStateAsInt(CHANNEL_VOLUME);
     }
 
     int currentPlayingTime() {
-        if (stateMap.containsKey(CHANNEL_CURRENT_PLAYING_TIME)) {
-            return ((DecimalType) stateMap.get(CHANNEL_CURRENT_PLAYING_TIME)).intValue();
-        } else {
-            return 0;
-        }
+        return cachedStateAsInt(CHANNEL_CURRENT_PLAYING_TIME);
     }
 
     int currentNumberPlaylistTracks() {
-        if (stateMap.containsKey(CHANNEL_NUMBER_PLAYLIST_TRACKS)) {
-            return ((DecimalType) stateMap.get(CHANNEL_NUMBER_PLAYLIST_TRACKS)).intValue();
-        } else {
-            return 0;
-        }
+        return cachedStateAsInt(CHANNEL_NUMBER_PLAYLIST_TRACKS);
     }
 
     int currentPlaylistIndex() {
-        if (stateMap.containsKey(CHANNEL_PLAYLIST_INDEX)) {
-            return ((DecimalType) stateMap.get(CHANNEL_PLAYLIST_INDEX)).intValue();
-        } else {
-            return 0;
-        }
+        return cachedStateAsInt(CHANNEL_PLAYLIST_INDEX);
     }
 
     boolean currentPower() {
-        if (stateMap.containsKey(CHANNEL_POWER)) {
-            return (stateMap.get(CHANNEL_POWER).equals(OnOffType.ON) ? true : false);
-        } else {
-            return false;
-        }
+        return cachedStateAsBoolean(CHANNEL_POWER, OnOffType.ON);
     }
 
     boolean currentStop() {
-        if (stateMap.containsKey(CHANNEL_STOP)) {
-            return (stateMap.get(CHANNEL_STOP).equals(OnOffType.ON) ? true : false);
-        } else {
-            return false;
-        }
+        return cachedStateAsBoolean(CHANNEL_STOP, OnOffType.ON);
     }
 
     boolean currentControl() {
-        if (stateMap.containsKey(CHANNEL_CONTROL)) {
-            return (stateMap.get(CHANNEL_CONTROL).equals(PlayPauseType.PLAY) ? true : false);
-        } else {
-            return false;
-        }
+        return cachedStateAsBoolean(CHANNEL_CONTROL, PlayPauseType.PLAY);
     }
 
     boolean currentMute() {
-        if (stateMap.containsKey(CHANNEL_MUTE)) {
-            return (stateMap.get(CHANNEL_MUTE).equals(OnOffType.ON) ? true : false);
-        } else {
-            return false;
-        }
+        return cachedStateAsBoolean(CHANNEL_MUTE, OnOffType.ON);
     }
 
     int currentShuffle() {
-        if (stateMap.containsKey(CHANNEL_CURRENT_PLAYLIST_SHUFFLE)) {
-            return ((DecimalType) stateMap.get(CHANNEL_CURRENT_PLAYLIST_SHUFFLE)).intValue();
-        } else {
-            return 0;
-        }
+        return cachedStateAsInt(CHANNEL_CURRENT_PLAYLIST_SHUFFLE);
     }
 
     int currentRepeat() {
-        if (stateMap.containsKey(CHANNEL_CURRENT_PLAYLIST_REPEAT)) {
-            return ((DecimalType) stateMap.get(CHANNEL_CURRENT_PLAYLIST_REPEAT)).intValue();
-        } else {
-            return 0;
-        }
+        return cachedStateAsInt(CHANNEL_CURRENT_PLAYLIST_REPEAT);
+    }
+
+    private boolean cachedStateAsBoolean(String key, @NonNull State activeState) {
+        return activeState.equals(stateMap.get(key));
+    }
+
+    private int cachedStateAsInt(String key) {
+        State state = stateMap.get(key);
+        return state instanceof DecimalType ? ((DecimalType) state).intValue() : 0;
     }
 
     /**
