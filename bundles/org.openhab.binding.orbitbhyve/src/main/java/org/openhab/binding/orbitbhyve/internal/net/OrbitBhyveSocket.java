@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OrbitBhyveSocket extends WebSocketAdapter {
-    private final Logger logger = LoggerFactory.getLogger(OrbitBhyveBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(OrbitBhyveSocket.class);
     private OrbitBhyveBridgeHandler handler;
 
     public OrbitBhyveSocket(OrbitBhyveBridgeHandler handler) {

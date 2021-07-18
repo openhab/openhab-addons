@@ -6,13 +6,14 @@
 
 	<config-description uri="bridge-type:orbitbhyve:bridge">
 		<parameter name="email" type="text" required="true">
-			<label>Email parameter</label>
-			<description>This is a login to your B-Hyve account.</description>
+			<label>Email</label>
+			<context>email</context>
+			<description>This is a login to your B-hyve account.</description>
 		</parameter>
 		<parameter name="password" type="text" required="true">
 			<label>Password</label>
 			<context>password</context>
-			<description>This is a password to your B-Hyve account.</description>
+			<description>This is a password to your B-hyve account.</description>
 		</parameter>
 		<parameter name="refresh" type="integer" required="false" min="10">
 			<label>Refresh</label>

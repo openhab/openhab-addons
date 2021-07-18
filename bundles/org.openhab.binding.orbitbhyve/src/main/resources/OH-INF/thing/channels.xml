@@ -8,24 +8,29 @@
 	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Irrigation Mode</label>
-		<description>Channel representing mode of Orbit B-Hyve Device (auto/manual)</description>
-		<state readOnly="true"></state>
+		<description>Channel representing mode of Orbit B-hyve Device (auto/manual)</description>
+		<state readOnly="true">
+			<options>
+				<option value="auto">Auto</option>
+				<option value="manual">Manual</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="next_start">
 		<item-type>DateTime</item-type>
-		<label>Next Watering Start Time</label>
+		<label>Next Watering Time</label>
 		<description>Channel representing start time of the next watering</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="rain_delay">
-		<item-type>Integer</item-type>
-		<label>Rain delay</label>
+		<item-type>Number</item-type>
+		<label>Rain Delay</label>
 		<description>Channel representing rain delay in hours</description>
 		<state pattern="%d h"></state>
 	</channel-type>
 	<channel-type id="watering_time">
-		<item-type>Integer</item-type>
-		<label>Zone watering time</label>
+		<item-type>Number:Time</item-type>
+		<label>Zone Watering Time</label>
 		<description>Channel representing the manual zone watering time in minutes</description>
 		<state max="240" min="0" pattern="%d min"></state>
 	</channel-type>
@@ -36,17 +41,17 @@
 	</channel-type>
 	<channel-type id="smart_watering">
 		<item-type>Switch</item-type>
-		<label>Sprinkler Smart Watering Control</label>
+		<label>Smart Watering Control</label>
 		<description>Channel for enabling/disabling the smart watering mode</description>
 	</channel-type>
 	<channel-type id="program">
 		<item-type>Switch</item-type>
-		<label>Program channel</label>
+		<label>Program Channel</label>
 		<description>Dynamic channel representing a program</description>
 	</channel-type>
 	<channel-type id="zone">
 		<item-type>Switch</item-type>
-		<label>Zone channel</label>
+		<label>Zone Channel</label>
 		<description>Dynamic channel representing a zone</description>
 	</channel-type>
 </thing:thing-descriptions>

@@ -8,7 +8,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		<label>Orbit B-Hyve Sprinkler</label>
+		<label>Sprinkler</label>
+		<description>Orbit B-hyve Sprinkler</description>
 		<channels>
 			<channel id="control" typeId="control"/>
 			<channel id="mode" typeId="mode"/>

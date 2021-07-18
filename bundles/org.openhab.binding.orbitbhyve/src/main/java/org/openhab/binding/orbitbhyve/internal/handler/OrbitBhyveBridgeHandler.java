@@ -79,6 +79,8 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
 
     private @Nullable ScheduledFuture<?> future = null;
 
+    private @Nullable ScheduledFuture<?> statusFuture = null;
+
     private @Nullable Session session;
 
     private @Nullable String sessionToken = null;
@@ -125,7 +127,11 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
     @Override
     public void dispose() {
         ScheduledFuture<?> localFuture = future;
-        if (localFuture != null && !(localFuture.isCancelled() || localFuture.isDone())) {
+        if (localFuture != null) {
+            localFuture.cancel(true);
+        }
+        localFuture = statusFuture;
+        if (localFuture != null) {
             localFuture.cancel(true);
         }
         closeSession();
@@ -149,15 +155,16 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 logger.debug("token: {}", sessionToken);
                 initializeWebSocketSession();
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Login response status:" + response.getStatus());
                 return false;
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Exception during login", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (TimeoutException | ExecutionException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Exception during login");
+            return false;
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Exception during login");
+            Thread.currentThread().interrupt();
             return false;
         }
         updateStatus(ThingStatus.ONLINE);
@@ -180,12 +187,11 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                     logger.debug("Sending ping");
                     localSession.getRemote().sendString("{\"event\":\"ping\"}");
                 } catch (IOException e) {
-                    logger.debug("Error sending ping to a web socket", e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "web socket communication error");
+                            "Error sending ping to a web socket");
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "web socket creation error");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Web socket creation error");
             }
         }
     }
@@ -200,15 +206,14 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 OrbitBhyveDevice[] devices = gson.fromJson(response.getContentAsString(), OrbitBhyveDevice[].class);
                 return Arrays.asList(devices);
             } else {
-                logger.debug("Returned status: {}", response.getStatus());
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Get devices returned response status: " + response.getStatus());
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Error during getting devices", e);
-            updateStatus(ThingStatus.OFFLINE);
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (TimeoutException | ExecutionException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during getting devices");
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during getting devices");
+            Thread.currentThread().interrupt();
         }
         return new ArrayList<>();
     }
@@ -232,13 +237,13 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Returned status: " + response.getStatus());
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Error during getting device: {}", deviceId, e);
+        } catch (TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error during getting device info");
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+                    "Error during getting device info: " + deviceId);
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error during getting device info: " + deviceId);
+            Thread.currentThread().interrupt();
         }
         return null;
     }
@@ -253,7 +258,6 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     private void processEvent(OrbitBhyveSocketEvent event) {
-        Runnable runnableUpdateDeviceStatus = () -> updateDeviceStatus(event.getDeviceId());
         switch (event.getEvent()) {
             case "watering_in_progress_notification":
                 disableZones(event.getDeviceId());
@@ -286,10 +290,10 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 if (ch != null) {
                     updateState(ch.getUID(), "off".equals(event.getMode()) ? OnOffType.OFF : OnOffType.ON);
                 }
-                scheduler.schedule(runnableUpdateDeviceStatus, 3, TimeUnit.SECONDS);
+                deferredStatusUpdate(event.getDeviceId());
                 break;
             case "rain_delay":
-                scheduler.schedule(runnableUpdateDeviceStatus, 3, TimeUnit.SECONDS);
+                deferredStatusUpdate(event.getDeviceId());
                 break;
             case "skip_active_station":
                 disableZones(event.getDeviceId());
@@ -298,12 +302,20 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 OrbitBhyveProgram program = gson.fromJson(event.getProgram(), OrbitBhyveProgram.class);
                 if (program != null) {
                     updateDeviceProgramStatus(program);
-                    scheduler.schedule(() -> updateDeviceStatus(program.getDeviceId()), 3, TimeUnit.SECONDS);
+                    deferredStatusUpdate(program.getDeviceId());
                 }
                 break;
             default:
                 logger.debug("Received event: {}", event.getEvent());
         }
+    }
+
+    private void deferredStatusUpdate(String deviceId) {
+        ScheduledFuture<?> localFuture = statusFuture;
+        if (localFuture != null) {
+            localFuture.cancel(true);
+        }
+        statusFuture = scheduler.schedule(() -> updateDeviceStatus(deviceId), 3, TimeUnit.SECONDS);
     }
 
     private void updateDeviceStatus(String deviceId) {
@@ -385,14 +397,11 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
             // Wait for Connect
             return fut.get();
         } catch (IOException e) {
-            logger.debug("Cannot connect websocket client", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot connect websocket client");
         } catch (InterruptedException e) {
-            logger.debug("Cannot create websocket session", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot create websocket session");
             Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
-            logger.debug("Cannot create websocket session", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot create websocket session");
         }
         return null;
@@ -410,7 +419,6 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 logger.trace("sending message:\n {}", msg);
                 localSession.getRemote().sendString(msg);
             } catch (IOException e) {
-                logger.debug("Cannot send hello string to web socket!", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Cannot send hello string to web socket!");
             }
@@ -436,7 +444,6 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                                 + ",\"run_time\":" + time + "}]}");
             }
         } catch (IOException e) {
-            logger.debug("Error during zone watering execution", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error during zone watering execution");
         }
@@ -452,7 +459,6 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                         + program + "\",\"device_id\":\"" + deviceId + "\",\"timestamp\":\"" + dateTime + "\"}");
             }
         } catch (IOException e) {
-            logger.debug("Error during program watering execution", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error during program watering execution");
         }
@@ -475,12 +481,11 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 logger.debug("Returned status: {}", response.getStatus());
                 updateStatus(ThingStatus.OFFLINE);
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Error during updating program", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during getting programs");
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (TimeoutException | ExecutionException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during updating programs");
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during updating programs");
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -494,7 +499,6 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                         + "\",\"delay\":" + delay + ",\"timestamp\":\"" + dateTime + "\"}");
             }
         } catch (IOException e) {
-            logger.debug("Error during rain delay setting", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during rain delay setting");
         }
     }
@@ -509,7 +513,6 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                         + "\",\"timestamp\":\"" + dateTime + "\",\"mode\":\"manual\",\"stations\":[]}");
             }
         } catch (IOException e) {
-            logger.debug("Error during watering stopping", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during watering stopping");
         }
     }
@@ -527,12 +530,11 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 logger.debug("Returned status: {}", response.getStatus());
                 updateStatus(ThingStatus.OFFLINE);
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Error during getting programs", e);
+        } catch (TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during getting programs");
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during getting programs");
+            Thread.currentThread().interrupt();
         }
         return new ArrayList<>();
     }
@@ -547,7 +549,6 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                         + "\",\"device_id\":\"" + deviceId + "\",\"timestamp\":\"" + dateTime + "\"}");
             }
         } catch (IOException e) {
-            logger.debug("Error during setting run mode", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during setting run mode");
         }
     }
@@ -566,23 +567,18 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
         try {
             ContentResponse response = sendRequestBuilder(BHYVE_DEVICES + "/" + deviceId, HttpMethod.PUT)
                     .content(new StringContentProvider(payload), "application/json;charset=UTF-8").send();
-            if (response.getStatus() == 200) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Device update response: {}", response.getContentAsString());
-                }
-            } else {
-                logger.debug("Returned status: {}", response.getStatus());
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Device update response: {}", response.getContentAsString());
-                }
-                updateStatus(ThingStatus.OFFLINE);
+            if (logger.isTraceEnabled()) {
+                logger.trace("Device update response: {}", response.getContentAsString());
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Error during updating device", e);
-            updateStatus(ThingStatus.OFFLINE);
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
+            if (response.getStatus() != 200) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Update device response status: " + response.getStatus());
             }
+        } catch (TimeoutException | ExecutionException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during updating device");
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during updating device");
+            Thread.currentThread().interrupt();
         }
     }
 }

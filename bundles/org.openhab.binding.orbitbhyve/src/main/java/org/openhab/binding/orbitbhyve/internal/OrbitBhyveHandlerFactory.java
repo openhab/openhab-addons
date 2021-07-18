@@ -53,7 +53,7 @@ public class OrbitBhyveHandlerFactory extends BaseThingHandlerFactory {
     /**
      * the shared http client
      */
-    private @NonNullByDefault({}) HttpClient httpClient;
+    private HttpClient httpClient;
 
     /**
      * the shared web socket client

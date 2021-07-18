@@ -12,10 +12,6 @@ So far only the [Orbit B-hyve 8-zone Indoor Timer](https://bhyve.orbitonline.com
 This binding supports the auto discovery of the sprinklers bound to your Orbit B-hyve account.  
 To start the discovery you need to create a bridge thing and enter valid credentials to your Orbit B-hyve cloud account.
 
-## Binding Configuration
-
-This binding does not require any configuration on the binding level.
-
 ## Thing Configuration
 
 The bridge thing requires a manual configuration. You have to enter valid credentials to your Orbit B-hyve account, and you can also set the refresh time in seconds for polling data from the Orbit cloud.  
@@ -33,16 +29,14 @@ This binding automatically detects all zones and programs for each sprinkler and
 
 Beside the dynamic channels each sprinkler thing provides these standard channels:
 
-| channel        | type     | description                                                        |
-|----------------|----------|--------------------------------------------------------------------|
-| mode           | String   | This channel represents the mode of sprinkler device (auto/manual) |
-| next_start     | DateTime | This channel represents the start time of the next watering        |
-| rain_delay     | Number   | This channel manages the current rain delay in hours               |
-| watering_time  | Number   | This channel manages the manual zone watering time in minutes      |
-| control        | Switch   | This channel controls the sprinkler (ON/OFF)                       |
-| smart_watering | Switch   | This channel controls the smart watering (ON/OFF)                  |
-| control        | String   | This channel manages the manual zone watering time in minutes      |
-
+| channel        | type        | description                                                        |
+|----------------|-------------|--------------------------------------------------------------------|
+| mode           | String      | This channel represents the mode of sprinkler device (auto/manual) |
+| next_start     | DateTime    | This channel represents the start time of the next watering        |
+| rain_delay     | Number      | This channel manages the current rain delay in hours               |
+| watering_time  | Number:Time | This channel manages the manual zone watering time in minutes      |
+| control        | Switch      | This channel controls the sprinkler (ON/OFF)                       |
+| smart_watering | Switch      | This channel controls the smart watering (ON/OFF)                  |
 
 ## Full Example
 

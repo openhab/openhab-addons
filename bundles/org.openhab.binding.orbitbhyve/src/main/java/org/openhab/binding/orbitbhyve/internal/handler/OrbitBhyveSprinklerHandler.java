@@ -256,6 +256,6 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
     }
 
     public void updateSmartWatering(String senseMode) {
-        updateState(CHANNEL_SMART_WATERING, (senseMode.equals("auto")) ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_SMART_WATERING, ("auto".equals(senseMode)) ? OnOffType.ON : OnOffType.OFF);
     }
 }
