@@ -24,9 +24,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class PacketStruct {
-    public DatagramPacket packet;
-    public boolean sent;
-    public long time = 0;
+    private DatagramPacket packet;
+
+    public DatagramPacket getPacket() {
+        return packet;
+    }
+
+    private boolean sent = false;
+    private long time = 0;
 
     public PacketStruct(DatagramPacket packetPar) {
         packet = packetPar;
@@ -36,7 +41,7 @@ public class PacketStruct {
         return time;
     }
 
-    public boolean isSent() {
+    public boolean getSent() {
         return sent;
     }
 
