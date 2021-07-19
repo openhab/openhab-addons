@@ -94,7 +94,7 @@ public class UniFiController {
     // Public API
 
     public void start() throws UniFiException {
-        if(unifios) {
+        if (unifios) {
             obtainCsrfToken();
         }
 

@@ -29,6 +29,7 @@ The following table describes the Bridge configuration parameters:
 | ------------------------ | ---------------------------------------------- |--------- | ------- |
 | host                     | Hostname of IP address of the UniFi Controller | Required | -       |
 | port                     | Port of the UniFi Controller                   | Required | -       |
+| UniFi OS                 | If the UniFi Controller is running on UniFi OS | Required | false   |
 | username                 | The username to access the UniFi Controller    | Required | -       |
 | password                 | The password to access the UniFi Controller    | Required | -       |
 | refresh                  | Refresh interval in seconds                    | Optional | 10      |
