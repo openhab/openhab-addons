@@ -94,7 +94,7 @@ public class BloomSkyHandlerFactory extends BaseThingHandlerFactory {
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof BloomSkyBridgeHandler) {
             if (bloomSkyDiscoveryServiceRegistration != null) {
-                // // remove discovery service, if bridge handler is removed
+                // remove discovery service, if bridge handler is removed
                 bloomSkyDiscoveryServiceRegistration.unregister();
 
             }
