@@ -68,7 +68,11 @@
 					<option value="temporary">Temporary</option>
 				</options>
 			</parameter>
-
+			<parameter name="clockSync" type="boolean">
+				<label>Enable Thermostat Clock Sync</label>
+				<description>Optional Flag to snyc the thermostat's clock with the host system clock</description>
+				<default>false</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 

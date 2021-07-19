@@ -213,9 +213,9 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | suppressRepeating | Suppress repeating of msg   | true, false |
 | rollershutter                   | senderIdOffset    |                             | 1-127 |
 |                                 | enoceanId         | | |
-|                                 | sendingEEPId      |                             | A5_3F_7F_EltakoFSB, A5_38_08_07, D2_05_00 |
+|                                 | sendingEEPId      |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_38_08_07, D2_05_00 |
 |                                 | broadcastMessages |                             | true, false |
-|                                 | receivingEEPId¹   |                             | A5_3F_7F_EltakoFSB, A5_11_03, D2_05_00 |
+|                                 | receivingEEPId¹   |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_11_03, D2_05_00 |
 |                                 | suppressRepeating |                             | true, false |
 |                                 | pollingInterval   | Refresh interval in seconds | Integer |
 | measurementSwitch               | senderIdOffset    |                             | 1-127 |

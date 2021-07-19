@@ -160,14 +160,10 @@ public class ShellyComponents {
                                     toQuantityType(getDouble(emeter.reactive), DIGITS_WATT, Units.WATT));
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_VOLTAGE,
                                     toQuantityType(getDouble(emeter.voltage), DIGITS_VOLT, Units.VOLT));
-
-                            if (emeter.current != null) {
-                                // Shelly
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_CURRENT,
-                                        toQuantityType(getDouble(emeter.current), DIGITS_VOLT, Units.AMPERE));
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
-                                        getDecimal(emeter.pf));
-                            }
+                            updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_CURRENT,
+                                    toQuantityType(getDouble(emeter.current), DIGITS_VOLT, Units.AMPERE));
+                            updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
+                                    toQuantityType(computePF(emeter), Units.PERCENT));
 
                             accumulatedWatts += getDouble(emeter.power);
                             accumulatedTotal += getDouble(emeter.total) / 1000;
@@ -232,6 +228,19 @@ public class ShellyComponents {
         }
 
         return updated;
+    }
+
+    private static Double computePF(ShellySettingsEMeter emeter) {
+        if (emeter.pf != null) { // EM3
+            return emeter.pf; // take device value
+        }
+
+        // EM: compute from provided values
+        if (Math.abs(emeter.power) + Math.abs(emeter.reactive) > 1.5) {
+            double pf = emeter.power / Math.sqrt(emeter.power * emeter.power + emeter.reactive * emeter.reactive);
+            return pf;
+        }
+        return 0.0;
     }
 
     /**
@@ -324,7 +333,7 @@ public class ShellyComponents {
             if ((sdata.adcs != null) && (sdata.adcs.size() > 0)) {
                 ShellyADC adc = sdata.adcs.get(0);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE,
-                        getDecimal(adc.voltage));
+                        toQuantityType(getDouble(adc.voltage), 2, Units.VOLT));
             }
 
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);

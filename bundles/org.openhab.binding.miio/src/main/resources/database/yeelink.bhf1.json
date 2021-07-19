@@ -68,7 +68,10 @@
 				"friendlyName": "Shutdown Timer",
 				"channel": "delayoff",
 				"type": "Number:Time",
-				"unit": "seconds",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -91,7 +94,7 @@
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"refresh": true,
 				"actions": [],
 				"category": "temperature",

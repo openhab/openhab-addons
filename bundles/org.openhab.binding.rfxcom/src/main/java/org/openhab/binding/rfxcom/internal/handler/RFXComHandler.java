@@ -19,15 +19,22 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
+import org.openhab.binding.rfxcom.internal.RFXComBindingConstants;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
+import org.openhab.binding.rfxcom.internal.config.RFXComGenericDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidParameterException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 import org.openhab.binding.rfxcom.internal.messages.RFXComDeviceMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComMessageFactory;
+import org.openhab.binding.rfxcom.internal.messages.RFXComMessageFactoryImpl;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -58,10 +65,22 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
     private final Map<String, Type> stateMap = new ConcurrentHashMap<>();
 
     private RFXComBridgeHandler bridgeHandler;
+
+    private Class<? extends RFXComDeviceConfiguration> configType;
     private RFXComDeviceConfiguration config;
 
+    private RFXComMessageFactory messageFactory;
+
     public RFXComHandler(@NonNull Thing thing) {
+        this(thing, RFXComMessageFactoryImpl.INSTANCE);
+    }
+
+    public RFXComHandler(@NonNull Thing thing, RFXComMessageFactory messageFactory) {
         super(thing);
+        this.messageFactory = messageFactory;
+
+        configType = RFXComBindingConstants.THING_TYPE_UID_CONFIGURATION_CLASS_MAP.getOrDefault(thing.getThingTypeUID(),
+                RFXComGenericDeviceConfiguration.class);
     }
 
     @Override
@@ -73,17 +92,18 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                 logger.trace("Received unsupported Refresh command");
             } else {
                 try {
-                    PacketType packetType = RFXComMessageFactory
+                    PacketType packetType = RFXComMessageFactoryImpl
                             .convertPacketType(getThing().getThingTypeUID().getId().toUpperCase());
 
-                    RFXComMessage msg = RFXComMessageFactory.createMessage(packetType);
-
-                    msg.setConfig(config);
-                    msg.convertFromState(channelUID.getId(), command);
+                    RFXComMessage msg = messageFactory.createMessage(packetType, config, channelUID, command);
 
                     bridgeHandler.sendMessage(msg);
                 } catch (RFXComMessageNotImplementedException e) {
                     logger.error("Message not supported", e);
+                } catch (RFXComUnsupportedChannelException e) {
+                    logger.error("Channel not supported", e);
+                } catch (RFXComInvalidStateException e) {
+                    logger.error("Invalid state supplied for channel", e);
                 } catch (RFXComException e) {
                     logger.error("Transmitting error", e);
                 }
@@ -94,8 +114,14 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
     @Override
     public void initialize() {
         logger.debug("Initializing thing {}", getThing().getUID());
-        initializeBridge((getBridge() == null) ? null : getBridge().getHandler(),
-                (getBridge() == null) ? null : getBridge().getStatus());
+
+        Bridge bridge = getBridge();
+
+        if (bridge == null) {
+            initializeBridge(null, null);
+        } else {
+            initializeBridge(bridge.getHandler(), bridge.getStatus());
+        }
 
         stateMap.clear();
     }
@@ -103,27 +129,36 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("bridgeStatusChanged {} for thing {}", bridgeStatusInfo, getThing().getUID());
-        initializeBridge((getBridge() == null) ? null : getBridge().getHandler(), bridgeStatusInfo.getStatus());
+
+        Bridge bridge = getBridge();
+
+        if (bridge == null) {
+            initializeBridge(null, bridgeStatusInfo.getStatus());
+        } else {
+            initializeBridge(bridge.getHandler(), bridgeStatusInfo.getStatus());
+        }
     }
 
     private void initializeBridge(ThingHandler thingHandler, ThingStatus bridgeStatus) {
         logger.debug("initializeBridge {} for thing {}", bridgeStatus, getThing().getUID());
 
-        config = getConfigAs(RFXComDeviceConfiguration.class);
-        if (config.deviceId == null || config.subType == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "RFXCOM device missing deviceId or subType");
-        } else if (thingHandler != null && bridgeStatus != null) {
-            bridgeHandler = (RFXComBridgeHandler) thingHandler;
-            bridgeHandler.registerDeviceStatusListener(this);
+        try {
+            config = getConfigAs(configType);
+            config.parseAndValidate();
+            if (thingHandler != null && bridgeStatus != null) {
+                bridgeHandler = (RFXComBridgeHandler) thingHandler;
+                bridgeHandler.registerDeviceStatusListener(this);
 
-            if (bridgeStatus == ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
+                if (bridgeStatus == ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        } catch (RFXComInvalidParameterException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 
@@ -140,12 +175,11 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
     @Override
     public void onDeviceMessageReceived(ThingUID bridge, RFXComDeviceMessage message) {
         try {
-            String id = message.getDeviceId();
-            if (config.deviceId.equals(id)) {
+            if (config.matchesMessage(message)) {
                 String receivedId = PACKET_TYPE_THING_TYPE_UID_MAP.get(message.getPacketType()).getId();
-                logger.debug("Received message from bridge: {} message: {}", bridge, message);
-
                 if (receivedId.equals(getThing().getThingTypeUID().getId())) {
+                    logger.debug("Message from bridge [{}] matches thing [{}] message: {}", bridge,
+                            getThing().getUID().toString(), message);
                     updateStatus(ThingStatus.ONLINE);
 
                     for (Channel channel : getThing().getChannels()) {
@@ -157,19 +191,21 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                                 case CHANNEL_COMMAND:
                                 case CHANNEL_CHIME_SOUND:
                                 case CHANNEL_MOOD:
-                                    postNullableCommand(uid, message.convertToCommand(channelId, this));
+                                    postNullableCommand(uid, message.convertToCommand(channelId, config, this));
                                     break;
 
                                 case CHANNEL_LOW_BATTERY:
                                     updateNullableState(uid,
-                                            isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL, this)));
+                                            isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL, config, this)));
                                     break;
 
                                 default:
-                                    updateNullableState(uid, message.convertToState(channelId, this));
+                                    updateNullableState(uid, message.convertToState(channelId, config, this));
                                     break;
                             }
-                        } catch (RFXComException e) {
+                        } catch (RFXComInvalidStateException e) {
+                            logger.trace("{} not configured for {}", channelId, message);
+                        } catch (RFXComUnsupportedChannelException e) {
                             logger.trace("{} does not handle {}", channelId, message);
                         }
                     }

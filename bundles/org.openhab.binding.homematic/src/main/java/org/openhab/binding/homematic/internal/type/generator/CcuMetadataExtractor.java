@@ -82,7 +82,7 @@ public class CcuMetadataExtractor {
                 file.delete();
             }
             file.createNewFile();
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "ISO-8859-1"));
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
 
             // write device descriptions
             bw.write("# -------------- generated descriptions " + new Date() + " --------------\n");
@@ -216,7 +216,7 @@ public class CcuMetadataExtractor {
         public UrlLoader(String url, String startLine, String endLine) throws IOException {
             System.out.println("Loading file " + url);
             Boolean includeLine = null;
-            BufferedReader br = new BufferedReader(new InputStreamReader(new URL(url).openStream(), "ISO-8859-1"));
+            BufferedReader br = new BufferedReader(new InputStreamReader(new URL(url).openStream(), "UTF-8"));
 
             String line;
             while ((line = br.readLine()) != null) {

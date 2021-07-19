@@ -29,6 +29,6 @@ public class RFXComCamera1MessageTest {
     @Test
     public void checkNotImplemented() {
         assertThrows(RFXComMessageNotImplementedException.class,
-                () -> RFXComMessageFactory.createMessage(PacketType.CAMERA1));
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.CAMERA1, null, null, null));
     }
 }

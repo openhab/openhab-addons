@@ -35,11 +35,6 @@ import org.openhab.core.types.UnDefType;
 public class RFXComFanLucciAirDcMessageTest {
 
     @Test
-    public void testFanLightOn() throws RFXComException {
-        testCommand(CHANNEL_FAN_LIGHT, OnOffType.ON, OnOffType.ON, null, StringType.valueOf("LIGHT"));
-    }
-
-    @Test
     public void testUp() throws RFXComException {
         testCommand(CHANNEL_FAN_SPEED, UpDownType.UP, UnDefType.UNDEF, UpDownType.UP, StringType.valueOf("UP"));
     }

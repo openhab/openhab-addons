@@ -70,18 +70,25 @@ public final class ForwardToLoginServlet extends AbstractRedirectionServlet {
             logger.warn("Request is missing client ID.");
             return getErrorRedirectionUrl(PairAccountServlet.MISSING_CLIENT_ID_PARAMETER_NAME);
         }
+        clientId = clientId.strip();
+
         if (clientSecret == null || clientSecret.isEmpty()) {
             logger.warn("Request is missing client secret.");
             return getErrorRedirectionUrl(PairAccountServlet.MISSING_CLIENT_SECRET_PARAMETER_NAME);
         }
+        clientSecret = clientSecret.strip();
+
         if (bridgeId == null || bridgeId.isEmpty()) {
             logger.warn("Request is missing bridge ID.");
             return getErrorRedirectionUrl(PairAccountServlet.MISSING_BRIDGE_ID_PARAMETER_NAME);
         }
+        bridgeId = bridgeId.strip();
+
         if (email == null || email.isEmpty()) {
             logger.warn("Request is missing e-mail address.");
             return getErrorRedirectionUrl(PairAccountServlet.MISSING_EMAIL_PARAMETER_NAME);
         }
+        email = email.strip();
 
         ThingUID bridgeUid = null;
         try {

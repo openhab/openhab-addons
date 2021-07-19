@@ -32,4 +32,5 @@ public class InfluxDBConstants {
     public static final String TAG_CATEGORY_NAME = "category";
     public static final String TAG_TYPE_NAME = "type";
     public static final String TAG_LABEL_NAME = "label";
+    public static final String FIELD_MEASUREMENT_NAME = "_measurement";
 }

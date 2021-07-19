@@ -26,6 +26,7 @@
 /bundles/org.openhab.binding.autelis/ @digitaldan
 /bundles/org.openhab.binding.automower/ @maxpg
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
+/bundles/org.openhab.binding.benqprojector/ @mlobstein
 /bundles/org.openhab.binding.bigassfan/ @mhilbush
 /bundles/org.openhab.binding.bluetooth/ @cdjackson @cpmeister
 /bundles/org.openhab.binding.bluetooth.airthings/ @paulianttila
@@ -127,6 +128,7 @@
 /bundles/org.openhab.binding.insteon/ @robnielsen
 /bundles/org.openhab.binding.intesis/ @hmerk
 /bundles/org.openhab.binding.ipcamera/ @Skinah
+/bundles/org.openhab.binding.ipobserver/ @Skinah
 /bundles/org.openhab.binding.ipp/ @peuter
 /bundles/org.openhab.binding.irobot/ @Sonic-Amiga
 /bundles/org.openhab.binding.irtrans/ @kgoderis
@@ -236,6 +238,7 @@
 /bundles/org.openhab.binding.pulseaudio/ @peuter
 /bundles/org.openhab.binding.pushbullet/ @hakan42
 /bundles/org.openhab.binding.pushover/ @cweitkamp
+/bundles/org.openhab.binding.pushsafer/ @appzer @cweitkamp
 /bundles/org.openhab.binding.qbus/ @QbusKoen
 /bundles/org.openhab.binding.radiothermostat/ @mlobstein
 /bundles/org.openhab.binding.regoheatpump/ @crnjan
@@ -270,6 +273,7 @@
 /bundles/org.openhab.binding.snmp/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.solaredge/ @alexf2015
 /bundles/org.openhab.binding.solarlog/ @johannrichard
+/bundles/org.openhab.binding.solarwatt/ @sven-carstens
 /bundles/org.openhab.binding.somfymylink/ @loungeflyz
 /bundles/org.openhab.binding.somfytahoma/ @octa22
 /bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo
@@ -308,7 +312,7 @@
 /bundles/org.openhab.binding.verisure/ @jannegpriv
 /bundles/org.openhab.binding.vigicrues/ @clinique
 /bundles/org.openhab.binding.vitotronic/ @steand
-/bundles/org.openhab.binding.volvooncall/ @clinique
+/bundles/org.openhab.binding.volvooncall/ @clinique @Jamstah
 /bundles/org.openhab.binding.warmup/ @jamesmelville
 /bundles/org.openhab.binding.weathercompany/ @mhilbush
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo

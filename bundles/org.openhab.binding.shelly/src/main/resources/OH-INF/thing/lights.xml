@@ -235,8 +235,7 @@
 	<channel-type id="whiteTemp">
 		<item-type>Dimmer</item-type>
 		<label>Light Temperature</label>
-		<description>Light Temperature 3000..6500K</description>
-		<state min="3000" max="6500" step="10" readOnly="false"></state>
+		<description>Light Temperature 2700/3000..6500K (0-100%)</description>
 	</channel-type>
 	<channel-type id="whiteBrightness">
 		<item-type>Dimmer</item-type>

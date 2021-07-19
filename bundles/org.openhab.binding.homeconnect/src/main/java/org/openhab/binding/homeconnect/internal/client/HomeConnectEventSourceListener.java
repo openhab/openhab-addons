@@ -27,6 +27,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.sse.InboundSseEvent;
 
@@ -138,9 +139,14 @@ public class HomeConnectEventSourceListener {
                 // seconds. So we wait few seconds before trying again.
                 if (error instanceof NotAuthorizedException) {
                     logger.debug(
-                            "Event source listener connection failure due to unauthorized exception : wait 10 seconds... haId={}",
+                            "Event source listener connection failure due to unauthorized exception : wait 20 seconds... haId={}",
                             haId);
-                    scheduledExecutorService.schedule(() -> eventListener.onClosed(), 10, TimeUnit.SECONDS);
+                    scheduledExecutorService.schedule(() -> eventListener.onClosed(), 20, TimeUnit.SECONDS);
+                } else if (error instanceof InternalServerErrorException) {
+                    logger.debug(
+                            "Event source listener connection failure due to internal server exception : wait 2 seconds... haId={}",
+                            haId);
+                    scheduledExecutorService.schedule(() -> eventListener.onClosed(), 2, TimeUnit.SECONDS);
                 } else {
                     eventListener.onClosed();
                 }

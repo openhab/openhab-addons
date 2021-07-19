@@ -49,7 +49,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +83,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
 
     private final Logger logger = LoggerFactory.getLogger(HueLightHandler.class);
 
-    private final HueStateDescriptionOptionProvider stateDescriptionOptionProvider;
+    private final HueStateDescriptionProvider stateDescriptionProvider;
 
     private @NonNullByDefault({}) String lightId;
 
@@ -105,9 +105,9 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
 
     private @Nullable ScheduledFuture<?> scheduledFuture;
 
-    public HueLightHandler(Thing hueLight, HueStateDescriptionOptionProvider stateDescriptionOptionProvider) {
+    public HueLightHandler(Thing hueLight, HueStateDescriptionProvider stateDescriptionProvider) {
         super(hueLight);
-        this.stateDescriptionOptionProvider = stateDescriptionOptionProvider;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -185,18 +185,14 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
                     colorTemperatureCapabilties = ct;
 
                     // minimum and maximum are inverted due to mired/Kelvin conversion!
-                    StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
+                    StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
                             .withMinimum(new BigDecimal(LightStateConverter.miredToKelvin(ct.max))) //
                             .withMaximum(new BigDecimal(LightStateConverter.miredToKelvin(ct.min))) //
                             .withStep(new BigDecimal(100)) //
                             .withPattern("%.0f K") //
-                            .build().toStateDescription();
-                    if (stateDescription != null) {
-                        stateDescriptionOptionProvider.setDescription(
-                                new ChannelUID(thing.getUID(), CHANNEL_COLORTEMPERATURE_ABS), stateDescription);
-                    } else {
-                        logger.warn("Failed to create state description in thing {}", thing.getUID());
-                    }
+                            .build();
+                    stateDescriptionProvider.setStateDescriptionFragment(
+                            new ChannelUID(thing.getUID(), CHANNEL_COLORTEMPERATURE_ABS), stateDescriptionFragment);
                 }
             }
             capabilitiesInitializedSuccessfully = true;
