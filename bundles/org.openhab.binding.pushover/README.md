@@ -46,7 +46,7 @@ One has to pass a `null` value if it should be skipped or the default value for 
 
 - `sendMonospaceMessage(String message, @Nullable String title)` - This method is used to send a monospace message.
 
-- `sendAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType)` - This method is used to send a message with an attachment. It takes a (local) path to the attachment (parameter `attachment` **mandatory**) and an optional `contentType` to define the content-type of the attachment (default: `image/jpeg`).
+- `sendAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType)` - This method is used to send a message with an attachment. It takes a local path or URL to the attachment (parameter `attachment` **mandatory**) and an optional `contentType` to define the content-type of the attachment (default: `image/jpeg`).
 
 - `sendURLMessage(String message, @Nullable String title, String url, @Nullable String urlTitle)` - This method is used to send a message with an URL. A supplementary `url` to show with the message and a `urlTitle` for the URL, otherwise just the URL is shown.
 

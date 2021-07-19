@@ -14,7 +14,8 @@ package org.openhab.binding.pushover.internal.connection;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,8 @@ import org.eclipse.jetty.client.api.ContentProvider;
 import org.eclipse.jetty.client.util.MultiPartContentProvider;
 import org.eclipse.jetty.client.util.PathContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.library.types.RawType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +58,7 @@ public class PushoverMessageBuilder {
     private static final int MAX_MESSAGE_LENGTH = 1024;
     private static final int MAX_TITLE_LENGTH = 250;
     private static final int MAX_DEVICE_LENGTH = 25;
-    private static final List<Integer> VALID_PRIORITY_LIST = Arrays.asList(-2, -1, 0, 1, 2);
+    private static final List<Integer> VALID_PRIORITY_LIST = List.of(-2, -1, 0, 1, 2);
     private static final int DEFAULT_PRIORITY = 0;
     public static final int EMERGENCY_PRIORITY = 2;
     private static final int MIN_RETRY_SECONDS = 30;
@@ -239,18 +242,36 @@ public class PushoverMessageBuilder {
         }
 
         if (attachment != null) {
-            File file = new File(attachment);
-            if (!file.exists()) {
-                throw new IllegalArgumentException(
-                        String.format("Skip sending the message as file '%s' does not exist.", attachment));
-            }
-            try {
-                body.addFilePart(MESSAGE_KEY_ATTACHMENT, file.getName(),
-                        new PathContentProvider(contentType, file.toPath()), null);
-            } catch (IOException e) {
-                logger.debug("IOException occurred - skip sending message: {}", e.getLocalizedMessage(), e);
-                throw new PushoverCommunicationException(
-                        String.format("Skip sending the message: %s", e.getLocalizedMessage()), e);
+            if (attachment.startsWith("http")) {
+                RawType content = HttpUtil.downloadImage(attachment, 10000);
+                if (content == null) {
+                    throw new IllegalArgumentException(
+                            String.format("Skip sending the message as content '%s' does not exist.", attachment));
+                }
+                try {
+                    Path tmpFile = Files.createTempFile("pushover-", ".tmp");
+                    Files.write(tmpFile, content.getBytes());
+                    body.addFilePart(MESSAGE_KEY_ATTACHMENT, tmpFile.toFile().getName(),
+                            new PathContentProvider(contentType, tmpFile), null);
+                } catch (IOException e) {
+                    logger.debug("IOException occurred - skip sending message: {}", e.getLocalizedMessage(), e);
+                    throw new PushoverCommunicationException(
+                            String.format("Skip sending the message: %s", e.getLocalizedMessage()), e);
+                }
+            } else {
+                File file = new File(attachment);
+                if (!file.exists()) {
+                    throw new IllegalArgumentException(
+                            String.format("Skip sending the message as file '%s' does not exist.", attachment));
+                }
+                try {
+                    body.addFilePart(MESSAGE_KEY_ATTACHMENT, file.getName(),
+                            new PathContentProvider(contentType, file.toPath()), null);
+                } catch (IOException e) {
+                    logger.debug("IOException occurred - skip sending message: {}", e.getLocalizedMessage(), e);
+                    throw new PushoverCommunicationException(
+                            String.format("Skip sending the message: %s", e.getLocalizedMessage()), e);
+                }
             }
         }
 
