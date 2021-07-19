@@ -94,7 +94,7 @@ public class JavaScriptTransformationService implements TransformationService, C
         if (filename.contains("?")) {
             String[] parts = filename.split("\\?");
             if (parts.length > 2) {
-                throw new TransformationException("Questionmark should be defined only ones in the filename");
+                throw new TransformationException("Questionmark should be defined only once in the filename");
             }
             fn = parts[0];
             try {
