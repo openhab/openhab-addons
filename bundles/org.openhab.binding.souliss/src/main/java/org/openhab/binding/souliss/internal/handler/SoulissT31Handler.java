@@ -14,7 +14,6 @@
 package org.openhab.binding.souliss.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.souliss.internal.HalfFloatUtils;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
 import org.openhab.core.config.core.Configuration;
@@ -27,6 +26,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.PrimitiveType;
 import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SoulissT31Handler} is responsible for handling commands, which are
@@ -38,6 +39,8 @@ import org.openhab.core.types.RefreshType;
 @NonNullByDefault
 public class SoulissT31Handler extends SoulissGenericHandler {
     private @NonNullByDefault({}) Configuration gwConfigurationMap;
+
+    private final Logger logger = LoggerFactory.getLogger(SoulissT31Handler.class);
 
     DecimalType setPointValue = DecimalType.ZERO;
     StringType fanStateValue = StringType.EMPTY;
@@ -110,16 +113,24 @@ public class SoulissT31Handler extends SoulissGenericHandler {
                             commandSEND(SoulissProtocolConstants.SOULISS_T3N_FAN_OFF);
                             fanStateValue = StringType.valueOf(SoulissBindingConstants.T31_FANOFF_MESSAGE_FAN_CHANNEL);
                             break;
+                        default:
+                            logger.debug("Fan Channel handle not recognized, skipping..");
+                            break;
                     }
                     break;
                 case SoulissBindingConstants.T31_SETPOINT_CHANNEL:
                     if (command instanceof DecimalType) {
-                        int uu = HalfFloatUtils.fromFloat(((DecimalType) command).floatValue());
+                        int uu = org.openhab.binding.souliss.internal.protocol.HalfFloatUtils
+                                .fromFloat(((DecimalType) command).floatValue());
                         byte b2 = (byte) (uu >> 8);
                         byte b1 = (byte) uu;
                         // setpoint command
                         commandSEND(SoulissProtocolConstants.SOULISS_T31_USE_OF_SLOT_SETPOINT_COMMAND, b1, b2);
                     }
+                    break;
+
+                default:
+                    logger.debug("state not recognized! skipping..");
                     break;
             }
         }
@@ -185,37 +196,38 @@ public class SoulissT31Handler extends SoulissGenericHandler {
                         powerState = (StringType) state;
                     }
                     break;
+
+                default:
             }
 
         }
     }
 
     public void setMeasuredValue(DecimalType valueOf) {
-        if (valueOf instanceof DecimalType) {
-            if (!setMeasuredValue.equals(valueOf)) {
-                this.updateState(SoulissBindingConstants.T31_VALUE_CHANNEL, valueOf);
-                setMeasuredValue = valueOf;
-            }
+        if ((valueOf instanceof DecimalType) && (!setMeasuredValue.equals(valueOf))) {
+            this.updateState(SoulissBindingConstants.T31_VALUE_CHANNEL, valueOf);
+            setMeasuredValue = valueOf;
         }
     }
 
     public void setSetpointValue(DecimalType valueOf) {
-        if (valueOf instanceof DecimalType) {
-            if (!setPointValue.equals(valueOf)) {
-                this.updateState(SoulissBindingConstants.T31_SETPOINT_CHANNEL, valueOf);
-                setPointValue = valueOf;
-            }
+        if ((valueOf instanceof DecimalType) && (!setPointValue.equals(valueOf))) {
+            this.updateState(SoulissBindingConstants.T31_SETPOINT_CHANNEL, valueOf);
+            setPointValue = valueOf;
         }
     }
 
     public void setRawStateValues(byte rawStateByte0, float valTemp, float valSetPoint) {
-        String sMessage = "";
+        var sMessage = "";
         switch (getBitState(rawStateByte0, 0)) {
             case 0:
                 sMessage = SoulissBindingConstants.T31_OFF_MESSAGE_SYSTEM_CHANNEL;
                 break;
             case 1:
                 sMessage = SoulissBindingConstants.T31_ON_MESSAGE_SYSTEM_CHANNEL;
+                break;
+            default:
+                logger.debug("System Channel on/off not recognized, skipping");
                 break;
         }
         this.setState(StringType.valueOf(sMessage));
@@ -227,6 +239,9 @@ public class SoulissT31Handler extends SoulissGenericHandler {
             case 1:
                 sMessage = SoulissBindingConstants.T31_COOLINGMODE_MESSAGE_MODE_CHANNEL;
                 break;
+            default:
+                logger.debug("Mode not recognized, skipping");
+                break;
         }
         this.setState(StringType.valueOf(sMessage));
 
@@ -237,6 +252,9 @@ public class SoulissT31Handler extends SoulissGenericHandler {
                 break;
             case 1:
                 sMessage = SoulissBindingConstants.T31_ON_MESSAGE_FIRE_CHANNEL;
+                break;
+            default:
+                logger.debug("Fire not recognized, skipping");
                 break;
         }
         this.setState(StringType.valueOf(sMessage));
@@ -254,6 +272,9 @@ public class SoulissT31Handler extends SoulissGenericHandler {
                 break;
             case 3:
                 sMessage = SoulissBindingConstants.T31_FANHIGH_MESSAGE_FAN_CHANNEL;
+                break;
+            default:
+                logger.debug("Fan speed not recognized, skipping");
                 break;
         }
 
@@ -281,7 +302,7 @@ public class SoulissT31Handler extends SoulissGenericHandler {
     }
 
     public byte getBitState(byte vRaw, int iBit) {
-        final int maskBit1 = 0x1;
+        final var maskBit1 = 0x1;
 
         if (((vRaw >>> iBit) & maskBit1) == 0) {
             return 0;

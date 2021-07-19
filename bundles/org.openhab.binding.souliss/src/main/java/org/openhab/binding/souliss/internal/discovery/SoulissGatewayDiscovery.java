@@ -61,14 +61,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         bridgeHandler.discoverResult = this;
     }
 
-    @Override
-    protected void startBackgroundDiscovery() {
-    }
-
-    @Override
-    protected void stopBackgroundDiscovery() {
-    }
-
     /**
      * The {@link gatewayDetected} callback used to create the Gateway
      *

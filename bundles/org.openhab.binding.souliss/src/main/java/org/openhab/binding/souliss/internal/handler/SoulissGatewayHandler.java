@@ -71,7 +71,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     private Bridge bridge;
 
-    private int nodes;
+    private int nodes = 0;
     private int maxTypicalXnode = 24;
     private int countPingKo = 0;
 
@@ -143,7 +143,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             var props = cfg.getProperties();
             var pNode = props.get("node");
             if (pNode != null) {
-                int thingNode = Integer.parseInt(pNode.toString());
+                var thingNode = Integer.parseInt(pNode.toString());
 
                 if (thingNode > maxNode) {
                     maxNode = thingNode;

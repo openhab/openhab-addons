@@ -95,8 +95,8 @@ public abstract class SoulissGenericActionMessage extends BaseThingHandler {
      */
     private static String getTimestamp() {
         // Pattern : yyyy-MM-dd'T'HH:mm:ssz
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz");
-        Date n = new Date();
+        var sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz");
+        var n = new Date();
         return sdf.format(n.getTime());
     }
 
