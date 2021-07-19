@@ -25,8 +25,7 @@ You can go to project [Souliss](https://github.com/souliss/souliss), see a lot o
 
 ## Discovery
 
-This binding can automatically discover devices. 
-First Gateway Node, then Peer Nodes. 
+First add a gateway (one only is permitted on LAN at this moment), then discovery can find other things (Souliss Typicals)
 
 ## Supported Things
 
@@ -75,18 +74,18 @@ Typicals match directly with openHAB Thing type.
 
 The following matrix lists the capabilities (channels) for each type:
 
-| Thing type / Channel | Switch / onoff | Switch / sleep | DateTime / lastStatusStored | Number / healthy | Switch / automode | Contact / stateOnOff | Contact / stateOpenClose | Switch / pulse | Switch / whitemode | Rollershutter / roller_brightness | Dimmer / dimmer_brightness | Color / ledcolor | Switch / one | Switch / two | Switch / three | Switch / four | Switch / five | Switch / six | Switch / seven | Switch / eight |
-|----------------------|----------------|----------------|-----------------------------|------------------|-------------------|----------------------|--------------------------|----------------|--------------------|-----------------------------------|----------------------------|------------------|--------------|--------------|----------------|---------------|---------------|--------------|----------------|----------------|
-| t11                  | x              | x              | x                           | x                |                   |                      |                          |                |                    |                                   |                            |                  |              |              |                |               |               |              |                |                |
-| t12                  | x              |                | x                           | x                | x                 |                      |                          |                |                    |                                   |                            |                  |              |              |                |               |               |              |                |                |
-| t13                  |                |                | x                           | x                |                   | x                    | x                        |                |                    |                                   |                            |                  |              |              |                |               |               |              |                |                |
-| t14                  |                |                | x                           | x                |                   |                      |                          | x              |                    |                                   |                            |                  |              |              |                |               |               |              |                |                |
-| t16                  | x              | x              | x                           | x                |                   |                      |                          |                | x                  | x                                 | x                          | x                |              |              |                |               |               |              |                |                |
-| t18                  | x              |                | x                           | x                |                   |                      |                          |                |                    |                                   |                            |                  |              |              |                |               |               |              |                |                |
-| t19                  | x              | x              | x                           | x                |                   |                      |                          |                |                    | x                                 | x                          |                  |              |              |                |               |               |              |                |                |
-| t1A                  |                |                | x                           | x                |                   |                      |                          |                |                    |                                   |                            |                  | x            | x            | x              | x             | x             | x            | x              | x              |
+| Thing type / Channel | Switch / onOff | Switch / sleep | DateTime / lastStatusStored | Number / healthy | Switch / autoMode | Contact / stateOnOff | Contact / stateOpenClose | Switch / pulse | Switch / whiteMode | Rollershutter / rollerBrightness | Dimmer / dimmerBrightness | Color / ledColor | Switch / one | Switch / two | Switch / three | Switch / four | Switch / five | Switch / six | Switch / seven | Switch / eight |
+|----------------------|----------------|----------------|-----------------------------|------------------|-------------------|----------------------|--------------------------|----------------|--------------------|----------------------------------|---------------------------|------------------|--------------|--------------|----------------|---------------|---------------|--------------|----------------|----------------|
+| t11                  | x              | x              | x                           | x                |                   |                      |                          |                |                    |                                  |                           |                  |              |              |                |               |               |              |                |                |
+| t12                  | x              |                | x                           | x                | x                 |                      |                          |                |                    |                                  |                           |                  |              |              |                |               |               |              |                |                |
+| t13                  |                |                | x                           | x                |                   | x                    | x                        |                |                    |                                  |                           |                  |              |              |                |               |               |              |                |                |
+| t14                  |                |                | x                           | x                |                   |                      |                          | x              |                    |                                  |                           |                  |              |              |                |               |               |              |                |                |
+| t16                  | x              | x              | x                           | x                |                   |                      |                          |                | x                  | x                                | x                         | x                |              |              |                |               |               |              |                |                |
+| t18                  | x              |                | x                           | x                |                   |                      |                          |                |                    |                                  |                           |                  |              |              |                |               |               |              |                |                |
+| t19                  | x              | x              | x                           | x                |                   |                      |                          |                |                    | x                                | x                         |                  |              |              |                |               |               |              |                |                |
+| t1A                  |                |                | x                           | x                |                   |                      |                          |                |                    |                                  |                           |                  | x            | x            | x              | x             | x             | x            | x              | x              |
 
-| Thing type / Channel | DateTime / lastStatusStored | Number / healthy | Rollershutter / rollershutter | (see below) / rollershutterstate | (see down) / mode | (see down) / fan | Switch / status | Number / setpoint | Switch / setAsMeasured | Switch / measured | Switch / statusAlarm | Switch / onOffAlarm | Switch / rearmAlarm |
+| Thing type / Channel | DateTime / lastStatusStored | Number / healthy | Rollershutter / rollerShutter | (see below) / rollerShutterState | (see down) / mode | (see down) / fan | Switch / status | Number / setPoint | Switch / setAsMeasured | Switch / measured | Switch / statusAlarm | Switch / onOffAlarm | Switch / rearmAlarm |
 |----------------------|-----------------------------|------------------|-------------------------------|----------------------------------|-------------------|------------------|-----------------|-------------------|------------------------|-------------------|----------------------|---------------------|---------------------|
 | t21                  | x                           | x                |                               | x                                |                   |                  |                 |                   |                        |                   |                      |                     |                     |
 | t22                  | x                           | x                | x                             | x                                |                   |                  |                 |                   |                        |                   |                      |                     |                     |
@@ -94,7 +93,7 @@ The following matrix lists the capabilities (channels) for each type:
 | t41                  | x                           | x                |                               |                                  |                   |                  |                 |                   |                        |                   | x                    | x                   | x                   |
 | t42                  | x                           | x                |                               |                                  |                   |                  |                 |                   |                        |                   | x                    |                     | x                   |
 
-rollershutterstate = opening, closing, limSwitch_open , limSwitch_close, state_open, state_close, NoLimSwitch
+rollershutterstate = opening, closing, limSwitchOpen , limSwitchClose, stateOpen, stateClose, noLimSwitch
 
 mode = COOLING_MODE, HEATING_MODE, POWEREDOFF_MODE
 
@@ -126,45 +125,38 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 
 ### Parameters
 
-| Thing type | Parameters Name and Default Value | Description                                                                                              |
-|------------|-----------------------------------|----------------------------------------------------------------------------------------------------------|
-| Gateway    | gatewayLanAddress=""               | Will be resolved by discovery if auto configured                                                         |
-| "          | gatewayPortNumber=230             |                                                                                                          |
-| "          | preferredLocalPortNumber=0        | Default port is 0. It means that it is random                                                            |
-| "          | pingInterval=30                   | Interval in seconds to check for device presence                                                         |
-| "          | subscriptionInterval=2            | Interval in minutes to subscribe Souliss Gateway                                                         |
-| "          | healthyInterval=35                | Interval in seconds to send nodes healthy                                                                |
-| "          | userIndex=70                      | Generally the default value works well. It must be different from other user interfaces (ex: SoulissApp) |
-| "          | nodeIndex=120                     | Generally the default value work good. It must is different from other user interfaces (ex: SoulissApp)  |
-| T11        | sleep=5                           | Set sleep timer in cycles                                                                                |
-| T12        |                                   |                                                                                                          |
-| T13        |                                   |                                                                                                          |
-| T14        |                                   |                                                                                                          |
-| T16        | sleep=5                           | Set sleep timer in cycles                                                                                |
-| T19        | sleep=5                           | Set sleep timer in cycles                                                                                |
-| T1A        |                                   |                                                                                                          |
-| T21        |                                   |                                                                                                          |
-| T22        |                                   |                                                                                                          |
-| T31        |                                   |                                                                                                          |
-| T4x        |                                   |                                                                                                          |
-| T5x        |                                   |                                                                                                          |
-| T6x        |                                   |                                                                                                          |
+| Thing type | Parameters Name and Default Value | Description                                                                                           |
+|------------|-----------------------------------|-------------------------------------------------------------------------------------------------------|
+| Gateway    | gatewayLanAddress=""              | Mandatory - lan address of Gateway                                                                    |
+| "          | gatewayWanAddress=""              | (advanced) When gateway is outside local network can insert domain/ip in this field                   |
+| "          | gatewayPortNumber=230             | (advanced) Gateway UDP Port                                                                           |
+| "          | preferredLocalPortNumber=23000    | (advanced) Local UDP Port                                                                             |
+| "          | pingInterval=30                   | (advanced) Interval in seconds to check for device presence                                           |
+| "          | subscriptionInterval=2            | (advanced) Interval in minutes to subscribe Souliss Gateway                                           |
+| "          | healthyInterval=35                | (advanced) Interval in seconds to send nodes healthy                                                  |
+| "          | userIndex=70                      | (advanced) Generally the default is good. It must be different from other ui (ex: SoulissApp)         |
+| "          | nodeIndex=120                     | (advanced) Generally the default value work good. It must is different from other ui (ex: SoulissApp) |
+| Txx (all)  | Node                              | Node of typical                                                                                       |
+| Txx (all)  | Slot                              | Slot of typical                                                                                       |
+| T11        | sleep=5                           | Set sleep timer in cycles                                                                             |
+| T11        | secureSend=true                   | Ensure command is correctly executed                                                                  |
+| T12        |                                   |                                                                                                       |
+| T13        |                                   |                                                                                                       |
+| T14        |                                   |                                                                                                       |
+| T16        | sleep=5                           | Set sleep timer in cycles                                                                             |
+| T19        | sleep=5                           | Set sleep timer in cycles                                                                             |
+| T1A        |                                   |                                                                                                       |
+| T21        |                                   |                                                                                                       |
+| T22        |                                   |                                                                                                       |
+| T31        |                                   |                                                                                                       |
+| T4x        |                                   |                                                                                                       |
+| T5x        |                                   |                                                                                                       |
+| T6x        |                                   |                                                                                                       |
 
 
-## Manual Things Configuration
+## Manual Things Configuration - Full Example
 
-Thing ID is [node]-[slot]
-For example, if you have two nodes and you want configure a typical on second node at slot seven, you must write 
-Thing ID: 
-
-```
-2-7
-```
-
-
-## Full Example
-
-Examples to configure items 
+Examples to configure things 
 Thing <binding_id>:<type_id>:<thing_id> "Label" @ "Location" [ <parameters> ]
     
 The general syntax for .things files is defined as follows (parts in <..> are required):
@@ -177,41 +169,40 @@ Thing <thing_type_id> <thing_uid> "<Souliss Thing Label>" [ <parameters> ]
 
 ```
 
-
 souliss.things:
 
 ```
 Bridge souliss:gateway:105 "Souliss Gateway - 105" [gatewayLanAddress="192.168.1.105", gatewayPortNumber=230, preferredLocalPortNumber=0, pingInterval=30, subscriptionInterval=2, healthyInterval=38, userIndex=72, nodeIndex=38,  timeoutToRequeue=5000, timeoutToRemovePacket=20000]
 {  
-Thing t14 1-6 "Portoncino"@"Rientro"
-Thing t14 1-7 "Cancello"@"Rientro"
-Thing t57 1-4 "Consumo"@"Soggiorno"
-Thing t57 4-0 "Fotovoltaico"@"Soggiorno"
-Thing t57 4-6 "Pannelli Gruppo 1"@"Soggiorno"
-Thing t57 4-8 "Pannelli Gruppo 2"@"Soggiorno"
-Thing t52 4-10 "Temp.Pannelli Gruppo 1"@"Soggiorno"
-Thing t52 4-12 "Temp.Pannelli Gruppo 2"@"Soggiorno"
+Thing t14 1-6 "Portoncino"@"Rientro" [node=1,slot=6] //thing UID is named as node-slot only as mnemonic convention, but you are free to assign other values
+Thing t14 1-7 "Cancello"@"Rientro" [node=1,slot=7]
+Thing t57 1-4 "Consumo"@"Soggiorno" [node=1,slot=4]
+Thing t57 4-0 "Fotovoltaico"@"Soggiorno" [node=4,slot=0]
+Thing t57 4-6 "Pannelli Gruppo 1"@"Soggiorno" [node=4,slot=6]
+Thing t57 4-8 "Pannelli Gruppo 2"@"Soggiorno" [node=4,slot=8]
+Thing t52 4-10 "Temp.Pannelli Gruppo 1"@"Soggiorno" [node=4,slot=10]
+Thing t52 4-12 "Temp.Pannelli Gruppo 2"@"Soggiorno" [node=4,slot=12]
 
-Thing t52 3-0 "Temperatura Boiler Solare Termico"
-Thing t52 3-2 "Temperatura Termocamino"
-Thing t11 3-4 "Acqua Termocamino"
-Thing t11 3-6 "Auto: Boiler / Termocamino"	
-Thing t31 3-7  "Acqua Auto: Boiler / Termocamino"	
+Thing t52 3-0 "Temperatura Boiler Solare Termico" [node=3,slot=0]
+Thing t52 3-2 "Temperatura Termocamino" [node=3,slot=2]
+Thing t11 3-4 "Acqua Termocamino" [node=3,slot=4]
+Thing t11 3-6 "Auto: Boiler / Termocamino" [node=3,slot=6]	 
+Thing t31 3-7  "Acqua Auto: Boiler / Termocamino" [node=3,slot=7]	
 
-Thing t31 6-0 "Termostato Soggiorno"@"Soggiorno"
-Thing t53 6-7 "Umidità"@"Soggiorno"
-Thing t19 6-9 "Termostato Soggiorno - Luminosità"@"Soggiorno"
+Thing t31 6-0 "Termostato Soggiorno"@"Soggiorno" [node=6,slot=0]
+Thing t53 6-7 "Umidità"@"Soggiorno" [node=6,slot=7]
+Thing t19 6-9 "Termostato Soggiorno - Luminosità"@"Soggiorno" [node=6,slot=9]
 
-Thing t11 5-0 "Tettoia"@"Giardino"
+Thing t11 5-0 "Tettoia"@"Giardino"  [node=5,slot=0]
 
-Thing t11 12-0 "Divano"@"Soggiorno" [sleep=10, secureSend=false] 
+Thing t11 12-0 "Divano"@"Soggiorno" [node=12,slot=0,sleep=10, secureSend=false] 
 
-Thing t16 8-0 "LYT1"
+Thing t16 8-0 "LYT1" [node=8,slot=0]
 
-Thing t11 10-0 "Albero di Natale"
-Thing t11 11-0 "Birra"@"Soppalco"
-Thing t52 11-1 "Birra - Temp 1"@"Soppalco"
-Thing t52 11-3 "Birra - Temp 2"@"Soppalco"
+Thing t11 10-0 "Albero di Natale" [node=10,slot=0]
+Thing t11 11-0 "Birra"@"Soppalco" [node=11,slot=0]
+Thing t52 11-1 "Birra - Temp 1"@"Soppalco" [node=11,slot=1]
+Thing t52 11-3 "Birra - Temp 2"@"Soppalco" [node=11,slot=3]
 }
 
 ```
@@ -247,7 +238,7 @@ Number   Fotovoltaico      "Fotovoltaico [%.1f W]"       <energy>      (FamilyRo
 String	AggiornamentoNodo1	"Agg.Consumi [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]"	<keyring> (FamilyRoom, Elettricita, Diagnostic)  {channel="souliss:t57:105:1-4:lastStatusStored"}
 String	AggiornamentoNodo4	"Agg.Fotovoltaico [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]"	<keyring> (FamilyRoom, Elettricita, Diagnostic)  {channel="souliss:t57:105:4-0:lastStatusStored"}
                                   
-Switch divano "Divano" <light> (FamilyRoom, Divano ) ["Switchable"] {autoupdate="false", channel="souliss:t11:105:12-0:onoff"}
+Switch divano "Divano" <light> (FamilyRoom, Divano ) ["Switchable"] {autoupdate="false", channel="souliss:t11:105:12-0:onOff"}
 String divano_aggiornamento	"Agg. [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]"	<keyring> (FamilyRoom, Divano, Diagnostic)  {channel="souliss:t57:105:12-0:lastStatusStored"}
 String divano_healthy	"Salute"	<keyring> (FamilyRoom, Divano, Diagnostic)  {channel="souliss:t57:105:12-0:healthy"}
 
@@ -257,7 +248,7 @@ Number termostatosoggiorno_umidita "Umidità [%.1f %%]" <temperature>   (Termost
 Number termostatosoggiorno_umidita "Umidità" <humidity>   (TermostatoSoggiorno)  {channel="souliss:t53:105:6-7:value" }
 
 Number termostatosoggiorno_temperatura  "Temperatura" <temperature> (TermostatoSoggiorno) {channel="souliss:t31:105:6-0:measured"}
-Number termostatosoggiorno_setpoint "Regola Set Point [%.1f °c]"    <heating> (TermostatoSoggiorno) {autoupdate="false", channel="souliss:t31:105:6-0:setpoint"}
+Number termostatosoggiorno_setpoint "Regola Set Point [%.1f °c]"    <heating> (TermostatoSoggiorno) {autoupdate="false", channel="souliss:t31:105:6-0:sePpoint"}
 Switch termostatosoggiorno_setasmeasured "Set temp. attuale" <heating> (TermostatoSoggiorno)  {channel="souliss:t31:105:6-0:setAsMeasured"}
 String termostatosoggiorno_modo "Modo" (TermostatoSoggiorno) {autoupdate="false", channel="souliss:t31:105:6-0:mode"}
 Switch termostatosoggiorno_power "Termostato" <powerIcon> (TermostatoSoggiorno) {channel="souliss:t31:105:6-0:system"}
@@ -340,3 +331,7 @@ Spanish Group, [here] (https://groups.google.com/forum/#!forum/souliss-es)
 ## Contribution
 
 Official repository for contributing to the Souliss project, GitHub page: [here](https://github.com/souliss)
+
+## Known issues
+
+Securesend is , at moment, enabled and tested only for t11...
