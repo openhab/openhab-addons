@@ -129,7 +129,7 @@ public class JavaScriptTransformationServiceTest {
         final String SCRIPT = "sum.js?a=1&test=ab?d&b=2";
 
         Exception exception = assertThrows(TransformationException.class, () -> processor.transform(SCRIPT, DATA));
-        assertEquals("Questionmark should be defined only ones in the filename", exception.getMessage());
+        assertEquals("Questionmark should be defined only once in the filename", exception.getMessage());
     }
 
     @Test
