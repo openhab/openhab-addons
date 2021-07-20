@@ -79,7 +79,7 @@ public class PushoverMessageBuilder {
     private @Nullable String urlTitle;
     private @Nullable String sound;
     private @Nullable String attachment;
-    private String contentType = DEFAULT_CONTENT_TYPE;
+    private @Nullable String contentType;
     private boolean html = false;
     private boolean monospace = false;
 
@@ -242,21 +242,23 @@ public class PushoverMessageBuilder {
         }
 
         if (attachment != null) {
-            if (attachment.startsWith("http")) {
-                RawType content = HttpUtil.downloadImage(attachment, 10000);
-                if (content == null) {
+            String localAttachment = attachment;
+            if (localAttachment.startsWith("http")) { // support data HTTP(S) scheme
+                RawType rawImage = HttpUtil.downloadImage(attachment, 10000);
+                if (rawImage == null) {
                     throw new IllegalArgumentException(
                             String.format("Skip sending the message as content '%s' does not exist.", attachment));
                 }
+                addFilePart(createTempFile(rawImage.getBytes()),
+                        contentType == null ? rawImage.getMimeType() : contentType);
+            } else if (localAttachment.startsWith("data:")) { // support data URI scheme
                 try {
-                    Path tmpFile = Files.createTempFile("pushover-", ".tmp");
-                    Files.write(tmpFile, content.getBytes());
-                    body.addFilePart(MESSAGE_KEY_ATTACHMENT, tmpFile.toFile().getName(),
-                            new PathContentProvider(contentType, tmpFile), null);
-                } catch (IOException e) {
-                    logger.debug("IOException occurred - skip sending message: {}", e.getLocalizedMessage(), e);
-                    throw new PushoverCommunicationException(
-                            String.format("Skip sending the message: %s", e.getLocalizedMessage()), e);
+                    RawType rawImage = RawType.valueOf(localAttachment);
+                    addFilePart(createTempFile(rawImage.getBytes()),
+                            contentType == null ? rawImage.getMimeType() : contentType);
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException(String
+                            .format("Skip sending the message because data URI scheme is invalid: %s", e.getMessage()));
                 }
             } else {
                 File file = new File(attachment);
@@ -264,14 +266,7 @@ public class PushoverMessageBuilder {
                     throw new IllegalArgumentException(
                             String.format("Skip sending the message as file '%s' does not exist.", attachment));
                 }
-                try {
-                    body.addFilePart(MESSAGE_KEY_ATTACHMENT, file.getName(),
-                            new PathContentProvider(contentType, file.toPath()), null);
-                } catch (IOException e) {
-                    logger.debug("IOException occurred - skip sending message: {}", e.getLocalizedMessage(), e);
-                    throw new PushoverCommunicationException(
-                            String.format("Skip sending the message: %s", e.getLocalizedMessage()), e);
-                }
+                addFilePart(file.toPath(), contentType);
             }
         }
 
@@ -282,5 +277,29 @@ public class PushoverMessageBuilder {
         }
 
         return body;
+    }
+
+    private Path createTempFile(byte[] data) throws PushoverCommunicationException {
+        try {
+            Path tmpFile = Files.createTempFile("pushover-", ".tmp");
+            return Files.write(tmpFile, data);
+        } catch (IOException e) {
+            logger.debug("IOException occurred while creating temp file - skip sending message: {}",
+                    e.getLocalizedMessage(), e);
+            throw new PushoverCommunicationException(
+                    String.format("Skip sending the message: %s", e.getLocalizedMessage()), e);
+        }
+    }
+
+    private void addFilePart(Path path, @Nullable String contentType) throws PushoverCommunicationException {
+        try {
+            body.addFilePart(MESSAGE_KEY_ATTACHMENT, path.toFile().getName(),
+                    new PathContentProvider(contentType == null ? DEFAULT_CONTENT_TYPE : contentType, path), null);
+        } catch (IOException e) {
+            logger.debug("IOException occurred while adding content - skip sending message: {}",
+                    e.getLocalizedMessage(), e);
+            throw new PushoverCommunicationException(
+                    String.format("Skip sending the message: %s", e.getLocalizedMessage()), e);
+        }
     }
 }
