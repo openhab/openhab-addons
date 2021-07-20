@@ -195,6 +195,26 @@ public class HomeConnectBindingConstants {
     public static final String OPTION_HOOD_VENTING_LEVEL = "Cooking.Common.Option.Hood.VentingLevel";
     public static final String OPTION_HOOD_INTENSIVE_LEVEL = "Cooking.Common.Option.Hood.IntensiveLevel";
 
+    // List of washer temperatures
+    public static final String TEMPERATURE_PREFIX = "LaundryCare.Washer.EnumType.Temperature.";
+    public static final String TEMPERATURE_AUTO = TEMPERATURE_PREFIX + "Auto";
+    public static final String TEMPERATURE_COLD = TEMPERATURE_PREFIX + "Cold";
+    public static final String TEMPERATURE_20 = TEMPERATURE_PREFIX + "GC20";
+    public static final String TEMPERATURE_30 = TEMPERATURE_PREFIX + "GC30";
+    public static final String TEMPERATURE_40 = TEMPERATURE_PREFIX + "GC40";
+    public static final String TEMPERATURE_60 = TEMPERATURE_PREFIX + "GC60";
+    public static final String TEMPERATURE_90 = TEMPERATURE_PREFIX + "GC90";
+
+    // List of spin speeds
+    public static final String SPIN_SPEED_PREFIX = "LaundryCare.Washer.EnumType.SpinSpeed.";
+    public static final String SPIN_SPEED_AUTO = SPIN_SPEED_PREFIX + "Auto";
+    public static final String SPIN_SPEED_OFF = SPIN_SPEED_PREFIX + "Off";
+    public static final String SPIN_SPEED_400 = SPIN_SPEED_PREFIX + "RPM400";
+    public static final String SPIN_SPEED_600 = SPIN_SPEED_PREFIX + "RPM600";
+    public static final String SPIN_SPEED_800 = SPIN_SPEED_PREFIX + "RPM800";
+    public static final String SPIN_SPEED_1200 = SPIN_SPEED_PREFIX + "RPM1200";
+    public static final String SPIN_SPEED_1400 = SPIN_SPEED_PREFIX + "RPM1400";
+
     // List of stages
     public static final String STAGE_FAN_OFF = "Cooking.Hood.EnumType.Stage.FanOff";
     public static final String STAGE_FAN_STAGE_01 = "Cooking.Hood.EnumType.Stage.FanStage01";

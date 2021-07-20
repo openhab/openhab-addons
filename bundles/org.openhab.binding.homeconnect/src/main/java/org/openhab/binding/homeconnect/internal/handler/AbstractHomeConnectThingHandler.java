@@ -1440,24 +1440,24 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     }
 
     protected String convertWasherTemperature(String value) {
-        if (value.startsWith("LaundryCare.Washer.EnumType.Temperature.GC")) {
-            return value.replace("LaundryCare.Washer.EnumType.Temperature.GC", "") + "°C";
+        if (value.startsWith(TEMPERATURE_PREFIX + "GC")) {
+            return value.replace(TEMPERATURE_PREFIX + "GC", "") + "°C";
         }
 
-        if (value.startsWith("LaundryCare.Washer.EnumType.Temperature.Ul")) {
-            return mapStringType(value.replace("LaundryCare.Washer.EnumType.Temperature.Ul", ""));
+        if (value.startsWith(TEMPERATURE_PREFIX + "Ul")) {
+            return mapStringType(value.replace(TEMPERATURE_PREFIX + "Ul", ""));
         }
 
         return mapStringType(value);
     }
 
     protected String convertWasherSpinSpeed(String value) {
-        if (value.startsWith("LaundryCare.Washer.EnumType.SpinSpeed.RPM")) {
-            return value.replace("LaundryCare.Washer.EnumType.SpinSpeed.RPM", "") + " RPM";
+        if (value.startsWith(SPIN_SPEED_PREFIX + "RPM")) {
+            return value.replace(SPIN_SPEED_PREFIX + "RPM", "") + " RPM";
         }
 
-        if (value.startsWith("LaundryCare.Washer.EnumType.SpinSpeed.Ul")) {
-            return value.replace("LaundryCare.Washer.EnumType.SpinSpeed.Ul", "");
+        if (value.startsWith(SPIN_SPEED_PREFIX + "Ul")) {
+            return value.replace(SPIN_SPEED_PREFIX + "Ul", "");
         }
 
         return mapStringType(value);
