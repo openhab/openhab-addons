@@ -33,10 +33,6 @@
 		<label>Last Seen</label>
 		<description>Time when this person was last seen</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -54,9 +50,6 @@
 		<item-type>String</item-type>
 		<label>Last Event Message</label>
 		<description>Last Event message from this person</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -65,10 +58,6 @@
 		<label>Last Event Time</label>
 		<description>Last Event message time for this person</description>
 		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -76,9 +65,6 @@
 		<item-type>String</item-type>
 		<label>Avatar URL</label>
 		<description>URL for the avatar of this person</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -86,9 +72,6 @@
 		<item-type>Image</item-type>
 		<label>Avatar</label>
 		<description>Avatar of this person</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -96,9 +79,6 @@
 		<item-type>Image</item-type>
 		<label>Last Event Picture</label>
 		<description>Picture of the last event for this person</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -106,9 +86,6 @@
 		<item-type>String</item-type>
 		<label>Last Event URL</label>
 		<description>URL for the picture of the last event for this person</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 

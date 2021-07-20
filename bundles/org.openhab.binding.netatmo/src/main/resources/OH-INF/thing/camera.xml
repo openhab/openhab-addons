@@ -66,9 +66,6 @@
 		<item-type>Switch</item-type>
 		<label>SD State</label>
 		<description>State of the SD card</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -88,9 +85,6 @@
 		<label>Is Local</label>
 		<description>Only for scope access_camera. If Camera and application requesting the information are on the same
 			network (true/false)</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -98,9 +92,6 @@
 		<item-type>String</item-type>
 		<label>Live Snapshot URL</label>
 		<description>Url of the live snapshot for this camera (need scope access_camera)</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -108,9 +99,6 @@
 		<item-type>Image</item-type>
 		<label>Live Snapshot</label>
 		<description>Camera Live Snapshot</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -118,9 +106,6 @@
 		<item-type>String</item-type>
 		<label>Live Stream URL</label>
 		<description>Url of the live stream for this camera</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
