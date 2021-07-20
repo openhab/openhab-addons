@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bloomsky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- BloomSky Binding -->
+	<bridge-type id="bridge-api">
+		<label>BloomSky Bridge</label>
+		<description>Provides access to the BloomSky API.</description>
+
+		<representation-property>apikey</representation-property>
+
+		<config-description-ref uri="bridge-type:bloomsky:bridge-api"/>
+	</bridge-type>
+
+</thing:thing-descriptions>

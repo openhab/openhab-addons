@@ -60,7 +60,8 @@
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.benqprojector</module>
     <module>org.openhab.binding.bigassfan</module>
-    <module>org.openhab.binding.bluetooth</module>
+    <module>org.openhab.binding.bloomsky</module>
+	<module>org.openhab.binding.bluetooth</module>
     <module>org.openhab.binding.bluetooth.airthings</module>
     <module>org.openhab.binding.bluetooth.am43</module>
     <module>org.openhab.binding.bluetooth.bluegiga</module>
