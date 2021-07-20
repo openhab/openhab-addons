@@ -219,13 +219,12 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             } else if (PercentType.ZERO.equals(hsb.getBrightness())) {
                 turnOff();
                 return;
-            } else if (config.whiteThreshold != -1 && hsb.getSaturation().intValue() <= config.whiteThreshold
-                    && "rgbw".equals(globeType)) {
-                sendMQTT("{\"command\":\"set_white\"}");
-                return;
+            } else if (config.whiteThreshold != -1 && hsb.getSaturation().intValue() <= config.whiteThreshold) {
+                sendMQTT("{\"command\":\"set_white\",\"level\":" + hsb.getBrightness().intValue() + "}");
+            } else {
+                sendMQTT("{\"state\":\"ON\",\"level\":" + hsb.getBrightness().intValue() + ",\"hue\":"
+                        + hsb.getHue().intValue() + ",\"saturation\":" + hsb.getSaturation().intValue() + "}");
             }
-            sendMQTT("{\"state\":\"ON\",\"level\":" + hsb.getBrightness().intValue() + ",\"hue\":"
-                    + hsb.getHue().intValue() + ",\"saturation\":" + hsb.getSaturation().intValue() + "}");
             savedLevel = hsb.getBrightness().toBigDecimal();
             return;
         } else if (command instanceof PercentType) {
@@ -239,7 +238,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             }
             sendMQTT("{\"state\":\"ON\",\"level\":" + command + "}");
             savedLevel = percentType.toBigDecimal();
-            if (globeType.equals("rgb_cct") || globeType.equals("fut089")) {
+            if ("rgb_cct".equals(globeType) || globeType.equals("fut089")) {
                 if (config.dimmedCT > 0 && bulbMode.equals("white")) {
                     sendMQTT("{\"state\":\"ON\",\"color_temp\":" + autoColourTemp(savedLevel.intValue()) + "}");
                 }
