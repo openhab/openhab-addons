@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mycroft"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="mycroft">
+		<label>Mycroft</label>
+		<description>A Mycroft instance</description>
+
+		<channels>
+			<channel id="listen" typeId="listen-channel"/>
+			<channel id="speak" typeId="speak-channel"/>
+			<channel id="utterance" typeId="utterance-channel"/>
+			<channel id="player" typeId="player-channel"/>
+			<channel id="volume" typeId="volume-channel"/>
+			<channel id="volume_mute" typeId="volume-mute-channel"/>
+			<channel id="volume_duck" typeId="volume-duck-channel"/>
+			<channel id="full_message" typeId="full-message-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Mycroft Bus Host Address</label>
+				<description>This is the host to connect to (ip or hostname)</description>
+			</parameter>
+			<parameter name="port" type="integer" required="false" min="1" max="65535">
+				<label>Mycroft Bus Port</label>
+				<description>This is the port to connect to.</description>
+				<default>8181</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="listen-channel">
+		<item-type>Switch</item-type>
+		<label>Listen State</label>
+		<description>Switch to ON when Mycroft is listening. Can simulate a wake work detection to trigger the STT.</description>
+	</channel-type>
+
+	<channel-type id="speak-channel">
+		<item-type>String</item-type>
+		<label>TTS</label>
+		<description>The last sentence Mycroft speaks, or ask Mycroft to say something.</description>
+	</channel-type>
+
+	<channel-type id="utterance-channel">
+		<item-type>String</item-type>
+		<label>Utterance</label>
+		<description>The last utterance Mycroft receive, or ask Mycroft something.</description>
+	</channel-type>
+
+	<channel-type id="full-message-channel">
+		<item-type>String</item-type>
+		<label>Full Bus Message</label>
+		<description>The last full message seen on the Mycroft Bus.</description>
+		<config-description>
+			<parameter name="messageTypes" type="text" required="false">
+				<label>Full Message Channel Filter</label>
+				<description>The full message channel will be updated on these message types only (comma separated value)</description>
+				<default>message.type.1,message.type.2</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="player-channel">
+		<item-type>Player</item-type>
+		<label>Player</label>
+		<description>The music player Mycroft is currently controlling.</description>
+	</channel-type>
+
+	<channel-type id="volume-channel">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>The volume of the Mycroft speaker</description>
+	</channel-type>
+
+	<channel-type id="volume-mute-channel">
+		<item-type>Switch</item-type>
+		<label>Volume Mute</label>
+		<description>Mute the Mycroft speaker</description>
+	</channel-type>
+
+	<channel-type id="volume-duck-channel">
+		<item-type>Switch</item-type>
+		<label>Volume Duck</label>
+		<description>Duck the volume of the Mycroft speaker</description>
+	</channel-type>
+
+</thing:thing-descriptions>
