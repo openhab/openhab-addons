@@ -111,7 +111,7 @@
         
     <module>org.openhab.binding.bloomsky</module>
 	
-	  <module>org.openhab.binding.bluetooth</module>
+	<module>org.openhab.binding.bluetooth</module>
         
     <module>org.openhab.binding.bluetooth.airthings</module>
         
