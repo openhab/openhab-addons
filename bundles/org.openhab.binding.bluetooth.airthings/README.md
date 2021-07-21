@@ -10,7 +10,7 @@ Following thing types are supported by this extension:
 | ------------------- | -------------------------------------- |
 | airthings_wave_plus | Airthings Wave Plus                    |
 | airthings_wave_mini | Airthings Wave Mini                    |
-| airthings_wave      | Airthings Wave 1st Gen (SN 2900xxxxxx) |
+| airthings_wave_gen1 | Airthings Wave 1st Gen (SN 2900xxxxxx) |
 
 ## Discovery
 
