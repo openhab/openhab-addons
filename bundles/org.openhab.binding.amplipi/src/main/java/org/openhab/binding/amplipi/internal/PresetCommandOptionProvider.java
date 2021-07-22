@@ -52,8 +52,8 @@ public class PresetCommandOptionProvider extends BaseDynamicCommandDescriptionPr
     public @Nullable CommandDescription getCommandDescription(Channel channel,
             @Nullable CommandDescription originalCommandDescription, @Nullable Locale locale) {
         ChannelTypeUID typeUID = channel.getChannelTypeUID();
+        List<CommandOption> options = new ArrayList<>();
         if (typeUID != null && AmpliPiBindingConstants.CHANNEL_PRESET.equals(typeUID.getId()) && handler != null) {
-            List<CommandOption> options = new ArrayList<>();
             List<Preset> presets = handler.getPresets();
             for (Preset preset : presets) {
                 options.add(new CommandOption(preset.getId().toString(), preset.getName()));

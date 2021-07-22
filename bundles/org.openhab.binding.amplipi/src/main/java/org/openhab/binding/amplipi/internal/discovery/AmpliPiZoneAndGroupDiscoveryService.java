@@ -10,13 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.amplipi.internal;
+package org.openhab.binding.amplipi.internal.discovery;
 
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.amplipi.internal.AmpliPiBindingConstants;
+import org.openhab.binding.amplipi.internal.AmpliPiHandler;
+import org.openhab.binding.amplipi.internal.AmpliPiStatusChangeListener;
 import org.openhab.binding.amplipi.internal.model.Group;
 import org.openhab.binding.amplipi.internal.model.Status;
 import org.openhab.binding.amplipi.internal.model.Zone;

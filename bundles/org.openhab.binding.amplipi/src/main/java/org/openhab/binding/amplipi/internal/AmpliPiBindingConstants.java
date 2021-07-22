@@ -38,5 +38,6 @@ public class AmpliPiBindingConstants {
     public static final String CHANNEL_SOURCE = "source";
 
     // list of configuration parameters
+    public static final String CFG_PARAM_HOSTNAME = "hostname";
     public static final String CFG_PARAM_ID = "id";
 }

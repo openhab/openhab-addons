@@ -13,11 +13,17 @@
 package org.openhab.binding.amplipi.internal;
 
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.amplipi.internal.api.ZoneApi;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.amplipi.internal.model.Status;
 import org.openhab.binding.amplipi.internal.model.Zone;
 import org.openhab.binding.amplipi.internal.model.ZoneUpdate;
@@ -35,6 +41,8 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link AmpliPiGroupHandler} is responsible for handling commands, which are
  * sent to one of the AmpliPi Groups.
@@ -47,10 +55,15 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
     private final Logger logger = LoggerFactory.getLogger(AmpliPiZoneHandler.class);
 
     private final Integer id;
-    private @Nullable ZoneApi api;
+    private final HttpClient httpClient;
+    private final Gson gson;
 
-    public AmpliPiZoneHandler(Thing thing) {
+    private @Nullable AmpliPiHandler bridgeHandler;
+
+    public AmpliPiZoneHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
+        this.gson = new Gson();
         id = Integer.valueOf(thing.getConfiguration().get(AmpliPiBindingConstants.CFG_PARAM_ID).toString());
     }
 
@@ -58,15 +71,9 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
     public void initialize() {
         Bridge bridge = getBridge();
         if (bridge != null) {
-            AmpliPiHandler bridgeHandler = (AmpliPiHandler) bridge.getHandler();
+            bridgeHandler = (AmpliPiHandler) bridge.getHandler();
             if (bridgeHandler != null) {
                 bridgeHandler.addStatusChangeListener(this);
-                ZoneApi api = bridgeHandler.getZoneApi();
-                if (api != null) {
-                    this.api = api;
-                } else {
-                    throw new IllegalStateException("Zone API must not be null here!");
-                }
             } else {
                 throw new IllegalStateException("Bridge handler must not be null here!");
             }
@@ -104,10 +111,20 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
                 }
                 break;
         }
-        if (api != null) {
-            api.setZoneApiZonesZidPatch(id, update);
-        } else {
-            logger.error("API not available for executing zone update!");
+        if (bridgeHandler != null) {
+            String url = bridgeHandler.getUrl() + "/api/zones/" + id;
+            StringContentProvider contentProvider = new StringContentProvider(gson.toJson(update));
+            try {
+                ContentResponse response = httpClient.newRequest(url).method(HttpMethod.PATCH)
+                        .content(contentProvider, "application/json").send();
+                if (response.getStatus() != HttpStatus.OK_200) {
+                    logger.error("AmpliPi API returned HTTP status {}.", response.getStatus());
+                    logger.debug("Content: {}", response.getContentAsString());
+                }
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "AmpliPi request failed: " + e.getMessage());
+            }
         }
     }
 

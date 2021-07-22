@@ -14,28 +14,23 @@ package org.openhab.binding.amplipi.internal;
 
 import static org.openhab.binding.amplipi.internal.AmpliPiBindingConstants.CHANNEL_PRESET;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.Response;
-
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.apache.cxf.jaxrs.client.ResponseExceptionMapper;
-import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.amplipi.internal.api.GroupApi;
-import org.openhab.binding.amplipi.internal.api.PresetApi;
-import org.openhab.binding.amplipi.internal.api.StatusApi;
-import org.openhab.binding.amplipi.internal.api.ZoneApi;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.amplipi.internal.discovery.AmpliPiZoneAndGroupDiscoveryService;
 import org.openhab.binding.amplipi.internal.model.Preset;
 import org.openhab.binding.amplipi.internal.model.Status;
 import org.openhab.core.library.types.DecimalType;
@@ -52,7 +47,7 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.google.gson.Gson;
 
 /**
  * The {@link AmpliPiHandler} is responsible for handling commands, which are
@@ -67,78 +62,79 @@ public class AmpliPiHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AmpliPiHandler.class);
 
-    private @Nullable StatusApi statusApi;
-    private @Nullable PresetApi presetApi;
-    private @Nullable ZoneApi zoneApi;
-    private @Nullable GroupApi groupApi;
+    private final HttpClient httpClient;
+    private final Gson gson;
 
+    private String url = "http://amplipi";
     private List<Preset> presets = List.of();
     private List<AmpliPiStatusChangeListener> changeListeners = new ArrayList<>();
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
-    public AmpliPiHandler(Thing thing) {
+    public AmpliPiHandler(Thing thing, HttpClient httpClient) {
         super((Bridge) thing);
+        this.httpClient = httpClient;
+        this.gson = new Gson();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        AmpliPiConfiguration config = getConfigAs(AmpliPiConfiguration.class);
+        url = "http://" + config.hostname;
+
         if (CHANNEL_PRESET.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 updateState(channelUID, UnDefType.NULL);
             } else if (command instanceof DecimalType) {
                 DecimalType preset = (DecimalType) command;
-                if (presetApi != null) {
-                    try {
-                        presetApi.loadPresetApiPresetsPidLoadPost(preset.intValue());
-                    } catch (ProcessingException e) {
-                        handleProcessingException(e);
+                try {
+                    ContentResponse response = this.httpClient
+                            .newRequest(url + "/api/presets/" + preset.intValue() + "/load").method(HttpMethod.POST)
+                            .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
+                    if (response.getStatus() != HttpStatus.OK_200) {
+                        logger.error("AmpliPi API returned HTTP status {}.", response.getStatus());
+                        logger.debug("Content: {}", response.getContentAsString());
                     }
-                } else {
-                    logger.error("Handler not correctly initialized!");
+                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "AmpliPi request failed: " + e.getMessage());
                 }
             }
+        } else {
+            logger.error("Handler not correctly initialized!");
         }
     }
 
     @Override
     public void initialize() {
         AmpliPiConfiguration config = getConfigAs(AmpliPiConfiguration.class);
-
-        JacksonJsonProvider provider = new JacksonJsonProvider();
-        List<Object> providers = new ArrayList<>();
-        providers.add(provider);
-        providers.add((ResponseExceptionMapper<?>) (@Nullable Response r) -> new IOException());
-
-        String url = "http://" + config.hostname;
-        statusApi = JAXRSClientFactory.create(url, StatusApi.class, providers);
-        presetApi = JAXRSClientFactory.create(url, PresetApi.class, providers);
-        zoneApi = JAXRSClientFactory.create(url, ZoneApi.class, providers);
-        groupApi = JAXRSClientFactory.create(url, GroupApi.class, providers);
-        HTTPClientPolicy clientConfig = WebClient.getConfig(statusApi).getHttpConduit().getClient();
-        clientConfig.setReceiveTimeout(REQUEST_TIMEOUT);
-        clientConfig = WebClient.getConfig(presetApi).getHttpConduit().getClient();
-        clientConfig.setReceiveTimeout(REQUEST_TIMEOUT);
-        clientConfig = WebClient.getConfig(zoneApi).getHttpConduit().getClient();
-        clientConfig.setReceiveTimeout(REQUEST_TIMEOUT);
-        clientConfig = WebClient.getConfig(groupApi).getHttpConduit().getClient();
-        clientConfig.setReceiveTimeout(REQUEST_TIMEOUT);
+        url = "http://" + config.hostname;
 
         updateStatus(ThingStatus.UNKNOWN);
 
         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
             try {
-                if (statusApi != null) {
-                    Status currentStatus = statusApi.getStatusApiGet();
-                    updateStatus(ThingStatus.ONLINE);
-                    setProperties(currentStatus);
-                    presets = currentStatus.getPresets();
-                    changeListeners.forEach(l -> l.receive(currentStatus));
+                ContentResponse response = this.httpClient.newRequest(url + "/api")
+                        .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
+                if (response.getStatus() == HttpStatus.OK_200) {
+                    Status currentStatus = this.gson.fromJson(response.getContentAsString(), Status.class);
+                    if (currentStatus != null) {
+                        updateStatus(ThingStatus.ONLINE);
+                        setProperties(currentStatus);
+                        presets = currentStatus.getPresets();
+                        changeListeners.forEach(l -> l.receive(currentStatus));
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "No valid response from AmpliPi API.");
+                        logger.debug("Received response: {}", response.getContentAsString());
+                    }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "API Client is not initialized.");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "AmpliPi API returned HTTP status " + response.getStatus() + ".");
                 }
-            } catch (ProcessingException e) {
-                handleProcessingException(e);
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "AmpliPi request failed: " + e.getMessage());
             } catch (Exception e) {
                 logger.error("Unexpected error occurred: {}", e.getMessage());
             }
@@ -150,12 +146,6 @@ public class AmpliPiHandler extends BaseBridgeHandler {
         Map<String, String> props = editProperties();
         props.put("firmwareVersion", version);
         updateProperties(props);
-    }
-
-    private void handleProcessingException(ProcessingException e) {
-        Throwable cause = e.getCause();
-        String msg = cause == null ? e.getMessage() : cause.getMessage();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
     }
 
     @Override
@@ -175,6 +165,10 @@ public class AmpliPiHandler extends BaseBridgeHandler {
         return presets;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
     public void addStatusChangeListener(AmpliPiStatusChangeListener listener) {
         changeListeners.add(listener);
     }
@@ -183,11 +177,4 @@ public class AmpliPiHandler extends BaseBridgeHandler {
         changeListeners.remove(listener);
     }
 
-    public @Nullable ZoneApi getZoneApi() {
-        return zoneApi;
-    }
-
-    public @Nullable GroupApi getGroupApi() {
-        return groupApi;
-    }
 }

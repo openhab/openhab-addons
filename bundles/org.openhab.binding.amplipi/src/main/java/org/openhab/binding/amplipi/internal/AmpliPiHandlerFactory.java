@@ -18,12 +18,16 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link AmpliPiHandlerFactory} is responsible for creating things and thing
@@ -34,6 +38,13 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(configurationPid = "binding.amplipi", service = ThingHandlerFactory.class)
 public class AmpliPiHandlerFactory extends BaseThingHandlerFactory {
+
+    private HttpClient httpClient;
+
+    @Activate
+    public AmpliPiHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CONTROLLER, THING_TYPE_ZONE,
             THING_TYPE_GROUP);
@@ -48,13 +59,13 @@ public class AmpliPiHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_CONTROLLER.equals(thingTypeUID)) {
-            return new AmpliPiHandler(thing);
+            return new AmpliPiHandler(thing, httpClient);
         }
         if (THING_TYPE_ZONE.equals(thingTypeUID)) {
-            return new AmpliPiZoneHandler(thing);
+            return new AmpliPiZoneHandler(thing, httpClient);
         }
         if (THING_TYPE_GROUP.equals(thingTypeUID)) {
-            return new AmpliPiGroupHandler(thing);
+            return new AmpliPiGroupHandler(thing, httpClient);
         }
 
         return null;

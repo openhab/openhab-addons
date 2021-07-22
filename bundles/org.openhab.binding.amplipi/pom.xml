@@ -51,9 +51,9 @@
               <inputSpec>${project.basedir}/amplipi-api.yml</inputSpec>
               <generatorName>jaxrs-cxf-client</generatorName>
               <output>${project.basedir}</output>
-              <apiPackage>org.openhab.binding.amplipi.internal.api</apiPackage>
               <modelPackage>org.openhab.binding.amplipi.internal.model</modelPackage>
               <skipValidateSpec>true</skipValidateSpec>
+              <generateApis>false</generateApis>
               <generateApiTests>false</generateApiTests>
               <generateSupportingFiles>false</generateSupportingFiles>
               <generateApiDocumentation>false</generateApiDocumentation>
