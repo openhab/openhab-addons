@@ -173,12 +173,13 @@ public class ChannelDefinitions {
      */
     public @Nullable ChannelIdMapEntry find(String id) {
         for (Map.Entry<String, ChannelIdMapEntry> e : CHANNEL_DEFINITIONS.entrySet()) {
-            if (id.startsWith(e.getKey())) {
+            String key = e.getKey();
+            if (!key.isEmpty() && id.equalsIgnoreCase(key)) {
                 return e.getValue();
             }
             ChannelIdMapEntry v = e.getValue();
             if ((!v.symbolicName.isEmpty() && id.startsWith(v.symbolicName))
-                    || (!v.channelName.isEmpty() && id.startsWith(v.channelName))) {
+                    || (!v.channelName.isEmpty() && id.equalsIgnoreCase(v.channelName))) {
                 return v;
             }
         }
@@ -256,24 +257,17 @@ public class ChannelDefinitions {
 
     private ChannelIdMapEntry add(String name, String id, String channel, String itemType, String group,
             @Nullable Unit<?> unit, boolean advanced, boolean readOnly) {
-        if (!channel.isEmpty() && (name.isEmpty() || group.isEmpty() || itemType.isEmpty())) {
+        if (!channel.isEmpty() && (group.isEmpty() || itemType.isEmpty())) {
             logger.warn("Incomplete channel definitoion: SYMNAME={}, group={}, chan={}, type={}", name, group, channel,
                     itemType);
         }
         ChannelIdMapEntry entry = new ChannelIdMapEntry(resources);
-        entry.id = id;
-        entry.symbolicName = name;
-        entry.groupName = group;
+        entry.id = !id.isEmpty() ? id : channel;
+        entry.symbolicName = !name.isEmpty() ? name : channel.toUpperCase();
+        entry.groupName = !group.isEmpty() ? group : CHANNEL_GROUP_STATUS;
         entry.channelName = channel;
         entry.itemType = itemType;
-        if (entry.groupName.equals("windows")) {
-            int i = 1;
-        }
-        if (ITEMT_PERCENT.equals(itemType) && (unit == null)) {
-            entry.unit = Units.PERCENT;
-        } else {
-            entry.unit = unit;
-        }
+        entry.unit = ((unit == null) && ITEMT_PERCENT.equals(itemType)) ? Units.PERCENT : unit;
         entry.advanced = advanced;
         entry.readOnly = group.equals(CHANNEL_GROUP_STATUS) ? true : readOnly;
 
@@ -282,17 +276,14 @@ public class ChannelDefinitions {
         entry.pattern = entry.getPattern();
         entry.options = entry.getOptions();
 
-        if (!CHANNEL_DEFINITIONS.containsKey(id)) {
-            CHANNEL_DEFINITIONS.put(id, entry);
+        if (!CHANNEL_DEFINITIONS.containsKey(entry.id)) {
+            CHANNEL_DEFINITIONS.put(entry.id, entry);
         }
 
         return entry;
     }
 
     public static String getGroupAttribute(TextResources resources, String groupName, String attribute) {
-        if (groupName.equals("window")) {
-            int i = 1;
-        }
         int len = groupName.length() - 1;
         char index = groupName.charAt(len);
         String groupType = Character.isDigit(index) ? groupName.substring(0, len) : groupName;
@@ -344,8 +335,8 @@ public class ChannelDefinitions {
                 true, true);
         add("SECONDARY_DRIVE", "0x0301030009", CHANNEL_RANGE_SFUELTYPE, ITEMT_NUMBER, CHANNEL_GROUP_RANGE, null, true,
                 true);
-        add("CHARGING_LEVEL_PERCENT", "0x0301030002", "chargingLevel", ITEMT_PERCENT, CHANNEL_GROUP_CHARGER, PERCENT,
-                true, true);
+        add("CHARGING_LEVEL_PERCENT", "0x0301030002", CHANNEL_CHARGER_CHGLVL, ITEMT_PERCENT, CHANNEL_GROUP_CHARGER,
+                PERCENT, true, true);
         add("15CNG_LEVEL_IN_PERCENT", "0x030103000D", "gasPercentage", ITEMT_PERCENT, CHANNEL_GROUP_RANGE, PERCENT,
                 true, true);
 
@@ -425,59 +416,53 @@ public class ChannelDefinitions {
         add("UNKNOWN_0x02040C0002", "0x02040C0002"); // no yet decoded
 
         // Group general
-        add("LAST_ACTION", "lastAction", CHANNEL_GENERAL_ACTION, ITEMT_STRING, CHANNEL_GROUP_GENERAL);
-        add("ACTION_STATUS", "actionStatus", CHANNEL_GENERAL_ACTION_STATUS, ITEMT_STRING, CHANNEL_GROUP_GENERAL);
-        add("LAST_PENDING", "actionPending", CHANNEL_GENERAL_ACTION_PENDING, ITEMT_SWITCH, CHANNEL_GROUP_GENERAL);
-        add("TIME_IN_CAR", "timeInCar", CHANNEL_GENERAL_TIMEINCAR, ITEMT_DATETIME, CHANNEL_GROUP_GENERAL);
+        add("", "", CHANNEL_GENERAL_UPDATED, ITEMT_DATETIME, CHANNEL_GROUP_GENERAL);
+        add("", "", CHANNEL_GENERAL_ACTION, ITEMT_STRING, CHANNEL_GROUP_GENERAL);
+        add("", "", CHANNEL_GENERAL_ACTION_STATUS, ITEMT_STRING, CHANNEL_GROUP_GENERAL);
+        add("", "", CHANNEL_GENERAL_ACTION_PENDING, ITEMT_SWITCH, CHANNEL_GROUP_GENERAL);
+        add("", "", CHANNEL_GENERAL_TIMEINCAR, ITEMT_DATETIME, CHANNEL_GROUP_GENERAL);
 
         // Group control
-        add("WIN_HEAT", "windowHeat", CHANNEL_CONTROL_WINHEAT, ITEMT_SWITCH, CHANNEL_GROUP_CONTROL, null, false, false);
-        add("CHG_MAXCURRENT", "chargerMaxCurrent", CHANNEL_CONTROL_MAXCURRENT, ITEMT_AMP, CHANNEL_GROUP_CONTROL,
-                Units.AMPERE);
+        add("", "", CHANNEL_CONTROL_WINHEAT, ITEMT_SWITCH, CHANNEL_GROUP_CONTROL, null, false, false);
+        add("", "", CHANNEL_CONTROL_MAXCURRENT, ITEMT_AMP, CHANNEL_GROUP_CONTROL, Units.AMPERE);
 
         // Group status
-        add("LAST_ERROR", "error", CHANNEL_STATUS_ERROR, ITEMT_STRING);
-        add("PARKING_BRAKE", "parkingBrake", CHANNEL_STATUS_PBRAKE, ITEMT_SWITCH);
-        add("VEHICLE_LIGHTS", "vehicleLights", CHANNEL_STATUS_LIGHTS, ITEMT_SWITCH);
+        add("", "", CHANNEL_STATUS_ERROR, ITEMT_STRING);
+        add("", "", CHANNEL_STATUS_PBRAKE, ITEMT_SWITCH);
+        add("", "", CHANNEL_STATUS_LIGHTS, ITEMT_SWITCH);
 
         // Group location
-        add("LOC_GEO", "vehiclePos", CHANNEL_LOCATTION_GEO, ITEMT_LOCATION, CHANNEL_GROUP_LOCATION);
-        add("LOC_ADDR", "locationAddr", CHANNEL_LOCATTION_ADDRESS, ITEMT_STRING, CHANNEL_GROUP_LOCATION);
-        add("LOC_TIME", "locationTime", CHANNEL_LOCATTION_TIME, ITEMT_DATETIME, CHANNEL_GROUP_LOCATION);
-        add("PARK_POS", "parkPos", CHANNEL_PARK_LOCATION, ITEMT_LOCATION, CHANNEL_GROUP_LOCATION);
-        add("PARK_ADDR", "parkAddr", CHANNEL_PARK_ADDRESS, ITEMT_STRING, CHANNEL_GROUP_LOCATION);
-        add("PARK_TIME", "parkTime", CHANNEL_PARK_TIME, ITEMT_DATETIME, CHANNEL_GROUP_LOCATION);
+        add("", "", CHANNEL_LOCATTION_GEO, ITEMT_LOCATION, CHANNEL_GROUP_LOCATION);
+        add("", "", CHANNEL_LOCATTION_ADDRESS, ITEMT_STRING, CHANNEL_GROUP_LOCATION);
+        add("", "", CHANNEL_LOCATTION_TIME, ITEMT_DATETIME, CHANNEL_GROUP_LOCATION);
+        add("", "", CHANNEL_PARK_LOCATION, ITEMT_LOCATION, CHANNEL_GROUP_LOCATION);
+        add("", "", CHANNEL_PARK_ADDRESS, ITEMT_STRING, CHANNEL_GROUP_LOCATION);
+        add("", "", CHANNEL_PARK_TIME, ITEMT_DATETIME, CHANNEL_GROUP_LOCATION);
 
         // Group charger
-        add("CHG_CONTROL", "chargerControl", CHANNEL_CONTROL_CHARGER, ITEMT_SWITCH, CHANNEL_GROUP_CONTROL, null, false,
-                true);
-        add("CHG_TLVL", "targetChgLevel", CHANNEL_CONTROL_TARGETCHG, ITEMT_PERCENT, CHANNEL_GROUP_CHARGER, null, false,
-                true);
-        add("CHG_STATE", "chargingState", CHANNEL_CHARGER_CHG_STATE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
-        add("CHG_MODE", "chargingMode", CHANNEL_CHARGER_MODE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
-        add("CHG_REMAIN", "charginngRemainig", CHANNEL_CHARGER_REMAINING, ITEMT_TIME, CHANNEL_GROUP_CHARGER,
-                Units.MINUTE);
-        add("CHG_POWER", "charginngPower", CHANNEL_CHARGER_POWER, ITEMT_VOLT, CHANNEL_GROUP_CHARGER);
-        add("CHG_RATE", "charginngKMPH", CHANNEL_CHARGER_RATE, ITEMT_NUMBER, CHANNEL_GROUP_CHARGER);
-        add("CHG_LEVEL", "charginngLevel", CHANNEL_CHARGER_CHGLVL, ITEMT_PERCENT, CHANNEL_GROUP_CHARGER);
-        add("CHG_PLUGLOCK", "chgPLockState", CHANNEL_CHARGER_LOCK_STATE, ITEMT_SWITCH, CHANNEL_GROUP_CHARGER);
-        add("CHG_PLUG", "chgPlugState", CHANNEL_CHARGER_PLUG_STATE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
+        add("", "", CHANNEL_CONTROL_CHARGER, ITEMT_SWITCH, CHANNEL_GROUP_CONTROL, null, false, true);
+        add("", "", CHANNEL_CONTROL_TARGETCHG, ITEMT_PERCENT, CHANNEL_GROUP_CONTROL, null, false, true);
+        add("", "", CHANNEL_CHARGER_CHG_STATE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
+        add("", "", CHANNEL_CHARGER_MODE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
+        add("", "", CHANNEL_CHARGER_REMAINING, ITEMT_TIME, CHANNEL_GROUP_CHARGER, Units.MINUTE);
+        add("", "", CHANNEL_CHARGER_POWER, ITEMT_VOLT, CHANNEL_GROUP_CHARGER);
+        add("", "", CHANNEL_CHARGER_RATE, ITEMT_NUMBER, CHANNEL_GROUP_CHARGER);
+        add("", "", CHANNEL_CHARGER_CHGLVL, ITEMT_PERCENT, CHANNEL_GROUP_CHARGER);
+        add("", "", CHANNEL_CHARGER_LOCK_STATE, ITEMT_SWITCH, CHANNEL_GROUP_CHARGER);
+        add("", "", CHANNEL_CHARGER_PLUG_STATE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
 
         // Group climater
-        add("CLIM_CONTROL", "climaControl", CHANNEL_CONTROL_CLIMATER, ITEMT_SWITCH, CHANNEL_GROUP_CLIMATER, null, false,
-                false);
-        add("CLIM_STATE", "climaState", CHANNEL_CLIMATER_GEN_STATE, ITEMT_SWITCH, CHANNEL_GROUP_CLIMATER);
-        add("CLIM_REMAINING", "climaRemain", CHANNEL_CLIMATER_REMAINING, ITEMT_TIME, CHANNEL_GROUP_CLIMATER,
-                Units.MINUTE);
-        add("CLIM_TARGETTEMP", "climaTargetTemp", CHANNEL_CLIMATER_TARGET_TEMP, ITEMT_TEMP, CHANNEL_GROUP_CLIMATER,
-                SIUnits.CELSIUS);
+        add("", "", CHANNEL_CONTROL_CLIMATER, ITEMT_SWITCH, CHANNEL_GROUP_CONTROL, null, false, false);
+        add("", "", CHANNEL_CLIMATER_GEN_STATE, ITEMT_SWITCH, CHANNEL_GROUP_CLIMATER);
+        add("", "", CHANNEL_CLIMATER_REMAINING, ITEMT_TIME, CHANNEL_GROUP_CLIMATER, Units.MINUTE);
+        add("", "", CHANNEL_CLIMATER_TARGET_TEMP, ITEMT_TEMP, CHANNEL_GROUP_CLIMATER, SIUnits.CELSIUS);
     }
 
     private ChannelIdMapEntry add(String name, String id, String channel, String itemType, String group,
             @Nullable Unit<?> unit) {
         boolean advanced = CHANNEL_GROUP_STATUS.equals(group) || CHANNEL_GROUP_WINDOWS.equals(group)
                 || CHANNEL_GROUP_DOORS.equals(group) || CHANNEL_GROUP_TIRES.equals(group);
-        return add(!name.isEmpty() ? name : channel.toUpperCase(), id, channel, itemType, group, unit, advanced, true);
+        return add(name, id, channel, itemType, group, unit, advanced, true);
     }
 
     public ChannelIdMapEntry add(String name, String id, String channelName, String itemType, String groupName) {
@@ -497,8 +482,8 @@ public class ChannelDefinitions {
         return add(mkChannelId(group, channel), channel, channel, itemType, group, unit, advanced, readOnly);
     }
 
-    public void dumpChannelDefinitions() {
-        try (FileWriter myWriter = new FileWriter("ConnectedCarChannels.md")) {
+    public void dumpChannelDefinitions(String thindId) {
+        try (FileWriter myWriter = new FileWriter("ConnectedCarChannels_" + thindId + ".md")) {
             String lastGroup = "";
             for (Map.Entry<String, ChannelIdMapEntry> m : CHANNEL_DEFINITIONS.entrySet()) {
                 ChannelIdMapEntry e = m.getValue();

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.connectedcar.internal.api.brand;
 
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_VW_TOKEN_URL;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,6 +47,7 @@ public class BrandCarNetSkoda extends CarNetApi {
         properties.clientId = "7f045eee-7003-4379-9968-9355ed2adb06@apps_vw-dilab_com";
         properties.xClientId = "28cd30c6-dee7-4529-a0e6-b1e07ff90b79";
         properties.authScope = "openid profile mbb cars";
+        properties.apiDefaultUrl = CNAPI_DEFAULT_API_URL;
         properties.tokenUrl = CNAPI_VW_TOKEN_URL;
         properties.tokenRefreshUrl = properties.tokenUrl;
         properties.redirect_uri = "skodaconnect://oidc.login/";

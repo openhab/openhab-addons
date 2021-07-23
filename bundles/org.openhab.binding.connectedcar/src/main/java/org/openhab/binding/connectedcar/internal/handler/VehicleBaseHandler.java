@@ -224,7 +224,7 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
                 }
 
                 logger.debug("{}: Creating {} channels", thingId, channels.size());
-                idMapper.dumpChannelDefinitions();
+                idMapper.dumpChannelDefinitions(thingId);
                 createChannels(new ArrayList<>(channels.values()));
                 channelsCreated = true;
 

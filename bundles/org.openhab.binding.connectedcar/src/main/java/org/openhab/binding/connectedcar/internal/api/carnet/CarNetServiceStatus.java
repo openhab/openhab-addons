@@ -62,6 +62,9 @@ public class CarNetServiceStatus extends ApiBaseService {
 
         // Try to query status information from vehicle
         CarNetVehicleStatus status = api.getVehicleStatus().cnStatus;
+        if (status == null) {
+            return false;
+        }
         for (CNStatusData data : status.storedVehicleDataResponse.vehicleData.data) {
             for (CNStatusField field : data.fields) {
                 try {
@@ -119,6 +122,9 @@ public class CarNetServiceStatus extends ApiBaseService {
         boolean updated = false;
 
         CarNetVehicleStatus status = api.getVehicleStatus().cnStatus;
+        if (status == null) {
+            return false; // make the compiler happy, should never happen, because on failure an exception is thrown
+        }
         logger.debug("{}: Vehicle Status:\n{}", thingId, status);
         for (CNStatusData data : status.storedVehicleDataResponse.vehicleData.data) {
             for (CNStatusField field : data.fields) {
@@ -263,30 +269,36 @@ public class CarNetServiceStatus extends ApiBaseService {
     }
 
     private boolean updateSwitchChannel(Channel channel, ChannelIdMapEntry definition, CNStatusField field) {
-        int value = Integer.parseInt(getString(field.value));
-        boolean on = false;
-        State state;
+        try {
+            int value = Integer.parseInt(getString(field.value));
+            boolean on = false;
+            State state;
 
-        String symbolicName = definition.symbolicName.toUpperCase();
-        if (symbolicName.startsWith("STATE") || symbolicName.startsWith("LOCK") || symbolicName.startsWith("SAFETY")) {
-            if (symbolicName.startsWith("STATE1")) {
-                on = value == 1; // 1=active, 0=not active
-            } else if (symbolicName.startsWith("STATE2") || symbolicName.startsWith("LOCK2")) {
-                on = value == 2; // 3=open, 2=closed
-            } else if (symbolicName.startsWith("STATE3") || symbolicName.startsWith("LOCK3")
+            String symbolicName = definition.symbolicName.toUpperCase();
+            if (symbolicName.startsWith("STATE") || symbolicName.startsWith("LOCK")
                     || symbolicName.startsWith("SAFETY")) {
-                on = value == 3; // 2=open, 3=closed
-            } else {
+                if (symbolicName.startsWith("STATE1")) {
+                    on = value == 1; // 1=active, 0=not active
+                } else if (symbolicName.startsWith("STATE2") || symbolicName.startsWith("LOCK2")) {
+                    on = value == 2; // 3=open, 2=closed
+                } else if (symbolicName.startsWith("STATE3") || symbolicName.startsWith("LOCK3")
+                        || symbolicName.startsWith("SAFETY")) {
+                    on = value == 3; // 2=open, 3=closed
+                } else {
+                    on = value == 1;
+                }
+            } else if (value == 0) {
                 on = value == 1;
             }
-        } else if (value == 0) {
-            on = value == 1;
-        }
 
-        state = ITEMT_SWITCH.equals(definition.itemType) ? (on ? OnOffType.ON : OnOffType.OFF)
-                : (on ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
-        logger.debug("{}: Map {}={} to state {} for channel {}", thingId, definition.symbolicName, value, state,
-                definition.channelName);
-        return thingHandler.updateChannel(channel, state);
+            state = ITEMT_SWITCH.equals(definition.itemType) ? (on ? OnOffType.ON : OnOffType.OFF)
+                    : (on ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
+            logger.debug("{}: Map {}={} to state {} for channel {}", thingId, definition.symbolicName, value, state,
+                    definition.channelName);
+            return thingHandler.updateChannel(channel, state);
+        } catch (NumberFormatException e) {
+            logger.debug("{}: Unable to parse field value for {}: {}", thingId, field.id, field.value);
+            return false;
+        }
     }
 }

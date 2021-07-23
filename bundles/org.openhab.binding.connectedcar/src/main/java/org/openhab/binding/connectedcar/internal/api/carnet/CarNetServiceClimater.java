@@ -90,10 +90,10 @@ public class CarNetServiceClimater extends ApiBaseService {
                 if (cs.status.climatisationStatusData != null) {
                     CarNetClimaterStatusData sd = cs.status.climatisationStatusData;
                     if (sd.climatisationState != null) {
+                        updated |= updateChannel(CHANNEL_CONTROL_CLIMATER, CHANNEL_CONTROL_CLIMATER,
+                                getOnOffType(sd.climatisationState.content));
                         updated |= updateChannel(group, CHANNEL_CLIMATER_GEN_STATE,
                                 getStringType(sd.climatisationState.content));
-                        updated |= updateChannel(group, CHANNEL_CONTROL_CLIMATER,
-                                getOnOffType(sd.climatisationState.content));
                     }
                     if (sd.climatisationElementStates != null) {
                         updateZoneStates(sd.climatisationElementStates.zoneStates);

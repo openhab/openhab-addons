@@ -21,6 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class CarNetApiConstants {
+    public static final String CNAPI_DEFAULT_API_URL = "https://msg.volkswagen.de/fs-car";
+
     // HTTP header attributes
     public static final String CNAPI_HEADER_APP = "X-App-Name";
     public static final String CNAPI_HEADER_VERS = "X-App-Version";
