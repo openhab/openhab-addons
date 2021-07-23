@@ -106,10 +106,15 @@ public class WeatherApi extends RestManager {
         }
         if (!measureType.startsWith("date")) {
             NAMeasuresResponse response = get(uriBuilder, NAMeasuresResponse.class);
-            return response.getBody().get(0);
+            if (!response.getBody().isEmpty()) {
+                return response.getBody().get(0);
+            }
         } else {
             NADateMeasuresResponse response = get(uriBuilder, NADateMeasuresResponse.class);
-            return response.getBody().get(0);
+            if (!response.getBody().isEmpty()) {
+                return response.getBody().get(0);
+            }
         }
+        throw new NetatmoException("Empty response while getting measurements");
     }
 }

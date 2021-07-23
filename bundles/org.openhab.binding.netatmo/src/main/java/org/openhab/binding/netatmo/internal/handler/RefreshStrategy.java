@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
+
+import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,69 +31,61 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RefreshStrategy {
-    private static final int DEFAULT_DELAY_SEC = 30;
-    private static final int SEARCH_REFRESH_INTERVAL_SEC = 120;
+    private static final Duration DEFAULT_DELAY = Duration.of(20, SECONDS);
+    private static final Duration PROBING_INTERVAL = Duration.of(120, SECONDS);
 
     private final Logger logger = LoggerFactory.getLogger(RefreshStrategy.class);
 
-    private long dataValidityPeriod;
+    private Duration dataValidity = Duration.ZERO;
     private boolean searchRefreshInterval;
-    private @Nullable ZonedDateTime dataTimeStamp;
-    private @Nullable ZonedDateTime dataTimestamp0;
+    private ZonedDateTime dataTimeStamp = ZonedDateTime.now();
+    private @Nullable ZonedDateTime dataTimeStamp0;
 
-    // By default we create dataTimeStamp to be outdated
-    // A null or negative value for dataValidityPeriod will trigger an automatic search of the validity period
-    public RefreshStrategy(int dataValidityPeriod) {
-        if (dataValidityPeriod <= 0) {
-            this.dataValidityPeriod = 0;
-            this.searchRefreshInterval = true;
-            logger.debug("Data validity period search...");
-        } else {
-            this.dataValidityPeriod = dataValidityPeriod;
-            this.searchRefreshInterval = false;
-            logger.debug("Data validity period set to {} ms", this.dataValidityPeriod);
-        }
+    public RefreshStrategy(int validityPeriod) {
+        setDataValidityPeriod(Duration.ofMillis(Math.max(0, validityPeriod)));
+        searchRefreshInterval = (validityPeriod <= 0);
         expireData();
     }
 
-    public void setDataTimeStamp(@Nullable ZonedDateTime dataTimestamp) {
-        ZonedDateTime localTimeStamp = dataTimestamp;
-        if (localTimeStamp != null) {
-            if (searchRefreshInterval) {
-                if (dataTimestamp0 == null) {
-                    dataTimestamp0 = localTimeStamp;
-                    logger.debug("First data timestamp is {}", dataTimestamp0);
-                } else if (localTimeStamp.isAfter(dataTimestamp0)) {
-                    dataValidityPeriod = ChronoUnit.MILLIS.between(dataTimestamp0, localTimeStamp);
-                    searchRefreshInterval = false;
-                    logger.debug("Data validity period found : {} ms", this.dataValidityPeriod);
-                } else {
-                    logger.debug("Data validity period not yet found - data timestamp unchanged");
-                }
-            }
-            this.dataTimeStamp = localTimeStamp;
-        }
-    }
-
-    public long dataAge() {
-        return ChronoUnit.MILLIS.between(dataTimeStamp, ZonedDateTime.now());
-    }
-
-    public boolean isDataOutdated() {
-        return dataAge() >= dataValidityPeriod;
-    }
-
-    public long nextRunDelayInS() {
-        return searchRefreshInterval ? SEARCH_REFRESH_INTERVAL_SEC
-                : Math.max(0, (dataValidityPeriod - dataAge())) / 1000 + DEFAULT_DELAY_SEC;
+    private void setDataValidityPeriod(Duration duration) {
+        dataValidity = duration;
+        logger.debug("Data validity period set to {}", duration);
     }
 
     public void expireData() {
-        ZonedDateTime now = ZonedDateTime.now().minus(this.dataValidityPeriod, ChronoUnit.MILLIS);
-        dataTimeStamp = now;
+        dataTimeStamp = ZonedDateTime.now().minus(dataValidity);
+    }
+
+    public void setDataTimeStamp(ZonedDateTime timeStamp) {
+        if (searchRefreshInterval) {
+            ZonedDateTime firstTimeStamp = dataTimeStamp0;
+            if (firstTimeStamp == null) {
+                dataTimeStamp0 = timeStamp;
+                logger.debug("First data timestamp is {}", dataTimeStamp0);
+            } else if (timeStamp.isAfter(firstTimeStamp)) {
+                Duration a = Duration.between(firstTimeStamp, timeStamp);
+                setDataValidityPeriod(a);
+                searchRefreshInterval = false;
+            } else {
+                logger.debug("Data validity period not yet found - data timestamp unchanged");
+            }
+        }
+        dataTimeStamp = timeStamp;
+    }
+
+    private Duration dataAge() {
+        return Duration.between(dataTimeStamp, ZonedDateTime.now());
+    }
+
+    public boolean isDataOutdated() {
+        return dataAge().compareTo(dataValidity) > 0;
+    }
+
+    public Duration nextRunDelay() {
+        return searchRefreshInterval ? PROBING_INTERVAL : dataValidity.minus(dataAge()).plus(DEFAULT_DELAY);
     }
 
     public boolean isSearchingRefreshInterval() {
-        return searchRefreshInterval && dataTimestamp0 != null;
+        return searchRefreshInterval;
     }
 }

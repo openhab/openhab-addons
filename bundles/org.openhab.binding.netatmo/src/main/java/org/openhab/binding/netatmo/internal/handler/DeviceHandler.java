@@ -134,7 +134,7 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
     private void scheduleRefreshJob() {
         RefreshStrategy strategy = refreshStrategy;
         if (strategy != null) {
-            long delay = strategy.nextRunDelayInS();
+            long delay = strategy.nextRunDelay().toSeconds();
             logger.debug("Scheduling update channel thread in {} s", delay);
 
             updateChannels(false);
@@ -150,7 +150,6 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
     private synchronized void updateChannels(boolean requireDefinedRefreshInterval) {
         RefreshStrategy strategy = refreshStrategy;
         if (strategy != null) {
-            logger.debug("Data aged of {} s", strategy.dataAge() / 1000);
             boolean dataOutdated = (requireDefinedRefreshInterval && strategy.isSearchingRefreshInterval()) ? false
                     : strategy.isDataOutdated();
             if (dataOutdated) {
@@ -160,7 +159,7 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
                     logger.debug("Successfully updated device {} readings! Now updating channels", config.id);
                     updateProperties(newData);
                     setNewData(newData);
-                    strategy.setDataTimeStamp(newData.getLastSeen());
+                    newData.getLastSeen().ifPresent(ts -> strategy.setDataTimeStamp(ts));
                     updateChildModules(newData);
                 } catch (NetatmoException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

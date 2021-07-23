@@ -18,7 +18,6 @@ import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
 import java.lang.reflect.Constructor;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -220,7 +219,7 @@ public enum ModuleType {
     }
 
     public static boolean isModuleTypeImplemented(String name) {
-        return Stream.of(values()).anyMatch(mt -> mt.toString().equals(name));
+        return asSet.stream().anyMatch(mt -> mt.toString().equals(name));
     }
 
     public FeatureArea getFeatures() {

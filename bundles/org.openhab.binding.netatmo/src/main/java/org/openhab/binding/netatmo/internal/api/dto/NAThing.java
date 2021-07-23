@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,8 +69,8 @@ public class NAThing extends NAObject {
         return radioStatus;
     }
 
-    public @Nullable ZonedDateTime getLastSeen() {
-        return lastSeen;
+    public Optional<ZonedDateTime> getLastSeen() {
+        return Optional.ofNullable(lastSeen);
     }
 
     public @Nullable String getBridge() {

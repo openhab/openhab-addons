@@ -26,7 +26,7 @@ import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
-import org.openhab.binding.netatmo.internal.deserialization.NADynamicObjectMap;
+import org.openhab.binding.netatmo.internal.deserialization.NAThingMap;
 import org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -64,7 +64,7 @@ public class PersonHandler extends DeviceWithEventHandler {
         });
     }
 
-    public void setCameras(NADynamicObjectMap modules) {
+    public void setCameras(NAThingMap modules) {
         descriptionProvider.setStateOptions(
                 new ChannelUID(getThing().getUID(), GROUP_PERSON_EVENT, CHANNEL_EVENT_CAMERA_ID), modules.values()
                         .stream().map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));

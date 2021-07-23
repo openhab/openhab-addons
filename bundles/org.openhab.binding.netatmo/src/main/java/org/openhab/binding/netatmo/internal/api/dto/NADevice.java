@@ -14,7 +14,7 @@ package org.openhab.binding.netatmo.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.deserialization.NADynamicObjectMap;
+import org.openhab.binding.netatmo.internal.deserialization.NAThingMap;
 
 /**
  *
@@ -23,13 +23,13 @@ import org.openhab.binding.netatmo.internal.deserialization.NADynamicObjectMap;
  */
 @NonNullByDefault
 public class NADevice extends NAThing {
-    private NADynamicObjectMap modules = new NADynamicObjectMap();
+    private NAThingMap modules = new NAThingMap();
     private boolean co2Calibrating;
     private long dateSetup;
     private long lastUpgrade;
     private @Nullable NAPlace place;
 
-    public NADynamicObjectMap getModules() {
+    public NAThingMap getModules() {
         return modules;
     }
 

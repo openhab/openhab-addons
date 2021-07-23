@@ -15,15 +15,19 @@ package org.openhab.binding.netatmo.internal.deserialization;
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 
 /**
- * The {@link NADynamicObjectMap} defines an hashmap of NAObjects identified
- * by their id, dynamically created upon API response
+ * The {@link NAThingMap} defines an hashmap of NAThings identified by their id
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class NADynamicObjectMap extends HashMap<String, NAThing> {
+public class NAThingMap extends HashMap<String, NAThing> {
     private static final long serialVersionUID = -7864636414965562293L;
+
+    public @Nullable NAThing put(NAThing thing) {
+        return super.put(thing.getId(), thing);
+    }
 }

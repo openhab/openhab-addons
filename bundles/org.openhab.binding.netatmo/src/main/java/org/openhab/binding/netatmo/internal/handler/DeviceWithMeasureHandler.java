@@ -63,32 +63,34 @@ public class DeviceWithMeasureHandler extends DeviceHandler {
 
     @Override
     public void setNewData(NAObject newData) {
-        weatherApi.ifPresent(api -> {
-            Stream<Channel> measureChannels = getThing().getChannels().stream()
-                    .filter(channel -> channel.getConfiguration().as(MeasureChannelConfig.class).isValid());
-            getBridgeHandler().ifPresentOrElse(handler -> ((DeviceWithMeasureHandler) handler).callGetMeasurements(api,
-                    config.id, measureChannels), () -> callGetMeasurements(api, null, measureChannels));
-        });
+        Stream<Channel> measureChannels = getThing().getChannels().stream()
+                .filter(channel -> channel.getConfiguration().as(MeasureChannelConfig.class).isValid());
+        getBridgeHandler().ifPresentOrElse(handler -> ((DeviceWithMeasureHandler) handler)
+                .callGetMeasurements(config.id, measureChannels, measures),
+                () -> callGetMeasurements(null, measureChannels, measures));
         super.setNewData(newData);
     }
 
-    private void callGetMeasurements(WeatherApi api, @Nullable String moduleId, Stream<Channel> measureChannels) {
-        measures.clear();
-        measureChannels.forEach(channel -> {
-            MeasureChannelConfig measureDef = channel.getConfiguration().as(MeasureChannelConfig.class);
-            try {
-                Object result = api.getMeasurements(config.id, moduleId, measureDef.period, measureDef.type,
-                        measureDef.limit);
+    private void callGetMeasurements(@Nullable String moduleId, Stream<Channel> measureChannels,
+            Map<String, State> measures2) {
+        weatherApi.ifPresent(api -> {
+            measures2.clear();
+            measureChannels.forEach(channel -> {
+                MeasureChannelConfig measureDef = channel.getConfiguration().as(MeasureChannelConfig.class);
+                try {
+                    Object result = api.getMeasurements(config.id, moduleId, measureDef.period, measureDef.type,
+                            measureDef.limit);
 
-                State data = result instanceof ZonedDateTime ? toDateTimeType((ZonedDateTime) result)
-                        : result instanceof Double ? toQuantityType((Double) result, measureDef.type.getUnit())
-                                : UnDefType.UNDEF;
+                    State data = result instanceof ZonedDateTime ? toDateTimeType((ZonedDateTime) result)
+                            : result instanceof Double ? toQuantityType((Double) result, measureDef.type.getUnit())
+                                    : UnDefType.UNDEF;
 
-                measures.put(channel.getUID().getIdWithoutGroup(), data);
-            } catch (NetatmoException e) {
-                logger.warn("Error getting measurement {} on period {} for module {} : {}", measureDef.type,
-                        measureDef.period, moduleId, e);
-            }
+                    measures2.put(channel.getUID().getIdWithoutGroup(), data);
+                } catch (NetatmoException e) {
+                    logger.warn("Error getting measurement {} on period {} for module {} : {}", measureDef.type,
+                            measureDef.period, moduleId, e);
+                }
+            });
         });
     }
 }
