@@ -64,5 +64,4 @@ public class AmpliPiMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant
         // TODO: Currently, the AmpliPi does not seem to announce any services.
         return null;
     }
-
 }

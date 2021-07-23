@@ -176,5 +176,4 @@ public class AmpliPiHandler extends BaseBridgeHandler {
     public void removeStatusChangeListener(AmpliPiStatusChangeListener listener) {
         changeListeners.remove(listener);
     }
-
 }

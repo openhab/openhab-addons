@@ -10,18 +10,18 @@
 
 		<channels>
 			<channel id="preset" typeId="preset"/>
-            <channel id="input1" typeId="input">
-                <label>Input 1</label>
-            </channel>
-            <channel id="input2" typeId="input">
-                <label>Input 2</label>
-            </channel>
-            <channel id="input3" typeId="input">
-                <label>Input 3</label>
-            </channel>
-            <channel id="input4" typeId="input">
-                <label>Input 4</label>
-            </channel>
+			<channel id="input1" typeId="input">
+				<label>Input 1</label>
+			</channel>
+			<channel id="input2" typeId="input">
+				<label>Input 2</label>
+			</channel>
+			<channel id="input3" typeId="input">
+				<label>Input 3</label>
+			</channel>
+			<channel id="input4" typeId="input">
+				<label>Input 4</label>
+			</channel>
 		</channels>
 
 		<config-description>
@@ -88,23 +88,23 @@
 		<description>Choose an existing preset</description>
 	</channel-type>
 
-    <channel-type id="input">
-        <item-type>String</item-type>
-        <label>Input</label>
-        <description>The selected input for the source</description>
-    </channel-type>
+	<channel-type id="input">
+		<item-type>String</item-type>
+		<label>Input</label>
+		<description>The selected input for the source</description>
+	</channel-type>
 
 	<channel-type id="source">
 		<item-type>Number</item-type>
 		<label>Source</label>
 		<description>The audio source that is played</description>
 		<state>
-		  <options>
-		      <option value="1">Input 1</option>
-              <option value="2">Input 2</option>
-              <option value="3">Input 3</option>
-              <option value="4">Input 4</option>
-		  </options>
+			<options>
+				<option value="1">Input 1</option>
+				<option value="2">Input 2</option>
+				<option value="3">Input 3</option>
+				<option value="4">Input 4</option>
+			</options>
 		</state>
 	</channel-type>
 
