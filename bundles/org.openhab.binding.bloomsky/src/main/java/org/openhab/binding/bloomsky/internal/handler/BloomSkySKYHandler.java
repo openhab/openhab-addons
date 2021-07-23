@@ -224,13 +224,27 @@ public class BloomSkySKYHandler extends BloomSkyAbstractHandler {
                     updateSkyObservations(channelUID, obs);
                     break;
                 case CH_GROUP_SKY_PREVIEW_IMAGE_LIST:
-                    updateSkyPreviewImageList(channelUID, obs);
+                    if (obs.getPreviewImageList().size() <= 0) {
+                        logger.error("Sky Preview Image list is empty, unable to update {} .",
+                                CH_GROUP_SKY_PREVIEW_IMAGE_LIST);
+                    } else {
+                        updateSkyPreviewImageList(channelUID, obs);
+                    }
                     break;
                 case CH_GROUP_SKY_VIDEO_LIST:
-                    updateSkyVideoList(channelUID, obs);
+                    if (obs.getVideoList().size() <= 0) {
+                        logger.error("Sky Video list is empty, unable to update {} .", CH_GROUP_SKY_VIDEO_LIST);
+                    } else {
+                        updateSkyVideoList(channelUID, obs);
+                    }
                     break;
                 case CH_GROUP_SKY_VIDEO_LIST_C:
-                    updateSkyVideoListCelsius(channelUID, obs);
+                    if (obs.getVideoListC().size() <= 0) {
+                        logger.error("Sky Video Celsius list is empty, unable to update {} .",
+                                CH_GROUP_SKY_VIDEO_LIST_C);
+                    } else {
+                        updateSkyVideoListCelsius(channelUID, obs);
+                    }
                     break;
             }
         }
@@ -387,23 +401,34 @@ public class BloomSkySKYHandler extends BloomSkyAbstractHandler {
     private void updateSkyPreviewImageList(ChannelUID channelUID, BloomSkyJsonSensorData obs) {
         String channelId = channelUID.getIdWithoutGroup();
         String url = null;
+        int obsArraySize = obs.getPreviewImageList().size();
         // The most recent image (yesterday) is always last element in array: Image_1 is oldest, Image_5 is newest
         // These are associated with the time lapse videos.
         switch (channelId) {
             case CH_SKY_SKY_PREVIEW_IMAGE_1:
-                url = obs.getPreviewImageList().get(4);
+                if (obsArraySize >= 5) {
+                    url = obs.getPreviewImageList().get(4);
+                }
                 break;
             case CH_SKY_SKY_PREVIEW_IMAGE_2:
-                url = obs.getPreviewImageList().get(3);
+                if (obsArraySize >= 4) {
+                    url = obs.getPreviewImageList().get(3);
+                }
                 break;
             case CH_SKY_SKY_PREVIEW_IMAGE_3:
-                url = obs.getPreviewImageList().get(2);
+                if (obsArraySize >= 3) {
+                    url = obs.getPreviewImageList().get(2);
+                }
                 break;
             case CH_SKY_SKY_PREVIEW_IMAGE_4:
-                url = obs.getPreviewImageList().get(1);
+                if (obsArraySize >= 2) {
+                    url = obs.getPreviewImageList().get(1);
+                }
                 break;
             case CH_SKY_SKY_PREVIEW_IMAGE_5:
-                url = obs.getPreviewImageList().get(0);
+                if (obsArraySize >= 1) {
+                    url = obs.getPreviewImageList().get(0);
+                }
                 break;
         }
         if (url != null) {
@@ -429,23 +454,34 @@ public class BloomSkySKYHandler extends BloomSkyAbstractHandler {
      */
     private void updateSkyVideoList(ChannelUID channelUID, BloomSkyJsonSensorData obs) {
         String channelId = channelUID.getIdWithoutGroup();
+        int obsArraySize = obs.getVideoList().size();
         // The most recent video (yesterday) is always last element in array: Day_1 is oldest, Day_5 is newest
         // These are associated with the preview images.
         switch (channelId) {
             case CH_SKY_SKY_VIDEO_DAY_1:
-                updateChannel(channelUID, undefOrString(obs.getVideoList().get(4)));
+                if (obsArraySize >= 5) {
+                    updateChannel(channelUID, undefOrString(obs.getVideoList().get(4)));
+                }
                 break;
             case CH_SKY_SKY_VIDEO_DAY_2:
-                updateChannel(channelUID, undefOrString(obs.getVideoList().get(3)));
+                if (obsArraySize >= 4) {
+                    updateChannel(channelUID, undefOrString(obs.getVideoList().get(3)));
+                }
                 break;
             case CH_SKY_SKY_VIDEO_DAY_3:
-                updateChannel(channelUID, undefOrString(obs.getVideoList().get(2)));
+                if (obsArraySize >= 3) {
+                    updateChannel(channelUID, undefOrString(obs.getVideoList().get(2)));
+                }
                 break;
             case CH_SKY_SKY_VIDEO_DAY_4:
-                updateChannel(channelUID, undefOrString(obs.getVideoList().get(1)));
+                if (obsArraySize >= 2) {
+                    updateChannel(channelUID, undefOrString(obs.getVideoList().get(1)));
+                }
                 break;
             case CH_SKY_SKY_VIDEO_DAY_5:
-                updateChannel(channelUID, undefOrString(obs.getVideoList().get(0)));
+                if (obsArraySize >= 1) {
+                    updateChannel(channelUID, undefOrString(obs.getVideoList().get(0)));
+                }
                 break;
         }
     }
@@ -461,23 +497,34 @@ public class BloomSkySKYHandler extends BloomSkyAbstractHandler {
      */
     private void updateSkyVideoListCelsius(ChannelUID channelUID, BloomSkyJsonSensorData obs) {
         String channelId = channelUID.getIdWithoutGroup();
+        int obsArraySize = obs.getVideoListC().size();
         // The most recent video (yesterday) is always last element in array: Day_1 is oldest, Day_5 is newest
         // These are associated with the preview images.
         switch (channelId) {
             case CH_SKY_SKY_VIDEO_C_DAY_1:
-                updateChannel(channelUID, undefOrString(obs.getVideoListC().get(4)));
+                if (obsArraySize >= 5) {
+                    updateChannel(channelUID, undefOrString(obs.getVideoListC().get(4)));
+                }
                 break;
             case CH_SKY_SKY_VIDEO_C_DAY_2:
-                updateChannel(channelUID, undefOrString(obs.getVideoListC().get(3)));
+                if (obsArraySize >= 4) {
+                    updateChannel(channelUID, undefOrString(obs.getVideoListC().get(3)));
+                }
                 break;
             case CH_SKY_SKY_VIDEO_C_DAY_3:
-                updateChannel(channelUID, undefOrString(obs.getVideoListC().get(2)));
+                if (obsArraySize >= 3) {
+                    updateChannel(channelUID, undefOrString(obs.getVideoListC().get(2)));
+                }
                 break;
             case CH_SKY_SKY_VIDEO_C_DAY_4:
-                updateChannel(channelUID, undefOrString(obs.getVideoListC().get(1)));
+                if (obsArraySize >= 2) {
+                    updateChannel(channelUID, undefOrString(obs.getVideoListC().get(1)));
+                }
                 break;
             case CH_SKY_SKY_VIDEO_C_DAY_5:
-                updateChannel(channelUID, undefOrString(obs.getVideoListC().get(0)));
+                if (obsArraySize >= 1) {
+                    updateChannel(channelUID, undefOrString(obs.getVideoListC().get(0)));
+                }
                 break;
         }
     }
