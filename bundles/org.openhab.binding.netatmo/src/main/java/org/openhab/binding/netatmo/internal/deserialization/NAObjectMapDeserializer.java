@@ -41,10 +41,9 @@ public class NAObjectMapDeserializer implements JsonDeserializer<NAObjectMap<?>>
         if (typeArguments.length > 0 && json instanceof JsonArray) {
             Type objectType = typeArguments[0];
             NAObjectMap<NAObject> result = new NAObjectMap<>();
-            for (JsonElement item : (JsonArray) json) {
-                NAObject obj = context.deserialize(item, objectType);
-                result.put(obj.getId(), obj);
-            }
+            ((JsonArray) json).forEach(item -> {
+                result.put(context.deserialize(item, objectType));
+            });
             return result;
         }
         return null;

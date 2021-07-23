@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.deserialization;
 
-import java.util.HashMap;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 
 /**
@@ -24,10 +21,6 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThing;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class NAThingMap extends HashMap<String, NAThing> {
+public class NAThingMap extends NAObjectMap<NAThing> {
     private static final long serialVersionUID = -7864636414965562293L;
-
-    public @Nullable NAThing put(NAThing thing) {
-        return super.put(thing.getId(), thing);
-    }
 }
