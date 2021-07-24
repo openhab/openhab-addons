@@ -50,18 +50,25 @@ public class CarNetServiceClimater extends ApiBaseService {
 
     @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> ch) throws ApiException {
-        addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_CLIMATER, ITEMT_SWITCH, null, false, false);
-        addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CLIMATER_TARGET_TEMP, ITEMT_TEMP, SIUnits.CELSIUS, false, false);
-        addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CLIMATER_HEAT_SOURCE, ITEMT_STRING, null, true, false);
-        addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_WINHEAT, ITEMT_SWITCH, null, false, false);
-        addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HEATSOURCE, ITEMT_STRING, null, true, false);
-
-        addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_GEN_STATE, ITEMT_STRING, null, false, true);
-        addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_FL_STATE, ITEMT_SWITCH, null, true, true);
-        addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_FR_STATE, ITEMT_SWITCH, null, true, true);
-        addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_RL_STATE, ITEMT_SWITCH, null, true, true);
-        addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_RR_STATE, ITEMT_SWITCH, null, true, true);
-        addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_MIRROR_HEAT, ITEMT_SWITCH, null, false, true);
+        /*
+         * addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_CLIMATER, ITEMT_SWITCH, null, false, false);
+         * addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CLIMATER_TARGET_TEMP, ITEMT_TEMP, SIUnits.CELSIUS, false,
+         * false);
+         * addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CLIMATER_HEAT_SOURCE, ITEMT_STRING, null, true, false);
+         * addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_WINHEAT, ITEMT_SWITCH, null, false, false);
+         * addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HEATSOURCE, ITEMT_STRING, null, true, false);
+         *
+         * addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_GEN_STATE, ITEMT_STRING, null, false, true);
+         * addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_FL_STATE, ITEMT_SWITCH, null, true, true);
+         * addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_FR_STATE, ITEMT_SWITCH, null, true, true);
+         * addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_RL_STATE, ITEMT_SWITCH, null, true, true);
+         * addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_RR_STATE, ITEMT_SWITCH, null, true, true);
+         * addChannel(ch, CHANNEL_GROUP_CLIMATER, CHANNEL_CLIMATER_MIRROR_HEAT, ITEMT_SWITCH, null, false, true);
+         */
+        addChannels(ch, true, CHANNEL_CONTROL_CLIMATER, CHANNEL_CLIMATER_TARGET_TEMP, CHANNEL_CLIMATER_HEAT_SOURCE,
+                CHANNEL_CONTROL_WINHEAT, CHANNEL_CONTROL_HEATSOURCE, CHANNEL_CLIMATER_GEN_STATE,
+                CHANNEL_CLIMATER_FL_STATE, CHANNEL_CLIMATER_FR_STATE, CHANNEL_CLIMATER_RL_STATE,
+                CHANNEL_CLIMATER_RR_STATE, CHANNEL_CLIMATER_MIRROR_HEAT);
         return true;
     }
 

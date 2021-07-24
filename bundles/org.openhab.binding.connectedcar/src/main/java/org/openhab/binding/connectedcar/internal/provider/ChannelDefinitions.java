@@ -116,7 +116,7 @@ public class ChannelDefinitions {
                 return label;
             }
 
-            return groupName + "_" + label.replaceAll("[ \\(\\)]", "");
+            return groupName + "_" + label.replaceAll("[ /\\(\\)]", "");
         }
 
         public String getDescription() {
@@ -415,47 +415,109 @@ public class ChannelDefinitions {
         add("UTC_TIME_STATUS", "0x0101010001");
         add("UNKNOWN_0x02040C0002", "0x02040C0002"); // no yet decoded
 
-        // Group general
-        add("", "", CHANNEL_GENERAL_UPDATED, ITEMT_DATETIME, CHANNEL_GROUP_GENERAL);
-        add("", "", CHANNEL_GENERAL_ACTION, ITEMT_STRING, CHANNEL_GROUP_GENERAL);
-        add("", "", CHANNEL_GENERAL_ACTION_STATUS, ITEMT_STRING, CHANNEL_GROUP_GENERAL);
-        add("", "", CHANNEL_GENERAL_ACTION_PENDING, ITEMT_SWITCH, CHANNEL_GROUP_GENERAL);
-        add("", "", CHANNEL_GENERAL_TIMEINCAR, ITEMT_DATETIME, CHANNEL_GROUP_GENERAL);
-
-        // Group control
-        add("", "", CHANNEL_CONTROL_WINHEAT, ITEMT_SWITCH, CHANNEL_GROUP_CONTROL, null, false, false);
-        add("", "", CHANNEL_CONTROL_MAXCURRENT, ITEMT_AMP, CHANNEL_GROUP_CONTROL, Units.AMPERE);
-
         // Group status
         add("", "", CHANNEL_STATUS_ERROR, ITEMT_STRING);
         add("", "", CHANNEL_STATUS_PBRAKE, ITEMT_SWITCH);
         add("", "", CHANNEL_STATUS_LIGHTS, ITEMT_SWITCH);
 
+        // Group general
+        String group = CHANNEL_GROUP_GENERAL;
+        add("", "", CHANNEL_GENERAL_UPDATED, ITEMT_DATETIME, group);
+        add("", "", CHANNEL_GENERAL_ACTION, ITEMT_STRING, group);
+        add("", "", CHANNEL_GENERAL_ACTION_STATUS, ITEMT_STRING, group);
+        add("", "", CHANNEL_GENERAL_ACTION_PENDING, ITEMT_SWITCH, group);
+        add("", "", CHANNEL_GENERAL_TIMEINCAR, ITEMT_DATETIME, group);
+        add("", "", CHANNEL_GENERAL_ACTION, ITEMT_STRING, group, null, false, true);
+        add("", "", CHANNEL_GENERAL_ACTION_STATUS, ITEMT_STRING, group, null, false, true);
+        add("", "", CHANNEL_GENERAL_ACTION_PENDING, ITEMT_SWITCH, group, null, false, true);
+
+        // Group control
+        group = CHANNEL_GROUP_CONTROL;
+        add("", "", CHANNEL_CONTROL_CHARGER, ITEMT_SWITCH, group, null, false, true);
+        add("", "", CHANNEL_CONTROL_MAXCURRENT, ITEMT_AMP, group, Units.AMPERE, false, false);
+        add("", "", CHANNEL_CONTROL_TARGETCHG, ITEMT_PERCENT, group, null, false, false);
+        add("", "", CHANNEL_CONTROL_CLIMATER, ITEMT_SWITCH, group, null, false, false);
+        add("", "", CHANNEL_CONTROL_WINHEAT, ITEMT_SWITCH, group, null, false, false);
+        add("", "", CHANNEL_CONTROL_PREHEAT, ITEMT_SWITCH, group, null, false, false);
+        add("", "", CHANNEL_CONTROL_VENT, ITEMT_SWITCH, group, null, false, false);
+        add("", "", CHANNEL_CONTROL_DURATION, ITEMT_NUMBER, group, null, false, false);
+        add("", "", CHANNEL_CONTROL_FLASH, ITEMT_SWITCH, group, null, false, false);
+        add("", "", CHANNEL_CONTROL_HONKFLASH, ITEMT_SWITCH, group, null, false, false);
+        add("", "", CHANNEL_CONTROL_HFDURATION, ITEMT_NUMBER, group, null, true, false);
+
         // Group location
-        add("", "", CHANNEL_LOCATTION_GEO, ITEMT_LOCATION, CHANNEL_GROUP_LOCATION);
-        add("", "", CHANNEL_LOCATTION_ADDRESS, ITEMT_STRING, CHANNEL_GROUP_LOCATION);
-        add("", "", CHANNEL_LOCATTION_TIME, ITEMT_DATETIME, CHANNEL_GROUP_LOCATION);
-        add("", "", CHANNEL_PARK_LOCATION, ITEMT_LOCATION, CHANNEL_GROUP_LOCATION);
-        add("", "", CHANNEL_PARK_ADDRESS, ITEMT_STRING, CHANNEL_GROUP_LOCATION);
-        add("", "", CHANNEL_PARK_TIME, ITEMT_DATETIME, CHANNEL_GROUP_LOCATION);
+        group = CHANNEL_GROUP_LOCATION;
+        add("", "", CHANNEL_LOCATTION_GEO, ITEMT_LOCATION, group);
+        add("", "", CHANNEL_LOCATTION_ADDRESS, ITEMT_STRING, group);
+        add("", "", CHANNEL_LOCATTION_TIME, ITEMT_DATETIME, group);
+        add("", "", CHANNEL_PARK_LOCATION, ITEMT_LOCATION, group);
+        add("", "", CHANNEL_PARK_ADDRESS, ITEMT_STRING, group);
+        add("", "", CHANNEL_PARK_TIME, ITEMT_DATETIME, group);
 
         // Group charger
-        add("", "", CHANNEL_CONTROL_CHARGER, ITEMT_SWITCH, CHANNEL_GROUP_CONTROL, null, false, true);
-        add("", "", CHANNEL_CONTROL_TARGETCHG, ITEMT_PERCENT, CHANNEL_GROUP_CONTROL, null, false, true);
-        add("", "", CHANNEL_CHARGER_CHG_STATE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
-        add("", "", CHANNEL_CHARGER_MODE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
-        add("", "", CHANNEL_CHARGER_REMAINING, ITEMT_TIME, CHANNEL_GROUP_CHARGER, Units.MINUTE);
-        add("", "", CHANNEL_CHARGER_POWER, ITEMT_VOLT, CHANNEL_GROUP_CHARGER);
-        add("", "", CHANNEL_CHARGER_RATE, ITEMT_NUMBER, CHANNEL_GROUP_CHARGER);
-        add("", "", CHANNEL_CHARGER_CHGLVL, ITEMT_PERCENT, CHANNEL_GROUP_CHARGER);
-        add("", "", CHANNEL_CHARGER_LOCK_STATE, ITEMT_SWITCH, CHANNEL_GROUP_CHARGER);
-        add("", "", CHANNEL_CHARGER_PLUG_STATE, ITEMT_STRING, CHANNEL_GROUP_CHARGER);
+        group = CHANNEL_GROUP_CHARGER;
+        add("", "", CHANNEL_CHARGER_CHG_STATE, ITEMT_STRING, group);
+        add("", "", CHANNEL_CHARGER_MODE, ITEMT_STRING, group);
+        add("", "", CHANNEL_CHARGER_REMAINING, ITEMT_TIME, group, Units.MINUTE);
+        add("", "", CHANNEL_CHARGER_POWER, ITEMT_VOLT, group);
+        add("", "", CHANNEL_CHARGER_RATE, ITEMT_NUMBER, group);
+        add("", "", CHANNEL_CHARGER_CHGLVL, ITEMT_PERCENT, group);
+        add("", "", CHANNEL_CHARGER_LOCK_STATE, ITEMT_SWITCH, group);
+        add("", "", CHANNEL_CHARGER_PLUG_STATE, ITEMT_STRING, group);
 
         // Group climater
-        add("", "", CHANNEL_CONTROL_CLIMATER, ITEMT_SWITCH, CHANNEL_GROUP_CONTROL, null, false, false);
-        add("", "", CHANNEL_CLIMATER_GEN_STATE, ITEMT_SWITCH, CHANNEL_GROUP_CLIMATER);
-        add("", "", CHANNEL_CLIMATER_REMAINING, ITEMT_TIME, CHANNEL_GROUP_CLIMATER, Units.MINUTE);
-        add("", "", CHANNEL_CLIMATER_TARGET_TEMP, ITEMT_TEMP, CHANNEL_GROUP_CLIMATER, SIUnits.CELSIUS);
+        group = CHANNEL_GROUP_CLIMATER;
+        add("", "", CHANNEL_CLIMATER_GEN_STATE, ITEMT_SWITCH, group);
+        add("", "", CHANNEL_CLIMATER_REMAINING, ITEMT_TIME, group, Units.MINUTE);
+        add("", "", CHANNEL_CLIMATER_TARGET_TEMP, ITEMT_TEMP, group, SIUnits.CELSIUS);
+
+        // Group destination
+        group = CHANNEL_GROUP_DEST_PRE;
+        add("", "", CHANNEL_DEST_NAME, ITEMT_STRING, group);
+        add("", "", CHANNEL_DEST_POI, ITEMT_STRING, group);
+        add("", "", CHANNEL_DEST_GEO, ITEMT_LOCATION, group);
+        add("", "", CHANNEL_DEST_STREET, ITEMT_STRING, group);
+        add("", "", CHANNEL_DEST_CITY, ITEMT_STRING, group);
+        add("", "", CHANNEL_DEST_ZIP, ITEMT_STRING, group, null, false, true);
+        add("", "", CHANNEL_DEST_COUNTY, ITEMT_STRING, group, null, false, true);
+        add("", "", CHANNEL_DEST_SOURCE, ITEMT_STRING, group, null, false, true);
+
+        // Group rluHistory
+        group = CHANNEL_GROUP_RLUHIST;
+        add("", "", CHANNEL_RLUHIST_OP, ITEMT_STRING, group, null, false, true);
+        add("", "", CHANNEL_RLUHIST_TS, ITEMT_DATETIME, group, null, false, true);
+        add("", "", CHANNEL_RLUHIST_RES, ITEMT_STRING, group, null, false, true);
+
+        // Group speedAlerts
+        group = CHANNEL_GROUP_SPEEDALERT;
+        add("", "", CHANNEL_SPEEDALERT_TYPE, ITEMT_STRING, group, null, false, true);
+        add("", "", CHANNEL_SPEEDALERT_TIME, ITEMT_DATETIME, group, null, false, true);
+        add("", "", CHANNEL_SPEEDALERT_DESCR, ITEMT_STRING, group, null, false, true);
+        add("", "", CHANNEL_SPEEDALERT_LIMIT, ITEMT_SPEED, group, null, false, true);
+
+        // Group geoFenceAlerts
+        group = CHANNEL_GROUP_SPEEDALERT;
+        add("", "", CHANNEL_GEOFENCE_TYPE, ITEMT_STRING, group, null, false, true);
+        add("", "", CHANNEL_GEOFENCE_TIME, ITEMT_DATETIME, group, null, false, true);
+        add("", "", CHANNEL_GEOFENCE_DESCR, ITEMT_STRING, group, null, false, true);
+
+        // Group
+        group = CHANNEL_GROUP_STRIP; // tripShort
+        add("", "", CHANNEL_TRIP_TIME, ITEMT_DATETIME, group, null, false, true);
+        add("", "", CHANNEL_TRIP_AVG_ELCON, ITEMT_ENERGY, group, Units.KILOWATT_HOUR, false, true);
+        add("", "", CHANNEL_TRIP_AVG_FUELCON, ITEMT_VOLUME, group, Units.LITRE, false, true);
+        add("", "", CHANNEL_TRIP_AVG_SPEED, ITEMT_SPEED, group, SIUnits.KILOMETRE_PER_HOUR, false, true);
+        add("", "", CHANNEL_TRIP_START_MIL, ITEMT_DISTANCE, group, KILOMETRE, false, true);
+        add("", "", CHANNEL_TRIP_MILAGE, ITEMT_DISTANCE, group, KILOMETRE, false, true);
+        add("", "", CHANNEL_TRIP_OVR_MILAGE, ITEMT_DISTANCE, group, KILOMETRE, true, true);
+        group = CHANNEL_GROUP_LTRIP; // tripLong
+        add("", "", CHANNEL_TRIP_TIME, ITEMT_DATETIME, group, null, false, true);
+        add("", "", CHANNEL_TRIP_AVG_ELCON, ITEMT_ENERGY, group, Units.KILOWATT_HOUR, false, true);
+        add("", "", CHANNEL_TRIP_AVG_FUELCON, ITEMT_VOLUME, group, Units.LITRE, false, true);
+        add("", "", CHANNEL_TRIP_AVG_SPEED, ITEMT_SPEED, group, SIUnits.KILOMETRE_PER_HOUR, false, true);
+        add("", "", CHANNEL_TRIP_START_MIL, ITEMT_DISTANCE, group, KILOMETRE, false, true);
+        add("", "", CHANNEL_TRIP_MILAGE, ITEMT_DISTANCE, group, KILOMETRE, false, true);
+        add("", "", CHANNEL_TRIP_OVR_MILAGE, ITEMT_DISTANCE, group, KILOMETRE, true, true);
     }
 
     private ChannelIdMapEntry add(String name, String id, String channel, String itemType, String group,

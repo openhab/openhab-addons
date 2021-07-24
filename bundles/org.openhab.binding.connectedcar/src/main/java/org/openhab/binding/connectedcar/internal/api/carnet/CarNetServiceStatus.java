@@ -104,10 +104,13 @@ public class CarNetServiceStatus extends ApiBaseService {
             }
         }
 
-        addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION, ITEMT_STRING, null, false, true);
-        addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION_STATUS, ITEMT_STRING, null, false, true);
-        addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION_PENDING, ITEMT_SWITCH, null, false, true);
-
+        /*
+         * addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION, ITEMT_STRING, null, false, true);
+         * addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION_STATUS, ITEMT_STRING, null, false, true);
+         * addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION_PENDING, ITEMT_SWITCH, null, false, true);
+         */
+        addChannels(channels, CHANNEL_GROUP_GENERAL, true, CHANNEL_GENERAL_ACTION, CHANNEL_GENERAL_ACTION_STATUS,
+                CHANNEL_GENERAL_ACTION_PENDING);
         return updated;
     }
 

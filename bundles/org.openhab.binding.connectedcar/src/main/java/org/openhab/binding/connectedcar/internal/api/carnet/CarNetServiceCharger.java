@@ -43,20 +43,26 @@ public class CarNetServiceCharger extends ApiBaseService {
 
     @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> ch) {
-        // Control channels
-        addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_CHARGER, ITEMT_SWITCH, null, false, false);
-        addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MAXCURRENT, ITEMT_AMP, null, false, true);
-
-        // Status channels
-        addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_STATUS, ITEMT_STRING, null, false, true);
-        addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_PWR_STATE, ITEMT_STRING, null, false, true);
-        addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_CHG_STATE, ITEMT_STRING, null, false, true);
-        addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_FLOW, ITEMT_STRING, null, false, true);
-        addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_BAT_STATE, ITEMT_PERCENT, null, false, true);
-        addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_REMAINING, ITEMT_TIME, QMINUTES, false, true);
-        addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_PLUG_STATE, ITEMT_STRING, null, false, true);
-        addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_LOCK_STATE, ITEMT_STRING, null, false, true);
-        addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_ERROR, ITEMT_NUMBER, null, false, true);
+        /*
+         * // Control channels
+         * addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_CHARGER, ITEMT_SWITCH, null, false, false);
+         * addChannel(ch, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MAXCURRENT, ITEMT_AMP, null, false, true);
+         *
+         * // Status channels
+         * addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_STATUS, ITEMT_STRING, null, false, true);
+         * addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_PWR_STATE, ITEMT_STRING, null, false, true);
+         * addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_CHG_STATE, ITEMT_STRING, null, false, true);
+         * addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_FLOW, ITEMT_STRING, null, false, true);
+         * addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_BAT_STATE, ITEMT_PERCENT, null, false, true);
+         * addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_REMAINING, ITEMT_TIME, QMINUTES, false, true);
+         * addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_PLUG_STATE, ITEMT_STRING, null, false, true);
+         * addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_LOCK_STATE, ITEMT_STRING, null, false, true);
+         * addChannel(ch, CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_ERROR, ITEMT_NUMBER, null, false, true);
+         */
+        addChannels(ch, true, CHANNEL_CHARGER_ERROR, CHANNEL_CONTROL_CHARGER, CHANNEL_CONTROL_MAXCURRENT,
+                CHANNEL_CHARGER_PWR_STATE, CHANNEL_CHARGER_CHG_STATE, CHANNEL_CHARGER_FLOW, CHANNEL_CHARGER_BAT_STATE,
+                CHANNEL_CHARGER_REMAINING, CHANNEL_CHARGER_PLUG_STATE, CHANNEL_CHARGER_LOCK_STATE,
+                CHANNEL_CHARGER_STATUS);
         return true;
     }
 

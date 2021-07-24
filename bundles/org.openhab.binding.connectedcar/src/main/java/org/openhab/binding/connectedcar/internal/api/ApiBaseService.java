@@ -95,6 +95,11 @@ public class ApiBaseService {
     }
 
     public boolean addChannels(Map<String, ChannelIdMapEntry> channels, boolean condition, String... channel) {
+        return addChannels(channels, "", condition, channel);
+    }
+
+    public boolean addChannels(Map<String, ChannelIdMapEntry> channels, String group, boolean condition,
+            String... channel) {
         if (!condition) {
             return false;
         }
@@ -104,8 +109,8 @@ public class ApiBaseService {
             if (definition == null) {
                 throw new IllegalArgumentException("Missing channel definition for " + ch);
             }
-            created |= addChannel(channels, definition.groupName, ch, definition.itemType, definition.unit,
-                    definition.advanced, definition.readOnly);
+            created |= addChannel(channels, !group.isEmpty() ? group : definition.groupName, ch, definition.itemType,
+                    definition.unit, definition.advanced, definition.readOnly);
         }
         return created;
     }

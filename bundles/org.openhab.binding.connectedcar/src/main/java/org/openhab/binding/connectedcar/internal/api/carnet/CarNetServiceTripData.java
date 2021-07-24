@@ -67,17 +67,23 @@ public class CarNetServiceTripData extends ApiBaseService {
         if (count == 0) {
             return false;
         }
+
+        boolean created = false;
         for (int i = 1; i <= count; i++) {
             String group = CHANNEL_GROUP_TRIP_PRE + type + i;
-            addChannel(ch, group, CHANNEL_TRIP_TIME, ITEMT_DATETIME, null, false, true);
-            addChannel(ch, group, CHANNEL_TRIP_AVG_ELCON, ITEMT_ENERGY, Units.KILOWATT_HOUR, false, true);
-            addChannel(ch, group, CHANNEL_TRIP_AVG_FUELCON, ITEMT_VOLUME, Units.LITRE, false, true);
-            addChannel(ch, group, CHANNEL_TRIP_AVG_SPEED, ITEMT_SPEED, SIUnits.KILOMETRE_PER_HOUR, false, true);
-            addChannel(ch, group, CHANNEL_TRIP_START_MIL, ITEMT_DISTANCE, KILOMETRE, false, true);
-            addChannel(ch, group, CHANNEL_TRIP_MILAGE, ITEMT_DISTANCE, KILOMETRE, false, true);
-            addChannel(ch, group, CHANNEL_TRIP_OVR_MILAGE, ITEMT_DISTANCE, KILOMETRE, true, true);
+            /*
+             * addChannel(ch, group, CHANNEL_TRIP_TIME, ITEMT_DATETIME, null, false, true);
+             * addChannel(ch, group, CHANNEL_TRIP_AVG_ELCON, ITEMT_ENERGY, Units.KILOWATT_HOUR, false, true);
+             * addChannel(ch, group, CHANNEL_TRIP_AVG_FUELCON, ITEMT_VOLUME, Units.LITRE, false, true);
+             * addChannel(ch, group, CHANNEL_TRIP_AVG_SPEED, ITEMT_SPEED, SIUnits.KILOMETRE_PER_HOUR, false, true);
+             * addChannel(ch, group, CHANNEL_TRIP_START_MIL, ITEMT_DISTANCE, KILOMETRE, false, true);
+             * addChannel(ch, group, CHANNEL_TRIP_MILAGE, ITEMT_DISTANCE, KILOMETRE, false, true);
+             * addChannel(ch, group, CHANNEL_TRIP_OVR_MILAGE, ITEMT_DISTANCE, KILOMETRE, true, true);
+             */
+            created |= addChannels(ch, group, true, CHANNEL_TRIP_TIME, CHANNEL_TRIP_AVG_ELCON, CHANNEL_TRIP_AVG_FUELCON,
+                    CHANNEL_TRIP_AVG_SPEED, CHANNEL_TRIP_START_MIL, CHANNEL_TRIP_MILAGE, CHANNEL_TRIP_OVR_MILAGE);
         }
-        return true;
+        return created;
     }
 
     @Override

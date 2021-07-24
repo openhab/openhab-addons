@@ -54,9 +54,12 @@ public class CarNetServiceRLU extends ApiBaseService {
         int count = getConfig().vehicle.numRluHistory;
         for (int i = 1; i <= count; i++) {
             String group = CHANNEL_GROUP_RLUHIST + i;
-            addChannel(channels, group, CHANNEL_RLUHIST_OP, ITEMT_STRING, null, false, true);
-            addChannel(channels, group, CHANNEL_RLUHIST_TS, ITEMT_DATETIME, null, false, true);
-            addChannel(channels, group, CHANNEL_RLUHIST_RES, ITEMT_STRING, null, false, true);
+            /*
+             * addChannel(channels, group, CHANNEL_RLUHIST_OP, ITEMT_STRING, null, false, true);
+             * addChannel(channels, group, CHANNEL_RLUHIST_TS, ITEMT_DATETIME, null, false, true);
+             * addChannel(channels, group, CHANNEL_RLUHIST_RES, ITEMT_STRING, null, false, true);
+             */
+            addChannels(channels, group, true, CHANNEL_RLUHIST_OP, CHANNEL_RLUHIST_TS, CHANNEL_RLUHIST_RES);
         }
         return true;
     }

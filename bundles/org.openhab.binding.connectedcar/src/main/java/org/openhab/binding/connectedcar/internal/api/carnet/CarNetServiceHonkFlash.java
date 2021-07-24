@@ -38,10 +38,13 @@ public class CarNetServiceHonkFlash extends ApiBaseService {
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws ApiException {
         // Honk&Flash requires CarFinder service to get geo position
         if (api.isRemoteServiceAvailable(CNAPI_SERVICE_CAR_FINDER)) {
-            addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_FLASH, ITEMT_SWITCH, null, false, false);
-            addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HONKFLASH, ITEMT_SWITCH, null, false, false);
-            addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HFDURATION, ITEMT_NUMBER, null, true, false);
-            return true;
+            /*
+             * addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_FLASH, ITEMT_SWITCH, null, false, false);
+             * addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_FLASH, ITEMT_SWITCH, null, false, false);
+             * addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HFDURATION, ITEMT_NUMBER, null, true, false);
+             */
+            return addChannels(channels, CHANNEL_GROUP_CONTROL, true, CHANNEL_CONTROL_FLASH, CHANNEL_CONTROL_FLASH,
+                    CHANNEL_CONTROL_HFDURATION);
         }
         return false;
     }

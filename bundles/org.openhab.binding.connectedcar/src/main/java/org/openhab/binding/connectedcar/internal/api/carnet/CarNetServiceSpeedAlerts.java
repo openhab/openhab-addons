@@ -56,10 +56,14 @@ public class CarNetServiceSpeedAlerts extends ApiBaseService {
         int count = getConfig().vehicle.numSpeedAlerts;
         for (int i = 1; i <= count; i++) {
             String group = CHANNEL_GROUP_SPEEDALERT + i;
-            created |= addChannel(channels, group, CHANNEL_SPEEDALERT_TYPE, ITEMT_STRING, null, false, true);
-            created |= addChannel(channels, group, CHANNEL_SPEEDALERT_TIME, ITEMT_DATETIME, null, false, true);
-            created |= addChannel(channels, group, CHANNEL_SPEEDALERT_DESCR, ITEMT_STRING, null, false, true);
-            created |= addChannel(channels, group, CHANNEL_SPEEDALERT_LIMIT, ITEMT_SPEED, null, false, true);
+            /*
+             * created |= addChannel(channels, group, CHANNEL_SPEEDALERT_TYPE, ITEMT_STRING, null, false, true);
+             * created |= addChannel(channels, group, CHANNEL_SPEEDALERT_TIME, ITEMT_DATETIME, null, false, true);
+             * created |= addChannel(channels, group, CHANNEL_SPEEDALERT_DESCR, ITEMT_STRING, null, false, true);
+             * created |= addChannel(channels, group, CHANNEL_SPEEDALERT_LIMIT, ITEMT_SPEED, null, false, true);
+             */
+            created |= addChannels(channels, group, true, CHANNEL_SPEEDALERT_TYPE, CHANNEL_SPEEDALERT_TIME,
+                    CHANNEL_SPEEDALERT_DESCR, CHANNEL_SPEEDALERT_LIMIT);
         }
         return created;
     }

@@ -39,9 +39,12 @@ public class CarNetServicePreHeat extends ApiBaseService {
     @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws ApiException {
         // rheating includes pre-heater and ventilation
-        addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PREHEAT, ITEMT_SWITCH, null, false, false);
-        addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_VENT, ITEMT_SWITCH, null, false, false);
-        addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_DURATION, ITEMT_NUMBER, null, false, false);
+        /*
+         * addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PREHEAT, ITEMT_SWITCH, null, false, false);
+         * addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_VENT, ITEMT_SWITCH, null, false, false);
+         * addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_DURATION, ITEMT_NUMBER, null, false, false);
+         */
+        addChannels(channels, true, CHANNEL_CONTROL_PREHEAT, CHANNEL_CONTROL_VENT, CHANNEL_CONTROL_DURATION);
         return true;
     }
 

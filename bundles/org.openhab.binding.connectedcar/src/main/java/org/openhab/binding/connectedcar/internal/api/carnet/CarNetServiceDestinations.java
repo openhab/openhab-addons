@@ -61,17 +61,19 @@ public class CarNetServiceDestinations extends ApiBaseService {
     }
 
     private boolean createChannels(Map<String, ChannelIdMapEntry> ch, int index) {
-        boolean a = false;
         String group = CHANNEL_GROUP_DEST_PRE + index;
-        a |= addChannel(ch, group, CHANNEL_DEST_NAME, ITEMT_STRING, null, false, true);
-        a |= addChannel(ch, group, CHANNEL_DEST_POI, ITEMT_STRING, null, false, true);
-        a |= addChannel(ch, group, CHANNEL_DEST_GEO, ITEMT_LOCATION, null, false, true);
-        a |= addChannel(ch, group, CHANNEL_DEST_STREET, ITEMT_STRING, null, false, true);
-        a |= addChannel(ch, group, CHANNEL_DEST_CITY, ITEMT_STRING, null, false, true);
-        a |= addChannel(ch, group, CHANNEL_DEST_ZIP, ITEMT_STRING, null, false, true);
-        a |= addChannel(ch, group, CHANNEL_DEST_COUNTY, ITEMT_STRING, null, true, true);
-        a |= addChannel(ch, group, CHANNEL_DEST_SOURCE, ITEMT_STRING, null, true, true);
-        return a;
+        /*
+         * a |= addChannel(ch, group, CHANNEL_DEST_NAME, ITEMT_STRING, null, false, true);
+         * a |= addChannel(ch, group, CHANNEL_DEST_POI, ITEMT_STRING, null, false, true);
+         * a |= addChannel(ch, group, CHANNEL_DEST_GEO, ITEMT_LOCATION, null, false, true);
+         * a |= addChannel(ch, group, CHANNEL_DEST_STREET, ITEMT_STRING, null, false, true);
+         * a |= addChannel(ch, group, CHANNEL_DEST_CITY, ITEMT_STRING, null, false, true);
+         * a |= addChannel(ch, group, CHANNEL_DEST_ZIP, ITEMT_STRING, null, false, true);
+         * a |= addChannel(ch, group, CHANNEL_DEST_COUNTY, ITEMT_STRING, null, true, true);
+         * a |= addChannel(ch, group, CHANNEL_DEST_SOURCE, ITEMT_STRING, null, true, true);
+         */
+        return addChannels(ch, group, true, CHANNEL_DEST_NAME, CHANNEL_DEST_POI, CHANNEL_DEST_GEO, CHANNEL_DEST_STREET,
+                CHANNEL_DEST_CITY, CHANNEL_DEST_ZIP, CHANNEL_DEST_COUNTY, CHANNEL_DEST_SOURCE);
     }
 
     @Override
