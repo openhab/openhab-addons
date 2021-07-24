@@ -52,7 +52,8 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         sqlIfTableExists = "SELECT * FROM PG_TABLES WHERE TABLENAME='#searchTable#'";
         sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (itemid SERIAL NOT NULL, #colname# #coltype# NOT NULL, CONSTRAINT #itemsManageTable#_pkey PRIMARY KEY (itemid))";
         sqlCreateNewEntryInItemsTable = "INSERT INTO items (itemname) SELECT itemname FROM #itemsManageTable# UNION VALUES ('#itemname#') EXCEPT SELECT itemname FROM items";
-        sqlGetItemTables = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema='public' AND NOT table_name='#itemsManageTable#'";
+        sqlGetItemTables = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema=(SELECT table_schema "
+                + "FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_name='#itemsManageTable#') AND NOT table_name='#itemsManageTable#'";
         // http://stackoverflow.com/questions/17267417/how-do-i-do-an-upsert-merge-insert-on-duplicate-update-in-postgresql
         // for later use, PostgreSql > 9.5 to prevent PRIMARY key violation use:
         // SQL_INSERT_ITEM_VALUE = "INSERT INTO #tableName# (TIME, VALUE) VALUES( NOW(), CAST( ? as #dbType#) ) ON
@@ -121,9 +122,10 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
 
     @Override
     public List<ItemsVO> doGetItemTables(ItemsVO vo) {
-        String sql = StringUtilsExt.replaceArrayMerge(sqlGetItemTables, new String[] { "#itemsManageTable#" },
-                new String[] { vo.getItemsManageTable() });
-        logger.debug("JDBC::doGetItemTables sql={}", sql);
+        String sql = StringUtilsExt.replaceArrayMerge(this.sqlGetItemTables,
+                new String[] { "#itemsManageTable#", "#itemsManageTable#" },
+                new String[] { vo.getItemsManageTable(), vo.getItemsManageTable() });
+        this.logger.debug("JDBC::doGetItemTables sql={}", sql);
         return Yank.queryBeanList(sql, ItemsVO.class, null);
     }
 
