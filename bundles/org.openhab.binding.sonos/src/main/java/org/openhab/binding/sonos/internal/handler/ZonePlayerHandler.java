@@ -1481,37 +1481,40 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         String codec = stateMap.get("HTAudioIn");
         switch (codec) {
             case "0":
-                codec = "No Signal";
+                codec = "noSignal";
                 break;
             case "21":
-                codec = "No Signal";
+                codec = "noSignal";
                 break;
             case "22":
-                codec = "Silence";
+                codec = "silence";
                 break;
             case "32":
                 codec = "DTS";
                 break;
             case "59":
-                codec = "Dolby Atmos";
+                codec = "dolbyAtmos";
                 break;
             case "63":
-                codec = "Dolby Atmos";
+                codec = "dolbyAtmos";
                 break;
             case "33554454":
-                codec = "Silence 2.0";
+                codec = "silence20";
                 break;
             case "33554434":
-                codec = "Dolby Digital 2.0";
+                codec = "DD20";
+                break;
+            case "33554494":
+                codec = "PCM20";
                 break;
             case "84934713":
-                codec = "Dolby Digital 5.1";
+                codec = "DD51";
                 break;
             case "84934714":
-                codec = "Dolby Digital Plus 5.1";
+                codec = "DDPlus51";
                 break;
             case "84934718":
-                codec = "Dolby Multichannel PCM 5.1";
+                codec = "PCM51";
                 break;
             default:
                 codec = "Unknown - " + codec;

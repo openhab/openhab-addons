@@ -15,7 +15,6 @@
 			<channel id="alarmproperties" typeId="alarmproperties"/>
 			<channel id="alarmrunning" typeId="alarmrunning"/>
 			<channel id="bass" typeId="bass"/>
-			<channel id="codec" typeId="codec"/>
 			<channel id="control" typeId="system.media-control"/>
 			<channel id="currentalbum" typeId="currentalbum"/>
 			<channel id="currentalbumart" typeId="currentalbumart"/>
@@ -58,6 +57,7 @@
 			<channel id="currenttransporturi" typeId="currenttransporturi"/>
 			<channel id="currenttrackuri" typeId="currenttrackuri"/>
 			<!-- Extended SONOS channels -->
+			<channel id="codec" typeId="codec"/>
 			<channel id="linein" typeId="linein"/>
 			<channel id="microphone" typeId="microphone"/>
 			<channel id="nightmode" typeId="nightmode"/>
