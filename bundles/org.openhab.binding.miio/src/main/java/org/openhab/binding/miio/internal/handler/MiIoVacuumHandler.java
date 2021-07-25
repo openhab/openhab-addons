@@ -18,12 +18,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -89,7 +89,7 @@ import com.google.gson.JsonObject;
 public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoVacuumHandler.class);
     private static final float MAP_SCALE = 2.0f;
-    private static final DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
+    private static final SimpleDateFormat DATEFORMATTER = new SimpleDateFormat("yyyyMMdd-HHmmss");
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
     private final ChannelUID mapChannelUid;
 
@@ -654,7 +654,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     if (logger.isDebugEnabled()) {
                         final String mapPath = BINDING_USERDATA_PATH + File.separator + map
-                                + LocalDateTime.now().format(DATEFORMATTER) + ".rrmap";
+                                + DATEFORMATTER.format(new Date()) + ".rrmap";
                         CloudUtil.writeBytesToFileNio(mapData, mapPath);
                         logger.debug("Mapdata saved to {}", mapPath);
                     }

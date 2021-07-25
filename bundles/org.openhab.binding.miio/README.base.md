@@ -80,11 +80,9 @@ However, for devices that are unsupported, you may override the value and try to
 | model           | text    | false    | Device model string, used to determine the subtype                  |
 | refreshInterval | integer | false    | Refresh interval for refreshing the data in seconds. (0=disabled)   |
 | timeout         | integer | false    | Timeout time in milliseconds                                        |
-| communication   | text    | false    | Communicate direct or via cloud (options values: 'direct', 'cloud') |
-| cloudServer     | text    | false    | Identifies the country server to use in case of cloud communication |
+| communication   | test    | false    | Communicate direct or via cloud (options values: 'direct', 'cloud') |
 
-Note: Suggest to use the cloud communication only for devices that require it. 
-It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
+Note: Suggest to use the cloud communication only for devices that require it. It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
 
 ### Example Thing file
 
@@ -92,7 +90,7 @@ It is unknown at this time if Xiaomi has a rate limit or other limitations on th
 
 or in case of unknown models include the model information of a similar device that is supported:
 
-`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId="326xxxx", model="roborock.vacuum.s4", communication="direct", cloudServer="de" ]`
+`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId="326xxxx", model="roborock.vacuum.s4", communication="direct" ]`
 
 # Advanced: Unsupported devices
 
