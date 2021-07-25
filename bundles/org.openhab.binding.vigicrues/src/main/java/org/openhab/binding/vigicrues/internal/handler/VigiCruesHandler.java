@@ -162,21 +162,21 @@ public class VigiCruesHandler extends BaseThingHandler {
             }
         } catch (VigiCruesException e) {
             logger.info("Historical flooding data are not available {} : {}", config.id, e.getMessage());
-            channels.removeIf(channel -> channel.getUID().getId().contains(RELATIVE_PREFIX));
+            channels.removeIf(channel -> (channel.getUID().getId().contains(RELATIVE_PREFIX)));
         }
 
         if (!properties.containsKey(TRONCON)) {
-            channels.removeIf(channel -> channel.getUID().getId().contains(ALERT));
-            channels.removeIf(channel -> channel.getUID().getId().contains(COMMENT));
+            channels.removeIf(channel -> (channel.getUID().getId().contains(ALERT)));
+            channels.removeIf(channel -> (channel.getUID().getId().contains(COMMENT)));
         }
 
         try {
             OpenDatasoftResponse measures = apiHandler.getMeasures(config.id);
             measures.getFirstRecord().ifPresent(field -> {
-                if (field.getHeight() == -1) {
+                if (field.getHeight().isEmpty()) {
                     channels.removeIf(channel -> (channel.getUID().getId().contains(HEIGHT)));
                 }
-                if (field.getFlow() == -1) {
+                if (field.getFlow().isEmpty()) {
                     channels.removeIf(channel -> (channel.getUID().getId().contains(FLOW)));
                 }
             });
@@ -194,11 +194,11 @@ public class VigiCruesHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Disposing the VigiCrues handler.");
 
-        ScheduledFuture<?> localJob = refreshJob;
-        if (localJob != null) {
-            localJob.cancel(true);
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
         }
-        refreshJob = null;
+        this.refreshJob = null;
     }
 
     @Override
@@ -213,21 +213,17 @@ public class VigiCruesHandler extends BaseThingHandler {
         try {
             OpenDatasoftResponse measures = apiHandler.getMeasures(config.id);
             measures.getFirstRecord().ifPresent(field -> {
-                double height = field.getHeight();
-                if (height != -1) {
+                field.getHeight().ifPresent(height -> {
                     updateQuantity(HEIGHT, height, SIUnits.METRE);
                     updateRelativeMeasure(RELATIVE_HEIGHT, referenceHeights, height);
-                }
-
-                double flow = field.getFlow();
-                if (flow != -1) {
+                });
+                field.getFlow().ifPresent(flow -> {
                     updateQuantity(FLOW, flow, Units.CUBICMETRE_PER_SECOND);
                     updateRelativeMeasure(RELATIVE_FLOW, referenceFlows, flow);
-                }
-
+                });
                 field.getTimestamp().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
             });
-            String currentPortion = portion;
+            String currentPortion = this.portion;
             if (currentPortion != null) {
                 InfoVigiCru status = apiHandler.getTronconStatus(currentPortion);
                 updateAlert(ALERT, status.vicInfoVigiCru.vicNivInfoVigiCru - 1);
@@ -259,13 +255,13 @@ public class VigiCruesHandler extends BaseThingHandler {
         }
     }
 
-    private void updateDate(String channelId, ZonedDateTime zonedDateTime) {
+    public void updateDate(String channelId, ZonedDateTime zonedDateTime) {
         if (isLinked(channelId)) {
             updateState(channelId, new DateTimeType(zonedDateTime));
         }
     }
 
-    private void updateAlert(String channelId, int value) {
+    public void updateAlert(String channelId, int value) {
         String channelIcon = channelId + "-icon";
         if (isLinked(channelId)) {
             updateState(channelId, new DecimalType(value));
@@ -276,14 +272,11 @@ public class VigiCruesHandler extends BaseThingHandler {
         }
     }
 
-    private byte @Nullable [] getResource(String iconPath) {
-        ClassLoader classLoader = VigiCruesHandler.class.getClassLoader();
-        if (classLoader != null) {
-            try (InputStream stream = classLoader.getResourceAsStream(iconPath)) {
-                return stream != null ? stream.readAllBytes() : null;
-            } catch (IOException e) {
-                logger.warn("Unable to load ressource '{}' : {}", iconPath, e.getMessage());
-            }
+    public byte @Nullable [] getResource(String iconPath) {
+        try (InputStream stream = VigiCruesHandler.class.getClassLoader().getResourceAsStream(iconPath)) {
+            return stream.readAllBytes();
+        } catch (IOException e) {
+            logger.warn("Unable to load ressource '{}' : {}", iconPath, e.getMessage());
         }
         return null;
     }
