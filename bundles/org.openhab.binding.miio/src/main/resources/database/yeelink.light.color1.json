@@ -246,7 +246,7 @@
 				"actions": [
 					{
 						"command": "start_cf",
-						"parameterType": "NONE",
+						"parameterType": "EMPTY",
 						"parameters": [
 							0,
 							0,
