@@ -86,7 +86,11 @@ public class ResponseFieldDTO {
     }
 
     public Optional<ZonedDateTime> getDatePrevue() {
-        return Optional.ofNullable(datePrevue);
+        ZonedDateTime datePrevue = this.datePrevue;
+        if (datePrevue != null) {
+            return Optional.of(datePrevue);
+        }
+        return Optional.empty();
     }
 
     public String getTypePrev() {
@@ -122,7 +126,11 @@ public class ResponseFieldDTO {
     }
 
     public Optional<ZonedDateTime> getDateInsert() {
-        return Optional.ofNullable(dateInsert);
+        ZonedDateTime dateInsert = this.dateInsert;
+        if (dateInsert != null) {
+            return Optional.of(dateInsert);
+        }
+        return Optional.empty();
     }
 
     public AlertLevel getInondation() {
@@ -150,6 +158,10 @@ public class ResponseFieldDTO {
     }
 
     public Optional<ZonedDateTime> getDateRun() {
-        return Optional.ofNullable(dateRun);
+        ZonedDateTime dateRun = this.dateRun;
+        if (dateRun != null) {
+            return Optional.of(dateRun);
+        }
+        return Optional.empty();
     }
 }
