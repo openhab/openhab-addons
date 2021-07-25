@@ -18,12 +18,11 @@
 		<config-description>
 			<parameter name="gatewayId" type="text" required="true">
 				<label>From</label>
-				<description>
-					The senders Threema ID. Threema Gateway lets you request your personal, custom ID.
+				<description><![CDATA[The senders Threema ID. Threema Gateway lets you request your personal, custom ID.
 					<br/>
 					All IDs that are
 					used on Threema Gateway start with an asterisk (*) and consist of 8 characters in total. Example
-					ID: *THREEMA.
+					ID: *THREEMA.]]>
 				</description>
 			</parameter>
 			<parameter name="secret" type="text" required="true">
