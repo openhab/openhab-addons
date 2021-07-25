@@ -10,9 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openwebnet.internal.handler;
+package org.openhab.binding.openwebnet.handler;
 
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.PROPERTY_FIRMWARE_VERSION;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.PROPERTY_SERIAL_NO;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.THING_TYPE_ZB_GATEWAY;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -24,10 +26,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
+import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
+import org.openhab.binding.openwebnet.handler.config.OpenWebNetBusBridgeConfig;
+import org.openhab.binding.openwebnet.handler.config.OpenWebNetZigBeeBridgeConfig;
 import org.openhab.binding.openwebnet.internal.discovery.OpenWebNetDeviceDiscoveryService;
-import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetBusBridgeConfig;
-import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetZigBeeBridgeConfig;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;

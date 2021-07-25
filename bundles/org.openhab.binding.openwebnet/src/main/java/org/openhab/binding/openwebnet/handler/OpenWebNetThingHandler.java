@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openwebnet.internal.handler;
+package org.openhab.binding.openwebnet.handler;
 
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
+import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.*;
 
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;

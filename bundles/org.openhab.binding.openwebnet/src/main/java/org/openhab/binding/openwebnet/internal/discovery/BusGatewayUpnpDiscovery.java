@@ -27,7 +27,7 @@ import org.jupnp.model.meta.ModelDetails;
 import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.model.meta.RemoteDeviceIdentity;
 import org.jupnp.model.types.UDN;
-import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
+import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
