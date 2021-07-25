@@ -3,19 +3,23 @@
 [SensorPush](https://www.sensorpush.com/) sells a line of battery-powered wireless sensors that, depending on the model, provide data on temperature, relative humidity, barometric pressure, dew point, and vapor pressure deficit (VPD).
 The sensors communicate using Bluetooth LE.
 While they can be used directly via BLE, when multiple sensors are in use they are typically configured to relay data to the cloud via the G1 WiFi Gateway.
-This binding retrieves sensor data from the SensorPush Gateway Cloud using a published API.
 
-## Supported Things
+This binding retrieves sensor data from the SensorPush Gateway Cloud using a published API.
+It requires use of the G1 WiFi gateway and a connection to the SensorPush Gateway Cloud.
 
 Supported sensors: HT1, HT.W, and HTP.XW
 
-The binding requires use of the G1 WiFi gateway and a connection to the SensorPush Gateway Cloud.
-Note that the HTP.XW sensor has not yet been tested.
+## Supported Things
+
+The binding supports the following thing types:
+
+* `cloudbridge` - Provides connectivity to the SensorPush Gateway Cloud.
+* `sensor` - Represents a HT1, HT.W, or HTP.XW sensor.
 
 ## Discovery
 
 Automatic discovery is supported for the sensors, but not for the cloud gateway.
-It is recommended that you configure the cloudbridge thing manually and let the associated sensors be discovered automatically.
+It is recommended that you configure the cloudbridge thing manually using the UI and let the associated sensors be discovered automatically.
 
 ## Thing Configuration
 
@@ -23,7 +27,7 @@ It is recommended that the SensorPush binding be configured through the manageme
 There is no easy way for the user to determine the sensor IDs in advance, so it is best to simply auto-discover them.
 After configuring the bridge, all active sensors should appear in the discovery inbox.
 
-### cloudbridge thing
+### Cloudbridge thing
 
 The `cloudbridge` thing is responsible for communicating with the SensorPush Gateway Cloud.
 You must supply your user name and password.
@@ -39,7 +43,7 @@ Parameters:
 **Note:** To activate your API access, you must log in to the [Gateway Cloud Dashboard](https://dashboard.sensorpush.com/) and agree to the terms of service.
 Once you've logged in that initial time, your account will have access.
 
-### sensor thing
+### Sensor thing
 
 The `sensor` thing represents an individual SensorPush sensor.
 It has a variety of channels that will be populated with the latest sensor readings at each poll period.
