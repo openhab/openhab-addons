@@ -75,7 +75,7 @@ abstract public class AbstractAirthingsHandler extends BeaconBluetoothHandler {
 
     @Override
     public void initialize() {
-        logger.info("Initialize");
+        logger.debug("Initialize");
         super.initialize();
         configuration = Optional.of(getConfigAs(AirthingsConfiguration.class));
         logger.debug("Using configuration: {}", configuration.get());
@@ -91,7 +91,7 @@ abstract public class AbstractAirthingsHandler extends BeaconBluetoothHandler {
 
     @Override
     public void dispose() {
-        logger.info("Dispose");
+        logger.debug("Dispose");
         cancelScheduledTask();
         serviceState = ServiceState.NOT_RESOLVED;
         readState = ReadState.IDLE;
@@ -136,9 +136,9 @@ abstract public class AbstractAirthingsHandler extends BeaconBluetoothHandler {
         if (!device.connect()) {
             errorConnectCounter++;
             if (errorConnectCounter < 6) {
-                logger.warn("Connecting to device {} failed {} times", address, errorConnectCounter);
+                logger.debug("Connecting to device {} failed {} times", address, errorConnectCounter);
             } else {
-                logger.error("ERROR:  Controller reset needed.  Connecting to device {} failed {} times", address,
+                logger.debug("ERROR:  Controller reset needed.  Connecting to device {} failed {} times", address,
                         errorConnectCounter);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connecting to device failed");
             }
@@ -153,9 +153,9 @@ abstract public class AbstractAirthingsHandler extends BeaconBluetoothHandler {
         if (!device.disconnect()) {
             errorDisconnectCounter++;
             if (errorDisconnectCounter < 6) {
-                logger.warn("Disconnect from device {} failed {} times", address, errorDisconnectCounter);
+                logger.debug("Disconnect from device {} failed {} times", address, errorDisconnectCounter);
             } else {
-                logger.error("ERROR:  Controller reset needed.  Disconnect from device {} failed {} times", address,
+                logger.debug("ERROR:  Controller reset needed.  Disconnect from device {} failed {} times", address,
                         errorDisconnectCounter);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Disconnect from device failed");
@@ -196,9 +196,9 @@ abstract public class AbstractAirthingsHandler extends BeaconBluetoothHandler {
                         } else {
                             errorReadCounter++;
                             if (errorReadCounter < 6) {
-                                logger.warn("Read data from device {} failed {} times", address, errorReadCounter);
+                                logger.debug("Read data from device {} failed {} times", address, errorReadCounter);
                             } else {
-                                logger.error(
+                                logger.debug(
                                         "ERROR:  Controller reset needed.  Read data from device {} failed {} times",
                                         address, errorReadCounter);
                                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -215,9 +215,9 @@ abstract public class AbstractAirthingsHandler extends BeaconBluetoothHandler {
             default: // serviceState RESOLVING
                 errorResolvingCounter++;
                 if (errorResolvingCounter < 6) {
-                    logger.warn("Unhandled serviceState {} on device {}", serviceState, address);
+                    logger.debug("Unhandled serviceState {} on device {}", serviceState, address);
                 } else {
-                    logger.error("ERROR:  Controller reset needed.  Unhandled serviceState {} on device {}",
+                    logger.debug("ERROR:  Controller reset needed.  Unhandled serviceState {} on device {}",
                             serviceState, address);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Service discovery for device failed");
