@@ -29,7 +29,7 @@ public class MqttBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID HOMIE300_MQTT_THING = new ThingTypeUID(BINDING_ID, "homie300");
 
-    public static final String CONFIG_HOMIE_CHANNEL = "mqtt:homie_channel";
+    public static final String CONFIG_HOMIE_CHANNEL = "channel-type:mqtt:homie-channel";
 
     public static final String HOMIE_PROPERTY_VERSION = "homieversion";
     public static final String HOMIE_PROPERTY_HEARTBEAT_INTERVAL = "heartbeat_interval";
