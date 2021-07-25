@@ -68,10 +68,7 @@
 				"friendlyName": "Shutdown Timer",
 				"channel": "delayoff",
 				"type": "Number:Time",
-				"unit": "minutes",
-				"stateDescription": {
-					"pattern": "%.0f %unit%"
-				},
+				"unit": "seconds",
 				"refresh": true,
 				"actions": [
 					{
