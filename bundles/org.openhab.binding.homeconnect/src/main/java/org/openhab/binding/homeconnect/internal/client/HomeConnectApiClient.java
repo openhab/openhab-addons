@@ -19,11 +19,9 @@ import static org.openhab.binding.homeconnect.internal.client.HttpHelper.*;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -79,7 +77,6 @@ public class HomeConnectApiClient {
     private final Logger logger = LoggerFactory.getLogger(HomeConnectApiClient.class);
     private final HttpClient client;
     private final String apiUrl;
-    private final Map<String, List<AvailableProgram>> programsCache;
     private final OAuthClientService oAuthClientService;
     private final CircularQueue<ApiRequest> communicationQueue;
     private final ApiBridgeConfiguration apiBridgeConfiguration;
@@ -90,7 +87,6 @@ public class HomeConnectApiClient {
         this.oAuthClientService = oAuthClientService;
         this.apiBridgeConfiguration = apiBridgeConfiguration;
 
-        programsCache = new ConcurrentHashMap<>();
         apiUrl = simulated ? API_SIMULATOR_BASE_URL : API_BASE_URL;
         communicationQueue = new CircularQueue<>(COMMUNICATION_QUEUE_SIZE);
         if (apiRequestHistory != null) {
@@ -610,16 +606,7 @@ public class HomeConnectApiClient {
 
     public List<AvailableProgram> getPrograms(String haId)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
-        List<AvailableProgram> programs;
-        if (programsCache.containsKey(haId)) {
-            logger.debug("Returning cached programs for '{}'.", haId);
-            programs = programsCache.get(haId);
-            programs = programs != null ? programs : Collections.emptyList();
-        } else {
-            programs = getAvailablePrograms(haId, BASE_PATH + haId + "/programs");
-            programsCache.put(haId, programs);
-        }
-        return programs;
+        return getAvailablePrograms(haId, BASE_PATH + haId + "/programs");
     }
 
     public List<AvailableProgram> getAvailablePrograms(String haId)
