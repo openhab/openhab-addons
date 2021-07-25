@@ -25,7 +25,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link Status} is responsible for storing
- * Status information returned by vehicle status rest answer
+ * Door Status informations returned by vehicule status rest answer
  *
  * @author Gaël L'hopital - Initial contribution
  */
