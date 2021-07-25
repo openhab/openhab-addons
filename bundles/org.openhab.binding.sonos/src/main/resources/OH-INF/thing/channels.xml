@@ -53,7 +53,6 @@
 			<options>
 				<option value="noSignal">No Signal</option>
 				<option value="silence">Silence</option>
-				<option value="silence20">Silence 2.0</option>
 				<option value="DTS">DTS</option>
 				<option value="dolbyAtmos">Dolby Atmos</option>
 				<option value="DD20">Dolby Digital 2.0</option>
@@ -62,6 +61,7 @@
 				<option value="DDPlus51">Dolby Digital Plus 5.1</option>
 				<option value="PCM51">Dolby Multichannel PCM 5.1</option>
 			</options>
+			<limitToOptions>false</limitToOptions>
 		</state>
 	</channel-type>
 
