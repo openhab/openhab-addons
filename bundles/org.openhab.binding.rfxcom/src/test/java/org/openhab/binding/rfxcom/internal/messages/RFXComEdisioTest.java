@@ -29,6 +29,6 @@ public class RFXComEdisioTest {
     @Test
     public void checkNotImplemented() {
         assertThrows(RFXComMessageNotImplementedException.class,
-                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(EDISIO, null, null, null));
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(EDISIO));
     }
 }

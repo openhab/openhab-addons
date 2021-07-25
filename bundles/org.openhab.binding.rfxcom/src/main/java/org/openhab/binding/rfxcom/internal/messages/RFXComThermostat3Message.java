@@ -19,9 +19,7 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComThermostat3Mess
 import java.util.Arrays;
 import java.util.List;
 
-import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
@@ -154,8 +152,7 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
     }
 
     @Override
-    public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
-            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_COMMAND:
                 switch (command) {
@@ -205,7 +202,7 @@ public class RFXComThermostat3Message extends RFXComDeviceMessageImpl<RFXComTher
                 return command == null ? UnDefType.UNDEF : StringType.valueOf(command.toString());
 
             default:
-                return super.convertToState(channelId, config, deviceState);
+                return super.convertToState(channelId, deviceState);
         }
     }
 

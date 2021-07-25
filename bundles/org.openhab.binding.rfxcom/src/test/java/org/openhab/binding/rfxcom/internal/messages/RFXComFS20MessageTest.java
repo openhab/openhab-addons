@@ -30,6 +30,6 @@ public class RFXComFS20MessageTest {
     @Test
     public void checkNotImplemented() {
         assertThrows(RFXComMessageNotImplementedException.class,
-                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.FS20, null, null, null));
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.FS20));
     }
 }

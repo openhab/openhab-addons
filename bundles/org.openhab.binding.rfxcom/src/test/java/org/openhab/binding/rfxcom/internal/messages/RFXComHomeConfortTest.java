@@ -13,16 +13,13 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.openhab.binding.rfxcom.internal.RFXComTestHelper.commandChannelUID;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.HOME_CONFORT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.rfxcom.internal.config.RFXComGenericDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.messages.RFXComHomeConfortMessage.Commands;
 import org.openhab.binding.rfxcom.internal.messages.RFXComHomeConfortMessage.SubType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.types.Command;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -32,21 +29,19 @@ import org.openhab.core.util.HexUtils;
  * @author Mike Jagdis - added message handling and real test
  */
 @NonNullByDefault
-public class RFXComHomeConfortMessageTest {
-    private void testMessage(SubType subType, Command command, String deviceId, String data) throws RFXComException {
-        RFXComGenericDeviceConfiguration config = new RFXComGenericDeviceConfiguration();
-
-        config.deviceId = deviceId;
-        config.subType = subType.toString();
-
+public class RFXComHomeConfortTest {
+    private void testMessage(SubType subType, Commands command, String deviceId, String data) throws RFXComException {
         RFXComHomeConfortMessage message = (RFXComHomeConfortMessage) RFXComMessageFactoryImpl.INSTANCE
-                .createMessage(HOME_CONFORT, config, commandChannelUID, command);
+                .createMessage(HOME_CONFORT);
+        message.setSubType(subType);
+        message.command = command;
+        message.setDeviceId(deviceId);
 
         assertArrayEquals(HexUtils.hexToBytes(data), message.decodeMessage());
     }
 
     @Test
     public void testMessage1() throws RFXComException {
-        testMessage(SubType.TEL_010, OnOffType.ON, "1118739.A.4", "0C1B0000111213410401000000");
+        testMessage(SubType.TEL_010, Commands.GROUP_ON, "1118739.A.4", "0C1B0000111213410403000000");
     }
 }

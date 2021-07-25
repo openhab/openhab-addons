@@ -14,8 +14,6 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.CHANNEL_BATTERY_LEVEL;
 
-import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 import org.openhab.core.library.types.DecimalType;
@@ -38,14 +36,13 @@ abstract class RFXComBatteryDeviceMessage<T> extends RFXComDeviceMessageImpl<T> 
     }
 
     @Override
-    public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
-            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_BATTERY_LEVEL:
                 return convertBatteryLevelToSystemWideLevel(batteryLevel);
 
             default:
-                return super.convertToState(channelId, config, deviceState);
+                return super.convertToState(channelId, deviceState);
         }
     }
 

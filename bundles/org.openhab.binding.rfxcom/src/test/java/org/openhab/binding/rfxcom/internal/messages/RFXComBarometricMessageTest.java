@@ -29,6 +29,6 @@ public class RFXComBarometricMessageTest {
     @Test
     public void checkNotImplemented() {
         assertThrows(RFXComMessageNotImplementedException.class,
-                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.BAROMETRIC, null, null, null));
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.BAROMETRIC));
     }
 }

@@ -20,9 +20,7 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting2Messag
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
@@ -175,8 +173,7 @@ public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighti
     }
 
     @Override
-    public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
-            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_DIMMING_LEVEL:
                 return RFXComLighting2Message.getPercentTypeFromDimLevel(dimmingLevel);
@@ -214,7 +211,7 @@ public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighti
                 }
 
             default:
-                return super.convertToState(channelId, config, deviceState);
+                return super.convertToState(channelId, deviceState);
         }
     }
 

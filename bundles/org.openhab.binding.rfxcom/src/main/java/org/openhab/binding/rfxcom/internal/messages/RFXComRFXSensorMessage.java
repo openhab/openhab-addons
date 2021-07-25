@@ -18,9 +18,7 @@ import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte
 
 import java.math.BigDecimal;
 
-import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
@@ -203,8 +201,7 @@ public class RFXComRFXSensorMessage extends RFXComDeviceMessageImpl<RFXComRFXSen
     }
 
     @Override
-    public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
-            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_TEMPERATURE:
                 return subType == SubType.TEMPERATURE ? getTemperature() : null;
@@ -222,7 +219,7 @@ public class RFXComRFXSensorMessage extends RFXComDeviceMessageImpl<RFXComRFXSen
                 return subType == SubType.A_D ? handlePressure(deviceState) : null;
 
             default:
-                return super.convertToState(channelId, config, deviceState);
+                return super.convertToState(channelId, deviceState);
         }
     }
 

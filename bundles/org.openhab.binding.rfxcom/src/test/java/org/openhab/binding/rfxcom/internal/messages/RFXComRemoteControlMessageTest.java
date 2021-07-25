@@ -29,6 +29,6 @@ public class RFXComRemoteControlMessageTest {
     @Test
     public void checkNotImplemented() {
         assertThrows(RFXComMessageNotImplementedException.class,
-                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.REMOTE_CONTROL, null, null, null));
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.REMOTE_CONTROL));
     }
 }

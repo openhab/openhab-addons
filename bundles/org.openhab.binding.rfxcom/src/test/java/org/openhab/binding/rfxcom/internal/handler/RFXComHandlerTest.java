@@ -15,7 +15,6 @@ package org.openhab.binding.rfxcom.internal.handler;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.rfxcom.internal.RFXComTestHelper.*;
 
 import java.util.Map;
 
@@ -42,6 +41,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.Command;
 
@@ -52,6 +53,10 @@ import org.openhab.core.types.Command;
  */
 @ExtendWith(MockitoExtension.class)
 public class RFXComHandlerTest {
+
+    static ThingUID bridgeUID = new ThingUID("rfxcom", "tcpbridge", "rfxtrx0");
+    static ThingUID thingUID = new ThingUID("rfxcom", bridgeUID, "mocked");
+    static ThingTypeUID thingTypeUID = new ThingTypeUID("rfxcom", "raw");
 
     @Mock
     Bridge bridge;
@@ -109,10 +114,10 @@ public class RFXComHandlerTest {
 
     private RFXComGenericDeviceConfiguration sendMessageToGetConfig(String channel, Command command)
             throws RFXComException {
+        when(messageFactory.createMessage(any(PacketType.class))).thenReturn(message);
         ChannelUID cuid = new ChannelUID(thing.getUID(), channel);
         handler.handleCommand(cuid, command);
-        verify(messageFactory).createMessage(any(PacketType.class), deviceConfigurationCaptor.capture(), eq(cuid),
-                eq(command));
+        verify(message).setConfig(deviceConfigurationCaptor.capture());
         return deviceConfigurationCaptor.getValue();
     }
 

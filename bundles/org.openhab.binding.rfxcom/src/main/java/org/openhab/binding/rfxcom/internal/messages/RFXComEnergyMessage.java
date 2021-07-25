@@ -15,9 +15,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
-import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
@@ -147,8 +145,7 @@ public class RFXComEnergyMessage extends RFXComBatteryDeviceMessage<RFXComEnergy
     }
 
     @Override
-    public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
-            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_INSTANT_POWER:
                 return new DecimalType(instantPower);
@@ -163,7 +160,7 @@ public class RFXComEnergyMessage extends RFXComBatteryDeviceMessage<RFXComEnergy
                 return new DecimalType(totalAmpHour);
 
             default:
-                return super.convertToState(channelId, config, deviceState);
+                return super.convertToState(channelId, deviceState);
         }
     }
 
