@@ -41,7 +41,6 @@ import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
-import org.openhab.binding.homematic.internal.type.HomematicChannelTypeProvider;
 import org.openhab.binding.homematic.internal.type.HomematicTypeGeneratorImpl;
 import org.openhab.binding.homematic.internal.type.MetadataUtils;
 import org.openhab.binding.homematic.internal.type.UidUtils;
@@ -58,8 +57,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.type.ChannelType;
-import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -73,14 +70,12 @@ import org.slf4j.LoggerFactory;
  */
 public class HomematicThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HomematicThingHandler.class);
-    private final HomematicChannelTypeProvider channelTypeProvider;
     private Future<?> initFuture;
     private final Object initLock = new Object();
     private volatile boolean deviceDeletionPending = false;
 
-    public HomematicThingHandler(Thing thing, HomematicChannelTypeProvider channelTypeProvider) {
+    public HomematicThingHandler(Thing thing) {
         super(thing);
-        this.channelTypeProvider = channelTypeProvider;
     }
 
     @Override
@@ -201,17 +196,10 @@ public class HomematicThingHandler extends BaseThingHandler {
                 Map<String, String> channelProps = new HashMap<>();
                 channelProps.put(propertyName, expectedFunction);
 
-                ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
-                ChannelType channelType = channelTypeProvider.getInternalChannelType(channelTypeUID);
-                if (channelType == null) {
-                    channelType = HomematicTypeGeneratorImpl.createChannelType(dp, channelTypeUID);
-                    channelTypeProvider.addChannelType(channelType);
-                }
-
                 Channel thingChannel = ChannelBuilder.create(channelUID, MetadataUtils.getItemType(dp))
                         .withProperties(channelProps).withLabel(MetadataUtils.getLabel(dp))
-                        .withDescription(MetadataUtils.getDatapointDescription(dp)).withType(channelType.getUID())
-                        .build();
+                        .withDescription(MetadataUtils.getDatapointDescription(dp))
+                        .withType(UidUtils.generateChannelTypeUID(dp)).build();
                 thingChannels.add(thingChannel);
                 changed = true;
             }
