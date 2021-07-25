@@ -69,7 +69,7 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
     private boolean fetchModels() {
         logger.trace("Searching for {} registration", config.mac);
         this.wifiReg = getRouterOs().findWirelessRegistration(config.mac);
-        if (!config.ssid.isBlank() && !config.ssid.equalsIgnoreCase(wifiReg.getSSID())) {
+        if (this.wifiReg != null && !config.ssid.isBlank() && !config.ssid.equalsIgnoreCase(wifiReg.getSSID())) {
             this.wifiReg = null;
         }
 
