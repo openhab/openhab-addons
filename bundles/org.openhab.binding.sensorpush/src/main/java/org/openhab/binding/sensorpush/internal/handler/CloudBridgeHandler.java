@@ -262,9 +262,7 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
             }
             this.accessToken = accessToken;
             accessTokenInfo = jwtInfo;
-        } catch (
-
-        TimeoutException e) {
+        } catch (TimeoutException e) {
             logger.debug("Timeout sending auth request");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Auth request timeout");
             return;
