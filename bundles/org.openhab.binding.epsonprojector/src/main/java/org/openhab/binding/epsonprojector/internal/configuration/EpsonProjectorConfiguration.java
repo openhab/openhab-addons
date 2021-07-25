@@ -41,9 +41,4 @@ public class EpsonProjectorConfiguration {
      * Polling interval to refresh states.
      */
     public int pollingInterval;
-
-    /**
-     * Maximum volume setting of this projector, ie 20, 40, etc.
-     */
-    public int maxVolume = 20;
 }
