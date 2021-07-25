@@ -80,7 +80,6 @@ public class MikrotikBindingConstants {
     public static final String CHANNEL_CONTINUOUS = "continuous";
 
     // PPP interface shared channel list
-    public static final String CHANNEL_UP_TIME = "uptime";
     public static final String CHANNEL_UP_SINCE = "upSince";
 
     // Wireless client channels

@@ -15,7 +15,6 @@
 			<channel id="totalMemory" typeId="totalMemory"/>
 			<channel id="usedMemory" typeId="usedMemory"/>
 			<channel id="cpuLoad" typeId="cpuLoad"/>
-			<channel id="uptime" typeId="uptime"/>
 			<channel id="upSince" typeId="upSince"/>
 		</channels>
 		<properties>
@@ -92,7 +91,6 @@
 			<channel id="registeredClients" typeId="registeredClients"/>
 			<channel id="authorizedClients" typeId="authorizedClients"/>
 			<!-- ppp & vpn interface channels -->
-			<channel id="uptime" typeId="uptime"/>
 			<channel id="upSince" typeId="upSince"/>
 		</channels>
 		<representation-property>name</representation-property>
@@ -118,7 +116,6 @@
 			<channel id="ssid" typeId="ssid"/>
 			<channel id="interface" typeId="interfaceName"/>
 			<channel id="signal" typeId="system.signal-strength"/>
-			<channel id="uptime" typeId="uptime"/>
 			<channel id="upSince" typeId="upSince"/>
 			<channel id="lastSeen" typeId="lastSeen"/>
 			<channel id="txRate" typeId="txRate"/>
@@ -390,13 +387,6 @@
 		<item-type>Number</item-type>
 		<label>Authorized Clients</label>
 		<description>Amount of clients authorized by WiFi interface</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="uptime">
-		<item-type>String</item-type>
-		<label>Uptime</label>
-		<description>Duration while thing is up</description>
 		<state readOnly="true"/>
 	</channel-type>
 

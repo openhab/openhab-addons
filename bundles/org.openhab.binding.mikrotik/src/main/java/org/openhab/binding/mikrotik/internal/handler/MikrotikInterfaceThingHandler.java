@@ -246,8 +246,6 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
         switch (channelID) {
             case MikrotikBindingConstants.CHANNEL_STATE:
                 return StateUtil.stringOrNull(pppCli.getStatus());
-            case MikrotikBindingConstants.CHANNEL_UP_TIME:
-                return StateUtil.stringOrNull(pppCli.getUptime());
             case MikrotikBindingConstants.CHANNEL_UP_SINCE:
                 return StateUtil.timeOrNull(pppCli.getUptimeStart());
             default:
@@ -260,8 +258,6 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
         switch (channelID) {
             case MikrotikBindingConstants.CHANNEL_STATE:
                 return StateUtil.stringOrNull(vpnSrv.getEncoding());
-            case MikrotikBindingConstants.CHANNEL_UP_TIME:
-                return StateUtil.stringOrNull(vpnSrv.getUptime());
             case MikrotikBindingConstants.CHANNEL_UP_SINCE:
                 return StateUtil.timeOrNull(vpnSrv.getUptimeStart());
             default:
@@ -274,8 +270,6 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
         switch (channelID) {
             case MikrotikBindingConstants.CHANNEL_STATE:
                 return StateUtil.stringOrNull(vpnCli.getEncoding());
-            case MikrotikBindingConstants.CHANNEL_UP_TIME:
-                return StateUtil.stringOrNull(vpnCli.getUptime());
             case MikrotikBindingConstants.CHANNEL_UP_SINCE:
                 return StateUtil.timeOrNull(vpnCli.getUptimeStart());
             default:

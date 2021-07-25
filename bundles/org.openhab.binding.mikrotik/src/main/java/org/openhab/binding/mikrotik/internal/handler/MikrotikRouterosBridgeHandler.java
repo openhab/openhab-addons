@@ -234,9 +234,6 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
             newState = UnDefType.NULL;
         } else {
             switch (channelID) {
-                case MikrotikBindingConstants.CHANNEL_UP_TIME:
-                    newState = StateUtil.stringOrNull(rbRes.getUptime());
-                    break;
                 case MikrotikBindingConstants.CHANNEL_UP_SINCE:
                     newState = StateUtil.timeOrNull(rbRes.getUptimeStart());
                     break;

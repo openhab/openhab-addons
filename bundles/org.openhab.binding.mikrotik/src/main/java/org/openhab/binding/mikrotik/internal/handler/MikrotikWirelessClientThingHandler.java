@@ -132,9 +132,6 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
                 case CHANNEL_SSID:
                     newState = StateUtil.stringOrNull(wifiReg.getSSID());
                     break;
-                case CHANNEL_UP_TIME:
-                    newState = StateUtil.stringOrNull(wifiReg.getUptime());
-                    break;
                 case CHANNEL_UP_SINCE:
                     newState = StateUtil.timeOrNull(wifiReg.getUptimeStart());
                     break;
