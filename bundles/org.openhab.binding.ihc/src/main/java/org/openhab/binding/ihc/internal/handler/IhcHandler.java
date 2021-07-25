@@ -202,18 +202,13 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
 
         if (ihc == null) {
-            logger.debug("Connection is not initialized, aborting resource value update for channel '{}'!", channelUID);
+            logger.warn("Connection is not initialized, abort resource value update for channel '{}'!", channelUID);
             return;
         }
 
         if (ihc.getConnectionState() != ConnectionState.CONNECTED) {
-            logger.debug("Connection to controller is not open, aborting resource value update for channel '{}'!",
+            logger.warn("Connection to controller is not open, abort resource value update for channel '{}'!",
                     channelUID);
-            return;
-        }
-
-        if (thing.getStatus() != ThingStatus.ONLINE) {
-            logger.debug("Controller is not ONLINE, aborting resource value update for channel '{}'!", channelUID);
             return;
         }
 
