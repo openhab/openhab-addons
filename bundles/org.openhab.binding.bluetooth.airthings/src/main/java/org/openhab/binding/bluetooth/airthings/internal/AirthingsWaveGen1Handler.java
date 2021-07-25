@@ -63,7 +63,7 @@ public class AirthingsWaveGen1Handler extends AbstractAirthingsHandler {
             switch (readSensor) {
                 case TEMPERATURE:
                     dblResult = intFromBytes(rawdata[0], rawdata[1]) / 100D;
-                    logger.info("Parsed data 1: {}", String.format("[temperature=%.1f °C]", dblResult));
+                    logger.debug("Parsed data 1: {}", String.format("[temperature=%.1f °C]", dblResult));
                     readSensor = ReadSensor.HUMIDITY;
                     logger.debug("Change next readSensor to: {}", readSensor);
                     logger.debug("Update channel 1");
@@ -73,7 +73,7 @@ public class AirthingsWaveGen1Handler extends AbstractAirthingsHandler {
                     break;
                 case HUMIDITY:
                     dblResult = intFromBytes(rawdata[0], rawdata[1]) / 100D;
-                    logger.info("Parsed data 2: {}", String.format("[humidity=%.1f %%rH]", dblResult));
+                    logger.debug("Parsed data 2: {}", String.format("[humidity=%.1f %%rH]", dblResult));
                     readSensor = ReadSensor.RADON_STA;
                     logger.debug("Change next readSensor to: {}", readSensor);
                     logger.debug("Update channel 2");
@@ -82,7 +82,7 @@ public class AirthingsWaveGen1Handler extends AbstractAirthingsHandler {
                     break;
                 case RADON_STA:
                     intResult = intFromBytes(rawdata[0], rawdata[1]);
-                    logger.info("Parsed data 3: {}", String.format("[radonShortTermAvg=%d Bq/m3]", intResult));
+                    logger.debug("Parsed data 3: {}", String.format("[radonShortTermAvg=%d Bq/m3]", intResult));
                     readSensor = ReadSensor.RADON_LTA;
                     logger.debug("Change next readSensor to: {}", readSensor);
                     logger.debug("Update channel 3");
@@ -92,7 +92,7 @@ public class AirthingsWaveGen1Handler extends AbstractAirthingsHandler {
                     break;
                 case RADON_LTA:
                     intResult = intFromBytes(rawdata[0], rawdata[1]);
-                    logger.info("Parsed data 4: {}", String.format("[radonLongTermAvg=%d Bq/m3]", intResult));
+                    logger.debug("Parsed data 4: {}", String.format("[radonLongTermAvg=%d Bq/m3]", intResult));
                     readSensor = ReadSensor.TEMPERATURE;
                     logger.debug("Change next readSensor to: {}", readSensor);
                     logger.debug("Update channel 4");
@@ -102,7 +102,7 @@ public class AirthingsWaveGen1Handler extends AbstractAirthingsHandler {
                     break;
             }
         } else {
-            logger.error("Illegal data structure length '%d'", String.valueOf(rawdata).length());
+            logger.debug("Illegal data structure length '%d'", String.valueOf(rawdata).length());
         }
     }
 
