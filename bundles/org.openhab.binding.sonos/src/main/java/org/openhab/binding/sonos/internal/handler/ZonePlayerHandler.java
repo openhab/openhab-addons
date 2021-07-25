@@ -1479,39 +1479,41 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     public @Nullable String getCodec() {
         String codec = stateMap.get("HTAudioIn");
-        switch (codec) {
-            case "0":
-            case "21":
-                codec = "noSignal";
-                break;
-            case "22":
-            case "33554454":
-                codec = "silence";
-                break;
-            case "32":
-                codec = "DTS";
-                break;
-            case "59":
-            case "63":
-                codec = "dolbyAtmos";
-                break;
-            case "33554434":
-                codec = "DD20";
-                break;
-            case "33554494":
-                codec = "PCM20";
-                break;
-            case "84934713":
-                codec = "DD51";
-                break;
-            case "84934714":
-                codec = "DDPlus51";
-                break;
-            case "84934718":
-                codec = "PCM51";
-                break;
-            default:
-                codec = "Unknown - " + codec;
+        if (codec != null) {
+            switch (codec) {
+                case "0":
+                case "21":
+                    codec = "noSignal";
+                    break;
+                case "22":
+                case "33554454":
+                    codec = "silence";
+                    break;
+                case "32":
+                    codec = "DTS";
+                    break;
+                case "59":
+                case "63":
+                    codec = "dolbyAtmos";
+                    break;
+                case "33554434":
+                    codec = "DD20";
+                    break;
+                case "33554494":
+                    codec = "PCM20";
+                    break;
+                case "84934713":
+                    codec = "DD51";
+                    break;
+                case "84934714":
+                    codec = "DDPlus51";
+                    break;
+                case "84934718":
+                    codec = "PCM51";
+                    break;
+                default:
+                    codec = "Unknown - " + codec;
+            }
         }
         return codec;
     }
