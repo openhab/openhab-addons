@@ -85,31 +85,32 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
     public void playerAdded(SqueezeBoxPlayer player) {
         ThingUID bridgeUID = squeezeBoxServerHandler.getThing().getUID();
 
-        ThingUID thingUID = new ThingUID(SQUEEZEBOXPLAYER_THING_TYPE, bridgeUID, player.macAddress.replace(":", ""));
+        ThingUID thingUID = new ThingUID(SQUEEZEBOXPLAYER_THING_TYPE, bridgeUID,
+                player.getMacAddress().replace(":", ""));
 
         if (!playerThingExists(thingUID)) {
-            logger.debug("player added {} : {} ", player.macAddress, player.name);
+            logger.debug("player added {} : {} ", player.getMacAddress(), player.getName());
 
             Map<String, Object> properties = new HashMap<>(1);
             String representationPropertyName = "mac";
-            properties.put(representationPropertyName, player.macAddress);
+            properties.put(representationPropertyName, player.getMacAddress());
 
             // Added other properties
-            properties.put("modelId", player.model);
-            properties.put("name", player.name);
-            properties.put("uid", player.uuid);
-            properties.put("ip", player.ipAddr);
+            properties.put("modelId", player.getModel());
+            properties.put("name", player.getName());
+            properties.put("uid", player.getUuid());
+            properties.put("ip", player.getIpAddr());
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(representationPropertyName).withBridge(bridgeUID).withLabel(player.name)
-                    .build();
+                    .withRepresentationProperty(representationPropertyName).withBridge(bridgeUID)
+                    .withLabel(player.getName()).build();
 
             thingDiscovered(discoveryResult);
         }
     }
 
     private boolean playerThingExists(ThingUID newThingUID) {
-        return squeezeBoxServerHandler.getThing().getThing(newThingUID) != null;
+        return squeezeBoxServerHandler.getThing().getThing(newThingUID) != null ? true : false;
     }
 
     /**
