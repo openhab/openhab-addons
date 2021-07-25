@@ -54,7 +54,7 @@ public class AirthingsWavePlusHandler extends AbstractAirthingsHandler {
         Map<String, Number> data;
         try {
             data = AirthingsDataParser.parseWavePlusData(is);
-            logger.info("Parsed data: {}", data);
+            logger.debug("Parsed data: {}", data);
             Number humidity = data.get(AirthingsDataParser.HUMIDITY);
             if (humidity != null) {
                 updateState(CHANNEL_ID_HUMIDITY, new QuantityType<Dimensionless>(humidity, Units.PERCENT));
