@@ -60,6 +60,6 @@ public final class CaddxMessageReaderUtil {
      */
     public static CaddxMessage readCaddxMessage(String messageName) {
         byte[] bytes = readRawMessage(messageName);
-        return new CaddxMessage(CaddxMessageContext.NONE, bytes, true);
+        return new CaddxMessage(bytes, true);
     }
 }
