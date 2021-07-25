@@ -74,14 +74,21 @@
 			<bridge-type-ref id="roaming" />
 			<bridge-type-ref id="bluegiga" />
 			<bridge-type-ref id="bluez" />
-		</supported-bridge-type-refs><label>Airthings Wave Gen 1</label><description>Smart Radon Monitor</description><channels>
+		</supported-bridge-type-refs>
+
+		<label>Airthings Wave Gen 1</label>
+		<description>Smart Radon Monitor</description>
+
+		<channels>
 			<channel id="rssi" typeId="rssi" />
 
 			<channel id="humidity" typeId="airthings_humidity" />
 			<channel id="temperature" typeId="airthings_temperature" />
 			<channel id="radon_st_avg" typeId="airthings_radon_st_avg" />
 			<channel id="radon_lt_avg" typeId="airthings_radon_lt_avg" />
-		</channels><config-description>
+		</channels>
+
+		<config-description>
 			<parameter name="address" type="text">
 				<label>Address</label>
 				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
