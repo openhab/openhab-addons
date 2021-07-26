@@ -14,6 +14,8 @@ package org.openhab.binding.teleinfo.internal.data;
 
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -22,6 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Olivier MARCEAU - Initial contribution
  *
  */
+@NonNullByDefault
 public enum FrameType {
     CBETM_SHORT(null),
     CBETM_LONG_BASE(THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID),
@@ -42,13 +45,13 @@ public enum FrameType {
     LSMT(THING_LSMT_ELECTRICITY_METER_TYPE_UID),
     UNKNOWN(null);
 
-    private ThingTypeUID thingTypeUid;
+    private @Nullable ThingTypeUID thingTypeUid;
 
-    FrameType(ThingTypeUID thingTypeUid) {
+    FrameType(@Nullable ThingTypeUID thingTypeUid) {
         this.thingTypeUid = thingTypeUid;
     }
 
-    public ThingTypeUID getThingTypeUid() {
+    public @Nullable ThingTypeUID getThingTypeUid() {
         return thingTypeUid;
     }
 }

@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.teleinfo.internal.reader.io.TeleinfoInputStream;
 import org.openhab.binding.teleinfo.internal.serial.TeleinfoTicMode;
@@ -27,6 +28,7 @@ import org.openhab.binding.teleinfo.util.TestUtils;
  *
  * @author Olivier MARCEAU - Initial contribution
  */
+@NonNullByDefault
 public class FrameUtilTest {
 
     @Test
