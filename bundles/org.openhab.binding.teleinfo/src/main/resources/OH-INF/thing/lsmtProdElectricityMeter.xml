@@ -12,105 +12,11 @@
 		<label>Linky Three-phase producer</label>
 		<description>Three-phase producer Linky Electricity meter in standard mode</description>
 
-		<channels>
-			<channel id="ngtf" typeId="ngtfType"/>
-			<channel id="ltarf" typeId="ltarfType"/>
-			<channel id="east" typeId="eastType"/>
-			<channel id="easf01" typeId="easf01Type"/>
-			<channel id="easf02" typeId="easf02Type"/>
-			<channel id="easf03" typeId="easf03Type"/>
-			<channel id="easf04" typeId="easf04Type"/>
-			<channel id="easf05" typeId="easf05Type"/>
-			<channel id="easf06" typeId="easf06Type"/>
-			<channel id="easf07" typeId="easf07Type"/>
-			<channel id="easf08" typeId="easf08Type"/>
-			<channel id="easf09" typeId="easf09Type"/>
-			<channel id="easf10" typeId="easf10Type"/>
-			<channel id="easd01" typeId="easd01Type"/>
-			<channel id="easd02" typeId="easd02Type"/>
-			<channel id="easd03" typeId="easd03Type"/>
-			<channel id="easd04" typeId="easd04Type"/>
-			<channel id="irms1" typeId="irms1Type"/>
-			<channel id="urms1" typeId="urms1Type"/>
-			<channel id="pref" typeId="prefType"/>
-			<channel id="pcoup" typeId="pcoupType"/>
-			<channel id="sinsts" typeId="sinstsType"/>
-			<channel id="smaxsn" typeId="smaxsnType"/>
-			<channel id="smaxsnMinus1" typeId="smaxsnMinus1Type"/>
-			<channel id="ccasn" typeId="ccasnType"/>
-			<channel id="ccasnMinus1" typeId="ccasnMinus1Type"/>
-			<channel id="umoy1" typeId="umoy1Type"/>
-			<channel id="stge" typeId="stgeType"/>
-			<channel id="dpm1" typeId="dpm1Type"/>
-			<channel id="fpm1" typeId="fpm1Type"/>
-			<channel id="dpm2" typeId="dpm2Type"/>
-			<channel id="fpm2" typeId="fpm2Type"/>
-			<channel id="dpm3" typeId="dpm3Type"/>
-			<channel id="fpm3" typeId="fpm3Type"/>
-			<channel id="msg1" typeId="msg1Type"/>
-			<channel id="msg2" typeId="msg2Type"/>
-			<channel id="prm" typeId="prmType"/>
-			<channel id="relais" typeId="relaisType"/>
-			<channel id="ntarf" typeId="ntarfType"/>
-			<channel id="njourf" typeId="njourfType"/>
-			<channel id="njourfPlus1" typeId="njourfPlus1Type"/>
-			<channel id="pjourfPlus1" typeId="pjourfPlus1Type"/>
-			<channel id="ppointe" typeId="ppointeType"/>
-
-			<channel id="irms2" typeId="irms2Type"/>
-			<channel id="irms3" typeId="irms3Type"/>
-			<channel id="urms2" typeId="urms2Type"/>
-			<channel id="urms3" typeId="urms3Type"/>
-			<channel id="sinsts1" typeId="sinsts1Type"/>
-			<channel id="sinsts2" typeId="sinsts2Type"/>
-			<channel id="sinsts3" typeId="sinsts3Type"/>
-			<channel id="smaxsn1" typeId="smaxsn1Type"/>
-			<channel id="smaxsn2" typeId="smaxsn2Type"/>
-			<channel id="smaxsn3" typeId="smaxsn3Type"/>
-			<channel id="smaxsn1Minus1" typeId="smaxsn1Minus1Type"/>
-			<channel id="smaxsn2Minus1" typeId="smaxsn2Minus1Type"/>
-			<channel id="smaxsn3Minus1" typeId="smaxsn3Minus1Type"/>
-			<channel id="umoy2" typeId="umoy2Type"/>
-			<channel id="umoy3" typeId="umoy3Type"/>
-
-			<channel id="eait" typeId="eaitType"/>
-			<channel id="erq1" typeId="erq1Type"/>
-			<channel id="erq2" typeId="erq2Type"/>
-			<channel id="erq3" typeId="erq3Type"/>
-			<channel id="erq4" typeId="erq4Type"/>
-			<channel id="sinsti" typeId="sinstiType"/>
-			<channel id="smaxin" typeId="smaxinType"/>
-			<channel id="smaxinMinus1" typeId="smaxinMinus1Type"/>
-			<channel id="ccain" typeId="ccainType"/>
-			<channel id="ccainMinus1" typeId="ccainMinus1Type"/>
-
-			<channel id="date" typeId="dateType"/>
-			<channel id="smaxsnDate" typeId="smaxsnDateType"/>
-			<channel id="smaxsnMinus1Date" typeId="smaxsnMinus1DateType"/>
-			<channel id="ccasnDate" typeId="ccasnDateType"/>
-			<channel id="ccasnMinus1Date" typeId="ccasnMinus1DateType"/>
-			<channel id="umoy1Date" typeId="umoy1DateType"/>
-			<channel id="dpm1Date" typeId="dpm1DateType"/>
-			<channel id="fpm1Date" typeId="fpm1DateType"/>
-			<channel id="dpm2Date" typeId="dpm2DateType"/>
-			<channel id="fpm2Date" typeId="fpm2DateType"/>
-			<channel id="dpm3Date" typeId="dpm3DateType"/>
-			<channel id="fpm3Date" typeId="fpm3DateType"/>
-
-			<channel id="smaxinDate" typeId="smaxinDateType"/>
-			<channel id="smaxinMinus1Date" typeId="smaxinMinus1DateType"/>
-			<channel id="ccainDate" typeId="ccainDateType"/>
-			<channel id="ccainMinus1Date" typeId="ccainMinus1DateType"/>
-
-			<channel id="smaxsn1Date" typeId="smaxsn1DateType"/>
-			<channel id="smaxsn2Date" typeId="smaxsn2DateType"/>
-			<channel id="smaxsn3Date" typeId="smaxsn3DateType"/>
-			<channel id="smaxsn1Minus1Date" typeId="smaxsn1Minus1DateType"/>
-			<channel id="smaxsn2Minus1Date" typeId="smaxsn2Minus1DateType"/>
-			<channel id="smaxsn3Minus1Date" typeId="smaxsn3Minus1DateType"/>
-			<channel id="umoy2Date" typeId="umoy2DateType"/>
-			<channel id="umoy3Date" typeId="umoy3DateType"/>
-		</channels>
+		<channel-groups>
+			<channel-group id="commonLSMGroup" typeId="commonLSMGroupType"/>
+			<channel-group id="producerLSMGroup" typeId="producerLSMGroupType"/>
+			<channel-group id="threePhasedLSMGroup" typeId="threePhasedLSMGroupType"/>
+		</channel-groups>
 
 		<config-description-ref uri="binding:teleinfo:adco"/>
 

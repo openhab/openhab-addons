@@ -21,11 +21,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.teleinfo.internal.data.Frame;
 import org.openhab.binding.teleinfo.internal.data.Phase;
 import org.openhab.binding.teleinfo.internal.data.Pricing;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.FrameUtil;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.ValueType;
 import org.openhab.binding.teleinfo.internal.serial.TeleinfoTicMode;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -183,6 +185,16 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
                     }
                 } catch (InvalidFrameException e) {
                     logger.warn("Can not find phase.");
+                }
+            } else {
+                if (frame.getLabelToValues().containsKey(Label.RELAIS)) {
+                    String relaisString = frame.get(Label.RELAIS);
+                    if (relaisString != null) {
+                        boolean[] relaisStates = FrameUtil.parseRelaisStates(relaisString);
+                        for (int i = 0; i <= 7; i++) {
+                            updateState(CHANNELS_LSM_RELAIS[i], OnOffType.from(relaisStates[i]));
+                        }
+                    }
                 }
             }
         } catch (InvalidFrameException e) {

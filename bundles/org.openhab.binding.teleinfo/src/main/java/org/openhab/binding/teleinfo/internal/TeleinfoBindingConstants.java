@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.teleinfo.internal;
 
+import java.util.stream.IntStream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -76,7 +78,7 @@ public class TeleinfoBindingConstants {
     public static final String CHANNEL_CBETM_SHORT_ADIR1 = "adir1";
     public static final String CHANNEL_CBETM_SHORT_ADIR2 = "adir2";
     public static final String CHANNEL_CBETM_SHORT_ADIR3 = "adir3";
-    // List ofLinky standard mode channel ids
+    // List of Linky standard mode channel ids
     public static final String CHANNEL_LSM_NGTF = "ngtf";
     public static final String CHANNEL_LSM_LTARF = "ltarf";
     public static final String CHANNEL_LSM_EAST = "east";
@@ -114,7 +116,8 @@ public class TeleinfoBindingConstants {
     public static final String CHANNEL_LSM_MSG1 = "msg1";
     public static final String CHANNEL_LSM_MSG2 = "msg2";
     public static final String CHANNEL_LSM_PRM = "prm";
-    public static final String CHANNEL_LSM_RELAIS = "relais";
+    public static final String[] CHANNELS_LSM_RELAIS = IntStream.range(1, 9).mapToObj(i -> "relais" + i)
+            .toArray(String[]::new);
     public static final String CHANNEL_LSM_NTARF = "ntarf";
     public static final String CHANNEL_LSM_NJOURF = "njourf";
     public static final String CHANNEL_LSM_NJOURF_PLUS_1 = "njourfPlus1";
