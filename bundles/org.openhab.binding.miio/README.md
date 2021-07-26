@@ -80,9 +80,11 @@ However, for devices that are unsupported, you may override the value and try to
 | model           | text    | false    | Device model string, used to determine the subtype                  |
 | refreshInterval | integer | false    | Refresh interval for refreshing the data in seconds. (0=disabled)   |
 | timeout         | integer | false    | Timeout time in milliseconds                                        |
-| communication   | test    | false    | Communicate direct or via cloud (options values: 'direct', 'cloud') |
+| communication   | text    | false    | Communicate direct or via cloud (options values: 'direct', 'cloud') |
+| cloudServer     | text    | false    | Identifies the country server to use in case of cloud communication |
 
-Note: Suggest to use the cloud communication only for devices that require it. It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
+Note: Suggest to use the cloud communication only for devices that require it. 
+It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
 
 ### Example Thing file
 
@@ -90,7 +92,7 @@ Note: Suggest to use the cloud communication only for devices that require it. I
 
 or in case of unknown models include the model information of a similar device that is supported:
 
-`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId="326xxxx", model="roborock.vacuum.s4", communication="direct" ]`
+`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId="326xxxx", model="roborock.vacuum.s4", communication="direct", cloudServer="de" ]`
 
 # Advanced: Unsupported devices
 
@@ -2863,8 +2865,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorflow            | Switch               | Color Flow                               |            |
 | name                 | String               | Name                                     |            |
 
 ### Mi Bedside Lamp 2 (<a name="yeelink-light-bslamp2">yeelink.light.bslamp2</a>) Channels
@@ -2875,8 +2878,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorflow            | Switch               | Color Flow                               |            |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight Bedside Lamp II (<a name="yeelink-light-bslamp3">yeelink.light.bslamp3</a>) Channels
@@ -2887,8 +2891,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorflow            | Switch               | Color Flow                               |            |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight Ceiling Light (<a name="yeelink-light-ceiling1">yeelink.light.ceiling1</a>) Channels
@@ -2899,7 +2904,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -2912,7 +2917,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -2925,7 +2930,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -2939,7 +2944,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | ambientBrightness    | Dimmer               | Ambient Brightness                       |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | ambientPower         | Switch               | Ambient Power                            |            |
 | ambientColor         | Color                | Ambient Color                            |            |
@@ -2956,7 +2961,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -2969,7 +2974,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -2982,7 +2987,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -2995,7 +3000,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3008,7 +3013,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3021,7 +3026,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3035,7 +3040,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | ambientBrightness    | Dimmer               | Ambient Brightness                       |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | ambientPower         | Switch               | Ambient Power                            |            |
 | ambientColor         | Color                | Ambient Color                            |            |
@@ -3052,7 +3057,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3065,7 +3070,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3078,7 +3083,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3091,7 +3096,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3104,7 +3109,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3117,7 +3122,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3130,7 +3135,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3143,7 +3148,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3156,7 +3161,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3169,7 +3174,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3182,7 +3187,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3195,7 +3200,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3208,7 +3213,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3221,7 +3226,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3234,7 +3239,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3247,7 +3252,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3260,8 +3265,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorflow            | Switch               | Color Flow                               |            |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight LED Bulb (Color) (<a name="yeelink-light-color2">yeelink.light.color2</a>) Channels
@@ -3272,8 +3278,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorflow            | Switch               | Color Flow                               |            |
 | name                 | String               | Name                                     |            |
 
 ### Mi LED Smart Bulb (White and Color) (<a name="yeelink-light-color3">yeelink.light.color3</a>) Channels
@@ -3284,8 +3291,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorflow            | Switch               | Color Flow                               |            |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight LED Bulb 1S（Color） (<a name="yeelink-light-color4">yeelink.light.color4</a>) Channels
@@ -3296,8 +3304,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorflow            | Switch               | Color Flow                               |            |
 | name                 | String               | Name                                     |            |
 
 ### Mi Smart LED Bulb Essential (White and Color) (<a name="yeelink-light-color5">yeelink.light.color5</a>) Channels
@@ -3308,8 +3317,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorflow            | Switch               | Color Flow                               |            |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight Smart LED Bulb 1SE (color) (<a name="yeelink-light-colora">yeelink.light.colora</a>) Channels
@@ -3320,8 +3330,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorflow            | Switch               | Color Flow                               |            |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight LED Bulb (Tunable) (<a name="yeelink-light-ct2">yeelink.light.ct2</a>) Channels
@@ -3332,7 +3343,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Mi LED Desk Lamp (<a name="yeelink-light-lamp1">yeelink.light.lamp1</a>) Channels
@@ -3343,7 +3354,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Mi Smart LED Desk Lamp Pro (<a name="yeelink-light-lamp2">yeelink.light.lamp2</a>) Channels
@@ -3354,7 +3365,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight LED Lamp (<a name="yeelink-light-lamp3">yeelink.light.lamp3</a>) Channels
@@ -3365,7 +3376,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Mi LED Desk Lamp 1S (<a name="yeelink-light-lamp4">yeelink.light.lamp4</a>) Channels
@@ -3376,7 +3387,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight Smart Desk Lamp Prime (<a name="yeelink-light-lamp5">yeelink.light.lamp5</a>) Channels
@@ -3387,7 +3398,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight (<a name="yeelink-light-lamp6">yeelink.light.lamp6</a>) Channels
@@ -3398,7 +3409,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight LED Light Sensor Desk Lamp V1 (<a name="yeelink-light-lamp7">yeelink.light.lamp7</a>) Channels
@@ -3409,7 +3420,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight (<a name="yeelink-light-lamp8">yeelink.light.lamp8</a>) Channels
@@ -3420,7 +3431,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight Star LED Table Lamp (<a name="yeelink-light-lamp9">yeelink.light.lamp9</a>) Channels
@@ -3431,7 +3442,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight Star Floor Lamp (<a name="yeelink-light-lamp10">yeelink.light.lamp10</a>) Channels
@@ -3442,7 +3453,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight Screen Light Bar (<a name="yeelink-light-lamp15">yeelink.light.lamp15</a>) Channels
@@ -3453,7 +3464,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number:Temperature   | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
 | ambientBrightness    | Number               | Ambient Brightness                       |            |
 | ambientPower         | Switch               | Ambient Power                            |            |
@@ -3469,7 +3480,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight White Bulb v2 (<a name="yeelink-light-mono2">yeelink.light.mono2</a>) Channels
@@ -3480,7 +3491,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight LED Bulb 1S（Dimmable） (<a name="yeelink-light-mono4">yeelink.light.mono4</a>) Channels
@@ -3491,7 +3502,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight LED Filament Bulb (<a name="yeelink-light-mono5">yeelink.light.mono5</a>) Channels
@@ -3502,7 +3513,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight Whiteglow Panel Light (<a name="yeelink-light-panel1">yeelink.light.panel1</a>) Channels
@@ -3513,7 +3524,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3526,8 +3537,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorflow            | Switch               | Color Flow                               |            |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight Lightstrip Plus (<a name="yeelink-light-strip2">yeelink.light.strip2</a>) Channels
@@ -3538,8 +3550,9 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | rgbColor             | Color                | RGB Color                                |            |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorflow            | Switch               | Color Flow                               |            |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight Willow LED Lightstrip (<a name="yeelink-light-strip4">yeelink.light.strip4</a>) Channels
@@ -3550,7 +3563,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Light Group (Mi & Yeelight) (<a name="yeelink-light-virtual">yeelink.light.virtual</a>) Channels
@@ -3561,7 +3574,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
 ### Yeelight Smart Dual Control Module (<a name="yeelink-switch-sw1">yeelink.switch.sw1</a>) Channels
@@ -3586,7 +3599,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3599,7 +3612,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -3612,7 +3625,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | brightness           | Dimmer               | Brightness                               |            |
 | delayoff             | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature     | Number               | Color Temperature                        |            |
-| colorMode            | Number               | Color Mode                               | Value mapping `["0"="Default","1"="CT mode","2"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
@@ -7881,8 +7894,9 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -7896,8 +7910,9 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -7911,8 +7926,9 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -8368,8 +8384,9 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -8383,8 +8400,9 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -8398,8 +8416,9 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -8413,8 +8432,9 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -8428,8 +8448,9 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -8443,8 +8464,9 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -8703,8 +8725,9 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -8718,8 +8741,9 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
-Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 

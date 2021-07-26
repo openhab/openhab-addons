@@ -129,16 +129,7 @@ public class MiIoAsyncCommunication {
         }
     }
 
-    public int queueCommand(MiIoCommand command, String cloudServer) throws MiIoCryptoException, IOException {
-        return queueCommand(command, "[]", cloudServer);
-    }
-
-    public int queueCommand(MiIoCommand command, String params, String cloudServer)
-            throws MiIoCryptoException, IOException {
-        return queueCommand(command.getCommand(), params, cloudServer);
-    }
-
-    public int queueCommand(String command, String params, String cloudServer)
+    public int queueCommand(String command, String params, String cloudServer, String sender)
             throws MiIoCryptoException, IOException, JsonSyntaxException {
         try {
             JsonObject fullCommand = new JsonObject();
@@ -146,9 +137,17 @@ public class MiIoAsyncCommunication {
             if (cmdId > MAX_ID) {
                 id.set(0);
             }
-            fullCommand.addProperty("id", cmdId);
-            fullCommand.addProperty("method", command);
-            fullCommand.add("params", JsonParser.parseString(params));
+            if (command.startsWith("{") && command.endsWith("}")) {
+                fullCommand = JsonParser.parseString(command).getAsJsonObject();
+                fullCommand.addProperty("id", cmdId);
+                if (!fullCommand.has("params") && !params.isBlank()) {
+                    fullCommand.add("params", JsonParser.parseString(params));
+                }
+            } else {
+                fullCommand.addProperty("id", cmdId);
+                fullCommand.addProperty("method", command);
+                fullCommand.add("params", JsonParser.parseString(params));
+            }
             MiIoSendCommand sendCmd = new MiIoSendCommand(cmdId, MiIoCommand.getCommand(command), fullCommand,
                     cloudServer);
             concurrentLinkedQueue.add(sendCmd);
@@ -163,7 +162,7 @@ public class MiIoAsyncCommunication {
                 sendPing(ip);
             }
             return cmdId;
-        } catch (JsonSyntaxException e) {
+        } catch (JsonSyntaxException | IllegalStateException e) {
             logger.warn("Send command '{}' with parameters {} -> {} (Device: {}) gave error {}", command, params, ip,
                     deviceId, e.getMessage());
             throw e;
@@ -177,11 +176,24 @@ public class MiIoAsyncCommunication {
             if (miIoSendCommand.getCloudServer().isBlank()) {
                 decryptedResponse = sendCommand(miIoSendCommand.getCommandString(), token, ip, deviceId);
             } else {
-                decryptedResponse = cloudConnector.sendRPCCommand(Utils.getHexId(deviceId),
-                        miIoSendCommand.getCloudServer(), miIoSendCommand);
-                logger.debug("Command {} send via cloudserver {}", miIoSendCommand.getCommandString(),
-                        miIoSendCommand.getCloudServer());
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                if (!miIoSendCommand.getMethod().startsWith("/")) {
+                    decryptedResponse = cloudConnector.sendRPCCommand(Utils.getHexId(deviceId),
+                            miIoSendCommand.getCloudServer(), miIoSendCommand);
+                    logger.debug("Command {} send via cloudserver {}", miIoSendCommand.getCommandString(),
+                            miIoSendCommand.getCloudServer());
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                } else {
+                    String data = miIoSendCommand.getParams().isJsonArray()
+                            && miIoSendCommand.getParams().getAsJsonArray().size() > 0
+                                    ? miIoSendCommand.getParams().getAsJsonArray().get(0).toString()
+                                    : "";
+                    logger.debug("Custom cloud request send to url '{}' with data '{}'", miIoSendCommand.getMethod(),
+                            data);
+                    decryptedResponse = cloudConnector.sendCloudCommand(miIoSendCommand.getMethod(),
+                            miIoSendCommand.getCloudServer(), data);
+                    miIoSendCommand.setResponse(JsonParser.parseString(decryptedResponse).getAsJsonObject());
+                    return miIoSendCommand;
+                }
             }
             // hack due to avoid invalid json errors from some misbehaving device firmwares
             decryptedResponse = decryptedResponse.replace(",,", ",");

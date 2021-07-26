@@ -80,7 +80,10 @@
 				"friendlyName": "Shutdown Timer",
 				"channel": "delayoff",
 				"type": "Number:Time",
-				"unit": "seconds",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -142,11 +145,11 @@
 							"label": "Default"
 						},
 						{
-							"value": "1",
+							"value": "2",
 							"label": "CT mode"
 						},
 						{
-							"value": "2",
+							"value": "1",
 							"label": "RGB mode"
 						},
 						{
@@ -164,8 +167,48 @@
 					]
 				},
 				"refresh": true,
-				"actions": [],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Default\",\"1\"\u003d\"CT mode\",\"2\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\",\"5\"\u003d\"Night Light mode\"]`"
+				"actions": [
+					{
+						"command": "set_rgb",
+						"parameterType": "NONE",
+						"parameters": [
+							"$rgb$",
+							"smooth",
+							500
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "1"
+								}
+							]
+						}
+					},
+					{
+						"command": "set_ct_abx",
+						"parameterType": "NONE",
+						"parameters": [
+							"$ct$",
+							"smooth",
+							500
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "2"
+								}
+							]
+						}
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Note, currently only supporting switching to RGB or CT mode. Value mapping `[\"0\"\u003d\"Default\",\"2\"\u003d\"CT mode\",\"1\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\",\"5\"\u003d\"Night Light mode\"]`"
 			},
 			{
 				"property": "name",

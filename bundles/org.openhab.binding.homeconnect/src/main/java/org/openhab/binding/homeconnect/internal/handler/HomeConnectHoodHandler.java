@@ -206,7 +206,7 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
         if (apiClient.isPresent()) {
             try {
                 ArrayList<StateOption> stateOptions = new ArrayList<>();
-                apiClient.get().getPrograms(getThingHaId()).forEach(availableProgram -> {
+                getPrograms().forEach(availableProgram -> {
                     if (PROGRAM_HOOD_AUTOMATIC.equals(availableProgram.getKey())) {
                         stateOptions.add(new StateOption(COMMAND_AUTOMATIC, mapStringType(availableProgram.getKey())));
                     } else if (PROGRAM_HOOD_DELAYED_SHUT_OFF.equals(availableProgram.getKey())) {
@@ -216,7 +216,7 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
                         try {
                             List<AvailableProgramOption> availableProgramOptions = apiClient.get()
                                     .getProgramOptions(getThingHaId(), PROGRAM_HOOD_VENTING);
-                            if (availableProgramOptions.isEmpty()) {
+                            if (availableProgramOptions == null || availableProgramOptions.isEmpty()) {
                                 throw new CommunicationException("Program " + PROGRAM_HOOD_VENTING + " is unsupported");
                             }
                             availableProgramOptions.forEach(option -> {

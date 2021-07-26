@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="binding:teleinfo:adco">
+	<config-description uri="thing-type:teleinfo:adco">
 		<parameter name="adco" type="text" required="true" pattern="^\w{12}$">
 			<label>ADCO</label>
 			<description>Electricity meter identifier (format: 12 characters / e.g: '031528042289')</description>

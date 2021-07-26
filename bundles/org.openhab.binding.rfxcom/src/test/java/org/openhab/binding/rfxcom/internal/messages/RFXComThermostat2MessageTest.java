@@ -30,6 +30,6 @@ public class RFXComThermostat2MessageTest {
     public void checkNotImplemented() {
         // TODO Note that this message is supported in the 1.9 binding
         assertThrows(RFXComMessageNotImplementedException.class,
-                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.THERMOSTAT2));
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.THERMOSTAT2, null, null, null));
     }
 }

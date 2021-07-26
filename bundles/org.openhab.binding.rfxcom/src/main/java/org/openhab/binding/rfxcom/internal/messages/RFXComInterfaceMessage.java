@@ -271,7 +271,7 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             transceiverType = TransceiverType._UNKNOWN;
             logger.warn(
                     "The transceiver type reported ({}) isn't known to the RFXCom binding. Please raise an issue at https://github.com/openhab/openhab-addons/ to have it included.",
-                    data[5]);
+                    Byte.toUnsignedInt(data[5]));
         }
 
         hardwareVersion1 = data[11];
