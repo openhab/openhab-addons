@@ -61,7 +61,6 @@
 				<option value="DDPlus51">Dolby Digital Plus 5.1</option>
 				<option value="PCM51">Dolby Multichannel PCM 5.1</option>
 			</options>
-			<limitToOptions>false</limitToOptions>
 		</state>
 	</channel-type>
 
