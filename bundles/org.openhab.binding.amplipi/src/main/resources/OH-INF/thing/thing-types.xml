@@ -100,10 +100,10 @@
 		<description>The audio source that is played</description>
 		<state>
 			<options>
-				<option value="1">Input 1</option>
-				<option value="2">Input 2</option>
-				<option value="3">Input 3</option>
-				<option value="4">Input 4</option>
+				<option value="0">Input 1</option>
+				<option value="1">Input 2</option>
+				<option value="2">Input 3</option>
+				<option value="3">Input 4</option>
 			</options>
 		</state>
 	</channel-type>

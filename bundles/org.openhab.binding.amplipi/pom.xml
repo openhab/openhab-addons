@@ -66,14 +66,4 @@
     </plugins>
   </build>
 
-  <dependencies>
-    <!-- CXF Client -->
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-rs-client</artifactId>
-      <version>${cxf-version}</version>
-      <scope>compile</scope>
-    </dependency>
-  </dependencies>
-
 </project>

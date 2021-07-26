@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.amplipi.internal.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -48,7 +46,6 @@ public class StreamUpdate {
      *
      * @return name
      **/
-    @JsonProperty("name")
     public String getName() {
         return name;
     }
@@ -67,7 +64,6 @@ public class StreamUpdate {
      *
      * @return user
      **/
-    @JsonProperty("user")
     public String getUser() {
         return user;
     }
@@ -86,7 +82,6 @@ public class StreamUpdate {
      *
      * @return password
      **/
-    @JsonProperty("password")
     public String getPassword() {
         return password;
     }
@@ -105,7 +100,6 @@ public class StreamUpdate {
      *
      * @return station
      **/
-    @JsonProperty("station")
     public String getStation() {
         return station;
     }
@@ -124,7 +118,6 @@ public class StreamUpdate {
      *
      * @return url
      **/
-    @JsonProperty("url")
     public String getUrl() {
         return url;
     }
@@ -143,7 +136,6 @@ public class StreamUpdate {
      *
      * @return logo
      **/
-    @JsonProperty("logo")
     public String getLogo() {
         return logo;
     }

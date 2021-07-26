@@ -14,8 +14,6 @@ package org.openhab.binding.amplipi.internal.model;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -42,7 +40,6 @@ public class PresetUpdate {
      *
      * @return name
      **/
-    @JsonProperty("name")
     public String getName() {
         return name;
     }
@@ -61,7 +58,6 @@ public class PresetUpdate {
      *
      * @return state
      **/
-    @JsonProperty("state")
     public PresetState getState() {
         return state;
     }
@@ -80,7 +76,6 @@ public class PresetUpdate {
      *
      * @return commands
      **/
-    @JsonProperty("commands")
     public List<Command> getCommands() {
         return commands;
     }

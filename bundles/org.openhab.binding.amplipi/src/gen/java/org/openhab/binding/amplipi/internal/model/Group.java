@@ -15,7 +15,7 @@ package org.openhab.binding.amplipi.internal.model;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -39,6 +39,7 @@ public class Group {
     private String name;
 
     @Schema
+    @SerializedName("source_id")
     /**
      * id of the connected source
      **/
@@ -57,6 +58,7 @@ public class Group {
     private Boolean mute = true;
 
     @Schema
+    @SerializedName("vol_delta")
     /**
      * Average utput volume in dB
      **/
@@ -67,7 +69,6 @@ public class Group {
      *
      * @return id
      **/
-    @JsonProperty("id")
     public Integer getId() {
         return id;
     }
@@ -86,7 +87,6 @@ public class Group {
      *
      * @return name
      **/
-    @JsonProperty("name")
     public String getName() {
         return name;
     }
@@ -107,7 +107,6 @@ public class Group {
      *
      * @return sourceId
      **/
-    @JsonProperty("source_id")
     public Integer getSourceId() {
         return sourceId;
     }
@@ -126,7 +125,6 @@ public class Group {
      *
      * @return zones
      **/
-    @JsonProperty("zones")
     public Set<Integer> getZones() {
         return zones;
     }
@@ -150,7 +148,6 @@ public class Group {
      *
      * @return mute
      **/
-    @JsonProperty("mute")
     public Boolean getMute() {
         return mute;
     }
@@ -171,7 +168,6 @@ public class Group {
      *
      * @return volDelta
      **/
-    @JsonProperty("vol_delta")
     public Integer getVolDelta() {
         return volDelta;
     }

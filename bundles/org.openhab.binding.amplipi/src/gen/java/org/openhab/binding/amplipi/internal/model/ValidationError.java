@@ -15,8 +15,6 @@ package org.openhab.binding.amplipi.internal.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public class ValidationError {
@@ -35,7 +33,6 @@ public class ValidationError {
      *
      * @return loc
      **/
-    @JsonProperty("loc")
     public List<String> getLoc() {
         return loc;
     }
@@ -59,7 +56,6 @@ public class ValidationError {
      *
      * @return msg
      **/
-    @JsonProperty("msg")
     public String getMsg() {
         return msg;
     }
@@ -78,7 +74,6 @@ public class ValidationError {
      *
      * @return type
      **/
-    @JsonProperty("type")
     public String getType() {
         return type;
     }

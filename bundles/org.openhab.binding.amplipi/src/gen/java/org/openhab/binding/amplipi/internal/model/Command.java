@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.amplipi.internal.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -23,6 +23,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class Command {
 
     @Schema(required = true)
+    @SerializedName("stream_id")
     /**
      * Stream to execute the command on
      **/
@@ -39,7 +40,6 @@ public class Command {
      *
      * @return streamId
      **/
-    @JsonProperty("stream_id")
     public Integer getStreamId() {
         return streamId;
     }
@@ -58,7 +58,6 @@ public class Command {
      *
      * @return cmd
      **/
-    @JsonProperty("cmd")
     public String getCmd() {
         return cmd;
     }

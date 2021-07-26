@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.amplipi.internal.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -87,7 +85,6 @@ public class Stream {
      *
      * @return id
      **/
-    @JsonProperty("id")
     public Integer getId() {
         return id;
     }
@@ -106,7 +103,6 @@ public class Stream {
      *
      * @return name
      **/
-    @JsonProperty("name")
     public String getName() {
         return name;
     }
@@ -125,7 +121,6 @@ public class Stream {
      *
      * @return type
      **/
-    @JsonProperty("type")
     public String getType() {
         return type;
     }
@@ -144,7 +139,6 @@ public class Stream {
      *
      * @return user
      **/
-    @JsonProperty("user")
     public String getUser() {
         return user;
     }
@@ -163,7 +157,6 @@ public class Stream {
      *
      * @return password
      **/
-    @JsonProperty("password")
     public String getPassword() {
         return password;
     }
@@ -182,7 +175,6 @@ public class Stream {
      *
      * @return station
      **/
-    @JsonProperty("station")
     public String getStation() {
         return station;
     }
@@ -201,7 +193,6 @@ public class Stream {
      *
      * @return url
      **/
-    @JsonProperty("url")
     public String getUrl() {
         return url;
     }
@@ -220,7 +211,6 @@ public class Stream {
      *
      * @return logo
      **/
-    @JsonProperty("logo")
     public String getLogo() {
         return logo;
     }
@@ -239,7 +229,6 @@ public class Stream {
      *
      * @return info
      **/
-    @JsonProperty("info")
     public Object getInfo() {
         return info;
     }
@@ -258,7 +247,6 @@ public class Stream {
      *
      * @return status
      **/
-    @JsonProperty("status")
     public String getStatus() {
         return status;
     }

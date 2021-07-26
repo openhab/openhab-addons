@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.amplipi.internal.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -35,6 +35,7 @@ public class Zone {
     private String name;
 
     @Schema
+    @SerializedName("source_id")
     /**
      * id of the connected source
      **/
@@ -63,7 +64,6 @@ public class Zone {
      *
      * @return id
      **/
-    @JsonProperty("id")
     public Integer getId() {
         return id;
     }
@@ -82,7 +82,6 @@ public class Zone {
      *
      * @return name
      **/
-    @JsonProperty("name")
     public String getName() {
         return name;
     }
@@ -103,7 +102,6 @@ public class Zone {
      *
      * @return sourceId
      **/
-    @JsonProperty("source_id")
     public Integer getSourceId() {
         return sourceId;
     }
@@ -122,7 +120,6 @@ public class Zone {
      *
      * @return mute
      **/
-    @JsonProperty("mute")
     public Boolean getMute() {
         return mute;
     }
@@ -143,7 +140,6 @@ public class Zone {
      *
      * @return vol
      **/
-    @JsonProperty("vol")
     public Integer getVol() {
         return vol;
     }
@@ -162,7 +158,6 @@ public class Zone {
      *
      * @return disabled
      **/
-    @JsonProperty("disabled")
     public Boolean getDisabled() {
         return disabled;
     }

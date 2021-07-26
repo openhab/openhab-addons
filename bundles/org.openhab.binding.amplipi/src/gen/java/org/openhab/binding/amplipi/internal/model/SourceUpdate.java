@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.amplipi.internal.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -36,7 +34,6 @@ public class SourceUpdate {
      *
      * @return name
      **/
-    @JsonProperty("name")
     public String getName() {
         return name;
     }
@@ -55,7 +52,6 @@ public class SourceUpdate {
      *
      * @return input
      **/
-    @JsonProperty("input")
     public String getInput() {
         return input;
     }

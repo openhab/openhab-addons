@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.amplipi.internal.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -29,35 +29,35 @@ public class ZoneUpdate {
     private String name;
 
     @Schema
+    @SerializedName("source_id")
     /**
      * id of the connected source
      **/
-    private Integer sourceId = 0;
+    private Integer sourceId;
 
     @Schema
     /**
      * Set to true if output is muted
      **/
-    private Boolean mute = true;
+    private Boolean mute;
 
     @Schema
     /**
      * Output volume in dB
      **/
-    private Integer vol = -79;
+    private Integer vol;
 
     @Schema
     /**
      * Set to true if not connected to a speaker
      **/
-    private Boolean disabled = false;
+    private Boolean disabled;
 
     /**
      * Friendly name
      *
      * @return name
      **/
-    @JsonProperty("name")
     public String getName() {
         return name;
     }
@@ -78,7 +78,6 @@ public class ZoneUpdate {
      *
      * @return sourceId
      **/
-    @JsonProperty("source_id")
     public Integer getSourceId() {
         return sourceId;
     }
@@ -97,7 +96,6 @@ public class ZoneUpdate {
      *
      * @return mute
      **/
-    @JsonProperty("mute")
     public Boolean getMute() {
         return mute;
     }
@@ -118,7 +116,6 @@ public class ZoneUpdate {
      *
      * @return vol
      **/
-    @JsonProperty("vol")
     public Integer getVol() {
         return vol;
     }
@@ -137,7 +134,6 @@ public class ZoneUpdate {
      *
      * @return disabled
      **/
-    @JsonProperty("disabled")
     public Boolean getDisabled() {
         return disabled;
     }

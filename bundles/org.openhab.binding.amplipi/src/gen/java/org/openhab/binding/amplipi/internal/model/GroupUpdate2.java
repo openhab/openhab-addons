@@ -14,7 +14,7 @@ package org.openhab.binding.amplipi.internal.model;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -34,6 +34,7 @@ public class GroupUpdate2 {
     /**
      * id of the connected source
      **/
+    @SerializedName("source_id")
     private Integer sourceId = 0;
 
     @Schema
@@ -49,8 +50,9 @@ public class GroupUpdate2 {
     private Boolean mute = true;
 
     @Schema
+    @SerializedName("vol_delta")
     /**
-     * Average utput volume in dB
+     * Average output volume in dB
      **/
     private Integer volDelta = -79;
 
@@ -62,7 +64,6 @@ public class GroupUpdate2 {
      *
      * @return name
      **/
-    @JsonProperty("name")
     public String getName() {
         return name;
     }
@@ -83,7 +84,6 @@ public class GroupUpdate2 {
      *
      * @return sourceId
      **/
-    @JsonProperty("source_id")
     public Integer getSourceId() {
         return sourceId;
     }
@@ -102,7 +102,6 @@ public class GroupUpdate2 {
      *
      * @return zones
      **/
-    @JsonProperty("zones")
     public List<Integer> getZones() {
         return zones;
     }
@@ -126,7 +125,6 @@ public class GroupUpdate2 {
      *
      * @return mute
      **/
-    @JsonProperty("mute")
     public Boolean getMute() {
         return mute;
     }
@@ -141,13 +139,12 @@ public class GroupUpdate2 {
     }
 
     /**
-     * Average utput volume in dB
+     * Average output volume in dB
      * minimum: -79
      * maximum: 0
      *
      * @return volDelta
      **/
-    @JsonProperty("vol_delta")
     public Integer getVolDelta() {
         return volDelta;
     }
@@ -166,7 +163,6 @@ public class GroupUpdate2 {
      *
      * @return id
      **/
-    @JsonProperty("id")
     public Integer getId() {
         return id;
     }

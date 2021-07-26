@@ -14,7 +14,7 @@ package org.openhab.binding.amplipi.internal.model;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -44,6 +44,7 @@ public class Preset {
     private List<Command> commands = null;
 
     @Schema
+    @SerializedName("last_used")
     private Integer lastUsed;
 
     /**
@@ -51,7 +52,6 @@ public class Preset {
      *
      * @return id
      **/
-    @JsonProperty("id")
     public Integer getId() {
         return id;
     }
@@ -70,7 +70,6 @@ public class Preset {
      *
      * @return name
      **/
-    @JsonProperty("name")
     public String getName() {
         return name;
     }
@@ -89,7 +88,6 @@ public class Preset {
      *
      * @return state
      **/
-    @JsonProperty("state")
     public PresetState getState() {
         return state;
     }
@@ -108,7 +106,6 @@ public class Preset {
      *
      * @return commands
      **/
-    @JsonProperty("commands")
     public List<Command> getCommands() {
         return commands;
     }
@@ -132,7 +129,6 @@ public class Preset {
      *
      * @return lastUsed
      **/
-    @JsonProperty("last_used")
     public Integer getLastUsed() {
         return lastUsed;
     }
