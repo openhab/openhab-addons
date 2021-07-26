@@ -26,7 +26,9 @@ import org.openhab.binding.orbitbhyve.internal.model.OrbitBhyveZone;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -79,9 +81,12 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
                 handler.stopWatering(deviceId);
                 return;
             }
-            if (CHANNEL_WATERING_TIME.equals(channelUID.getId()) && command instanceof DecimalType) {
-                wateringTime = ((DecimalType) command).intValue();
-                updateState(CHANNEL_WATERING_TIME, (DecimalType) command);
+            if (CHANNEL_WATERING_TIME.equals(channelUID.getId()) && command instanceof QuantityType) {
+                final QuantityType<?> value = ((QuantityType<?>) command).toUnit(Units.MINUTE);
+                if (value != null) {
+                    wateringTime = value.intValue();
+                    updateState(CHANNEL_WATERING_TIME, new DecimalType(wateringTime));
+                }
                 return;
             }
             if (channelUID.getId().startsWith("zone")) {
@@ -107,7 +112,11 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
                 return;
             }
             if (CHANNEL_RAIN_DELAY.equals(channelUID.getId()) && command instanceof DecimalType) {
-                handler.setRainDelay(deviceId, ((DecimalType) command).intValue());
+                final QuantityType<?> value = ((QuantityType<?>) command).toUnit(Units.HOUR);
+                if (value != null) {
+                    handler.setRainDelay(deviceId, value.intValue());
+                }
+
             }
         }
     }

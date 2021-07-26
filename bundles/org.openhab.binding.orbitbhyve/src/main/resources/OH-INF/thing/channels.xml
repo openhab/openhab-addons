@@ -23,7 +23,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="rain_delay">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Rain Delay</label>
 		<description>Channel representing rain delay in hours</description>
 		<state pattern="%d h"></state>

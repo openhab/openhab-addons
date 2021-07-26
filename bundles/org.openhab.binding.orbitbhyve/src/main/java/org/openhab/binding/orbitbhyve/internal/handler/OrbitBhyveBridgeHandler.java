@@ -79,8 +79,6 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
 
     private @Nullable ScheduledFuture<?> future = null;
 
-    private @Nullable ScheduledFuture<?> statusFuture = null;
-
     private @Nullable Session session;
 
     private @Nullable String sessionToken = null;
@@ -127,10 +125,6 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
     @Override
     public void dispose() {
         ScheduledFuture<?> localFuture = future;
-        if (localFuture != null) {
-            localFuture.cancel(true);
-        }
-        localFuture = statusFuture;
         if (localFuture != null) {
             localFuture.cancel(true);
         }
@@ -186,6 +180,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 try {
                     logger.debug("Sending ping");
                     localSession.getRemote().sendString("{\"event\":\"ping\"}");
+                    updateAllStatuses();
                 } catch (IOException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Error sending ping to a web socket");
@@ -290,10 +285,10 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 if (ch != null) {
                     updateState(ch.getUID(), "off".equals(event.getMode()) ? OnOffType.OFF : OnOffType.ON);
                 }
-                deferredStatusUpdate(event.getDeviceId());
+                updateDeviceStatus(event.getDeviceId());
                 break;
             case "rain_delay":
-                deferredStatusUpdate(event.getDeviceId());
+                updateDeviceStatus(event.getDeviceId());
                 break;
             case "skip_active_station":
                 disableZones(event.getDeviceId());
@@ -302,7 +297,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 OrbitBhyveProgram program = gson.fromJson(event.getProgram(), OrbitBhyveProgram.class);
                 if (program != null) {
                     updateDeviceProgramStatus(program);
-                    deferredStatusUpdate(program.getDeviceId());
+                    updateDeviceStatus(program.getDeviceId());
                 }
                 break;
             default:
@@ -310,12 +305,26 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
         }
     }
 
-    private void deferredStatusUpdate(String deviceId) {
-        ScheduledFuture<?> localFuture = statusFuture;
-        if (localFuture != null) {
-            localFuture.cancel(true);
+    private void updateAllStatuses() {
+        List<OrbitBhyveDevice> devices = getDevices();
+        for (Thing th : getThing().getThings()) {
+            String deviceId = th.getUID().getId();
+            OrbitBhyveSprinklerHandler handler = (OrbitBhyveSprinklerHandler) th.getHandler();
+            for (OrbitBhyveDevice device : devices) {
+                if (deviceId.equals(th.getUID().getId())) {
+                    updateDeviceStatus(device, handler);
+                }
+            }
         }
-        statusFuture = scheduler.schedule(() -> updateDeviceStatus(deviceId), 3, TimeUnit.SECONDS);
+    }
+
+    private void updateDeviceStatus(@Nullable OrbitBhyveDevice device, @Nullable OrbitBhyveSprinklerHandler handler) {
+        if (device != null && handler != null) {
+            handler.setDeviceOnline(device.isConnected());
+            handler.updateDeviceStatus(device.getStatus());
+            handler.updateSmartWatering(device.getWaterSenseMode());
+            return;
+        }
     }
 
     private void updateDeviceStatus(String deviceId) {
@@ -323,12 +332,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
             if (deviceId.equals(th.getUID().getId())) {
                 OrbitBhyveSprinklerHandler handler = (OrbitBhyveSprinklerHandler) th.getHandler();
                 OrbitBhyveDevice device = getDevice(deviceId);
-                if (device != null && handler != null) {
-                    handler.setDeviceOnline(device.isConnected());
-                    handler.updateDeviceStatus(device.getStatus());
-                    handler.updateSmartWatering(device.getWaterSenseMode());
-                    return;
-                }
+                updateDeviceStatus(device, handler);
             }
         }
     }

@@ -17,7 +17,7 @@
 		</parameter>
 		<parameter name="refresh" type="integer" required="false" min="10">
 			<label>Refresh</label>
-			<description>Specifies the refresh time in seconds for polling events from Orbit cloud</description>
+			<description>Specifies the refresh time in seconds for polling data from Orbit cloud</description>
 			<default>30</default>
 		</parameter>
 	</config-description>

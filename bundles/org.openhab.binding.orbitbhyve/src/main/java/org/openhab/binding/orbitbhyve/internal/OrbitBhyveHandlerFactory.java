@@ -15,7 +15,6 @@ package org.openhab.binding.orbitbhyve.internal;
 import static org.openhab.binding.orbitbhyve.internal.OrbitBhyveBindingConstants.THING_TYPE_BRIDGE;
 import static org.openhab.binding.orbitbhyve.internal.OrbitBhyveBindingConstants.THING_TYPE_SPRINKLER;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -48,7 +47,7 @@ import org.osgi.service.component.annotations.Reference;
 public class OrbitBhyveHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
-            Arrays.asList(THING_TYPE_BRIDGE, THING_TYPE_SPRINKLER));
+            Set.of(THING_TYPE_BRIDGE, THING_TYPE_SPRINKLER));
 
     /**
      * the shared http client
@@ -58,7 +57,7 @@ public class OrbitBhyveHandlerFactory extends BaseThingHandlerFactory {
     /**
      * the shared web socket client
      */
-    private @NonNullByDefault({}) WebSocketClient webSocketClient;
+    private WebSocketClient webSocketClient;
 
     @Activate
     public OrbitBhyveHandlerFactory(@Reference HttpClientFactory httpClientFactory,

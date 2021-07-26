@@ -33,7 +33,7 @@ Beside the dynamic channels each sprinkler thing provides these standard channel
 |----------------|-------------|--------------------------------------------------------------------|
 | mode           | String      | This channel represents the mode of sprinkler device (auto/manual) |
 | next_start     | DateTime    | This channel represents the start time of the next watering        |
-| rain_delay     | Number      | This channel manages the current rain delay in hours               |
+| rain_delay     | Number:Time | This channel manages the current rain delay in hours               |
 | watering_time  | Number:Time | This channel manages the manual zone watering time in minutes      |
 | control        | Switch      | This channel controls the sprinkler (ON/OFF)                       |
 | smart_watering | Switch      | This channel controls the smart watering (ON/OFF)                  |
