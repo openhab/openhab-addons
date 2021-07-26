@@ -1,6 +1,8 @@
-# NADAvr Binding
+# NAD Electronics - Audio/Video Receiver Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+![NAD Electronics](./doc/NAD_logo_red.png)
+
+This binding integrates NAD A/V Receivers by using Telnet over either an Ethernet or serial RS-323 interface.
 
 _If possible, provide some resources like pictures, a video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
 
