@@ -32,26 +32,30 @@ To do this, proceed to <kbd>System -> Users</kbd> configuration section and add 
 
 The RouterOS Bridge configuration parameters are:
 
-* `host` _(required text)_ [Default: `192.168.88.1`] - Hostname or IP address of the RouterOS device
-* `port` _(optional integer)_ [Default: `8729`] - API Port number of the RouterOS device
-* `login` _(required text)_ [Default: `admin`] - The user login to access the the RouterOS device
-* `password` _(required text)_ - The user password to access the RouterOS device
-* `refresh` _(optional integer)_ [Default: `10`] - The refresh interval in seconds to poll the RouterOS device
+| Name | Type | Required | Default | Description |
+|---|---|---|---|---|
+| host | text | Yes | 192.168.88.1 | Hostname or IP address of the RouterOS device |
+| port | integer | No | 8728 | API Port number of the RouterOS device |
+| login | text | Yes | admin | The username to access the the RouterOS device |
+| password | text | Yes |  | The user password to access the RouterOS device |
+| refresh | integer | No | 10 | The refresh interval in seconds to poll the RouterOS device |
 
 **All things provided by this binding require a working bridge to be set up.**
 
 
 ### Bridge Channels
 
-* <kbd>Number:DataAmount</kbd> `freeSpace` _(read-only)_ - Amount of free storage left on device in bytes
-* <kbd>Number:DataAmount</kbd> `totalSpace` _(read-only)_ - Amount of total storage available on device in bytes
-* <kbd>Number:Dimensionless</kbd> `usedSpace` _(read-only)_ - Percentage of used device storage space
-* <kbd>Number:DataAmount</kbd> `freeMemory` _(read-only)_ - Amount of free memory left on device in bytes
-* <kbd>Number:DataAmount</kbd> `totalMemory` _(read-only)_ - Amount of total memory available on device in bytes
-* <kbd>Number:Dimensionless</kbd> `usedMemory` _(read-only)_ - Percentage of used device memory
-* <kbd>Number:Dimensionless</kbd> `cpuLoad` _(read-only)_ - CPU load percentage
-* <kbd>String</kbd> `uptime` _(read-only)_ - For how long the device is working
-* <kbd>DateTime</kbd> `upSince` _(read-only)_ - Since when the device is working
+| Channel | Type | Description | Comment |
+|---|---|---|---|
+| freeSpace | Number:DataAmount | Amount of free storage left on device in bytes |  |
+| totalSpace | Number:DataAmount | Amount of total storage available on device in bytes |  |
+| usedSpace | Number:Dimensionless | Percentage of used device storage space |  |
+| freeMemory | Number:DataAmount | Amount of free memory left on device in bytes |  |
+| totalMemory | Number:DataAmount | Amount of total memory available on device in bytes |  |
+| usedMemory | Number:Dimensionless | Percentage of used device memory |  |
+| cpuLoad | Number:Dimensionless | CPU load percentage |  |
+| upSince | DateTime | Time when thing got up |  |
+
 
 
 ## WiFi Client Thing Configuration
@@ -62,31 +66,33 @@ Represents a wireless client connected to a RouterOS wireless network (direct or
 
 The WiFi client thing configuration parameters are:
 
-* `mac` _(required text)_ - WiFi client MAC address
-* `ssid` _(optional text)_ - Constraining SSID for the WiFi client (optional). If client will connect to another SSID, this thing will stay offline until client reconnects to specified SSID.
-* `considerContinuous` _(optional integer)_ [Default: `180`] - The interval in seconds to treat the client as connected permanently. For example, when this set to 60, the binding will report a client away as soon as `lastSeen` + `60` seconds < `now`
+| Name | Type | Required | Default | Description |
+|---|---|---|---|---|
+| mac | text | Yes |  | WiFi client MAC address |
+| ssid | text | No |  | Constraining SSID for the WiFi client (optional). If client will connect to another SSID, this thing will stay offline until client reconnects to specified SSID. |
+| considerContinuous | integer | No | 180 | The interval in seconds to treat the client as connected permanently |
 
 ### WiFi client Thing Channels
 
-* <kbd>String</kbd> `macAddress` _(read-only)_ - MAC address of the client or interface
-* <kbd>String</kbd> `comment` _(read-only)_ - User-defined comment
-* <kbd>Switch</kbd> `connected` _(read-only)_ - Reflects connected or disconnected state
-* <kbd>Switch</kbd> `continuous` _(read-only)_ - Connection is considered long-running
-* <kbd>String</kbd> `ssid` _(read-only)_ - Wireless Network (SSID) the wireless client is connected to
-* <kbd>String</kbd> `interface` _(read-only)_ - Network interface name
-* <kbd>Number</kbd> `signal` _(read-only)_ - Received Signal Strength Indicator (RSSI) of the wireless client
-* <kbd>String</kbd> `uptime` _(read-only)_ - Duration while thing is up
-* <kbd>DateTime</kbd> `upSince` _(read-only)_ - Time when thing got up
-* <kbd>DateTime</kbd> `lastSeen` _(read-only)_ - Time of when the client was last seen connected
-* <kbd>Number:DataTransferRate</kbd> `txRate` _(read-only)_ - Rate of data transmission in megabits per second
-* <kbd>Number:DataTransferRate</kbd> `rxRate` _(read-only)_ - Rate of data receiving in megabits per second
-* <kbd>Number</kbd> `txPacketRate` _(read-only)_ - Rate of data transmission in packets per second
-* <kbd>Number</kbd> `rxPacketRate` _(read-only)_ - Rate of data receiving in packets per second
-* <kbd>Number</kbd> `txBytes` _(read-only)_ - Amount of bytes transmitted
-* <kbd>Number</kbd> `rxBytes` _(read-only)_ - Amount of bytes received
-* <kbd>Number</kbd> `txPackets` _(read-only)_ - Amount of packets transmitted
-* <kbd>Number</kbd> `rxPackets` _(read-only)_ - Amount of packets received
-
+| Channel | Type | Description | Comment |
+|---|---|---|---|
+| macAddress | String | MAC address of the client or interface |  |
+| comment | String | User-defined comment |  |
+| connected | Switch | Reflects connected or disconnected state |  |
+| continuous | Switch | Connection is considered long-running |  |
+| ssid | String | Wireless Network (SSID) the wireless client is connected to |  |
+| interface | String | Network interface name |  |
+| signal |  |  |  |
+| upSince | DateTime | Time when thing got up |  |
+| lastSeen | DateTime | Time of when the client was last seen connected |  |
+| txRate | Number:DataTransferRate | Rate of data transmission in megabits per second |  |
+| rxRate | Number:DataTransferRate | Rate of data receiving in megabits per second |  |
+| txPacketRate | Number | Rate of data transmission in packets per second |  |
+| rxPacketRate | Number | Rate of data receiving in packets per second |  |
+| txBytes | Number:DataAmount | Amount of bytes transmitted |  |
+| rxBytes | Number:DataAmount | Amount of bytes received |  |
+| txPackets | Number | Amount of packets transmitted |  |
+| rxPackets | Number | Amount of packets received |  |
 
 ## Network Interface Thing Configuration
 
@@ -107,7 +113,9 @@ The interface thing configuration parameters are:
 
 ### Interface Thing Configuration
 
-* `name` _(required text)_ - RouterOS Interface name (i.e. ether1)
+| Name | Type | Required | Default | Description |
+|---|---|---|---|---|
+| name | text | Yes |  | RouterOS Interface name (i.e. ether1) |
 
 ### Interface Thing Channels
 
@@ -117,40 +125,35 @@ be improved in future binding versions.
 
 Common for all kinds of interfaces:
 
-* <kbd>String</kbd> `type` _(read-only)_ - Network interface type
-* <kbd>String</kbd> `name` _(read-only)_ - Network interface name
-* <kbd>String</kbd> `comment` _(read-only)_ - User-defined comment
-* <kbd>String</kbd> `macAddress` _(read-only)_ - MAC address of the client or interface
-* <kbd>Switch</kbd> `enabled` _(read-only)_ - Reflects enabled or disabled state
-* <kbd>Switch</kbd> `connected` _(read-only)_ - Reflects connected or disconnected state
-* <kbd>DateTime</kbd> `lastLinkDownTime` _(read-only)_ - Last time when link went down
-* <kbd>DateTime</kbd> `lastLinkUpTime` _(read-only)_ - Last time when link went up
-* <kbd>Number</kbd> `linkDowns` _(read-only)_ - Amount of link downs
-* <kbd>Number:DataTransferRate</kbd> `txRate` _(read-only)_ - Rate of data transmission in megabits per second
-* <kbd>Number:DataTransferRate</kbd> `rxRate` _(read-only)_ - Rate of data receiving in megabits per second
-* <kbd>Number</kbd> `txPacketRate` _(read-only)_ - Rate of data transmission in packets per second
-* <kbd>Number</kbd> `rxPacketRate` _(read-only)_ - Rate of data receiving in packets per second
-* <kbd>Number:DataAmount</kbd> `txBytes` _(read-only)_ - Amount of bytes transmitted
-* <kbd>Number:DataAmount</kbd> `rxBytes` _(read-only)_ - Amount of bytes received
-* <kbd>Number</kbd> `txPackets` _(read-only)_ - Amount of packets transmitted
-* <kbd>Number</kbd> `rxPackets` _(read-only)_ - Amount of packets received
-* <kbd>Number</kbd> `txDrops` _(read-only)_ - Amount of packets dropped during transmission
-* <kbd>Number</kbd> `rxDrops` _(read-only)_ - Amount of packets dropped during receiving
-* <kbd>Number</kbd> `txErrors` _(read-only)_ - Amount of errors during transmission
-* <kbd>Number</kbd> `rxErrors` _(read-only)_ - Amount of errors during receiving
-
-Populated only for `ether` interfaces:
-
-* <kbd>String</kbd> `defaultName` _(read-only)_ - Interface factory name
-* <kbd>String</kbd> `rate` _(read-only)_ - Ethernet link rate
-* <kbd>String</kbd> `autoNegotiation` _(read-only)_ - Ethernet auto-negotiation status
-
-Populated only for `cap` interfaces:
-
-* <kbd>Number</kbd> `registeredClients` _(read-only)_ - Amount of clients registered to WiFi interface
-* <kbd>Number</kbd> `authorizedClients` _(read-only)_ - Amount of clients authorized by WiFi interface
-* <kbd>String</kbd> `uptime` _(read-only)_ - Duration while thing is up
-* <kbd>DateTime</kbd> `upSince` _(read-only)_ - Time when thing got up
+| Channel | Type | Description | Comment |
+|---|---|---|---|
+| type | String | Network interface type |  |
+| name | String | Network interface name |  |
+| comment | String | User-defined comment |  |
+| macAddress | String | MAC address of the client or interface |  |
+| enabled | Switch | Reflects enabled or disabled state |  |
+| connected | Switch | Reflects connected or disconnected state |  |
+| lastLinkDownTime | DateTime | Last time when link went down |  |
+| lastLinkUpTime | DateTime | Last time when link went up |  |
+| linkDowns | Number | Amount of link downs |  |
+| txRate | Number:DataTransferRate | Rate of data transmission in megabits per second |  |
+| rxRate | Number:DataTransferRate | Rate of data receiving in megabits per second |  |
+| txPacketRate | Number | Rate of data transmission in packets per second |  |
+| rxPacketRate | Number | Rate of data receiving in packets per second |  |
+| txBytes | Number:DataAmount | Amount of bytes transmitted |  |
+| rxBytes | Number:DataAmount | Amount of bytes received |  |
+| txPackets | Number | Amount of packets transmitted |  |
+| rxPackets | Number | Amount of packets received |  |
+| txDrops | Number | Amount of packets dropped during transmission |  |
+| rxDrops | Number | Amount of packets dropped during receiving |  |
+| txErrors | Number | Amount of errors during transmission |  |
+| rxErrors | Number | Amount of errors during receiving |  |
+| defaultName | String | Interface factory name | Populated only for `ether` interfaces |
+| rate | String | Ethernet link rate | Populated only for `ether` interfaces |
+| state | String | WiFi interface state |  |
+| registeredClients | Number | Amount of clients registered to WiFi interface | Populated only for `cap` interfaces |
+| authorizedClients | Number | Amount of clients authorized by WiFi interface | Populated only for `cap` interfaces |
+| upSince | DateTime | Time when thing got up | Populated only for `cap` interfaces |
 
 ## Text Configuration Example
 
@@ -182,7 +185,6 @@ Number:DataAmount   My_RB_3011_Free_Memory    "Free ram"       (gRB1) {channel="
 Number:DataAmount   My_RB_3011_Total_Memory   "Total ram"      (gRB1) {channel="mikrotik:routeros:rb1:totalMemory"}
 Number:Dimensionless   My_RB_3011_Used_Memory    "Used ram"     (gRB1) {channel="mikrotik:routeros:rb1:usedMemory"}
 Number:Dimensionless   My_RB_3011_Cpu_Load       "Cpu load"     (gRB1) {channel="mikrotik:routeros:rb1:cpuLoad"}
-String   My_RB_3011_Uptime         "Uptime"         (gRB1) {channel="mikrotik:routeros:rb1:uptime"}
 DateTime   My_RB_3011_Upsince      "Up since [%1$td.%1$tm.%1$ty %1$tH:%1$tM]"         (gRB1) {channel="mikrotik:routeros:rb1:upSince"}
 
 Group gRB1Eth1 "Ethernet Interface 1"
@@ -264,7 +266,6 @@ Number     Cap_1_Rx_Errors             "Receiving errors"           (gRB1Cap1) {
 String     Cap_1_State                 "State"                      (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:state"}
 Number     Cap_1_Registered_Clients    "Registered clients"         (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:registeredClients"}
 Number     Cap_1_Authorized_Clients    "Authorized clients"         (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:authorizedClients"}
-String     Cap_1_Uptime                "Uptime"                     (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:uptime"}
 DateTime   Cap_1_Up_Since              "Up since"                   (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:upSince"}
 
 Group gRB1Ppp1 "PPPoE Client 1"
@@ -290,7 +291,6 @@ Number     PP_Po_E_1_Rx_Drops              "Receiving drops"            (gRB1Ppp
 Number     PP_Po_E_1_Tx_Errors             "Transmission errors"        (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:txErrors"}
 Number     PP_Po_E_1_Rx_Errors             "Receiving errors"           (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:rxErrors"}
 String     PP_Po_E_1_State                 "State"                      (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:state"}
-String     PP_Po_E_1_Uptime                "Uptime"                     (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:uptime"}
 DateTime   PP_Po_E_1_Up_Since              "Up since"                   (gRB1Ppp1) {channel="mikrotik:interface:rb1:ppp1:upSince"}
 
 Group gRB1Tun1 "L2TP Server 1"
@@ -324,7 +324,6 @@ Switch     Phone_1_Continuous       "Continuous"                           (gRB1
 String     Phone_1_Ssid             "Wi fi network"                        (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:ssid"}
 String     Phone_1_Interface        "Name"                                 (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:interface"}
 Number     Phone_1_Signal           "Received signal strength indicator"   (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:signal"}
-String     Phone_1_Uptime           "Uptime"                               (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:uptime"}
 DateTime   Phone_1_Up_Since         "Up since"                             (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:upSince"}
 DateTime   Phone_1_Last_Seen        "Last seen"                            (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:lastSeen"}
 Number:DataTransferRate     Phone_1_Tx_Rate          "Transmission rate"                    (gRB1Wifi1) {channel="mikrotik:wifiRegistration:rb1:wifi1:txRate"}
@@ -344,7 +343,6 @@ Switch     Tablet_2_Continuous       "Continuous"                           (gRB
 String     Tablet_2_Ssid             "Wi fi network"                        (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:ssid"}
 String     Tablet_2_Interface        "Name"                                 (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:interface"}
 Number     Tablet_2_Signal           "Received signal strength indicator"   (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:signal"}
-String     Tablet_2_Uptime           "Uptime"                               (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:uptime"}
 DateTime   Tablet_2_Up_Since         "Up since"                             (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:upSince"}
 DateTime   Tablet_2_Last_Seen        "Last seen"                            (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:lastSeen"}
 Number:DataTransferRate    Tablet_2_Tx_Rate          "Transmission rate"                    (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:txRate"}
