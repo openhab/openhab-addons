@@ -94,7 +94,6 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
 
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        logger.trace("Attempt updating {} status to {}; detail = {}", getThing().getUID(), status, statusDetail);
         if (status == ThingStatus.ONLINE
                 || (status == ThingStatus.OFFLINE && statusDetail == ThingStatusDetail.COMMUNICATION_ERROR)) {
             scheduleRefreshJob();
@@ -261,8 +260,6 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
             }
         }
 
-        logger.trace("About to update state on channel {} for thing {}: newState({}) = {}, oldState = {}", channelUID,
-                getThing().getUID(), newState.getClass().getSimpleName(), newState, oldState);
         if (!newState.equals(oldState)) {
             updateState(channelID, newState);
             currentState.put(channelID, newState);

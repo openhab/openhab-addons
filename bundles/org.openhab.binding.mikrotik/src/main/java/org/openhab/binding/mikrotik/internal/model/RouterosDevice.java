@@ -173,39 +173,32 @@ public class RouterosDevice {
     }
 
     public @Nullable RouterosCapsmanRegistration findCapsmanRegistration(String macAddress) {
-        logger.trace("findCapsmanRegistration({}) called for {}", macAddress, host);
         Optional<RouterosCapsmanRegistration> searchResult = capsmanRegistrationCache.stream()
                 .filter(registration -> registration.getMacAddress().equalsIgnoreCase(macAddress)).findFirst();
         return searchResult.orElse(null);
     }
 
     public @Nullable RouterosWirelessRegistration findWirelessRegistration(String macAddress) {
-        logger.trace("findWirelessRegistration({}) called for {}", macAddress, host);
         Optional<RouterosWirelessRegistration> searchResult = wirelessRegistrationCache.stream()
                 .filter(registration -> registration.getMacAddress().equalsIgnoreCase(macAddress)).findFirst();
         return searchResult.orElse(null);
     }
 
     public @Nullable RouterosInterfaceBase findInterface(String name) {
-        logger.trace("findInterface({}) called for {}", name, host);
         Optional<RouterosInterfaceBase> searchResult = interfaceCache.stream()
                 .filter(iface -> iface.getName() != null && iface.getName().equalsIgnoreCase(name)).findFirst();
         return searchResult.orElse(null);
     }
 
     private void updateInterfaceData() throws MikrotikApiException {
-        logger.trace("Executing '{}' on {}...", CMD_PRINT_IFACES, host);
         List<Map<String, String>> ifaceResponse = connection.execute(CMD_PRINT_IFACES);
 
         Set<String> interfaceTypesToPoll = new HashSet<>();
         this.wlanSsid.clear();
         interfaceCache = ifaceResponse.stream().map(props -> {
-            logger.trace("Got interface props from {}: {}", host, props);
             Optional<RouterosInterfaceBase> ifaceOpt = createTypedInterface(props);
             if (ifaceOpt.isPresent() && ifaceOpt.get().hasDetailedReport()) {
                 interfaceTypesToPoll.add(ifaceOpt.get().getApiType());
-            } else {
-                logger.trace("Skipping unsupported interface type: {}", props.get(PROP_TYPE_KEY));
             }
             return ifaceOpt;
         }).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
@@ -216,7 +209,6 @@ public class RouterosDevice {
             if (ifaceApiType.compareTo("cap") == 0) {
                 cmd = CMD_PRINT_CAPS_IFACES;
             }
-            logger.trace("Executing '{}' on {}...", cmd, host);
             connection.execute(cmd).forEach(propMap -> {
                 @Nullable
                 String ifaceName = propMap.get(PROP_NAME_KEY);
@@ -240,7 +232,6 @@ public class RouterosDevice {
             // Get monitor data
             if (ifaceModel.hasMonitor() && monitoredInterfaces.contains(ifaceModel.getName())) {
                 String cmd = String.format(CMD_MONTOR_IFACE_MONITOR_TPL, ifaceModel.getApiType(), ifaceModel.getName());
-                logger.trace("Executing '{}' on {}...", cmd, host);
                 List<Map<String, String>> monitorProps = connection.execute(cmd);
                 ifaceModel.mergeProps(monitorProps.get(0));
             }
@@ -256,21 +247,13 @@ public class RouterosDevice {
     }
 
     private void updateCapsmanRegistrations() throws MikrotikApiException {
-        logger.trace("Executing '{}' on {}...", CMD_PRINT_CAPSMAN_REGS, host);
         List<Map<String, String>> response = connection.execute(CMD_PRINT_CAPSMAN_REGS);
-        capsmanRegistrationCache = response.stream().map(props -> {
-            logger.trace("Got capsman registration props from {}: {}", host, props);
-            return new RouterosCapsmanRegistration(props);
-        }).collect(Collectors.toList());
+        capsmanRegistrationCache = response.stream().map(RouterosCapsmanRegistration::new).collect(Collectors.toList());
     }
 
     private void updateWirelessRegistrations() throws MikrotikApiException {
-        logger.trace("Executing '{}' on {}...", CMD_PRINT_WIRELESS_REGS, host);
         List<Map<String, String>> response = connection.execute(CMD_PRINT_WIRELESS_REGS);
-        logger.trace("wlanSsid = {}", wlanSsid);
         wirelessRegistrationCache = response.stream().map(props -> {
-            logger.trace("Got wireless registration props from {}: {}", host, props);
-
             @Nullable
             String wlanIfaceName = props.get("interface");
             @Nullable
@@ -284,14 +267,11 @@ public class RouterosDevice {
     }
 
     private void updateResources() throws MikrotikApiException {
-        logger.trace("Executing '{}' on {}...", CMD_PRINT_RESOURCE, host);
         List<Map<String, String>> response = connection.execute(CMD_PRINT_RESOURCE);
-        logger.trace("Got resource props from {}: {}", host, response.get(0));
         this.resourcesCache = new RouterosSystemResources(response.get(0));
     }
 
     private void updateRouterboardInfo() throws MikrotikApiException {
-        logger.trace("Executing '{}' on {}...", CMD_PRINT_RB_INFO, host);
         List<Map<String, String>> response = connection.execute(CMD_PRINT_RB_INFO);
         this.rbInfo = new RouterosRouterboardInfo(response.get(0));
     }

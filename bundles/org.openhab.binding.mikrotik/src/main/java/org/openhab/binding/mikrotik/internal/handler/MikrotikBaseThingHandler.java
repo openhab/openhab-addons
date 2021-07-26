@@ -120,7 +120,6 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
             return;
         }
         this.config = localConfig;
-        logger.trace("Config for for {} ({}) is {}", getThing().getUID(), getThing().getStatus(), config);
 
         if (!config.isValid()) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, String.format("%s is invalid", klass.getSimpleName()));
@@ -132,7 +131,6 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
 
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        logger.trace("Updating {} status to {} / {}", getThing().getUID(), status, statusDetail);
         if (status == ONLINE || (status == OFFLINE && statusDetail == ThingStatusDetail.COMMUNICATION_ERROR)) {
             scheduleRefreshJob();
         } else if (status == OFFLINE
@@ -180,7 +178,6 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
     }
 
     private void scheduledRun() {
-        logger.trace("scheduledRun() called for {}", getThing().getUID());
         if (getVerifiedBridgeHandler() == null) {
             updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Failed reaching out to RouterOS bridge");
             return;
@@ -225,7 +222,6 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
             refreshModels();
             return true;
         } else {
-            logger.trace("getRouteros() || config is null, skipping {}.refreshModels()", getClass().getSimpleName());
             return false;
         }
     }

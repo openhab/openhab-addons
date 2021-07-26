@@ -83,7 +83,6 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
 
     @Override
     protected void refreshModels() {
-        logger.trace("Searching for {} interface", config.name);
         iface = getRouterOs().findInterface(config.name);
         if (iface == null) {
             String statusMsg = String.format("Interface %s is not found in RouterOS for thing %s", config.name,
@@ -187,8 +186,6 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
             }
         }
 
-        logger.trace("About to update state on channel {} for thing {} - newState({}) = {}, oldState = {}", channelUID,
-                getThing().getUID(), newState.getClass().getSimpleName(), newState, oldState);
         if (!newState.equals(oldState)) {
             updateState(channelID, newState);
             currentState.put(channelID, newState);

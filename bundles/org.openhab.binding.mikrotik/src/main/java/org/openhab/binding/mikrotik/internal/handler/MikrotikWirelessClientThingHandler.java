@@ -67,7 +67,6 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
     }
 
     private boolean fetchModels() {
-        logger.trace("Searching for {} registration", config.mac);
         this.wifiReg = getRouterOs().findWirelessRegistration(config.mac);
         if (this.wifiReg != null && !config.ssid.isBlank() && !config.ssid.equalsIgnoreCase(wifiReg.getSSID())) {
             this.wifiReg = null;
@@ -169,8 +168,6 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
             }
         }
 
-        logger.trace("About to update state on channel {} for thing {} - newState({}) = {}, oldState = {}", channelUID,
-                getThing().getUID(), newState.getClass().getSimpleName(), newState, oldState);
         if (!newState.equals(oldState)) {
             updateState(channelID, newState);
             currentState.put(channelID, newState);
