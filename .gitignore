@@ -24,4 +24,3 @@ features/**/src/main/feature
 .vscode
 .factorypath
 pom.xml.versionsBackup
-bundles/org.openhab.binding.amplipi/.openapi-generator
