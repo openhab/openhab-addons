@@ -11,16 +11,20 @@
 		<channels>
 			<channel id="preset" typeId="preset"/>
 			<channel id="input1" typeId="input">
-				<label>Input 1</label>
+				<label>Source 1</label>
+				<description>This channel selects the input for source 1.</description>
 			</channel>
 			<channel id="input2" typeId="input">
-				<label>Input 2</label>
+				<label>Source 2</label>
+                <description>This channel selects the input for source 2.</description>
 			</channel>
 			<channel id="input3" typeId="input">
-				<label>Input 3</label>
+				<label>Source 3</label>
+                <description>This channel selects the input for source 3.</description>
 			</channel>
 			<channel id="input4" typeId="input">
-				<label>Input 4</label>
+				<label>Source 4</label>
+                <description>This channel selects the input for source 4.</description>
 			</channel>
 		</channels>
 
@@ -100,10 +104,10 @@
 		<description>The audio source that is played</description>
 		<state>
 			<options>
-				<option value="0">Input 1</option>
-				<option value="1">Input 2</option>
-				<option value="2">Input 3</option>
-				<option value="3">Input 4</option>
+				<option value="0">Source 1</option>
+				<option value="1">Source 2</option>
+				<option value="2">Source 3</option>
+				<option value="3">Source 4</option>
 			</options>
 		</state>
 	</channel-type>

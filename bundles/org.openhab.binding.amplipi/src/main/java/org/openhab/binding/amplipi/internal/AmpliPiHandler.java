@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.amplipi.internal;
 
-import static org.openhab.binding.amplipi.internal.AmpliPiBindingConstants.CHANNEL_PRESET;
+import static org.openhab.binding.amplipi.internal.AmpliPiBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,12 +28,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.amplipi.internal.discovery.AmpliPiZoneAndGroupDiscoveryService;
 import org.openhab.binding.amplipi.internal.model.Preset;
+import org.openhab.binding.amplipi.internal.model.SourceUpdate;
 import org.openhab.binding.amplipi.internal.model.Status;
+import org.openhab.binding.amplipi.internal.model.Stream;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -67,6 +71,7 @@ public class AmpliPiHandler extends BaseBridgeHandler {
 
     private String url = "http://amplipi";
     private List<Preset> presets = List.of();
+    private List<Stream> streams = List.of();
     private List<AmpliPiStatusChangeListener> changeListeners = new ArrayList<>();
 
     private @Nullable ScheduledFuture<?> refreshJob;
@@ -100,8 +105,26 @@ public class AmpliPiHandler extends BaseBridgeHandler {
                             "AmpliPi request failed: " + e.getMessage());
                 }
             }
-        } else {
-            logger.error("Handler not correctly initialized!");
+        } else if (channelUID.getId().startsWith(CHANNEL_INPUT)) {
+            if (command instanceof StringType) {
+                StringType input = (StringType) command;
+                int source = Integer.valueOf(channelUID.getId().substring(CHANNEL_INPUT.length())) - 1;
+                SourceUpdate update = new SourceUpdate();
+                update.setInput(input.toString());
+                try {
+                    StringContentProvider contentProvider = new StringContentProvider(gson.toJson(update));
+                    ContentResponse response = this.httpClient.newRequest(url + "/api/sources/" + source)
+                            .method(HttpMethod.PATCH).content(contentProvider, "application/json")
+                            .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
+                    if (response.getStatus() != HttpStatus.OK_200) {
+                        logger.error("AmpliPi API returned HTTP status {}.", response.getStatus());
+                        logger.debug("Content: {}", response.getContentAsString());
+                    }
+                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "AmpliPi request failed: " + e.getMessage());
+                }
+            }
         }
     }
 
@@ -121,7 +144,9 @@ public class AmpliPiHandler extends BaseBridgeHandler {
                     if (currentStatus != null) {
                         updateStatus(ThingStatus.ONLINE);
                         setProperties(currentStatus);
+                        setInputs(currentStatus);
                         presets = currentStatus.getPresets();
+                        streams = currentStatus.getStreams();
                         changeListeners.forEach(l -> l.receive(currentStatus));
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -148,6 +173,12 @@ public class AmpliPiHandler extends BaseBridgeHandler {
         updateProperties(props);
     }
 
+    private void setInputs(Status currentStatus) {
+        currentStatus.getSources().forEach(source -> {
+            updateState(CHANNEL_INPUT + (source.getId() + 1), new StringType(source.getInput()));
+        });
+    }
+
     @Override
     public void dispose() {
         if (refreshJob != null) {
@@ -158,11 +189,16 @@ public class AmpliPiHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(PresetCommandOptionProvider.class, AmpliPiZoneAndGroupDiscoveryService.class);
+        return Set.of(PresetCommandOptionProvider.class, InputStateOptionProvider.class,
+                AmpliPiZoneAndGroupDiscoveryService.class);
     }
 
     public List<Preset> getPresets() {
         return presets;
+    }
+
+    public List<Stream> getStreams() {
+        return streams;
     }
 
     public String getUrl() {
@@ -176,4 +212,5 @@ public class AmpliPiHandler extends BaseBridgeHandler {
     public void removeStatusChangeListener(AmpliPiStatusChangeListener listener) {
         changeListeners.remove(listener);
     }
+
 }
