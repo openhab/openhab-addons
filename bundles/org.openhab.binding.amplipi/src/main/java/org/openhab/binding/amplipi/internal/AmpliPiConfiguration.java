@@ -23,6 +23,5 @@ public class AmpliPiConfiguration {
      * Sample configuration parameters. Replace with your own.
      */
     public String hostname;
-    public String password;
     public int refreshInterval;
 }
