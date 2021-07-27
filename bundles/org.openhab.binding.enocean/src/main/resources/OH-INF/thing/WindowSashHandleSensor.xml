@@ -10,7 +10,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Window Sash and Handle Sensor</label>
+		<label>Sash Handle Sensor</label>
 		<description>Combined sensor for window/door sash state and handle state</description>
 
 		<config-description>
