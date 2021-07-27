@@ -29,13 +29,13 @@ Both the `zone` and `group` Things only require a single configuration parameter
 
 These are the channels of the `controller` Bridge:
 
-| Channel  | Type   | Description                                                                                         |
-|----------|--------|-----------------------------------------------------------------------------------------------------|
-| preset   | Number | Allows setting a pre-configured preset. The available options are dynamically read from the AmpliPi |
-| input1   | String | The selected input of source 1                                                                      |
-| input2   | String | The selected input of source 2                                                                      |
-| input3   | String | The selected input of source 3                                                                      |
-| input4   | String | The selected input of source 4                                                                      |
+| Channel  | Type   | Description                                                                                          |
+|----------|--------|------------------------------------------------------------------------------------------------------|
+| preset   | Number | Allows setting a pre-configured preset. The available options are dynamically read from the AmpliPi. |
+| input1   | String | The selected input of source 1                                                                       |
+| input2   | String | The selected input of source 2                                                                       |
+| input3   | String | The selected input of source 3                                                                       |
+| input4   | String | The selected input of source 4                                                                       |
 
 The `zone` and `group` Things have the following channels:
 
