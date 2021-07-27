@@ -1,56 +1,91 @@
 # AmpliPi Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding supports the multi room audio system [AmpliPi](http://www.amplipi.com/) from [MicroNova](http://www.micro-nova.com/).
 
-_If possible, provide some resources like pictures, a video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The AmpliPi itself is modeled as a Bridge of type `controller`.
+Every available zone as well as group is managed as an individual Thing of type `zone` resp. `group`.
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+Once the AmpliPi announces itself through mDNS (still a pending feature), it will be automatically discovered on the network.
 
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the AmpliPi Binding
-#
-# Default secret key for the pairing of the AmpliPi Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+As soon as the AmpliPi is online, its zones and groups are automatically retrieved and added as Things to the Inbox.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+The `controller` Bridge has two configuration parameters:
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Parameter       | Required | Description                                                                                        |
+|-----------------|----------|----------------------------------------------------------------------------------------------------|
+| hostname        | yes      | The hostname or IP address of the AmpliPi on the network                                           |
+| refreshInterval | no       | The time to wait between two polling requests for receiving state updates. Defaults to 10 seconds. |
+
+Both the `zone` and `group` Things only require a single configuration parameter `id`, which corresponds to their id on the AmpliPi.
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+These are the channels of the `controller` Bridge:
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Channel  | Type   | Description                                                                                         |
+|----------|--------|-----------------------------------------------------------------------------------------------------|
+| preset   | Number | Allows setting a pre-configured preset. The available options are dynamically read from the AmpliPi |
+| input1   | String | The selected input of source 1                                                                      |
+| input2   | String | The selected input of source 2                                                                      |
+| input3   | String | The selected input of source 3                                                                      |
+| input4   | String | The selected input of source 4                                                                      |
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+The `zone` and `group` Things have the following channels:
+
+| Channel  | Type   | Description                                        |
+|----------|--------|----------------------------------------------------|
+| volume   | Dimmer | The volume of the zone/group                       |
+| mute     | Switch | Mutes the zone/group                               |
+| source   | Number | The source (1-4) that this zone/group is playing   |
+
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+amplipi.things:
 
-## Any custom content here!
+```
+Bridge amplipi:controller:1 "My AmpliPi" [ hostname="amplipi.local" ] {
+    zone zone2 "Living Room" [ id=1 ]
+}
+```
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+amplipi.items:
+
+```
+Number      Preset      "Preset"                { channel="amplipi:controller:1:preset" }
+Number      Input1      "Input 1"               { channel="amplipi:controller:1:input1" }
+Number      Input2      "Input 2"               { channel="amplipi:controller:1:input2" }
+Number      Input3      "Input 3"               { channel="amplipi:controller:1:input3" }
+Number      Input4      "Input 4"               { channel="amplipi:controller:1:input4" }
+
+Dimmer      VolumeZ2    "Volume Zone2"          { channel="amplipi:zone:1:zone2:volume" }
+Switch      MuteZ2      "Mute Zone2"            { channel="amplipi:zone:1:zone2::mute" }
+Number      SourceZ2    "Source Zone2"          { channel="amplipi:zone:1:zone2::source" }
+```
+
+amplipi.sitemap:
+
+```
+sitemap amplipi label="Main Menu"
+{
+    Frame label="AmpliPi" {
+        Selection item=Preset
+        Selection item=Input1
+        Selection item=Input2
+        Selection item=Input3
+        Selection item=Input4
+    }
+    Frame label="Living Room Zone" {
+        Slider item=VolumeZ2 label="Volume Zone 1 [%.1f %%]"
+        Switch item=MuteZ2
+        Selection item=SourceZ2
+    }
+}
+```

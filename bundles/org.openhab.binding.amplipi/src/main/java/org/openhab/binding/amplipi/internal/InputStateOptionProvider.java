@@ -70,6 +70,5 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
         } else {
             return stream.getType().substring(0, 1).toUpperCase() + stream.getType().substring(1);
         }
-
     }
 }

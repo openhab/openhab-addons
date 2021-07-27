@@ -16,15 +16,15 @@
 			</channel>
 			<channel id="input2" typeId="input">
 				<label>Source 2</label>
-                <description>This channel selects the input for source 2.</description>
+				<description>This channel selects the input for source 2.</description>
 			</channel>
 			<channel id="input3" typeId="input">
 				<label>Source 3</label>
-                <description>This channel selects the input for source 3.</description>
+				<description>This channel selects the input for source 3.</description>
 			</channel>
 			<channel id="input4" typeId="input">
 				<label>Source 4</label>
-                <description>This channel selects the input for source 4.</description>
+				<description>This channel selects the input for source 4.</description>
 			</channel>
 		</channels>
 
@@ -90,12 +90,14 @@
 		<item-type>Number</item-type>
 		<label>Preset</label>
 		<description>Choose an existing preset</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="input">
 		<item-type>String</item-type>
 		<label>Input</label>
 		<description>The selected input for the source</description>
+		<autoUpdatePolicy>recommend</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="source">
@@ -110,6 +112,7 @@
 				<option value="3">Source 4</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>recommend</autoUpdatePolicy>
 	</channel-type>
 
 </thing:thing-descriptions>

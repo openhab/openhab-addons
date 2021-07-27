@@ -91,6 +91,7 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
     public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
         if (command == RefreshType.REFRESH) {
             // do nothing - we just wait for the next automatic refresh
+            return;
         }
         GroupUpdate update = new GroupUpdate();
         switch (channelUID.getId()) {
@@ -111,7 +112,7 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
                 break;
         }
         if (bridgeHandler != null) {
-            String url = bridgeHandler.getUrl() + "/api/zones/" + id;
+            String url = bridgeHandler.getUrl() + "/api/groups/" + id;
             StringContentProvider contentProvider = new StringContentProvider(gson.toJson(update));
             try {
                 ContentResponse response = httpClient.newRequest(url).method(HttpMethod.PATCH)
@@ -119,10 +120,15 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
                 if (response.getStatus() != HttpStatus.OK_200) {
                     logger.error("AmpliPi API returned HTTP status {}.", response.getStatus());
                     logger.debug("Content: {}", response.getContentAsString());
+                } else {
+                    updateStatus(ThingStatus.ONLINE);
                 }
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            } catch (InterruptedException | TimeoutException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "AmpliPi request failed: " + e.getMessage());
+            } catch (ExecutionException e) {
+                logger.error("HTTP request to AmpliPi failed: {}.", e.getMessage());
+                logger.debug("{}", e.getMessage(), e);
             }
         }
     }

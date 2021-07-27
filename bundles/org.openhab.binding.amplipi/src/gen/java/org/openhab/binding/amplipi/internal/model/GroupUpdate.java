@@ -35,26 +35,26 @@ public class GroupUpdate {
     /**
      * id of the connected source
      **/
-    private Integer sourceId = 0;
+    private Integer sourceId;
 
     @Schema
     /**
      * Set of zones belonging to a group
      **/
-    private List<Integer> zones = null;
+    private List<Integer> zones;
 
     @Schema
     /**
      * Set to true if output is all zones muted
      **/
-    private Boolean mute = true;
+    private Boolean mute;
 
     @Schema
     @SerializedName("vol_delta")
     /**
      * Average utput volume in dB
      **/
-    private Integer volDelta = -79;
+    private Integer volDelta;
 
     /**
      * Friendly name
