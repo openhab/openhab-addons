@@ -46,6 +46,7 @@ public class BoschSHCBindingConstants {
             "intrusion-detection-system");
     public static final ThingTypeUID THING_TYPE_SMART_PLUG_COMPACT = new ThingTypeUID(BINDING_ID, "smart-plug-compact");
     public static final ThingTypeUID THING_TYPE_SMART_BULB = new ThingTypeUID(BINDING_ID, "smart-bulb");
+    public static final ThingTypeUID THING_TYPE_SMOKE_DETECTOR = new ThingTypeUID(BINDING_ID, "smoke-detector");
 
     // List of all Channel IDs
     // Auto-generated from thing-types.xml via script, don't modify

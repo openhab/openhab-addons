@@ -29,6 +29,7 @@ import org.openhab.binding.boschshc.internal.devices.motiondetector.MotionDetect
 import org.openhab.binding.boschshc.internal.devices.plug.PlugHandler;
 import org.openhab.binding.boschshc.internal.devices.shuttercontrol.ShutterControlHandler;
 import org.openhab.binding.boschshc.internal.devices.smartbulb.SmartBulbHandler;
+import org.openhab.binding.boschshc.internal.devices.smokedetector.SmokeDetectorHandler;
 import org.openhab.binding.boschshc.internal.devices.thermostat.ThermostatHandler;
 import org.openhab.binding.boschshc.internal.devices.twinguard.TwinguardHandler;
 import org.openhab.binding.boschshc.internal.devices.wallthermostat.WallThermostatHandler;
@@ -79,7 +80,8 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_CAMERA_EYES, CameraHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_INTRUSION_DETECTION_SYSTEM, IntrusionDetectionHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SMART_PLUG_COMPACT, PlugHandler::new),
-            new ThingTypeHandlerMapping(THING_TYPE_SMART_BULB, SmartBulbHandler::new));
+            new ThingTypeHandlerMapping(THING_TYPE_SMART_BULB, SmartBulbHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_SMOKE_DETECTOR, SmokeDetectorHandler::new));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

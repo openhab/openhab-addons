@@ -12,6 +12,8 @@
 		<config-description-ref uri="thing-type:boschshc:bridge"/>
 	</bridge-type>
 
+	<!-- Things -->
+
 	<thing-type id="in-wall-switch">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="shc"/>
@@ -67,6 +69,7 @@
 			<channel id="combined-rating" typeId="combined-rating"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="smoke-check" typeId="smoke-check"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -342,6 +345,23 @@
 		</state>
 	</channel-type>
 
+	<thing-type id="smoke-detector">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Smoke Detector</label>
+		<description>The smoke detector warns you in case of fire.</description>
+
+		<channels>
+			<channel id="smoke-check" typeId="smoke-check"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+	</thing-type>
+
+	<!-- Channels -->
+
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
@@ -426,6 +446,20 @@
 				<option value="GOOD">Good Quality</option>
 				<option value="MEDIUM">Medium Quality</option>
 				<option value="BAD">Bad Quality</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smoke-check">
+		<item-type>String</item-type>
+		<label>Smoke Check State</label>
+		<description>State of last smoke detector check.</description>
+		<state readOnly="true">
+			<options>
+				<option value="NONE">None</option>
+				<option value="SMOKE_TEST_REQUESTED">Test requested</option>
+				<option value="SMOKE_TEST_OK">Test successful</option>
+				<option value="SMOKE_TEST_FAILED">Test failed</option>
 			</options>
 		</state>
 	</channel-type>

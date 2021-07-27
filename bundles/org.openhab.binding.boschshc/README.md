@@ -17,6 +17,7 @@ Binding for the Bosch Smart Home.
     - [Security Camera Eyes](#security-camera-eyes)
     - [Intrusion Detection System](#intrusion-detection-system)
     - [Smart Bulb](#smart-bulb)
+    - [Smoke Detector](#smoke-detector)
   - [Limitations](#limitations)
   - [Discovery](#discovery)
   - [Bridge Configuration](#bridge-configuration)
@@ -191,6 +192,17 @@ A smart bulb connected to the bridge via Zigbee such as a Ledvance Smart+ bulb.
 | power-switch    | Switch    | &#9745;  | Switches the light on or off.                                  |
 | brightness      | Dimmer    | &#9745;  | Regulates the brightness on a percentage scale from 0 to 100%. |
 | color           | Color     | &#9745;  | The color of the emitted light.                                |
+
+### Smoke detector
+
+The smoke detector warns you in case of fire.
+
+**Thing Type ID**: `smoke-detector`
+
+| Channel Type ID    | Item Type            | Writable | Description                                                                                       |
+| ------------------ | -------------------- | :------: | ------------------------------------------------------------------------------------------------- |
+| smoke-check        | String               | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                 |
+
 
 ## Limitations
 
