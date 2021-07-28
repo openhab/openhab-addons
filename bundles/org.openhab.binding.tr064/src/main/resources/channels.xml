@@ -164,7 +164,7 @@
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
 			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration1"/>
 		<getAction name="GetSpecificAssociatedDeviceInfo" argument="NewX_AVM-DE_SignalStrength"
-			postProcessor="processMacSignalStrength">
+			postProcessor="processMacSignalStrength1">
 			<parameter name="NewAssociatedDeviceMACAddress" thingParameter="macOnline"
 				pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"/>
 		</getAction>
@@ -190,7 +190,7 @@
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
 			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration2"/>
 		<getAction name="GetSpecificAssociatedDeviceInfo" argument="NewX_AVM-DE_SignalStrength"
-			postProcessor="processMacSignalStrength">
+			postProcessor="processMacSignalStrength2">
 			<parameter name="NewAssociatedDeviceMACAddress" thingParameter="macOnline"
 				pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"/>
 		</getAction>

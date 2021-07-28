@@ -172,9 +172,36 @@ public class SOAPValueConverter {
     }
 
     /**
-     * post processor to map mac device signal strength to system.signal-strength 0-4
+     * post processor to map mac device 2.4Ghz signal strength to system.signal-strength 0-4
+     *
+     * @param state with signalStrength
+     * @param channelConfig channel config of the mac signal strength 2.4Ghz
+     * @return the mapped system.signal-strength in range 0-4
      */
-    private State processMacSignalStrength(State state, Tr064ChannelConfig channelConfig) {
+    @SuppressWarnings("unused")
+    private State processMacSignalStrength1(State state, Tr064ChannelConfig channelConfig) {
+        return this.processMacSignalStrength(state);
+    }
+
+    /**
+     * post processor to map mac device 5Ghz signal strength to system.signal-strength 0-4
+     *
+     * @param state with signal strength
+     * @param channelConfig channel config of the mac signal strength 5Ghz
+     * @return the mapped system.signal-strength in range 0-4
+     */
+    @SuppressWarnings("unused")
+    private State processMacSignalStrength2(State state, Tr064ChannelConfig channelConfig) {
+        return this.processMacSignalStrength(state);
+    }
+
+    /**
+     * internal helper to map the mac signal strength.
+     * 
+     * @param state with signalStrength
+     * @return the mapped system.signal-strength
+     */
+    private State processMacSignalStrength(State state) {
         DecimalType mappedSignalStrength = new DecimalType(0);
         DecimalType currentStateValue = state.as(DecimalType.class);
 
