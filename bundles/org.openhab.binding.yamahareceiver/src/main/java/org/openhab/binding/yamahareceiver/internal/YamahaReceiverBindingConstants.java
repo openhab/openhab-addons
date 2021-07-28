@@ -48,6 +48,8 @@ public class YamahaReceiverBindingConstants {
     public static final String CHANNEL_MUTE = "mute";
     public static final String CHANNEL_SCENE = "scene";
     public static final String CHANNEL_DIALOGUE_LEVEL = "dialogueLevel";
+    public static final String CHANNEL_HDMI1OUT = "hdmi1Out";
+    public static final String CHANNEL_HDMI2OUT = "hdmi2Out";
 
     public static final String CHANNEL_PARTY_MODE = "party_mode";
     public static final String CHANNEL_PARTY_MODE_MUTE = "party_mode_mute";
