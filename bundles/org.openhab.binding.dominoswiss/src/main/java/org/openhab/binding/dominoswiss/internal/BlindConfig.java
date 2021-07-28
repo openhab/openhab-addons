@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Frieso Aeschbacher - Initial contribution
  */
 @NonNullByDefault
-public class blindConfig {
+public class BlindConfig {
 
     /*
      * The ID of that blind

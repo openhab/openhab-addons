@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dominoswiss.internal;
 
-import static org.openhab.binding.dominoswiss.internal.dominoswissBindingConstants.*;
+import static org.openhab.binding.dominoswiss.internal.DominoswissBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,15 +34,15 @@ import org.slf4j.LoggerFactory;
  * @author Frieso Aeschbacher - Initial contribution
  */
 @NonNullByDefault
-public class blindHandler extends BaseThingHandler {
+public class BlindHandler extends BaseThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(blindHandler.class);
+    private Logger logger = LoggerFactory.getLogger(BlindHandler.class);
 
-    private @Nullable eGateHandler dominoswissHandler;
+    private @Nullable EGateHandler dominoswissHandler;
 
     private String id = "";
 
-    public blindHandler(Thing thing) {
+    public BlindHandler(Thing thing) {
         super(thing);
     }
 
@@ -50,7 +50,7 @@ public class blindHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Blind got command: {} and ChannelUID: {} ", command.toFullString(),
                 channelUID.getIdWithoutGroup());
-        dominoswissHandler = (eGateHandler) getBridge().getHandler();
+        dominoswissHandler = (EGateHandler) getBridge().getHandler();
         if (dominoswissHandler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "EGate not available");
             logger.debug("Blind thing {} has no server configured, ignoring command: {}", getThing().getUID(), command);
@@ -149,14 +149,14 @@ public class blindHandler extends BaseThingHandler {
     @SuppressWarnings("null")
     @Override
     public void initialize() {
-        this.id = getConfig().as(blindConfig.class).id;
-        dominoswissHandler = (eGateHandler) getBridge().getHandler();
+        this.id = getConfig().as(BlindConfig.class).id;
+        dominoswissHandler = (EGateHandler) getBridge().getHandler();
         dominoswissHandler.registerBlind(this.id, getThing().getUID());
         try {
             ThingStatus bridgeStatus = getBridge().getStatus();
             if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-                dominoswissHandler = (eGateHandler) getBridge().getHandler();
+                dominoswissHandler = (EGateHandler) getBridge().getHandler();
             } else if (bridgeStatus == ThingStatus.OFFLINE) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }

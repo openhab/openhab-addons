@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dominoswiss.internal;
 
-import static org.openhab.binding.dominoswiss.internal.dominoswissBindingConstants.*;
+import static org.openhab.binding.dominoswiss.internal.DominoswissBindingConstants.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.dominoswiss", service = ThingHandlerFactory.class)
-public class dominoswissHandlerFactory extends BaseThingHandlerFactory {
+public class DominoswissHandlerFactory extends BaseThingHandlerFactory {
 
     private static final List<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(DOMINOSWISSEGATE_THING_TYPE,
             DOMINOSWISSBLINDS_THING_TYPE);
@@ -50,11 +50,11 @@ public class dominoswissHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(DOMINOSWISSEGATE_THING_TYPE)) {
-            return new eGateHandler((Bridge) thing);
+            return new EGateHandler((Bridge) thing);
         }
 
         if (thingTypeUID.equals(DOMINOSWISSBLINDS_THING_TYPE)) {
-            return new blindHandler(thing);
+            return new BlindHandler(thing);
         }
         return null;
     }

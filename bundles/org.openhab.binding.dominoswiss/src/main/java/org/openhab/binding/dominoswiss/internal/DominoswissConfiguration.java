@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Frieso Aeschbacher - Initial contribution
  */
 @NonNullByDefault
-public class dominoswissConfiguration {
+public class DominoswissConfiguration {
 
     /**
      * Server ip address

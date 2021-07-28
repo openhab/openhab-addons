@@ -22,7 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Frieso Aeschbacher - Initial contribution
  */
 @NonNullByDefault
-public class dominoswissBindingConstants {
+public class DominoswissBindingConstants {
 
     private static final String BINDING_ID = "dominoswiss";
 

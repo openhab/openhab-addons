@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dominoswiss.internal;
 
-import static org.openhab.binding.dominoswiss.internal.dominoswissBindingConstants.*;
+import static org.openhab.binding.dominoswiss.internal.DominoswissBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -24,9 +24,11 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,9 +52,9 @@ import org.slf4j.LoggerFactory;
  * @author Frieso Aeschbacher - Initial contribution
  */
 @NonNullByDefault
-public class eGateHandler extends BaseBridgeHandler {
+public class EGateHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(eGateHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(EGateHandler.class);
     private @Nullable Socket egateSocket;
 
     private int port;
@@ -63,12 +65,14 @@ public class eGateHandler extends BaseBridgeHandler {
     private @Nullable BufferedReader reader;
     private @Nullable Future<?> refreshJob;
     private @Nullable Map<String, ThingUID> registeredBlinds;
-    private final ExecutorService scheduler;
+    private final ScheduledExecutorService scheduler;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
-    public eGateHandler(Bridge thing) {
+    public EGateHandler(Bridge thing) {
         super(thing);
         registeredBlinds = new HashMap<String, ThingUID>();
-        scheduler = Executors.newSingleThreadExecutor(new NamedThreadFactory(thing.getUID().getAsString(), true));
+        scheduler = (ScheduledExecutorService) Executors
+                .newSingleThreadExecutor(new NamedThreadFactory(thing.getUID().getAsString(), true));
     }
 
     @Override
@@ -90,32 +94,7 @@ public class eGateHandler extends BaseBridgeHandler {
 
         if (host != null && port > 0) {
             // Create a socket to eGate
-            synchronized (this.lock) {
-                try {
-                    egateSocket = new Socket();
-                    egateSocket.connect(new InetSocketAddress(host, port));
-                    egateSocket.setSoTimeout(SOCKET_TIMEOUT_SEC);
-                    writer = new BufferedWriter(new OutputStreamWriter(egateSocket.getOutputStream()));
-                    writer.write("SilenceModeSet;Value=0;" + CR);
-                    writer.flush();
-
-                } catch (IOException e) {
-                    logger.debug("unknown socket host {}", host);
-                    try {
-                        egateSocket.close();
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, e.toString());
-                    } catch (IOException e1) {
-                        logger.warn("EGate Socket not closed {}", e1.toString());
-                    }
-                    egateSocket = null;
-                }
-                if (egateSocket != null) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
-                startAutomaticRefresh();
-                logger.debug("EGate Handler connected and online, Status {} ", this.getThing().getStatus().toString());
-
-            }
+            pollingJob = scheduler.scheduleWithFixedDelay(pollingConfig, 0, 30, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to dominoswiss eGate gateway. host IP address or port are not set.");
@@ -128,6 +107,9 @@ public class eGateHandler extends BaseBridgeHandler {
             egateSocket.close();
             refreshJob.cancel(true);
             reader.close();
+            if (pollingJob != null) {
+                pollingJob.cancel(true);
+            }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "EGate Disposed");
             logger.debug("EGate Handler connection closed, disposing");
         } catch (IOException e) {
@@ -230,6 +212,37 @@ public class eGateHandler extends BaseBridgeHandler {
         }
     }
 
+    private final Runnable pollingConfig = new Runnable() {
+        @Override
+        public void run() {
+            synchronized (lock) {
+                try {
+                    egateSocket = new Socket();
+                    egateSocket.connect(new InetSocketAddress(host, port));
+                    egateSocket.setSoTimeout(SOCKET_TIMEOUT_SEC);
+                    writer = new BufferedWriter(new OutputStreamWriter(egateSocket.getOutputStream()));
+                    writer.write("SilenceModeSet;Value=0;" + CR);
+                    writer.flush();
+
+                } catch (IOException e) {
+                    logger.debug("unknown socket host {}", host);
+                    try {
+                        egateSocket.close();
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, e.toString());
+                    } catch (IOException e1) {
+                        logger.warn("EGate Socket not closed {}", e1.toString());
+                    }
+                    egateSocket = null;
+                }
+                if (egateSocket != null) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+                startAutomaticRefresh();
+                logger.debug("EGate Handler connected and online, Status {} ", getThing().getStatus().toString());
+            }
+        }
+    };
+
     private void startAutomaticRefresh() {
         Runnable runnable = () -> {
             try {
@@ -272,9 +285,7 @@ public class eGateHandler extends BaseBridgeHandler {
 
     @SuppressWarnings("null")
     protected void onData(String input) {
-
         // Instruction=2;ID=19;Command=1;Value=0;Priority=0;
-
         Map<String, String> map = new HashMap<String, String>();
         // Thing blind;
         // split on ;
