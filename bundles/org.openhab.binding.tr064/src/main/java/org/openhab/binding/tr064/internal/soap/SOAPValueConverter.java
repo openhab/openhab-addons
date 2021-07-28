@@ -172,6 +172,26 @@ public class SOAPValueConverter {
     }
 
     /**
+     * post processor to map mac device signal strength to system.signal-strength 0-4
+     */
+    private State processMacSignalStrength(State state, Tr064ChannelConfig channelConfig) {
+        DecimalType mappedSignalStrength = new DecimalType(0);
+        DecimalType currentStateValue = state.as(DecimalType.class);
+
+        if (currentStateValue.intValue() > 80) {
+            mappedSignalStrength = new DecimalType(4);
+        } else if (currentStateValue.intValue() > 60) {
+            mappedSignalStrength = new DecimalType(3);
+        } else if (currentStateValue.intValue() > 40) {
+            mappedSignalStrength = new DecimalType(2);
+        } else if (currentStateValue.intValue() > 20) {
+            mappedSignalStrength = new DecimalType(1);
+        }
+
+        return mappedSignalStrength;
+    }
+
+    /**
      * post processor for answering machine new messages channel
      *
      * @param state the message list URL

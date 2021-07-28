@@ -156,18 +156,20 @@
 	</channel>
 
 	<!-- WLAN Config 1 - 2.4 Ghz -->
-	<channel name="macSignalStrengthConfig1" label="MAC Wifi Signal Strength 2.4Ghz"
+	<channel name="macSignalStrength1" label="MAC Wifi Signal Strength 2.4Ghz"
 		description="Wifi Signal Strength of the device with
-		the given MAC. This is set in case the Device is connected to 2.4Ghz">
-		<item type="Number:Dimensionless" unit="%" statePattern="%d %%"/>
+		the given MAC. This is set in case the Device is connected to 2.4Ghz"
+		typeId="system.signal-strength">
+		<item type="Number:Dimensionless"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
 			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration1"/>
-		<getAction name="GetSpecificAssociatedDeviceInfo" argument="NewX_AVM-DE_SignalStrength">
+		<getAction name="GetSpecificAssociatedDeviceInfo" argument="NewX_AVM-DE_SignalStrength"
+			postProcessor="processMacSignalStrength">
 			<parameter name="NewAssociatedDeviceMACAddress" thingParameter="macOnline"
 				pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"/>
 		</getAction>
 	</channel>
-	<channel name="macSpeedConfig1" label="MAC Wifi Speed 2.4Ghz"
+	<channel name="macSpeed1" label="MAC Wifi Speed 2.4Ghz"
 		description="Wifi Speed of the device with
 		the given MAC. This is set in case the Device is connected to 2.4Ghz">
 		<item type="Number:DataTransferRate" unit="Mbit/s" statePattern="%d Mbit/s"/>
@@ -180,18 +182,20 @@
 	</channel>
 
 	<!-- WLAN Config 2 - 5 Ghz -->
-	<channel name="macSignalStrengthConfig2" label="MAC Wifi Signal Strength 5Ghz"
+	<channel name="macSignalStrength2" label="MAC Wifi Signal Strength 5Ghz"
 		description="Wifi Signal Strength of the device with
-		the given MAC. This is set in case the Device is connected to 5Ghz">
-		<item type="Number:Dimensionless" unit="%" statePattern="%d %%"/>
+		the given MAC. This is set in case the Device is connected to 5Ghz"
+		typeId="system.signal-strength">
+		<item type="Number:Dimensionless"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
 			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration2"/>
-		<getAction name="GetSpecificAssociatedDeviceInfo" argument="NewX_AVM-DE_SignalStrength">
+		<getAction name="GetSpecificAssociatedDeviceInfo" argument="NewX_AVM-DE_SignalStrength"
+			postProcessor="processMacSignalStrength">
 			<parameter name="NewAssociatedDeviceMACAddress" thingParameter="macOnline"
 				pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"/>
 		</getAction>
 	</channel>
-	<channel name="macSpeedConfig2" label="MAC Wifi Speed 5Ghz"
+	<channel name="macSpeed2" label="MAC Wifi Speed 5Ghz"
 		description="Wifi Speed of the device with
 		the given MAC. This is set in case the Device is connected to 5Ghz">
 		<item type="Number:DataTransferRate" unit="Mbit/s" statePattern="%d Mbit/s"/>
