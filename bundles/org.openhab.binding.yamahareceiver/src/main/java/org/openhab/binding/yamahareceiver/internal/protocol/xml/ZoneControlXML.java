@@ -15,7 +15,7 @@ package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.*;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.*;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.*;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getZoneResponse;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.*;
 
 import java.io.IOException;
@@ -79,10 +79,10 @@ public class ZoneControlXML implements ZoneControl {
             "Sound_Video/Dialogue_Adjust/Dialogue_Lvl");
     protected CommandTemplate hdmi1Out = new CommandTemplate(
             "<System><Sound_Video><HDMI><Output><OUT_1>%s</OUT_1></Output></HDMI></Sound_Video></System>",
-            "System/Sound_Video/HDMI/Output/OUT_1");
+            "Sound_Video/HDMI/Output/OUT_1");
     protected CommandTemplate hdmi2Out = new CommandTemplate(
             "<System><Sound_Video><HDMI><Output><OUT_2>%s</OUT_2></Output></HDMI></Sound_Video></System>",
-            "System/Sound_Video/HDMI/Output/OUT_2");
+            "Sound_Video/HDMI/Output/OUT_2");
     protected boolean dialogueLevelSupported = false;
     protected boolean hdmi1OutSupported = false;
     protected boolean hdmi2OutSupported = false;
@@ -326,11 +326,11 @@ public class ZoneControlXML implements ZoneControl {
             throw new ReceivedMessageParseException("Expected inputID. Failed to read Input/Input_Sel");
         }
 
-        Node node = getResponse(comReference.get(), hdmi1Out.apply(GET_PARAM), hdmi1Out.getPath());
-        state.hdmi1Out = node != null && ON.equals(node.getTextContent());
+        value = getNodeContentOrEmpty(statusNode, hdmi1Out.getPath());
+        state.hdmi1Out = ON.equalsIgnoreCase(value);
 
-        node = getResponse(comReference.get(), hdmi2Out.apply(GET_PARAM), hdmi2Out.getPath());
-        state.hdmi2Out = node != null && ON.equals(node.getTextContent());
+        value = getNodeContentOrEmpty(statusNode, hdmi1Out.getPath());
+        state.hdmi2Out = ON.equalsIgnoreCase(value);
 
         // Some receivers may use Src_Name instead?
         value = getNodeContentOrEmpty(statusNode, inputSelNamePath);
