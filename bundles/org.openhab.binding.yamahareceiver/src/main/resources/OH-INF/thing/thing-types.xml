@@ -232,14 +232,14 @@
 		<category>SoundVolume</category>
 		<state min="0" max="2" step="1" pattern="%d"/>
 	</channel-type>
-	
+
 	<channel-type id="hdmi1Out">
 		<item-type>Switch</item-type>
 		<label>HDMI1 Output</label>
 		<description>Switch the HDMI1 Output ON/OFF</description>
 		<category>switch</category>
 	</channel-type>
-	
+
 	<channel-type id="hdmi2Out">
 		<item-type>Switch</item-type>
 		<label>HDMI2 Output</label>
