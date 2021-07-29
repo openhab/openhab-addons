@@ -40,6 +40,7 @@ public class RadioThermostatBindingConstants {
     public static final String LOCAL = "local";
     public static final String PROPERTY_IP = "hostName";
     public static final String PROPERTY_ISCT80 = "isCT80";
+    public static final String JSON_TIME = "{\"day\":%s,\"hour\":%s,\"minute\":%s}";
 
     public static final String KEY_ERROR = "error";
 
@@ -48,6 +49,7 @@ public class RadioThermostatBindingConstants {
     public static final String RUNTIME_RESOURCE = "tstat/datalog";
     public static final String HUMIDITY_RESOURCE = "tstat/humidity";
     public static final String REMOTE_TEMP_RESOURCE = "tstat/remote_temp";
+    public static final String TIME_RESOURCE = "tstat/time";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_RTHERM = new ThingTypeUID(BINDING_ID, "rtherm");

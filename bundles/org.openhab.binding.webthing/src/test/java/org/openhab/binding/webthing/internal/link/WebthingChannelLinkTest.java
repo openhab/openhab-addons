@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.webthing.internal.link;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import java.net.URI;
@@ -29,8 +29,14 @@ import org.openhab.binding.webthing.internal.channel.Channels;
 import org.openhab.binding.webthing.internal.client.Mocks;
 import org.openhab.binding.webthing.internal.client.WebthingTest;
 import org.openhab.binding.webthing.internal.client.dto.PropertyStatusMessage;
-import org.openhab.core.library.types.*;
-import org.openhab.core.thing.*;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 

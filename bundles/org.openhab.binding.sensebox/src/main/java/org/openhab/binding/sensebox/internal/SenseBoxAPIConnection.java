@@ -80,17 +80,18 @@ public class SenseBoxAPIConnection {
                 if (loc.getGeometry() != null) {
                     List<Double> locationData = loc.getGeometry().getData();
                     if (locationData != null) {
+                        int locationDataCount = locationData.size();
                         SenseBoxLocation location = new SenseBoxLocation();
 
-                        if (locationData.size() > 0) {
+                        if (locationDataCount > 0) {
                             location.setLongitude(locationData.get(0));
                         }
 
-                        if (locationData.size() > 1) {
+                        if (locationDataCount > 1) {
                             location.setLatitude(locationData.get(1));
                         }
 
-                        if (locationData.size() > 2) {
+                        if (locationDataCount > 2) {
                             location.setHeight(locationData.get(2));
                         }
 

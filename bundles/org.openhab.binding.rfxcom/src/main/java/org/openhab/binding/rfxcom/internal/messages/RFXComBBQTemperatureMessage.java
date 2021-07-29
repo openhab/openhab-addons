@@ -15,7 +15,9 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
@@ -124,13 +126,14 @@ public class RFXComBBQTemperatureMessage extends RFXComBatteryDeviceMessage<RFXC
     }
 
     @Override
-    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
+            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
         if (CHANNEL_FOOD_TEMPERATURE.equals(channelId)) {
             return new DecimalType(foodTemperature);
         } else if (CHANNEL_BBQ_TEMPERATURE.equals(channelId)) {
             return new DecimalType(bbqTemperature);
         } else {
-            return super.convertToState(channelId, deviceState);
+            return super.convertToState(channelId, config, deviceState);
         }
     }
 

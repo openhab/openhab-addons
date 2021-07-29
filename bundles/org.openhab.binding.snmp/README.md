@@ -94,6 +94,8 @@ For `string` channels the default `datatype` is `STRING` (i.e. the item's will b
 If it is set to `IPADDRESS`, an SNMP IP address object is constructed from the item's value.
 The `HEXSTRING` datatype converts a hexadecimal string (e.g. `aa bb 11`) to the respective octet string before sending data to the target (and vice versa for receiving data).
 
+`number`-type channels can have a parameter `unit` if their `mode` is set to `READ`. This will result in a state update applying [UoM](https://www.openhab.org/docs/concepts/units-of-measurement.html) to the received data if the UoM symbol is recognised.
+
 `switch`-type channels send a pre-defined value if they receive `ON` or `OFF` command in `WRITE` or `READ_WRITE` mode.
 In `READ`, `READ_WRITE` or `TRAP` mode they change to either `ON` or `OFF` on these values.
 The parameters used for defining the values are `onvalue` and `offvalue`.
@@ -125,7 +127,7 @@ demo.things:
 ```
 Thing snmp:target:router [ hostname="192.168.0.1", protocol="v2c" ] {
     Channels:
-        Type number : inBytes [ oid=".1.3.6.1.2.1.31.1.1.1.6.2", mode="READ" ]
+        Type number : inBytes [ oid=".1.3.6.1.2.1.31.1.1.1.6.2", mode="READ", unit="B" ]
         Type number : outBytes [ oid=".1.3.6.1.2.1.31.1.1.1.10.2", mode="READ" ]
         Type number : if4Status [ oid="1.3.6.1.2.1.2.2.1.7.4", mode="TRAP" ]
         Type switch : if4Command [ oid="1.3.6.1.2.1.2.2.1.7.4", mode="READ_WRITE", datatype="UINT32", onvalue="2", offvalue="0" ]
@@ -138,6 +140,7 @@ demo.items:
 
 ```
 Number inBytes "Router bytes in [%d]" { channel="snmp:target:router:inBytes" }
+Number inGigaBytes "Router gigabytes in [%d GB]" { channel="snmp:target:router:inBytes" }
 Number outBytes "Router bytes out [%d]" { channel="snmp:target:router:outBytes" }
 Number if4Status "Router interface 4 status [%d]" { channel="snmp:target:router:if4Status" }
 Switch if4Command "Router interface 4 switch [%s]" { channel="snmp:target:router:if4Command" }

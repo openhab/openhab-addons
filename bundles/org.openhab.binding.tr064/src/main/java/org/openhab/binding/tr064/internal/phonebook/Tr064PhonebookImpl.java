@@ -93,6 +93,6 @@ public class Tr064PhonebookImpl implements Phonebook {
 
     private String normalizeNumber(String number) {
         // Naive normalization: remove all non-digit characters
-        return number.replaceAll("[^0-9]\\+\\*", "");
+        return number.replaceAll("[^0-9\\*\\+]", "");
     }
 }

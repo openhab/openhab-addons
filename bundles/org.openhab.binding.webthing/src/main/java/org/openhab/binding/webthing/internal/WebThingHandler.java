@@ -16,7 +16,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -28,11 +29,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.webthing.internal.channel.Channels;
-import org.openhab.binding.webthing.internal.client.*;
+import org.openhab.binding.webthing.internal.client.ConsumedThing;
+import org.openhab.binding.webthing.internal.client.ConsumedThingFactory;
 import org.openhab.binding.webthing.internal.link.ChannelToPropertyLink;
 import org.openhab.binding.webthing.internal.link.PropertyToChannelLink;
 import org.openhab.binding.webthing.internal.link.UnknownPropertyException;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -92,10 +97,9 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
         // perform connect in background
         scheduler.execute(() -> {
             // WebThing URI present?
-            var uri = toUri(getConfigAs(WebThingConfiguration.class).webThingURI);
-            if (uri != null) {
-                logger.debug("try to connect WebThing {}", uri);
-                var connected = tryReconnect(uri);
+            if (getWebThingURI() != null) {
+                logger.debug("try to connect WebThing {}", webThingURI);
+                var connected = tryReconnect();
                 if (connected) {
                     logger.debug("WebThing {} connected", getWebThingLabel());
                 }
@@ -111,6 +115,13 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
                 .getAndSet(Optional.of(scheduler.scheduleWithFixedDelay(this::checkWebThingConnection,
                         HEALTH_CHECK_PERIOD.getSeconds(), HEALTH_CHECK_PERIOD.getSeconds(), TimeUnit.SECONDS)))
                 .ifPresent(future -> future.cancel(true));
+    }
+
+    private @Nullable URI getWebThingURI() {
+        if (webThingURI == null) {
+            webThingURI = toUri(getConfigAs(WebThingConfiguration.class).webThingURI);
+        }
+        return webThingURI;
     }
 
     private @Nullable URI toUri(@Nullable String uri) {
@@ -137,10 +148,11 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
         }
     }
 
-    private boolean tryReconnect(@Nullable URI uri) {
+    private boolean tryReconnect() {
         if (isActivated.get()) { // will try reconnect only, if activated
             try {
                 // create the client-side WebThing representation
+                var uri = getWebThingURI();
                 if (uri != null) {
                     var webThing = ConsumedThingFactory.instance().create(webSocketClient, httpClient, uri, scheduler,
                             this::onError);
@@ -253,7 +265,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
             itemChangedListenerMap.getOrDefault(channelUID, EMPTY_ITEM_CHANGED_LISTENER).onItemStateChanged(channelUID,
                     (State) command);
         } else if (command instanceof RefreshType) {
-            tryReconnect(webThingURI);
+            tryReconnect();
         }
     }
 
@@ -277,7 +289,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
         // try reconnect, if necessary
         if (isDisconnected() || (isOnline() && !isAlive())) {
             logger.debug("try reconnecting WebThing {}", getWebThingLabel());
-            if (tryReconnect(webThingURI)) {
+            if (tryReconnect()) {
                 logger.debug("WebThing {} reconnected", getWebThingLabel());
             }
 
@@ -285,7 +297,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
             // force reconnecting periodically, to fix erroneous states that occurs for unknown reasons
             var elapsedSinceLastReconnect = Duration.between(lastReconnect.get(), Instant.now());
             if (isOnline() && (elapsedSinceLastReconnect.getSeconds() > RECONNECT_PERIOD.getSeconds())) {
-                if (tryReconnect(webThingURI)) {
+                if (tryReconnect()) {
                     logger.debug("WebThing {} reconnected. Initiated by periodic reconnect", getWebThingLabel());
                 } else {
                     logger.debug("could not reconnect WebThing {} (periodic reconnect failed). Next trial in {} sec",

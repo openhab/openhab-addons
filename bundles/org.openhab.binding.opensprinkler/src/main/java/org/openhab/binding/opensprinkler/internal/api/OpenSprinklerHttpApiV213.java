@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.opensprinkler.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.openhab.binding.opensprinkler.internal.util.Hash;
@@ -23,6 +25,7 @@ import org.openhab.binding.opensprinkler.internal.util.Hash;
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 class OpenSprinklerHttpApiV213 extends OpenSprinklerHttpApiV210 {
     /**
      * Constructor for the OpenSprinkler API class to create a connection to the OpenSprinkler
@@ -33,15 +36,14 @@ class OpenSprinklerHttpApiV213 extends OpenSprinklerHttpApiV210 {
      * @param password Admin password for the OpenSprinkler device.
      * @param basicUsername only needed if basic auth is required
      * @param basicPassword only needed if basic auth is required
+     * @throws CommunicationApiException
      * @throws Exception
      */
     OpenSprinklerHttpApiV213(final HttpClient httpClient, final OpenSprinklerHttpInterfaceConfig config)
-            throws GeneralApiException {
-        super(httpClient, withHashedPassword(config));
-    }
-
-    private static OpenSprinklerHttpInterfaceConfig withHashedPassword(final OpenSprinklerHttpInterfaceConfig config) {
-        config.password = Hash.getMD5Hash(config.password);
-        return config;
+            throws GeneralApiException, CommunicationApiException {
+        super(httpClient, config);
+        password = Hash.getMD5Hash(password);
+        getProgramData();
+        getStationNames();
     }
 }

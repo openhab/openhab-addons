@@ -19,15 +19,17 @@ key=value
 0=OFF
 ON=1
 OFF=0
+white\ space=showing escape
 =default
 ```
 
-| input      | output    |
-|------------|-----------|
-| `1`        | `ON`      |
-| `OFF`      | `0`       |
-| `key`      | `value`   |
-| `anything` | `default` |
+| input         | output         |
+|---------------|----------------|
+| `1`           | `ON`           |
+| `OFF`         | `0`            |
+| `key`         | `value`        |
+| `white space` | `using escape` |
+| `anything`    | `default`      |
 
 ## Usage as a Profile
 

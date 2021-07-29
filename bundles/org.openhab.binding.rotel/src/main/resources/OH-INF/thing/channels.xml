@@ -151,6 +151,10 @@
 		<label>Volume</label>
 		<description>Increase or decrease the volume</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state pattern="%d" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>

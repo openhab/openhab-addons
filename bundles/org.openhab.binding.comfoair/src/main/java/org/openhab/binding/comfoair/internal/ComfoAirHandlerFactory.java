@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.comfoair.internal;
 
-import java.util.Collections;
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.transport.serial.SerialPortManager;
@@ -36,9 +33,6 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.comfoair", service = ThingHandlerFactory.class)
 public class ComfoAirHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(ComfoAirBindingConstants.THING_TYPE_COMFOAIR_GENERIC);
-
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
 
     @Reference
@@ -52,14 +46,15 @@ public class ComfoAirHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return ComfoAirBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (ComfoAirBindingConstants.THING_TYPE_COMFOAIR_GENERIC.equals(thingTypeUID)) {
+        if (ComfoAirBindingConstants.THING_TYPE_COMFOAIR_GENERIC.equals(thingTypeUID)
+                || ComfoAirBindingConstants.THING_TYPE_COMFOAIR_WHR930.equals(thingTypeUID)) {
             return new ComfoAirHandler(thing, serialPortManager);
         }
 

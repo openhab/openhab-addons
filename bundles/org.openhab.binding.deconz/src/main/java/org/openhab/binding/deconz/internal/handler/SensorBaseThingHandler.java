@@ -38,9 +38,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.type.ChannelKind;
-import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -169,32 +167,6 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
         String lastSeen = stateResponse.lastseen;
         if (lastSeen != null) {
             updateState(CHANNEL_LAST_SEEN, Util.convertTimestampToDateTime(lastSeen));
-        }
-    }
-
-    protected void createChannel(String channelId, ChannelKind kind) {
-        if (thing.getChannel(channelId) != null) {
-            // channel already exists, no update necessary
-            return;
-        }
-
-        ThingHandlerCallback callback = getCallback();
-        if (callback != null) {
-            ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-            ChannelTypeUID channelTypeUID;
-            switch (channelId) {
-                case CHANNEL_BATTERY_LEVEL:
-                    channelTypeUID = new ChannelTypeUID("system:battery-level");
-                    break;
-                case CHANNEL_BATTERY_LOW:
-                    channelTypeUID = new ChannelTypeUID("system:low-battery");
-                    break;
-                default:
-                    channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
-                    break;
-            }
-            Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).withKind(kind).build();
-            updateThing(editThing().withChannel(channel).build());
         }
     }
 

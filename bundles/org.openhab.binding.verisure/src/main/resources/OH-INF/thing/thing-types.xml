@@ -160,6 +160,7 @@
 			<channel id="installationName" typeId="installationName"/>
 			<channel id="installationId" typeId="installationId"/>
 			<channel id="smokeDetectorTriggerChannel" typeId="triggerChannel"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
 		</channels>
 
 		<properties>
@@ -224,6 +225,7 @@
 			<channel id="installationName" typeId="installationName"/>
 			<channel id="installationId" typeId="installationId"/>
 			<channel id="sirenTriggerChannel" typeId="triggerChannel"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
 		</channels>
 
 		<properties>
@@ -256,6 +258,7 @@
 			<channel id="installationName" typeId="installationName"/>
 			<channel id="installationId" typeId="installationId"/>
 			<channel id="nightControlTriggerChannel" typeId="triggerChannel"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
 		</channels>
 
 		<properties>
@@ -288,6 +291,7 @@
 			<channel id="installationName" typeId="installationName"/>
 			<channel id="installationId" typeId="installationId"/>
 			<channel id="doorWindowTriggerChannel" typeId="triggerChannel"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
 		</channels>
 
 		<properties>

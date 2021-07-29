@@ -12,8 +12,19 @@
  */
 package org.openhab.binding.gardena.internal;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,7 +42,13 @@ import org.openhab.binding.gardena.internal.exception.GardenaDeviceNotFoundExcep
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.DataItemDeserializer;
 import org.openhab.binding.gardena.internal.model.dto.Device;
-import org.openhab.binding.gardena.internal.model.dto.api.*;
+import org.openhab.binding.gardena.internal.model.dto.api.CreateWebSocketRequest;
+import org.openhab.binding.gardena.internal.model.dto.api.DataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.LocationDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.LocationResponse;
+import org.openhab.binding.gardena.internal.model.dto.api.LocationsResponse;
+import org.openhab.binding.gardena.internal.model.dto.api.PostOAuth2Response;
+import org.openhab.binding.gardena.internal.model.dto.api.WebSocketCreatedResponse;
 import org.openhab.binding.gardena.internal.model.dto.command.GardenaCommand;
 import org.openhab.binding.gardena.internal.model.dto.command.GardenaCommandRequest;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -116,6 +133,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             startWebsockets();
             initialized = true;
         } catch (Exception ex) {
+            dispose();
             throw new GardenaException(ex.getMessage(), ex);
         }
     }
@@ -263,6 +281,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     /**
      * Stops the client.
      */
+    @Override
     public void dispose() {
         logger.debug("Disposing GardenaSmart");
 

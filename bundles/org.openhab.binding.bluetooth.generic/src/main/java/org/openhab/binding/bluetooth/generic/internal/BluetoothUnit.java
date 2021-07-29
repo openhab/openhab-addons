@@ -36,12 +36,10 @@ import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 
-import tec.uom.se.format.SimpleUnitFormat;
-import tec.uom.se.function.MultiplyConverter;
-import tec.uom.se.function.PiMultiplierConverter;
-import tec.uom.se.function.RationalConverter;
-import tec.uom.se.unit.ProductUnit;
-import tec.uom.se.unit.TransformedUnit;
+import tech.units.indriya.format.SimpleUnitFormat;
+import tech.units.indriya.function.MultiplyConverter;
+import tech.units.indriya.unit.ProductUnit;
+import tech.units.indriya.unit.TransformedUnit;
 
 /**
  * The {@link BluetoothUnit} maps bluetooth units to openHAB units.
@@ -239,13 +237,13 @@ public enum BluetoothUnit {
                 new ProductUnit<RadiationDoseAbsorptionRate>(Units.GRAY.divide(Units.SECOND)));
 
         public static final Unit<Mass> POUND = addUnit(
-                new TransformedUnit<Mass>(SIUnits.KILOGRAM, new MultiplyConverter(0.45359237)));
+                new TransformedUnit<Mass>(SIUnits.KILOGRAM, MultiplyConverter.of(0.45359237)));
 
         public static final Unit<Angle> MINUTE_ANGLE = addUnit(new TransformedUnit<Angle>(Units.RADIAN,
-                new PiMultiplierConverter().concatenate(new RationalConverter(1, 180 * 60))));
+                MultiplyConverter.ofPiExponent(1).concatenate(MultiplyConverter.ofRational(1, 180 * 60))));
 
         public static final Unit<Angle> SECOND_ANGLE = addUnit(new TransformedUnit<Angle>(Units.RADIAN,
-                new PiMultiplierConverter().concatenate(new RationalConverter(1, 180 * 60 * 60))));
+                MultiplyConverter.ofPiExponent(1).concatenate(MultiplyConverter.ofRational(1, 180 * 60 * 60))));
 
         public static final Unit<Area> HECTARE = addUnit(SIUnits.SQUARE_METRE.multiply(10000.0));
         public static final Unit<Area> BARN = addUnit(SIUnits.SQUARE_METRE.multiply(10E-28));
@@ -259,10 +257,10 @@ public enum BluetoothUnit {
                 new ProductUnit<Radiance>(WATT_PER_STERADIAN.divide(SIUnits.SQUARE_METRE)));
 
         public static final Unit<Frequency> CYCLES_PER_MINUTE = addUnit(new TransformedUnit<Frequency>(Units.HERTZ,
-                new RationalConverter(BigInteger.valueOf(60), BigInteger.ONE)));
+                MultiplyConverter.ofRational(BigInteger.valueOf(60), BigInteger.ONE)));
 
         public static final Unit<Angle> REVOLUTION = addUnit(new TransformedUnit<Angle>(Units.RADIAN,
-                new PiMultiplierConverter().concatenate(new RationalConverter(2, 1))));
+                MultiplyConverter.ofPiExponent(1).concatenate(MultiplyConverter.ofRational(2, 1))));
         public static final Unit<AngularVelocity> REVOLUTION_PER_MINUTE = addUnit(
                 new ProductUnit<AngularVelocity>(REVOLUTION.divide(Units.MINUTE)));
 

@@ -73,6 +73,7 @@ import com.google.gson.JsonSyntaxException;
  * sent to one of the channels.
  *
  * @author Ondrej Pecta - Initial contribution
+ * @author Laurent Garnier - Other portals integration
  */
 @NonNullByDefault
 public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
@@ -193,8 +194,6 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     public synchronized void login() {
-        String url;
-
         if (thingConfig.getEmail().isEmpty() || thingConfig.getPassword().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Can not access device as username and/or password are null");
@@ -214,11 +213,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         reLoginNeeded = false;
 
         try {
-            url = TAHOMA_API_URL + "login";
             String urlParameters = "userId=" + urlEncode(thingConfig.getEmail()) + "&userPassword="
                     + urlEncode(thingConfig.getPassword());
 
-            ContentResponse response = sendRequestBuilder(url, HttpMethod.POST)
+            ContentResponse response = sendRequestBuilder("login", HttpMethod.POST)
                     .content(new StringContentProvider(urlParameters),
                             "application/x-www-form-urlencoded; charset=UTF-8")
                     .send();
@@ -235,7 +233,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             } else if (data.isSuccess()) {
                 logger.debug("SomfyTahoma version: {}", data.getVersion());
                 String id = registerEvents();
-                if (id != null && !id.equals(UNAUTHORIZED)) {
+                if (id != null && !UNAUTHORIZED.equals(id)) {
                     eventsId = id;
                     logger.debug("Events id: {}", eventsId);
                     updateStatus(ThingStatus.ONLINE);
@@ -254,7 +252,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data (login)");
         } catch (ExecutionException e) {
             if (isAuthenticationChallenge(e)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Authentication challenge");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Error logging in (check your credentials)");
                 setTooManyRequests();
             } else {
                 logger.debug("Cannot get login cookie", e);
@@ -270,14 +269,15 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private void setTooManyRequests() {
-        logger.debug("Too many requests error, suspending activity for {} seconds", SUSPEND_TIME);
+        logger.debug("Too many requests or bad credentials for the cloud portal, suspending activity for {} seconds",
+                SUSPEND_TIME);
         tooManyRequests = true;
         scheduler.schedule(this::enableLogin, SUSPEND_TIME, TimeUnit.SECONDS);
     }
 
     private @Nullable String registerEvents() {
-        SomfyTahomaRegisterEventsResponse response = invokeCallToURL(TAHOMA_EVENTS_URL + "register", "",
-                HttpMethod.POST, SomfyTahomaRegisterEventsResponse.class);
+        SomfyTahomaRegisterEventsResponse response = invokeCallToURL(EVENTS_URL + "register", "", HttpMethod.POST,
+                SomfyTahomaRegisterEventsResponse.class);
         return response != null ? response.getId() : null;
     }
 
@@ -294,8 +294,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private List<SomfyTahomaEvent> getEvents() {
-        SomfyTahomaEvent[] response = invokeCallToURL(TAHOMA_API_URL + "events/" + eventsId + "/fetch", "",
-                HttpMethod.POST, SomfyTahomaEvent[].class);
+        SomfyTahomaEvent[] response = invokeCallToURL(EVENTS_URL + eventsId + "/fetch", "", HttpMethod.POST,
+                SomfyTahomaEvent[].class);
         return response != null ? List.of(response) : List.of();
     }
 
@@ -357,13 +357,13 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     public List<SomfyTahomaActionGroup> listActionGroups() {
-        SomfyTahomaActionGroup[] list = invokeCallToURL(TAHOMA_API_URL + "actionGroups", "", HttpMethod.GET,
+        SomfyTahomaActionGroup[] list = invokeCallToURL("actionGroups", "", HttpMethod.GET,
                 SomfyTahomaActionGroup[].class);
         return list != null ? List.of(list) : List.of();
     }
 
     public @Nullable SomfyTahomaSetup getSetup() {
-        SomfyTahomaSetup setup = invokeCallToURL(TAHOMA_API_URL + "setup", "", HttpMethod.GET, SomfyTahomaSetup.class);
+        SomfyTahomaSetup setup = invokeCallToURL("setup", "", HttpMethod.GET, SomfyTahomaSetup.class);
         if (setup != null) {
             saveDevicePlaces(setup.getDevices());
         }
@@ -591,7 +591,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     private void logout() {
         try {
             eventsId = "";
-            sendGetToTahomaWithCookie(TAHOMA_API_URL + "logout");
+            sendGetToTahomaWithCookie("logout");
         } catch (ExecutionException | TimeoutException e) {
             logger.debug("Cannot send logout command!", e);
         } catch (InterruptedException e) {
@@ -626,7 +626,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     private String sendMethodToTahomaWithCookie(String url, HttpMethod method, String urlParameters)
             throws InterruptedException, ExecutionException, TimeoutException {
-        logger.trace("Sending {} to url: {} with data: {}", method.asString(), url, urlParameters);
+        logger.trace("Sending {} to url: {} with data: {}", method.asString(), getApiFullUrl(url), urlParameters);
         Request request = sendRequestBuilder(url, method);
         if (!urlParameters.isEmpty()) {
             request = request.content(new StringContentProvider(urlParameters), "application/json;charset=UTF-8");
@@ -644,10 +644,15 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         return response.getContentAsString();
     }
 
-    private Request sendRequestBuilder(String url, HttpMethod method) {
-        return httpClient.newRequest(url).method(method).header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en")
-                .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate").header("X-Requested-With", "XMLHttpRequest")
-                .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).agent(TAHOMA_AGENT);
+    private Request sendRequestBuilder(String subUrl, HttpMethod method) {
+        return httpClient.newRequest(getApiFullUrl(subUrl)).method(method)
+                .header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en").header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate")
+                .header("X-Requested-With", "XMLHttpRequest").timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS)
+                .agent(TAHOMA_AGENT);
+    }
+
+    private String getApiFullUrl(String subUrl) {
+        return "https://" + thingConfig.getCloudPortal() + API_BASE_URL + subUrl;
     }
 
     public void sendCommand(String io, String command, String params, String url) {
@@ -672,7 +677,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private boolean sendCommandInternal(String io, String command, String params, String url) {
-        String value = params.equals("[]") ? command : command + " " + params.replace("\"", "");
+        String value = "[]".equals(params) ? command : command + " " + params.replace("\"", "");
         String urlParameters = "{\"label\":\"" + getThingLabelByURL(io) + " - " + value
                 + " - openHAB\",\"actions\":[{\"deviceURL\":\"" + io + "\",\"commands\":[{\"name\":\"" + command
                 + "\",\"parameters\":" + params + "}]}]}";
@@ -799,11 +804,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
-        if (configurationParameters.containsKey("email")) {
-            thingConfig.setEmail(configurationParameters.get("email").toString());
-        }
-        if (configurationParameters.containsKey("password")) {
-            thingConfig.setPassword(configurationParameters.get("password").toString());
+        if (configurationParameters.containsKey("email") || configurationParameters.containsKey("password")
+                || configurationParameters.containsKey("portalUrl")) {
+            reLoginNeeded = true;
+            tooManyRequests = false;
         }
     }
 
@@ -841,11 +845,11 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             if (isAuthenticationChallenge(e)) {
                 reLogin();
             } else {
-                logger.debug("Cannot call url: {} with params: {}!", url, urlParameters, e);
+                logger.debug("Cannot call url: {} with params: {}!", getApiFullUrl(url), urlParameters, e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } catch (TimeoutException e) {
-            logger.debug("Timeout when calling url: {} with params: {}!", url, urlParameters, e);
+            logger.debug("Timeout when calling url: {} with params: {}!", getApiFullUrl(url), urlParameters, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         } catch (InterruptedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

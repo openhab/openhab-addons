@@ -125,6 +125,9 @@ Caddx Alarm things support a variety of channels as seen below in the following 
 | panel_primary_keypad_function_without_pin        | Switch    | Configuration       | Primary Keypad Function without PIN        |
 | panel_secondary_keypad_function                  | Switch    | Configuration       | Secondary Keypad Function                  |
 | panel_zone_bypass_toggle                         | Switch    | Configuration       | Zone Bypass Toggle                         |
+| panel_ac_fail                                    | Switch    | Configuration       | AC fail                                    |
+| panel_ac_power_on                                | Switch    | Configuration       | AC Power on                                |
+| panel_low_battery_memory                         | Switch    | Configuration       | Low Battery Memory                         |
 | partition_bypass_code_required                   | Switch    | Partition Condition | Bypass code required                       |
 | partition_fire_trouble                           | Switch    | Partition Condition | Fire trouble                               |
 | partition_fire                                   | Switch    | Partition Condition | Fire                                       |

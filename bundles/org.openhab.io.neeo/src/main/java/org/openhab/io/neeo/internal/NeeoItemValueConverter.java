@@ -250,7 +250,7 @@ public class NeeoItemValueConverter {
                     default:
                         break;
                 }
-            } catch (NumberFormatException e) {
+            } catch (IllegalArgumentException e) {
                 // do nothing - let it go to the other cases
             }
         }

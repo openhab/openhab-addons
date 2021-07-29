@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxEvent;
 import org.openhab.binding.caddx.internal.CaddxMessage;
+import org.openhab.binding.caddx.internal.CaddxMessageContext;
 import org.openhab.binding.caddx.internal.CaddxMessageType;
 import org.openhab.binding.caddx.internal.CaddxProperty;
 import org.openhab.binding.caddx.internal.action.CaddxPartitionActions;
@@ -46,6 +47,20 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
 
     public ThingHandlerPartition(Thing thing) {
         super(thing, CaddxThingType.PARTITION);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        CaddxBridgeHandler bridgeHandler = getCaddxBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+
+        String cmd = CaddxBindingConstants.PARTITION_STATUS_REQUEST;
+        String data = String.format("%d", getPartitionNumber() - 1);
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd, data);
     }
 
     @Override
@@ -87,7 +102,7 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
         }
 
         if (!data.startsWith("-")) {
-            bridgeHandler.sendCommand(cmd, data);
+            bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd, data);
         }
     }
 
@@ -105,6 +120,7 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
                     String value = message.getPropertyById(p.getId());
                     channelUID = new ChannelUID(getThing().getUID(), p.getId());
                     updateChannel(channelUID, value);
+                    logger.trace("Updating partition channel: {}", channelUID.getAsString());
                 }
             }
 
@@ -135,7 +151,7 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
         if (bridgeHandler == null) {
             return;
         }
-        bridgeHandler.sendCommand(cmd, sb.toString());
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd, sb.toString());
     }
 
     private void sendSecondaryCommand(String function) {
@@ -149,7 +165,7 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
         if (bridgeHandler == null) {
             return;
         }
-        bridgeHandler.sendCommand(cmd, sb.toString());
+        bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, cmd, sb.toString());
     }
 
     public void turnOffAnySounderOrAlarm(String pin) {
