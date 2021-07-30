@@ -156,6 +156,11 @@ If the FRITZ!Powerline 546E is added via auto-discovery it determines its own `a
 
 - `ain` (mandatory), no default (AIN number of the device)
 
+### HAN-FUN Blinds
+
+- `ain` (mandatory), no default (AIN number of the device)
+- `invertLevel` (mandatory), default false (Set this to true to invert the shutter level to match the openHAB standard, where 0 = closed, 100 = open)
+
 ### Finding The AIN
 
 The AIN (actor identification number) can be found in the FRITZ!Box interface -> Home Network -> SmartHome. When opening the details view for a device with the edit button, the AIN is shown. Use the AIN without the blank.

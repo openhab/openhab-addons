@@ -292,7 +292,7 @@
 
 		<representation-property>ain</representation-property>
 
-		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+		<config-description-ref uri="thing-type:avmfritz:hanfunblinds"/>
 	</thing-type>
 
 	<thing-type id="HAN_FUN_ON_OFF">

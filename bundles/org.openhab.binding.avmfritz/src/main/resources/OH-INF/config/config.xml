@@ -128,6 +128,18 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="thing-type:avmfritz:hanfunblinds">
+		<parameter name="ain" type="text" required="true">
+			<label>AIN</label>
+			<description>The AHA id (AIN) that identifies one specific FRITZ! device.</description>
+		</parameter>
+		<parameter name="invertLevel" type="boolean" required="true">
+			<label>Invert Level</label>
+			<description>Set this to true to invert the shutter level to match the openHAB standard (0 = closed, 100 = open)</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
 	<config-description uri="thing-type:avmfritz:fritzgroup">
 		<parameter name="ain" type="text" required="true">
 			<label>AIN</label>
