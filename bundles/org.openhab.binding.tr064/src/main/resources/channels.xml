@@ -160,11 +160,11 @@
 		description="Wifi Signal Strength of the device with
 		the given MAC. This is set in case the Device is connected to 2.4Ghz"
 		typeId="system.signal-strength">
-		<item type="Number:Dimensionless"/>
+		<item type="Number"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
 			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration1"/>
 		<getAction name="GetSpecificAssociatedDeviceInfo" argument="NewX_AVM-DE_SignalStrength"
-			postProcessor="processMacSignalStrength1">
+			postProcessor="processMacSignalStrength">
 			<parameter name="NewAssociatedDeviceMACAddress" thingParameter="macOnline"
 				pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"/>
 		</getAction>
@@ -186,11 +186,11 @@
 		description="Wifi Signal Strength of the device with
 		the given MAC. This is set in case the Device is connected to 5Ghz"
 		typeId="system.signal-strength">
-		<item type="Number:Dimensionless"/>
+		<item type="Number"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
 			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration2"/>
 		<getAction name="GetSpecificAssociatedDeviceInfo" argument="NewX_AVM-DE_SignalStrength"
-			postProcessor="processMacSignalStrength2">
+			postProcessor="processMacSignalStrength">
 			<parameter name="NewAssociatedDeviceMACAddress" thingParameter="macOnline"
 				pattern="([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}(\s*#.*)*"/>
 		</getAction>
