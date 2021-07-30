@@ -70,7 +70,6 @@ public class NukiLinkBuilder {
         this.port = port;
         this.token = token;
         this.secureToken = secureToken;
-        logger.debug("Instantiating NukiLinkBuilder({}:{}, secured: {})", host, port, secureToken);
     }
 
     public static URI getAuthUri(String host, int port) {

@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackListCallbackDto;
@@ -47,7 +46,6 @@ public class BridgeCallbackListResponse extends NukiBaseResponse {
         super(nukiBaseResponse.getStatus(), nukiBaseResponse.getMessage());
     }
 
-    @NonNull
     public List<BridgeApiCallbackListCallbackDto> getCallbacks() {
         return callbacks;
     }

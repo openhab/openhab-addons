@@ -24,7 +24,7 @@ The Sheet [NukiBridgeAPI](https://docs.google.com/spreadsheets/d/1SGKWhqwqRyOGbv
 
 ## Supported Bridges
 
-This binding supports just one bridge type: The Nuki Bridge. Create one `bridge` per Nuki Bridge available in your home automation environment.  
+This binding supports just one bridge type: The Nuki Bridge (`nuki:bridge`). Create one `bridge` per Nuki Bridge available in your home automation environment.  
 
 The following configuration options are available:  
 
@@ -51,7 +51,7 @@ be created but token must be set manually for binding to work.
 
 ## Supported Things
 
-This binding supports 2 things - Nuki Smart Lock and Nuki Opener. Both devices can be added using discovery after bridge they are 
+This binding supports 2 things - Nuki Smart Lock (`nuki:smartlock`) and Nuki Opener (`nuki:opener`). Both devices can be added using discovery after bridge they are 
 connected to is configured and online.
 
 ### Nuki Smart Lock
@@ -80,10 +80,10 @@ The following configuration options are available:
   | 5      | Lock 'n' Go with Unlatch |
 
   Supported lock states are:
-  
+
   | State  | Name                     |
   |--------|--------------------------|
-  | 0      | Uncalibared              |
+  | 0      | Uncalibrated             |
   | 1      | Locked                   |
   | 2      | Unlocking                |
   | 3      | Unlocked                 |
@@ -110,7 +110,8 @@ The following configuration options are available:
 
 - **doorsensorState** (Number)
     Use this channel if you want to display the current door state provided by the door sensor.
-  
+
+
   | Action | Name                     |
   |--------|--------------------------|
   | 0      | Unavailable              |

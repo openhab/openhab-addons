@@ -13,7 +13,6 @@
 package org.openhab.binding.nuki.internal.discovery;
 
 import java.util.Collections;
-import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -24,7 +23,6 @@ import org.openhab.binding.nuki.internal.constants.NukiLinkBuilder;
 import org.openhab.binding.nuki.internal.dto.BridgeApiAuthDto;
 import org.openhab.binding.nuki.internal.dto.WebApiBridgeDiscoveryDto;
 import org.openhab.binding.nuki.internal.dto.WebApiBridgeDto;
-import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -54,7 +52,6 @@ public class NukiBridgeDiscoveryService extends AbstractDiscoveryService {
 
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
-    private final ScheduledExecutorService threadPool = ThreadPoolManager.getScheduledPool("discovery");
 
     @Activate
     public NukiBridgeDiscoveryService(@Reference final HttpClientFactory httpClientFactory) {
@@ -64,8 +61,6 @@ public class NukiBridgeDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        logger.info("Bridge discovery started");
-
         try {
             ContentResponse response = this.httpClient.GET(NukiLinkBuilder.URI_BRIDGE_DISCOVERY);
             if (response.getStatus() == HttpStatus.OK_200) {
@@ -73,19 +68,18 @@ public class NukiBridgeDiscoveryService extends AbstractDiscoveryService {
                 WebApiBridgeDiscoveryDto discoveryResult = gson.fromJson(responseString,
                         WebApiBridgeDiscoveryDto.class);
                 if (discoveryResult == null) {
-                    logger.error("Bridge discovery failed - API returned invalid body {}", responseString);
+                    logger.debug("Bridge discovery failed - API returned invalid body {}", responseString);
                 } else if (discoveryResult.getErrorCode() == 0) {
                     discoverBridges(discoveryResult);
                 } else {
-                    logger.error("Bridge discovery failed - API returned error code '{}': {}",
+                    logger.debug("Bridge discovery failed - API returned error code '{}': {}",
                             discoveryResult.getErrorCode(), responseString);
                 }
             } else {
-                logger.error("Bridge discovery failed - invalid status {}: '{}'", response.getStatus(),
+                logger.debug("Bridge discovery failed - invalid status {}: '{}'", response.getStatus(),
                         response.getContentAsString());
             }
         } catch (Exception e) {
-            logger.error("Bridge discovery failed - '{}': {}", e.getClass(), e.getMessage());
             logger.debug("Bridge discovery failed", e);
         }
     }
@@ -99,7 +93,7 @@ public class NukiBridgeDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Discovery finished, found {} bridges", discoveryResult);
 
         discoveryResult.getBridges().forEach(bridge -> {
-            threadPool.execute(new BridgeInitializer(bridge));
+            scheduler.execute(new BridgeInitializer(bridge));
         });
     }
 
@@ -118,9 +112,9 @@ public class NukiBridgeDiscoveryService extends AbstractDiscoveryService {
                 .create(new ThingUID(NukiBindingConstants.THING_TYPE_BRIDGE,
                         generateBridgeId(bridgeData.getBridgeId())))
                 .withLabel(name).withProperty(NukiBindingConstants.PROPERTY_BRIDGE_ID, bridgeData.getBridgeId())
-                .withProperty(NukiBindingConstants.PROPERTY_BRIDGE_IP, bridgeData.getIp())
-                .withProperty(NukiBindingConstants.PROPERTY_BRIDGE_PORT, bridgeData.getPort())
-                .withProperty(NukiBindingConstants.PROPERTY_BRIDGE_TOKEN, token)
+                .withProperty(NukiBindingConstants.CONFIG_IP, bridgeData.getIp())
+                .withProperty(NukiBindingConstants.CONFIG_PORT, bridgeData.getPort())
+                .withProperty(NukiBindingConstants.CONFIG_API_TOKEN, token)
                 .withRepresentationProperty(NukiBindingConstants.PROPERTY_BRIDGE_ID).build();
         thingDiscovered(result);
     }
@@ -150,18 +144,16 @@ public class NukiBridgeDiscoveryService extends AbstractDiscoveryService {
                         discoverBridge(bridge, "");
                     }
                 } else if (response.getStatus() == HttpStatus.FORBIDDEN_403) {
-                    logger.error(
+                    logger.warn(
                             "Failed to get API token for bridge {}({}) - bridge authentication is disabled, check settings",
                             bridge.getIp(), bridge.getBridgeId());
                     discoverBridge(bridge, "");
                 } else {
-                    logger.error("Failed to get API token for bridge {}({}) - invalid status {}: {}", bridge.getIp(),
+                    logger.warn("Failed to get API token for bridge {}({}) - invalid status {}: {}", bridge.getIp(),
                             bridge.getBridgeId(), response.getStatus(), responseData);
                 }
             } catch (Exception e) {
-                logger.error("Failed to get API token for bridge {}({}) - {}", bridge.getIp(), bridge.getBridgeId(),
-                        e.getMessage());
-                logger.debug("Failed to get API token for bridge {}({})", bridge.getIp(), bridge.getBridgeId(), e);
+                logger.warn("Failed to get API token for bridge {}({})", bridge.getIp(), bridge.getBridgeId(), e);
             }
         }
     }

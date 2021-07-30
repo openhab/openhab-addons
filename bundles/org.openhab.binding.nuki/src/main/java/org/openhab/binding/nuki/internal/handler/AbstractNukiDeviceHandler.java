@@ -16,6 +16,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -69,7 +70,6 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
 
     public AbstractNukiDeviceHandler(Thing thing) {
         super(thing);
-        logger.debug("Instantiating {}({})", getClass().getSimpleName(), thing);
         String id = thing.getProperties().get(NukiBindingConstants.PROPERTY_NUKI_ID);
         if (id == null) {
             Object idFromOldConfig = getConfig().get(NukiBindingConstants.PROPERTY_NUKI_ID);
@@ -91,19 +91,15 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("initialize() for Nuki Device[{}].", getThing().getUID());
         scheduler.execute(this::initializeHandler);
     }
 
     @Override
     public void dispose() {
-        logger.debug("dispose() for Nuki Device[{}].", getThing().getUID());
         stopReInitJob();
     }
 
     private void initializeHandler() {
-        logger.debug("initializeHandler() for Nuki Device[{}]", nukiId);
-        @Nullable
         Bridge bridge = getBridge();
         if (bridge == null) {
             initializeHandler(null, null);
@@ -113,13 +109,7 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
     }
 
     protected NukiHttpClient getNukiHttpClient() {
-        @Nullable
-        NukiHttpClient httpClient = this.nukiHttpClient;
-        if (httpClient == null) {
-            throw new IllegalStateException("HTTP client is null");
-        } else {
-            return httpClient;
-        }
+        return Objects.requireNonNull(this.nukiHttpClient, "HTTP client is null");
     }
 
     private void initializeHandler(@Nullable ThingHandler bridgeHandler, @Nullable ThingStatus bridgeStatus) {
@@ -167,7 +157,6 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
     public abstract void refreshState(BridgeApiDeviceStateDto state);
 
     protected <T> void updateState(String channelId, T state, Function<T, State> transform) {
-        @Nullable
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
             updateState(channel.getUID(), state, transform);
@@ -178,25 +167,19 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
         updateState(channel, state == null ? UnDefType.NULL : transform.apply(state));
     }
 
-    protected State toSwitch(Boolean value) {
-        return value ? OnOffType.ON : OnOffType.OFF;
-    }
-
     protected State toDateTime(String dateTimeString) {
         try {
             ZonedDateTime date = OffsetDateTime.parse(dateTimeString).atZoneSameInstant(ZoneId.systemDefault());
             return new DateTimeType(date);
         } catch (DateTimeParseException e) {
-            logger.warn("Failed to parse date from '{}'", dateTimeString);
+            logger.debug("Failed to parse date from '{}'", dateTimeString);
             return UnDefType.UNDEF;
         }
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("bridgeStatusChanged({}) for Nuki Device[{}].", bridgeStatusInfo, nukiId);
         scheduler.execute(() -> {
-            @Nullable
             Bridge bridge = getBridge();
             if (bridge == null) {
                 initializeHandler(null, bridgeStatusInfo.getStatus());
@@ -208,7 +191,7 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("handleCommand({}, {})", channelUID, command);
+        logger.trace("handleCommand({}, {})", channelUID, command);
 
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             logger.debug("Thing is not ONLINE; command[{}] for channelUID[{}] is ignored", command, channelUID);

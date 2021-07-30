@@ -10,10 +10,11 @@
 		<description>This bridge represents a Nuki Bridge on your local network. Nuki Smart Locks have to be paired via
 			Bluetooth with it.</description>
 		<properties>
-			<property name="hardwareId">-</property>
-			<property name="serverId">-</property>
-			<property name="firmwareVersion">-</property>
-			<property name="wifiFirmwareVersion">-</property>
+			<property name="bridgeId"/>
+			<property name="hardwareId"/>
+			<property name="serverId"/>
+			<property name="firmwareVersion"/>
+			<property name="wifiFirmwareVersion"/>
 		</properties>
 		<config-description>
 			<parameter name="ip" type="text" required="true">
@@ -76,8 +77,9 @@
 			<channel id="doorsensorState" typeId="smartlockDoorState"/>
 		</channels>
 		<properties>
-			<property name="name">-</property>
-			<property name="firmwareVersion">-</property>
+			<property name="name"/>
+			<property name="firmwareVersion"/>
+			<property name="nukiId"/>
 		</properties>
 		<representation-property>nukiId</representation-property>
 		<config-description>
@@ -105,8 +107,9 @@
 			<channel id="ringActionTimestamp" typeId="ringActionTimestamp"/>
 		</channels>
 		<properties>
-			<property name="name">-</property>
-			<property name="firmwareVersion">-</property>
+			<property name="name"/>
+			<property name="firmwareVersion"/>
+			<property name="nukiId"/>
 		</properties>
 		<representation-property>nukiId</representation-property>
 	</thing-type>
@@ -171,7 +174,6 @@
 				<option value="ON">Battery is charging</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="smartlockDoorState">

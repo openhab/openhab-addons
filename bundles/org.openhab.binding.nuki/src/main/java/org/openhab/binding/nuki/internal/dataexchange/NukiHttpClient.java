@@ -157,7 +157,7 @@ public class NukiHttpClient {
                 return new BridgeLockStateResponse(status, contentResponse.getReason(), null);
             }
         } catch (Exception e) {
-            logger.debug("Could not get Bridge Lock State! Exception[{}]", e.getMessage());
+            logger.debug("Could not get Bridge Lock State!", e);
             return new BridgeLockStateResponse(handleException(e));
         }
     }

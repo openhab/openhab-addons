@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.nuki.internal.discovery;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -46,7 +45,7 @@ public class NukiDeviceDiscoveryService extends AbstractDiscoveryService impleme
     private NukiBridgeHandler bridge;
 
     public NukiDeviceDiscoveryService() {
-        super(new HashSet<>(Arrays.asList(NukiBindingConstants.THING_TYPE_SMARTLOCK)), 5, false);
+        super(Set.of(NukiBindingConstants.THING_TYPE_SMARTLOCK), 5, false);
     }
 
     @Override

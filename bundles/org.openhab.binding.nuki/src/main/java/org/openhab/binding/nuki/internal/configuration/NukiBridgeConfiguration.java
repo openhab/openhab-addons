@@ -1,0 +1,26 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.nuki.internal.configuration;
+
+/**
+ * Configuration for Nuki Bridge
+ *
+ * @author Jan Vybíral - Initial contribution
+ */
+public class NukiBridgeConfiguration {
+    public String ip;
+    public Integer port;
+    public String apiToken;
+    public boolean manageCallbacks = true;
+    public boolean secureToken = true;
+}

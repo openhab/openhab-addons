@@ -34,8 +34,7 @@ public enum OpenerAction {
         this.action = action;
     }
 
-    @Nullable
-    public static OpenerAction fromAction(int action) {
+    public static @Nullable OpenerAction fromAction(int action) {
         for (OpenerAction value : values()) {
             if (value.action == action) {
                 return value;

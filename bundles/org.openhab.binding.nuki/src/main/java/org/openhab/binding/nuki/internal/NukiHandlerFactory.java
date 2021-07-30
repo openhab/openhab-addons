@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Markus Katter - Initial contribution
+ * @contributer Jan Vybíral - Improved thing id generation
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.nuki")
 @NonNullByDefault
@@ -68,15 +69,11 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        logger.debug("NukiHandlerFactory:createHandler({})", thing);
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (NukiBindingConstants.THING_TYPE_BRIDGE_UIDS.contains(thingTypeUID)) {
             String callbackUrl = createCallbackUrl(thing.getUID().getId());
             NukiBridgeHandler nukiBridgeHandler = new NukiBridgeHandler((Bridge) thing, httpClient, callbackUrl);
-            if (!nukiBridgeHandler.isInitializable()) {
-                return null;
-            }
             nukiApiServlet.add(nukiBridgeHandler);
             return nukiBridgeHandler;
         } else if (NukiBindingConstants.THING_TYPE_SMARTLOCK_UIDS.contains(thingTypeUID)) {
@@ -84,15 +81,13 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
         } else if (NukiBindingConstants.THING_TYPE_OPENER_UIDS.contains(thingTypeUID)) {
             return new NukiOpenerHandler(thing);
         }
-        logger.trace("No valid Handler found for Thing[{}]!", thingTypeUID);
+        logger.warn("No valid Handler found for Thing[{}]!", thingTypeUID);
         return null;
     }
 
     @Override
     public void unregisterHandler(Thing thing) {
         super.unregisterHandler(thing);
-        logger.trace("NukiHandlerFactory:unregisterHandler({})", thing);
-        @Nullable
         ThingHandler handler = thing.getHandler();
         if (handler instanceof NukiBridgeHandler) {
             nukiApiServlet.remove((NukiBridgeHandler) handler);
@@ -100,11 +95,9 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private @Nullable String createCallbackUrl(String bridgeId) {
-        logger.trace("createCallbackUrl()");
-        @Nullable
         final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
         if (ipAddress == null) {
-            logger.warn("No network interface could be found.");
+            logger.warn("No network interface could be found to get callback address");
             return null;
         }
         // we do not use SSL as it can cause certificate validation issues.

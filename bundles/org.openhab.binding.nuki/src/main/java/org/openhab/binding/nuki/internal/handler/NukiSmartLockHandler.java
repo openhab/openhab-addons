@@ -13,7 +13,6 @@
 package org.openhab.binding.nuki.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nuki.internal.constants.NukiBindingConstants;
 import org.openhab.binding.nuki.internal.constants.SmartLockAction;
 import org.openhab.binding.nuki.internal.dataexchange.BridgeLockActionResponse;
@@ -50,14 +49,14 @@ public class NukiSmartLockHandler extends AbstractNukiDeviceHandler {
     @Override
     public void refreshState(BridgeApiDeviceStateDto state) {
         updateState(NukiBindingConstants.CHANNEL_SMARTLOCK_LOCK,
-                state.getState() == NukiBindingConstants.LOCK_STATES_LOCKED, this::toSwitch);
+                state.getState() == NukiBindingConstants.LOCK_STATES_LOCKED, OnOffType::from);
         updateState(NukiBindingConstants.CHANNEL_SMARTLOCK_BATTERY_LEVEL, state.getBatteryChargeState(),
                 DecimalType::new);
         updateState(NukiBindingConstants.CHANNEL_SMARTLOCK_BATTERY_CHARGING, state.getBatteryCharging(),
-                this::toSwitch);
-        updateState(NukiBindingConstants.CHANNEL_SMARTLOCK_LOW_BATTERY, state.isBatteryCritical(), this::toSwitch);
+                OnOffType::from);
+        updateState(NukiBindingConstants.CHANNEL_SMARTLOCK_LOW_BATTERY, state.isBatteryCritical(), OnOffType::from);
         updateState(NukiBindingConstants.CHANNEL_SMARTLOCK_KEYPAD_LOW_BATTERY, state.getKeypadBatteryCritical(),
-                this::toSwitch);
+                OnOffType::from);
         updateState(NukiBindingConstants.CHANNEL_SMARTLOCK_STATE, state.getState(), DecimalType::new);
         updateState(NukiBindingConstants.CHANNEL_SMARTLOCK_DOOR_STATE, state.getDoorsensorState(), DecimalType::new);
     }
@@ -87,7 +86,6 @@ public class NukiSmartLockHandler extends AbstractNukiDeviceHandler {
             case NukiBindingConstants.CHANNEL_SMARTLOCK_STATE:
                 if (command instanceof DecimalType) {
                     DecimalType cmd = (DecimalType) command;
-                    @Nullable
                     SmartLockAction action = SmartLockAction.fromAction(cmd.intValue());
                     if (action != null) {
                         BridgeLockActionResponse bridgeLockActionResponse = getNukiHttpClient()

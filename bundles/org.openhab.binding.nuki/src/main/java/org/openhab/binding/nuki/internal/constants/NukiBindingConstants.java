@@ -59,9 +59,6 @@ public class NukiBindingConstants {
     public static final String PROPERTY_NAME = "name";
     public static final String PROPERTY_NUKI_ID = "nukiId";
     public static final String PROPERTY_BRIDGE_ID = "bridgeId";
-    public static final String PROPERTY_BRIDGE_TOKEN = "bridgeToken";
-    public static final String PROPERTY_BRIDGE_IP = "bridgeIp";
-    public static final String PROPERTY_BRIDGE_PORT = "bridgePort";
 
     // List of all Smart Lock Channel ids
     public static final String CHANNEL_SMARTLOCK_LOCK = "lock";

@@ -34,8 +34,7 @@ public enum SmartLockAction {
         this.action = action;
     }
 
-    @Nullable
-    public static SmartLockAction fromAction(int action) {
+    public static @Nullable SmartLockAction fromAction(int action) {
         for (SmartLockAction value : values()) {
             if (value.action == action) {
                 return value;
