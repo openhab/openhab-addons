@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
@@ -92,6 +93,7 @@ public class ButtonDatapointTest extends JavaTest {
     }
 
     @Test
+    @Ignore(value = "Test is unstable see #10753")
     public void testDoublePress() throws IOException, HomematicClientException, InterruptedException {
         HmDatapoint shortPressDp = createPressDatapoint("PRESS_SHORT", Boolean.TRUE);
         HmDatapoint buttonVirtualDatapoint = getButtonVirtualDatapoint(shortPressDp);

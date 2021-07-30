@@ -15,9 +15,12 @@ package org.openhab.binding.miio.internal.handler;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -59,6 +62,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -71,6 +75,7 @@ import com.google.gson.JsonSyntaxException;
 public abstract class MiIoAbstractHandler extends BaseThingHandler implements MiIoMessageListener {
     protected static final int MAX_QUEUE = 5;
     protected static final Gson GSON = new GsonBuilder().create();
+    protected static final String TIMESTAMP = "timestamp";
 
     protected ScheduledExecutorService miIoScheduler = scheduler;
     protected @Nullable ScheduledFuture<?> pollingJob;
@@ -111,12 +116,13 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     public abstract void handleCommand(ChannelUID channelUID, Command command);
 
     protected boolean handleCommandsChannels(ChannelUID channelUID, Command command) {
+        String cmd = processSubstitutions(command.toString(), deviceVariables);
         if (channelUID.getId().equals(CHANNEL_COMMAND)) {
-            cmds.put(sendCommand(command.toString(), ""), command.toString());
+            cmds.put(sendCommand(cmd), channelUID.getId());
             return true;
         }
         if (channelUID.getId().equals(CHANNEL_RPC)) {
-            cmds.put(sendCommand(command.toString(), cloudServer), command.toString());
+            cmds.put(sendCommand(cmd, cloudServer), channelUID.getId());
             return true;
         }
         return false;
@@ -146,6 +152,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
         this.cloudServer = configuration.cloudServer;
         isIdentified = false;
+        deviceVariables.put(TIMESTAMP, Instant.now().getEpochSecond());
+        deviceVariables.put(PROPERTY_DID, configuration.deviceId);
         miIoScheduler.schedule(this::initializeData, 1, TimeUnit.SECONDS);
         int pollingPeriod = configuration.refreshInterval;
         if (pollingPeriod > 0) {
@@ -216,14 +224,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     protected int sendCommand(MiIoCommand command, String params) {
-        try {
-            final MiIoAsyncCommunication connection = getConnection();
-            return (connection != null) ? connection.queueCommand(command, params, getCloudServer()) : 0;
-        } catch (MiIoCryptoException | IOException e) {
-            logger.debug("Command {} for {} failed (type: {}): {}", command.toString(), getThing().getUID(),
-                    getThing().getThingTypeUID(), e.getLocalizedMessage());
-        }
-        return 0;
+        return sendCommand(command.getCommand(), processSubstitutions(params, deviceVariables), getCloudServer(), "");
     }
 
     protected int sendCommand(String commandString) {
@@ -241,19 +242,39 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
      * @return vacuum response
      */
     protected int sendCommand(String commandString, String cloudServer) {
-        final MiIoAsyncCommunication connection = getConnection();
+        String command = commandString.trim();
+        command = processSubstitutions(commandString.trim(), deviceVariables);
+        String param = "[]";
+        int sb = command.indexOf("[");
+        int cb = command.indexOf("{");
+        if (Math.max(sb, cb) > 0) {
+            int loc = (Math.min(sb, cb) > 0 ? Math.min(sb, cb) : Math.max(sb, cb));
+            param = command.substring(loc).trim();
+            command = command.substring(0, loc).trim();
+        }
+        return sendCommand(command, param, cloudServer, "");
+    }
+
+    protected int sendCommand(String command, String params, String cloudServer) {
+        return sendCommand(command, processSubstitutions(params, deviceVariables), cloudServer, "");
+    }
+
+    /**
+     * Sends commands to the {@link MiIoAsyncCommunication} for transmission to the Mi devices or cloud
+     *
+     * @param command (method) to be queued for execution
+     * @param parameters to be send with the command
+     * @param cloud server to be used or empty string for direct sending to the device
+     * @param sending subdevice or empty string for regular device
+     * @return message id
+     */
+    protected int sendCommand(String command, String params, String cloudServer, String sender) {
         try {
-            String command = commandString.trim();
-            String param = "[]";
-            int sb = command.indexOf("[");
-            int cb = command.indexOf("{");
-            if (Math.max(sb, cb) > 0) {
-                int loc = (Math.min(sb, cb) > 0 ? Math.min(sb, cb) : Math.max(sb, cb));
-                param = command.substring(loc).trim();
-                command = command.substring(0, loc).trim();
-            }
-            return (connection != null) ? connection.queueCommand(command, param, cloudServer) : 0;
+            final MiIoAsyncCommunication connection = getConnection();
+            return (connection != null) ? connection.queueCommand(command, params, cloudServer, sender) : 0;
         } catch (MiIoCryptoException | IOException e) {
+            logger.debug("Command {} for {} failed (type: {}): {}", command.toString(), getThing().getUID(),
+                    getThing().getThingTypeUID(), e.getLocalizedMessage());
             disconnected(e.getMessage());
         }
         return 0;
@@ -351,16 +372,22 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
         @Nullable
         String deviceId = configuration.deviceId;
+        if (deviceId.length() == 8 && deviceId.matches("^.*[a-zA-Z]+.*$")) {
+            logger.warn(
+                    "As per openHAB version 3.2 the deviceId is no longer a string with hexadecimals, instead it is a string with the numeric respresentation of the deviceId. If you continue seeing this message, update deviceId in your thing configuration. Expected change for thing '{}': Update current deviceId: '{}' to '{}'",
+                    getThing().getUID(), deviceId, Utils.fromHEX(deviceId));
+            deviceId = "";
+        }
         try {
-            if (deviceId.length() == 8 && tokenCheckPass(configuration.token)) {
-                final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token,
-                        Utils.hexStringToByteArray(deviceId), lastId, configuration.timeout, cloudConnector);
+            if (!deviceId.isBlank() && tokenCheckPass(configuration.token)) {
+                final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token, deviceId,
+                        lastId, configuration.timeout, cloudConnector);
                 if (getCloudServer().isBlank()) {
-                    logger.debug("Ping Mi device {} at {}", deviceId, configuration.host);
+                    logger.debug("Ping Mi deviceId '{}' at {}", deviceId, configuration.host);
                     Message miIoResponse = miioCom.sendPing(configuration.host);
                     if (miIoResponse != null) {
-                        logger.debug("Ping response from device {} at {}. Time stamp: {}, OH time {}, delta {}",
-                                Utils.getHex(miIoResponse.getDeviceId()), configuration.host,
+                        logger.debug("Ping response from deviceId '{}' at {}. Time stamp: {}, OH time {}, delta {}",
+                                Utils.fromHEX(Utils.getHex(miIoResponse.getDeviceId())), configuration.host,
                                 miIoResponse.getTimestamp(), LocalDateTime.now(), miioCom.getTimeDelta());
                         miioCom.registerListener(this);
                         this.miioCom = miioCom;
@@ -374,20 +401,17 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     return miioCom;
                 }
             } else {
-                logger.debug("No device ID defined. Retrieving Mi device ID");
-                final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token,
-                        new byte[0], lastId, configuration.timeout, cloudConnector);
+                logger.debug("No deviceId defined. Retrieving Mi deviceId");
+                final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token, "", lastId,
+                        configuration.timeout, cloudConnector);
                 Message miIoResponse = miioCom.sendPing(configuration.host);
                 if (miIoResponse != null) {
-                    logger.debug("Ping response from device {} at {}. Time stamp: {}, OH time {}, delta {}",
-                            Utils.getHex(miIoResponse.getDeviceId()), configuration.host, miIoResponse.getTimestamp(),
-                            LocalDateTime.now(), miioCom.getTimeDelta());
-                    deviceId = Utils.getHex(miIoResponse.getDeviceId());
-                    logger.debug("Ping response from device {} at {}. Time stamp: {}, OH time {}, delta {}", deviceId,
-                            configuration.host, miIoResponse.getTimestamp(), LocalDateTime.now(),
+                    deviceId = Utils.fromHEX(Utils.getHex(miIoResponse.getDeviceId()));
+                    logger.debug("Ping response from deviceId '{}' at {}. Time stamp: {}, OH time {}, delta {}",
+                            deviceId, configuration.host, miIoResponse.getTimestamp(), LocalDateTime.now(),
                             miioCom.getTimeDelta());
-                    miioCom.setDeviceId(miIoResponse.getDeviceId());
-                    logger.debug("Using retrieved Mi device ID: {}", deviceId);
+                    miioCom.setDeviceId(deviceId);
+                    logger.debug("Using retrieved Mi deviceId: {}", deviceId);
                     updateDeviceIdConfig(deviceId);
                     miioCom.registerListener(this);
                     this.miioCom = miioCom;
@@ -396,7 +420,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     miioCom.close();
                 }
             }
-            logger.debug("Ping response from device {} at {} FAILED", configuration.deviceId, configuration.host);
+            logger.debug("Ping response from deviceId '{}' at {} FAILED", configuration.deviceId, configuration.host);
             disconnectedNoResponse();
             return null;
         } catch (IOException e) {
@@ -412,8 +436,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             Configuration config = editConfiguration();
             config.put(PROPERTY_DID, deviceId);
             updateConfiguration(config);
+            deviceVariables.put(PROPERTY_DID, deviceId);
         } else {
-            logger.debug("Could not update config with device ID: {}", deviceId);
+            logger.debug("Could not update config with deviceId: {}", deviceId);
         }
     }
 
@@ -454,6 +479,42 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
         deviceVariables.putAll(properties);
         updateProperties(properties);
+    }
+
+    protected String processSubstitutions(String cmd, Map<String, Object> deviceVariables) {
+        if (!cmd.contains("$")) {
+            return cmd;
+        }
+        String returnCmd = cmd.replace("\"$", "$").replace("$\"", "$");
+        String cmdParts[] = cmd.split("\\$");
+        if (logger.isTraceEnabled()) {
+            logger.debug("processSubstitutions {} ", cmd);
+            for (Entry<String, Object> e : deviceVariables.entrySet()) {
+                logger.debug("key, value:  {}  -> {}", e.getKey(), e.getValue());
+            }
+        }
+        for (String substitute : cmdParts) {
+            if (deviceVariables.containsKey(substitute)) {
+                String replacementString = "";
+                Object replacement = deviceVariables.get(substitute);
+                if (replacement == null) {
+                    logger.debug("Replacement for '{}' is null. skipping replacement", substitute);
+                    continue;
+                }
+                if (replacement instanceof Integer || replacement instanceof Long || replacement instanceof Double
+                        || replacement instanceof BigDecimal || replacement instanceof Boolean) {
+                    replacementString = replacement.toString();
+                } else if (replacement instanceof JsonPrimitive) {
+                    replacementString = ((JsonPrimitive) replacement).getAsString();
+                } else if (replacement instanceof String) {
+                    replacementString = "\"" + (String) replacement + "\"";
+                } else {
+                    replacementString = String.valueOf(replacement);
+                }
+                returnCmd = returnCmd.replace("$" + substitute + "$", replacementString);
+            }
+        }
+        return returnCmd;
     }
 
     protected boolean updateThingType(JsonObject miioInfo) {
@@ -529,10 +590,11 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
     @Override
     public void onMessageReceived(MiIoSendCommand response) {
-        logger.debug("Received response for {} type: {}, result: {}, fullresponse: {}", getThing().getUID().getId(),
-                response.getCommand(), response.getResult(), response.getResponse());
+        logger.debug("Received response for device {} type: {}, result: {}, fullresponse: {}",
+                getThing().getUID().getId(), response.getCommand(), response.getResult(), response.getResponse());
         if (response.isError()) {
-            logger.debug("Error received: {}", response.getResponse().get("error"));
+            logger.debug("Error received for command '{}': {}.", response.getCommandString(),
+                    response.getResponse().get("error"));
             if (MiIoCommand.MIIO_INFO.equals(response.getCommand())) {
                 network.invalidateValue();
             }
@@ -550,12 +612,11 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                     break;
             }
             if (cmds.containsKey(response.getId())) {
-                if (response.getCloudServer().isBlank()) {
-                    updateState(CHANNEL_COMMAND, new StringType(response.getResponse().toString()));
-                } else {
-                    updateState(CHANNEL_RPC, new StringType(response.getResponse().toString()));
+                String channel = cmds.get(response.getId());
+                if (channel != null && (CHANNEL_COMMAND.contentEquals(channel) || CHANNEL_RPC.contentEquals(channel))) {
+                    updateState(channel, new StringType(response.getResponse().toString()));
+                    cmds.remove(response.getId());
                 }
-                cmds.remove(response.getId());
             }
         } catch (Exception e) {
             logger.debug("Error while handing message {}", response.getResponse(), e);

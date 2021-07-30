@@ -127,4 +127,17 @@ public final class Utils {
         }
         return value;
     }
+
+    /**
+     * Formats the deviceId to a hex string if possible. Otherwise returns the id unmodified.
+     *
+     * @param did
+     * @return did
+     */
+    public static String getHexId(String did) {
+        if (!did.isBlank() && !did.contains(".")) {
+            return toHEX(did);
+        }
+        return did;
+    }
 }

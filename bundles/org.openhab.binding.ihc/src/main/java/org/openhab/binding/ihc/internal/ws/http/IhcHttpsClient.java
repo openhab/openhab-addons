@@ -20,6 +20,8 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.net.ssl.SSLHandshakeException;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.client.ClientProtocolException;
@@ -29,6 +31,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
+import org.openhab.binding.ihc.internal.ws.exeptions.IhcTlsExecption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +75,8 @@ public abstract class IhcHttpsClient {
         setRequestProperty(requestProperties);
         try {
             return sendQ(query, timeout);
+        } catch (SSLHandshakeException e) {
+            throw new IhcTlsExecption(e);
         } catch (NoHttpResponseException | SocketTimeoutException e) {
             try {
                 logger.debug("No response received, resend query");

@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.2.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -159,6 +159,7 @@
     <module>org.openhab.binding.innogysmarthome</module>
     <module>org.openhab.binding.insteon</module>
     <module>org.openhab.binding.ipcamera</module>
+    <module>org.openhab.binding.ipobserver</module>
     <module>org.openhab.binding.intesis</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.irobot</module>
@@ -269,6 +270,7 @@
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.pushbullet</module>
     <module>org.openhab.binding.pushover</module>
+    <module>org.openhab.binding.pushsafer</module>
     <module>org.openhab.binding.qbus</module>
     <module>org.openhab.binding.radiothermostat</module>
     <module>org.openhab.binding.regoheatpump</module>
@@ -303,6 +305,7 @@
     <module>org.openhab.binding.snmp</module>
     <module>org.openhab.binding.solaredge</module>
     <module>org.openhab.binding.solarlog</module>
+    <module>org.openhab.binding.solarwatt</module>
     <module>org.openhab.binding.somfymylink</module>
     <module>org.openhab.binding.somfytahoma</module>
     <module>org.openhab.binding.sonos</module>

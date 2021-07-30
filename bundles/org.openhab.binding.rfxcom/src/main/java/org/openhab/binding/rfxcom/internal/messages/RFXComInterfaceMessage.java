@@ -14,10 +14,14 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.core.types.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * RFXCOM data class for interface message.
@@ -26,6 +30,8 @@ import org.openhab.core.types.Type;
  * @author Ivan Martinez - Older firmware support (OH1)
  */
 public class RFXComInterfaceMessage extends RFXComBaseMessage {
+
+    private final Logger logger = LoggerFactory.getLogger(RFXComInterfaceMessage.class);
 
     public enum SubType implements ByteEnumWrapper {
         UNKNOWN_COMMAND(-1),
@@ -74,46 +80,70 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
     }
 
     public enum TransceiverType implements ByteEnumWrapper {
-        _310MHZ(80),
-        _315MHZ(81),
-        _433_92MHZ_RECEIVER_ONLY(82),
-        _433_92MHZ_TRANSCEIVER(83),
-        _868_00MHZ(85),
-        _868_00MHZ_FSK(86),
-        _868_30MHZ(87),
-        _868_30MHZ_FSK(88),
-        _868_35MHZ(89),
-        _868_35MHZ_FSK(90),
-        _868_95MHZ_FSK(91);
+        _310MHZ(0x50, "RFXtrx315 operating at 310MHz"),
+        _315MHZ(0x51, "RFXtrx315 operating at 315MHz"),
+        _433_92MHZ_RECEIVER_ONLY(0x52, "RFXrec433 operating at 433.92MHz (receiver only)"),
+        _433_92MHZ_TRANSCEIVER(0x53, "RFXtrx433 operating at 433.92MHz"),
+        _433_42MHZ(0x54, "RFXtrx433 operating at 433.42MHz"),
+        _868_00MHZ(0x55, "RFXtrx868X operating at 868MHz"),
+        _868_00MHZ_FSK(0x56, "RFXtrx868X operating at 868.00MHz FSK"),
+        _868_30MHZ(0x57, "RFXtrx868X operating at 868.30MHz"),
+        _868_30MHZ_FSK(0x58, "RFXtrx868X operating at 868.30MHz FSK"),
+        _868_35MHZ(0x59, "RFXtrx868X operating at 868.35MHz"),
+        _868_35MHZ_FSK(0x5A, "RFXtrx868X operating at 868.35MHz FSK"),
+        _868_95MHZ_FSK(0x5B, "RFXtrx868X operating at 868.95MHz"),
+        _433_92MHZ_IOT(0x5C, "RFXtrxIOT operating at 433.92MHz"),
+        _868_00MHZ_IOT(0x5D, "RFXtrxIOT operating at 868MHz"),
+        _434_50MHZ(0x5F, "RFXtrx433 operating at 434.50MHz"),
+        _UNKNOWN(0xFF, "Unknown");
 
         private final int type;
+        private final String name;
 
-        TransceiverType(int type) {
+        TransceiverType(int type, String name) {
             this.type = type;
+            this.name = name;
         }
 
         @Override
         public byte toByte() {
             return (byte) type;
+        }
+
+        @Override
+        public String toString() {
+            return name;
         }
     }
 
     public enum FirmwareType implements ByteEnumWrapper {
-        TYPE1_RX_ONLY(0),
-        TYPE1(1),
-        TYPE2(2),
-        EXT(3),
-        EXT2(4);
+        TYPE1_RX_ONLY(0x00, "Type1 RFXrec receive only firmware"),
+        TYPE1(0x01, "Type1"),
+        TYPE2(0x02, "Type2"),
+        EXT(0x03, "Ext"),
+        EXT2(0x04, "Ext2"),
+        PRO1(0x05, "Pro1"),
+        PRO2(0x06, "Pro2"),
+        PROXL1(0x10, "ProXL1"),
+        PROXL2(0x12, "ProXL2"), // Discovered in the wild (not from RFXtrx SDK)
+        UNKNOWN(0xFF, "Unknown");
 
         private final int type;
+        private final String name;
 
-        FirmwareType(int type) {
+        FirmwareType(int type, String name) {
             this.type = type;
+            this.name = name;
         }
 
         @Override
         public byte toByte() {
             return (byte) type;
+        }
+
+        @Override
+        public String toString() {
+            return name;
         }
     }
 
@@ -222,81 +252,116 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
         subType = fromByte(SubType.class, super.subType);
 
         if (subType == SubType.RESPONSE) {
-            command = fromByte(Commands.class, data[4]);
-            transceiverType = fromByte(TransceiverType.class, data[5]);
-
-            firmwareVersion = data[6] & 0xFF;
-
-            enableUndecodedPackets = (data[7] & 0x80) != 0;
-            enableImagintronixOpusPackets = (data[7] & 0x40) != 0;
-            enableByronSXPackets = (data[7] & 0x20) != 0;
-            enableRSLPackets = (data[7] & 0x10) != 0;
-            enableLighting4Packets = (data[7] & 0x08) != 0;
-            enableFineOffsetPackets = (data[7] & 0x04) != 0;
-            enableRubicsonPackets = (data[7] & 0x02) != 0;
-            enableAEPackets = (data[7] & 0x01) != 0;
-
-            enableBlindsT1T2T3T4Packets = (data[8] & 0x80) != 0;
-            enableBlindsT0Packets = (data[8] & 0x40) != 0;
-            enableProGuardPackets = (data[8] & 0x20) != 0;
-            enableFS20Packets = (data[8] & 0x10) != 0;
-            enableLaCrossePackets = (data[8] & 0x08) != 0;
-            enableHidekiUPMPackets = (data[8] & 0x04) != 0;
-            enableADPackets = (data[8] & 0x02) != 0;
-            enableMertikPackets = (data[8] & 0x01) != 0;
-
-            enableVisonicPackets = (data[9] & 0x80) != 0;
-            enableATIPackets = (data[9] & 0x40) != 0;
-            enableOregonPackets = (data[9] & 0x20) != 0;
-            enableMeiantechPackets = (data[9] & 0x10) != 0;
-            enableHomeEasyPackets = (data[9] & 0x08) != 0;
-            enableACPackets = (data[9] & 0x04) != 0;
-            enableARCPackets = (data[9] & 0x02) != 0;
-            enableX10Packets = (data[9] & 0x01) != 0;
-
-            /*
-             * Different firmware versions have slightly different message formats.
-             * The firmware version numbering is unique to each hardware version
-             * but the location of the hardware version in the message is one of
-             * those things whose position varies. So we have to just look at the
-             * firmware version and pray. This condition below is taken from the
-             * openhab1-addons binding.
-             */
-            if ((firmwareVersion >= 95 && firmwareVersion <= 100) || (firmwareVersion >= 195 && firmwareVersion <= 200)
-                    || (firmwareVersion >= 251)) {
-                enableHomeConfortPackets = (data[10] & 0x02) != 0;
-                enableKEELOQPackets = (data[10] & 0x01) != 0;
-
-                hardwareVersion1 = data[11];
-                hardwareVersion2 = data[12];
-
-                outputPower = data[13] - 18;
-                firmwareType = fromByte(FirmwareType.class, data[14]);
-            } else {
-                hardwareVersion1 = data[10];
-                hardwareVersion2 = data[11];
-            }
-
-            text = "";
+            encodeResponseMessage(data);
         } else if (subType == SubType.START_RECEIVER) {
-            command = fromByte(Commands.class, data[4]);
-
-            final int len = 16;
-            final int dataOffset = 5;
-
-            byte[] byteArray = new byte[len];
-
-            for (int i = dataOffset; i < (dataOffset + len); i++) {
-                byteArray[i - dataOffset] += data[i];
-            }
-
-            text = new String(byteArray, StandardCharsets.US_ASCII);
+            encodeStartReceiverMessage(data);
         } else {
             // We don't handle the other subTypes but to avoid null pointer
             // exceptions we set command to something. It doesn't really
-            // matter what but it may b printed in log messages so...
+            // matter what but it may be printed in log messages so...
             command = Commands.UNSUPPORTED_COMMAND;
         }
+    }
+
+    private void encodeResponseMessage(byte[] data) throws RFXComException {
+        command = fromByte(Commands.class, data[4]);
+        try {
+            transceiverType = fromByte(TransceiverType.class, data[5]);
+        } catch (RFXComUnsupportedValueException e) {
+            transceiverType = TransceiverType._UNKNOWN;
+            logger.warn(
+                    "The transceiver type reported ({}) isn't known to the RFXCom binding. Please raise an issue at https://github.com/openhab/openhab-addons/ to have it included.",
+                    Byte.toUnsignedInt(data[5]));
+        }
+
+        hardwareVersion1 = data[11];
+        hardwareVersion2 = data[12];
+
+        outputPower = data[13] - 18;
+
+        /*
+         * Firmware versions before 1000 did not include a firmware
+         * type in their response. Instead, versions 0-99 were for
+         * Type 1, versions 100-199 were for Type 2, and versions
+         * above 200 were for Ext.
+         *
+         * From version 1000, the response includes a longer message
+         * which adds a byte for firmware type. The version is calculated
+         * from the single byte, to which 1000 is added.
+         *
+         * Discovered through hints in the release notes and experimentation
+         * with RFXmngr. See RESPONSES.md for data.
+         */
+        if (data.length > 14) {
+            firmwareVersion = Byte.toUnsignedInt(data[6]) + 1000;
+            try {
+                firmwareType = fromByte(FirmwareType.class, data[14]);
+            } catch (RFXComUnsupportedValueException e) {
+                firmwareType = FirmwareType.UNKNOWN;
+                logger.warn(
+                        "The firmware type reported ({}) isn't known to the RFXCom binding. Please raise an issue at https://github.com/openhab/openhab-addons/ to have it included.",
+                        data[14]);
+            }
+        } else {
+            firmwareVersion = Byte.toUnsignedInt(data[6]);
+
+            if (firmwareVersion < 100) {
+                firmwareType = FirmwareType.TYPE1;
+            } else if (firmwareVersion < 200) {
+                firmwareType = FirmwareType.TYPE2;
+            } else {
+                firmwareType = FirmwareType.EXT;
+            }
+        }
+
+        /*
+         * These are actually dependent on the type of device and
+         * firmware, this list is mainly for RFXtrx443 at 433.92MHz,
+         * which most of our users use.
+         *
+         * TODO: At some point, we should reconcile this with the SDK
+         * and accommodate for other devices and protocols. This is
+         * probably not worth doing until someone needs it and has
+         * suitable devices to test with!
+         */
+        enableUndecodedPackets = (data[7] & 0x80) != 0;
+        enableImagintronixOpusPackets = (data[7] & 0x40) != 0;
+        enableByronSXPackets = (data[7] & 0x20) != 0;
+        enableRSLPackets = (data[7] & 0x10) != 0;
+        enableLighting4Packets = (data[7] & 0x08) != 0;
+        enableFineOffsetPackets = (data[7] & 0x04) != 0;
+        enableRubicsonPackets = (data[7] & 0x02) != 0;
+        enableAEPackets = (data[7] & 0x01) != 0;
+
+        enableBlindsT1T2T3T4Packets = (data[8] & 0x80) != 0;
+        enableBlindsT0Packets = (data[8] & 0x40) != 0;
+        enableProGuardPackets = (data[8] & 0x20) != 0;
+        enableFS20Packets = (data[8] & 0x10) != 0;
+        enableLaCrossePackets = (data[8] & 0x08) != 0;
+        enableHidekiUPMPackets = (data[8] & 0x04) != 0;
+        enableADPackets = (data[8] & 0x02) != 0;
+        enableMertikPackets = (data[8] & 0x01) != 0;
+
+        enableVisonicPackets = (data[9] & 0x80) != 0;
+        enableATIPackets = (data[9] & 0x40) != 0;
+        enableOregonPackets = (data[9] & 0x20) != 0;
+        enableMeiantechPackets = (data[9] & 0x10) != 0;
+        enableHomeEasyPackets = (data[9] & 0x08) != 0;
+        enableACPackets = (data[9] & 0x04) != 0;
+        enableARCPackets = (data[9] & 0x02) != 0;
+        enableX10Packets = (data[9] & 0x01) != 0;
+
+        enableHomeConfortPackets = (data[10] & 0x02) != 0;
+        enableKEELOQPackets = (data[10] & 0x01) != 0;
+
+        text = "";
+    }
+
+    private void encodeStartReceiverMessage(byte[] data) throws RFXComException {
+        command = fromByte(Commands.class, data[4]);
+
+        ByteBuffer text_bytes = ByteBuffer.wrap(data, 5, data.length - 5);
+        text = StandardCharsets.US_ASCII.decode(text_bytes).toString();
     }
 
     @Override
@@ -308,4 +373,32 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
     public void convertFromState(String channelId, Type type) {
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * Command to reset RFXCOM controller.
+     *
+     */
+    public static final byte[] CMD_RESET = new byte[] { 0x0D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00 };
+
+    /**
+     * Command to get RFXCOM controller status.
+     *
+     */
+    public static final byte[] CMD_GET_STATUS = new byte[] { 0x0D, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00 };
+
+    /**
+     * Command to save RFXCOM controller configuration.
+     *
+     */
+    public static final byte[] CMD_SAVE = new byte[] { 0x0D, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00 };
+
+    /**
+     * Command to start RFXCOM receiver.
+     *
+     */
+    public static final byte[] CMD_START_RECEIVER = new byte[] { 0x0D, 0x00, 0x00, 0x03, 0x07, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00 };
 }

@@ -77,7 +77,7 @@
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"stateDescription": {
 					"pattern": "%.1f %unit%",
 					"readOnly": true

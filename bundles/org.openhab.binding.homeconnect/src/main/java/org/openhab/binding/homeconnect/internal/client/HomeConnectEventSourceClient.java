@@ -95,11 +95,11 @@ public class HomeConnectEventSourceClient {
 
         if (!eventSourceConnections.containsKey(eventListener)) {
             logger.debug("Create new event source listener for '{}'.", haId);
-            Client client = clientBuilder.readTimeout(SSE_REQUEST_READ_TIMEOUT, TimeUnit.SECONDS).register(
-                    new HomeConnectStreamingRequestFilter(HttpHelper.getAuthorizationHeader(oAuthClientService)))
-                    .build();
-            SseEventSource eventSource = eventSourceFactory
-                    .newSource(client.target(apiUrl + "/api/homeappliances/" + haId + "/events"));
+            String target = apiUrl + "/api/homeappliances/" + haId + "/events";
+
+            Client client = createClient(target);
+
+            SseEventSource eventSource = eventSourceFactory.newSource(client.target(target));
             HomeConnectEventSourceListener eventSourceListener = new HomeConnectEventSourceListener(haId, eventListener,
                     this, scheduler, eventQueue);
             eventSource.register(eventSourceListener::onEvent, eventSourceListener::onError,
@@ -149,14 +149,36 @@ public class HomeConnectEventSourceClient {
     }
 
     private void closeEventSource(SseEventSource eventSource, boolean immediate, boolean completed) {
-        if (eventSource.isOpen() && !completed) {
-            logger.debug("Close event source (immediate = {})", immediate);
-            eventSource.close(immediate ? 0 : 10, TimeUnit.SECONDS);
+        var open = eventSource.isOpen();
+        logger.debug("Closing event source. open={}, completed={}, immediate={}", open, completed, immediate);
+        if (open && !completed) {
+            eventSource.close(immediate ? 0 : 5, TimeUnit.SECONDS);
+            logger.debug("Event source closed.");
         }
         HomeConnectEventSourceListener eventSourceListener = eventSourceListeners.get(eventSource);
         if (eventSourceListener != null) {
             eventSourceListener.stopMonitor();
         }
+    }
+
+    private Client createClient(String target) throws CommunicationException, AuthorizationException {
+        boolean filterRegistered = clientBuilder.getConfiguration()
+                .isRegistered(HomeConnectStreamingRequestFilter.class);
+
+        Client client;
+        HomeConnectStreamingRequestFilter filter;
+        if (filterRegistered) {
+            filter = clientBuilder.getConfiguration().getInstances().stream()
+                    .filter(instance -> instance instanceof HomeConnectStreamingRequestFilter)
+                    .map(instance -> (HomeConnectStreamingRequestFilter) instance).findAny().orElseThrow();
+            client = clientBuilder.readTimeout(SSE_REQUEST_READ_TIMEOUT, TimeUnit.SECONDS).build();
+        } else {
+            filter = new HomeConnectStreamingRequestFilter();
+            client = clientBuilder.readTimeout(SSE_REQUEST_READ_TIMEOUT, TimeUnit.SECONDS).register(filter).build();
+        }
+        filter.setAuthorizationHeader(target, HttpHelper.getAuthorizationHeader(oAuthClientService));
+
+        return client;
     }
 
     /**

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,6 +45,7 @@ import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflin
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
 import org.openhab.binding.homeconnect.internal.client.listener.HomeConnectEventListener;
+import org.openhab.binding.homeconnect.internal.client.model.AvailableProgram;
 import org.openhab.binding.homeconnect.internal.client.model.AvailableProgramOption;
 import org.openhab.binding.homeconnect.internal.client.model.Data;
 import org.openhab.binding.homeconnect.internal.client.model.Event;
@@ -83,6 +85,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Jonas Brüstel - Initial contribution
+ * @author Laurent Garnier - programs cache moved and enhanced to allow adding unsupported programs
  */
 @NonNullByDefault
 public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler implements HomeConnectEventListener {
@@ -105,7 +108,9 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     private final ExpiringStateMap expiringStateMap;
     private final AtomicBoolean accessible;
     private final Logger logger = LoggerFactory.getLogger(AbstractHomeConnectThingHandler.class);
+    private final List<AvailableProgram> programsCache;
     private final Map<String, List<AvailableProgramOption>> availableProgramOptionsCache;
+    private final Map<String, List<AvailableProgramOption>> unsupportedProgramOptions;
 
     public AbstractHomeConnectThingHandler(Thing thing,
             HomeConnectDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
@@ -115,10 +120,13 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         this.dynamicStateDescriptionProvider = dynamicStateDescriptionProvider;
         expiringStateMap = new ExpiringStateMap(Duration.ofSeconds(CACHE_TTL_SEC));
         accessible = new AtomicBoolean(false);
+        programsCache = new CopyOnWriteArrayList<>();
         availableProgramOptionsCache = new ConcurrentHashMap<>();
+        unsupportedProgramOptions = new ConcurrentHashMap<>();
 
         configureEventHandlers(eventHandlers);
         configureChannelUpdateHandlers(channelUpdateHandlers);
+        configureUnsupportedProgramOptions(unsupportedProgramOptions);
     }
 
     @Override
@@ -207,7 +215,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 logger.debug("Start custom program. command={} haId={}", command.toFullString(), getThingHaId());
                 apiClient.startCustomProgram(getThingHaId(), command.toFullString());
             }
-        } else if (command instanceof StringType && CHANNEL_SELECTED_PROGRAM_STATE.equals(channelUID.getId())) {
+        } else if (command instanceof StringType && CHANNEL_SELECTED_PROGRAM_STATE.equals(channelUID.getId())
+                && isProgramSupported(command.toFullString())) {
             apiClient.setSelectedProgram(getThingHaId(), command.toFullString());
         }
     }
@@ -347,20 +356,15 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             return;
         }
 
-        Optional<HomeConnectApiClient> apiClient = getApiClient();
-        if (apiClient.isPresent()) {
-            try {
-                List<StateOption> stateOptions = apiClient.get().getPrograms(getThingHaId()).stream()
-                        .map(p -> new StateOption(p.getKey(), mapStringType(p.getKey()))).collect(Collectors.toList());
+        try {
+            List<StateOption> stateOptions = getPrograms().stream()
+                    .map(p -> new StateOption(p.getKey(), mapStringType(p.getKey()))).collect(Collectors.toList());
 
-                getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE).ifPresent(
-                        channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), stateOptions));
-            } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
-                logger.debug("Could not fetch available programs. thing={}, haId={}, error={}", getThingLabel(),
-                        getThingHaId(), e.getMessage());
-                removeSelectedProgramStateDescription();
-            }
-        } else {
+            getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE).ifPresent(
+                    channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), stateOptions));
+        } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
+            logger.debug("Could not fetch available programs. thing={}, haId={}, error={}", getThingLabel(),
+                    getThingHaId(), e.getMessage());
             removeSelectedProgramStateDescription();
         }
     }
@@ -484,6 +488,13 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
      * @param handlers Server-Sent-Event handlers
      */
     protected abstract void configureEventHandlers(final Map<String, EventHandler> handlers);
+
+    protected void configureUnsupportedProgramOptions(final Map<String, List<AvailableProgramOption>> programOptions) {
+    }
+
+    protected boolean isChannelLinkedToProgramOptionNotFullySupportedByApi() {
+        return false;
+    }
 
     /**
      * Update all channels via API.
@@ -795,16 +806,16 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             getThingChannel(CHANNEL_OPERATION_STATE).ifPresent(channel -> updateState(channel.getUID(),
                     value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
 
-            if (STATE_OPERATION_FINISHED.equals(event.getValue())) {
+            if (STATE_OPERATION_FINISHED.equals(value)) {
                 getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
                         .ifPresent(c -> updateState(c.getUID(), new QuantityType<>(100, PERCENT)));
                 getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE)
                         .ifPresent(c -> updateState(c.getUID(), new QuantityType<>(0, SECOND)));
-            } else if (STATE_OPERATION_RUN.equals(event.getValue())) {
+            } else if (STATE_OPERATION_RUN.equals(value)) {
                 getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
                         .ifPresent(c -> updateState(c.getUID(), new QuantityType<>(0, PERCENT)));
                 getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateChannel(c.getUID()));
-            } else if (STATE_OPERATION_READY.equals(event.getValue())) {
+            } else if (STATE_OPERATION_READY.equals(value)) {
                 resetProgramStateChannels(false);
             }
         };
@@ -815,8 +826,33 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             String value = event.getValue();
             getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(channel -> updateState(channel.getUID(),
                     value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
-            if (event.getValue() == null) {
+            if (value == null) {
                 resetProgramStateChannels(false);
+            }
+        };
+    }
+
+    protected EventHandler updateProgramOptionsAndActiveProgramStateEventHandler() {
+        return event -> {
+            String value = event.getValue();
+            getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(channel -> updateState(channel.getUID(),
+                    value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
+            if (value == null) {
+                resetProgramStateChannels(false);
+            } else {
+                try {
+                    Optional<HomeConnectApiClient> apiClient = getApiClient();
+                    if (apiClient.isPresent() && isChannelLinkedToProgramOptionNotFullySupportedByApi()
+                            && apiClient.get().isRemoteControlActive(getThingHaId())) {
+                        // update channels linked to program options
+                        Program program = apiClient.get().getSelectedProgram(getThingHaId());
+                        if (program != null) {
+                            processProgramOptions(program.getOptions());
+                        }
+                    }
+                } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
+                    logger.debug("Could not update program options. {}", e.getMessage());
+                }
             }
         };
     }
@@ -863,13 +899,25 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         return event -> {
             defaultBooleanEventHandler(CHANNEL_REMOTE_CONTROL_ACTIVE_STATE).handle(event);
 
-            // update available program options if update was previously delayed and remote control is enabled
             try {
-                String programKey = programOptionsDelayedUpdate;
-                if (programKey != null && Boolean.parseBoolean(event.getValue())) {
-                    logger.debug("Delayed update of options for program {}", programKey);
-                    updateProgramOptionsStateDescriptions(programKey);
-                    programOptionsDelayedUpdate = null;
+                if (Boolean.parseBoolean(event.getValue())) {
+                    // update available program options if update was previously delayed and remote control is enabled
+                    String programKey = programOptionsDelayedUpdate;
+                    if (programKey != null) {
+                        logger.debug("Delayed update of options for program {}", programKey);
+                        updateProgramOptionsStateDescriptions(programKey);
+                        programOptionsDelayedUpdate = null;
+                    }
+
+                    if (isChannelLinkedToProgramOptionNotFullySupportedByApi()) {
+                        Optional<HomeConnectApiClient> apiClient = getApiClient();
+                        if (apiClient.isPresent()) {
+                            Program program = apiClient.get().getSelectedProgram(getThingHaId());
+                            if (program != null) {
+                                processProgramOptions(program.getOptions());
+                            }
+                        }
+                    }
                 }
             } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
                 logger.debug("Could not update program options. {}", e.getMessage());
@@ -881,18 +929,31 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         return event -> {
             defaultSelectedProgramStateEventHandler().handle(event);
 
-            // update available program options
             try {
                 Optional<HomeConnectApiClient> apiClient = getApiClient();
                 String programKey = event.getValue();
+
                 if (apiClient.isPresent() && programKey != null) {
-                    // Delay the update if options are not yet cached and remote control is disabled
-                    if (availableProgramOptionsCache.get(programKey) == null
-                            && !apiClient.get().isRemoteControlActive(getThingHaId())) {
+                    Boolean remoteControl = (availableProgramOptionsCache.get(programKey) == null
+                            || isChannelLinkedToProgramOptionNotFullySupportedByApi())
+                                    ? apiClient.get().isRemoteControlActive(getThingHaId())
+                                    : false;
+
+                    // Delay the update of available program options if options are not yet cached and remote control is
+                    // disabled
+                    if (availableProgramOptionsCache.get(programKey) == null && !remoteControl) {
                         logger.debug("Delay update of options for program {}", programKey);
                         programOptionsDelayedUpdate = programKey;
                     } else {
                         updateProgramOptionsStateDescriptions(programKey);
+                    }
+
+                    if (isChannelLinkedToProgramOptionNotFullySupportedByApi() && remoteControl) {
+                        // update channels linked to program options
+                        Program program = apiClient.get().getSelectedProgram(getThingHaId());
+                        if (program != null) {
+                            processProgramOptions(program.getOptions());
+                        }
                     }
                 }
             } catch (CommunicationException | ApplianceOfflineException | AuthorizationException e) {
@@ -972,7 +1033,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                                 updateState(channel.getUID(), UnDefType.UNDEF);
                             }
                         });
-
                     }
                     return OnOffType.from(enabled);
                 } else {
@@ -1288,11 +1348,11 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                                 .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
                         break;
                     case OPTION_WASHER_IDOS_1_DOSING_LEVEL:
-                        getThingChannel(CHANNEL_WASHER_IDOS1)
+                        getThingChannel(CHANNEL_WASHER_IDOS1_LEVEL)
                                 .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
                         break;
                     case OPTION_WASHER_IDOS_2_DOSING_LEVEL:
-                        getThingChannel(CHANNEL_WASHER_IDOS2)
+                        getThingChannel(CHANNEL_WASHER_IDOS2_LEVEL)
                                 .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
                         break;
                     case OPTION_DRYER_DRYING_TARGET:
@@ -1338,84 +1398,151 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                                 .ifPresent(channel -> updateState(channel.getUID(),
                                         new QuantityType<>(option.getValueAsInt(), PERCENT)));
                         break;
+                    case OPTION_WASHER_IDOS_1_ACTIVE:
+                        getThingChannel(CHANNEL_WASHER_IDOS1).ifPresent(
+                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
+                        break;
+                    case OPTION_WASHER_IDOS_2_ACTIVE:
+                        getThingChannel(CHANNEL_WASHER_IDOS2).ifPresent(
+                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
+                        break;
+                    case OPTION_WASHER_VARIO_PERFECT:
+                        getThingChannel(CHANNEL_WASHER_VARIO_PERFECT)
+                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
+                        break;
+                    case OPTION_WASHER_LESS_IRONING:
+                        getThingChannel(CHANNEL_WASHER_LESS_IRONING).ifPresent(
+                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
+                        break;
+                    case OPTION_WASHER_PRE_WASH:
+                        getThingChannel(CHANNEL_WASHER_PRE_WASH).ifPresent(
+                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
+                        break;
+                    case OPTION_WASHER_RINSE_PLUS:
+                        getThingChannel(CHANNEL_WASHER_RINSE_PLUS)
+                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
+                        break;
+                    case OPTION_WASHER_SOAK:
+                        getThingChannel(CHANNEL_WASHER_SOAK).ifPresent(
+                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
+                        break;
+                    case OPTION_WASHER_ENERGY_FORECAST:
+                        getThingChannel(CHANNEL_PROGRAM_ENERGY).ifPresent(channel -> updateState(channel.getUID(),
+                                new QuantityType<>(option.getValueAsInt(), PERCENT)));
+                        break;
+                    case OPTION_WASHER_WATER_FORECAST:
+                        getThingChannel(CHANNEL_PROGRAM_WATER).ifPresent(channel -> updateState(channel.getUID(),
+                                new QuantityType<>(option.getValueAsInt(), PERCENT)));
+                        break;
                 }
             }
         });
     }
 
     protected String convertWasherTemperature(String value) {
-        if (value.startsWith("LaundryCare.Washer.EnumType.Temperature.GC")) {
-            return value.replace("LaundryCare.Washer.EnumType.Temperature.GC", "") + "°C";
+        if (value.startsWith(TEMPERATURE_PREFIX + "GC")) {
+            return value.replace(TEMPERATURE_PREFIX + "GC", "") + "°C";
         }
 
-        if (value.startsWith("LaundryCare.Washer.EnumType.Temperature.Ul")) {
-            return mapStringType(value.replace("LaundryCare.Washer.EnumType.Temperature.Ul", ""));
+        if (value.startsWith(TEMPERATURE_PREFIX + "Ul")) {
+            return mapStringType(value.replace(TEMPERATURE_PREFIX + "Ul", ""));
         }
 
         return mapStringType(value);
     }
 
     protected String convertWasherSpinSpeed(String value) {
-        if (value.startsWith("LaundryCare.Washer.EnumType.SpinSpeed.RPM")) {
-            return value.replace("LaundryCare.Washer.EnumType.SpinSpeed.RPM", "") + " RPM";
+        if (value.startsWith(SPIN_SPEED_PREFIX + "RPM")) {
+            return value.replace(SPIN_SPEED_PREFIX + "RPM", "") + " RPM";
         }
 
-        if (value.startsWith("LaundryCare.Washer.EnumType.SpinSpeed.Ul")) {
-            return value.replace("LaundryCare.Washer.EnumType.SpinSpeed.Ul", "");
+        if (value.startsWith(SPIN_SPEED_PREFIX + "Ul")) {
+            return value.replace(SPIN_SPEED_PREFIX + "Ul", "");
         }
 
         return mapStringType(value);
     }
 
     protected void updateProgramOptionsStateDescriptions(String programKey)
-            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+            throws AuthorizationException, ApplianceOfflineException {
         Optional<HomeConnectApiClient> apiClient = getApiClient();
         if (apiClient.isPresent()) {
+            boolean cacheToSet = false;
             List<AvailableProgramOption> availableProgramOptions;
             if (availableProgramOptionsCache.containsKey(programKey)) {
-                logger.debug("Returning cached options for '{}'.", programKey);
+                logger.debug("Returning cached options for program '{}'.", programKey);
                 availableProgramOptions = availableProgramOptionsCache.get(programKey);
                 availableProgramOptions = availableProgramOptions != null ? availableProgramOptions
                         : Collections.emptyList();
             } else {
-                availableProgramOptions = apiClient.get().getProgramOptions(getThingHaId(), programKey);
-                availableProgramOptionsCache.put(programKey, availableProgramOptions);
+                // Depending on the current program operation state, the APi request could trigger a
+                // CommunicationException exception due to returned status code 409
+                try {
+                    availableProgramOptions = apiClient.get().getProgramOptions(getThingHaId(), programKey);
+                    if (availableProgramOptions == null) {
+                        // Program is unsupported, to avoid calling again the API for this program, save in cache either
+                        // the predefined options provided by the binding if they exist, or an empty list of options
+                        if (unsupportedProgramOptions.containsKey(programKey)) {
+                            availableProgramOptions = unsupportedProgramOptions.get(programKey);
+                            availableProgramOptions = availableProgramOptions != null ? availableProgramOptions
+                                    : emptyList();
+                            logger.debug("Saving predefined options in cache for unsupported program '{}'.",
+                                    programKey);
+                        } else {
+                            availableProgramOptions = emptyList();
+                            logger.debug("Saving empty options in cache for unsupported program '{}'.", programKey);
+                        }
+                        availableProgramOptionsCache.put(programKey, availableProgramOptions);
+
+                        // Add the unsupported program in programs cache and refresh the dynamic state description
+                        if (addUnsupportedProgramInCache(programKey)) {
+                            updateSelectedProgramStateDescription();
+                        }
+                    } else {
+                        // If no options are returned by the API, using predefined options if available
+                        if (availableProgramOptions.isEmpty() && unsupportedProgramOptions.containsKey(programKey)) {
+                            availableProgramOptions = unsupportedProgramOptions.get(programKey);
+                            availableProgramOptions = availableProgramOptions != null ? availableProgramOptions
+                                    : emptyList();
+                        }
+                        cacheToSet = true;
+                    }
+                } catch (CommunicationException e) {
+                    availableProgramOptions = emptyList();
+                }
             }
 
             Optional<Channel> channelSpinSpeed = getThingChannel(CHANNEL_WASHER_SPIN_SPEED);
             Optional<Channel> channelTemperature = getThingChannel(CHANNEL_WASHER_TEMPERATURE);
             Optional<Channel> channelDryingTarget = getThingChannel(CHANNEL_DRYER_DRYING_TARGET);
 
-            if (availableProgramOptions.isEmpty()) {
-                channelSpinSpeed.ifPresent(
-                        channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), emptyList()));
-                channelTemperature.ifPresent(
-                        channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), emptyList()));
-                channelDryingTarget.ifPresent(
-                        channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), emptyList()));
+            Optional<AvailableProgramOption> optionsSpinSpeed = availableProgramOptions.stream()
+                    .filter(option -> OPTION_WASHER_SPIN_SPEED.equals(option.getKey())).findFirst();
+            Optional<AvailableProgramOption> optionsTemperature = availableProgramOptions.stream()
+                    .filter(option -> OPTION_WASHER_TEMPERATURE.equals(option.getKey())).findFirst();
+            Optional<AvailableProgramOption> optionsDryingTarget = availableProgramOptions.stream()
+                    .filter(option -> OPTION_DRYER_DRYING_TARGET.equals(option.getKey())).findFirst();
+
+            // Save options in cache only if we got options for all expected channels
+            if (cacheToSet && (!channelSpinSpeed.isPresent() || optionsSpinSpeed.isPresent())
+                    && (!channelTemperature.isPresent() || optionsTemperature.isPresent())
+                    && (!channelDryingTarget.isPresent() || optionsDryingTarget.isPresent())) {
+                logger.debug("Saving options in cache for program '{}'.", programKey);
+                availableProgramOptionsCache.put(programKey, availableProgramOptions);
             }
 
-            availableProgramOptions.forEach(option -> {
-                switch (option.getKey()) {
-                    case OPTION_WASHER_SPIN_SPEED: {
-                        channelSpinSpeed
-                                .ifPresent(channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(),
-                                        createStateOptions(option, this::convertWasherSpinSpeed)));
-                        break;
-                    }
-                    case OPTION_WASHER_TEMPERATURE: {
-                        channelTemperature
-                                .ifPresent(channel -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(),
-                                        createStateOptions(option, this::convertWasherTemperature)));
-                        break;
-                    }
-                    case OPTION_DRYER_DRYING_TARGET: {
-                        channelDryingTarget.ifPresent(channel -> dynamicStateDescriptionProvider
-                                .setStateOptions(channel.getUID(), createStateOptions(option, this::mapStringType)));
-                        break;
-                    }
-                }
-            });
+            channelSpinSpeed.ifPresent(channel -> optionsSpinSpeed.ifPresentOrElse(
+                    option -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(),
+                            createStateOptions(option, this::convertWasherSpinSpeed)),
+                    () -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), emptyList())));
+            channelTemperature.ifPresent(channel -> optionsTemperature.ifPresentOrElse(
+                    option -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(),
+                            createStateOptions(option, this::convertWasherTemperature)),
+                    () -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), emptyList())));
+            channelDryingTarget.ifPresent(channel -> optionsDryingTarget.ifPresentOrElse(
+                    option -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(),
+                            createStateOptions(option, this::mapStringType)),
+                    () -> dynamicStateDescriptionProvider.setStateOptions(channel.getUID(), emptyList())));
         }
     }
 
@@ -1497,5 +1624,50 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             reinitializationFuture.cancel(true);
             this.reinitializationFuture3 = null;
         }
+    }
+
+    protected List<AvailableProgram> getPrograms()
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        if (!programsCache.isEmpty()) {
+            logger.debug("Returning cached programs for '{}'.", getThingHaId());
+            return programsCache;
+        } else {
+            Optional<HomeConnectApiClient> apiClient = getApiClient();
+            if (apiClient.isPresent()) {
+                programsCache.addAll(apiClient.get().getPrograms(getThingHaId()));
+                return programsCache;
+            } else {
+                throw new CommunicationException("API not initialized");
+            }
+        }
+    }
+
+    /**
+     * Add an entry in the programs cache and mark it as unsupported
+     *
+     * @param programKey program id
+     * @return true if an entry was added in the cache
+     */
+    private boolean addUnsupportedProgramInCache(String programKey) {
+        Optional<AvailableProgram> prog = programsCache.stream().filter(program -> programKey.equals(program.getKey()))
+                .findFirst();
+        if (!prog.isPresent()) {
+            programsCache.add(new AvailableProgram(programKey, false));
+            logger.debug("{} added in programs cache as an unsupported program", programKey);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if a program is marked as supported in the programs cache
+     *
+     * @param programKey program id
+     * @return true if the program is in the cache and marked as supported
+     */
+    protected boolean isProgramSupported(String programKey) {
+        Optional<AvailableProgram> prog = programsCache.stream().filter(program -> programKey.equals(program.getKey()))
+                .findFirst();
+        return prog.isPresent() && prog.get().isSupported();
     }
 }

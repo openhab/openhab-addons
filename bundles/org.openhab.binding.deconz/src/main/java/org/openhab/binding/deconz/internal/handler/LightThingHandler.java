@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.deconz.internal.CommandDescriptionProvider;
-import org.openhab.binding.deconz.internal.StateDescriptionProvider;
+import org.openhab.binding.deconz.internal.DeconzDynamicCommandDescriptionProvider;
+import org.openhab.binding.deconz.internal.DeconzDynamicStateDescriptionProvider;
 import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
@@ -46,13 +46,11 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.CommandDescriptionBuilder;
 import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -85,8 +83,8 @@ public class LightThingHandler extends DeconzBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LightThingHandler.class);
 
-    private final StateDescriptionProvider stateDescriptionProvider;
-    private final CommandDescriptionProvider commandDescriptionProvider;
+    private final DeconzDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final DeconzDynamicCommandDescriptionProvider commandDescriptionProvider;
 
     private long lastCommandExpireTimestamp = 0;
     private boolean needsPropertyUpdate = false;
@@ -96,15 +94,16 @@ public class LightThingHandler extends DeconzBaseThingHandler {
      */
     private LightState lightStateCache = new LightState();
     private LightState lastCommand = new LightState();
-    private int onTime = 0; // in 0.1s
+    @Nullable
+    private Integer onTime = null; // in 0.1s
     private String colorMode = "";
 
     // set defaults, we can override them later if we receive better values
     private int ctMax = ZCL_CT_MAX;
     private int ctMin = ZCL_CT_MIN;
 
-    public LightThingHandler(Thing thing, Gson gson, StateDescriptionProvider stateDescriptionProvider,
-            CommandDescriptionProvider commandDescriptionProvider) {
+    public LightThingHandler(Thing thing, Gson gson, DeconzDynamicStateDescriptionProvider stateDescriptionProvider,
+            DeconzDynamicCommandDescriptionProvider commandDescriptionProvider) {
         super(thing, gson, ResourceType.LIGHTS);
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.commandDescriptionProvider = commandDescriptionProvider;
@@ -122,15 +121,11 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                 ctMin = ctMinString == null ? ZCL_CT_MIN : Integer.parseInt(ctMinString);
 
                 // minimum and maximum are inverted due to mired/kelvin conversion!
-                StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
+                StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
                         .withMinimum(new BigDecimal(miredToKelvin(ctMax)))
-                        .withMaximum(new BigDecimal(miredToKelvin(ctMin))).build().toStateDescription();
-                if (stateDescription != null) {
-                    stateDescriptionProvider.setDescription(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE),
-                            stateDescription);
-                } else {
-                    logger.warn("Failed to create state description in thing {}", thing.getUID());
-                }
+                        .withMaximum(new BigDecimal(miredToKelvin(ctMin))).build();
+                stateDescriptionProvider.setDescriptionFragment(
+                        new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE), stateDescriptionFragment);
             } catch (NumberFormatException e) {
                 needsPropertyUpdate = true;
             }
@@ -215,19 +210,19 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                     }
                 } else if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
-                    if ("xy".equals(colorMode)) {
+                    // XY color is the implicit default: Use XY color mode if i) no color mode is set or ii) if the bulb
+                    // is in CT mode or iii) already in XY mode. Only if the bulb is in HS mode, use this one.
+                    if ("hs".equals(colorMode)) {
+                        newLightState.hue = (int) (hsbCommand.getHue().doubleValue() * HUE_FACTOR);
+                        newLightState.sat = Util.fromPercentType(hsbCommand.getSaturation());
+                    } else {
                         PercentType[] xy = hsbCommand.toXY();
                         if (xy.length < 2) {
                             logger.warn("Failed to convert {} to xy-values", command);
                         }
                         newLightState.xy = new double[] { xy[0].doubleValue() / 100.0, xy[1].doubleValue() / 100.0 };
-                        newLightState.bri = Util.fromPercentType(hsbCommand.getBrightness());
-                    } else {
-                        // default is colormode "hs" (used when colormode "hs" is set or colormode is unknown)
-                        newLightState.bri = Util.fromPercentType(hsbCommand.getBrightness());
-                        newLightState.hue = (int) (hsbCommand.getHue().doubleValue() * HUE_FACTOR);
-                        newLightState.sat = Util.fromPercentType(hsbCommand.getSaturation());
                     }
+                    newLightState.bri = Util.fromPercentType(hsbCommand.getBrightness());
                 } else if (command instanceof PercentType) {
                     newLightState.bri = Util.fromPercentType((PercentType) command);
                 } else if (command instanceof DecimalType) {
@@ -350,39 +345,26 @@ public class LightThingHandler extends DeconzBaseThingHandler {
         }
 
         ChannelUID effectChannelUID = new ChannelUID(thing.getUID(), CHANNEL_EFFECT);
-        ChannelUID effectSpeedChannelUID = new ChannelUID(thing.getUID(), CHANNEL_EFFECT_SPEED);
-
-        if (thing.getChannel(CHANNEL_EFFECT) == null) {
-            ThingBuilder thingBuilder = editThing();
-            thingBuilder.withChannel(
-                    ChannelBuilder.create(effectChannelUID, "String").withType(CHANNEL_EFFECT_TYPE_UID).build());
-            if (model == EffectLightModel.LIDL_MELINARA) {
-                // additional channels
-                thingBuilder.withChannel(ChannelBuilder.create(effectSpeedChannelUID, "Number")
-                        .withType(CHANNEL_EFFECT_SPEED_TYPE_UID).build());
-            }
-            updateThing(thingBuilder.build());
-        }
+        createChannel(CHANNEL_EFFECT, ChannelKind.STATE);
 
         switch (model) {
             case LIDL_MELINARA:
+                // additional channels
+                createChannel(CHANNEL_EFFECT_SPEED, ChannelKind.STATE);
+
                 List<String> options = List.of("none", "steady", "snow", "rainbow", "snake", "tinkle", "fireworks",
                         "flag", "waves", "updown", "vintage", "fading", "collide", "strobe", "sparkles", "carnival",
                         "glow");
-                commandDescriptionProvider.setDescription(effectChannelUID,
-                        CommandDescriptionBuilder.create().withCommandOptions(toCommandOptionList(options)).build());
+                commandDescriptionProvider.setCommandOptions(effectChannelUID, toCommandOptionList(options));
                 break;
             case TINT_MUELLER:
                 options = List.of("none", "colorloop", "sunset", "party", "worklight", "campfire", "romance",
                         "nightlight");
-                commandDescriptionProvider.setDescription(effectChannelUID,
-                        CommandDescriptionBuilder.create().withCommandOptions(toCommandOptionList(options)).build());
+                commandDescriptionProvider.setCommandOptions(effectChannelUID, toCommandOptionList(options));
                 break;
             default:
                 options = List.of("none", "colorloop");
-                commandDescriptionProvider.setDescription(effectChannelUID,
-                        CommandDescriptionBuilder.create().withCommandOptions(toCommandOptionList(options)).build());
-
+                commandDescriptionProvider.setCommandOptions(effectChannelUID, toCommandOptionList(options));
         }
     }
 
