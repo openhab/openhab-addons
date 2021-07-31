@@ -46,8 +46,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.orbitbhyve", service = ThingHandlerFactory.class)
 public class OrbitBhyveHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
-            Set.of(THING_TYPE_BRIDGE, THING_TYPE_SPRINKLER));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_SPRINKLER);
 
     /**
      * the shared http client
