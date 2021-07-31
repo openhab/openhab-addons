@@ -102,7 +102,7 @@ public class AirthingsWaveGen1Handler extends AbstractAirthingsHandler {
                     break;
             }
         } else {
-            logger.debug("Illegal data structure length '%d'", String.valueOf(rawdata).length());
+            logger.debug("Illegal data structure length '{}'", String.valueOf(rawdata).length());
         }
     }
 
