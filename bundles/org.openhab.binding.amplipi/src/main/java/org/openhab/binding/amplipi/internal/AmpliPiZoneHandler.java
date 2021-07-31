@@ -54,7 +54,6 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
 
     private final Logger logger = LoggerFactory.getLogger(AmpliPiZoneHandler.class);
 
-    private final Integer id;
     private final HttpClient httpClient;
     private final Gson gson;
 
@@ -64,7 +63,6 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
         super(thing);
         this.httpClient = httpClient;
         this.gson = new Gson();
-        id = Integer.valueOf(thing.getConfiguration().get(AmpliPiBindingConstants.CFG_PARAM_ID).toString());
     }
 
     @Override
@@ -85,6 +83,10 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
         } else {
             throw new IllegalStateException("Bridge must not be null here!");
         }
+    }
+
+    private int getId(Thing thing) {
+        return Integer.valueOf(thing.getConfiguration().get(AmpliPiBindingConstants.CFG_PARAM_ID).toString());
     }
 
     @Override
@@ -112,7 +114,7 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
                 break;
         }
         if (bridgeHandler != null) {
-            String url = bridgeHandler.getUrl() + "/api/zones/" + id;
+            String url = bridgeHandler.getUrl() + "/api/zones/" + getId(thing);
             StringContentProvider contentProvider = new StringContentProvider(gson.toJson(update));
             try {
                 ContentResponse response = httpClient.newRequest(url).method(HttpMethod.PATCH)
@@ -135,6 +137,7 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
 
     @Override
     public void receive(@NonNull Status status) {
+        int id = getId(thing);
         Optional<Zone> zone = status.getZones().stream().filter(z -> z.getId().equals(id)).findFirst();
         if (zone.isPresent()) {
             Boolean mute = zone.get().getMute();

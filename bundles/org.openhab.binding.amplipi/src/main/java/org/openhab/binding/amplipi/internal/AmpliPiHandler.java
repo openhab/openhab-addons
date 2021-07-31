@@ -169,7 +169,7 @@ public class AmpliPiHandler extends BaseBridgeHandler {
     private void setProperties(Status currentStatus) {
         String version = currentStatus.getInfo().getVersion();
         Map<String, String> props = editProperties();
-        props.put("firmwareVersion", version);
+        props.put(Thing.PROPERTY_FIRMWARE_VERSION, version);
         updateProperties(props);
     }
 

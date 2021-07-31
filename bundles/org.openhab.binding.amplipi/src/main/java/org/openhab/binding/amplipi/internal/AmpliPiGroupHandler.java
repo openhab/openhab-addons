@@ -54,7 +54,6 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
 
     private final Logger logger = LoggerFactory.getLogger(AmpliPiGroupHandler.class);
 
-    private final Integer id;
     private final HttpClient httpClient;
     private final Gson gson;
 
@@ -64,7 +63,10 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
         super(thing);
         this.httpClient = httpClient;
         this.gson = new Gson();
-        id = Integer.valueOf(thing.getConfiguration().get(AmpliPiBindingConstants.CFG_PARAM_ID).toString());
+    }
+
+    private int getId(Thing thing) {
+        return Integer.valueOf(thing.getConfiguration().get(AmpliPiBindingConstants.CFG_PARAM_ID).toString());
     }
 
     @Override
@@ -112,7 +114,8 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
                 break;
         }
         if (bridgeHandler != null) {
-            String url = bridgeHandler.getUrl() + "/api/groups/" + id;
+            String url = bridgeHandler.getUrl() + "/api/groups/" + getId(thing);
+            ;
             StringContentProvider contentProvider = new StringContentProvider(gson.toJson(update));
             try {
                 ContentResponse response = httpClient.newRequest(url).method(HttpMethod.PATCH)
@@ -135,6 +138,7 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
 
     @Override
     public void receive(@NonNull Status status) {
+        int id = getId(thing);
         Optional<Group> group = status.getGroups().stream().filter(z -> z.getId().equals(id)).findFirst();
         if (group.isPresent()) {
             Boolean mute = group.get().getMute();

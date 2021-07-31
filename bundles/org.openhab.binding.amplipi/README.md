@@ -60,10 +60,10 @@ amplipi.items:
 
 ```
 Number      Preset      "Preset"                { channel="amplipi:controller:1:preset" }
-Number      Input1      "Input 1"               { channel="amplipi:controller:1:input1" }
-Number      Input2      "Input 2"               { channel="amplipi:controller:1:input2" }
-Number      Input3      "Input 3"               { channel="amplipi:controller:1:input3" }
-Number      Input4      "Input 4"               { channel="amplipi:controller:1:input4" }
+String      Input1      "Input 1"               { channel="amplipi:controller:1:input1" }
+String      Input2      "Input 2"               { channel="amplipi:controller:1:input2" }
+String      Input3      "Input 3"               { channel="amplipi:controller:1:input3" }
+String      Input4      "Input 4"               { channel="amplipi:controller:1:input4" }
 
 Dimmer      VolumeZ2    "Volume Zone2"          { channel="amplipi:zone:1:zone2:volume" }
 Switch      MuteZ2      "Mute Zone2"            { channel="amplipi:zone:1:zone2::mute" }
