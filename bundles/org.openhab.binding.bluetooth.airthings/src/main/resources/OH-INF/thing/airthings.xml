@@ -71,21 +71,21 @@
 	</thing-type>
 	<thing-type id="airthings_wave_gen1">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="roaming" />
-			<bridge-type-ref id="bluegiga" />
-			<bridge-type-ref id="bluez" />
+			<bridge-type-ref id="roaming"/>
+			<bridge-type-ref id="bluegiga"/>
+			<bridge-type-ref id="bluez"/>
 		</supported-bridge-type-refs>
 
 		<label>Airthings Wave Gen 1</label>
 		<description>Smart Radon Monitor</description>
 
 		<channels>
-			<channel id="rssi" typeId="rssi" />
+			<channel id="rssi" typeId="rssi"/>
 
-			<channel id="humidity" typeId="airthings_humidity" />
-			<channel id="temperature" typeId="airthings_temperature" />
-			<channel id="radon_st_avg" typeId="airthings_radon_st_avg" />
-			<channel id="radon_lt_avg" typeId="airthings_radon_lt_avg" />
+			<channel id="humidity" typeId="airthings_humidity"/>
+			<channel id="temperature" typeId="airthings_temperature"/>
+			<channel id="radon_st_avg" typeId="airthings_radon_st_avg"/>
+			<channel id="radon_lt_avg" typeId="airthings_radon_lt_avg"/>
 		</channels>
 
 		<config-description>
