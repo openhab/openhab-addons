@@ -7,17 +7,17 @@ The binding supports two different kinds of connections:
 * serial connection,
 * serial over IP connection
 
-For users without serial connector on the server side, you can add a serial to USB adapter.
+For users without a serial port on the server side, you can add a USB to serial adapter.
 
-You don't need to have your Monoprice whole house amplifier device directly connected to your openHAB server.
-You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
+You don't need to have your whole house amplifier device directly connected to your openHAB server.
+You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on the LAN (serial over IP).
 
 ## Supported Things
 
-Monoprice 10761 & 39261 or Dayton Audio DAX66 Amplifiers use the `amplifier` id. Up to 18 zones with 3 linked amps.  
-Monoprice 31028 70V Amplifiers use the `monoprice70v` id. 6 zones per device, not linkable.  
-Xantech 4x4 Amplifiers use the `xantech44` id. 4 zones per device, not linkable.  
-Xantech 8x8 Amplifiers use the `xantech88` id. Up to 24 zones with 3 linked amps.  
+Monoprice 10761 & 39261 or Dayton Audio DAX66 Amplifiers use the `amplifier` id. Up to 18 zones with 3 linked amps, 6 source inputs.  
+Monoprice 31028 70V Amplifiers use the `monoprice70v` id. Supports 6 zones per amp with 2 source inputs, not linkable.  
+Xantech 4x4 Amplifiers use the `xantech44` id. Supports 4 zones per amp with 4 source inputs, not linkable.  
+Xantech 8x8 Amplifiers use the `xantech88` id. Up to 24 zones with 3 linked amps, 8 source inputs.  
 
 ## Discovery
 
@@ -31,14 +31,14 @@ All settings are through thing configuration parameters.
 
 ## Thing Configuration
 
-The thing has the following configuration parameters:
+The thing has the following configuration parameters (number of sources and zones is amplifier dependent):
 
 | Parameter Label      | Parameter ID     | Description                                                                                                                    | Accepted values  |
 |----------------------|------------------|--------------------------------------------------------------------------------------------------------------------------------|------------------|
-| Serial Port          | serialPort       | Serial port to use for connecting to the Monoprice whole house amplifier device                                                | Serial port name |
-| Address              | host             | Host name or IP address of the machine connected to the Monoprice whole house amplifier device (serial over IP)                | Host name or IP  |
+| Serial Port          | serialPort       | Serial port to use for connecting to the whole house amplifier device                                                          | Serial port name |
+| Address              | host             | Host name or IP address of the machine connected to the whole house amplifier device (serial over IP)                          | Host name or IP  |
 | Port                 | port             | Communication port (serial over IP).                                                                                           | TCP port number  |
-| Number of Zones      | numZones         | (Optional) Number of amplifier zones to utilize in the binding (up to 18 zones with 3 amplifiers connected together)           | 1-18; default 6  |
+| Number of Zones      | numZones         | (Optional) Number of amplifier zones to utilize in the binding (up to 24 zones with 3 amplifiers connected together)           | 1-24; default 6  |
 | Polling Interval     | pollingInterval  | (Optional) Configures how often (in seconds) to poll the amplifier to check for zone updates                                   | 5-60; default 15 |
 | Ignore Zones         | ignoreZones      | (Optional) A comma seperated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | ie: "1,6,10"     |
 | Initial All Volume   | initialAllVolume | (Optional) When 'All' zones are activated, the volume will reset to this value to prevent excessive blaring of sound ;)        | 1-30; default 10 |
@@ -48,15 +48,17 @@ The thing has the following configuration parameters:
 | Source 4 Input Label | inputLabel4      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 4") | A free text name |
 | Source 5 Input Label | inputLabel5      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 5") | A free text name |
 | Source 6 Input Label | inputLabel6      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 6") | A free text name |
+| Source 7 Input Label | inputLabel7      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 7") | A free text name |
+| Source 8 Input Label | inputLabel8      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 8") | A free text name |
 
 Some notes:
 
-* On the 10761 amp, activating the 'Page All Zones' feature can only be done through the +12v trigger input on the back of the amplifier.
+* On the 10761/DAX66 amp, activating the 'Page All Zones' feature can only be done through the +12v trigger input on the back of the amplifier.
 * On Linux, you may get an error stating the serial port cannot be opened when the MonopriceAudio binding tries to load.
 * You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
 * Also on Linux you may have issues with the USB if using two serial USB devices e.g. MonopriceAudio and RFXcom.
 * See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
-* Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Monoprice amplifier):
+* Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/):
 
 ```
 4444:raw:0:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT LOCAL
@@ -64,41 +66,52 @@ Some notes:
 
 ## Channels
 
-The following channels are available:
+The following channels are available (dnd, page and keypad not available on all amps):
 
-| Channel ID                    | Item Type | Description                                                                                                  |
-|-------------------------------|-----------|--------------------------------------------------------------------------------------------------------------|
-| all#allpower                  | Switch    | Turn all zones on or off simultaneously (those specified by the ignoreZones config option will not turn on)  |
-| all#allsource                 | Number    | Select the input source for all zones simultaneously (1-6) (except ignoreZones)                              |
-| all#allvolume                 | Dimmer    | Control the volume for all zones simultaneously (0-100%) [translates to 0-38] (except ignoreZones)           |
-| all#allmute                   | Switch    | Mute or unmute all zones simultaneously (except ignoreZones)                                                 |
-| zoneN#power (where N= 1-18)   | Switch    | Turn the power for a zone on or off                                                                          |
-| zoneN#source (where N= 1-18)  | Number    | Select the input source for a zone (1-6)                                                                     |
-| zoneN#volume (where N= 1-18)  | Dimmer    | Control the volume for a zone (0-100%) [translates to 0-38]                                                  |
-| zoneN#mute (where N= 1-18)    | Switch    | Mute or unmute a zone                                                                                        |
-| zoneN#treble (where N= 1-18)  | Number    | Adjust the treble control for a zone (-7 to 7) -7=none, 0=flat, 7=full                                       |
-| zoneN#bass (where N= 1-18)    | Number    | Adjust the bass control for a zone (-7 to 7) -7=none, 0=flat, 7=full                                         |
-| zoneN#balance (where N= 1-18) | Number    | Adjust the balance control for a zone (-10 to 10) -10=left, 0=center, 10=right                               |
-| zoneN#dnd (where N= 1-18)     | Switch    | Turn on or off the Do Not Disturb for the zone (for when the amplifier's external page trigger is activated) |
-| zoneN#page (where N= 1-18)    | Contact   | Indicates if the page input is activated for the zone                                                        |
-| zoneN#keypad (where N= 1-18)  | Contact   | Indicates if the physical keypad is attached to a zone                                                       |
+| Channel ID                    | Item Type | Description                                                                                                                          |
+|-------------------------------|-----------|--------------------------------------------------------------------------------------------------------------------------------------|
+| all#allpower                  | Switch    | Turn all zones on or off simultaneously (those specified by the ignoreZones config option will not turn on)                          |
+| all#allsource                 | Number    | Select the input source for all zones simultaneously (1-8) [number of sources is amplifier dependent] (except ignoreZones)           |
+| all#allvolume                 | Dimmer    | Control the volume for all zones simultaneously (0-100%) [translates to the paticular amplifier's volume range] (except ignoreZones) |
+| all#allmute                   | Switch    | Mute or unmute all zones simultaneously (except ignoreZones)                                                                         |
+| zoneN#power (where N= 1-24)   | Switch    | Turn the power for a zone on or off                                                                                                  |
+| zoneN#source (where N= 1-24)  | Number    | Select the input source for a zone (1-8) [number of sources is amplifier dependent]                                                  |
+| zoneN#volume (where N= 1-24)  | Dimmer    | Control the volume for a zone (0-100%) [translates to the paticular amplifier's volume range]                                        |
+| zoneN#mute (where N= 1-24)    | Switch    | Mute or unmute a zone                                                                                                                |
+| zoneN#treble (where N= 1-24)  | Number    | Adjust the treble control for a zone [range is amplifier dependent]                                                                  |
+| zoneN#bass (where N= 1-24)    | Number    | Adjust the bass control for a zone [range is amplifier dependent]                                                                    |
+| zoneN#balance (where N= 1-24) | Number    | Adjust the balance control for a zone [0=center, range is amplifier dependent]                                                       |
+| zoneN#dnd (where N= 1-24)     | Switch    | Turn on or off the Do Not Disturb for the zone (for when the amplifier's external page trigger is activated)                         |
+| zoneN#page (where N= 1-24)    | Contact   | Indicates if the page input is activated for the zone                                                                                |
+| zoneN#keypad (where N= 1-24)  | Contact   | Indicates if the physical keypad is attached to a zone                                                                               |
 
 ## Full Example
 
 monoprice.things:
 
 ```
-// serial port connection
-monopriceaudio:amplifier:myamp "Monoprice WHA" [ serialPort="COM5", pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono"]
+// Monoprice 10761 / DAX66 (serial port connection)
+monopriceaudio:amplifier:myamp "Monoprice WHA" [ serialPort="COM5", pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono" ]
 
-// serial over IP connection
-monopriceaudio:amplifier:myamp "Monoprice WHA" [ host="192.168.0.10", port=4444, pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono"]
+// Monoprice 10761 / DAX66 (serial over IP connection)
+monopriceaudio:amplifier:myamp "Monoprice WHA" [ host="192.168.0.10", port=4444, pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono" ]
+
+// Monoprice 31028
+monopriceaudio:monoprice70v:myamp "Monoprice 70V" [ serialPort="COM5", pollingInterval=30, numZones=6, inputLabel1="Source 0 - Bus", inputLabel2="Source 1 - Line" ]
+
+// Xantech 4x4
+monopriceaudio:xantech44:myamp "Xantech WHA" [ serialPort="COM5", pollingInterval=15, numZones=4, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio" ]
+
+// Xantech 8x8
+monopriceaudio:xantech88:myamp "Xantech WHA" [ serialPort="COM5", pollingInterval=15, numZones=8, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono", inputLabel7="Ipod", inputLabel8="Sirius" ]
 
 ```
 
 monoprice.items:
 
 ```
+// substitute 'amplifier' for the appropriate thing id if using 31028 or Xantech amplifier
+
 Switch all_allpower "All Zones Power" { channel="monopriceaudio:amplifier:myamp:all#allpower" }
 Number all_source "Source Input [%s]" { channel="monopriceaudio:amplifier:myamp:all#allsource" }
 Dimmer all_volume "Volume [%d %%]" { channel="monopriceaudio:amplifier:myamp:all#allvolume" }
@@ -115,7 +128,7 @@ Switch z1_dnd "Do Not Disturb" { channel="monopriceaudio:amplifier:myamp:zone1#d
 Switch z1_page "Page Active: [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#page" }
 Switch z1_keypad "Keypad Connected: [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#keypad" }
 
-// repeat for zones 2-18 (substitute z1 and zone1)
+// repeat for total number of zones used (substitute z1 and zone1)
 ```
 
 monoprice.sitemap:
@@ -136,6 +149,7 @@ sitemap monoprice label="Audio Control" {
         // Volume can be a Slider also
         Setpoint item=z1_volume minValue=0 maxValue=100 step=1 visibility=[z1_power==ON]
         Switch item=z1_mute visibility=[z1_power==ON]
+        // Min and Max values are for the 10761 amp, adjust if using a different model
         Setpoint item=z1_treble label="Treble Adjustment [%d]" minValue=-7 maxValue=7 step=1 visibility=[z1_power==ON]
         Setpoint item=z1_bass label="Bass Adjustment [%d]" minValue=-7 maxValue=7 step=1 visibility=[z1_power==ON]
         Setpoint item=z1_balance label="Balance Adjustment [%d]" minValue=-10 maxValue=10 step=1 visibility=[z1_power==ON]
@@ -144,6 +158,6 @@ sitemap monoprice label="Audio Control" {
         Text item=z1_keypad label="Keypad Connected: [%s]" visibility=[z1_power==ON]
     }
     
-    // repeat for zones 2-18 (substitute z1)
+    // repeat for total number of zones used (substitute z1)
 }
 ```

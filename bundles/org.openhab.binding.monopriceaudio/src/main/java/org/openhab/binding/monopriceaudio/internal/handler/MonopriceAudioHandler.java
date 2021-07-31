@@ -663,17 +663,18 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                 updateChannelState(zoneName, CHANNEL_TYPE_VOLUME, zoneData);
             }
 
-            if (newZoneData.getTreble() != zoneData.getTreble()) {
+            // check for a real value since the 31028's normal polling does not populate Treble, Bass and Balance
+            if (newZoneData.getTreble() != NIL && newZoneData.getTreble() != zoneData.getTreble()) {
                 zoneData.setTreble(newZoneData.getTreble());
                 updateChannelState(zoneName, CHANNEL_TYPE_TREBLE, zoneData);
             }
 
-            if (newZoneData.getBass() != zoneData.getBass()) {
+            if (newZoneData.getBass() != NIL && newZoneData.getBass() != zoneData.getBass()) {
                 zoneData.setBass(newZoneData.getBass());
                 updateChannelState(zoneName, CHANNEL_TYPE_BASS, zoneData);
             }
 
-            if (newZoneData.getBalance() != zoneData.getBalance()) {
+            if (newZoneData.getBalance() != NIL && newZoneData.getBalance() != zoneData.getBalance()) {
                 zoneData.setBalance(newZoneData.getBalance());
                 updateChannelState(zoneName, CHANNEL_TYPE_BALANCE, zoneData);
             }
