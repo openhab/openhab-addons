@@ -14,6 +14,8 @@ package org.openhab.binding.hydrawise.internal.handler;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +30,7 @@ import org.openhab.binding.hydrawise.internal.api.graphql.HydrawiseGraphQLClient
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.Customer;
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.QueryResponse;
 import org.openhab.binding.hydrawise.internal.config.HydrawiseAccountConfiguration;
+import org.openhab.binding.hydrawise.internal.discovery.HydrawiseCloudControllerDiscoveryService;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -40,6 +43,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +61,6 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
      * Minimum amount of time we can poll for updates
      */
     private static final int MIN_REFRESH_SECONDS = 30;
-    private static final int DEFAULT_REFRESH_SECONDS = 60;
     private static final String BASE_URL = "https://app.hydrawise.com/api/v2/";
     private static final String AUTH_URL = BASE_URL + "oauth/access-token";
     private static final String CLIENT_SECRET = "zn3CrjglwNV1";
@@ -97,6 +100,11 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
         logger.debug("Auth Token Refreshed, expires in {}", tokenResponse.getExpiresIn());
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(HydrawiseCloudControllerDiscoveryService.class);
     }
 
     public void addControllerListeners(HydrawiseControllerListener listener) {
@@ -140,10 +148,8 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
             this.refresh = Math.max(config.refreshInterval, MIN_REFRESH_SECONDS);
             initPolling(0, refresh);
         } catch (OAuthException | IOException e) {
-            logger.debug("Could not log in", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (OAuthResponseException e) {
-            logger.debug("Could not log in", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Login credentials required.");
         }
     }

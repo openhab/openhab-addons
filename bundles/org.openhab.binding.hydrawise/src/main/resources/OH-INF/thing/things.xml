@@ -8,7 +8,7 @@
 		<label>Hydrawise Account Thing</label>
 		<description>Hydrawise account</description>
 		<config-description>
-			<parameter name="userName" type="text" required="false">
+			<parameter name="userName" type="text" required="true">
 				<label>User Name</label>
 				<description>Your Hydrawise account user name</description>
 			</parameter>
@@ -23,7 +23,7 @@
 				<description>By default, the password will not be persisted after the first login attempt unless this is enabled</description>
 				<default>false</default>
 			</parameter>
-			<parameter name="refresh" type="integer" required="false" min="30">
+			<parameter name="refresh" type="integer" required="false" min="30" unit="s">
 				<label>Refresh interval</label>
 				<description>Specifies the refresh interval in seconds</description>
 				<default>60</default>

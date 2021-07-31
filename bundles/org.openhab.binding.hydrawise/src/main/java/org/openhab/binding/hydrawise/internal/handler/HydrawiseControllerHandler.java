@@ -12,38 +12,7 @@
  */
 package org.openhab.binding.hydrawise.internal.handler;
 
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.BASE_IMAGE_URL;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_CONTROLLER_LAST_CONTACT;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_CONTROLLER_NAME;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_CONTROLLER_ONLINE;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_CONTROLLER_SUMMARY;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_FORECAST_CONDITIONS;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_FORECAST_EVAPOTRANSPRIATION;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_FORECAST_HUMIDITY;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_FORECAST_PRECIPITATION;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_FORECAST_PROBABILITYOFPRECIPITATION;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_FORECAST_TEMPERATURE_HIGH;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_FORECAST_TEMPERATURE_LOW;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_FORECAST_TIME;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_FORECAST_WIND;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_GROUP_ALLZONES;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_GROUP_CONTROLLER_SYSTEM;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_SENSOR_ACTIVE;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_SENSOR_DELAY;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_SENSOR_NAME;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_SENSOR_OFFLEVEL;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_SENSOR_OFFTIMER;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_SENSOR_WATERFLOW;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_ZONE_DURATION;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_ZONE_ICON;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_ZONE_NAME;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_ZONE_NEXT_RUN_TIME_TIME;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_ZONE_RUN;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_ZONE_RUN_CUSTOM;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_ZONE_SUMMARY;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_ZONE_SUSPEND;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_ZONE_SUSPENDUNTIL;
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.CHANNEL_ZONE_TIME_LEFT;
+import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.*;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -270,6 +239,15 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
             if (controller.zones != null) {
                 updateZones(controller.zones);
             }
+
+            // update values with what the cloud tells us even though the controller may be offline
+            if (!controller.status.online) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        String.format("Controller Offline: %s last seen %s", controller.status.summary,
+                                secondsToDateTime(controller.status.lastContact.timestamp)));
+            } else if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
         });
     }
 
@@ -283,8 +261,6 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
         updateGroupState(CHANNEL_GROUP_CONTROLLER_SYSTEM, CHANNEL_CONTROLLER_NAME, new StringType(controller.name));
         updateGroupState(CHANNEL_GROUP_CONTROLLER_SYSTEM, CHANNEL_CONTROLLER_SUMMARY,
                 new StringType(controller.status.summary));
-        updateGroupState(CHANNEL_GROUP_CONTROLLER_SYSTEM, CHANNEL_CONTROLLER_ONLINE,
-                controller.status.online ? OnOffType.ON : OnOffType.OFF);
         updateGroupState(CHANNEL_GROUP_CONTROLLER_SYSTEM, CHANNEL_CONTROLLER_LAST_CONTACT,
                 secondsToDateTime(controller.status.lastContact.timestamp));
     }

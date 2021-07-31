@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants;
 import org.openhab.binding.hydrawise.internal.HydrawiseControllerListener;
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.Controller;
@@ -25,57 +26,85 @@ import org.openhab.binding.hydrawise.internal.handler.HydrawiseAccountHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
 
 /**
  *
  * @author Dan Cunningham - Initial contribution
  *
  */
+
 @NonNullByDefault
+@Component(service = ThingHandlerService.class)
 public class HydrawiseCloudControllerDiscoveryService extends AbstractDiscoveryService
-        implements HydrawiseControllerListener {
+        implements HydrawiseControllerListener, ThingHandlerService {
 
     private static final int TIMEOUT = 5;
-    HydrawiseAccountHandler bridge;
+    @Nullable
+    HydrawiseAccountHandler handler;
 
-    public HydrawiseCloudControllerDiscoveryService(HydrawiseAccountHandler bridge) {
+    public HydrawiseCloudControllerDiscoveryService() {
         super(Collections.singleton(HydrawiseBindingConstants.THING_TYPE_CONTROLLER), TIMEOUT, true);
-        bridge.addControllerListeners(this);
-        this.bridge = bridge;
     }
 
     @Override
     protected void startScan() {
-        Customer data = bridge.lastData();
-        if (data != null) {
-            data.controllers.forEach(controller -> addDiscoveryResults(controller));
+        HydrawiseAccountHandler localHandler = this.handler;
+        if (localHandler != null) {
+            Customer data = localHandler.lastData();
+            if (data != null) {
+                data.controllers.forEach(controller -> addDiscoveryResults(controller));
+            }
         }
     }
 
     @Override
     public void deactivate() {
-        removeOlderResults(new Date().getTime(), bridge.getThing().getUID());
+        HydrawiseAccountHandler localHandler = this.handler;
+        if (localHandler != null) {
+            removeOlderResults(new Date().getTime(), localHandler.getThing().getUID());
+        }
     }
 
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        removeOlderResults(getTimestampOfLastScan(), bridge.getThing().getUID());
-    }
-
-    private void addDiscoveryResults(Controller controller) {
-        String label = String.format("Hydrawise Controller %s", controller.name);
-        int id = controller.id;
-        ThingUID bridgeUID = bridge.getThing().getUID();
-        ThingUID thingUID = new ThingUID(HydrawiseBindingConstants.THING_TYPE_CONTROLLER, bridgeUID,
-                String.valueOf(id));
-
-        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withLabel(label).withBridge(bridgeUID)
-                .withProperty(HydrawiseBindingConstants.CONFIG_CONTROLLER_ID, id).build());
+        HydrawiseAccountHandler localHandler = this.handler;
+        if (localHandler != null) {
+            removeOlderResults(getTimestampOfLastScan(), localHandler.getThing().getUID());
+        }
     }
 
     @Override
     public void onData(List<Controller> controllers) {
         controllers.forEach(controller -> addDiscoveryResults(controller));
+    }
+
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        this.handler = (HydrawiseAccountHandler) handler;
+        this.handler.addControllerListeners(this);
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return handler;
+    }
+
+    private void addDiscoveryResults(Controller controller) {
+        HydrawiseAccountHandler localHandler = this.handler;
+        if (localHandler != null) {
+            String label = String.format("Hydrawise Controller %s", controller.name);
+            int id = controller.id;
+            ThingUID bridgeUID = localHandler.getThing().getUID();
+            ThingUID thingUID = new ThingUID(HydrawiseBindingConstants.THING_TYPE_CONTROLLER, bridgeUID,
+                    String.valueOf(id));
+            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withLabel(label).withBridge(bridgeUID)
+                    .withProperty(HydrawiseBindingConstants.CONFIG_CONTROLLER_ID, id)
+                    .withRepresentationProperty(String.valueOf(HydrawiseBindingConstants.CONFIG_CONTROLLER_ID))
+                    .build());
+        }
     }
 }

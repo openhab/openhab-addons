@@ -68,7 +68,6 @@
 		<channels>
 			<channel id="name" typeId="name"/>
 			<channel id="summary" typeId="summary"/>
-			<channel id="online" typeId="online"/>
 			<channel id="lastcontacttime" typeId="lastcontacttime"/>
 		</channels>
 	</channel-group-type>
@@ -84,15 +83,8 @@
 
 	<channel-type id="summary">
 		<item-type>String</item-type>
-		<label>Status summary</label>
+		<label>Status Summary</label>
 		<description>Status summary</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="online">
-		<item-type>Switch</item-type>
-		<label>Online</label>
-		<description>Online status of the controller</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
