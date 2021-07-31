@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -75,8 +74,8 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
         this.httpClient = httpClient;
     }
 
-    public NukiHttpClient getNukiHttpClient() {
-        return Objects.requireNonNull(this.nukiHttpClient, "HTTP Client is null");
+    public @Nullable NukiHttpClient getNukiHttpClient() {
+        return this.nukiHttpClient;
     }
 
     @Override
@@ -124,6 +123,10 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
     }
 
     private synchronized void initializeHandler() {
+        if (isHttpClientNull()) {
+            return;
+        }
+
         BridgeInfoResponse bridgeInfoResponse = getNukiHttpClient().getBridgeInfo();
         if (bridgeInfoResponse.getStatus() == HttpStatus.OK_200) {
             updateProperty(NukiBindingConstants.PROPERTY_FIRMWARE_VERSION, bridgeInfoResponse.getFirmwareVersion());
@@ -148,6 +151,10 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
     public void checkBridgeOnline() {
         logger.debug("checkBridgeOnline():bridgeIp[{}] status[{}]", this.config.ip, getThing().getStatus());
         if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            if (isHttpClientNull()) {
+                return;
+            }
+
             logger.debug("Requesting BridgeInfo to ensure Bridge[{}] is online.", this.config.ip);
             BridgeInfoResponse bridgeInfoResponse = getNukiHttpClient().getBridgeInfo();
             int status = bridgeInfoResponse.getStatus();
@@ -168,7 +175,22 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    private boolean isHttpClientNull() {
+        NukiHttpClient httpClient = getNukiHttpClient();
+        if (httpClient == null) {
+            logger.debug("HTTP Client not configured, switching bridge to OFFLINE");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "HTTP Client not configured");
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private @Nullable List<BridgeApiCallbackListCallbackDto> listCallbacks() {
+        if (isHttpClientNull()) {
+            return Collections.emptyList();
+        }
+
         BridgeCallbackListResponse bridgeCallbackListResponse = getNukiHttpClient().getBridgeCallbackList();
         if (bridgeCallbackListResponse.isSuccess()) {
             return bridgeCallbackListResponse.getCallbacks();

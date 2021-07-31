@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.nuki.internal.handler;
 
+import java.time.Duration;
+import java.time.Instant;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.nuki.internal.configuration.NukiDeviceConfiguration;
 import org.openhab.binding.nuki.internal.constants.NukiBindingConstants;
 import org.openhab.binding.nuki.internal.constants.OpenerAction;
 import org.openhab.binding.nuki.internal.dataexchange.BridgeLockActionResponse;
@@ -29,20 +33,26 @@ import org.openhab.core.types.Command;
  * @author Jan Vybíral - Initial contribution
  */
 @NonNullByDefault
-public class NukiOpenerHandler extends AbstractNukiDeviceHandler {
+public class NukiOpenerHandler extends AbstractNukiDeviceHandler<NukiDeviceConfiguration> {
 
     public NukiOpenerHandler(Thing thing) {
         super(thing);
     }
+
+    private volatile Instant lastRingAction = Instant.EPOCH;
 
     @Override
     public void refreshState(BridgeApiDeviceStateDto state) {
         updateState(NukiBindingConstants.CHANNEL_OPENER_LOW_BATTERY, state.isBatteryCritical(), OnOffType::from);
         updateState(NukiBindingConstants.CHANNEL_OPENER_STATE, state.getState(), DecimalType::new);
         updateState(NukiBindingConstants.CHANNEL_OPENER_MODE, state.getMode(), DecimalType::new);
-        updateState(NukiBindingConstants.CHANNEL_OPENER_RING_ACTION_STATE, state.getRingactionState(), OnOffType::from);
         updateState(NukiBindingConstants.CHANNEL_OPENER_RING_ACTION_TIMESTAMP, state.getRingActionTimestamp(),
                 this::toDateTime);
+
+        if (state.getRingactionState() && Duration.between(lastRingAction, Instant.now()).getSeconds() > 30) {
+            triggerChannel(NukiBindingConstants.CHANNEL_OPENER_RING_ACTION_STATE, NukiBindingConstants.EVENT_RINGING);
+            lastRingAction = Instant.now();
+        }
     }
 
     @Override
@@ -57,12 +67,18 @@ public class NukiOpenerHandler extends AbstractNukiDeviceHandler {
                 if (command instanceof DecimalType) {
                     OpenerAction action = OpenerAction.fromAction(((DecimalType) command).intValue());
                     if (action != null) {
-                        BridgeLockActionResponse response = getNukiHttpClient().getOpenerAction(nukiId, action);
+                        BridgeLockActionResponse response = getNukiHttpClient().getOpenerAction(configuration.nukiId,
+                                action);
                         return handleResponse(response, channelUID.getAsString(), command.toString());
                     }
                 }
                 break;
         }
         return false;
+    }
+
+    @Override
+    protected Class<NukiDeviceConfiguration> getConfigurationClass() {
+        return NukiDeviceConfiguration.class;
     }
 }

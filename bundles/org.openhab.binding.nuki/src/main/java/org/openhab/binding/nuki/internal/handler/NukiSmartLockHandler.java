@@ -13,6 +13,7 @@
 package org.openhab.binding.nuki.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.nuki.internal.configuration.NukiSmartLockConfiguration;
 import org.openhab.binding.nuki.internal.constants.NukiBindingConstants;
 import org.openhab.binding.nuki.internal.constants.SmartLockAction;
 import org.openhab.binding.nuki.internal.dataexchange.BridgeLockActionResponse;
@@ -32,9 +33,7 @@ import org.openhab.core.types.Command;
  * @contributer Jan Vybíral - Refactoring, added more channels
  */
 @NonNullByDefault
-public class NukiSmartLockHandler extends AbstractNukiDeviceHandler {
-
-    private boolean unlatch;
+public class NukiSmartLockHandler extends AbstractNukiDeviceHandler<NukiSmartLockConfiguration> {
 
     public NukiSmartLockHandler(Thing thing) {
         super(thing);
@@ -43,7 +42,6 @@ public class NukiSmartLockHandler extends AbstractNukiDeviceHandler {
     @Override
     public void initialize() {
         super.initialize();
-        unlatch = (Boolean) getConfig().get(NukiBindingConstants.CONFIG_UNLATCH);
     }
 
     @Override
@@ -74,11 +72,11 @@ public class NukiSmartLockHandler extends AbstractNukiDeviceHandler {
                     SmartLockAction action = SmartLockAction.LOCK;
 
                     if (command == OnOffType.OFF) {
-                        action = unlatch ? SmartLockAction.UNLATCH : SmartLockAction.UNLOCK;
+                        action = configuration.unlatch ? SmartLockAction.UNLATCH : SmartLockAction.UNLOCK;
                     }
 
-                    BridgeLockActionResponse bridgeLockActionResponse = getNukiHttpClient().getSmartLockAction(nukiId,
-                            action);
+                    BridgeLockActionResponse bridgeLockActionResponse = getNukiHttpClient()
+                            .getSmartLockAction(configuration.nukiId, action);
                     handleResponse(bridgeLockActionResponse, channelUID.getAsString(), command.toString());
                     return true;
                 }
@@ -89,12 +87,17 @@ public class NukiSmartLockHandler extends AbstractNukiDeviceHandler {
                     SmartLockAction action = SmartLockAction.fromAction(cmd.intValue());
                     if (action != null) {
                         BridgeLockActionResponse bridgeLockActionResponse = getNukiHttpClient()
-                                .getSmartLockAction(nukiId, action);
+                                .getSmartLockAction(configuration.nukiId, action);
                         handleResponse(bridgeLockActionResponse, channelUID.getAsString(), command.toString());
                     }
                     return true;
                 }
         }
         return false;
+    }
+
+    @Override
+    protected Class<NukiSmartLockConfiguration> getConfigurationClass() {
+        return NukiSmartLockConfiguration.class;
     }
 }

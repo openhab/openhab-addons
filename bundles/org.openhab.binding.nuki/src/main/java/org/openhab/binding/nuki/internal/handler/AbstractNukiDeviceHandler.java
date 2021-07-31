@@ -21,9 +21,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.nuki.internal.configuration.NukiDeviceConfiguration;
 import org.openhab.binding.nuki.internal.constants.NukiBindingConstants;
 import org.openhab.binding.nuki.internal.dataexchange.BridgeListResponse;
 import org.openhab.binding.nuki.internal.dataexchange.BridgeLockStateResponse;
@@ -57,35 +59,34 @@ import org.slf4j.LoggerFactory;
  * @author Jan Vybíral - Initial contribution
  */
 @NonNullByDefault
-public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
+public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguration> extends BaseThingHandler {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private static final int JOB_INTERVAL = 60;
+    private static final Pattern NUKI_ID_HEX_PATTERN = Pattern.compile("[A-F\\d]{8}", Pattern.CASE_INSENSITIVE);
 
     @Nullable
     private NukiHttpClient nukiHttpClient;
     @Nullable
     protected ScheduledFuture<?> reInitJob;
-    protected final String nukiId;
+    protected T configuration;
+
+    private static String hexToDecimal(String hexString) {
+        return String.valueOf(Integer.parseInt(hexString, 16));
+    }
 
     public AbstractNukiDeviceHandler(Thing thing) {
         super(thing);
-        String id = thing.getProperties().get(NukiBindingConstants.PROPERTY_NUKI_ID);
-        if (id == null) {
-            Object idFromOldConfig = getConfig().get(NukiBindingConstants.PROPERTY_NUKI_ID);
-            if (idFromOldConfig != null) {
-                logger.warn(
-                        "SmartLock '{}' was created by old version of binding. It is recommended to delete it and discover again",
-                        thing.getUID());
-                int nukiId = Integer.parseInt(idFromOldConfig.toString(), 16);
-                this.nukiId = Integer.toString(nukiId);
-            } else {
-                throw new IllegalStateException(String.format(
-                        "%s is missing from properties of %s. Delete thing and add it again using discovery",
-                        NukiBindingConstants.PROPERTY_NUKI_ID, thing));
-            }
-        } else {
-            nukiId = id;
+        this.configuration = getConfigAs(getConfigurationClass());
+        // legacy support - check if nukiId is hexadecimal (which might have been set by previous binding version)
+        // and convert it to decimal
+        if (NUKI_ID_HEX_PATTERN.matcher(this.configuration.nukiId).matches()) {
+            logger.warn(
+                    "SmartLock '{}' was created by old version of binding. It is recommended to delete it and discover again",
+                    thing.getUID());
+            this.thing.getConfiguration().put(NukiBindingConstants.PROPERTY_NUKI_ID,
+                    hexToDecimal(configuration.nukiId));
+            this.configuration = getConfigAs(getConfigurationClass());
         }
     }
 
@@ -118,9 +119,10 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
                 nukiHttpClient = ((NukiBridgeHandler) bridgeHandler).getNukiHttpClient();
                 BridgeListResponse bridgeListResponse = getNukiHttpClient().getList();
                 if (handleResponse(bridgeListResponse, null, null)) {
-                    BridgeApiListDeviceDto device = bridgeListResponse.getDevice(this.nukiId);
+                    BridgeApiListDeviceDto device = bridgeListResponse.getDevice(configuration.nukiId);
                     if (device == null) {
-                        logger.warn("Configured Smart Lock [{}] not present in bridge device list", this.nukiId);
+                        logger.warn("Configured Smart Lock [{}] not present in bridge device list",
+                                configuration.nukiId);
                     } else {
                         updateStatus(ThingStatus.ONLINE);
                         refreshData(device);
@@ -156,14 +158,21 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
      */
     public abstract void refreshState(BridgeApiDeviceStateDto state);
 
-    protected <T> void updateState(String channelId, T state, Function<T, State> transform) {
+    protected <U> void updateState(String channelId, U state, Function<U, State> transform) {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
             updateState(channel.getUID(), state, transform);
         }
     }
 
-    protected <T> void updateState(ChannelUID channel, T state, Function<T, State> transform) {
+    protected void triggerChannel(String channelId, String event) {
+        Channel channel = thing.getChannel(channelId);
+        if (channel != null) {
+            triggerChannel(channel.getUID(), event);
+        }
+    }
+
+    protected <U> void updateState(ChannelUID channel, U state, Function<U, State> transform) {
         updateState(channel, state == null ? UnDefType.NULL : transform.apply(state));
     }
 
@@ -197,8 +206,8 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
             logger.debug("Thing is not ONLINE; command[{}] for channelUID[{}] is ignored", command, channelUID);
         } else if (command instanceof RefreshType) {
             scheduler.execute(() -> {
-                BridgeLockStateResponse bridgeLockStateResponse = getNukiHttpClient().getBridgeLockState(nukiId,
-                        getDeviceType());
+                BridgeLockStateResponse bridgeLockStateResponse = getNukiHttpClient()
+                        .getBridgeLockState(configuration.nukiId, getDeviceType());
                 if (handleResponse(bridgeLockStateResponse, channelUID.getAsString(), command.toString())) {
                     if (!doHandleRefreshCommand(channelUID, command, bridgeLockStateResponse)) {
                         logger.debug("Command[{}] for channelUID[{}] not implemented!", command, channelUID);
@@ -220,6 +229,13 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
      * @return Device type
      */
     protected abstract int getDeviceType();
+
+    /**
+     * Get class of configuration
+     *
+     * @return Configuration class
+     */
+    protected abstract Class<T> getConfigurationClass();
 
     /**
      * Method to handle channel command - will not receive REFRESH command
@@ -246,7 +262,8 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
     protected boolean handleResponse(NukiBaseResponse nukiBaseResponse, @Nullable String channelUID,
             @Nullable String command) {
         if (nukiBaseResponse.getStatus() == 200 && nukiBaseResponse.isSuccess()) {
-            logger.debug("Command[{}] succeeded for channelUID[{}] on nukiId[{}]!", command, channelUID, nukiId);
+            logger.debug("Command[{}] succeeded for channelUID[{}] on nukiId[{}]!", command, channelUID,
+                    configuration.nukiId);
             return true;
         } else if (nukiBaseResponse.getStatus() != 200) {
             logger.debug("Request to Bridge failed! status[{}] - message[{}]", nukiBaseResponse.getStatus(),
@@ -256,7 +273,8 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
                     "Request from Bridge to Smart Lock failed! status[{}] - message[{}] - isSuccess[{}]. Check if Nuki Smart Lock is powered on!",
                     nukiBaseResponse.getStatus(), nukiBaseResponse.getMessage(), nukiBaseResponse.isSuccess());
         }
-        logger.debug("Could not handle command[{}] for channelUID[{}] on nukiId[{}]!", command, channelUID, nukiId);
+        logger.debug("Could not handle command[{}] for channelUID[{}] on nukiId[{}]!", command, channelUID,
+                configuration.nukiId);
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, nukiBaseResponse.getMessage());
 
@@ -284,19 +302,20 @@ public abstract class AbstractNukiDeviceHandler extends BaseThingHandler {
     }
 
     private void startReInitJob() {
-        logger.trace("Starting reInitJob with interval of  {}secs for Smart Lock[{}].", JOB_INTERVAL, nukiId);
+        logger.trace("Starting reInitJob with interval of  {}secs for Smart Lock[{}].", JOB_INTERVAL,
+                configuration.nukiId);
         if (reInitJob != null) {
-            logger.trace("Already started reInitJob for Smart Lock[{}].", nukiId);
+            logger.trace("Already started reInitJob for Smart Lock[{}].", configuration.nukiId);
             return;
         }
         reInitJob = scheduler.scheduleWithFixedDelay(this::initializeHandler, 1, JOB_INTERVAL, TimeUnit.SECONDS);
     }
 
     private void stopReInitJob() {
-        logger.trace("Stopping reInitJob for Smart Lock[{}].", nukiId);
+        logger.trace("Stopping reInitJob for Smart Lock[{}].", configuration.nukiId);
         if (reInitJob != null) {
             reInitJob.cancel(true);
-            logger.trace("Stopped reInitJob for Smart Lock[{}].", nukiId);
+            logger.trace("Stopped reInitJob for Smart Lock[{}].", configuration.nukiId);
         }
         reInitJob = null;
     }

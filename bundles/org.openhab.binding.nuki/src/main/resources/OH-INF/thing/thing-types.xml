@@ -79,7 +79,6 @@
 		<properties>
 			<property name="name"/>
 			<property name="firmwareVersion"/>
-			<property name="nukiId"/>
 		</properties>
 		<representation-property>nukiId</representation-property>
 		<config-description>
@@ -88,6 +87,10 @@
 				<description>If switched to On (or set to true) the Nuki Smart Lock will unlock the door but then also automatically
 					pull the latch of the door lock. Usually, if the door hinges are correctly adjusted, the door will then swing open.</description>
 				<default>false</default>
+			</parameter>
+			<parameter name="nukiId" type="text" required="true" readOnly="true">
+				<label>Nuki ID</label>
+				<description>The decimal string that identifies the Nuki Smart Lock.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -109,9 +112,14 @@
 		<properties>
 			<property name="name"/>
 			<property name="firmwareVersion"/>
-			<property name="nukiId"/>
 		</properties>
 		<representation-property>nukiId</representation-property>
+		<config-description>
+			<parameter name="nukiId" type="text" required="true" readOnly="true">
+				<label>Nuki ID</label>
+				<description>The decimal string that identifies the Nuki Opener.</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<!-- Channel Type -->
@@ -238,17 +246,15 @@
 	</channel-type>
 
 	<channel-type id="ringActionState">
-		<item-type>Switch</item-type>
+		<kind>trigger</kind>
 		<label>Ring Action State</label>
-		<description>Use this channel to display current ring action state (if doorbell is being rung)</description>
+		<description>Channel is triggered when doorbell is rang, at most once every 30s</description>
 		<category>Siren</category>
-		<state readOnly="true">
+		<event>
 			<options>
-				<option value="OFF">Doorbell is not ringing</option>
-				<option value="ON">Doorbell is ringing</option>
+				<option value="RINGING">Doorbell is ringing</option>
 			</options>
-		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		</event>
 	</channel-type>
 
 	<channel-type id="ringActionTimestamp">

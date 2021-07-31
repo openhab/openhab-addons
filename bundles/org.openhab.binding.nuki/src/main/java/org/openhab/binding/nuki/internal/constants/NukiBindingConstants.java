@@ -114,4 +114,7 @@ public class NukiBindingConstants {
     public static final int DOORSENSOR_STATES_OPEN = 3;
     public static final int DOORSENSOR_STATES_UNKNOWN = 4;
     public static final int DOORSENSOR_STATES_CALIBRATING = 5;
+
+    // trigger channel events
+    public static final String EVENT_RINGING = "RINGING";
 }
