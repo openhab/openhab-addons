@@ -130,5 +130,4 @@ public class AirthingsWaveGen1Handler extends AbstractAirthingsHandler {
     private int intFromBytes(int lowByte, int highByte) {
         return (highByte & 0xFF) << 8 | (lowByte & 0xFF);
     }
-
 }
