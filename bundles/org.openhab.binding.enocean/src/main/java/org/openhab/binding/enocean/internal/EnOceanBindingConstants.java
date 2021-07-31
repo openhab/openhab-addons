@@ -77,6 +77,8 @@ public class EnOceanBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_HEATRECOVERYVENTILATION = new ThingTypeUID(BINDING_ID,
             "heatRecoveryVentilation");
+    public static final ThingTypeUID THING_TYPE_WINDOWSASHHANDLESENSOR = new ThingTypeUID(BINDING_ID,
+            "windowSashHandleSensor");
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(THING_TYPE_PUSHBUTTON,
             THING_TYPE_ROCKERSWITCH, THING_TYPE_CLASSICDEVICE, THING_TYPE_CENTRALCOMMAND, THING_TYPE_ROOMOPERATINGPANEL,
@@ -84,7 +86,8 @@ public class EnOceanBindingConstants {
             THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER,
             THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR,
             THING_TYPE_ENVIRONMENTALSENSOR, THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_THERMOSTAT,
-            THING_TYPE_MULTFUNCTIONSMOKEDETECTOR, THING_TYPE_HEATRECOVERYVENTILATION);
+            THING_TYPE_MULTFUNCTIONSMOKEDETECTOR, THING_TYPE_HEATRECOVERYVENTILATION,
+            THING_TYPE_WINDOWSASHHANDLESENSOR);
 
     // List of all Channel Type Ids, these type ids are also used as channel ids during dynamic creation of channels
     // this makes it a lot easier as we do not have to manage a type id and an id, drawback long channel names
@@ -138,6 +141,10 @@ public class EnOceanBindingConstants {
     public static final String CHANNEL_ROCKERSWITCHLISTENER_START = "rockerswitchListener";
 
     public static final String CHANNEL_WINDOWHANDLESTATE = "windowHandleState";
+    public static final String CHANNEL_WINDOWSASHSTATE = "windowSashState";
+    public static final String CHANNEL_WINDOWCALIBRATIONSTATE = "windowCalibrationState";
+    public static final String CHANNEL_WINDOWCALIBRATIONSTEP = "windowCalibrationStep";
+    public static final String CHANNEL_WINDOWBREACHEVENT = "windowBreachEvent";
     public static final String CHANNEL_CONTACT = "contact";
     public static final String CHANNEL_TEACHINCMD = "teachInCMD";
     public static final String CHANNEL_INSTANTPOWER = "instantpower";
@@ -293,8 +300,7 @@ public class EnOceanBindingConstants {
             Map.entry(CHANNEL_INDOORAIRANALYSIS,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_INDOORAIRANALYSIS),
                             CoreItemFactory.STRING)),
-            Map.entry(
-                    CHANNEL_SETPOINT,
+            Map.entry(CHANNEL_SETPOINT,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SETPOINT),
                             CoreItemFactory.NUMBER)),
             Map.entry(CHANNEL_CONTACT,
@@ -303,6 +309,19 @@ public class EnOceanBindingConstants {
             Map.entry(CHANNEL_WINDOWHANDLESTATE,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_WINDOWHANDLESTATE),
                             CoreItemFactory.STRING)),
+            Map.entry(CHANNEL_WINDOWSASHSTATE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_WINDOWSASHSTATE),
+                            CoreItemFactory.STRING)),
+            Map.entry(CHANNEL_WINDOWCALIBRATIONSTATE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_WINDOWCALIBRATIONSTATE),
+                            CoreItemFactory.STRING)),
+            Map.entry(CHANNEL_WINDOWCALIBRATIONSTEP,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_WINDOWCALIBRATIONSTEP),
+                            CoreItemFactory.STRING)),
+
+            Map.entry(CHANNEL_WINDOWBREACHEVENT,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_WINDOWBREACHEVENT), null, null,
+                            false, true)),
             Map.entry(
                     CHANNEL_BATTERY_VOLTAGE,
                     new EnOceanChannelDescription(
