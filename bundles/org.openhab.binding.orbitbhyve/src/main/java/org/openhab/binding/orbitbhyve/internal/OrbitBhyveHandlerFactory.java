@@ -15,7 +15,6 @@ package org.openhab.binding.orbitbhyve.internal;
 import static org.openhab.binding.orbitbhyve.internal.OrbitBhyveBindingConstants.THING_TYPE_BRIDGE;
 import static org.openhab.binding.orbitbhyve.internal.OrbitBhyveBindingConstants.THING_TYPE_SPRINKLER;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
