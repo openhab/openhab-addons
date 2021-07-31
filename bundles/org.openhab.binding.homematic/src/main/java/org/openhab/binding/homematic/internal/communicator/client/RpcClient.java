@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
@@ -55,6 +56,7 @@ public abstract class RpcClient<T> {
     protected static final int RESP_BUFFER_SIZE = 8192;
 
     protected HomematicConfig config;
+    private String thisUID = UUID.randomUUID().toString();
 
     public RpcClient(HomematicConfig config) {
         this.config = config;
@@ -83,10 +85,10 @@ public abstract class RpcClient<T> {
     /**
      * Register a callback for the specified interface where the Homematic gateway can send its events.
      */
-    public void init(HmInterface hmInterface, String clientId) throws IOException {
+    public void init(HmInterface hmInterface) throws IOException {
         RpcRequest<T> request = createRpcRequest("init");
         request.addArg(getRpcCallbackUrl());
-        request.addArg(clientId);
+        request.addArg(thisUID);
         if (config.getGatewayInfo().isHomegear()) {
             request.addArg(Integer.valueOf(0x22));
         }

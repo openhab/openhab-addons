@@ -54,8 +54,8 @@ public class BinRpcClient extends RpcClient<byte[]> {
     }
 
     @Override
-    public void init(HmInterface hmInterface, String clientId) throws IOException {
-        super.init(hmInterface, clientId);
+    public void init(HmInterface hmInterface) throws IOException {
+        super.init(hmInterface);
         socketHandler.removeSocket(config.getRpcPort(hmInterface));
     }
 
