@@ -12,12 +12,23 @@
  */
 package org.openhab.binding.hydrawise.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
- * Thrown when the Hydrawise cloud or local API returns back a "unauthorized" response to commands
- * 
+ * Thrown when the Hydrawise API returns back a "unauthorized" response to commands
+ *
  * @author Dan Cunningham - Initial contribution
  */
-@SuppressWarnings("serial")
+@NonNullByDefault
 public class HydrawiseAuthenticationException extends Exception {
+    private static final long serialVersionUID = 1L;
 
+    public HydrawiseAuthenticationException() {
+        super();
+    }
+
+    public HydrawiseAuthenticationException(@Nullable String message) {
+        super(message);
+    }
 }
