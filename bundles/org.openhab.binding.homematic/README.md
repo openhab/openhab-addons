@@ -157,6 +157,12 @@ The port number of the HMIP server (default = 2010)
 - **cuxdPort**
 The port number of the CUxD daemon (default = 8701)
 
+- **retryConnects**
+Maximum number of retries to connect to the Homematic Gateway and register a callback.
+
+- **retryWaitTime**
+Time in seconds between two connection retries (default = 30s)
+
 - **installModeDuration**
 Time in seconds that the controller will be in install mode when a device discovery is initiated (default = 60)
 

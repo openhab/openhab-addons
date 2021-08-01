@@ -58,6 +58,8 @@ public class HomematicConfig {
     private int bufferSize = 2048;
 
     private HmGatewayInfo gatewayInfo;
+    private int retryConnects;
+    private int retryWaitTime;
 
     /**
      * Returns the Homematic gateway address.
@@ -113,6 +115,34 @@ public class HomematicConfig {
      */
     public void setBinCallbackPort(int binCallbackPort) {
         this.binCallbackPort = binCallbackPort;
+    }
+
+    /**
+     * Sets the number of retry connects.
+     */
+    public void setRetryConnects(int retryConnectCtr) {
+        this.retryConnects = retryConnectCtr;
+    }
+
+    /**
+     * Returns the number of retry connects.
+     */
+    public int getRetryConnects() {
+        return retryConnects;
+    }
+
+    /**
+     * Sets the wait time between two retries in seconds.
+     */
+    public void setRetryWaitTime(int retryWaitTime) {
+        this.retryWaitTime = retryWaitTime;
+    }
+
+    /**
+     * Returns the wait time between two retries in seconds.
+     */
+    public int getRetryWaitTime() {
+        return retryWaitTime;
     }
 
     /**

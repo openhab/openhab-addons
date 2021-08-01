@@ -189,6 +189,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         logger.debug("Used Homematic transfer modes: {}", sb.toString());
         startClients();
         startServers();
+        registerCallbacks();
 
         if (!config.getGatewayInfo().isHomegear()) {
             // delay the newDevice event handling at startup, reduces some API calls
@@ -253,6 +254,9 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 rpcServer.start();
             }
         }
+    }
+
+    private void registerCallbacks() throws IOException {
         for (HmInterface hmInterface : availableInterfaces.keySet()) {
             getRpcClient(hmInterface).init(hmInterface);
         }
@@ -920,6 +924,11 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
             if (connectionLost) {
                 connectionLost = false;
                 logger.info("Connection resumed on gateway '{}'", id);
+                try {
+                    registerCallbacks();
+                } catch (IOException e) {
+                    logger.warn("Connection only partially restored. It is recommended to restart the binding");
+                }
                 gatewayAdapter.onConnectionResumed();
             }
         }

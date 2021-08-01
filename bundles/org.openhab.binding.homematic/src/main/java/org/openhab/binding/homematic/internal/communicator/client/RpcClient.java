@@ -92,7 +92,28 @@ public abstract class RpcClient<T> {
         if (config.getGatewayInfo().isHomegear()) {
             request.addArg(Integer.valueOf(0x22));
         }
-        sendMessage(config.getRpcPort(hmInterface), request);
+        int maxRetryAttempts = config.getRetryConnects();
+        int waitTime = config.getRetryWaitTime() * 1000;
+        for (int attempt = 1; attempt <= maxRetryAttempts; attempt++) {
+            try {
+                logger.debug("Register callback for interface {}, attempt {}/{}", hmInterface.getName(), attempt,
+                        maxRetryAttempts);
+                sendMessage(config.getRpcPort(hmInterface), request);
+                break;
+            } catch (IOException e) {
+                if (attempt == maxRetryAttempts) {
+                    logger.warn(
+                            "All attempts to register a callback for interface '{}' failed, last exception message: {}",
+                            hmInterface.getName(), e.getMessage());
+                    throw (e);
+                }
+                try {
+                    Thread.sleep(waitTime);
+                } catch (InterruptedException e1) {
+                    // ignore
+                }
+            }
+        }
     }
 
     /**
