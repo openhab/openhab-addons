@@ -65,105 +65,105 @@ public class DahuaHandler extends ChannelDuplexHandler {
         String action = content.substring(startIndex, endIndex);
         switch (code) {
             case "VideoMotion":
-                if (action.equals("Start")) {
+                if ("Start".equals(action)) {
                     ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
-                } else if (action.equals("Stop")) {
+                } else if ("Stop".equals(action)) {
                     ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
                 }
                 break;
             case "TakenAwayDetection":
-                if (action.equals("Start")) {
+                if ("Start".equals(action)) {
                     ipCameraHandler.motionDetected(CHANNEL_ITEM_TAKEN);
-                } else if (action.equals("Stop")) {
+                } else if ("Stop".equals(action)) {
                     ipCameraHandler.noMotionDetected(CHANNEL_ITEM_TAKEN);
                 }
                 break;
             case "LeftDetection":
-                if (action.equals("Start")) {
+                if ("Start".equals(action)) {
                     ipCameraHandler.motionDetected(CHANNEL_ITEM_LEFT);
-                } else if (action.equals("Stop")) {
+                } else if ("Stop".equals(action)) {
                     ipCameraHandler.noMotionDetected(CHANNEL_ITEM_LEFT);
                 }
                 break;
             case "SmartMotionVehicle":
-                if (action.equals("Start")) {
+                if ("Start".equals(action)) {
                     ipCameraHandler.motionDetected(CHANNEL_CAR_ALARM);
-                } else if (action.equals("Stop")) {
+                } else if ("Stop".equals(action)) {
                     ipCameraHandler.noMotionDetected(CHANNEL_CAR_ALARM);
                 }
                 break;
             case "SmartMotionHuman":
-                if (action.equals("Start")) {
+                if ("Start".equals(action)) {
                     ipCameraHandler.motionDetected(CHANNEL_HUMAN_ALARM);
-                } else if (action.equals("Stop")) {
+                } else if ("Stop".equals(action)) {
                     ipCameraHandler.noMotionDetected(CHANNEL_HUMAN_ALARM);
                 }
                 break;
             case "CrossLineDetection":
-                if (action.equals("Start")) {
+                if ("Start".equals(action)) {
                     ipCameraHandler.motionDetected(CHANNEL_LINE_CROSSING_ALARM);
-                } else if (action.equals("Stop")) {
+                } else if ("Stop".equals(action)) {
                     ipCameraHandler.noMotionDetected(CHANNEL_LINE_CROSSING_ALARM);
                 }
                 break;
             case "AudioMutation":
-                if (action.equals("Start")) {
+                if ("Start".equals(action)) {
                     ipCameraHandler.audioDetected();
-                } else if (action.equals("Stop")) {
+                } else if ("Stop".equals(action)) {
                     ipCameraHandler.noAudioDetected();
                 }
                 break;
             case "FaceDetection":
-                if (action.equals("Start")) {
+                if ("Start".equals(action)) {
                     ipCameraHandler.motionDetected(CHANNEL_FACE_DETECTED);
-                } else if (action.equals("Stop")) {
+                } else if ("Stop".equals(action)) {
                     ipCameraHandler.noMotionDetected(CHANNEL_FACE_DETECTED);
                 }
                 break;
             case "ParkingDetection":
-                if (action.equals("Start")) {
+                if ("Start".equals(action)) {
                     ipCameraHandler.setChannelState(CHANNEL_PARKING_ALARM, OnOffType.ON);
-                } else if (action.equals("Stop")) {
+                } else if ("Stop".equals(action)) {
                     ipCameraHandler.setChannelState(CHANNEL_PARKING_ALARM, OnOffType.OFF);
                 }
                 break;
             case "CrossRegionDetection":
-                if (action.equals("Start")) {
+                if ("Start".equals(action)) {
                     ipCameraHandler.motionDetected(CHANNEL_FIELD_DETECTION_ALARM);
-                } else if (action.equals("Stop")) {
+                } else if ("Stop".equals(action)) {
                     ipCameraHandler.noMotionDetected(CHANNEL_FIELD_DETECTION_ALARM);
                 }
                 break;
             case "VideoLoss":
             case "VideoBlind":
-                if (action.equals("Start")) {
+                if ("Start".equals(action)) {
                     ipCameraHandler.setChannelState(CHANNEL_TOO_DARK_ALARM, OnOffType.ON);
-                } else if (action.equals("Stop")) {
+                } else if ("Stop".equals(action)) {
                     ipCameraHandler.setChannelState(CHANNEL_TOO_DARK_ALARM, OnOffType.OFF);
                 }
                 break;
             case "VideoAbnormalDetection":
-                if (action.equals("Start")) {
+                if ("Start".equals(action)) {
                     ipCameraHandler.setChannelState(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.ON);
-                } else if (action.equals("Stop")) {
+                } else if ("Stop".equals(action)) {
                     ipCameraHandler.setChannelState(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.OFF);
                 }
                 break;
             case "VideoUnFocus":
-                if (action.equals("Start")) {
+                if ("Start".equals(action)) {
                     ipCameraHandler.setChannelState(CHANNEL_TOO_BLURRY_ALARM, OnOffType.ON);
-                } else if (action.equals("Stop")) {
+                } else if ("Stop".equals(action)) {
                     ipCameraHandler.setChannelState(CHANNEL_TOO_BLURRY_ALARM, OnOffType.OFF);
                 }
                 break;
             case "AlarmLocal":
-                if (action.equals("Start")) {
+                if ("Start".equals(action)) {
                     if (content.contains("index=0")) {
                         ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.ON);
                     } else {
                         ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT2, OnOffType.ON);
                     }
-                } else if (action.equals("Stop")) {
+                } else if ("Stop".equals(action)) {
                     if (content.contains("index=0")) {
                         ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
                     } else {
