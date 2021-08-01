@@ -10,20 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hydrawise.internal.api;
+package org.openhab.binding.hydrawise.internal.api.graphql.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import java.util.Map;
 
 /**
- * Thrown when command responses return a error message
- *
  * @author Dan Cunningham - Initial contribution
  */
-@NonNullByDefault
-public class HydrawiseCommandException extends Exception {
-    private static final long serialVersionUID = 1L;
+public class MutationResponse {
+    public Map<String, MutationResponseStatus> data;
 
-    public HydrawiseCommandException(String message) {
-        super(message);
+    public class MutationResponseStatus {
+        public StatusCode status;
+    }
+
+    public enum StatusCode {
+        OK,
+        WARNING,
+        ERROR;
     }
 }

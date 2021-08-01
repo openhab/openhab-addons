@@ -10,20 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hydrawise.internal.api;
+package org.openhab.binding.hydrawise.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Thrown when command responses return a error message
+ * The {@link HydrawiseAccountConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class HydrawiseCommandException extends Exception {
-    private static final long serialVersionUID = 1L;
-
-    public HydrawiseCommandException(String message) {
-        super(message);
-    }
+public class HydrawiseAccountConfiguration {
+    public String userName = "";
+    public String password = "";
+    public Boolean savePassword = false;
+    public Integer refreshInterval = 60;
 }
