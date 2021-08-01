@@ -125,12 +125,9 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
                 } else {
                     updateStatus(ThingStatus.ONLINE);
                 }
-            } catch (InterruptedException | TimeoutException e) {
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "AmpliPi request failed: " + e.getMessage());
-            } catch (ExecutionException e) {
-                logger.error("HTTP request to AmpliPi failed: {}.", e.getMessage());
-                logger.debug("{}", e.getMessage(), e);
             }
         }
     }
