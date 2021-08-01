@@ -149,10 +149,16 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
                         logger.warn("Invalid command type for run custom {}", command.getClass().getName());
                         return;
                     }
+                    QuantityType<?> time = ((QuantityType<?>) command).toUnit(Units.SECOND);
+
+                    if (time == null) {
+                        return;
+                    }
+
                     if (allCommand) {
-                        client.runAllRelays(controllerId, ((QuantityType<?>) command).intValue());
+                        client.runAllRelays(controllerId, time.intValue());
                     } else if (zone != null) {
-                        client.runRelay(zone.id, ((QuantityType<?>) command).intValue());
+                        client.runRelay(zone.id, time.intValue());
                     }
                     break;
                 case CHANNEL_ZONE_RUN:

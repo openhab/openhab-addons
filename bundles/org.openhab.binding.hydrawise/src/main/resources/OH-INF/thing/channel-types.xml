@@ -128,7 +128,7 @@
 	<channel-type id="nextruntime">
 		<item-type>DateTime</item-type>
 		<label>Next Run Time</label>
-		<description>Next time this zone is scheduled to run</description>
+		<description>The next time this zone is scheduled to run</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -140,7 +140,7 @@
 
 	<channel-type id="runcustom">
 		<item-type>Number:Time</item-type>
-		<label>Run Zones With Custom Duration </label>
+		<label>Run Zones With Custom Duration</label>
 		<description>Run zones now for a custom duration</description>
 	</channel-type>
 
@@ -152,7 +152,7 @@
 
 	<channel-type id="suspenduntil">
 		<item-type>DateTime</item-type>
-		<label>Suspend Zones </label>
+		<label>Suspend Zones</label>
 		<description>Suspends zones until this date</description>
 	</channel-type>
 
@@ -291,7 +291,7 @@
 
 	<channel-type id="probabilityofprecipitation">
 		<item-type>Number</item-type>
-		<label>Probability Of Precipitation </label>
+		<label>Probability Of Precipitation</label>
 		<description>Probability of precipitation percentage</description>
 		<state readOnly="true" pattern="%d%%"/>
 	</channel-type>
