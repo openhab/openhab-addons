@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="amplipi"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="controller">
+		<label>AmpliPi Controller</label>
+		<description>An AmpliPi controller</description>
+
+		<channels>
+			<channel id="preset" typeId="preset"/>
+			<channel id="input1" typeId="input">
+				<label>Source 1</label>
+				<description>This channel selects the input for source 1.</description>
+			</channel>
+			<channel id="input2" typeId="input">
+				<label>Source 2</label>
+				<description>This channel selects the input for source 2.</description>
+			</channel>
+			<channel id="input3" typeId="input">
+				<label>Source 3</label>
+				<description>This channel selects the input for source 3.</description>
+			</channel>
+			<channel id="input4" typeId="input">
+				<label>Source 4</label>
+				<description>This channel selects the input for source 4.</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the AmpliPi</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+
+		<label>AmpliPi Zone</label>
+		<description>A zone of the AmpliPi system</description>
+
+		<channels>
+			<channel typeId="system.volume" id="volume"/>
+			<channel typeId="system.mute" id="mute"/>
+			<channel typeId="source" id="source"/>
+		</channels>
+
+		<config-description>
+			<parameter name="id" type="integer" required="true">
+				<label>Zone ID</label>
+				<description>The ID of the zone</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="group">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+
+		<label>AmpliPi Group</label>
+		<description>A group of the AmpliPi system</description>
+
+		<channels>
+			<channel typeId="system.volume" id="volume"/>
+			<channel typeId="system.mute" id="mute"/>
+			<channel typeId="source" id="source"/>
+		</channels>
+
+		<config-description>
+			<parameter name="id" type="integer" required="true">
+				<label>Group ID</label>
+				<description>The ID of the group</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="preset">
+		<item-type>Number</item-type>
+		<label>Preset</label>
+		<description>Choose an existing preset</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="input">
+		<item-type>String</item-type>
+		<label>Input</label>
+		<description>The selected input for the source</description>
+		<autoUpdatePolicy>recommend</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="source">
+		<item-type>Number</item-type>
+		<label>Source</label>
+		<description>The audio source that is played</description>
+		<state>
+			<options>
+				<option value="0">Source 1</option>
+				<option value="1">Source 2</option>
+				<option value="2">Source 3</option>
+				<option value="3">Source 4</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>recommend</autoUpdatePolicy>
+	</channel-type>
+
+</thing:thing-descriptions>
