@@ -7,7 +7,7 @@ The binding supports two different kinds of connections:
 * serial connection,
 * serial over IP connection
 
-For users without a serial port on the server side, you can add a USB to serial adapter.
+For users without a serial port on the server side, you can use a USB to serial adapter.
 
 You don't need to have your whole house amplifier device directly connected to your openHAB server.
 You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on the LAN (serial over IP).
