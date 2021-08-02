@@ -35,7 +35,6 @@ public class FailureServlet extends AbstractShowPageServlet {
     public static final String MISSING_BRIDGE_UID_PARAMETER_NAME = "missingBridgeUid";
     public static final String MISSING_EMAIL_PARAMETER_NAME = "missingEmail";
     public static final String MALFORMED_BRIDGE_UID_PARAMETER_NAME = "malformedBridgeUid";
-    public static final String MALFORMED_EMAIL_PARAMETER_NAME = "malformedEmail";
     public static final String MISSING_REQUEST_URL_PARAMETER_NAME = "missingRequestUrl";
 
     public static final String OAUTH2_ERROR_ACCESS_DENIED = "access_denied";
@@ -80,8 +79,6 @@ public class FailureServlet extends AbstractShowPageServlet {
             return "Missing e-mail address.";
         } else if (ServletUtil.isParameterEnabled(request, MALFORMED_BRIDGE_UID_PARAMETER_NAME)) {
             return "Malformed bridge UID.";
-        } else if (ServletUtil.isParameterEnabled(request, MALFORMED_EMAIL_PARAMETER_NAME)) {
-            return "Malformed e-mail address.";
         } else if (ServletUtil.isParameterEnabled(request, MISSING_REQUEST_URL_PARAMETER_NAME)) {
             return "Missing request URL. Please try the config flow again.";
         } else {
