@@ -30,7 +30,6 @@ import org.openhab.binding.mielecloud.internal.auth.OAuthException;
 import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefreshListener;
 import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefresher;
 import org.openhab.binding.mielecloud.internal.discovery.ThingDiscoveryService;
-import org.openhab.binding.mielecloud.internal.util.EmailValidator;
 import org.openhab.binding.mielecloud.internal.util.LocaleValidator;
 import org.openhab.binding.mielecloud.internal.webservice.ConnectionError;
 import org.openhab.binding.mielecloud.internal.webservice.ConnectionStatusListener;
@@ -58,7 +57,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Roland Edelhoff - Initial contribution
  * @author Björn Lange - Introduced CombiningLanguageProvider field and interactions, added LanguageProvider super
- *         interface, switched from polling to SSE, added support for multiple bridges
+ *         interface, switched from polling to SSE, added support for multiple bridges, removed e-mail validation
  */
 @NonNullByDefault
 public class MieleBridgeHandler extends BaseBridgeHandler
@@ -122,14 +121,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler
     }
 
     public void initializeWebservice() {
-        if (!EmailValidator.isValid(getConfig().get(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL).toString())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    I18NKeys.BRIDGE_STATUS_DESCRIPTION_INVALID_EMAIL);
-            // When the e-mail configuration is changed a new initialization will be triggered. Therefore, we can leave
-            // the bridge in this state.
-            return;
-        }
-
         try {
             webService = webserviceFactory.get();
         } catch (MieleWebserviceInitializationException e) {
