@@ -23,7 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Björn Lange - Added locale config parameter, added i18n key collection
  * @author Benjamin Bolte - Add pre-heat finished and plate step channels, door state and door alarm channels, info
  *         state channel and map signal flags from API
- * @author Björn Lange - Add elapsed time channel, dish warmer thing
+ * @author Björn Lange - Add elapsed time channel, dish warmer thing, removed e-mail validation
  */
 @NonNullByDefault
 public final class MieleCloudBindingConstants {
@@ -227,7 +227,6 @@ public final class MieleCloudBindingConstants {
         public static final String BRIDGE_STATUS_DESCRIPTION_ACCESS_TOKEN_NOT_CONFIGURED = "@text/mielecloud.bridge.status.access.token.not.configured";
         public static final String BRIDGE_STATUS_DESCRIPTION_ACCOUNT_NOT_AUTHORIZED = "@text/mielecloud.bridge.status.account.not.authorized";
         public static final String BRIDGE_STATUS_DESCRIPTION_ACCESS_TOKEN_REFRESH_FAILED = "@text/mielecloud.bridge.status.access.token.refresh.failed";
-        public static final String BRIDGE_STATUS_DESCRIPTION_INVALID_EMAIL = "@text/mielecloud.bridge.status.invalid.email";
         public static final String BRIDGE_STATUS_DESCRIPTION_TRANSIENT_HTTP_ERROR = "@text/mielecloud.bridge.status.transient.http.error";
 
         public static final String THING_STATUS_DESCRIPTION_WEBSERVICE_MISSING = "@text/mielecloud.thing.status.webservice.missing";
