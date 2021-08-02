@@ -66,7 +66,7 @@ public class ConnectedCarDiscoveryService extends AbstractDiscoveryService imple
             return;
         }
         for (VehicleDetails vehicle : vehicleList) {
-            logger.debug("VIN {} discovery, create thing", vehicle.getId());
+            logger.debug("{} vehicle with VIN {} discovered", vehicle.brand, vehicle.vin);
             Map<String, Object> properties = new TreeMap<String, Object>();
             ThingTypeUID tuid;
             switch (vehicle.brand) {
@@ -77,6 +77,9 @@ public class ConnectedCarDiscoveryService extends AbstractDiscoveryService imple
                 case API_BRAND_ENYAK:
                     tuid = THING_TYPE_ENYAKVEHICLE;
                     break;
+                case API_BRAND_FORD:
+                    tuid = THING_TYPE_FORDVEHICLE;
+                    break;
                 default:
                     tuid = THING_TYPE_CNVEHICLE;
             }
@@ -86,6 +89,7 @@ public class ConnectedCarDiscoveryService extends AbstractDiscoveryService imple
             properties.put(PROPERTY_COLOR, vehicle.color);
             properties.put(PROPERTY_ENGINE, vehicle.engine);
             properties.put(PROPERTY_TRANS, vehicle.transmission);
+            logger.debug("{}: Adding discovered thing with id {}", vehicle.getId(), uid.toString());
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
                     .withRepresentationProperty(PROPERTY_VIN).withLabel(vehicle.model).build();
             thingDiscovered(result);

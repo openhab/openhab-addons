@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.connectedcar.internal.api.brand;
+package org.openhab.binding.connectedcar.internal.api.skodaenyak;
 
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_ENYAK;
 import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_VW_TOKEN_URL;
@@ -18,9 +18,12 @@ import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiCons
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
+import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
+import org.openhab.binding.connectedcar.internal.api.ApiToken.JwtToken;
+import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
 import org.openhab.binding.connectedcar.internal.api.TokenManager;
-import org.openhab.binding.connectedcar.internal.api.skodaenyak.SkodaEnyakApi;
+import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetSkoda;
 
 /**
  * {@link BrandSkodaEnyak} provides the Brand interface for Skoda Enyak
@@ -49,8 +52,8 @@ public class BrandSkodaEnyak extends SkodaEnyakApi {
         properties.xClientId = "28cd30c6-dee7-4529-a0e6-b1e07ff90b79";
         properties.xrequest = "cz.skodaauto.connect";
         properties.redirect_uri = "skodaconnect://oidc.login/";
-        properties.responseType = "code id_token";
-        properties.authScope = "openid profile mbb";
+        properties.responseType = "code token id_token";
+        properties.authScope = "openid profile";
         properties.tokenUrl = CNAPI_VW_TOKEN_URL;
         properties.tokenRefreshUrl = "https://tokenrefreshservice.apps.emea.vwapps.io";
         properties.xappVersion = "3.2.6";
@@ -67,5 +70,21 @@ public class BrandSkodaEnyak extends SkodaEnyakApi {
         properties.authScope = "openid profile phone address cars email birthdate badge dealers driversLicense mbb";
         properties.responseType = "code id_token";
         return properties;
+    }
+
+    @Override
+    public String[] getImageUrls() throws ApiException {
+        if (config.vstatus.imageUrls.length == 0) {
+            try {
+                // config.vstatus.imageUrls = super.callApi("",
+                String idToken = tokenManager.createProfileToken(config);
+                JwtToken jwt = decodeJwt(idToken);
+                String json = super.callApi("", "https://api.connect.skoda-auto.cz/api/v1/vehicles/{2}",
+                        fillAppHeaders(tokenManager.createProfileToken(config)), "getImageUrls", String.class);
+            } catch (ApiException e) {
+
+            }
+        }
+        return config.vstatus.imageUrls;
     }
 }

@@ -42,13 +42,30 @@ public class TokenOAuthFlow {
     public String action = "";
     public ApiResult res = new ApiResult();
     private final ApiHttpClient http;
+    private final ApiHttpMap map;
 
     public TokenOAuthFlow(ApiHttpClient http) {
         this.http = http;
+        this.map = new ApiHttpMap();
         http.clearCookies();
     }
 
-    ApiHttpMap map = new ApiHttpMap();
+    public TokenOAuthFlow(ApiHttpClient http, ApiHttpMap map) {
+        this.http = http;
+        this.map = map;
+        http.clearCookies();
+    }
+
+    public TokenOAuthFlow init(ApiHttpMap map) {
+        this.map.getHeaders().putAll(map.getHeaders());
+        this.map.getData().putAll(map.getData());
+        /*
+         * for (Map.Entry<String, String> h : map.getHeaders().entrySet()) {
+         * map.header(h.getKey(), h.getValue());
+         * }
+         */
+        return this;
+    }
 
     public TokenOAuthFlow header(String header, String value) {
         map.header(header, value);
@@ -75,8 +92,9 @@ public class TokenOAuthFlow {
         return update();
     }
 
-    public ApiResult post(String url) throws ApiException {
-        return post(url, false);
+    public ApiResult put(String url, boolean json) throws ApiException {
+        res = http.put(url, map.getHeaders(), map.getRequestData(json));
+        return update();
     }
 
     public ApiResult follow() throws ApiException {

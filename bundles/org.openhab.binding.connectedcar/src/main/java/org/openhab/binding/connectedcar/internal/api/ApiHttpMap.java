@@ -37,10 +37,6 @@ public class ApiHttpMap {
         return header(header.toString(), value);
     }
 
-    public void clearHeader() {
-        headers.clear();
-    }
-
     public ApiHttpMap data(String attribute, String value) {
         data.put(attribute, value);
         return this;
@@ -54,7 +50,17 @@ public class ApiHttpMap {
         return data;
     }
 
-    public void clearData() {
+    public String getRequestData(boolean json) {
+        return ApiHttpClient.buildPostData(data, json);
+    }
+
+    public ApiHttpMap clearHeader() {
+        headers.clear();
+        return this;
+    }
+
+    public ApiHttpMap clearData() {
         data.clear();
+        return this;
     }
 }

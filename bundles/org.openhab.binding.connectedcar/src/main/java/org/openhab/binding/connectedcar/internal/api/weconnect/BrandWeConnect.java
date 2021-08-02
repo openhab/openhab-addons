@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.connectedcar.internal.api.brand;
+package org.openhab.binding.connectedcar.internal.api.weconnect;
 
 import static org.openhab.binding.connectedcar.internal.CarUtils.generateNonce;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_VWID;
@@ -21,9 +21,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
+import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
 import org.openhab.binding.connectedcar.internal.api.TokenManager;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetImageUrlsVW;
-import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApi;
 
 /**
  * {@link BrandWeConnect} provides the VW ID.3/ID.4 specific functions of the API
@@ -61,6 +61,12 @@ public class BrandWeConnect extends WeConnectApi {
         return properties;
     }
 
+    /*
+     * @Override
+     * public String getLoginUrl() throws ApiException {
+     * return http.get(config.api.loginUrl, fillAppHeaders()).response;
+     * }
+     */
     @Override
     public String[] getImageUrls() throws ApiException {
         if (config.vstatus.imageUrls.length == 0) {

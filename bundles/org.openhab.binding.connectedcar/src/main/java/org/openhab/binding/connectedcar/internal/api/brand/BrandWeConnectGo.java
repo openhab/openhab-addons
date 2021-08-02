@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
+import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
 import org.openhab.binding.connectedcar.internal.api.TokenManager;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApi;
 

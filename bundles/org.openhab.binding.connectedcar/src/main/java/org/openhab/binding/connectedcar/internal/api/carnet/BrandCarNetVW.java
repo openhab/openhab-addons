@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.connectedcar.internal.api.brand;
+package org.openhab.binding.connectedcar.internal.api.carnet;
 
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_VW;
 import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.*;
@@ -20,8 +20,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
+import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
+import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.TokenManager;
-import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApi;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetImageUrlsVW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

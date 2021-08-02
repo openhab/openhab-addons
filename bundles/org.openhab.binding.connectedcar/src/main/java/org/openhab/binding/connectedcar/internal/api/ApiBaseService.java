@@ -12,20 +12,30 @@
  */
 package org.openhab.binding.connectedcar.internal.api;
 
+import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
+import static org.openhab.binding.connectedcar.internal.CarUtils.toQuantityType;
+
 import java.util.Map;
 
+import javax.measure.IncommensurableException;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.connectedcar.internal.CarUtils;
+import org.openhab.binding.connectedcar.internal.OpenStreetMapApiDTO;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.openhab.binding.connectedcar.internal.handler.AccountHandler;
 import org.openhab.binding.connectedcar.internal.handler.VehicleBaseHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +51,7 @@ public class ApiBaseService {
     protected final ApiBase api;
     protected final VehicleBaseHandler thingHandler;
     protected final ChannelDefinitions idMapper;
+    protected final OpenStreetMapApiDTO osmApi = new OpenStreetMapApiDTO();
     protected final String thingId;
     protected String serviceId = "";
     protected boolean enabled = true;
@@ -94,6 +105,18 @@ public class ApiBaseService {
         return false;
     }
 
+    public boolean updateLocationAddress(PointType position, String channel) {
+        if (getConfig().vehicle.enableAddressLookup) {
+            try {
+                String address = osmApi.getAddressFromPosition(api.getHttp(), position);
+                return updateChannel(CHANNEL_GROUP_LOCATION, channel, new StringType(address));
+            } catch (ApiException e) {
+                updateChannel(CHANNEL_GROUP_LOCATION, channel, UnDefType.UNDEF);
+            }
+        }
+        return false;
+    }
+
     public boolean addChannels(Map<String, ChannelIdMapEntry> channels, boolean condition, String... channel) {
         return addChannels(channels, "", condition, channel);
     }
@@ -120,6 +143,21 @@ public class ApiBaseService {
         return thingHandler.addChannel(channels, group, channel, itemType, unit, advanced, readOnly);
     }
 
+    protected boolean updateChannel(String channelId, State value) {
+        ChannelIdMapEntry definition = idMapper.find(channelId);
+        if (definition == null) {
+            throw new IllegalArgumentException(
+                    "Unable to update channel " + channelId + ", missing channel definition ");
+        }
+        Unit<?> unit = definition.unit;
+        if (unit != null) {
+            return thingHandler.updateChannel(definition.groupName, definition.channelName, toQuantityType(
+                    ((DecimalType) value).doubleValue(), definition.digits == -1 ? 1 : definition.digits, unit));
+        } else {
+            return thingHandler.updateChannel(definition.groupName, definition.channelName, value);
+        }
+    }
+
     protected boolean updateChannel(String group, String channel, State value) {
         return thingHandler.updateChannel(group, channel, value);
     }
@@ -138,5 +176,17 @@ public class ApiBaseService {
 
     protected CombinedConfig getConfig() {
         return thingHandler.getThingConfig();
+    }
+
+    public double milesToKM(@Nullable Double value) {
+        try {
+            ImperialUnits.MILE.getConverterToAny(KILOMETRE).convert(value);
+            if (value != null) {
+                return "US".equalsIgnoreCase(getConfig().api.xcountry) ? value / 1.6 : value;
+            }
+        } catch (IncommensurableException e) {
+
+        }
+        return -1;
     }
 }

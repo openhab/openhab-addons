@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.connectedcar.internal.api.brand;
+package org.openhab.binding.connectedcar.internal.api.carnet;
 
 import static org.openhab.binding.connectedcar.internal.CarUtils.getString;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_AUDI;
@@ -24,8 +24,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
+import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
+import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.TokenManager;
-import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApi;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -196,7 +197,7 @@ public class BrandCarNetAudi extends CarNetApi implements BrandAuthenticator {
      * json = http.post(CNAPI_AUDI_TOKEN_URL, headers, data, true);
      *
      * // process token
-     * token = fromJson(gson, json, CNApiToken.class);
+     * token = fromJson(gson, json, JwtToken.class);
      * if ((token.accessToken == null) || token.accessToken.isEmpty()) {
      * throw new CarNetSecurityException("Authentication failed: Unable to get id token!");
      * }

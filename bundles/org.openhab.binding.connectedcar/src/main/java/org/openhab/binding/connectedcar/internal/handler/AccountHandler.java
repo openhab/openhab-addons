@@ -37,14 +37,15 @@ import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleDeta
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
+import org.openhab.binding.connectedcar.internal.api.BrandNull;
 import org.openhab.binding.connectedcar.internal.api.TokenManager;
-import org.openhab.binding.connectedcar.internal.api.brand.BrandCarNetAudi;
-import org.openhab.binding.connectedcar.internal.api.brand.BrandCarNetSeat;
-import org.openhab.binding.connectedcar.internal.api.brand.BrandCarNetSkoda;
-import org.openhab.binding.connectedcar.internal.api.brand.BrandCarNetVW;
-import org.openhab.binding.connectedcar.internal.api.brand.BrandNull;
-import org.openhab.binding.connectedcar.internal.api.brand.BrandSkodaEnyak;
-import org.openhab.binding.connectedcar.internal.api.brand.BrandWeConnect;
+import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetAudi;
+import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetSeat;
+import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetSkoda;
+import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetVW;
+import org.openhab.binding.connectedcar.internal.api.fordpass.BrandFordPass;
+import org.openhab.binding.connectedcar.internal.api.skodaenyak.BrandSkodaEnyak;
+import org.openhab.binding.connectedcar.internal.api.weconnect.BrandWeConnect;
 import org.openhab.binding.connectedcar.internal.config.AccountConfiguration;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.openhab.core.thing.Bridge;
@@ -97,6 +98,7 @@ public class AccountHandler extends BaseBridgeHandler {
         brandMap.put(THING_SEAT, API_BRAND_SEAT);
         brandMap.put(THING_SKODA, API_BRAND_SKODA);
         brandMap.put(THING_ENYAK, API_BRAND_ENYAK);
+        brandMap.put(THING_FORD, API_BRAND_FORD);
     }
 
     /**
@@ -116,9 +118,10 @@ public class AccountHandler extends BaseBridgeHandler {
         String ttype = getThing().getUID().toString();
         ttype = CarUtils.substringBetween(ttype, ":", ":");
         String brand = brandMap.get(ttype);
-        if (brand != null) {
-            config.account.brand = brand;
+        if (brand == null) {
+            throw new IllegalArgumentException("Unable to get brand for thing type " + ttype);
         }
+        config.account.brand = brand;
         api = createApi(config, null);
         config.authenticator = api;
         config.api = api.getProperties();
@@ -166,10 +169,11 @@ public class AccountHandler extends BaseBridgeHandler {
 
         vehicleList = new ArrayList<VehicleDetails>();
         for (String vin : api.getVehicles()) {
-            config.vehicle.vin = vin;
-            api.setConfig(config);
-            config.vstatus.apiUrlPrefix = api.getApiUrl();
-            api.setConfig(config);
+            CombinedConfig vconfig = config;
+            vconfig.vehicle.vin = vin;
+            api.setConfig(vconfig);
+            vconfig.vstatus.apiUrlPrefix = api.getApiUrl();
+            api.setConfig(vconfig);
             vehicleList.add(api.getVehicleDetails(vin));
         }
         informVehicleInformationListeners(vehicleList);
@@ -225,8 +229,11 @@ public class AccountHandler extends BaseBridgeHandler {
                 return new BrandCarNetSeat(httpClient, tokenManager, apiListener);
             case API_BRAND_ENYAK:
                 return new BrandSkodaEnyak(httpClient, tokenManager, apiListener);
-            case API_BRAND_NULL:
+            case API_BRAND_FORD:
+                return new BrandFordPass(httpClient, tokenManager, apiListener);
             default:
+                logger.warn("Unknown brand {}", config.account.brand);
+            case API_BRAND_NULL:
                 return api;
 
         }

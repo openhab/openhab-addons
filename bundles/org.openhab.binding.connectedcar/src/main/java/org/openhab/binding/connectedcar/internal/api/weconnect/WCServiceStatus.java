@@ -14,6 +14,7 @@ package org.openhab.binding.connectedcar.internal.api.weconnect;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
 import static org.openhab.binding.connectedcar.internal.CarUtils.*;
+import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_VWID;
 import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_SERVICE_VEHICLE_STATUS_REPORT;
 
 import java.util.Map;
@@ -25,7 +26,6 @@ import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleStatusData.WCVehicleStatus;
 import org.openhab.binding.connectedcar.internal.handler.VehicleBaseHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -40,19 +40,24 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WCServiceStatus extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(WCServiceStatus.class);
+    String thingId = API_BRAND_VWID;
 
     public WCServiceStatus(VehicleBaseHandler thingHandler, ApiBase api) {
         super(CNAPI_SERVICE_VEHICLE_STATUS_REPORT, thingHandler, api);
+        thingId = getConfig().vehicle.vin;
     }
 
     @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws ApiException {
         // Try to query status information from vehicle
         WCVehicleStatus status = api.getVehicleStatus().wcStatus;
+        if (status == null) {
+            logger.warn("{}: Unable to read vehicle status, can't create channels!", thingId);
+            return false;
+        }
 
         addChannels(channels, true, /* CHANNEL_STATUS_PBRAKE, CHANNEL_STATUS_LIGHTS, */ CHANNEL_STATUS_ERROR);
-        addChannels(channels, status.rangeStatus != null, CHANNEL_RANGE_TOTAL, CHANNEL_RANGE_PRANGE,
-                CHANNEL_RANGE_PFUELTYPE);
+        addChannels(channels, status.rangeStatus != null, CHANNEL_RANGE_TOTAL, CHANNEL_RANGE_PRANGE);
         addChannels(channels, status.batteryStatus != null, CHANNEL_CHARGER_CHGLVL);
         addChannels(channels, status.chargingStatus != null, CHANNEL_CONTROL_CHARGER, CHANNEL_CHARGER_CHG_STATE,
                 CHANNEL_CHARGER_MODE, CHANNEL_CHARGER_REMAINING, CHANNEL_CONTROL_MAXCURRENT, CHANNEL_CONTROL_TARGETCHG,
@@ -96,8 +101,6 @@ public class WCServiceStatus extends ApiBaseService {
                     toQuantityType(getInteger(status.rangeStatus.totalRange_km), 1, KILOMETRE));
             updated |= updateChannel(group, CHANNEL_RANGE_PRANGE,
                     toQuantityType(getInteger(status.rangeStatus.primaryEngine.remainingRange_km), 1, KILOMETRE));
-            updated |= updateChannel(group, CHANNEL_RANGE_PFUELTYPE,
-                    new DecimalType("electric".equals(getString(status.rangeStatus.primaryEngine.type)) ? 3 : 0));
         }
         return updated;
     }

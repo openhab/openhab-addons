@@ -27,11 +27,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.CarPosition;
-import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.JwtToken;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleDetails;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleStatus;
-import org.openhab.binding.connectedcar.internal.api.brand.BrandApiProperties;
-import org.openhab.binding.connectedcar.internal.api.brand.BrandAuthenticator;
+import org.openhab.binding.connectedcar.internal.api.ApiToken.JwtToken;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetPendingRequest;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.openhab.binding.connectedcar.internal.config.VehicleConfiguration;
@@ -82,11 +80,9 @@ public class ApiBase implements BrandAuthenticator, ApiBrandInterface {
      */
     @Override
     public void initialize(CombinedConfig configIn) throws ApiException {
-        config = configIn;
-        setConfig(config); // derive from account config
-        tokenManager.refreshTokens(config);
-        initialzed = true;
+        setConfig(configIn); // derive from account config
         thingId = config.account.brand;
+        initialzed = tokenManager.refreshTokens(config);
     }
 
     @Override
@@ -165,6 +161,11 @@ public class ApiBase implements BrandAuthenticator, ApiBrandInterface {
 
     @Override
     public String controlLock(boolean lock) throws ApiException {
+        return UNSUPPORTED;
+    }
+
+    @Override
+    public String controlEngine(boolean start) throws ApiException {
         return UNSUPPORTED;
     }
 
@@ -347,5 +348,28 @@ public class ApiBase implements BrandAuthenticator, ApiBrandInterface {
     @Override
     public Map<String, CarNetPendingRequest> getPendingRequests() {
         return pendingRequests;
+    }
+
+    @Override
+    public String getLoginUrl() throws ApiException {
+        return "";
+    }
+
+    @Override
+    public ApiToken login(String loginUrl, TokenOAuthFlow oauth) throws ApiException {
+        throw new ApiException("BrandAuthenticator is missing");
+    }
+
+    @Override
+    public ApiToken grantAccess(TokenOAuthFlow oauth) throws ApiException {
+        throw new ApiException("BrandAuthenticator is missing");
+    }
+
+    @Override
+    public ApiToken refreshToken(CombinedConfig config, ApiToken token) throws ApiException {
+        if (config.authenticator != null) {
+            return config.authenticator.refreshToken(config, token);
+        }
+        throw new ApiException("BrandAuthenticator.refreshToken() is missing");
     }
 }

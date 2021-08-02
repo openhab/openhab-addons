@@ -55,4 +55,11 @@
 
 		<config-description-ref uri="bridge-type:connectedcar:account"/>
 	</bridge-type>
+
+	<bridge-type id="ford">
+		<label>Ford Account (ForPass)</label>
+		<description>This thing represents a FordPass Account.</description>
+
+		<config-description-ref uri="bridge-type:connectedcar:account"/>
+	</bridge-type>
 </thing:thing-descriptions>

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.connectedcar.internal.api.brand;
+package org.openhab.binding.connectedcar.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

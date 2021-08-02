@@ -33,7 +33,7 @@ import javax.ws.rs.core.HttpHeaders;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNApiToken;
+import org.openhab.binding.connectedcar.internal.api.ApiToken.OAuthToken;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetSecurityPinAuthInfo;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetSecurityPinAuthentication;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
@@ -60,7 +60,6 @@ public class TokenManager {
     private class TokenSet {
         private ApiToken apiToken = new ApiToken();
         private ApiToken idToken = new ApiToken();
-        private String csrf = "";
         private ApiHttpClient http = new ApiHttpClient();
     }
 
@@ -115,13 +114,25 @@ public class TokenManager {
         TokenOAuthFlow oauth = new TokenOAuthFlow(tokens.http);
         try {
             logger.debug("{}: Logging in, account={}", config.vehicle.vin, config.account.user);
-            String authUrl = "";
+
+            BrandAuthenticator authenticator = config.authenticator;
+            if (authenticator != null) {
+                url = authenticator.getLoginUrl();
+                if (!url.isEmpty()) {
+                    tokens.idToken = authenticator.login(url, oauth);
+                    tokens.apiToken = authenticator.grantAccess(oauth);
+                    logger.debug("{}: accessToken was created, valid for {}sec", config.api.brand,
+                            tokens.apiToken.validity);
+                    updateTokenSet(config.tokenSetId, tokens);
+                    return tokens.apiToken.accessToken;
+                }
+            }
+
             if (API_BRAND_VWID.equals(config.api.brand)) {
                 res = oauth.get(config.api.loginUrl);
-                authUrl = res.response;
                 url = res.getLocation();
             } else {
-                authUrl = config.api.issuerRegionMappingUrl + "/oidc/v1/authorize";
+                String authUrl = config.api.issuerRegionMappingUrl + "/oidc/v1/authorize";
                 oauth.header(HttpHeader.USER_AGENT, CNAPI_HEADER_USER_AGENT).header(HttpHeader.ACCEPT,
                         "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3")
                         .header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded")
@@ -138,6 +149,7 @@ public class TokenManager {
 
             logger.debug("{}: OAuth: Get signin form", config.vehicle.vin);
             res = oauth.get(url);
+
             url = oauth.location;
             if (url.contains("error=consent_required")) {
                 logger.debug("Missing consent: {}", url);
@@ -159,7 +171,7 @@ public class TokenManager {
             url = config.api.issuerRegionMappingUrl + oauth.action;
             oauth.clearData().data("_csrf", oauth.csrf).data("relayState", oauth.relayState).data("hmac", oauth.hmac)
                     .data("email", URLEncoder.encode(config.account.user, UTF_8));
-            oauth.post(url);
+            oauth.post(url, false);
             if (oauth.location.isEmpty()) {
                 logger.debug("{}: OAuth failed, can't input password - HTML {}: {}", config.vehicle.vin, res.httpCode,
                         res.response);
@@ -177,7 +189,7 @@ public class TokenManager {
             oauth.clearData().data("_csrf", oauth.csrf).data("relayState", oauth.relayState).data("hmac", oauth.hmac)
                     .data("email", URLEncoder.encode(config.account.user, UTF_8))
                     .data("password", URLEncoder.encode(config.account.password, UTF_8));
-            res = oauth.post(url);
+            res = oauth.post(url, false);
             url = oauth.location; // Continue URL
             if (url.contains("error=login.error.password_invalid")) {
                 throw new ApiSecurityException("Login failed due to invalid password or locked account!");
@@ -215,11 +227,9 @@ public class TokenManager {
                 throw new ApiSecurityException("Login/OAuth failed, didn't got accessToken/idToken");
             }
             // In this case the id and access token were returned by the login process
-            tokens.idToken = new ApiToken(oauth.idToken, oauth.accessToken, "bearer",
-                    Integer.parseInt(oauth.expiresIn, 10));
+            tokens.idToken = new ApiToken(oauth.idToken, oauth.accessToken, Integer.parseInt(oauth.expiresIn, 10));
             logger.trace("{}: OAuth successful, idToken was retrieved, valid for {}sec", config.vehicle.vin,
                     tokens.idToken.validity);
-            tokens.csrf = oauth.csrf;
         } catch (UnsupportedEncodingException e) {
             logger.warn("Technical problem with algorithms", e);
             throw new ApiException("Technical problem with algorithms", e);
@@ -229,7 +239,7 @@ public class TokenManager {
         }
 
         try {
-            CNApiToken token;
+            OAuthToken token;
             String json = "";
 
             if (API_BRAND_VWID.equals(config.api.brand)) { // config.api.xClientId.isEmpty()) {
@@ -249,13 +259,13 @@ public class TokenManager {
                         .data("redirect_uri", config.api.redirect_uri).data("region", "emea")
                         .data("access_token", oauth.accessToken).data("authorizationCode", oauth.code) //
                         .post("https://login.apps.emea.vwapps.io/login/v1", true).response;
-                token = fromJson(gson, json, CNApiToken.class);
+                token = fromJson(gson, json, OAuthToken.class);
             } else if (API_BRAND_ENYAK.equals(config.api.brand)) {
                 json = oauth.clearHeader().header(HttpHeader.HOST, "tokenrefreshservice.apps.emea.vwapps.io")//
                         .header(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE_FORM_URLENC).clearData()
                         .data("auth_code", oauth.code).data("id_token", oauth.idToken).data("brand", "skoda") //
                         .post("https://tokenrefreshservice.apps.emea.vwapps.io/exchangeAuthCode", false).response;
-                token = fromJson(gson, json, CNApiToken.class);
+                token = fromJson(gson, json, OAuthToken.class);
             } else {
                 // Last step: Request the access token from the VW token management
                 // We save the generated tokens as tokenSet. Account handler and vehicle handler(s) are sharing the same
@@ -268,11 +278,11 @@ public class TokenManager {
                         .header(HttpHeader.ACCEPT, "*/*") //
                         .clearData().data("grant_type", "id_token").data("token", tokens.idToken.idToken)
                         .data("scope", "sc2:fal") //
-                        .post(CNAPI_URL_GET_SEC_TOKEN).response;
-                token = fromJson(gson, json, CNApiToken.class);
+                        .post(CNAPI_URL_GET_SEC_TOKEN, false).response;
+                token = fromJson(gson, json, OAuthToken.class);
             }
             token.normalize();
-            if ((token.accessToken == null) && token.idToken.isEmpty()) {
+            if (token.accessToken.isEmpty() && token.idToken.isEmpty()) {
                 throw new ApiSecurityException("Authentication failed: Unable to get access token!");
             }
             tokens.apiToken = new ApiToken(token);
@@ -298,7 +308,7 @@ public class TokenManager {
     public String createProfileToken(CombinedConfig config) throws ApiException {
         TokenSet tokens = getTokenSet(config.tokenSetId);
         createIdToken(config);
-        return tokens.idToken.accessToken;
+        return !tokens.idToken.accessToken.isEmpty() ? tokens.idToken.accessToken : tokens.idToken.idToken;
     }
 
     /**
@@ -366,7 +376,7 @@ public class TokenManager {
         String data = gson.toJson(pinAuth);
         json = http.post(config.vstatus.rolesRightsUrl + "/rolesrights/authorization/v2/security-pin-auth-completed",
                 headers, data).response;
-        CNApiToken t = fromJson(gson, json, CNApiToken.class);
+        OAuthToken t = fromJson(gson, json, OAuthToken.class);
         ApiToken securityToken = new ApiToken(t);
         if (securityToken.securityToken.isEmpty()) {
             throw new ApiSecurityException("Authentication failed: Unable to get access token!");
@@ -380,11 +390,6 @@ public class TokenManager {
             securityTokens.add(securityToken);
         }
         return securityToken.securityToken;
-    }
-
-    public String getCsrfToken(String tokenSetId) {
-        TokenSet tokens = getTokenSet(tokenSetId);
-        return tokens.csrf;
     }
 
     /**
@@ -413,11 +418,12 @@ public class TokenManager {
                     securityTokens.remove(stoken);
                 }
             }
+            return true;
         } catch (ApiException e) {
             // Ignore problems with the idToken or securityToken if the accessToken was requested successful
             logger.debug("Unable to refresh token: {}", e.toString()); // "normal, no stack trace"
         } catch (IllegalArgumentException e) {
-            logger.debug("Invalid token!");
+            logger.debug("Invalid tokenSet!");
         }
         return false;
     }
@@ -468,7 +474,7 @@ public class TokenManager {
                     json = http.post(config.api.tokenRefreshUrl, http.fillRefreshHeaders(), data.getData(),
                             false).response;
                 }
-                CNApiToken newToken = gson.fromJson(json, CNApiToken.class);
+                OAuthToken newToken = gson.fromJson(json, OAuthToken.class);
                 if (newToken == null) {
                     throw new ApiSecurityException("Unable to parse token information from JSON");
                 }

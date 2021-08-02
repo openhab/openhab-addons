@@ -10,12 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.connectedcar.internal.api.brand;
+package org.openhab.binding.connectedcar.internal.api;
 
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_NULL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.connectedcar.internal.api.ApiBase;
 
 /**
  * {@link BrandNull} providesan empty implementation of the Brand interface

@@ -10,51 +10,45 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.connectedcar.internal.api.brand;
+package org.openhab.binding.connectedcar.internal.api.carnet;
 
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.*;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_VW_TOKEN_URL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
+import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
 import org.openhab.binding.connectedcar.internal.api.TokenManager;
-import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApi;
 
 /**
- * {@link BrandCarNetSkoda} provides the Skoda specific functions of the API, portal URL us
- * https://www.skoda-connect.com
+ * {@link BrandCarNetSeat} provides the SEAT specific functions of the API
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class BrandCarNetSkoda extends CarNetApi {
-    public BrandCarNetSkoda(ApiHttpClient httpClient, TokenManager tokenManager,
+public class BrandCarNetSeat extends CarNetApi {
+    public BrandCarNetSeat(ApiHttpClient httpClient, TokenManager tokenManager,
             @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
 
     @Override
     public BrandApiProperties getProperties() {
-        return getSkodaProperties();
-    }
-
-    public static BrandApiProperties getSkodaProperties() {
         BrandApiProperties properties = new BrandApiProperties();
-        properties.brand = "VW"; // it's "VW", not "Skoda"
-        properties.xcountry = "CZ";
+        properties.brand = "VW"; // CNAPI_BRAND_SEAT;
+        properties.xcountry = "ES";
         properties.apiDefaultUrl = "";
-        properties.clientId = "7f045eee-7003-4379-9968-9355ed2adb06@apps_vw-dilab_com";
-        properties.xClientId = "28cd30c6-dee7-4529-a0e6-b1e07ff90b79";
-        properties.authScope = "openid profile mbb cars";
-        properties.apiDefaultUrl = CNAPI_DEFAULT_API_URL;
+        properties.clientId = "50f215ac-4444-4230-9fb1-fe15cd1a9bcc@apps_vw-dilab_com";
+        properties.xClientId = "9dcc70f0-8e79-423a-a3fa-4065d99088b4";
+        properties.authScope = "openid profile mbb cars birthdate nickname address phone";
         properties.tokenUrl = CNAPI_VW_TOKEN_URL;
         properties.tokenRefreshUrl = properties.tokenUrl;
-        properties.redirect_uri = "skodaconnect://oidc.login/";
+        properties.redirect_uri = "seatconnect://identity-kit/login";
         properties.xrequest = "cz.skodaauto.connect";
-        properties.responseType = "token id_token";
-        properties.xappVersion = "3.2.6";
-        properties.xappName = "cz.skodaauto.connect";
+        properties.responseType = "code id_token";
+        properties.xappName = "SEATConnect";
+        properties.xappVersion = "1.1.29";
         return properties;
     }
 }

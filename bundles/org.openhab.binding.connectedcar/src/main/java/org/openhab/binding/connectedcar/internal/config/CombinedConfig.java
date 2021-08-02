@@ -14,8 +14,8 @@ package org.openhab.binding.connectedcar.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.connectedcar.internal.api.brand.BrandApiProperties;
-import org.openhab.binding.connectedcar.internal.api.brand.BrandAuthenticator;
+import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
+import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNOperationList.CarNetOperationList;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNPairingInfo.CarNetPairingInfo;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetMbbStatus;
@@ -58,4 +58,17 @@ public class CombinedConfig {
     public VehicleConfiguration vehicle = new VehicleConfiguration();
     public VehicleConfig vstatus = new VehicleConfig();
     public UserConfig user = new UserConfig();
+
+    public CombinedConfig() {
+    }
+
+    public CombinedConfig(CombinedConfig aconfig, VehicleConfiguration vconfig) {
+        this.api = aconfig.api;
+        this.account = aconfig.account;
+        this.tokenSetId = aconfig.tokenSetId;
+        this.authenticator = aconfig.authenticator;
+        this.vehicle = vconfig;
+        this.oidcConfig = new CarNetOidcConfig();
+        this.user = new UserConfig();
+    }
 }

@@ -32,8 +32,8 @@ import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpMap;
+import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.TokenManager;
-import org.openhab.binding.connectedcar.internal.api.brand.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleList;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleList.WCVehicle;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleStatusData;
@@ -58,6 +58,16 @@ public class WeConnectApi extends ApiBase implements BrandAuthenticator {
     }
 
     @Override
+    public String getApiUrl() {
+        return "https://mobileapi.apps.emea.vwapps.io";
+    }
+
+    @Override
+    public String getHomeReguionUrl() {
+        return getApiUrl();
+    }
+
+    @Override
     public ArrayList<String> getVehicles() throws ApiException {
         ApiHttpMap params = crerateParameters();
         WCVehicleList weList = callApi("", "https://mobileapi.apps.emea.vwapps.io/vehicles", params.getHeaders(),
@@ -78,16 +88,6 @@ public class WeConnectApi extends ApiBase implements BrandAuthenticator {
         } else {
             throw new ApiException("Unknown VIN: " + vin);
         }
-    }
-
-    @Override
-    public String getApiUrl() {
-        return "https://mobileapi.apps.emea.vwapps.io";
-    }
-
-    @Override
-    public String getHomeReguionUrl() {
-        return getApiUrl();
     }
 
     @Override

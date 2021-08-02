@@ -51,6 +51,7 @@ public class BindingConstants {
     public static final String THING_SEAT = "seat";
     public static final String THING_SKODA = "skoda";
     public static final String THING_ENYAK = "enyak";
+    public static final String THING_FORD = "ford";
 
     public static final ThingTypeUID THING_TYPE_MYAUDI = new ThingTypeUID(BINDING_ID, THING_MYAUDI);
     public static final ThingTypeUID THING_TYPE_VW = new ThingTypeUID(BINDING_ID, THING_VOLKSWAGEN);
@@ -59,16 +60,20 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_SKODA = new ThingTypeUID(BINDING_ID, THING_SKODA);
     public static final ThingTypeUID THING_TYPE_SEAT = new ThingTypeUID(BINDING_ID, THING_SEAT);
     public static final ThingTypeUID THING_TYPE_ENYAK = new ThingTypeUID(BINDING_ID, THING_ENYAK);
+    public static final ThingTypeUID THING_TYPE_FORD = new ThingTypeUID(BINDING_ID, THING_FORD);
 
     public static final ThingTypeUID THING_TYPE_CNVEHICLE = new ThingTypeUID(BINDING_ID, "cnvehicle");
     public static final ThingTypeUID THING_TYPE_IDVEHICLE = new ThingTypeUID(BINDING_ID, "idvehicle");
     public static final ThingTypeUID THING_TYPE_GOPLUG = new ThingTypeUID(BINDING_ID, "goplug");
     public static final ThingTypeUID THING_TYPE_WCWALLBOX = new ThingTypeUID(BINDING_ID, "wcbox");
     public static final ThingTypeUID THING_TYPE_ENYAKVEHICLE = new ThingTypeUID(BINDING_ID, "enyakvehicle");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(THING_TYPE_MYAUDI, THING_TYPE_VW, THING_TYPE_VWID, THING_TYPE_VWGO, THING_TYPE_SKODA, THING_TYPE_ENYAK,
-                    THING_TYPE_SEAT, THING_TYPE_CNVEHICLE, THING_TYPE_IDVEHICLE, THING_TYPE_ENYAKVEHICLE)
-            .collect(Collectors.toSet()));
+    public static final ThingTypeUID THING_TYPE_FORDVEHICLE = new ThingTypeUID(BINDING_ID, "fordvehicle");
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream
+                    .of(THING_TYPE_MYAUDI, THING_TYPE_VW, THING_TYPE_VWID, THING_TYPE_VWGO, THING_TYPE_SKODA,
+                            THING_TYPE_ENYAK, THING_TYPE_SEAT, THING_TYPE_FORD, THING_TYPE_CNVEHICLE,
+                            THING_TYPE_IDVEHICLE, THING_TYPE_ENYAKVEHICLE, THING_TYPE_FORDVEHICLE)
+                    .collect(Collectors.toSet()));
 
     // List of all ChannelGroups and Channels
     public static final String CHANNEL_GROUP_GENERAL = "general";
@@ -76,6 +81,7 @@ public class BindingConstants {
     public static final String CHANNEL_GENERAL_LOCKED = "vehicleLocked";
     public static final String CHANNEL_GENERAL_MAINTREQ = "maintenanceRequired";
     public static final String CHANNEL_GENERAL_WINCLOSED = "windowsClosed";
+    public static final String CHANNEL_GENERAL_DOORSCLOSED = "doorsClosed";
     public static final String CHANNEL_GENERAL_TIRESOK = "tiresOk";
     public static final String CHANNEL_GENERAL_ACTION = "lastAction";
     public static final String CHANNEL_GENERAL_ACTION_STATUS = "lastActionStatus";
@@ -85,14 +91,22 @@ public class BindingConstants {
 
     // Group status
     public static final String CHANNEL_GROUP_STATUS = "status";
+    public static final String CHANNEL_STATUS_ODOMETER = "odometer";
+    public static final String CHANNEL_STATUS_PLIGHT = "parkingLight";
     public static final String CHANNEL_STATUS_PBRAKE = "parkingBrake";
     public static final String CHANNEL_STATUS_LIGHTS = "vehicleLights";
+    public static final String CHANNEL_STATUS_TEMPOUT = "tempOutside";
+    public static final String CHANNEL_STATUS_SPEED = "currentSpeed";
+    public static final String CHANNEL_STATUS_MMILAGE = "monthlyMilage";
     public static final String CHANNEL_STATUS_ERROR = "error";
+    public static final String CHANNEL_STATUS_SWUPDATE = "softwareUpgrade";
+    public static final String CHANNEL_STATUS_DEEPSLEEP = "deepSleep";
 
     // Group control
     public static final String CHANNEL_GROUP_CONTROL = "control";
     public static final String CHANNEL_CONTROL_UPDATE = "update";
     public static final String CHANNEL_CONTROL_LOCK = "lock";
+    public static final String CHANNEL_CONTROL_ENGINE = "engine";
     public static final String CHANNEL_CONTROL_CHARGER = "charge";
     public static final String CHANNEL_CONTROL_MAXCURRENT = "maxCurrent";
     public static final String CHANNEL_CONTROL_TARGETCHG = "targetChgLvl";
@@ -117,11 +131,12 @@ public class BindingConstants {
 
     // Group range
     public static final String CHANNEL_GROUP_RANGE = "range";
+    public static final String CHANNEL_RANGE_FUEL = "fuelPercentage";
+    public static final String CHANNEL_RANGE_GAS = "gasPercentage";
+    public static final String CHANNEL_RANGE_FMETHOD = "fuelMethod";
     public static final String CHANNEL_RANGE_TOTAL = "totalRange";
     public static final String CHANNEL_RANGE_PRANGE = "primaryRange";
-    public static final String CHANNEL_RANGE_PFUELTYPE = "primaryFuelType";
     public static final String CHANNEL_RANGE_SRANGE = "secondaryRange";
-    public static final String CHANNEL_RANGE_SFUELTYPE = "secondaryFuelType";
 
     // Group Climarter
     public static final String CHANNEL_GROUP_CLIMATER = "climater";
@@ -186,11 +201,60 @@ public class BindingConstants {
     public static final String CHANNEL_GEOFENCE_DESCR = "geoFenceAlertDescr";
     public static final String CHANNEL_GEOFENCE_TIME = "geoFenceAlertTime";
 
+    public static final String CHANNEL_GROUP_TIRES = "tires";
+    public static final String CHANNEL_TIREP_FRONTLEFT = "tirePresFrontLeft";
+    public static final String CHANNEL_TIREP_FRONTRIGHT = "tirePresFrontRight";
+    public static final String CHANNEL_TIREP_REARLEFT = "tirePresRearLeft";
+    public static final String CHANNEL_TIREP_REARRIGHT = "tirePresRearRight";
+    public static final String CHANNEL_TIREP_INNERREARLEFT = "tirePresInnerRearLeft";
+    public static final String CHANNEL_TIREP_INNERREARRIGHT = "tirePresInnerRearRight";
+    public static final String CHANNEL_TIREP_SPARE = "tirePresSpare";
+
+    // Group Windows
+    public static final String CHANNEL_GROUP_WINDOWS = "windows";
+    public static final String CHANNEL_WIN_FLSTATE = "windowFrontLeftState";
+    public static final String CHANNEL_WIN_FLPOS = "windowFrontLeftPos";
+    public static final String CHANNEL_WIN_RLSTATE = "windowRearLeftState";
+    public static final String CHANNEL_WIN_RLPOS = "windowRearLeftPos";
+    public static final String CHANNEL_WIN_FRSTATE = "windowFrontRightState";
+    public static final String CHANNEL_WIN_FRPOS = "windowFrontRightPos";
+    public static final String CHANNEL_WIN_RRSTATE = "windowRearRightState";
+    public static final String CHANNEL_WIN_RRPOS = "windowRearRightPos";
+    public static final String CHANNEL_WIN_FROOFSTATE = "roofFrontCoverState";
+    public static final String CHANNEL_WIN_FROOFPOS = "roofFrontCoverPos";
+    public static final String CHANNEL_WIN_RROOFSTATE = "roofRearCoverState";
+    public static final String CHANNEL_WIN_RROOFPOS = "roofRearCoverPos";
+
+    // Group Doors
+    public static final String CHANNEL_GROUP_DOORS = "doors";
+    public static final String CHANNEL_DOORS_FLSTATE = "doorFrontLeftState";
+    public static final String CHANNEL_DOORS_FLLOCKED = "doorFrontLeftLocked";
+    public static final String CHANNEL_DOORS_FRSTATE = "doorFrontRightState";
+    public static final String CHANNEL_DOORS_FRLOCKED = "doorFrontRightLocked";
+    public static final String CHANNEL_DOORS_RLSTATE = "doorRearLeftState";
+    public static final String CHANNEL_DOORS_RLLOCKED = "doorRearLeftLocked";
+    public static final String CHANNEL_DOORS_RRSTATE = "doorRearRightState";
+    public static final String CHANNEL_DOORS_RRLOCKED = "doorRearRightLocked";
+    public static final String CHANNEL_DOORS_HOODSTATE = "hoodState";
+    public static final String CHANNEL_DOORS_HOODLOCKED = "hoodLocked";
+    public static final String CHANNEL_DOORS_TRUNKLSTATE = "trunkLidState";
+    public static final String CHANNEL_DOORS_TRUNKLLOCKED = "trunkLidLocked";
+    public static final String CHANNEL_DOORS_CTOPSTATE = "covertibleTopState";
+    public static final String CHANNEL_DOORS_CTOPPOS = "covertibleTopPos";
+    public static final String CHANNEL_DOORS_ITAILGSTATE = "innerTailgateState";
+
     // Other channels group in here
     public static final String CHANNEL_GROUP_MAINT = "maintenance";
-    public static final String CHANNEL_GROUP_WINDOWS = "windows";
-    public static final String CHANNEL_GROUP_DOORS = "doors";
-    public static final String CHANNEL_GROUP_TIRES = "tires";
+    public static final String CHANNEL_MAINT_ALARMINSP = "alarmInspection";
+    public static final String CHANNEL_MAINT_DISTINSP = "distanceToInspection";
+    public static final String CHANNEL_MAINT_DISTTIME = "timeToInspection";
+    public static final String CHANNEL_MAINT_OILPERC = "oilPercentage";
+    public static final String CHANNEL_MAINT_OILWARNCHG = "oilWarningChange";
+    public static final String CHANNEL_MAINT_OILWARNLVL = "oilWarningLevel";
+    public static final String CHANNEL_MAINT_OILDIST = "distanceOilChange";
+    public static final String CHANNEL_MAINT_OILINTV = "intervalOilChange";
+    public static final String CHANNEL_MAINT_ABDIST = "distanceAdBlue";
+
     public static final String CHANNEL_GROUP_PICTURES = "pictures";
     public static final String CHANNEL_PICTURES_IMG_PREFIX = "imageUrl";
 

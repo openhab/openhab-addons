@@ -38,8 +38,8 @@ import org.openhab.binding.connectedcar.internal.api.ApiErrorDTO;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiResult;
-import org.openhab.binding.connectedcar.internal.api.brand.BrandApiProperties;
-import org.openhab.binding.connectedcar.internal.api.brand.BrandNull;
+import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
+import org.openhab.binding.connectedcar.internal.api.BrandNull;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetPendingRequest;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.openhab.binding.connectedcar.internal.config.VehicleConfiguration;
@@ -114,7 +114,7 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
 
     @Override
     public void initialize() {
-        logger.debug("Initializing!");
+        logger.debug("{}: Initializing!", getConfigAs(VehicleConfiguration.class).vin);
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing");
         scheduler.schedule(() -> {
             // Register listener and wait for account being ONLINE
@@ -129,19 +129,21 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
                 return;
             }
             accountHandler = handler;
-            config = handler.getCombinedConfig();
+
+            config = accountHandler.getCombinedConfig();
             config.vehicle = getConfigAs(VehicleConfiguration.class);
             api = handler.createApi(config, this);
-
             handler.registerListener(this);
+
             setupPollingJob();
 
             if (config.vehicle.enableAddressLookup) {
+                // log to inform data protection sensible users
                 logger.info(
                         "{}: Reverse address lookup based on vehicle's geo position is enabled (using OpenStreetMap)",
                         thingId);
             }
-        }, 5, TimeUnit.SECONDS);
+        }, 3, TimeUnit.SECONDS);
     }
 
     /**
@@ -163,8 +165,7 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
                 return false;
             }
 
-            config = handler.getCombinedConfig();
-            config.vehicle = getConfigAs(VehicleConfiguration.class);
+            config = new CombinedConfig(accountHandler.getCombinedConfig(), getConfigAs(VehicleConfiguration.class));
             if (config.vehicle.vin.isEmpty()) {
                 Map<String, String> properties = getThing().getProperties();
                 String vin = properties.get(PROPERTY_VIN);
@@ -182,6 +183,7 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
                 return false;
             }
 
+            // Some providers require a 2nd login (e. g. Skoda-E)
             BrandApiProperties prop = api.getProperties2();
             if ((prop != null) && (accountHandler != null)) {
                 // Vehicle endpoint uses different properties
@@ -201,6 +203,11 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
 
             // Create services
             registerServices();
+            if (services.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Vehicle has no active services, check portal/account");
+                return false;
+            }
 
             // Create channels
             if (!channelsCreated) {

@@ -18,7 +18,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleDetails;
-import org.openhab.binding.connectedcar.internal.api.brand.BrandApiProperties;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetPendingRequest;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.openhab.core.library.types.PointType;
@@ -60,6 +59,8 @@ public interface ApiBrandInterface {
     abstract String refreshVehicleStatus() throws ApiException;
 
     abstract boolean isAccessTokenValid() throws ApiException;
+
+    abstract String controlEngine(boolean start) throws ApiException;
 
     abstract String controlLock(boolean lock) throws ApiException;
 

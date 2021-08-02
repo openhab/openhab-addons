@@ -164,7 +164,7 @@ public class ApiHttpClient {
      * @return Returns the HTTP response. In additional lastHttpHeaders get filled with the http response headers
      * @throws ApiException
      */
-    private ApiResult request(HttpMethod method, String uri, String parms, Map<String, String> headers, String data,
+    public ApiResult request(HttpMethod method, String uri, String parms, Map<String, String> headers, String data,
             String pvin, String token, boolean followRedirect) throws ApiException {
         Request request = null;
         String url = "";

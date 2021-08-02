@@ -17,6 +17,8 @@ import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -249,11 +251,18 @@ public class CarUtils {
 
     public static State getDateTime(String timestamp, ZoneId zoneId) {
         try {
-            DateTimeFormatter fmt = timestamp.contains("+") ? DateTimeFormatter.ISO_ZONED_DATE_TIME
-                    : DateTimeFormatter.ISO_INSTANT;
-            Date date = Date.from(Instant.from(fmt.parse(timestamp)));
+            Date date;
+            if ((timestamp.charAt(2) == '-') && (timestamp.charAt(5) == '-') && (timestamp.charAt(13) == ':')) {
+                // format: 07-30-2021 15:28:38, e.g. Ford
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-uuuu HH:mm:ss");
+                date = simpleDateFormat.parse(timestamp);
+            } else {
+                DateTimeFormatter fmt = timestamp.contains("+") ? DateTimeFormatter.ISO_ZONED_DATE_TIME
+                        : DateTimeFormatter.ISO_INSTANT;
+                date = Date.from(Instant.from(fmt.parse(timestamp)));
+            }
             return new DateTimeType(ZonedDateTime.ofInstant(date.toInstant(), zoneId));
-        } catch (DateTimeException e) {
+        } catch (DateTimeException | ParseException e) {
             return UnDefType.UNDEF;
         }
     }
