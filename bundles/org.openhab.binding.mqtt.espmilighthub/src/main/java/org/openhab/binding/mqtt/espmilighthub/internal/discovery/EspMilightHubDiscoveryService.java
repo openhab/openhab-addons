@@ -70,7 +70,7 @@ public class EspMilightHubDiscoveryService extends AbstractMQTTDiscovery {
                     String globeType = (cutTopic.substring(0, index));
                     String remoteGroupID = (cutTopic.substring(index + 1, index + 2));
                     // openHAB's framework has better code for handling groups then the firmware does
-                    if (!remoteGroupID.equals("0")) {// Users can manually add group 0 things if they wish
+                    if (!"0".equals(remoteGroupID)) {// Users can manually add group 0 things if they wish
                         publishDevice(connectionBridge, connection, topic, remoteCode, globeType, remoteGroupID);
                     }
                 }

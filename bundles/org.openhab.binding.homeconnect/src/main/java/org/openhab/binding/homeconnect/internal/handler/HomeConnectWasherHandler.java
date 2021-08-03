@@ -23,6 +23,7 @@ import org.openhab.binding.homeconnect.internal.client.HomeConnectApiClient;
 import org.openhab.binding.homeconnect.internal.client.exception.ApplianceOfflineException;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
+import org.openhab.binding.homeconnect.internal.client.model.AvailableProgramOption;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -119,6 +120,47 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
         handlers.put(EVENT_WASHER_IDOS_2_DOSING_LEVEL,
                 event -> getThingChannel(CHANNEL_WASHER_IDOS2_LEVEL).ifPresent(channel -> updateState(channel.getUID(),
                         event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue()))));
+    }
+
+    @Override
+    protected void configureUnsupportedProgramOptions(Map<String, List<AvailableProgramOption>> programOptions) {
+        programOptions.put("LaundryCare.Washer.Program.Cotton.Eco4060", List.of(
+                new AvailableProgramOption(OPTION_WASHER_TEMPERATURE, List.of(TEMPERATURE_AUTO)),
+                new AvailableProgramOption(OPTION_WASHER_SPIN_SPEED,
+                        List.of(SPIN_SPEED_400, SPIN_SPEED_600, SPIN_SPEED_800, SPIN_SPEED_1200, SPIN_SPEED_1400))));
+
+        programOptions.put("LaundryCare.Washer.Program.Cotton.Colour", List.of(
+                new AvailableProgramOption(OPTION_WASHER_TEMPERATURE,
+                        List.of(TEMPERATURE_COLD, TEMPERATURE_20, TEMPERATURE_30, TEMPERATURE_40, TEMPERATURE_60,
+                                TEMPERATURE_90)),
+                new AvailableProgramOption(OPTION_WASHER_SPIN_SPEED,
+                        List.of(SPIN_SPEED_400, SPIN_SPEED_600, SPIN_SPEED_800, SPIN_SPEED_1200, SPIN_SPEED_1400))));
+
+        // Auto30 is a supported program provided by the API but the API returns empty options, so we defined predefined
+        // values for this program
+        programOptions.put("LaundryCare.Washer.Program.Auto30",
+                List.of(new AvailableProgramOption(OPTION_WASHER_TEMPERATURE, List.of(TEMPERATURE_AUTO)),
+                        new AvailableProgramOption(OPTION_WASHER_SPIN_SPEED, List.of(SPIN_SPEED_AUTO))));
+
+        programOptions.put("LaundryCare.Washer.Program.Super153045.Super1530",
+                List.of(new AvailableProgramOption(OPTION_WASHER_TEMPERATURE,
+                        List.of(TEMPERATURE_COLD, TEMPERATURE_20, TEMPERATURE_30, TEMPERATURE_40)),
+                        new AvailableProgramOption(OPTION_WASHER_SPIN_SPEED,
+                                List.of(SPIN_SPEED_400, SPIN_SPEED_600, SPIN_SPEED_800, SPIN_SPEED_1200))));
+
+        programOptions.put("LaundryCare.Washer.Program.Rinse",
+                List.of(new AvailableProgramOption(OPTION_WASHER_TEMPERATURE, List.of()),
+                        new AvailableProgramOption(OPTION_WASHER_SPIN_SPEED, List.of(SPIN_SPEED_OFF, SPIN_SPEED_400,
+                                SPIN_SPEED_600, SPIN_SPEED_800, SPIN_SPEED_1200, SPIN_SPEED_1400))));
+
+        programOptions.put("LaundryCare.Washer.Program.Spin.SpinDrain",
+                List.of(new AvailableProgramOption(OPTION_WASHER_TEMPERATURE, List.of()),
+                        new AvailableProgramOption(OPTION_WASHER_SPIN_SPEED, List.of(SPIN_SPEED_OFF, SPIN_SPEED_400,
+                                SPIN_SPEED_600, SPIN_SPEED_800, SPIN_SPEED_1200, SPIN_SPEED_1400))));
+
+        programOptions.put("LaundryCare.Washer.Program.DrumClean",
+                List.of(new AvailableProgramOption(OPTION_WASHER_TEMPERATURE, List.of()),
+                        new AvailableProgramOption(OPTION_WASHER_SPIN_SPEED, List.of(SPIN_SPEED_1200))));
     }
 
     @Override
