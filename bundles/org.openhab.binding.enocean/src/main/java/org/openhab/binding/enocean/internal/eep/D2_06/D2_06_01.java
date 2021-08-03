@@ -14,7 +14,6 @@ package org.openhab.binding.enocean.internal.eep.D2_06;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import java.nio.ByteBuffer;
 import java.util.function.Function;
 
 import org.openhab.binding.enocean.internal.eep.Base._VLDMessage;
@@ -79,45 +78,40 @@ public class D2_06_01 extends _VLDMessage {
             case 0x01:
                 return OnOffType.ON;
         }
-
         return UnDefType.UNDEF;
     }
 
     protected State getTemperature() {
-        int unscaledTemp = bytes[5];
+        double unscaledTemp = (double) (bytes[5] & 0xFF);
         if (unscaledTemp <= 250) {
-            double scaledTemp = (unscaledTemp * 0.32) - 20d;
+            double scaledTemp = unscaledTemp * 0.32 - 20;
             return new QuantityType<>(scaledTemp, SIUnits.CELSIUS);
         }
-
         return UnDefType.UNDEF;
     }
 
     protected State getHumidity() {
-        int unscaledHumidity = bytes[6];
+        int unscaledHumidity = bytes[6] & 0xFF;
         if (unscaledHumidity <= 200) {
             double scaledHumidity = unscaledHumidity * 0.5;
             return new DecimalType(scaledHumidity);
         }
-
         return UnDefType.UNDEF;
     }
 
     protected State getIllumination() {
-        int illumination = ByteBuffer.wrap(bytes, 7, 2).getInt();
+        int illumination = ((bytes[7] & 0xFF) << 8) | (bytes[8] & 0xFF);
         if (illumination <= 60000) {
             return new QuantityType<>(illumination, Units.LUX);
         }
-
         return UnDefType.UNDEF;
     }
 
     protected State getBatteryLevel() {
-        int batteryLevel = bytes[9] >>> 3;
-        if (batteryLevel <= 20) {
-            new DecimalType(batteryLevel);
+        int unscaledBatteryLevel = ((bytes[9] & 0xFF) >> 3);
+        if (unscaledBatteryLevel <= 20) {
+            return new DecimalType(unscaledBatteryLevel * 5);
         }
-
         return UnDefType.UNDEF;
     }
 

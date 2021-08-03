@@ -170,6 +170,7 @@
 			<options>
 				<option value="OPEN">Open</option>
 				<option value="TILTED">Tilted</option>
+				<option value="NOT TILTED">Not Tilted</option>
 				<option value="CLOSED">Closed</option>
 			</options>
 		</state>
