@@ -75,6 +75,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -467,6 +468,21 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     protected Optional<Channel> getThingChannel(String channelId) {
         Channel channel = getThing().getChannel(channelId);
         if (channel == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(channel);
+        }
+    }
+
+    /**
+     * Get thing linked channel by given channel id.
+     *
+     * @param channelId channel id
+     * @return channel if linked
+     */
+    protected Optional<Channel> getLinkedChannel(String channelId) {
+        Channel channel = getThing().getChannel(channelId);
+        if (channel == null || !isLinked(channelId)) {
             return Optional.empty();
         } else {
             return Optional.of(channel);
@@ -1334,109 +1350,95 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         }
     }
 
+    private Optional<Option> getOption(List<Option> options, String optionKey) {
+        return options.stream().filter(option -> optionKey.equals(option.getKey())).findFirst();
+    }
+
+    private void setStringChannelFromOption(String channelId, List<Option> options, String optionKey,
+            @Nullable State defaultState) {
+        setStringChannelFromOption(channelId, options, optionKey, value -> value, defaultState);
+    }
+
+    private void setStringChannelFromOption(String channelId, List<Option> options, String optionKey,
+            Function<String, String> mappingFunc, @Nullable State defaultState) {
+        getLinkedChannel(channelId)
+                .ifPresent(channel -> getOption(options, optionKey).map(option -> option.getValue()).ifPresentOrElse(
+                        value -> updateState(channel.getUID(), new StringType(mappingFunc.apply(value))), () -> {
+                            if (defaultState != null) {
+                                updateState(channel.getUID(), defaultState);
+                            }
+                        }));
+    }
+
+    private void setQuantityChannelFromOption(String channelId, List<Option> options, String optionKey,
+            Function<@Nullable String, Unit<?>> unitMappingFunc, @Nullable State defaultState) {
+        getLinkedChannel(channelId).ifPresent(channel -> getOption(options, optionKey) //
+                .ifPresentOrElse(
+                        option -> updateState(channel.getUID(),
+                                new QuantityType<>(option.getValueAsInt(), unitMappingFunc.apply(option.getUnit()))),
+                        () -> {
+                            if (defaultState != null) {
+                                updateState(channel.getUID(), defaultState);
+                            }
+                        }));
+    }
+
+    private void setOnOffChannelFromOption(String channelId, List<Option> options, String optionKey,
+            @Nullable State defaultState) {
+        getLinkedChannel(channelId)
+                .ifPresent(channel -> getOption(options, optionKey).map(option -> option.getValueAsBoolean())
+                        .ifPresentOrElse(value -> updateState(channel.getUID(), OnOffType.from(value)), () -> {
+                            if (defaultState != null) {
+                                updateState(channel.getUID(), defaultState);
+                            }
+                        }));
+    }
+
     protected void processProgramOptions(List<Option> options) {
-        options.forEach(option -> {
-            String key = option.getKey();
-            if (key != null) {
-                switch (key) {
-                    case OPTION_WASHER_TEMPERATURE:
-                        getThingChannel(CHANNEL_WASHER_TEMPERATURE)
-                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
-                        break;
-                    case OPTION_WASHER_SPIN_SPEED:
-                        getThingChannel(CHANNEL_WASHER_SPIN_SPEED)
-                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
-                        break;
-                    case OPTION_WASHER_IDOS_1_DOSING_LEVEL:
-                        getThingChannel(CHANNEL_WASHER_IDOS1_LEVEL)
-                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
-                        break;
-                    case OPTION_WASHER_IDOS_2_DOSING_LEVEL:
-                        getThingChannel(CHANNEL_WASHER_IDOS2_LEVEL)
-                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
-                        break;
-                    case OPTION_DRYER_DRYING_TARGET:
-                        getThingChannel(CHANNEL_DRYER_DRYING_TARGET)
-                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
-                        break;
-                    case OPTION_HOOD_INTENSIVE_LEVEL:
-                        String hoodIntensiveLevelValue = option.getValue();
-                        if (hoodIntensiveLevelValue != null) {
-                            getThingChannel(CHANNEL_HOOD_INTENSIVE_LEVEL)
-                                    .ifPresent(channel -> updateState(channel.getUID(),
-                                            new StringType(mapStageStringType(hoodIntensiveLevelValue))));
-                        }
-                        break;
-                    case OPTION_HOOD_VENTING_LEVEL:
-                        String hoodVentingLevel = option.getValue();
-                        if (hoodVentingLevel != null) {
-                            getThingChannel(CHANNEL_HOOD_VENTING_LEVEL)
-                                    .ifPresent(channel -> updateState(channel.getUID(),
-                                            new StringType(mapStageStringType(hoodVentingLevel))));
-                        }
-                        break;
-                    case OPTION_SETPOINT_TEMPERATURE:
-                        getThingChannel(CHANNEL_SETPOINT_TEMPERATURE).ifPresent(channel -> updateState(channel.getUID(),
-                                new QuantityType<>(option.getValueAsInt(), mapTemperature(option.getUnit()))));
-                        break;
-                    case OPTION_DURATION:
-                        getThingChannel(CHANNEL_DURATION).ifPresent(channel -> updateState(channel.getUID(),
-                                new QuantityType<>(option.getValueAsInt(), SECOND)));
-                        break;
-                    case OPTION_FINISH_IN_RELATIVE:
-                    case OPTION_REMAINING_PROGRAM_TIME:
-                        getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE)
-                                .ifPresent(channel -> updateState(channel.getUID(),
-                                        new QuantityType<>(option.getValueAsInt(), SECOND)));
-                        break;
-                    case OPTION_ELAPSED_PROGRAM_TIME:
-                        getThingChannel(CHANNEL_ELAPSED_PROGRAM_TIME).ifPresent(channel -> updateState(channel.getUID(),
-                                new QuantityType<>(option.getValueAsInt(), SECOND)));
-                        break;
-                    case OPTION_PROGRAM_PROGRESS:
-                        getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
-                                .ifPresent(channel -> updateState(channel.getUID(),
-                                        new QuantityType<>(option.getValueAsInt(), PERCENT)));
-                        break;
-                    case OPTION_WASHER_IDOS_1_ACTIVE:
-                        getThingChannel(CHANNEL_WASHER_IDOS1).ifPresent(
-                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
-                        break;
-                    case OPTION_WASHER_IDOS_2_ACTIVE:
-                        getThingChannel(CHANNEL_WASHER_IDOS2).ifPresent(
-                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
-                        break;
-                    case OPTION_WASHER_VARIO_PERFECT:
-                        getThingChannel(CHANNEL_WASHER_VARIO_PERFECT)
-                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
-                        break;
-                    case OPTION_WASHER_LESS_IRONING:
-                        getThingChannel(CHANNEL_WASHER_LESS_IRONING).ifPresent(
-                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
-                        break;
-                    case OPTION_WASHER_PRE_WASH:
-                        getThingChannel(CHANNEL_WASHER_PRE_WASH).ifPresent(
-                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
-                        break;
-                    case OPTION_WASHER_RINSE_PLUS:
-                        getThingChannel(CHANNEL_WASHER_RINSE_PLUS)
-                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
-                        break;
-                    case OPTION_WASHER_SOAK:
-                        getThingChannel(CHANNEL_WASHER_SOAK).ifPresent(
-                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
-                        break;
-                    case OPTION_WASHER_ENERGY_FORECAST:
-                        getThingChannel(CHANNEL_PROGRAM_ENERGY).ifPresent(channel -> updateState(channel.getUID(),
-                                new QuantityType<>(option.getValueAsInt(), PERCENT)));
-                        break;
-                    case OPTION_WASHER_WATER_FORECAST:
-                        getThingChannel(CHANNEL_PROGRAM_WATER).ifPresent(channel -> updateState(channel.getUID(),
-                                new QuantityType<>(option.getValueAsInt(), PERCENT)));
-                        break;
-                }
-            }
-        });
+        String operationState = getOperationState();
+
+        Map.of(CHANNEL_WASHER_TEMPERATURE, OPTION_WASHER_TEMPERATURE, CHANNEL_WASHER_SPIN_SPEED,
+                OPTION_WASHER_SPIN_SPEED, CHANNEL_WASHER_IDOS1_LEVEL, OPTION_WASHER_IDOS_1_DOSING_LEVEL,
+                CHANNEL_WASHER_IDOS2_LEVEL, OPTION_WASHER_IDOS_2_DOSING_LEVEL, CHANNEL_DRYER_DRYING_TARGET,
+                OPTION_DRYER_DRYING_TARGET)
+                .forEach((channel, option) -> setStringChannelFromOption(channel, options, option, UnDefType.UNDEF));
+
+        Map.of(CHANNEL_WASHER_IDOS1, OPTION_WASHER_IDOS_1_ACTIVE, CHANNEL_WASHER_IDOS2, OPTION_WASHER_IDOS_2_ACTIVE,
+                CHANNEL_WASHER_LESS_IRONING, OPTION_WASHER_LESS_IRONING, CHANNEL_WASHER_PRE_WASH,
+                OPTION_WASHER_PRE_WASH, CHANNEL_WASHER_SOAK, OPTION_WASHER_SOAK)
+                .forEach((channel, option) -> setOnOffChannelFromOption(channel, options, option, OnOffType.OFF));
+
+        setStringChannelFromOption(CHANNEL_HOOD_INTENSIVE_LEVEL, options, OPTION_HOOD_INTENSIVE_LEVEL,
+                value -> mapStageStringType(value), UnDefType.UNDEF);
+        setStringChannelFromOption(CHANNEL_HOOD_VENTING_LEVEL, options, OPTION_HOOD_VENTING_LEVEL,
+                value -> mapStageStringType(value), UnDefType.UNDEF);
+        setQuantityChannelFromOption(CHANNEL_SETPOINT_TEMPERATURE, options, OPTION_SETPOINT_TEMPERATURE,
+                unit -> mapTemperature(unit), UnDefType.UNDEF);
+        setQuantityChannelFromOption(CHANNEL_DURATION, options, OPTION_DURATION, unit -> SECOND, UnDefType.UNDEF);
+        // The channel remaining_program_time_state depends on two program options: FinishInRelative and
+        // RemainingProgramTime. When the start of the program is delayed, the two options are returned by the API with
+        // different values. In this case, we consider the value of the option FinishInRelative.
+        setQuantityChannelFromOption(CHANNEL_REMAINING_PROGRAM_TIME_STATE, options,
+                getOption(options, OPTION_FINISH_IN_RELATIVE).isPresent() ? OPTION_FINISH_IN_RELATIVE
+                        : OPTION_REMAINING_PROGRAM_TIME,
+                unit -> SECOND, UnDefType.UNDEF);
+        setQuantityChannelFromOption(CHANNEL_ELAPSED_PROGRAM_TIME, options, OPTION_ELAPSED_PROGRAM_TIME, unit -> SECOND,
+                new QuantityType<>(0, SECOND));
+        setQuantityChannelFromOption(CHANNEL_PROGRAM_PROGRESS_STATE, options, OPTION_PROGRAM_PROGRESS, unit -> PERCENT,
+                new QuantityType<>(0, PERCENT));
+        // When the program is not in ready state, the vario perfect option is not always provided by the API returning
+        // the options of the current active program. So in this case we avoid updating the channel (to the default
+        // state) by passing a null value as parameter.to setStringChannelFromOption.
+        setStringChannelFromOption(CHANNEL_WASHER_VARIO_PERFECT, options, OPTION_WASHER_VARIO_PERFECT,
+                OPERATION_STATE_READY.equals(operationState)
+                        ? new StringType("LaundryCare.Common.EnumType.VarioPerfect.Off")
+                        : null);
+        setStringChannelFromOption(CHANNEL_WASHER_RINSE_PLUS, options, OPTION_WASHER_RINSE_PLUS,
+                new StringType("LaundryCare.Washer.EnumType.RinsePlus.Off"));
+        setQuantityChannelFromOption(CHANNEL_PROGRAM_ENERGY, options, OPTION_WASHER_ENERGY_FORECAST, unit -> PERCENT,
+                UnDefType.UNDEF);
+        setQuantityChannelFromOption(CHANNEL_PROGRAM_WATER, options, OPTION_WASHER_WATER_FORECAST, unit -> PERCENT,
+                UnDefType.UNDEF);
     }
 
     protected String convertWasherTemperature(String value) {
