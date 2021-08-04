@@ -54,6 +54,7 @@ The thing has the following configuration parameters (number of sources and zone
 Some notes:
 
 * On the 10761/DAX66 amp, activating the 'Page All Zones' feature can only be done through the +12v trigger input on the back of the amplifier.
+
 * On Linux, you may get an error stating the serial port cannot be opened when the MonopriceAudio binding tries to load.
 * You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
 * Also on Linux you may have issues with the USB if using two serial USB devices e.g. MonopriceAudio and RFXcom.
