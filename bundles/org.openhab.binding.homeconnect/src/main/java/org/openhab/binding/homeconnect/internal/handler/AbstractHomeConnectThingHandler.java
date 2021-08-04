@@ -587,16 +587,16 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     protected void resetChannelsOnOfflineEvent() {
         logger.debug("Resetting channel states due to OFFLINE event. thing={}, haId={}", getThingLabel(),
                 getThingHaId());
-        getThingChannel(CHANNEL_POWER_STATE).ifPresent(channel -> updateState(channel.getUID(), OnOffType.OFF));
-        getThingChannel(CHANNEL_OPERATION_STATE).ifPresent(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_DOOR_STATE).ifPresent(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_LOCAL_CONTROL_ACTIVE_STATE)
+        getLinkedChannel(CHANNEL_POWER_STATE).ifPresent(channel -> updateState(channel.getUID(), OnOffType.OFF));
+        getLinkedChannel(CHANNEL_OPERATION_STATE).ifPresent(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
+        getLinkedChannel(CHANNEL_DOOR_STATE).ifPresent(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
+        getLinkedChannel(CHANNEL_LOCAL_CONTROL_ACTIVE_STATE)
                 .ifPresent(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_REMOTE_CONTROL_ACTIVE_STATE)
+        getLinkedChannel(CHANNEL_REMOTE_CONTROL_ACTIVE_STATE)
                 .ifPresent(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_REMOTE_START_ALLOWANCE_STATE)
+        getLinkedChannel(CHANNEL_REMOTE_START_ALLOWANCE_STATE)
                 .ifPresent(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE)
+        getLinkedChannel(CHANNEL_SELECTED_PROGRAM_STATE)
                 .ifPresent(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
     }
 
@@ -792,43 +792,43 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     }
 
     protected EventHandler defaultElapsedProgramTimeEventHandler() {
-        return event -> getThingChannel(CHANNEL_ELAPSED_PROGRAM_TIME)
+        return event -> getLinkedChannel(CHANNEL_ELAPSED_PROGRAM_TIME)
                 .ifPresent(channel -> updateState(channel.getUID(), new QuantityType<>(event.getValueAsInt(), SECOND)));
     }
 
     protected EventHandler defaultPowerStateEventHandler() {
         return event -> {
-            getThingChannel(CHANNEL_POWER_STATE).ifPresent(
+            getLinkedChannel(CHANNEL_POWER_STATE).ifPresent(
                     channel -> updateState(channel.getUID(), OnOffType.from(STATE_POWER_ON.equals(event.getValue()))));
 
             if (STATE_POWER_ON.equals(event.getValue())) {
                 getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE).ifPresent(c -> updateChannel(c.getUID()));
             } else {
                 resetProgramStateChannels(true);
-                getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE)
+                getLinkedChannel(CHANNEL_SELECTED_PROGRAM_STATE)
                         .ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
             }
         };
     }
 
     protected EventHandler defaultDoorStateEventHandler() {
-        return event -> getThingChannel(CHANNEL_DOOR_STATE).ifPresent(channel -> updateState(channel.getUID(),
+        return event -> getLinkedChannel(CHANNEL_DOOR_STATE).ifPresent(channel -> updateState(channel.getUID(),
                 STATE_DOOR_OPEN.equals(event.getValue()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED));
     }
 
     protected EventHandler defaultOperationStateEventHandler() {
         return event -> {
             String value = event.getValue();
-            getThingChannel(CHANNEL_OPERATION_STATE).ifPresent(channel -> updateState(channel.getUID(),
+            getLinkedChannel(CHANNEL_OPERATION_STATE).ifPresent(channel -> updateState(channel.getUID(),
                     value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
 
             if (STATE_OPERATION_FINISHED.equals(value)) {
-                getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
+                getLinkedChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
                         .ifPresent(c -> updateState(c.getUID(), new QuantityType<>(100, PERCENT)));
-                getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE)
+                getLinkedChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE)
                         .ifPresent(c -> updateState(c.getUID(), new QuantityType<>(0, SECOND)));
             } else if (STATE_OPERATION_RUN.equals(value)) {
-                getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
+                getLinkedChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
                         .ifPresent(c -> updateState(c.getUID(), new QuantityType<>(0, PERCENT)));
                 getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateChannel(c.getUID()));
             } else if (STATE_OPERATION_READY.equals(value)) {
@@ -840,7 +840,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     protected EventHandler defaultActiveProgramEventHandler() {
         return event -> {
             String value = event.getValue();
-            getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(channel -> updateState(channel.getUID(),
+            getLinkedChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(channel -> updateState(channel.getUID(),
                     value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
             if (value == null) {
                 resetProgramStateChannels(false);
@@ -851,7 +851,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     protected EventHandler updateProgramOptionsAndActiveProgramStateEventHandler() {
         return event -> {
             String value = event.getValue();
-            getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(channel -> updateState(channel.getUID(),
+            getLinkedChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(channel -> updateState(channel.getUID(),
                     value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
             if (value == null) {
                 resetProgramStateChannels(false);
@@ -874,34 +874,34 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     }
 
     protected EventHandler defaultEventPresentStateEventHandler(String channelId) {
-        return event -> getThingChannel(channelId).ifPresent(channel -> updateState(channel.getUID(),
+        return event -> getLinkedChannel(channelId).ifPresent(channel -> updateState(channel.getUID(),
                 OnOffType.from(!STATE_EVENT_PRESENT_STATE_OFF.equals(event.getValue()))));
     }
 
     protected EventHandler defaultBooleanEventHandler(String channelId) {
-        return event -> getThingChannel(channelId)
+        return event -> getLinkedChannel(channelId)
                 .ifPresent(channel -> updateState(channel.getUID(), OnOffType.from(event.getValueAsBoolean())));
     }
 
     protected EventHandler defaultRemainingProgramTimeEventHandler() {
-        return event -> getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE)
+        return event -> getLinkedChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE)
                 .ifPresent(channel -> updateState(channel.getUID(), new QuantityType<>(event.getValueAsInt(), SECOND)));
     }
 
     protected EventHandler defaultSelectedProgramStateEventHandler() {
-        return event -> getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE)
+        return event -> getLinkedChannel(CHANNEL_SELECTED_PROGRAM_STATE)
                 .ifPresent(channel -> updateState(channel.getUID(),
                         event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue())));
     }
 
     protected EventHandler defaultAmbientLightColorStateEventHandler() {
-        return event -> getThingChannel(CHANNEL_AMBIENT_LIGHT_COLOR_STATE)
+        return event -> getLinkedChannel(CHANNEL_AMBIENT_LIGHT_COLOR_STATE)
                 .ifPresent(channel -> updateState(channel.getUID(),
                         event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue())));
     }
 
     protected EventHandler defaultAmbientLightCustomColorStateEventHandler() {
-        return event -> getThingChannel(CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE).ifPresent(channel -> {
+        return event -> getLinkedChannel(CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE).ifPresent(channel -> {
             String value = event.getValue();
             if (value != null) {
                 updateState(channel.getUID(), mapColor(value));
@@ -979,12 +979,12 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     }
 
     protected EventHandler defaultPercentQuantityTypeEventHandler(String channelId) {
-        return event -> getThingChannel(channelId).ifPresent(
+        return event -> getLinkedChannel(channelId).ifPresent(
                 channel -> updateState(channel.getUID(), new QuantityType<>(event.getValueAsInt(), PERCENT)));
     }
 
     protected EventHandler defaultPercentHandler(String channelId) {
-        return event -> getThingChannel(channelId)
+        return event -> getLinkedChannel(channelId)
                 .ifPresent(channel -> updateState(channel.getUID(), new PercentType(event.getValueAsInt())));
     }
 
@@ -1030,18 +1030,18 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                     if (enabled) {
                         // brightness
                         Data brightnessData = apiClient.get().getAmbientLightBrightnessState(getThingHaId());
-                        getThingChannel(CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE)
+                        getLinkedChannel(CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE)
                                 .ifPresent(channel -> updateState(channel.getUID(),
                                         new PercentType(brightnessData.getValueAsInt())));
 
                         // color
                         Data colorData = apiClient.get().getAmbientLightColorState(getThingHaId());
-                        getThingChannel(CHANNEL_AMBIENT_LIGHT_COLOR_STATE).ifPresent(
+                        getLinkedChannel(CHANNEL_AMBIENT_LIGHT_COLOR_STATE).ifPresent(
                                 channel -> updateState(channel.getUID(), new StringType(colorData.getValue())));
 
                         // custom color
                         Data customColorData = apiClient.get().getAmbientLightCustomColorState(getThingHaId());
-                        getThingChannel(CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE).ifPresent(channel -> {
+                        getLinkedChannel(CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE).ifPresent(channel -> {
                             String value = customColorData.getValue();
                             if (value != null) {
                                 updateState(channel.getUID(), mapColor(value));
