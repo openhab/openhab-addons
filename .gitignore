@@ -24,3 +24,5 @@ features/**/src/main/feature
 .vscode
 .factorypath
 pom.xml.versionsBackup
+.gitattributes
+.gitignore

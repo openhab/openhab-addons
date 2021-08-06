@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.modbus.solaxx3mic.internal;
 
-
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -58,7 +57,6 @@ public class SolaxX3MicHandler extends BaseModbusThingHandler {
      * Configuration instance
      */
     private @Nullable SolaxX3MicConfiguration config;
-
 
     public SolaxX3MicHandler(Thing thing) {
         super(thing);
@@ -115,7 +113,7 @@ public class SolaxX3MicHandler extends BaseModbusThingHandler {
      * This is where we set up our regular poller
      */
     private synchronized void registerPollTask(RegisterBlock mainBlock) {
-        SolaxX3MicConfiguration myconfig = config; // this is because of bug in Nullness checker      
+        SolaxX3MicConfiguration myconfig = config; // this is because of bug in Nullness checker
         logger.debug("Setting up regular polling");
 
         ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(),
@@ -189,6 +187,7 @@ public class SolaxX3MicHandler extends BaseModbusThingHandler {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 "Failed to retrieve data: " + error.getCause().getMessage());
     }
+
     /**
      * Returns value multiplied by the 10 on the power of scaleFactory
      *
