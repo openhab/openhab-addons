@@ -15,6 +15,7 @@ package org.openhab.binding.connectedcar.internal;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -33,6 +34,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -303,5 +305,19 @@ public class CarUtils {
         String dateTimeString = Long.toString(new Date().getTime());
         byte[] nonceBytes = dateTimeString.getBytes();
         return Base64.getEncoder().encodeToString(nonceBytes);
+    }
+
+    /**
+     * Encode fields for URL string
+     *
+     * @param s Field value
+     * @return URL encoded value
+     */
+    public static String urlEncode(String s) {
+        String url = UrlEncoded.encodeString(s, StandardCharsets.UTF_8); // returns forms data format
+        url = url.replace("+", "%20");
+        url = url.replace("%2D", "-");
+        url = url.replace("%5F", "_");
+        return url;
     }
 }

@@ -16,6 +16,7 @@ import static org.openhab.binding.connectedcar.internal.CarUtils.substringBetwee
 import static org.openhab.binding.connectedcar.internal.api.ApiHttpClient.getUrlParm;
 
 import java.io.UnsupportedEncodingException;
+import java.net.CookieStore;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -59,11 +60,6 @@ public class TokenOAuthFlow {
     public TokenOAuthFlow init(ApiHttpMap map) {
         this.map.getHeaders().putAll(map.getHeaders());
         this.map.getData().putAll(map.getData());
-        /*
-         * for (Map.Entry<String, String> h : map.getHeaders().entrySet()) {
-         * map.header(h.getKey(), h.getValue());
-         * }
-         */
         return this;
     }
 
@@ -82,13 +78,18 @@ public class TokenOAuthFlow {
         return this;
     }
 
+    public TokenOAuthFlow body(String body) {
+        map.body(body);
+        return this;
+    }
+
     public ApiResult get(String url) throws ApiException {
         res = http.get(url, map.getHeaders(), false);
         return update();
     }
 
     public ApiResult post(String url, boolean json) throws ApiException {
-        res = http.post(url, map.getHeaders(), map.getData(), json);
+        res = http.post(url, map.getHeaders(), map.getRequestData(json));
         return update();
     }
 
@@ -102,6 +103,10 @@ public class TokenOAuthFlow {
             throw new ApiException("Missing localtion on redirect");
         }
         return get(location);
+    }
+
+    public CookieStore getCookieStore() {
+        return http.getCookieStore();
     }
 
     private ApiResult update() {

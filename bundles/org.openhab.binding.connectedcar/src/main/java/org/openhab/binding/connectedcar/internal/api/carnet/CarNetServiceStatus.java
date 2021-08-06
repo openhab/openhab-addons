@@ -76,7 +76,7 @@ public class CarNetServiceStatus extends ApiBaseService {
                             continue;
                         }
 
-                        logger.info("{}: {}={}{} (channel {}#{})", thingId, definition.symbolicName,
+                        logger.debug("{}: {}={}{} (channel {}#{})", thingId, definition.symbolicName,
                                 getString(field.value), getString(field.unit), definition.groupName,
                                 definition.channelName);
                         if ((definition.symbolicName.startsWith("STATE2_")

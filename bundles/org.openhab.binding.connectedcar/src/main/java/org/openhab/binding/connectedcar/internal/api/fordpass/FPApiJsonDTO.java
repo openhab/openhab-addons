@@ -244,17 +244,17 @@ public class FPApiJsonDTO {
             public FPDieselSystemStatus dieselSystemStatus;
             public FPStatusDoubleValue batteryFillLevel;
             public FPStatusDoubleValue elVehDTE;
+            public FPStatusStringValue hybridModeStatus;
             public FPStatusStringValue chargingStatus;
             public FPStatusIntValue plugStatus;
             public FPStatusStringValue chargeStartTime;
             public FPStatusStringValue chargeEndTime;
-
+            public FPStatusStringValue preCondStatusDsply;
+            public FPStatusStringValue chargerPowertype;
+            public FPStatusStringValue batteryPerfStatus;
             /*
              * Formats for those are missing, to be added
-             * "hybridModeStatus":null,
-             * "preCondStatusDsply":null,
-             * "chargerPowertype":null,
-             * "batteryPerfStatus":null,
+             *
              * "batteryChargeStatus":null,
              * "dcFastChargeData":null,
              * "batteryTracLowChargeThreshold":null,

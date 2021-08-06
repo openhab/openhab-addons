@@ -51,20 +51,11 @@ public class SEServiceStatus extends ApiBaseService {
 
     @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws ApiException {
-        // Try to query status information from vehicle
-        // SEVehicleStatusData status = api.getVehicleStatus().seStatus;
-        // addChannels(channels, true, CHANNEL_STATUS_PBRAKE, CHANNEL_STATUS_LIGHTS, CHANNEL_STATUS_ERROR);
-        // addChannels(channels, status.rangeStatus != null, CHANNEL_RANGE_TOTAL, CHANNEL_RANGE_PRANGE,
-        // CHANNEL_RANGE_PFUELTYPE);
-        // addChannels(channels, status.charger != null, CHANNEL_CONTROL_CHARGER, CHANNEL_CHARGER_CHG_STATE,
-        // CHANNEL_CHARGER_MODE, CHANNEL_CHARGER_REMAINING, CHANNEL_CONTROL_MAXCURRENT, CHANNEL_CONTROL_TARGETCHG,
-        // CHANNEL_CHARGER_KMPH);
-        // addChannels(channels, status.climatisationTimer != null, CHANNEL_GENERAL_TIMEINCAR);
-        addChannels(channels, true, CHANNEL_CONTROL_CHARGER, CHANNEL_CONTROL_MAXCURRENT, CHANNEL_CHARGER_CHG_STATE,
+        addChannels(channels, true, CHANNEL_CONTROL_CHARGER, CHANNEL_CHARGER_MAXCURRENT, CHANNEL_CHARGER_CHG_STATE,
                 CHANNEL_CHARGER_MODE, CHANNEL_CONTROL_TARGETCHG, CHANNEL_CHARGER_CHGLVL, CHANNEL_CHARGER_REMAINING,
                 CHANNEL_CHARGER_RATE, CHANNEL_RANGE_TOTAL, CHANNEL_CHARGER_PLUG_STATE, CHANNEL_CHARGER_LOCK_STATE,
                 CHANNEL_CLIMATER_GEN_STATE, CHANNEL_CLIMATER_REMAINING, CHANNEL_CONTROL_CLIMATER,
-                CHANNEL_CLIMATER_TARGET_TEMP, CHANNEL_CONTROL_WINHEAT);
+                CHANNEL_CONTROL_TARGET_TEMP, CHANNEL_CONTROL_WINHEAT);
         return true;
     }
 
@@ -128,7 +119,7 @@ public class SEServiceStatus extends ApiBaseService {
             SEChargerSettings s = data.settings.charger;
             updated |= updateChannel(group, CHANNEL_CONTROL_TARGETCHG,
                     toQuantityType(getInteger(s.targetStateOfChargeInPercent), 0, PERCENT));
-            updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MAXCURRENT,
+            updated |= updateChannel(CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_MAXCURRENT,
                     getStringType(s.maxChargeCurrentAc));
         }
 
@@ -150,7 +141,7 @@ public class SEServiceStatus extends ApiBaseService {
         if (settings != null) {
             Double tempC = Units.KELVIN.getConverterTo(SIUnits.CELSIUS).convert(settings.targetTemperatureInKelvin)
                     .doubleValue();
-            updated |= updateChannel(group, CHANNEL_CLIMATER_TARGET_TEMP, toQuantityType(tempC, 1, SIUnits.CELSIUS));
+            updated |= updateChannel(group, CHANNEL_CONTROL_TARGET_TEMP, toQuantityType(tempC, 1, SIUnits.CELSIUS));
         }
         return updated;
     }

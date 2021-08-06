@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.connectedcar.internal.api.fordpass;
 
-import static org.openhab.binding.connectedcar.internal.CarUtils.fromJson;
+import static org.openhab.binding.connectedcar.internal.CarUtils.*;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_FORD;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -73,7 +73,7 @@ public class BrandFordPass extends FordPassApi {
         // Step 1: get access code (returns access_token, but this is in fact the auth code
         oauth.init(createDefaultParameters()) //
                 .data("client_id", config.api.clientId).data("grant_type", "password")
-                .data("username", config.account.user).data("password", config.account.password);
+                .data("username", config.account.user).data("password", urlEncode(config.account.password));
         String json = oauth.post(loginUrl, false).response;
         OAuthToken token = fromJson(gson, json, OAuthToken.class).normalize();
         oauth.accessToken = token.accessToken;

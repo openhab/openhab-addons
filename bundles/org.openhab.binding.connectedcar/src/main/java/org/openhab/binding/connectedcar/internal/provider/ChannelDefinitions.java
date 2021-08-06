@@ -279,16 +279,18 @@ public class ChannelDefinitions {
 
         entry.min = entry.getMin();
         entry.max = entry.getMax();
+        entry.options = entry.getOptions();
         entry.pattern = entry.getPattern();
         entry.digits = entry.getDigits();
-        entry.options = entry.getOptions();
-        if (entry.digits == -1) {
+        if (entry.digits == -1 && !entry.pattern.isEmpty()) {
             if (entry.pattern.startsWith("%.") && entry.pattern.indexOf('f') > 0) {
                 String digits = substringBetween(entry.pattern, "%.", "f");
                 entry.digits = Integer.parseInt(digits);
             } else if (entry.pattern.startsWith("%d")) {
                 entry.digits = 0;
             }
+        } else if (entry.digits > 0 && entry.pattern.isEmpty()) {
+            entry.pattern = "%." + entry.digits + "f %%vunit%%";
         }
 
         if (!CHANNEL_DEFINITIONS.containsKey(entry.id)) {
@@ -350,8 +352,8 @@ public class ChannelDefinitions {
                 true, true);
         add("CHARGING_LEVEL_PERCENT", "0x0301030002", CHANNEL_CHARGER_CHGLVL, ITEMT_PERCENT, CHANNEL_GROUP_CHARGER,
                 PERCENT, true, true);
-        add("15CNG_LEVEL_IN_PERCENT", "0x030103000D", CHANNEL_RANGE_GAS, ITEMT_PERCENT, CHANNEL_GROUP_RANGE, PERCENT,
-                true, true);
+        add("GASLEVEL_IN_PERCENT", "0x030103000D", CHANNEL_RANGE_GAS, ITEMT_PERCENT, CHANNEL_GROUP_RANGE, PERCENT, true,
+                true);
         add("PRIMARY_FTYPE", "0x0301030007");
         add("SECONDARY_FTYPE", "0x0301030009");
 
@@ -368,7 +370,7 @@ public class ChannelDefinitions {
         add("MAINT_OIL_DIPSTICK", "0x0204040003", CHANNEL_MAINT_OILPERC, ITEMT_PERCENT, CHANNEL_GROUP_MAINT, PERCENT);
         add("MAINT_OIL_LEVEL_AMOUNT", "0x0204040001");
         add("MAINT_OIL_LEVEL_DISPLAY", "0x0204040004");
-        add("MAINT_AD_BLUE_DISTANCE", "0x02040C0001", CHANNEL_MAINT_ABDIST, ITEMT_DISTANCE, CHANNEL_GROUP_MAINT,
+        add("MAINT_ADBLUE_DISTANCE", "0x02040C0001", CHANNEL_MAINT_ABDIST, ITEMT_DISTANCE, CHANNEL_GROUP_MAINT,
                 KILOMETRE);
 
         add("MAINT_MONTHLY_MILEAGE", "0x0203010007", CHANNEL_STATUS_MMILAGE, ITEMT_DISTANCE, CHANNEL_GROUP_STATUS,
@@ -444,6 +446,7 @@ public class ChannelDefinitions {
         add("", "", CHANNEL_STATUS_ERROR, ITEMT_STRING);
         add("", "", CHANNEL_STATUS_PBRAKE, ITEMT_SWITCH);
         add("", "", CHANNEL_STATUS_LIGHTS, ITEMT_SWITCH);
+        add("", "", CHANNEL_CAR_MOVING, ITEMT_SWITCH);
 
         // Group general
         String group = CHANNEL_GROUP_GENERAL;
@@ -466,9 +469,9 @@ public class ChannelDefinitions {
         add("", "", CHANNEL_CONTROL_LOCK, ITEMT_SWITCH, group, null, false, false);
         add("", "", CHANNEL_CONTROL_ENGINE, ITEMT_SWITCH, group, null, false, false);
         add("", "", CHANNEL_CONTROL_CHARGER, ITEMT_SWITCH, group, null, false, false);
-        add("", "", CHANNEL_CONTROL_MAXCURRENT, ITEMT_AMP, group, Units.AMPERE, false, false);
         add("", "", CHANNEL_CONTROL_TARGETCHG, ITEMT_PERCENT, group, null, false, false);
         add("", "", CHANNEL_CONTROL_CLIMATER, ITEMT_SWITCH, group, null, false, false);
+        add("", "", CHANNEL_CONTROL_TARGET_TEMP, ITEMT_TEMP, group, SIUnits.CELSIUS);
         add("", "", CHANNEL_CONTROL_WINHEAT, ITEMT_SWITCH, group, null, false, false);
         add("", "", CHANNEL_CONTROL_PREHEAT, ITEMT_SWITCH, group, null, false, false);
         add("", "", CHANNEL_CONTROL_VENT, ITEMT_SWITCH, group, null, false, false);
@@ -490,18 +493,25 @@ public class ChannelDefinitions {
         group = CHANNEL_GROUP_CHARGER;
         add("", "", CHANNEL_CHARGER_CHG_STATE, ITEMT_STRING, group);
         add("", "", CHANNEL_CHARGER_MODE, ITEMT_STRING, group);
+        add("", "", CHANNEL_CHARGER_STATUS, ITEMT_STRING, group);
+        add("", "", CHANNEL_CHARGER_MAXCURRENT, ITEMT_AMP, group, Units.AMPERE, false, false);
         add("", "", CHANNEL_CHARGER_REMAINING, ITEMT_TIME, group, Units.MINUTE);
         add("", "", CHANNEL_CHARGER_POWER, ITEMT_VOLT, group);
+        add("", "", CHANNEL_CHARGER_PWR_STATE, ITEMT_STRING, group);
         add("", "", CHANNEL_CHARGER_RATE, ITEMT_NUMBER, group);
         add("", "", CHANNEL_CHARGER_CHGLVL, ITEMT_PERCENT, group);
+        add("", "", CHANNEL_CHARGER_FLOW, ITEMT_STRING, group);
+        add("", "", CHANNEL_CHARGER_BAT_STATE, ITEMT_NUMBER, group);
         add("", "", CHANNEL_CHARGER_LOCK_STATE, ITEMT_SWITCH, group);
         add("", "", CHANNEL_CHARGER_PLUG_STATE, ITEMT_STRING, group);
+        add("", "", CHANNEL_CHARGER_ERROR, ITEMT_NUMBER, group);
 
         // Group climater
         group = CHANNEL_GROUP_CLIMATER;
         add("", "", CHANNEL_CLIMATER_GEN_STATE, ITEMT_SWITCH, group);
+        add("", "", CHANNEL_CLIMATER_HEATSOURCE, ITEMT_STRING, group, null, false, false);
         add("", "", CHANNEL_CLIMATER_REMAINING, ITEMT_TIME, group, Units.MINUTE);
-        add("", "", CHANNEL_CLIMATER_TARGET_TEMP, ITEMT_TEMP, group, SIUnits.CELSIUS);
+        add("", "", CHANNEL_CLIMATER_MIRROR_HEAT, ITEMT_SWITCH, group);
 
         // Group destination
         group = CHANNEL_GROUP_DEST_PRE;

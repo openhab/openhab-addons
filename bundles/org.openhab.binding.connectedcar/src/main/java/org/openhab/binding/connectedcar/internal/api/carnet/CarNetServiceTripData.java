@@ -30,8 +30,6 @@ import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.openhab.binding.connectedcar.internal.handler.VehicleCarNetHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,15 +69,6 @@ public class CarNetServiceTripData extends ApiBaseService {
         boolean created = false;
         for (int i = 1; i <= count; i++) {
             String group = CHANNEL_GROUP_TRIP_PRE + type + i;
-            /*
-             * addChannel(ch, group, CHANNEL_TRIP_TIME, ITEMT_DATETIME, null, false, true);
-             * addChannel(ch, group, CHANNEL_TRIP_AVG_ELCON, ITEMT_ENERGY, Units.KILOWATT_HOUR, false, true);
-             * addChannel(ch, group, CHANNEL_TRIP_AVG_FUELCON, ITEMT_VOLUME, Units.LITRE, false, true);
-             * addChannel(ch, group, CHANNEL_TRIP_AVG_SPEED, ITEMT_SPEED, SIUnits.KILOMETRE_PER_HOUR, false, true);
-             * addChannel(ch, group, CHANNEL_TRIP_START_MIL, ITEMT_DISTANCE, KILOMETRE, false, true);
-             * addChannel(ch, group, CHANNEL_TRIP_MILAGE, ITEMT_DISTANCE, KILOMETRE, false, true);
-             * addChannel(ch, group, CHANNEL_TRIP_OVR_MILAGE, ITEMT_DISTANCE, KILOMETRE, true, true);
-             */
             created |= addChannels(ch, group, true, CHANNEL_TRIP_TIME, CHANNEL_TRIP_AVG_ELCON, CHANNEL_TRIP_AVG_FUELCON,
                     CHANNEL_TRIP_AVG_SPEED, CHANNEL_TRIP_START_MIL, CHANNEL_TRIP_MILAGE, CHANNEL_TRIP_OVR_MILAGE);
         }
@@ -113,15 +102,15 @@ public class CarNetServiceTripData extends ApiBaseService {
             String group = (shortTerm ? CHANNEL_GROUP_STRIP : CHANNEL_GROUP_LTRIP) + i;
             double fuel = getDouble(entry.averageFuelConsumption) / 10.0; // convert dL to l
             updated |= updateChannel(group, CHANNEL_TRIP_TIME, getDateTime(getString(entry.timestamp)));
-            updated |= updateChannel(group, CHANNEL_TRIP_AVG_FUELCON, new DecimalType(fuel), 1, Units.LITRE);
+            updated |= updateChannel(group, CHANNEL_TRIP_AVG_FUELCON, new DecimalType(fuel));
             updated |= updateChannel(group, CHANNEL_TRIP_AVG_ELCON,
-                    new DecimalType(getInteger(entry.averageElectricEngineConsumption) * 100 / 1000), 3,
-                    Units.KILOWATT_HOUR); // convert kw per km to kw/h per 100km
-            updated |= updateChannel(group, CHANNEL_TRIP_AVG_SPEED, getDecimal(entry.averageSpeed), 1,
-                    SIUnits.KILOMETRE_PER_HOUR);
-            updated |= updateChannel(group, CHANNEL_TRIP_START_MIL, getDecimal(entry.startMileage), KILOMETRE);
-            updated |= updateChannel(group, CHANNEL_TRIP_MILAGE, getDecimal(entry.mileage), KILOMETRE);
-            updated |= updateChannel(group, CHANNEL_TRIP_OVR_MILAGE, getDecimal(entry.overallMileage), KILOMETRE);
+                    new DecimalType(getInteger(entry.averageElectricEngineConsumption) * 100 / 1000)); // convert kw per
+                                                                                                       // km to kw/h per
+                                                                                                       // 100km
+            updated |= updateChannel(group, CHANNEL_TRIP_AVG_SPEED, getDecimal(entry.averageSpeed));
+            updated |= updateChannel(group, CHANNEL_TRIP_START_MIL, getDecimal(entry.startMileage));
+            updated |= updateChannel(group, CHANNEL_TRIP_MILAGE, getDecimal(entry.mileage));
+            updated |= updateChannel(group, CHANNEL_TRIP_OVR_MILAGE, getDecimal(entry.overallMileage));
         }
         return updated;
     }

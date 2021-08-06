@@ -29,7 +29,7 @@ Once the account is online the binding can query all registered vehicles and cre
 
 Make sure to select the correct type of Account Think (e.g. select Sokda Enyaq instead of Skoda, which is for non-electrical models).
 
-## CarNet: Audi, VW, Skoda
+## connectedcar: Audi, VW, Skoda
 
 VW has a special API for the ID. models - WeConnect ID., check below for more information.
 Skoda has a special API for the Enyak, see below.
@@ -307,58 +307,58 @@ Some common error codes:
 .things
 
 ```
-Bridge carnet:volkswagen:vw   "VW" [user="<username>", password="<password>" ] {
-    Thing vehicle   WAUZZZXXXXXXXXXXX   "My Car"    [ vin="WAUZZZXXXXXXXXXXX", pin="<s-pin>", pollingInterval=15, enableAddressLookup=true ]
+Bridge connectedcar:volkswagen:vw   "VW" [user="<username>", password="<password>" ] {
+    Thing cnvehicle   WAUZZZXXXXXXXXXXX   "My Car"    [ vin="WAUZZZXXXXXXXXXXX", pin="<s-pin>", pollingInterval=15, enableAddressLookup=true ]
 }
 ```
 
 .items
 
 ```
-Switch                      Locked               "Vehicle Locked"                      { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:general#vehicleLocked" }
-Switch                      AllWindowsClosed     "All Windows Closed"                  { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:general#windowsClosed" }
-Switch                      TirePressureOk       "Tire Pressure OK"                    { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:general#tiresOk" }
-Switch                      ParkingBrake         "Parking Brake"                       { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:general#parkingBrake" }
-Number:Length               Reichweite1          "Reichweite [%.1f %unit%]"            { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:range#totalRange" }
-Number:Length               MonthlyMilage        "Monthly Milage [%.1f %unit%]"        { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:general#monthlyMilage" }
-Number:Dimensionless        LadestandPer1        "Ladestand [%.1f %unit%]"             { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:range#chargingLevel" }
-Number:Length               Km1                  "Kilometerstand [%.1f %unit%]"        { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:general#kilometerStatus" }
-Location                    Position1            "Position"                            { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:location#position" }
-Switch                      Update1              "Update"                              { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:control#update" }
-Number:Temperature          OutsideTemp1         "Außentemperatur [%.1f %unit%]"       { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:general#tempOutside" }
-DateTime                    Timestamp_S          "Timestamp"                           { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripShort1#timestamp" }
-Number:Energy               AvgConsumption_S     "Avg Electrical Cons [%.1f %unit%]"   { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripShort1#avgElectricConsumption" }
-Number:Speed                AvgSpeed_S           "Avg Speed [%.1f %unit%]"             { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripShort1#avgSpeed" }
-Number:Length               TripMilage_S         "Trip Milage [%.1f %unit%]"           { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripShort1#mileage" }
-DateTime                    Timestamp_L          "Timestamp"                           { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#timestamp" }
-Number:Energy               AvgConsumption_L     "Avg Electrical Cons [%.1f %unit%]"   { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#avgElectricConsumption" }
-Number:Speed                AvgSpeed_L           "Avg Speed [%.1f %unit%]"             { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#avgSpeed" }
-Number:Length               TripMilage_L         "Trip Milage [%.1f %unit%]"           { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#mileage" }
-Number:Length               StartMilage_L        "Start Milage [%.1f %unit%]"          { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#startMileage" }
-Number:Length               OverallMilage_L      "Overall Milage [%.1f %unit%]"        { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#overallMileage" }
-String                      ChargingStatus       "Charging Status"                     { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#chargingStatus" }
-Number                      ChargingError        "Charging Error [%.1f %unit%]"        { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#errorCode" }
-String                      PowerState           "Power State"                         { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#powerState" }
-String                      ChargingState        "Charging State"                      { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#chargingState" }
-String                      EnergyFlow           "Energy Flow"                         { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#energyFlow" }
-Number:Dimensionless        BatteryState         "Battery State [%.1f %unit%]"         { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#batteryState" }
-Number                      RemainingTime        "Remaining Time [%.1f %unit%]"        { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#remainingTime" }
-String                      PlugState            "Plug State"                          { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#plugState" }
-String                      PlugLockState        "Plug Lock State"                     { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:charger#lockState" }
-Number:Temperature          TargetTemp           "Target Temperature [%.1f %unit%]"    { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:climater#targetTemperature" }
-String                      HeaterSource         "Heater Source"                       { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:climater#heaterSource" }
-String                      ClimatisationState   "Climatisation State"                 { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:climater#climatisationState" }
-Switch                      ZoneFrontLeft        "Zone Front Left"                     { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:climater#frontLeft" }
-Switch                      ZoneFrontRight       "Zone Front Right"                    { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:climater#frontRight" }
-Switch                      ZoneRearLeft         "Zone Rear Left"                      { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:climater#rearLeft" }
-Switch                      ZoneRearRight        "Zone Rear Right"                     { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:climater#rearRight" }
-Switch                      MirrorHeating        "Mirror Heating"                      { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:climater#mirrorHeat" }
-Switch                      LockVehicle          "Lock Vehicle"                        { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:control#lock" }
-Switch                      ClimateControl       "Climate ON/OFF"                      { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:control#climater" }
-Switch                      WindowHeater         "Window Heater ON/OFF"                { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:control#windowHeat" }
-Switch                      ChargerSwitch        "Charging ON/OFF"                     { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:control#charger" }
-Switch                      PreHeater            "Pre-Heater ON/OFF"                   { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:control#preHeater" }
-Number                      Current_Speed        "Current Speed [%.1f %unit%]"         { channel="carnet:vehicle:vw:WAUZZZXXXXXXXXXXX:status#currentSpeed" }
+Switch                      Locked               "Vehicle Locked"                      { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:general#vehicleLocked" }
+Switch                      AllWindowsClosed     "All Windows Closed"                  { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:general#windowsClosed" }
+Switch                      TirePressureOk       "Tire Pressure OK"                    { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:general#tiresOk" }
+Switch                      ParkingBrake         "Parking Brake"                       { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:general#parkingBrake" }
+Number:Length               Reichweite1          "Reichweite [%.1f %unit%]"            { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:range#totalRange" }
+Number:Length               MonthlyMilage        "Monthly Milage [%.1f %unit%]"        { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:general#monthlyMilage" }
+Number:Dimensionless        LadestandPer1        "Ladestand [%.1f %unit%]"             { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:range#chargingLevel" }
+Number:Length               Km1                  "Kilometerstand [%.1f %unit%]"        { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:general#kilometerStatus" }
+Location                    Position1            "Position"                            { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:location#position" }
+Switch                      Update1              "Update"                              { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:control#update" }
+Number:Temperature          OutsideTemp1         "Außentemperatur [%.1f %unit%]"       { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:general#tempOutside" }
+DateTime                    Timestamp_S          "Timestamp"                           { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:tripShort1#timestamp" }
+Number:Energy               AvgConsumption_S     "Avg Electrical Cons [%.1f %unit%]"   { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:tripShort1#avgElectricConsumption" }
+Number:Speed                AvgSpeed_S           "Avg Speed [%.1f %unit%]"             { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:tripShort1#avgSpeed" }
+Number:Length               TripMilage_S         "Trip Milage [%.1f %unit%]"           { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:tripShort1#mileage" }
+DateTime                    Timestamp_L          "Timestamp"                           { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#timestamp" }
+Number:Energy               AvgConsumption_L     "Avg Electrical Cons [%.1f %unit%]"   { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#avgElectricConsumption" }
+Number:Speed                AvgSpeed_L           "Avg Speed [%.1f %unit%]"             { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#avgSpeed" }
+Number:Length               TripMilage_L         "Trip Milage [%.1f %unit%]"           { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#mileage" }
+Number:Length               StartMilage_L        "Start Milage [%.1f %unit%]"          { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#startMileage" }
+Number:Length               OverallMilage_L      "Overall Milage [%.1f %unit%]"        { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:tripLong1#overallMileage" }
+String                      ChargingStatus       "Charging Status"                     { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:charger#chargingStatus" }
+Number                      ChargingError        "Charging Error [%.1f %unit%]"        { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:charger#errorCode" }
+String                      PowerState           "Power State"                         { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:charger#powerState" }
+String                      ChargingState        "Charging State"                      { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:charger#chargingState" }
+String                      EnergyFlow           "Energy Flow"                         { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:charger#energyFlow" }
+Number:Dimensionless        BatteryState         "Battery State [%.1f %unit%]"         { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:charger#batteryState" }
+Number                      RemainingTime        "Remaining Time [%.1f %unit%]"        { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:charger#remainingTime" }
+String                      PlugState            "Plug State"                          { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:charger#plugState" }
+String                      PlugLockState        "Plug Lock State"                     { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:charger#lockState" }
+Number:Temperature          TargetTemp           "Target Temperature [%.1f %unit%]"    { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:climater#targetTemperature" }
+String                      HeaterSource         "Heater Source"                       { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:climater#heaterSource" }
+String                      ClimatisationState   "Climatisation State"                 { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:climater#climatisationState" }
+Switch                      ZoneFrontLeft        "Zone Front Left"                     { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:climater#frontLeft" }
+Switch                      ZoneFrontRight       "Zone Front Right"                    { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:climater#frontRight" }
+Switch                      ZoneRearLeft         "Zone Rear Left"                      { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:climater#rearLeft" }
+Switch                      ZoneRearRight        "Zone Rear Right"                     { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:climater#rearRight" }
+Switch                      MirrorHeating        "Mirror Heating"                      { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:climater#mirrorHeat" }
+Switch                      LockVehicle          "Lock Vehicle"                        { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:control#lock" }
+Switch                      ClimateControl       "Climate ON/OFF"                      { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:control#climater" }
+Switch                      WindowHeater         "Window Heater ON/OFF"                { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:control#windowHeat" }
+Switch                      ChargerSwitch        "Charging ON/OFF"                     { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:control#charger" }
+Switch                      PreHeater            "Pre-Heater ON/OFF"                   { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:control#preHeater" }
+Number                      Current_Speed        "Current Speed [%.1f %unit%]"         { channel="connectedcar:cnvehicle:vw:WAUZZZXXXXXXXXXXX:status#currentSpeed" }
 ```
 
 ## WeConnect ID.: VW ID.3/ID.4

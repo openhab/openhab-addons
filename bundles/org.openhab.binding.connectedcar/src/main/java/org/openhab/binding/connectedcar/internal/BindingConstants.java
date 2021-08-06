@@ -108,10 +108,9 @@ public class BindingConstants {
     public static final String CHANNEL_CONTROL_LOCK = "lock";
     public static final String CHANNEL_CONTROL_ENGINE = "engine";
     public static final String CHANNEL_CONTROL_CHARGER = "charge";
-    public static final String CHANNEL_CONTROL_MAXCURRENT = "maxCurrent";
     public static final String CHANNEL_CONTROL_TARGETCHG = "targetChgLvl";
     public static final String CHANNEL_CONTROL_CLIMATER = "climater";
-    public static final String CHANNEL_CONTROL_HEATSOURCE = "heaterSource";
+    public static final String CHANNEL_CONTROL_TARGET_TEMP = "targetTemperature";
     public static final String CHANNEL_CONTROL_WINHEAT = "windowHeat";
     public static final String CHANNEL_CONTROL_PREHEAT = "preHeater";
     public static final String CHANNEL_CONTROL_DURATION = "duration";
@@ -140,13 +139,8 @@ public class BindingConstants {
 
     // Group Climarter
     public static final String CHANNEL_GROUP_CLIMATER = "climater";
-    public static final String CHANNEL_CLIMATER_TARGET_TEMP = "targetTemperature";
-    public static final String CHANNEL_CLIMATER_HEAT_SOURCE = "heaterSource";
     public static final String CHANNEL_CLIMATER_GEN_STATE = "climatisationState";
-    public static final String CHANNEL_CLIMATER_FL_STATE = "frontLeft";
-    public static final String CHANNEL_CLIMATER_FR_STATE = "frontRight";
-    public static final String CHANNEL_CLIMATER_RL_STATE = "rearLeft";
-    public static final String CHANNEL_CLIMATER_RR_STATE = "rearRight";
+    public static final String CHANNEL_CLIMATER_HEATSOURCE = "heaterSource";
     public static final String CHANNEL_CLIMATER_MIRROR_HEAT = "mirrorHeat";
     public static final String CHANNEL_CLIMATER_REMAINING = "remainingClimatisation";
 
@@ -164,6 +158,7 @@ public class BindingConstants {
     public static final String CHANNEL_CHARGER_LOCK_STATE = "lockState";
     public static final String CHANNEL_CHARGER_REMAINING = "remainingChargingTime";
     public static final String CHANNEL_CHARGER_POWER = "chargingPower";
+    public static final String CHANNEL_CHARGER_MAXCURRENT = "maxCurrent";
     public static final String CHANNEL_CHARGER_RATE = "chargingRate";
 
     public static final String CHANNEL_GROUP_TRIP_PRE = "trip";

@@ -4,10 +4,10 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="bridge-type:connectedcar:account">
+	<config-description uri="bridge-type:connectedcar:cnaccount">
 		<parameter-group name="authentication">
-			<label>Authentication</label>
-			<description>Authentication settings.</description>
+			<label>Account</label>
+			<description>Login settings</description>
 		</parameter-group>
 
 		<parameter name="user" type="text" required="true" groupName="authentication">
@@ -33,6 +33,59 @@
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
+
+    <config-description uri="bridge-type:connectedcar:idaccount">
+        <parameter-group name="authentication">
+            <label>Authentication</label>
+            <description>Authentication settings.</description>
+        </parameter-group>
+
+        <parameter name="user" type="text" required="true" groupName="authentication">
+            <label>Online User</label>
+            <description>User name for the Login.</description>
+        </parameter>
+        <parameter name="password" type="text" required="true" groupName="authentication">
+            <label>Password</label>
+            <context>password</context>
+            <description>Password to access the account.</description>
+        </parameter>
+    </config-description>
+
+    <config-description uri="bridge-type:connectedcar:seaccount">
+        <parameter-group name="authentication">
+            <label>Authentication</label>
+            <description>Authentication settings.</description>
+        </parameter-group>
+
+        <parameter name="user" type="text" required="true" groupName="authentication">
+            <label>Online User</label>
+            <description>User name for the Login.</description>
+        </parameter>
+        <parameter name="password" type="text" required="true" groupName="authentication">
+            <label>Password</label>
+            <context>password</context>
+            <description>Password to access the account.</description>
+        </parameter>
+    </config-description>
+
+   <config-description uri="bridge-type:connectedcar:fordaccount">
+        <parameter-group name="authentication">
+            <label>Authentication</label>
+            <description>Authentication settings.</description>
+        </parameter-group>
+
+        <parameter name="user" type="text" required="true" groupName="authentication">
+            <label>Online User</label>
+            <description>User name for the Login.</description>
+        </parameter>
+        <parameter name="password" type="text" required="true" groupName="authentication">
+            <label>Password</label>
+            <context>password</context>
+            <description>Password to access the account.</description>
+        </parameter>
+    </config-description>
+
+
 
 	<config-description uri="thing-type:connectedcar:cnvehicle">
 		<parameter name="vin" type="text" required="false">

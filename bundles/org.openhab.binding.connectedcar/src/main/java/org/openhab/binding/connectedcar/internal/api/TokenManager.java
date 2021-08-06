@@ -15,7 +15,6 @@ package org.openhab.binding.connectedcar.internal.api;
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
 import static org.openhab.binding.connectedcar.internal.CarUtils.*;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
-import static org.openhab.binding.connectedcar.internal.api.ApiHttpClient.urlEncode;
 import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.*;
 
 import java.io.UnsupportedEncodingException;
@@ -282,16 +281,43 @@ public class TokenManager {
                 token = fromJson(gson, json, OAuthToken.class);
             }
             token.normalize();
+            token.xcsrf = oauth.csrf;
             if (token.accessToken.isEmpty() && token.idToken.isEmpty()) {
                 throw new ApiSecurityException("Authentication failed: Unable to get access token!");
             }
             tokens.apiToken = new ApiToken(token);
             logger.debug("{}: accessToken was created, valid for {}sec", config.api.brand, tokens.apiToken.validity);
             updateTokenSet(config.tokenSetId, tokens);
+
+            /*
+             * CookieStore cstore = oauth.getCookieStore();
+             * List<HttpCookie> cookies = cstore.getCookies();
+             * for (HttpCookie c : cookies) {
+             * logger.debug("{}={}", c.getName(), c.getValue());
+             * }
+             */
+            /*
+             * json = oauth.clearHeader().clearData() //
+             * .header(HttpHeader.REFERER, "https://www.audi.de/myaudi/").header("path", "/userinfo/bvh/v1")
+             * .header("scheme", "https").header("access-control-allow-credentials", "true") //
+             * .header(HttpHeader.ACCEPT, "* /*").header(HttpHeader.ACCEPT_LANGUAGE, "de-DE")
+             * .header(HttpHeader.CACHE_CONTROL, "no-cache").header("authority", "www.audi.de")
+             * .header("x-csrf-token", createXCSRF(config)) //
+             * .header("x-myaudi-request-id", "e14a2569-df03-4fe3-b368-aa14c372e600") //
+             * .body("{\"query\":\"\\n\\nfragment ExtendedVehicleFragment on Vehicle {\\n  vin\\n  id\\n\\n  favorite\\n}\\n\\n\\nquery Vehicles($ids: [String]!, $country: String!, $language: String!) {\\n  vehicles(ids: $ids, country: $country, language: $language) {\\n    edges {\\n      node {\\n          ...ExtendedVehicleFragment\\n      }\\n    }\\n  }\\n}\\n\",\"variables\":{\"ids\":[\"VmVoaWNsZTpXQVVaWlpGMjFMTjA0NjQ0OQ==\"],\"country\":\"DE\",\"language\":\"de\"}}"
+             * )
+             * .post("https://www.audi.de/userinfo/bvh/v1", true).response;
+             */
             return tokens.apiToken.accessToken;
         } catch (ApiException e) {
             throw new ApiSecurityException("Unable to create API access token", e);
         }
+    }
+
+    public String createXCSRF(CombinedConfig config) throws ApiException {
+        createAccessToken(config);
+        TokenSet tokens = getTokenSet(config.tokenSetId);
+        return tokens.apiToken.xcsrf;
     }
 
     public String createIdToken(CombinedConfig config) throws ApiException {

@@ -123,6 +123,11 @@ public class ApiDataTypesDTO {
     }
 
     public static class VehicleStatus {
+        public @Nullable CarNetVehicleStatus cnStatus;
+        public @Nullable WCVehicleStatus wcStatus;
+        public @Nullable SEVehicleStatusData seStatus;
+        public @Nullable FPVehicleStatusData fpStatus;
+
         public VehicleStatus() {
         }
 
@@ -141,11 +146,6 @@ public class ApiDataTypesDTO {
         public VehicleStatus(FPVehicleStatusData status) {
             fpStatus = status;
         }
-
-        public @Nullable CarNetVehicleStatus cnStatus;
-        public @Nullable WCVehicleStatus wcStatus;
-        public @Nullable SEVehicleStatusData seStatus;
-        public @Nullable FPVehicleStatusData fpStatus;
     }
 
     public static class CarPosition {

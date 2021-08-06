@@ -144,32 +144,39 @@ public class ApiBaseService {
     }
 
     protected boolean updateChannel(String channelId, State value) {
+        return updateChannel("", channelId, value);
+    }
+
+    protected boolean updateChannel(String gr, String channelId, State value) {
         ChannelIdMapEntry definition = idMapper.find(channelId);
         if (definition == null) {
             throw new IllegalArgumentException(
                     "Unable to update channel " + channelId + ", missing channel definition ");
         }
+
+        if (channelId.equals(CHANNEL_MAINT_ABDIST)) {
+            int i = 1;
+        }
+        String group = gr.isEmpty() ? definition.groupName : gr;
         Unit<?> unit = definition.unit;
-        if (unit != null) {
-            return thingHandler.updateChannel(definition.groupName, definition.channelName, toQuantityType(
-                    ((DecimalType) value).doubleValue(), definition.digits == -1 ? 1 : definition.digits, unit));
+        if (unit == null || value instanceof UnDefType) {
+            return thingHandler.updateChannel(group, definition.channelName, value);
         } else {
-            return thingHandler.updateChannel(definition.groupName, definition.channelName, value);
+            return thingHandler.updateChannel(group, definition.channelName, toQuantityType(
+                    ((DecimalType) value).doubleValue(), definition.digits == -1 ? 1 : definition.digits, unit));
         }
     }
 
-    protected boolean updateChannel(String group, String channel, State value) {
-        return thingHandler.updateChannel(group, channel, value);
-    }
-
-    protected boolean updateChannel(String group, String channel, State value, Unit<?> unit) {
-        return thingHandler.updateChannel(group, channel, value, unit);
-    }
-
-    protected boolean updateChannel(String group, String channel, State value, int digits, Unit<?> unit) {
-        return thingHandler.updateChannel(group, channel, value, digits, unit);
-    }
-
+    /*
+     *
+     * protected boolean updateChannel(String group, String channel, State value, Unit<?> unit) {
+     * return thingHandler.updateChannel(group, channel, value, unit);
+     * }
+     *
+     * protected boolean updateChannel(String group, String channel, State value, int digits, Unit<?> unit) {
+     * return thingHandler.updateChannel(group, channel, value, digits, unit);
+     * }
+     */
     protected State getDateTime(String time) {
         return CarUtils.getDateTime(time, thingHandler.getZoneId());
     }

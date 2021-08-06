@@ -46,14 +46,6 @@ public class CarNetServiceCarFinder extends ApiBaseService {
 
     @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> ch) throws ApiException {
-        /*
-         * addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO, ITEMT_LOCATION, null, false, true);
-         * addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, ITEMT_DATETIME, null, false, true);
-         * addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_ADDRESS, ITEMT_STRING, null, false, true);
-         * addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_PARK_LOCATION, ITEMT_LOCATION, null, false, true);
-         * addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_PARK_ADDRESS, ITEMT_STRING, null, false, true);
-         * addChannel(ch, CHANNEL_GROUP_LOCATION, CHANNEL_PARK_TIME, ITEMT_DATETIME, null, false, true);
-         */
         addChannels(ch, true, CHANNEL_LOCATTION_GEO, CHANNEL_LOCATTION_TIME, CHANNEL_LOCATTION_ADDRESS,
                 CHANNEL_PARK_LOCATION, CHANNEL_PARK_ADDRESS, CHANNEL_PARK_TIME);
         return true;
@@ -65,25 +57,25 @@ public class CarNetServiceCarFinder extends ApiBaseService {
         try {
             logger.debug("{}: Get Vehicle Position", thingId);
             CarPosition position = api.getVehiclePosition();
-            updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO, position.getAsPointType());
+            updated |= updateChannel(CHANNEL_LOCATTION_GEO, position.getAsPointType());
 
             String time = position.getCarSentTime();
-            updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, new DateTimeType(time));
+            updated |= updateChannel(CHANNEL_LOCATTION_TIME, new DateTimeType(time));
             updated |= updateAddress(position, CHANNEL_LOCATTION_ADDRESS);
 
             position = api.getStoredPosition();
-            updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_PARK_LOCATION, position.getAsPointType());
-            updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, new DateTimeType(time));
+            updated |= updateChannel(CHANNEL_PARK_LOCATION, position.getAsPointType());
+            updated |= updateChannel(CHANNEL_LOCATTION_TIME, new DateTimeType(time));
             updated |= updateAddress(position, CHANNEL_PARK_ADDRESS);
             String parkingTime = getString(position.getParkingTime());
-            updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_PARK_TIME,
+            updated |= updateChannel(CHANNEL_PARK_TIME,
                     !parkingTime.isEmpty() ? getDateTime(parkingTime) : UnDefType.UNDEF);
-            updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_CAR_MOVING, OnOffType.OFF);
+            updated |= updateChannel(CHANNEL_CAR_MOVING, OnOffType.OFF);
         } catch (ApiException e) {
-            updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO, UnDefType.UNDEF);
-            updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_TIME, UnDefType.UNDEF);
+            updateChannel(CHANNEL_LOCATTION_GEO, UnDefType.UNDEF);
+            updateChannel(CHANNEL_LOCATTION_TIME, UnDefType.UNDEF);
             if (e.getApiResult().httpCode == HttpStatus.NO_CONTENT_204) {
-                updated |= updateChannel(CHANNEL_GROUP_LOCATION, CHANNEL_CAR_MOVING, OnOffType.ON);
+                updated |= updateChannel(CHANNEL_CAR_MOVING, OnOffType.ON);
             } else {
                 throw e;
             }

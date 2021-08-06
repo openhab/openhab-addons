@@ -27,6 +27,7 @@ import org.eclipse.jetty.http.HttpHeader;
 public class ApiHttpMap {
     private Map<String, String> headers = new LinkedHashMap<>();
     private Map<String, String> data = new LinkedHashMap<>();
+    private String body = "";
 
     public ApiHttpMap header(String header, String value) {
         headers.put(header, value);
@@ -42,6 +43,11 @@ public class ApiHttpMap {
         return this;
     }
 
+    public ApiHttpMap body(String body) {
+        this.body = body;
+        return this;
+    }
+
     public Map<String, String> getHeaders() {
         return headers;
     }
@@ -50,8 +56,12 @@ public class ApiHttpMap {
         return data;
     }
 
+    public String getBody() {
+        return body;
+    }
+
     public String getRequestData(boolean json) {
-        return ApiHttpClient.buildPostData(data, json);
+        return body.isEmpty() ? ApiHttpClient.buildPostData(data, json) : body;
     }
 
     public ApiHttpMap clearHeader() {

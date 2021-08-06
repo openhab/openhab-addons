@@ -54,11 +54,6 @@ public class CarNetServiceGeoFenceAlerts extends ApiBaseService {
         boolean created = false;
         for (int index = 1; index <= count; index++) {
             String group = CHANNEL_GROUP_GEOFENCE + index;
-            /*
-             * created |= addChannel(channels, group, CHANNEL_GEOFENCE_TYPE, ITEMT_STRING, null, false, true);
-             * created |= addChannel(channels, group, CHANNEL_GEOFENCE_TIME, ITEMT_DATETIME, null, false, true);
-             * created |= addChannel(channels, group, CHANNEL_GEOFENCE_DESCR, ITEMT_STRING, null, false, true);
-             */
             created |= addChannels(channels, group, true, CHANNEL_GEOFENCE_TYPE, CHANNEL_GEOFENCE_TIME,
                     CHANNEL_GEOFENCE_DESCR);
         }

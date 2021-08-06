@@ -25,6 +25,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiBase;
 import org.openhab.binding.connectedcar.internal.api.ApiBaseService;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleStatus;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
+import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleStatusData;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleStatusData.FPVehicleStatus;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleStatusData.FPVehicleStatus.FPDoorStatus;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleStatusData.FPVehicleStatus.FPStatusStringValue;
@@ -56,11 +57,12 @@ public class FPServiceStatus extends ApiBaseService {
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws ApiException {
         // We need one status poll to dynamically determine required channels
         VehicleStatus data = api.getVehicleStatus();
-        if (data.fpStatus == null || data.fpStatus.vehiclestatus == null) {
+        FPVehicleStatusData fpStatus = data.fpStatus;
+        if (fpStatus == null || fpStatus.vehiclestatus == null) {
             throw new ApiException(thingId + "Can't read vehicle data, channels not created!");
         }
 
-        FPVehicleStatus status = data.fpStatus.vehiclestatus;
+        FPVehicleStatus status = fpStatus.vehiclestatus;
         // Control & Status channels
         addChannels(channels, true, CHANNEL_CONTROL_ENGINE, CHANNEL_CONTROL_LOCK, CHANNEL_GENERAL_LOCKED,
                 CHANNEL_STATUS_ODOMETER, CHANNEL_STATUS_SWUPDATE, CHANNEL_STATUS_DEEPSLEEP);
@@ -130,7 +132,6 @@ public class FPServiceStatus extends ApiBaseService {
             updated |= updateRangeStatus(status);
             updated |= updateMaintenance(status);
             updated |= updateChargingStatus(status);
-            updated |= updateClimatisationStatus(status);
             updated |= updateDoorWindowStatus(status);
             updated |= updateTireStatus(status);
         }
@@ -180,61 +181,11 @@ public class FPServiceStatus extends ApiBaseService {
 
     private boolean updateChargingStatus(FPVehicleStatus status) {
         boolean updated = false;
-        /*
-         * if (data.status.charger != null) {
-         * FPChargerStatus s = data.status.charger;
-         * if (s.charging != null) {
-         * String state = getString(s.charging.state);
-         * updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_CHARGER,
-         * "charging".equalsIgnoreCase(state) ? OnOffType.ON : OnOffType.OFF);
-         * updated |= updateChannel(group, CHANNEL_CHARGER_CHG_STATE, getStringType(state));
-         * updated |= updateChannel(group, CHANNEL_CHARGER_MODE, getStringType(s.charging.chargeMode));
-         * updated |= updateChannel(group, CHANNEL_CHARGER_REMAINING,
-         * toQuantityType(getLong(s.charging.remainingToCompleteInSeconds) / 60.0, 0, Units.MINUTE));
-         * updated |= updateChannel(group, CHANNEL_CHARGER_POWER,
-         * toQuantityType(getDouble(s.charging.chargingPowerInWatts), 0, Units.WATT));
-         * updated |= updateChannel(group, CHANNEL_CHARGER_RATE,
-         * getDecimal(s.charging.chargingRateInKilometersPerHour));
-         * }
-         *
-         * if (s.plug != null) {
-         * updated |= updateChannel(group, CHANNEL_CHARGER_LOCK_STATE,
-         * getOnOffType(getString(s.plug.lockState)));
-         * if (data.settings.charger != null) {
-         * FPChargerSettings s = data.settings.charger;
-         * updated |= updateChannel(group, CHANNEL_CONTROL_TARGETCHG,
-         * toQuantityType(getInteger(s.targetStateOfChargeInPercent), 0, PERCENT));
-         * updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MAXCURRENT,
-         * getStringType(s.maxChargeCurrentAc));
-         * }
-         */
         if (status.elVehDTE != null) {
             updated |= updateChannel(CHANNEL_CHARGER_PLUG_STATE, getOnOff(status.plugStatus.value));
             updated |= updateChannel(CHANNEL_CHARGER_CHG_STATE, getStringType(status.chargingStatus.value));
             updated |= updateChannel(CHANNEL_CHARGER_CHGLVL, getDecimal(status.batteryFillLevel.value));
         }
-        return updated;
-    }
-
-    private boolean updateClimatisationStatus(FPVehicleStatus data) {
-        boolean updated = false;
-        String group = CHANNEL_GROUP_CLIMATER;
-        /*
-         * SEClimaterStatus status = data.status.climatisation;
-         * if (status != null) {
-         * updated |= updateChannel(group, CHANNEL_CLIMATER_GEN_STATE, getOnOffType(status.state));
-         * updated |= updateChannel(group, CHANNEL_CLIMATER_REMAINING, toQuantityType(
-         * getInteger(status.remainingTimeToReachTargetTemperatureInSeconds), 0, Units.SECOND));
-         * }
-         *
-         * FPClimaterSettings settings = data.settings.climater;
-         * if (settings != null) {
-         * Double tempC = Units.KELVIN.getConverterTo(SIUnits.CELSIUS).convert(settings.targetTemperatureInKelvin)
-         * .doubleValue();
-         * updated |= updateChannel(group, CHANNEL_CLIMATER_TARGET_TEMP,
-         * toQuantityType(tempC, 1, SIUnits.CELSIUS));
-         * }
-         */
         return updated;
     }
 

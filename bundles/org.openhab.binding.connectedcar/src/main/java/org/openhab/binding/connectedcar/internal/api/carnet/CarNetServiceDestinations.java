@@ -62,16 +62,6 @@ public class CarNetServiceDestinations extends ApiBaseService {
 
     private boolean createChannels(Map<String, ChannelIdMapEntry> ch, int index) {
         String group = CHANNEL_GROUP_DEST_PRE + index;
-        /*
-         * a |= addChannel(ch, group, CHANNEL_DEST_NAME, ITEMT_STRING, null, false, true);
-         * a |= addChannel(ch, group, CHANNEL_DEST_POI, ITEMT_STRING, null, false, true);
-         * a |= addChannel(ch, group, CHANNEL_DEST_GEO, ITEMT_LOCATION, null, false, true);
-         * a |= addChannel(ch, group, CHANNEL_DEST_STREET, ITEMT_STRING, null, false, true);
-         * a |= addChannel(ch, group, CHANNEL_DEST_CITY, ITEMT_STRING, null, false, true);
-         * a |= addChannel(ch, group, CHANNEL_DEST_ZIP, ITEMT_STRING, null, false, true);
-         * a |= addChannel(ch, group, CHANNEL_DEST_COUNTY, ITEMT_STRING, null, true, true);
-         * a |= addChannel(ch, group, CHANNEL_DEST_SOURCE, ITEMT_STRING, null, true, true);
-         */
         return addChannels(ch, group, true, CHANNEL_DEST_NAME, CHANNEL_DEST_POI, CHANNEL_DEST_GEO, CHANNEL_DEST_STREET,
                 CHANNEL_DEST_CITY, CHANNEL_DEST_ZIP, CHANNEL_DEST_COUNTY, CHANNEL_DEST_SOURCE);
     }
@@ -103,32 +93,31 @@ public class CarNetServiceDestinations extends ApiBaseService {
             if (channels != null) {
                 createChannels(channels, l);
             } else {
-                String group = CHANNEL_GROUP_DEST_PRE + l;
                 CarNetDestination entry = dest.destination.get(i);
                 if (entry != null) {
-                    updated |= updateChannel(group, CHANNEL_DEST_NAME, getStringType(entry.destinationName));
-                    updated |= updateChannel(group, CHANNEL_DEST_POI,
+                    updated |= updateChannel(CHANNEL_DEST_NAME, getStringType(entry.destinationName));
+                    updated |= updateChannel(CHANNEL_DEST_POI,
                             entry.POIContact != null ? getStringType(entry.POIContact.lastName) : UnDefType.UNDEF);
-                    updated |= updateChannel(group, CHANNEL_DEST_SOURCE, getStringType(entry.destinationSource));
+                    updated |= updateChannel(CHANNEL_DEST_SOURCE, getStringType(entry.destinationSource));
 
                     if (entry.address != null) {
-                        updated |= updateChannel(group, CHANNEL_DEST_STREET, getStringType(entry.address.street));
-                        updated |= updateChannel(group, CHANNEL_DEST_CITY, getStringType(entry.address.city));
-                        updated |= updateChannel(group, CHANNEL_DEST_ZIP, getStringType(entry.address.zipCode));
-                        updated |= updateChannel(group, CHANNEL_DEST_COUNTY, getStringType(entry.address.country));
+                        updated |= updateChannel(CHANNEL_DEST_STREET, getStringType(entry.address.street));
+                        updated |= updateChannel(CHANNEL_DEST_CITY, getStringType(entry.address.city));
+                        updated |= updateChannel(CHANNEL_DEST_ZIP, getStringType(entry.address.zipCode));
+                        updated |= updateChannel(CHANNEL_DEST_COUNTY, getStringType(entry.address.country));
                     } else {
-                        updated |= updateChannel(group, CHANNEL_DEST_STREET, UnDefType.UNDEF);
-                        updated |= updateChannel(group, CHANNEL_DEST_CITY, UnDefType.UNDEF);
-                        updated |= updateChannel(group, CHANNEL_DEST_ZIP, UnDefType.UNDEF);
-                        updated |= updateChannel(group, CHANNEL_DEST_COUNTY, UnDefType.UNDEF);
+                        updated |= updateChannel(CHANNEL_DEST_STREET, UnDefType.UNDEF);
+                        updated |= updateChannel(CHANNEL_DEST_CITY, UnDefType.UNDEF);
+                        updated |= updateChannel(CHANNEL_DEST_ZIP, UnDefType.UNDEF);
+                        updated |= updateChannel(CHANNEL_DEST_COUNTY, UnDefType.UNDEF);
                     }
 
                     if ((entry.geoCoordinate != null) && (entry.geoCoordinate.getLattitude() != 0)) {
                         PointType location = new PointType(new DecimalType(entry.geoCoordinate.getLattitude()),
                                 new DecimalType(entry.geoCoordinate.getLongitude()));
-                        updated |= updateChannel(group, CHANNEL_DEST_GEO, location);
+                        updated |= updateChannel(CHANNEL_DEST_GEO, location);
                     } else {
-                        updated |= updateChannel(group, CHANNEL_DEST_GEO, UnDefType.UNDEF);
+                        updated |= updateChannel(CHANNEL_DEST_GEO, UnDefType.UNDEF);
                     }
                 }
             }

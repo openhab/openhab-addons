@@ -111,14 +111,22 @@ public class BrandCarNetAudi extends CarNetApi implements BrandAuthenticator {
 
     @Override
     public CombinedConfig initialize(String vin, CombinedConfig configIn) throws ApiException {
-        CombinedConfig cfg = super.initialize(vin, configIn);
+        CombinedConfig config = super.initialize(vin, configIn);
 
-        if (!cfg.vstatus.pairingInfo.isPairingCompleted()) {
+        if (!config.vstatus.pairingInfo.isPairingCompleted()) {
             logger.warn("{}: Unable to verify pairing or pairing not completed (status {}, userId {}, code {})",
                     thingId, getString(config.vstatus.pairingInfo.pairingStatus), getString(config.user.id),
                     getString(config.vstatus.pairingInfo.pairingCode));
         }
-        return cfg;
+        return config;
+    }
+
+    @Override
+    public ArrayList<String> getVehicles() throws ApiException {
+
+        ArrayList<String> list = super.getVehicles();
+
+        return list;
     }
 
     @Override

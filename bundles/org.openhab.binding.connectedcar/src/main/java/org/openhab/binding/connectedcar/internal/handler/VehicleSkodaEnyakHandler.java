@@ -78,10 +78,10 @@ public class VehicleSkodaEnyakHandler extends VehicleBaseHandler {
                     action = switchOn ? "startCharging" : "stopCharging";
                     actionStatus = api.controlCharger(switchOn);
                     break;
-                case CHANNEL_CLIMATER_TARGET_TEMP:
+                case CHANNEL_CONTROL_TARGET_TEMP:
                     actionStatus = api.controlClimaterTemp(((DecimalType) command).doubleValue(), "electric");
                     break;
-                case CHANNEL_CONTROL_MAXCURRENT:
+                case CHANNEL_CHARGER_MAXCURRENT:
                     int maxCurrent = ((DecimalType) command).intValue();
                     logger.info("{}: Setting max charging current to {}A", thingId, maxCurrent);
                     action = "controlMaxCurrent";

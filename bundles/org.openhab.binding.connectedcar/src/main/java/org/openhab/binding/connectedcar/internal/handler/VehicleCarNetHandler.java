@@ -95,10 +95,10 @@ public class VehicleCarNetHandler extends VehicleBaseHandler {
                     action = switchOn ? "startClimater" : "stopClimater";
                     actionStatus = api.controlClimater(switchOn, getHeaterSource());
                     break;
-                case CHANNEL_CLIMATER_TARGET_TEMP:
+                case CHANNEL_CONTROL_TARGET_TEMP:
                     actionStatus = api.controlClimaterTemp(((DecimalType) command).doubleValue(), getHeaterSource());
                     break;
-                case CHANNEL_CONTROL_HEATSOURCE:
+                case CHANNEL_CLIMATER_HEATSOURCE:
                     String heaterSource = command.toString().toLowerCase();
                     logger.debug("{}: Set heater source for climatisation to {}", thingId, heaterSource);
                     cache.setValue(channelId, channelUID.getId(), new StringType(heaterSource));
@@ -107,7 +107,7 @@ public class VehicleCarNetHandler extends VehicleBaseHandler {
                     action = switchOn ? "startCharging" : "stopCharging";
                     actionStatus = api.controlCharger(switchOn);
                     break;
-                case CHANNEL_CONTROL_MAXCURRENT:
+                case CHANNEL_CHARGER_MAXCURRENT:
                     int maxCurrent = ((DecimalType) command).intValue();
                     logger.info("{}: Setting max charging current to {}A", thingId, maxCurrent);
                     action = "controlMaxCurrent";
@@ -165,7 +165,7 @@ public class VehicleCarNetHandler extends VehicleBaseHandler {
     }
 
     private String getHeaterSource() {
-        State value = cache.getValue(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_HEATSOURCE);
+        State value = cache.getValue(CHANNEL_GROUP_CONTROL, CHANNEL_CLIMATER_HEATSOURCE);
         return value != UnDefType.NULL ? ((StringType) value).toString().toLowerCase() : CNAPI_HEATER_SOURCE_ELECTRIC;
     }
 

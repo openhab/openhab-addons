@@ -16,6 +16,7 @@ import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
 import static org.openhab.binding.connectedcar.internal.CarUtils.*;
 import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.*;
 
+import java.net.CookieStore;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.time.ZonedDateTime;
@@ -37,7 +38,6 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +66,10 @@ public class ApiHttpClient {
 
     public void setConfig(CombinedConfig config) {
         this.config = config;
+    }
+
+    public CookieStore getCookieStore() {
+        return httpClient.getCookieStore();
     }
 
     public static void fillHttpHeaders(Request request, Map<String, String> headers, String token) {
@@ -375,19 +379,5 @@ public class ApiHttpClient {
     public static long parseDate(String timestamp) {
         ZonedDateTime zdt = ZonedDateTime.parse(timestamp, DateTimeFormatter.RFC_1123_DATE_TIME);
         return zdt.toInstant().toEpochMilli() * 1000; // return ms
-    }
-
-    /**
-     * Encode fields for URL string
-     *
-     * @param s Field value
-     * @return URL encoded value
-     */
-    public static String urlEncode(String s) {
-        String url = UrlEncoded.encodeString(s, StandardCharsets.UTF_8); // returns forms data format
-        url = url.replace("+", "%20");
-        url = url.replace("%2D", "-");
-        url = url.replace("%5F", "_");
-        return url;
     }
 }

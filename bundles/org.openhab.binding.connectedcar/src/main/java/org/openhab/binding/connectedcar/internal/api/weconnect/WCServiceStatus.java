@@ -60,13 +60,13 @@ public class WCServiceStatus extends ApiBaseService {
         addChannels(channels, status.rangeStatus != null, CHANNEL_RANGE_TOTAL, CHANNEL_RANGE_PRANGE);
         addChannels(channels, status.batteryStatus != null, CHANNEL_CHARGER_CHGLVL);
         addChannels(channels, status.chargingStatus != null, CHANNEL_CONTROL_CHARGER, CHANNEL_CHARGER_CHG_STATE,
-                CHANNEL_CHARGER_MODE, CHANNEL_CHARGER_REMAINING, CHANNEL_CONTROL_MAXCURRENT, CHANNEL_CONTROL_TARGETCHG,
+                CHANNEL_CHARGER_MODE, CHANNEL_CHARGER_REMAINING, CHANNEL_CHARGER_MAXCURRENT, CHANNEL_CONTROL_TARGETCHG,
                 CHANNEL_CHARGER_RATE);
         addChannels(channels, status.plugStatus != null, CHANNEL_CHARGER_PLUG_STATE, CHANNEL_CHARGER_LOCK_STATE);
         addChannels(channels, status.climatisationStatus != null, CHANNEL_CLIMATER_GEN_STATE,
                 CHANNEL_CLIMATER_REMAINING);
         addChannels(channels, status.climatisationSettings != null, CHANNEL_CONTROL_CLIMATER,
-                CHANNEL_CLIMATER_TARGET_TEMP);
+                CHANNEL_CONTROL_TARGET_TEMP);
         addChannels(channels, status.climatisationTimer != null, CHANNEL_GENERAL_TIMEINCAR);
         addChannels(channels, status.windowHeatingStatus != null, CHANNEL_CONTROL_WINHEAT);
         return true;
@@ -125,7 +125,7 @@ public class WCServiceStatus extends ApiBaseService {
                 maxCurrent = "255";
             }
             if (Character.isDigit(maxCurrent.charAt(0))) {
-                updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_MAXCURRENT,
+                updated |= updateChannel(CHANNEL_GROUP_CHARGER, CHANNEL_CHARGER_MAXCURRENT,
                         getDecimal(Integer.parseInt(maxCurrent)));
             } else {
                 logger.debug("{}: MaxCurrent returned String {}", thingId, maxCurrent);
@@ -154,7 +154,7 @@ public class WCServiceStatus extends ApiBaseService {
                     getInteger(status.climatisationStatus.remainingClimatisationTime_min), 0, Units.MINUTE));
         }
         if (status.climatisationSettings != null) {
-            updated |= updateChannel(group, CHANNEL_CLIMATER_TARGET_TEMP,
+            updated |= updateChannel(group, CHANNEL_CONTROL_TARGET_TEMP,
                     toQuantityType(getDouble(status.climatisationSettings.targetTemperature_C), 0, SIUnits.CELSIUS));
         }
         if (status.climatisationTimer != null) {

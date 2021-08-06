@@ -13,9 +13,8 @@
 package org.openhab.binding.connectedcar.internal.api.fordpass;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.CONTENT_TYPE_JSON;
-import static org.openhab.binding.connectedcar.internal.CarUtils.fromJson;
+import static org.openhab.binding.connectedcar.internal.CarUtils.*;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
-import static org.openhab.binding.connectedcar.internal.api.ApiHttpClient.urlEncode;
 import static org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.*;
 import static org.openhab.binding.connectedcar.internal.api.skodaenyak.SEApiJsonDTO.SESERVICE_CHARGING;
 

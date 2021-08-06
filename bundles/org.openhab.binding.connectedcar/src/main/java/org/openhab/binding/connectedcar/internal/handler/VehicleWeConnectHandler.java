@@ -79,10 +79,10 @@ public class VehicleWeConnectHandler extends VehicleBaseHandler {
                     action = switchOn ? "startCharging" : "stopCharging";
                     actionStatus = api.controlCharger(switchOn);
                     break;
-                case CHANNEL_CLIMATER_TARGET_TEMP:
+                case CHANNEL_CONTROL_TARGET_TEMP:
                     actionStatus = api.controlClimaterTemp(((DecimalType) command).doubleValue(), "electric");
                     break;
-                case CHANNEL_CONTROL_MAXCURRENT:
+                case CHANNEL_CHARGER_MAXCURRENT:
                     int maxCurrent = ((DecimalType) command).intValue();
                     logger.info("{}: Setting max charging current to {}A", thingId, maxCurrent);
                     action = "controlMaxCurrent";
@@ -98,44 +98,7 @@ public class VehicleWeConnectHandler extends VehicleBaseHandler {
                     action = switchOn ? "startWindowHeat" : "stopWindowHeat";
                     actionStatus = api.controlWindowHeating(switchOn);
                     break;
-
-                /*
-                 * case CHANNEL_CONTROL_LOCK:
-                 * action = switchOn ? "lock" : "unlock";
-                 * actionStatus = api.controlLock(switchOn);
-                 * break;
-                 * case CHANNEL_CONTROL_PREHEAT:
-                 * action = switchOn ? "startPreHeat" : "stopPreHeat";
-                 * actionStatus = api.controlPreHeating(switchOn, 30);
-                 * break;
-                 * case CHANNEL_CONTROL_VENT:
-                 * action = switchOn ? "startVentilation" : "stopVentilation";
-                 * actionStatus = api.controlVentilation(switchOn, getVentDuration());
-                 * break;
-                 * case CHANNEL_CONTROL_DURATION:
-                 * DecimalType value = new DecimalType(((DecimalType) command).intValue());
-                 * logger.debug("{}: Set ventilation/pre-heat duration to {}", thingId, value);
-                 * cache.setValue(channelUID.getId(), value);
-                 * break;
-                 * case CHANNEL_CONTROL_FLASH:
-                 * case CHANNEL_CONTROL_HONKFLASH:
-                 * if (command == OnOffType.ON) {
-                 * State point = cache.getValue(mkChannelId(CHANNEL_GROUP_LOCATION, CHANNEL_LOCATTION_GEO));
-                 * if (point != UnDefType.NULL) {
-                 * action = CHANNEL_CONTROL_FLASH == channelId ? "flash" : "honk";
-                 * actionStatus = api.controlHonkFlash(CHANNEL_CONTROL_HONKFLASH.equals(channelId),
-                 * (PointType) point, getHfDuration());
-                 * } else {
-                 * logger.warn("{}: Geo position is not available, can't execute command", thingId);
-                 * }
-                 * }
-                 * break;
-                 * case CHANNEL_CONTROL_HFDURATION:
-                 * DecimalType hfd = new DecimalType(((DecimalType) command).intValue());
-                 * logger.debug("{}: Set honk%flash duration to {}", thingId, hfd);
-                 * cache.setValue(channelUID.getId(), hfd);
-                 * break;
-                 */ default:
+                default:
                     processed = false;
             }
         } catch (RuntimeException /* ApiException */ e) {

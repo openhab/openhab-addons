@@ -28,7 +28,6 @@ import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNS
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNSpeedAlerts.CarNetSpeedAlerts.CarNetpeedAlertEntry;
 import org.openhab.binding.connectedcar.internal.handler.VehicleCarNetHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
-import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,12 +55,6 @@ public class CarNetServiceSpeedAlerts extends ApiBaseService {
         int count = getConfig().vehicle.numSpeedAlerts;
         for (int i = 1; i <= count; i++) {
             String group = CHANNEL_GROUP_SPEEDALERT + i;
-            /*
-             * created |= addChannel(channels, group, CHANNEL_SPEEDALERT_TYPE, ITEMT_STRING, null, false, true);
-             * created |= addChannel(channels, group, CHANNEL_SPEEDALERT_TIME, ITEMT_DATETIME, null, false, true);
-             * created |= addChannel(channels, group, CHANNEL_SPEEDALERT_DESCR, ITEMT_STRING, null, false, true);
-             * created |= addChannel(channels, group, CHANNEL_SPEEDALERT_LIMIT, ITEMT_SPEED, null, false, true);
-             */
             created |= addChannels(channels, group, true, CHANNEL_SPEEDALERT_TYPE, CHANNEL_SPEEDALERT_TIME,
                     CHANNEL_SPEEDALERT_DESCR, CHANNEL_SPEEDALERT_LIMIT);
         }
@@ -96,8 +89,7 @@ public class CarNetServiceSpeedAlerts extends ApiBaseService {
             updated |= updateChannel(group, CHANNEL_SPEEDALERT_TYPE, getStringType(entry.alertType));
             updated |= updateChannel(group, CHANNEL_SPEEDALERT_DESCR, getStringType(entry.definitionName));
             updated |= updateChannel(group, CHANNEL_SPEEDALERT_TIME, getDateTime(getString(entry.occurenceDateTime)));
-            updated |= updateChannel(group, CHANNEL_SPEEDALERT_LIMIT, getDecimal(entry.speedLimit), 0,
-                    SIUnits.KILOMETRE_PER_HOUR);
+            updated |= updateChannel(group, CHANNEL_SPEEDALERT_LIMIT, getDecimal(entry.speedLimit));
         }
         return updated;
     }
