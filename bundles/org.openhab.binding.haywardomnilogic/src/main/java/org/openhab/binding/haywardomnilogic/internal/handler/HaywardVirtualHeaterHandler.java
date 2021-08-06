@@ -131,7 +131,7 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
                     String status = bridgehandler.evaluateXPath("//Parameter[@name='Status']/text()", xmlResponse)
                             .get(0);
 
-                    if (!(status.equals("0"))) {
+                    if (!("0".equals(status))) {
                         logger.debug("haywardCommand XML response: {}", xmlResponse);
                         return;
                     }

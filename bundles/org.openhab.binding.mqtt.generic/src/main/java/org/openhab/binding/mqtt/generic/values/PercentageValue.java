@@ -154,7 +154,7 @@ public class PercentageValue extends Value {
 
     @Override
     public StateDescriptionFragmentBuilder createStateDescription(boolean readOnly) {
-        return super.createStateDescription(readOnly).withMaximum(max).withMinimum(min).withStep(step)
+        return super.createStateDescription(readOnly).withMaximum(HUNDRED).withMinimum(BigDecimal.ZERO).withStep(step)
                 .withPattern("%s %%");
     }
 }

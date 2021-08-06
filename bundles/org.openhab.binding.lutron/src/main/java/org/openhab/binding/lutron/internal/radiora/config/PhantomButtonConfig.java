@@ -12,32 +12,21 @@
  */
 package org.openhab.binding.lutron.internal.radiora.config;
 
-import java.math.BigDecimal;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Configuration class for PhantomButton thing type.
- * 
+ *
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class PhantomButtonConfig {
 
-    private int buttonNumber;
-    private BigDecimal fadeSec;
+    public int buttonNumber;
+    public int system = 0;
 
     public int getButtonNumber() {
         return buttonNumber;
-    }
-
-    public void setButtonNumber(int buttonNumber) {
-        this.buttonNumber = buttonNumber;
-    }
-
-    public BigDecimal getFadeSec() {
-        return fadeSec;
-    }
-
-    public void setFadeSec(BigDecimal fadeSec) {
-        this.fadeSec = fadeSec;
     }
 }

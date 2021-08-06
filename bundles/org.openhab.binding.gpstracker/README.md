@@ -249,8 +249,6 @@ After a location message received from the tracker the log should contain these 
 2018-10-05 09:27:58.794 [TRACE] [cker.internal.handler.TrackerHandler] - System uses SI measurement units. No conversion is needed.
 ```
 
-**Note**: If the binding was restarted or the distance channel is new (this is the first location message for the channel) only the second location update will trigger event as the binding has to know the previous state.
-
 ### External Region and Presence Switch
 
 Assumptions:

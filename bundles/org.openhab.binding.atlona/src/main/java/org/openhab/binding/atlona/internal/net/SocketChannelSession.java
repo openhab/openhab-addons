@@ -347,7 +347,7 @@ public class SocketChannelSession implements SocketSession {
             while (isRunning.get()) {
                 try {
                     // if no listeners, we don't want to start dispatching yet.
-                    if (listeners.size() == 0) {
+                    if (listeners.isEmpty()) {
                         Thread.sleep(250);
                         continue;
                     }

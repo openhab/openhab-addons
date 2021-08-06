@@ -30,6 +30,6 @@ public class RFXComGasMessageTest {
     @Test
     public void checkNotImplemented() {
         assertThrows(RFXComMessageNotImplementedException.class,
-                () -> RFXComMessageFactory.createMessage(PacketType.GAS));
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.GAS, null, null, null));
     }
 }

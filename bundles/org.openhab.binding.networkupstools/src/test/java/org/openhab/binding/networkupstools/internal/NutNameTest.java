@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -40,10 +39,14 @@ public class NutNameTest {
 
             assertTrue(matcher.find(), "NutName name '" + nn + "' could not be matched with expected pattern.");
             final String expectedChannelId = matcher.group(1)
-                    + StringUtils.capitalize(Optional.ofNullable(matcher.group(2)).orElse(""))
-                    + StringUtils.capitalize(Optional.ofNullable(matcher.group(3)).orElse(""))
-                    + StringUtils.capitalize(Optional.ofNullable(matcher.group(4)).orElse(""));
+                    + capitalize(Optional.ofNullable(matcher.group(2)).orElse(""))
+                    + capitalize(Optional.ofNullable(matcher.group(3)).orElse(""))
+                    + capitalize(Optional.ofNullable(matcher.group(4)).orElse(""));
             assertEquals(expectedChannelId, nn.getChannelId(), "Channel name not correct");
         }
+    }
+
+    private String capitalize(String s) {
+        return s.isEmpty() ? "" : Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 }

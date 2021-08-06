@@ -32,7 +32,7 @@ Before you can integrate this service with your Google Cloud Text-to-Speech, you
 
 ## Service Configuration
 
-Using your favorite configuration UI (e.g. Paper UI) edit **Services / Voice / Google Cloud Text-to-Speech** settings and set:
+Using your favorite configuration UI to edit **Settings / Other Services - Google Cloud Text-to-Speech** and set:
 
 * **Client Id** - Google Cloud Platform OAuth 2.0-Client Id.
 * **Client Secret** - Google Cloud Platform OAuth 2.0-Client Secret.
@@ -54,7 +54,7 @@ Make sure to disable this setting again so the cache is maintained after restart
 
 Using your favorite configuration UI:
 
-* Edit **System** settings.
-* Edit **Voice** settings.
+* Go to **Settings**.
+* Edit **System Services - Voice**.
 * Set **Google Cloud** as **Default Text-to-Speech**.
-* Choose default voice for the setup.
+* Choose your preferred **Default Voice** for your setup.

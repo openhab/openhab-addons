@@ -13,8 +13,10 @@
 package org.openhab.binding.wled.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -29,9 +31,13 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = { DynamicStateDescriptionProvider.class, WledDynamicStateDescriptionProvider.class })
 @NonNullByDefault
 public class WledDynamicStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
+
     @Activate
-    public WledDynamicStateDescriptionProvider(
+    public WledDynamicStateDescriptionProvider(final @Reference EventPublisher eventPublisher, //
+            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry, //
             final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+        this.eventPublisher = eventPublisher;
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
     }
 }

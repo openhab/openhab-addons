@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * {@link NikoHomeControlActionDimmerConfig} is the config class for Niko Home Control Dimmer Actions.
  *
  * @author Mark Herwege - Initial Contribution
  */
+@NonNullByDefault
 public class NikoHomeControlActionDimmerConfig extends NikoHomeControlActionConfig {
-    public int step;
+    public int step = 10;
 }

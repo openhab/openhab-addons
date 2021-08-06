@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 /**
  * Info object which holds gateway specific informations.
  *
@@ -184,9 +181,8 @@ public class HmGatewayInfo {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("id", id).append("type", type)
-                .append("firmware", firmware).append("address", address).append("rf", rfInterface)
-                .append("wired", wiredInterface).append("hmip", hmipInterface).append("cuxd", cuxdInterface)
-                .append("group", groupInterface).toString();
+        return String.format("%s[id=%s,type=%s,firmware=%s,address=%s,rf=%b,wired=%b,hmip=%b,cuxd=%b,group=%b]",
+                getClass().getSimpleName(), id, type, firmware, address, rfInterface, wiredInterface, hmipInterface,
+                cuxdInterface, groupInterface);
     }
 }

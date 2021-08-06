@@ -18,8 +18,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 import org.openhab.binding.homematic.internal.communicator.parser.DeleteDevicesParser;
 import org.openhab.binding.homematic.internal.communicator.parser.EventParser;
@@ -63,7 +63,7 @@ public abstract class RpcResponseHandler<T> {
             for (Object o : (Object[]) responseData[0]) {
                 Map<?, ?> call = (Map<?, ?>) o;
                 if (call != null) {
-                    String method = ObjectUtils.toString(call.get("methodName"));
+                    String method = Objects.toString(call.get("methodName"), "");
                     Object[] data = (Object[]) call.get("params");
                     handleMethodCall(method, data);
                 }

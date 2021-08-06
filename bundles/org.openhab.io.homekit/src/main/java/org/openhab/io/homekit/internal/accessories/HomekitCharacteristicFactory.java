@@ -69,7 +69,17 @@ import io.github.hapjava.characteristics.impl.common.StatusFaultCharacteristic;
 import io.github.hapjava.characteristics.impl.common.StatusFaultEnum;
 import io.github.hapjava.characteristics.impl.common.StatusTamperedCharacteristic;
 import io.github.hapjava.characteristics.impl.common.StatusTamperedEnum;
-import io.github.hapjava.characteristics.impl.fan.*;
+import io.github.hapjava.characteristics.impl.fan.CurrentFanStateCharacteristic;
+import io.github.hapjava.characteristics.impl.fan.CurrentFanStateEnum;
+import io.github.hapjava.characteristics.impl.fan.LockPhysicalControlsCharacteristic;
+import io.github.hapjava.characteristics.impl.fan.LockPhysicalControlsEnum;
+import io.github.hapjava.characteristics.impl.fan.RotationDirectionCharacteristic;
+import io.github.hapjava.characteristics.impl.fan.RotationDirectionEnum;
+import io.github.hapjava.characteristics.impl.fan.RotationSpeedCharacteristic;
+import io.github.hapjava.characteristics.impl.fan.SwingModeCharacteristic;
+import io.github.hapjava.characteristics.impl.fan.SwingModeEnum;
+import io.github.hapjava.characteristics.impl.fan.TargetFanStateCharacteristic;
+import io.github.hapjava.characteristics.impl.fan.TargetFanStateEnum;
 import io.github.hapjava.characteristics.impl.lightbulb.BrightnessCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.ColorTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.HueCharacteristic;
@@ -164,9 +174,11 @@ public class HomekitCharacteristicFactory {
             T offEnum, T onEnum, T defaultEnum) {
         final State state = item.getItem().getState();
         if (state instanceof OnOffType) {
-            return CompletableFuture.completedFuture(state.equals(OnOffType.OFF) ? offEnum : onEnum);
+            return CompletableFuture
+                    .completedFuture(state.equals(item.isInverted() ? OnOffType.ON : OnOffType.OFF) ? offEnum : onEnum);
         } else if (state instanceof OpenClosedType) {
-            return CompletableFuture.completedFuture(state.equals(OpenClosedType.CLOSED) ? offEnum : onEnum);
+            return CompletableFuture.completedFuture(
+                    state.equals(item.isInverted() ? OpenClosedType.OPEN : OpenClosedType.CLOSED) ? offEnum : onEnum);
         } else if (state instanceof DecimalType) {
             return CompletableFuture.completedFuture(((DecimalType) state).intValue() == 0 ? offEnum : onEnum);
         } else if (state instanceof UnDefType) {
@@ -182,9 +194,9 @@ public class HomekitCharacteristicFactory {
             CharacteristicEnum offEnum, CharacteristicEnum onEnum) {
         if (taggedItem.getItem() instanceof SwitchItem) {
             if (value.equals(offEnum)) {
-                ((SwitchItem) taggedItem.getItem()).send(OnOffType.OFF);
+                ((SwitchItem) taggedItem.getItem()).send(taggedItem.isInverted() ? OnOffType.ON : OnOffType.OFF);
             } else if (value.equals(onEnum)) {
-                ((SwitchItem) taggedItem.getItem()).send(OnOffType.ON);
+                ((SwitchItem) taggedItem.getItem()).send(taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON);
             } else {
                 logger.warn("Enum value {} is not supported. Only following values are supported: {},{}", value,
                         offEnum, onEnum);
@@ -214,6 +226,22 @@ public class HomekitCharacteristicFactory {
         return value;
     }
 
+    /** special method for tilts. it converts percentage to angle */
+    private static int getAngleFromItem(HomekitTaggedItem taggedItem) {
+        int value = 0;
+        final State state = taggedItem.getItem().getState();
+        if (state instanceof PercentType) {
+            value = (int) ((((PercentType) state).intValue() * 90.0) / 50.0 - 90.0);
+        } else {
+            value = getIntFromItem(taggedItem);
+        }
+        return value;
+    }
+
+    private static Supplier<CompletableFuture<Integer>> getAngleSupplier(HomekitTaggedItem taggedItem) {
+        return () -> CompletableFuture.completedFuture(getAngleFromItem(taggedItem));
+    }
+
     private static Supplier<CompletableFuture<Integer>> getIntSupplier(HomekitTaggedItem taggedItem) {
         return () -> CompletableFuture.completedFuture(getIntFromItem(taggedItem));
     }
@@ -234,6 +262,20 @@ public class HomekitCharacteristicFactory {
             if (taggedItem.getItem() instanceof NumberItem) {
                 ((NumberItem) taggedItem.getItem()).send(new DecimalType(value));
             } else if (taggedItem.getItem() instanceof DimmerItem) {
+                ((DimmerItem) taggedItem.getItem()).send(new PercentType(value));
+            } else {
+                logger.warn("Item type {} is not supported for {}. Only DimmerItem and NumberItem are supported.",
+                        taggedItem.getItem().getType(), taggedItem.getName());
+            }
+        };
+    }
+
+    private static ExceptionalConsumer<Integer> setAngleConsumer(HomekitTaggedItem taggedItem) {
+        return (value) -> {
+            if (taggedItem.getItem() instanceof NumberItem) {
+                ((NumberItem) taggedItem.getItem()).send(new DecimalType(value));
+            } else if (taggedItem.getItem() instanceof DimmerItem) {
+                value = (int) (value * 50.0 / 90.0 + 50.0);
                 ((DimmerItem) taggedItem.getItem()).send(new PercentType(value));
             } else {
                 logger.warn("Item type {} is not supported for {}. Only DimmerItem and NumberItem are supported.",
@@ -357,28 +399,28 @@ public class HomekitCharacteristicFactory {
 
     private static CurrentHorizontalTiltAngleCharacteristic createCurrentHorizontalTiltAngleCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new CurrentHorizontalTiltAngleCharacteristic(getIntSupplier(taggedItem),
+        return new CurrentHorizontalTiltAngleCharacteristic(getAngleSupplier(taggedItem),
                 getSubscriber(taggedItem, CURRENT_HORIZONTAL_TILT_ANGLE, updater),
                 getUnsubscriber(taggedItem, CURRENT_HORIZONTAL_TILT_ANGLE, updater));
     }
 
     private static CurrentVerticalTiltAngleCharacteristic createCurrentVerticalTiltAngleCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new CurrentVerticalTiltAngleCharacteristic(getIntSupplier(taggedItem),
+        return new CurrentVerticalTiltAngleCharacteristic(getAngleSupplier(taggedItem),
                 getSubscriber(taggedItem, CURRENT_VERTICAL_TILT_ANGLE, updater),
                 getUnsubscriber(taggedItem, CURRENT_VERTICAL_TILT_ANGLE, updater));
     }
 
     private static TargetHorizontalTiltAngleCharacteristic createTargetHorizontalTiltAngleCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new TargetHorizontalTiltAngleCharacteristic(getIntSupplier(taggedItem), setIntConsumer(taggedItem),
+        return new TargetHorizontalTiltAngleCharacteristic(getAngleSupplier(taggedItem), setAngleConsumer(taggedItem),
                 getSubscriber(taggedItem, TARGET_HORIZONTAL_TILT_ANGLE, updater),
                 getUnsubscriber(taggedItem, TARGET_HORIZONTAL_TILT_ANGLE, updater));
     }
 
     private static TargetVerticalTiltAngleCharacteristic createTargetVerticalTiltAngleCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new TargetVerticalTiltAngleCharacteristic(getIntSupplier(taggedItem), setIntConsumer(taggedItem),
+        return new TargetVerticalTiltAngleCharacteristic(getAngleSupplier(taggedItem), setAngleConsumer(taggedItem),
                 getSubscriber(taggedItem, TARGET_HORIZONTAL_TILT_ANGLE, updater),
                 getUnsubscriber(taggedItem, TARGET_HORIZONTAL_TILT_ANGLE, updater));
     }

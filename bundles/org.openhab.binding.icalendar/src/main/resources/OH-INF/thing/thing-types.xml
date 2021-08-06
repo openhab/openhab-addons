@@ -154,14 +154,12 @@
 				<label>Text based Filter</label>
 			</parameter-group>
 
-			<parameter name="maxEvents" type="integer" min="0" groupName="general">
+			<parameter name="maxEvents" type="integer" required="true" min="0" groupName="general">
 				<label>Maximum Matches</label>
-				<required>true</required>
 			</parameter>
-			<parameter name="refreshTime" type="integer" min="1" groupName="general" unit="min">
+			<parameter name="refreshTime" type="integer" required="true" min="1" groupName="general" unit="min">
 				<label>Refresh Time</label>
 				<description>The frequency in minutes the channels get refreshed</description>
-				<required>true</required>
 				<default>15</default>
 			</parameter>
 			<parameter name="datetimeUnit" type="text" groupName="datetime_based">

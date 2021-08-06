@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.miele.internal.handler.ApplianceStatusListener;
 import org.openhab.binding.miele.internal.handler.MieleApplianceHandler;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler;
@@ -45,6 +44,9 @@ import com.google.gson.JsonElement;
  * @author Martin Lepsy - Added protocol information in order so support WiFi devices
  */
 public class MieleApplianceDiscoveryService extends AbstractDiscoveryService implements ApplianceStatusListener {
+
+    private static final String MIELE_APPLIANCE_CLASS = "com.miele.xgw3000.gateway.hdm.deviceclasses.MieleAppliance";
+    private static final String MIELE_CLASS = "com.miele.xgw3000.gateway.hdm.deviceclasses.Miele";
 
     private final Logger logger = LoggerFactory.getLogger(MieleApplianceDiscoveryService.class);
 
@@ -103,10 +105,9 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
             properties.put(APPLIANCE_ID, appliance.getApplianceId());
 
             for (JsonElement dc : appliance.DeviceClasses) {
-                if (dc.getAsString().contains("com.miele.xgw3000.gateway.hdm.deviceclasses.Miele")
-                        && !dc.getAsString().equals("com.miele.xgw3000.gateway.hdm.deviceclasses.MieleAppliance")) {
-                    properties.put(DEVICE_CLASS, StringUtils.right(dc.getAsString(), dc.getAsString().length()
-                            - new String("com.miele.xgw3000.gateway.hdm.deviceclasses.Miele").length()));
+                String dcStr = dc.getAsString();
+                if (dcStr.contains(MIELE_CLASS) && !dcStr.equals(MIELE_APPLIANCE_CLASS)) {
+                    properties.put(DEVICE_CLASS, dcStr.substring(MIELE_CLASS.length()));
                     break;
                 }
             }
@@ -145,17 +146,16 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
         String modelID = null;
 
         for (JsonElement dc : appliance.DeviceClasses) {
-            if (dc.getAsString().contains("com.miele.xgw3000.gateway.hdm.deviceclasses.Miele")
-                    && !dc.getAsString().equals("com.miele.xgw3000.gateway.hdm.deviceclasses.MieleAppliance")) {
-                modelID = StringUtils.right(dc.getAsString(), dc.getAsString().length()
-                        - new String("com.miele.xgw3000.gateway.hdm.deviceclasses.Miele").length());
+            String dcStr = dc.getAsString();
+            if (dcStr.contains(MIELE_CLASS) && !dcStr.equals(MIELE_APPLIANCE_CLASS)) {
+                modelID = dcStr.substring(MIELE_CLASS.length());
                 break;
             }
         }
 
         if (modelID != null) {
             ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID,
-                    StringUtils.lowerCase(modelID.replaceAll("[^a-zA-Z0-9_]", "_")));
+                    modelID.replaceAll("[^a-zA-Z0-9_]", "_").toLowerCase());
 
             if (getSupportedThingTypes().contains(thingTypeUID)) {
                 ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, appliance.getId());

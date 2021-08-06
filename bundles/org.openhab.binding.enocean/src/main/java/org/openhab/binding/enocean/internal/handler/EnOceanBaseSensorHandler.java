@@ -14,13 +14,13 @@ package org.openhab.binding.enocean.internal.handler;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 import org.openhab.binding.enocean.internal.config.EnOceanBaseConfig;
@@ -51,14 +51,16 @@ import org.openhab.core.util.HexUtils;
 public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements PacketListener {
 
     // List of all thing types which support receiving of eep messages
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT,
-                    THING_TYPE_TEMPERATURESENSOR, THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_ROCKERSWITCH,
-                    THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR,
-                    THING_TYPE_PUSHBUTTON, THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_ENVIRONMENTALSENSOR,
-                    THING_TYPE_MULTFUNCTIONSMOKEDETECTOR));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ROOMOPERATINGPANEL,
+            THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT, THING_TYPE_TEMPERATURESENSOR,
+            THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_ROCKERSWITCH, THING_TYPE_OCCUPANCYSENSOR,
+            THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR, THING_TYPE_PUSHBUTTON,
+            THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_ENVIRONMENTALSENSOR, THING_TYPE_MULTFUNCTIONSMOKEDETECTOR,
+            THING_TYPE_WINDOWSASHHANDLESENSOR);
 
     protected final Hashtable<RORG, EEPType> receivingEEPTypes = new Hashtable<>();
+
+    protected ScheduledFuture<?> responseFuture = null;
 
     public EnOceanBaseSensorHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing, itemChannelLinkRegistry);
@@ -107,7 +109,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
     }
 
     @Override
-    public long getSenderIdToListenTo() {
+    public long getEnOceanIdToListenTo() {
         return Long.parseLong(config.enoceanId, 16);
     }
 
@@ -130,6 +132,10 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
             boolean result = eepType.GetSupportedChannels().containsKey(c.getUID().getId());
             return (isLinked(c.getUID()) || c.getKind() == ChannelKind.TRIGGER) && result;
         };
+    }
+
+    protected void sendRequestResponse() {
+        throw new UnsupportedOperationException("Sensor cannot send responses");
     }
 
     @Override
@@ -178,6 +184,15 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                                 break;
                         }
                     });
+
+            if (receivingEEPType.getRequstesResponse()) {
+                // fire trigger for receive
+                triggerChannel(prepareAnswer, "requestAnswer");
+                // Send response after 100ms
+                if (responseFuture == null || responseFuture.isDone()) {
+                    responseFuture = scheduler.schedule(this::sendRequestResponse, 100, TimeUnit.MILLISECONDS);
+                }
+            }
         }
     }
 }

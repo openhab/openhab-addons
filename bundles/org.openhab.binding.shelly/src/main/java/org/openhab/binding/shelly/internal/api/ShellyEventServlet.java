@@ -87,7 +87,7 @@ public class ShellyEventServlet extends HttpServlet {
         }
 
         try {
-            path = request.getRequestURI().toLowerCase();
+            path = getString(request.getRequestURI()).toLowerCase();
             String ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
             if (ipAddress == null) {
                 ipAddress = request.getRemoteAddr();

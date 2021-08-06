@@ -45,7 +45,7 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     protected volatile @Nullable C config;
     protected volatile @Nullable E endpoint;
     protected ModbusManager modbusManager;
-    protected volatile @Nullable EndpointPoolConfiguration poolConfiguration;
+    protected volatile @NonNullByDefault({}) EndpointPoolConfiguration poolConfiguration;
     private final Logger logger = LoggerFactory.getLogger(AbstractModbusEndpointThingHandler.class);
     private @NonNullByDefault({}) ModbusCommunicationInterface comms;
 

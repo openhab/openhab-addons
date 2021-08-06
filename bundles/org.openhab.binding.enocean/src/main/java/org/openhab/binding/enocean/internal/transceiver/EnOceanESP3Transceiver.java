@@ -18,8 +18,6 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.openhab.binding.enocean.internal.EnOceanException;
 import org.openhab.binding.enocean.internal.messages.BasePacket;
-import org.openhab.binding.enocean.internal.messages.ERP1Message;
-import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 import org.openhab.binding.enocean.internal.messages.ESP3Packet;
 import org.openhab.binding.enocean.internal.messages.ESP3PacketFactory;
 import org.openhab.binding.enocean.internal.messages.Response;
@@ -138,21 +136,8 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
                                                     HexUtils.bytesToHex(packet.getPayload()));
                                             break;
                                         case EVENT:
-                                            logger.debug("Event occured: {}", HexUtils.bytesToHex(packet.getPayload()));
-                                            break;
-                                        case RADIO_ERP1: {
-                                            ERP1Message msg = (ERP1Message) packet;
-                                            logger.debug("{} with RORG {} for {} payload {} received",
-                                                    packet.getPacketType().name(), msg.getRORG().name(),
-                                                    HexUtils.bytesToHex(msg.getSenderId()), HexUtils.bytesToHex(
-                                                            Arrays.copyOf(dataBuffer, dataLength + optionalLength)));
-
-                                            if (msg.getRORG() != RORG.Unknown) {
-                                                informListeners(msg);
-                                            } else {
-                                                logger.debug("Received unknown RORG");
-                                            }
-                                        }
+                                        case RADIO_ERP1:
+                                            informListeners(packet);
                                             break;
                                         case RADIO_ERP2:
                                             break;

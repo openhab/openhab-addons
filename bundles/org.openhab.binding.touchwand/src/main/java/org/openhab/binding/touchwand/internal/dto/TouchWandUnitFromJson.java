@@ -47,10 +47,6 @@ public class TouchWandUnitFromJson {
             type = TYPE_UNKNOWN;
         }
 
-        if (!jsonUnit.has("currStatus") || (jsonUnit.get("currStatus") == null)) {
-            type = TYPE_UNKNOWN;
-        }
-
         switch (type) {
             case TYPE_WALLCONTROLLER:
                 touchWandUnit = gson.fromJson(jsonUnit, TouchWandUnitDataWallController.class);
@@ -70,6 +66,12 @@ public class TouchWandUnitFromJson {
                         .create();
                 touchWandUnit = builder.fromJson(jsonUnit, TouchWandUnitDataAlarmSensor.class);
                 break;
+            case TYPE_BSENSOR:
+                touchWandUnit = gson.fromJson(jsonUnit, TouchWandBSensorUnitData.class);
+                break;
+            case TYPE_THERMOSTAT:
+                touchWandUnit = gson.fromJson(jsonUnit, TouchWandThermostatUnitData.class);
+                break;
             case TYPE_UNKNOWN:
                 touchWandUnit = new TouchWandUnknownTypeUnitData();
                 break;
@@ -85,11 +87,10 @@ public class TouchWandUnitFromJson {
     }
 
     public static TouchWandUnitData parseResponse(String JsonUnit) {
-        final JsonParser jsonParser = new JsonParser();
         TouchWandUnitData myTouchWandUnitData;
         JsonObject unitObj;
         try {
-            unitObj = jsonParser.parse(JsonUnit).getAsJsonObject();
+            unitObj = JsonParser.parseString(JsonUnit).getAsJsonObject();
             myTouchWandUnitData = parseResponse(unitObj);
         } catch (JsonParseException | IllegalStateException e) {
             logger.warn("Could not parse response {}", JsonUnit);

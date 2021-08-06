@@ -7,7 +7,7 @@
 	<!-- Bosch Bridge -->
 	<bridge-type id="shc">
 		<label>Smart Home Controller</label>
-		<description>The Bosch SHC Bridge representing the Bosch Smart Home Controller.</description>
+		<description>The Bosch Smart Home Bridge representing the Bosch Smart Home Controller.</description>
 
 		<config-description-ref uri="thing-type:boschshc:bridge"/>
 	</bridge-type>

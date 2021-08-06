@@ -1118,7 +1118,7 @@ class AtlonaPro3PortocolHandler {
             }
 
             m = versionHdPattern.matcher(response);
-            if (m.matches()) {
+            if (!capabilities.isUHDModel() && m.matches()) {
                 handleVersionResponse(m, response);
                 return;
             }

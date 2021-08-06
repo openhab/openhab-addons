@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.deconz.internal.handler;
 
+import static org.openhab.binding.deconz.internal.BindingConstants.*;
+
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -25,12 +27,16 @@ import org.openhab.binding.deconz.internal.netutils.WebSocketConnection;
 import org.openhab.binding.deconz.internal.netutils.WebSocketMessageListener;
 import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -220,6 +226,32 @@ public abstract class DeconzBaseThingHandler extends BaseThingHandler implements
         Bridge bridge = getBridge();
         if (bridge != null) {
             bridgeStatusChanged(bridge.getStatusInfo());
+        }
+    }
+
+    protected void createChannel(String channelId, ChannelKind kind) {
+        if (thing.getChannel(channelId) != null) {
+            // channel already exists, no update necessary
+            return;
+        }
+
+        ThingHandlerCallback callback = getCallback();
+        if (callback != null) {
+            ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
+            ChannelTypeUID channelTypeUID;
+            switch (channelId) {
+                case CHANNEL_BATTERY_LEVEL:
+                    channelTypeUID = new ChannelTypeUID("system:battery-level");
+                    break;
+                case CHANNEL_BATTERY_LOW:
+                    channelTypeUID = new ChannelTypeUID("system:low-battery");
+                    break;
+                default:
+                    channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
+                    break;
+            }
+            Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).withKind(kind).build();
+            updateThing(editThing().withChannel(channel).build());
         }
     }
 }

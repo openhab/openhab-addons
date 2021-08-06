@@ -44,7 +44,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"No faults\",\"1\"\u003d\"m1_run\",\"2\"\u003d\"m1_stuck\",\"3\"\u003d\"no_sensor\",\"4\"\u003d\"error_hum\",\"5\"\u003d\"error_temp\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\",\"1\"\u003d\"m1_run\",\"2\"\u003d\"m1_stuck\",\"3\"\u003d\"no_sensor\",\"4\"\u003d\"error_hum\",\"5\"\u003d\"error_temp\"]`"
 			},
 			{
 				"property": "on",
@@ -95,7 +95,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]`"
 			},
 			{
 				"property": "mode",
@@ -134,7 +134,7 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\",\"3\"\u003d\"None\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\",\"3\"\u003d\"None\"]`"
 			},
 			{
 				"property": "pm2.5-density",
@@ -276,7 +276,7 @@
 					"Control",
 					"Light"
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"brightest\",\"1\"\u003d\"glimmer\",\"2\"\u003d\"led_closed\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"brightest\",\"1\"\u003d\"glimmer\",\"2\"\u003d\"led_closed\"]`"
 			},
 			{
 				"property": "on1",
@@ -714,7 +714,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"continue\",\"1\"\u003d\"hold\",\"2\"\u003d\"sleep\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"continue\",\"1\"\u003d\"hold\",\"2\"\u003d\"sleep\"]`"
 			},
 			{
 				"property": "aqi-state",
@@ -754,7 +754,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"AQI_GOOD_L\",\"1\"\u003d\"AQI_GOOD_H\",\"2\"\u003d\"AQI_MID_L\",\"3\"\u003d\"AQI_MID_H\",\"4\"\u003d\"AQI_BAD_L\",\"5\"\u003d\"AQI_BAD_H\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"AQI_GOOD_L\",\"1\"\u003d\"AQI_GOOD_H\",\"2\"\u003d\"AQI_MID_L\",\"3\"\u003d\"AQI_MID_H\",\"4\"\u003d\"AQI_BAD_L\",\"5\"\u003d\"AQI_BAD_H\"]`"
 			},
 			{
 				"property": "aqi-updata-heartbeat",
@@ -955,7 +955,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"REASON_HW_BOOT\",\"1\"\u003d\"REASON_USER_REBOOT\",\"2\"\u003d\"REASON_UPDATE\",\"3\"\u003d\"REASON_WDT\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"REASON_HW_BOOT\",\"1\"\u003d\"REASON_USER_REBOOT\",\"2\"\u003d\"REASON_UPDATE\",\"3\"\u003d\"REASON_WDT\"]`"
 			},
 			{
 				"property": "hw-version",
@@ -1017,7 +1017,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]`"
 			}
 		],
 		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"filter-reset-filter-life\",\"siid\":4,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"button-toggle\",\"siid\":8,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"button-toggle-mode\",\"siid\":8,\"aiid\":2,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",

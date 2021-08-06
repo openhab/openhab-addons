@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="orbitbhyve"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="sprinkler">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Sprinkler</label>
+		<description>Orbit B-hyve Sprinkler</description>
+		<channels>
+			<channel id="control" typeId="control"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="smart_watering" typeId="smart_watering"/>
+			<channel id="next_start" typeId="next_start"/>
+			<channel id="rain_delay" typeId="rain_delay"/>
+			<channel id="watering_time" typeId="watering_time"/>
+		</channels>
+		<config-description-ref uri="thing-type:orbitbhyve:sprinkler"/>
+	</thing-type>
+
+</thing:thing-descriptions>

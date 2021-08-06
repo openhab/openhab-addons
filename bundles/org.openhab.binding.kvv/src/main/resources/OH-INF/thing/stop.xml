@@ -39,10 +39,9 @@
 		<description>Train stop for KVV Binding.</description>
 
 		<config-description>
-			<parameter name="stopId" type="text">
+			<parameter name="stopId" type="text" required="true">
 				<label>Stop ID</label>
 				<description>ID of the train stop.</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</thing-type>

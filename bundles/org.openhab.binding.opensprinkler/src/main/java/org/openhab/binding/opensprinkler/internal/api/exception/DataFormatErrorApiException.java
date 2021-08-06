@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.opensprinkler.internal.api.exception;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link DataFormatErrorApiException} exception is thrown when result from the OpenSprinkler
  * API is "result" : 18.
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 public class DataFormatErrorApiException extends GeneralApiException {
     /**
      * Serial ID of this error class.

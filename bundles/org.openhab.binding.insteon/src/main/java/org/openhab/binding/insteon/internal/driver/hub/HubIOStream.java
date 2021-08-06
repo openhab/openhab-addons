@@ -270,6 +270,7 @@ public class HubIOStream extends IOStream implements Runnable {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         try {
             connection.setConnectTimeout(30000);
+            connection.setReadTimeout(10000);
             connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(false);

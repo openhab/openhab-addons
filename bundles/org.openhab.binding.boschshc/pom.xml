@@ -7,12 +7,12 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.boschshc</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: BoschSHC Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Bosch Smart Home Binding</name>
 
   <dependencies>
     <dependency>

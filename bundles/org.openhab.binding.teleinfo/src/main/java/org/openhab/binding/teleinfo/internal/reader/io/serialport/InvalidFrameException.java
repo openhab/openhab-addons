@@ -26,7 +26,7 @@ public class InvalidFrameException extends Exception {
 
     private static final long serialVersionUID = 4729529258857792922L;
 
-    private Date timestamp;
+    private final Date timestamp;
 
     public InvalidFrameException() {
         timestamp = new Date();

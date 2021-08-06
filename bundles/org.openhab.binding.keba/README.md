@@ -4,46 +4,48 @@ This binding integrates the [Keba KeContact EV Charging Stations](https://www.ke
 
 ## Supported Things
 
-The Keba KeContact P20 and P30 stations are supported by this binding, the thing type id is `kecontact`.
-
+The Keba KeContact P20 and P30 stations which are providing the UDP interface (P20 LSA+ socket, P30 c-series and x-series) are supported by this binding, the thing type id is `kecontact`.
 
 ## Thing Configuration
 
-The Keba KeContact P20/30 requires the ip address as the configuration parameter `ipAddress`. Optionally, a refresh interval (in seconds) can be defined as parameter `refreshInterval` that defines the polling of values from the charging station.
-
+The Keba KeContact P20/30 requires the IP address as the configuration parameter `ipAddress`.
+Optionally, a refresh interval (in seconds) can be defined as parameter `refreshInterval` that defines the polling of values from the charging station.
 
 ## Channels
 
 All devices support the following channels:
 
-| Channel ID         | Item Type | Read-only | Description                                                            |
-|--------------------|-----------|-----------|------------------------------------------------------------------------|
-| state              | Number    | yes       | current operational state of the wallbox                               |
-| enabled            | Switch    | no        | activation state of the wallbox                                        |
-| maxpresetcurrent   | Number    | no        | maximum current the charging station should deliver to the EV          |
-| power              | Number    | yes       | active power delivered by the charging station                         |
-| wallbox            | Switch    | yes       | plug state of wallbox                                                  |
-| vehicle            | Switch    | yes       | plug state of vehicle                                                  |
-| locked             | Switch    | yes       | lock state of plug at vehicle                                          |
-| I1/2/3             | Number    | yes       | current for the given phase                                            |
-| U1/2/3             | Number    | yes       | voltage for the given phase                                            |
-| output             | Switch    | no        | state of the X1 relais                                                 |
-| input              | Switch    | yes       | state of the X2 contact                                                |
-| display            | String    | yes       | display text on wallbox                                                |
-| error1             | String    | yes       | error code state 1, if in error (see the KeContact FAQ)                |
-| error2             | String    | yes       | error code state 2, if in error (see the KeContact FAQ)                |
-| maxsystemcurrent   | Number    | yes       | maximum current the wallbox can deliver                                |
-| failsafecurrent    | Number    | yes       | maximum current the wallbox can deliver, if network is lost            |
-| uptime             | DateTime  | yes       | system uptime since the last reset of the wallbox                      |
-| sessionconsumption | Number    | yes       | energy delivered in current session                                    |
-| totalconsumption   | Number    | yes       | total energy delivered since the last reset of the wallbox             |
-| authreq            | Switch    | yes       | authentication required                                                |
-| authon             | Switch    | yes       | authentication enabled                                                 |
-| sessionrfidtag     | String    | yes       | RFID tag used for the last charging session                            |
-| sessionrfidclass   | String    | yes       | RFID tag class used for the last charging session                      |
-| sessionid          | Number    | yes       | session ID of the last charging session                                |
-| setenergylimit     | Number    | no        | set an energy limit for an already running or the next charging session|
-| authenticate       | String    | no        | authenticate and start a session using RFID tag+RFID class             |
+| Channel ID         		| Item Type 				| Read-only | Description                                                            	|
+|---------------------------|---------------------------|-----------|---------------------------------------------------------------------------|
+| state              		| Number    				| yes       | current operational state of the wallbox                               	|
+| enabled            		| Switch    				| no        | activation state of the wallbox                                        	|
+| maxpresetcurrent   		| Number:ElectricCurrent   	| no        | maximum current the charging station should deliver to the EV in A      	|
+| maxpresetcurrentrange		| Number:Dimensionless      | no 		| maximum current the charging station should deliver to the EV in %        |
+| power              		| Number:Power             	| yes       | active power delivered by the charging station                         	|
+| wallbox            		| Switch    				| yes       | plug state of wallbox                                                  	|
+| vehicle            		| Switch    				| yes       | plug state of vehicle                                                  	|
+| locked             		| Switch    				| yes       | lock state of plug at vehicle                                          	|
+| I1/2/3             		| Number:ElectricCurrent   	| yes       | current for the given phase                                            	|
+| U1/2/3             		| Number:ElectricPotential 	| yes       | voltage for the given phase                                            	|
+| output             		| Switch    				| no        | state of the X1 relais                                                 	|
+| input              		| Switch    				| yes       | state of the X2 contact                                                	|
+| display           		| String    				| no        | display text on wallbox                                                	|
+| error1             		| String    				| yes       | error code state 1, if in error (see the KeContact FAQ)                	|
+| error2             		| String    				| yes       | error code state 2, if in error (see the KeContact FAQ)                	|
+| maxsystemcurrent   		| Number:ElectricCurrent   	| yes       | maximum current the wallbox can deliver                                	|
+| failsafecurrent    		| Number:ElectricCurrent   	| yes       | maximum current the wallbox can deliver, if network is lost            	|
+| uptime             		| Number:Time  				| yes       | system uptime since the last reset of the wallbox                      	|
+| sessionconsumption 		| Number:Energy    			| yes       | energy delivered in current session                                    	|
+| totalconsumption   		| Number:Energy    			| yes       | total energy delivered since the last reset of the wallbox             	|
+| authreq            		| Switch    				| yes       | authentication required                                                	|
+| authon             		| Switch    				| yes       | authentication enabled                                                 	|
+| sessionrfidtag     		| String    				| yes       | RFID tag used for the last charging session                            	|
+| sessionrfidclass   		| String    				| yes       | RFID tag class used for the last charging session                      	|
+| sessionid          		| Number    				| yes       | session ID of the last charging session                                	|
+| setenergylimit     		| Number:Energy    			| no        | set an energy limit for an already running or the next charging session	|
+| authenticate       		| String    				| no        | authenticate and start a session using RFID tag+RFID class             	|
+| maxpilotcurrent         	| Number:ElectricCurrent	| yes  		| current offered to the vehicle via control pilot signalization         	|
+| maxpilotcurrentdutycyle 	| Number:Dimensionless 		| yes  		| duty cycle of the control pilot signal									|
 
 
 ## Example
@@ -57,28 +59,28 @@ Thing keba:kecontact:1 [ipAddress="192.168.0.64", refreshInterval=30]
 demo.items:
 
 ```
-Dimmer KebaCurrentRange  {channel="keba:kecontact:1:maxpresetcurrentrange"} 
-Number KebaCurrent  {channel="keba:kecontact:1:maxpresetcurrent"}
-Number KebaSystemCurrent  {channel="keba:kecontact:1:maxsystemcurrent"} 
-Number KebaFailSafeCurrent  {channel="keba:kecontact:1:failsafecurrent"} 
-String KebaState  {channel="keba:kecontact:1:state"}
-Switch KebaSwitch  {channel="keba:kecontact:1:enabled"}
-Switch KebaWallboxPlugged  {channel="keba:kecontact:1:wallbox"}
-Switch KebaVehiclePlugged  {channel="keba:kecontact:1:vehicle"}
-Switch KebaPlugLocked  {channel="keba:kecontact:1:locked"}
-DateTime KebaUptime "Uptime [%1$tY Y, %1$tm M, %1$td D,  %1$tT]"  {channel="keba:kecontact:1:uptime"}
-Number KebaI1  {channel="keba:kecontact:1:I1"}
-Number KebaI2  {channel="keba:kecontact:1:I2"}
-Number KebaI3  {channel="keba:kecontact:1:I3"}
-Number KebaU1  {channel="keba:kecontact:1:U1"}
-Number KebaU2  {channel="keba:kecontact:1:U2"}
-Number KebaU3  {channel="keba:kecontact:1:U3"}
-Number KebaPower  {channel="keba:kecontact:1:power"}
-Number KebaSessionEnergy  {channel="keba:kecontact:1:sessionconsumption"}
-Number KebaTotalEnergy  {channel="keba:kecontact:1:totalconsumption"}
-Switch KebaInputSwitch  {channel="keba:kecontact:1:input"}
-Switch KebaOutputSwitch  {channel="keba:kecontact:1:output"}
-Number KebaSetEnergyLimit {channel="keba:kecontact:1:setenergylimit"}
+Number:Dimensionless		KebaCurrentRange  		"Maximum supply current [%.1f %%]"			{channel="keba:kecontact:1:maxpresetcurrentrange"} 
+Number:ElectricCurrent  	KebaCurrent  			"Maximum supply current [%.3f A]"			{channel="keba:kecontact:1:maxpresetcurrent"}
+Number:ElectricCurrent  	KebaSystemCurrent  		"Maximum system supply current [%.3f A]"	{channel="keba:kecontact:1:maxsystemcurrent"} 
+Number:ElectricCurrent  	KebaFailSafeCurrent  	"Failsafe supply current [%.3f A]"			{channel="keba:kecontact:1:failsafecurrent"} 
+String 						KebaState  				"Operating State [%s]"						{channel="keba:kecontact:1:state"}
+Switch 						KebaSwitch  			"Enabled"									{channel="keba:kecontact:1:enabled"}
+Switch 						KebaWallboxPlugged  	"Plugged into wallbox"						{channel="keba:kecontact:1:wallbox"}
+Switch 						KebaVehiclePlugged  	"Plugged into vehicle"						{channel="keba:kecontact:1:vehicle"}
+Switch 						KebaPlugLocked  		"Plug locked"								{channel="keba:kecontact:1:locked"}
+DateTime					KebaUptime 				"Uptime [%s s]"  							{channel="keba:kecontact:1:uptime"}
+Number:ElectricCurrent  	KebaI1  															{channel="keba:kecontact:1:I1"}
+Number:ElectricCurrent  	KebaI2  															{channel="keba:kecontact:1:I2"}
+Number:ElectricCurrent  	KebaI3  															{channel="keba:kecontact:1:I3"}
+Number:ElectricPotential 	KebaU1  															{channel="keba:kecontact:1:U1"}
+Number:ElectricPotential 	KebaU2  															{channel="keba:kecontact:1:U2"}
+Number:ElectricPotential 	KebaU3  															{channel="keba:kecontact:1:U3"}
+Number:Power 				KebaPower  				"Energy during current session [%.1f Wh]"	{channel="keba:kecontact:1:power"}
+Number:Energy 				KebaSessionEnergy  													{channel="keba:kecontact:1:sessionconsumption"}
+Number:Energy 				KebaTotalEnergy  		"Energy during all sessions [%.1f Wh]"		{channel="keba:kecontact:1:totalconsumption"}
+Switch 						KebaInputSwitch  													{channel="keba:kecontact:1:input"}
+Switch 						KebaOutputSwitch  													{channel="keba:kecontact:1:output"}
+Number:Energy 				KebaSetEnergyLimit 		"Set charge energy limit [%.1f Wh]"			{channel="keba:kecontact:1:setenergylimit"}
 ```
 
 demo.sitemap:
@@ -86,20 +88,63 @@ demo.sitemap:
 ```
 sitemap demo label="Main Menu"
 {
-			Text label="Charging Station" {
-				Text item=KebaState label="Operating State [%s]"
-				Text item=KebaUptime
-				Switch item=KebaSwitch label="Enabled" mappings=[ON=ON, OFF=OFF ]
-				Switch item=KebaWallboxPlugged label="Plugged into wallbox" mappings=[ON=ON, OFF=OFF ]
-				Switch item=KebaVehiclePlugged label="Plugged into vehicle" mappings=[ON=ON, OFF=OFF ]
-				Switch item=KebaPlugLocked label="Plug locked" mappings=[ON=ON, OFF=OFF ]
-				Slider item=KebaCurrentRange switchSupport label="Maximum supply current [%.1f %%]"
-				Text item=KebaCurrent label="Maximum supply current [%.0f mA]"
-				Text item=KebaSystemCurrent label="Maximum system supply current [%.0f mA]"
-				Text item=KebaFailSafeCurrent label="Failsafe supply current [%.0f mA]"
-				Text item=KebaSessionEnergy label="Energy during current session [%.0f Wh]"
-				Text item=KebaTotalEnergy label="Energy during all sessions [%.0f Wh]"
-				Switch item=KebaSetEnergyLimit label="Set charge energy limit" mappings=[0="off", 20000="20kWh"]
-			}
+	Text label="Charging Station" {
+		Text 	item=KebaState
+		Text 	item=KebaUptime
+		Switch 	item=KebaSwitch
+		Switch 	item=KebaWallboxPlugged
+		Switch 	item=KebaVehiclePlugged
+		Switch 	item=KebaPlugLocked
+		Slider 	item=KebaCurrentRange
+		Text 	item=KebaCurrent
+		Text 	item=KebaSystemCurrent
+		Text 	item=KebaFailSafeCurrent
+		Text 	item=KebaSessionEnergy
+		Text 	item=KebaTotalEnergy
+		Switch 	item=KebaSetEnergyLimit
+	}
 }
 ```
+
+## Troubleshooting
+
+### Enable Verbose Logging
+
+Enable `DEBUG` or `TRACE` (even more verbose) logging for the logger named:
+
+    org.openhab.binding.keba
+
+If everything is working fine, you see the cyclic reception of `report 1`, `2` & `3` from the station. The frequency is according to the `refreshInterval` configuration.
+
+### UDP Ports used
+
+	Send port = UDP 7090
+
+The Keba station is the server
+
+	Receive port = UDP 7090
+
+This binding is providing the server
+
+UDP port 7090 needs to be available/free on the openHAB server.
+
+
+In order to enable the UDP port 7090 on the Keba station with full functionality, `DIP switch 1.3` must be `ON`.
+With `DIP switch 1.3 OFF` only ident-data can be read (`i` and `report 1`) but not the other reports as well as the commands needed for the write access.
+After setting the DIP switch, you need to `power OFF` and `ON` the station. SW-reset via WebGUI seems not to be sufficient in order to apply the new configuration.
+
+
+The right configuration can be validated as follows:
+
+- WebGUI DSW Settings:
+  - `DIP 1.3 | ON | UDP interface (SmartHome)`
+- UDP response of `report 1`:
+  - `DIP-Sw1` `0x20` Bit is set (enable at least `DEBUG` log-level for the binding)
+
+### Supported stations
+
+- KeContact P20 charging station with network connection (LSA+ socket)
+  - Product code: `KC-P20-xxxxxx2x-xxx` or `KC-P20-xxxxxx3x-xxx`
+  - Firmware version: 2.5 or higher
+- KeContact P30 charging station (c- or x-series) or BMW wallbox
+  - Firmware version 3.05 or higher

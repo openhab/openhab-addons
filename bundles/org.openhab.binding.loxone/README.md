@@ -88,7 +88,7 @@ The binding supports the following authentication methods, which are selected au
 | Method      | Miniserver Firmware | Authentication                                                                 | Encryption | Requirements                                          |
 |-------------|---------------------|--------------------------------------------------------------------------------|------------|-------------------------------------------------------|
 | Hash-based  | 8.x                 | HMAC-SHA1 hash on user and password                                            | None       | None                                                  |
-| Token-based | 9.x                 | Token acquired on the first connection and used later instead of the password. | AES-256    | JRE must have unrestricted security policy configured |
+| Token-based | From 9.x                 | Token acquired on the first connection and used later instead of the password. | AES-256    | JRE must have unrestricted security policy configured |
 
 For the token-based authentication, the password is required only for the first login and acquiring the token. After the token is acquired, the password is cleared in the binding configuration. 
 
@@ -96,6 +96,9 @@ The acquired token will remain active for several weeks following the last succe
 
 In case a websocket connection to the Miniserver remains active for the whole duration of the token's life span, the binding will refresh the token one day before token expiration, without the need of providing the password.
 
+In case of connecting to Generation 2 Miniservers, it is possible to establish a secure WebSocket connection over HTTPS protocol. Binding will automatically detect if HTTPS connection is available and will use it. In that case, commands sent to the Miniserver will not be additionally encrypted. When HTTPS is not available, binding will use unsecure HTTP connection and will encrypt each command.
+
+It is possible to override the communication protocol by setting `webSocketType` configuration parameter. Setting it to 1 will force to always establish HTTPS connection. Setting it to 2 will force to always establish HTTP connection. Default value of 0 means the binding will determine the right protocol in the runtime.
 
 A method to enable unrestricted security policy depends on the JRE version and vendor, some examples can be found [here](https://www.petefreitag.com/item/844.cfm) and [here](https://stackoverflow.com/questions/41580489/how-to-install-unlimited-strength-jurisdiction-policy-files).
 
@@ -118,7 +121,8 @@ Currently supported controls are presented in the table below.
 |                                                           |                                                                                                                                                                                                                                                                                                                           | `String` - list of alarm sensors separated with `|`            | Read-only channel                                                                                                                                                                                    |
 |                                                           |                                                                                                                                                                                                                                                                                                                           | `Switch` - acknowledge the alarm - pushbutton                  | `OnOffType.ON` - acknowledge alarm                                                                                                                                                                   |
 | ColorPickerV2                                             | [RGBW 24v Dimmer Tree](https://www.loxone.com/enen/kb/rgbw-24v-dimmer-tree/)                                                                                                                                                                                                                                              | `Color`                                                        | `HSBType` - sets the color of the light, `DecimalType` and `PercentType` - sets the brightness, `IncreaseDecreaseType.*` - increases/decreases the brightness, `OnOffType.*` - switches light on/off |
-| Dimmer                                                    | [Dimmer](https://www.loxone.com/enen/kb/dimmer/)                                                                                                                                                                                                                                                                          | `Dimmer`                                                       | `OnOffType.*`, `PercentType`                                                                                                                                                                         |
+| Dimmer                                                    | [Dimmer](https://www.loxone.com/enen/kb/dimmer/)                                                                                                                                                                                                                                                                          | `Dimmer`                                                       | `OnOffType.*`, `PercentType`, `IncreaseDecreaseType.*`                                                                                                                                               |
+| EIBDimmer                                                 | EIB Dimmer (undocumented)                                                                                                                                                                                                                                                                                                 | `Dimmer`                                                       | `OnOffType.*`, `PercentType`, `IncreaseDecreaseType.*`                                                                                                                                               |
 | InfoOnlyAnalog                                            | Analog [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state)                                                                                                                                                                                                                           | `Number`                                                       | Read-only channel                                                                                                                                                                                    |
 | InfoOnlyDigital                                           | Digital [virtual inputs](https://www.loxone.com/enen/kb/virtual-inputs-outputs/) (virtual state)                                                                                                                                                                                                                          | `String`                                                       | Read-only channel                                                                                                                                                                                    |
 | IRoomControllerV2                                         | [Intelligent Room Controller V2](https://www.loxone.com/enen/kb/irc-v2/)                                                                                                                                                                                                                                                  | `Number` - active mode                                         | Read-only channel                                                                                                                                                                                    | 
@@ -186,7 +190,7 @@ Channels have the default tags as follows:
 
 ## Advanced Parameters
 
-This section describes the optional advanced parameters that can be configured for a Miniserver. They can be set using UI (e.g. Paper UI) or in a .things file.
+This section describes the optional advanced parameters that can be configured for a Miniserver.
 If a parameter is not explicitly defined, binding will use its default value.
 
 To define a parameter value in a .things file, please refer to it by parameter's ID, for example:
@@ -195,9 +199,10 @@ To define a parameter value in a .things file, please refer to it by parameter's
 
 ### Security
 
-| ID           | Name                  | Values                                          | Default      | Description                                           |
-|--------------|-----------------------|-------------------------------------------------|--------------|-------------------------------------------------------|
-| `authMethod` | Authentication method | 0: Automatic<br>1: Hash-based<br>2: Token-based | 0: Automatic | A method used to authenticate user in the Miniserver. |
+| ID              | Name                  | Values                                          | Default      | Description                                           |
+|-----------------|-----------------------|-------------------------------------------------|--------------|-------------------------------------------------------|
+| `authMethod`    | Authentication method | 0: Automatic<br>1: Hash-based<br>2: Token-based | 0: Automatic | A method used to authenticate user in the Miniserver. |
+| `webSocketType` | WebSocket protocol    | 0: Automatic<br>1: Force HTTPS<br>2: Force HTTP | 0: Automatic | Communication protocol used for WebSocket connection. |
 
 ### Timeouts
 
