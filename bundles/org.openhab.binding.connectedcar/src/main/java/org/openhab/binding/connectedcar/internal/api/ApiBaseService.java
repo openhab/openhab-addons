@@ -159,11 +159,11 @@ public class ApiBaseService {
         }
         String group = gr.isEmpty() ? definition.groupName : gr;
         Unit<?> unit = definition.unit;
-        if (unit == null || value instanceof UnDefType) {
-            return thingHandler.updateChannel(group, definition.channelName, value);
-        } else {
+        if (unit != null && value instanceof DecimalType) {
             return thingHandler.updateChannel(group, definition.channelName, toQuantityType(
                     ((DecimalType) value).doubleValue(), definition.digits == -1 ? 1 : definition.digits, unit));
+        } else {
+            return thingHandler.updateChannel(group, definition.channelName, value);
         }
     }
 

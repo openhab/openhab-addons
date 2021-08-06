@@ -290,7 +290,7 @@ public class ChannelDefinitions {
                 entry.digits = 0;
             }
         } else if (entry.digits > 0 && entry.pattern.isEmpty()) {
-            entry.pattern = "%." + entry.digits + "f %%vunit%%";
+            entry.pattern = "%." + entry.digits + "f %%unit%%";
         }
 
         if (!CHANNEL_DEFINITIONS.containsKey(entry.id)) {

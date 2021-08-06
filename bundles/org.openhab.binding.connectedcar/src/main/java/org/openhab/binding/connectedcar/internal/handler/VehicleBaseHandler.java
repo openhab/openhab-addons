@@ -165,7 +165,7 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
                 return false;
             }
 
-            config = new CombinedConfig(accountHandler.getCombinedConfig(), getConfigAs(VehicleConfiguration.class));
+            config = new CombinedConfig(handler.getCombinedConfig(), getConfigAs(VehicleConfiguration.class));
             if (config.vehicle.vin.isEmpty()) {
                 Map<String, String> properties = getThing().getProperties();
                 String vin = properties.get(PROPERTY_VIN);
@@ -188,7 +188,7 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
             if ((prop != null) && (accountHandler != null)) {
                 // Vehicle endpoint uses different properties
                 config.api = prop;
-                accountHandler.createTokenSet(config);
+                handler.createTokenSet(config);
             }
             config = api.initialize(config.vehicle.vin, config);
 
