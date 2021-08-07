@@ -16,7 +16,7 @@ import static java.util.Collections.emptyList;
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 import static org.openhab.binding.homeconnect.internal.client.model.EventType.*;
 import static org.openhab.core.library.unit.ImperialUnits.FAHRENHEIT;
-import static org.openhab.core.library.unit.SIUnits.CELSIUS;
+import static org.openhab.core.library.unit.SIUnits.*;
 import static org.openhab.core.library.unit.Units.*;
 import static org.openhab.core.thing.ThingStatus.*;
 
@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import javax.measure.UnconvertibleException;
 import javax.measure.Unit;
+import javax.measure.quantity.Mass;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -672,6 +673,22 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             return CELSIUS;
         } else {
             return FAHRENHEIT;
+        }
+    }
+
+    /**
+     * Map unit string (returned by home connect api) to Unit
+     *
+     * @param unit String eg. "gram"
+     * @return Unit
+     */
+    protected Unit<Mass> mapMass(@Nullable String unit) {
+        if ("gram".equalsIgnoreCase(unit)) {
+            return GRAM;
+        } else if ("kilogram".equalsIgnoreCase(unit)) {
+            return KILOGRAM;
+        } else {
+            return GRAM;
         }
     }
 
@@ -1405,7 +1422,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
         Map.of(CHANNEL_WASHER_IDOS1, OPTION_WASHER_IDOS_1_ACTIVE, CHANNEL_WASHER_IDOS2, OPTION_WASHER_IDOS_2_ACTIVE,
                 CHANNEL_WASHER_LESS_IRONING, OPTION_WASHER_LESS_IRONING, CHANNEL_WASHER_PRE_WASH,
-                OPTION_WASHER_PRE_WASH, CHANNEL_WASHER_SOAK, OPTION_WASHER_SOAK)
+                OPTION_WASHER_PRE_WASH, CHANNEL_WASHER_SOAK, OPTION_WASHER_SOAK, CHANNEL_WASHER_RINSE_HOLD,
+                OPTION_WASHER_RINSE_HOLD)
                 .forEach((channel, option) -> setOnOffChannelFromOption(channel, options, option, OnOffType.OFF));
 
         setStringChannelFromOption(CHANNEL_HOOD_INTENSIVE_LEVEL, options, OPTION_HOOD_INTENSIVE_LEVEL,
@@ -1435,6 +1453,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                         : null);
         setStringChannelFromOption(CHANNEL_WASHER_RINSE_PLUS, options, OPTION_WASHER_RINSE_PLUS,
                 new StringType("LaundryCare.Washer.EnumType.RinsePlus.Off"));
+        setQuantityChannelFromOption(CHANNEL_WASHER_LOAD_RECOMMENDATION, options, OPTION_WASHER_LOAD_RECOMMENDATION,
+                unit -> mapMass(unit), UnDefType.UNDEF);
         setQuantityChannelFromOption(CHANNEL_PROGRAM_ENERGY, options, OPTION_WASHER_ENERGY_FORECAST, unit -> PERCENT,
                 UnDefType.UNDEF);
         setQuantityChannelFromOption(CHANNEL_PROGRAM_WATER, options, OPTION_WASHER_WATER_FORECAST, unit -> PERCENT,
