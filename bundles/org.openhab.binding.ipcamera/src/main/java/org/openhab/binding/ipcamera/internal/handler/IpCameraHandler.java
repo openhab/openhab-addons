@@ -768,6 +768,10 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
+    private void openMjpegStream() {
+        sendHttpGET(mjpegUri);
+    }
+
     // If start is true the CTX is added to the list to stream video to, false stops
     // the stream.
     public void setupMjpegStreaming(boolean start, ChannelHandlerContext ctx) {
@@ -777,13 +781,8 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (mjpegUri.isEmpty() || "ffmpeg".equals(mjpegUri)) {
                     sendMjpegFirstPacket(ctx);
                     setupFfmpegFormat(FFmpegFormat.MJPEG);
-                } else {
-                    try {
-                        // fix Dahua reboots when refreshing a mjpeg stream.
-                        TimeUnit.MILLISECONDS.sleep(500);
-                    } catch (InterruptedException e) {
-                    }
-                    sendHttpGET(mjpegUri);
+                } else {// Delay fixes Dahua reboots when refreshing a mjpeg stream.
+                    threadPool.schedule(this::openMjpegStream, 500, TimeUnit.MILLISECONDS);
                 }
             } else if (ffmpegMjpeg != null) {// not first stream and we will use ffmpeg
                 sendMjpegFirstPacket(ctx);
@@ -1779,7 +1778,6 @@ public class IpCameraHandler extends BaseThingHandler {
     public void dispose() {
         isOnline = false;
         snapshotPolling = false;
-        onvifCamera.disconnect();
         Future<?> localFuture = pollCameraJob;
         if (localFuture != null) {
             localFuture.cancel(true);
@@ -1832,6 +1830,7 @@ public class IpCameraHandler extends BaseThingHandler {
             localFfmpeg.stopConverting();
         }
         channelTrackingMap.clear();
+        onvifCamera.disconnect();
     }
 
     public void setStreamServerHandler(StreamServerHandler streamServerHandler2) {
