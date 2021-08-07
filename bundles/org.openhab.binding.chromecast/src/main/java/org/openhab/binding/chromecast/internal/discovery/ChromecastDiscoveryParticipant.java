@@ -86,12 +86,13 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
         if (model == null) {
             return null;
         }
-        if (model.equals("Chromecast Audio")) {
-            return THING_TYPE_AUDIO;
-        } else if (model.equals("Google Cast Group")) {
-            return THING_TYPE_AUDIOGROUP;
-        } else {
-            return THING_TYPE_CHROMECAST;
+        switch (model) {
+            case "Chromecast Audio":
+                return THING_TYPE_AUDIO;
+            case "Google Cast Group":
+                return THING_TYPE_AUDIOGROUP;
+            default:
+                return THING_TYPE_CHROMECAST;
         }
     }
 

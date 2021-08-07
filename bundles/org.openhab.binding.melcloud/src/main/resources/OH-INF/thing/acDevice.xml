@@ -25,6 +25,8 @@
 			<channel id="nextCommunication" typeId="nextCommunication-channel"/>
 		</channels>
 
+		<representation-property>deviceID</representation-property>
+
 		<config-description>
 			<parameter name="deviceID" type="integer" required="true">
 				<label>Device ID</label>

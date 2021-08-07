@@ -21,7 +21,7 @@ import org.openhab.binding.lifx.internal.LifxLightPropertiesUpdater;
  * The {@link LifxPropertiesUpdateListener} is notified when the {@link LifxLightPropertiesUpdater} has
  * updated light properties.
  *
- * @author Wouter Born - Update light properties when online
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public interface LifxPropertiesUpdateListener {

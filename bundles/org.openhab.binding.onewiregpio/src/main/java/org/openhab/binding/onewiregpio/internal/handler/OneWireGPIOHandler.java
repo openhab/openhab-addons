@@ -26,7 +26,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.onewiregpio.internal.OneWireGPIOBindingConstants;
 import org.openhab.binding.onewiregpio.internal.OneWireGpioConfiguration;
 import org.openhab.core.library.types.QuantityType;
@@ -94,7 +93,7 @@ public class OneWireGPIOHandler extends BaseThingHandler {
      * When invalid parameter is found, default value is assigned.
      */
     private boolean checkConfiguration() {
-        if (StringUtils.isEmpty(gpioBusFile)) {
+        if (gpioBusFile == null || gpioBusFile.isEmpty()) {
             logger.debug("GPIO_BUS_FILE not set. Please check configuration, and set proper path to w1_slave file.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The path to the w1_slave sensor data file is missing.");

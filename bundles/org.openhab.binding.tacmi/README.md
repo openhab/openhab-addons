@@ -127,9 +127,21 @@ The thing has no channels by default - they have to be added manually matching t
 
 ### TA C.M.I. schema API connection
 
-The channels provided by this thing depends on the configuration of the "schema API page".
+The channels provided by this thing depend on the configuration of the "schema API page".
 All the channels are dynamically created to match it.
 Also when the API Page is updated, the channels are also updated during the next refresh.
+
+The channels have a parameter allowing to configure their update behavior:
+
+| Parameter Label         | Parameter ID | Description                                                                                                   | Accepted values        |
+|-------------------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|
+| Update Policy           | updatePolicy | Update policy for this channel. Default means "On-Change" for channels that can be modified and "On-Change" for read-only channels.  | 0 (Default), 1 (On-Fetch), 2 (On-Change)   |
+
+The behavior in detail:
+
+* `Default` (`0`): When the channel is 'read-only' the update-policy defaults to _On-Fetch_ . When the channel is linked to something that can be modified it defaults to _On-Change_ .
+* `On-Fetch` (`1`): This is the default for read-only values. This means the channel is updated every time the schema page is polled. Ideally for values you want to monitor and log into charts.
+* `On-Change` (`2`): When channel values can be changed via OH it is better to only update the channel when the value changes. The binding will cache the previous value and only send an update when it changes to the previous known value. This is especially useful if you intend to link other things (like i.e. ZigBee or Shelly switches) to the TA via OH that can be controlled by different sources. This prevents unintended toggles or even toggle-loops.
 
 ### TA C.M.I. CoE Connection
 

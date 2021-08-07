@@ -52,25 +52,26 @@ Groups:
 
 Channels in every group type:
 
-1. Device Information (device-information)
-   a. status (status-type)
-   b. cabinet-temperature (cabinet-temperature-type)
-   c. heatsink-temperature(heatsink-temperature-type)
-2. AC Summary (ac-general)
-   a. ac-power (ac-power-type)
-   b. ac-dayly-energy (ac-dayly-energy-type)
-   c. ac-lifetime-energy (ac-lifetime-energy-type)
-3. AC Phase (ac-phase)
-   a. ac-phase-voltage-to-n (ac-phase-voltage-to-n-type)
-   b. ac-phase-current (ac-phase-current-type)
-   c. ac-phase-frequency (ac-phase-frequency-type)
-   d. ac-phase-power (ac-power-type)
-4. DC summary (dc-general )
-   a. dc-current (dc-current-type)
-   b. dc-voltage (dc-voltage-type)
-   c. dc-power (dc-power-type)
+1. Device Information (device-information)
+   - status (status-type)
+   - cabinet-temperature (cabinet-temperature-type)
+   - heatsink-temperature(heatsink-temperature-type)
+2. AC Summary (ac-general)
+   - ac-power (ac-power-type)
+   - ac-dayly-energy (ac-dayly-energy-type)
+   - ac-lifetime-energy (ac-lifetime-energy-type)
+3. AC Phase (ac-phase)
+   - ac-phase-voltage-to-n (ac-phase-voltage-to-n-type)
+   - ac-phase-current (ac-phase-current-type)
+   - ac-phase-frequency (ac-phase-frequency-type)
+   - ac-phase-power (ac-power-type)
+4. DC summary (dc-general )
+   - dc-current (dc-current-type)
+   - dc-voltage (dc-voltage-type)
+   - dc-power (dc-power-type)
 
 Every channel configuration consists of five parameters:
+
 1. registerFunction - identification of block where register resides.
    - Possible are:
      - 3 - Input register
@@ -83,7 +84,7 @@ Every channel configuration consists of five parameters:
    - USHORT
    - STATUS
 4. registerUnit - unit of value in register. Possible are all names from org.openhab.core.library.unit.Units constants. It is required to use exact names with capital Letters only. It is not verified at this moment, but when coversion fails, there is an exception thrown and message to logs is written: "Illegal access exception during reflection to Units!"
-5. registerScaleFactor - power of then that register's value should be multiplied. Eg. Daily power produced by inverter is given in Watt*Hours, and we have channel with KILO Watt*Hours, so there is need to divide register value by 1000. It meams registerScaleFactor is -3.
+5. registerScaleFactor - power of then that register's value should be multiplied. Eg. Daily power produced by inverter is given in Watt*Hours, and we have channel with KILO Watt*Hours, so there is need to divide register value by 1000. It means registerScaleFactor is -3.
 
 
 ## Full Example

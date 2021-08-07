@@ -79,10 +79,10 @@ public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
 
         logger.trace("Discovered nanoleaf host: {} port: {} firmWare: {} modelId: {} qualifiedName: {}", host, port,
                 firmwareVersion, modelId, qualifiedName);
-        logger.debug("Adding Nanoleaf controller {} with FW version {} found at {} {} to inbox", qualifiedName,
+        logger.debug("Adding Nanoleaf controller {} with FW version {} found at {}:{} to inbox", qualifiedName,
                 firmwareVersion, host, port);
         if (!OpenAPIUtils.checkRequiredFirmware(service.getPropertyString("md"), firmwareVersion)) {
-            logger.warn("Nanoleaf controller firmware is too old. Must be {} or higher",
+            logger.debug("Nanoleaf controller firmware is too old. Must be {} or higher",
                     MODEL_ID_LIGHTPANELS.equals(modelId) ? API_MIN_FW_VER_LIGHTPANELS : API_MIN_FW_VER_CANVAS);
         }
 

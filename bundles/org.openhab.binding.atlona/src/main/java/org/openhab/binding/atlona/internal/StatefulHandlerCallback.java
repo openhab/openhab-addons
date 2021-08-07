@@ -13,6 +13,7 @@
 package org.openhab.binding.atlona.internal;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -93,13 +94,8 @@ public class StatefulHandlerCallback implements AtlonaHandlerCallback {
 
         final State oldState = this.state.get(channelId);
 
-        // If both null OR the same value (enums), nothing changed
-        if (oldState == state) {
-            return;
-        }
-
         // If they are equal - nothing changed
-        if (oldState != null && oldState.equals(state)) {
+        if (Objects.equals(oldState, state)) {
             return;
         }
 

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mielecloud"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="wine_storage">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>@text/thing-type.mielecloud.wine_storage.label</label>
+		<description>@text/thing-type.mielecloud.wine_storage.description</description>
+		<category>WhiteGood</category>
+
+		<channels>
+			<channel id="remote_control_can_be_started" typeId="remote_control_can_be_started"/>
+			<channel id="remote_control_can_be_stopped" typeId="remote_control_can_be_stopped"/>
+			<channel id="remote_control_can_be_switched_on" typeId="remote_control_can_be_switched_on"/>
+			<channel id="remote_control_can_be_switched_off" typeId="remote_control_can_be_switched_off"/>
+			<channel id="operation_state" typeId="operation_state"/>
+			<channel id="operation_state_raw" typeId="operation_state_raw"/>
+			<channel id="power_state_on_off" typeId="power_state_on_off"/>
+			<channel id="error_state" typeId="error_state"/>
+			<channel id="info_state" typeId="info_state"/>
+			<channel id="temperature_target" typeId="temperature_target"/>
+			<channel id="temperature_current" typeId="temperature_current"/>
+			<channel id="top_temperature_target" typeId="top_temperature_target"/>
+			<channel id="top_temperature_current" typeId="top_temperature_current"/>
+			<channel id="middle_temperature_target" typeId="middle_temperature_target"/>
+			<channel id="middle_temperature_current" typeId="middle_temperature_current"/>
+			<channel id="bottom_temperature_target" typeId="bottom_temperature_target"/>
+			<channel id="bottom_temperature_current" typeId="bottom_temperature_current"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Miele</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:mielecloud:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

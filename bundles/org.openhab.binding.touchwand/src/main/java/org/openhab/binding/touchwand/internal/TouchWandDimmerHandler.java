@@ -56,7 +56,7 @@ public class TouchWandDimmerHandler extends TouchWandBaseUnitHandler {
             state = new PercentType(convertStatus);
             updateState(CHANNEL_DIMMER, state);
         } else {
-            logger.warn("updateTouchWandUnitState incompatible TouchWandUnitData instance");
+            logger.debug("updateTouchWandUnitState incompatible TouchWandUnitData instance");
         }
     }
 }

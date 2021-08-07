@@ -70,7 +70,7 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
     }
 
     private String resolveIndexToPath(String uri) {
-        if (!uri.substring(1, 2).equals("i")) {
+        if (!"i".equals(uri.substring(1, 2))) {
             return ipCameraGroupHandler.getOutputFolder(Integer.parseInt(uri.substring(1, 2)));
         }
         return "notFound";
@@ -87,7 +87,7 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
                 HttpRequest httpRequest = (HttpRequest) msg;
                 String requestIP = "("
                         + ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress() + ")";
-                if (!whiteList.contains(requestIP) && !whiteList.equals("DISABLE")) {
+                if (!whiteList.contains(requestIP) && !"DISABLE".equals(whiteList)) {
                     logger.warn("The request made from {} was not in the whitelist and will be ignored.", requestIP);
                     return;
                 } else if (HttpMethod.GET.equals(httpRequest.method())) {

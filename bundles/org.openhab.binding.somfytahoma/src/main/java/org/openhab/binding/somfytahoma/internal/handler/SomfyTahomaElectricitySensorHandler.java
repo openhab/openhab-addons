@@ -14,6 +14,7 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -22,6 +23,7 @@ import org.openhab.core.thing.Thing;
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@NonNullByDefault
 public class SomfyTahomaElectricitySensorHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaElectricitySensorHandler(Thing thing) {

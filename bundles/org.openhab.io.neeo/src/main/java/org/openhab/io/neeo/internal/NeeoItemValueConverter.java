@@ -14,7 +14,6 @@ package org.openhab.io.neeo.internal;
 
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
@@ -138,7 +137,7 @@ public class NeeoItemValueConverter {
             return new NeeoItemValue(convertedState == UpDownType.UP);
 
         } else if (convertedState instanceof DecimalType) {
-            if (StringUtils.isEmpty(format) || channel.getType() == NeeoCapabilityType.SLIDER) {
+            if (format == null || format.isEmpty() || channel.getType() == NeeoCapabilityType.SLIDER) {
                 return new NeeoItemValue(((DecimalType) convertedState).toBigDecimal());
             }
         } else if (convertedState instanceof UnDefType) {
@@ -150,7 +149,7 @@ public class NeeoItemValueConverter {
         // Formatting must use the actual state (not converted state) to avoid
         // issues where a decimal converted to string or otherwise
         String itemValue;
-        if (format != null && StringUtils.isNotEmpty(format)) {
+        if (format != null && !format.isEmpty()) {
             if (state instanceof UnDefType) {
                 itemValue = formatUndefined(format);
             } else if (state instanceof Type) {
@@ -230,7 +229,7 @@ public class NeeoItemValueConverter {
         Objects.requireNonNull(item, "item cannot be null");
         Objects.requireNonNull(eventType, "eventType cannot be null");
 
-        if (actionValue == null || StringUtils.isEmpty(actionValue)) {
+        if (actionValue == null || actionValue.isEmpty()) {
             return null;
         }
 
@@ -251,7 +250,7 @@ public class NeeoItemValueConverter {
                     default:
                         break;
                 }
-            } catch (NumberFormatException e) {
+            } catch (IllegalArgumentException e) {
                 // do nothing - let it go to the other cases
             }
         }
@@ -265,9 +264,9 @@ public class NeeoItemValueConverter {
                 }
                 break;
             case "switch":
-                if (StringUtils.equalsIgnoreCase("true", actionValue)) {
+                if ("true".equalsIgnoreCase(actionValue)) {
                     return OnOffType.ON;
-                } else if (StringUtils.equalsIgnoreCase("false", actionValue)) {
+                } else if ("false".equalsIgnoreCase(actionValue)) {
                     return OnOffType.OFF;
                 }
                 break;

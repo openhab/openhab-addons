@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * @author Tim Buckley
+ * @author Tim Buckley - Initial contribution
  */
 @NonNullByDefault
 public class StringField extends Field<String> {

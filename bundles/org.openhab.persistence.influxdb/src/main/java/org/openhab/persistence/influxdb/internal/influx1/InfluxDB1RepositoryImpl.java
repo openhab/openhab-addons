@@ -15,12 +15,15 @@ package org.openhab.persistence.influxdb.internal.influx1;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_TIME_NAME_V1;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_VALUE_NAME_V1;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.FIELD_VALUE_NAME;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_ITEM_NAME;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,8 +45,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of {@link InfluxDBRepository} for InfluxDB 1.0
  *
- * @author Joan Pujol Espinar - Initial contribution. Most code has been moved from
- *         {@link org.openhab.persistence.influxdb.InfluxDBPersistenceService} where it was in previous version
+ * @author Joan Pujol Espinar - Initial contribution. Most code has been moved
+ *         from
+ *         {@link org.openhab.persistence.influxdb.InfluxDBPersistenceService}
+ *         where it was in previous version
  */
 @NonNullByDefault
 public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
@@ -168,8 +173,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
             } else {
                 for (QueryResult.Series series : seriess) {
                     logger.trace("series {}", series.toString());
-                    String itemName = series.getName();
-                    List<List<Object>> valuess = series.getValues();
+                    List<List<@Nullable Object>> valuess = series.getValues();
                     if (valuess == null) {
                         logger.debug("query returned no values");
                     } else {
@@ -178,21 +182,29 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
                         if (columns != null) {
                             Integer timestampColumn = null;
                             Integer valueColumn = null;
+                            Integer itemNameColumn = null;
                             for (int i = 0; i < columns.size(); i++) {
                                 String columnName = columns.get(i);
                                 if (columnName.equals(COLUMN_TIME_NAME_V1)) {
                                     timestampColumn = i;
                                 } else if (columnName.equals(COLUMN_VALUE_NAME_V1)) {
                                     valueColumn = i;
+                                } else if (columnName.equals(TAG_ITEM_NAME)) {
+                                    itemNameColumn = i;
                                 }
                             }
                             if (valueColumn == null || timestampColumn == null) {
                                 throw new IllegalStateException("missing column");
                             }
                             for (int i = 0; i < valuess.size(); i++) {
-                                Double rawTime = (Double) valuess.get(i).get(timestampColumn);
+                                Double rawTime = (Double) Objects.requireNonNull(valuess.get(i).get(timestampColumn));
                                 Instant time = Instant.ofEpochMilli(rawTime.longValue());
+                                @Nullable
                                 Object value = valuess.get(i).get(valueColumn);
+                                var currentI = i;
+                                String itemName = Optional.ofNullable(itemNameColumn)
+                                        .flatMap(inc -> Optional.ofNullable((String) valuess.get(currentI).get(inc)))
+                                        .orElse(series.getName());
                                 logger.trace("adding historic item {}: time {} value {}", itemName, time, value);
                                 rows.add(new InfluxRow(time, itemName, value));
                             }

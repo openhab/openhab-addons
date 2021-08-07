@@ -50,8 +50,11 @@ Two different actions available:
 * `sendPushbulletNote(String recipient, String title, String messsage)`
 
 Since there is a separate rule action instance for each `bot` thing, this needs to be retrieved through `getActions(scope, thingUID)`.
-The first parameter always has to be `pushbullet` and the second is the full Thing UID of the bot that should be used. 
+The first parameter always has to be `pushbullet` and the second is the full Thing UID of the bot that should be used.
 Once this action instance is retrieved, you can invoke the action method on it.
+
+The recipient can either be an email address, a channel tag or `null`.
+If it is not specified or properly formatted, the note will be broadcast to all of the user account's devices.
 
 Examples:
 

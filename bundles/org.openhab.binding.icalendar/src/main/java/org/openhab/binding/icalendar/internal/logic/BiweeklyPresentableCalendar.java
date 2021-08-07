@@ -59,6 +59,8 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * @author Andrew Fiddian-Green - Methods getJustBegunEvents() & getJustEndedEvents()
  * @author Michael Wodniok - Extension for filtered events
  * @author Michael Wodniok - Added logic for events moved with "RECURRENCE-ID" (issue 9647)
+ * @author Michael Wodniok - Extended logic for defined behavior with parallel current events
+ *         (issue 10808)
  */
 @NonNullByDefault
 class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
@@ -320,6 +322,8 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         final List<VEvent> positiveEvents = new ArrayList<VEvent>();
         classifyEvents(positiveEvents, negativeEvents);
 
+        VEventWPeriod earliestEndingEvent = null;
+
         for (final VEvent currentEvent : positiveEvents) {
             final DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);
             final Duration duration = getEventLength(currentEvent);
@@ -333,7 +337,9 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
                 if (startInstant.isBefore(instant) && endInstant.isAfter(instant)) {
                     final Uid eventUid = currentEvent.getUid();
                     if (eventUid == null || !isCounteredBy(startInstant, eventUid, negativeEvents)) {
-                        return new VEventWPeriod(currentEvent, startInstant, endInstant);
+                        if (earliestEndingEvent == null || endInstant.isBefore(earliestEndingEvent.end)) {
+                            earliestEndingEvent = new VEventWPeriod(currentEvent, startInstant, endInstant);
+                        }
                     }
                 }
                 if (startInstant.isAfter(instant.plus(duration))) {
@@ -342,7 +348,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
             }
         }
 
-        return null;
+        return earliestEndingEvent;
     }
 
     /**

@@ -12,29 +12,15 @@
  */
 package org.openhab.binding.tr064.internal.phonebook;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tr064.internal.dto.additions.PhonebooksType;
+import org.openhab.binding.tr064.internal.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,21 +47,9 @@ public class Tr064PhonebookImpl implements Phonebook {
     }
 
     private void getPhonebook() {
-        try {
-            ContentResponse contentResponse = httpClient.newRequest(phonebookUrl).method(HttpMethod.GET)
-                    .timeout(2, TimeUnit.SECONDS).send();
-            InputStream xml = new ByteArrayInputStream(contentResponse.getContent());
-
-            JAXBContext context = JAXBContext.newInstance(PhonebooksType.class);
-            XMLInputFactory xif = XMLInputFactory.newFactory();
-            xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
-            xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-            XMLStreamReader xsr = xif.createXMLStreamReader(new StreamSource(xml));
-            Unmarshaller um = context.createUnmarshaller();
-            PhonebooksType phonebooksType = um.unmarshal(xsr, PhonebooksType.class).getValue();
-
+        PhonebooksType phonebooksType = Util.getAndUnmarshalXML(httpClient, phonebookUrl, PhonebooksType.class);
+        if (phonebooksType != null) {
             phonebookName = phonebooksType.getPhonebook().getName();
-
             phonebook = phonebooksType.getPhonebook().getContact().stream().map(contact -> {
                 String contactName = contact.getPerson().getRealName();
                 return contact.getTelephony().getNumber().stream()
@@ -83,8 +57,6 @@ public class Tr064PhonebookImpl implements Phonebook {
                                 this::mergeSameContactNames));
             }).collect(HashMap::new, HashMap::putAll, HashMap::putAll);
             logger.debug("Downloaded phonebook {}: {}", phonebookName, phonebook);
-        } catch (JAXBException | InterruptedException | ExecutionException | TimeoutException | XMLStreamException e) {
-            logger.warn("Failed to get phonebook with URL {}:", phonebookUrl, e);
         }
     }
 
@@ -121,6 +93,6 @@ public class Tr064PhonebookImpl implements Phonebook {
 
     private String normalizeNumber(String number) {
         // Naive normalization: remove all non-digit characters
-        return number.replaceAll("[^0-9]\\+\\*", "");
+        return number.replaceAll("[^0-9\\*\\+]", "");
     }
 }

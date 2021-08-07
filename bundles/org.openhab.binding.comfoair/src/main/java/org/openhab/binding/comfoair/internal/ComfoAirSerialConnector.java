@@ -511,7 +511,9 @@ public class ComfoAirSerialConnector {
 
                     if (preRequestData.length > 0 && newRequestData.length <= preRequestData.length) {
                         System.arraycopy(preRequestData, 0, newRequestData, 0, 6);
-                        System.arraycopy(preRequestData, 10, newRequestData, 6, newRequestData.length - 6);
+                        if (preRequestData.length > 10) {
+                            System.arraycopy(preRequestData, 10, newRequestData, 6, newRequestData.length - 6);
+                        }
                         newRequestData[dataPosition] = requestValue;
                     } else {
                         return ComfoAirCommandType.Constants.EMPTY_INT_ARRAY;

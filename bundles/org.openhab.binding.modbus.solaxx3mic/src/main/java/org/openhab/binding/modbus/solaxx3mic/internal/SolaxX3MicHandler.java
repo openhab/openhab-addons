@@ -70,8 +70,12 @@ public class SolaxX3MicHandler extends BaseModbusThingHandler {
     @Override
     public void modbusInitialize() {
         config = getConfigAs(SolaxX3MicConfiguration.class);
-        logger.debug("Initializing thing with properties: {} and config {}", thing.getProperties(), config.toString());
-
+        if (config != null) {
+            logger.debug("Initializing thing with properties: {} and config {}", thing.getProperties(),
+                    config.toString());
+        } else {
+            return;
+        }
         // Try properties first
         @Nullable
         RegisterBlock inputBlock = getRegisterBlockFromConfig(RegisterBlockFunction.INPUT_REGISTER_BLOCK);
@@ -116,17 +120,21 @@ public class SolaxX3MicHandler extends BaseModbusThingHandler {
         SolaxX3MicConfiguration myconfig = config; // this is because of bug in Nullness checker
         logger.debug("Setting up regular polling");
 
-        ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(),
-                ModbusReadFunctionCode.READ_INPUT_REGISTERS, mainBlock.address, mainBlock.length, myconfig.maxTries);
+        if (myconfig != null) {
+            ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(),
+                    ModbusReadFunctionCode.READ_INPUT_REGISTERS, mainBlock.address, mainBlock.length,
+                    myconfig.maxTries);
+            long refreshMillis = myconfig.getRefreshMillis();
 
-        long refreshMillis = myconfig.getRefreshMillis();
-
-        registerRegularPoll(request, refreshMillis, 1000, result -> {
-            result.getRegisters().ifPresent(this::handlePolledData);
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-            }
-        }, this::handleError);
+            registerRegularPoll(request, refreshMillis, 1000, result -> {
+                result.getRegisters().ifPresent(this::handlePolledData);
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            }, this::handleError);
+        } else {
+            return;
+        }
     }
 
     /**

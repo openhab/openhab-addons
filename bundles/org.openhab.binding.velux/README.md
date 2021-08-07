@@ -2,7 +2,7 @@
 # Velux Binding
 
 This binding integrates the <B>Velux</B> devices with help of a gateway, the <B>Velux Bridge KLF200</B>, which is able to control 200 actuators.
-The Velux Binding interacts via the Velux Bridge with any [io-homecontrol](http://www.io-homecontrol.com/)-based
+The Velux Binding interacts via the Velux Bridge with any [io-homecontrol](https://www.io-homecontrol.com/)-based
 devices like window openers, shutters and others.
 
 ![Velux](doc/veluxlogo.jpg)
@@ -11,8 +11,8 @@ Based on the VELUX API this binding integrates <B>Velux</B> and other io-homecon
 
 For details about the features, see the following websites:
 
-- [Velux](http://www.velux.com)
-- [Velux API](http://www.velux.com/api/klf200)
+- [Velux](https://www.velux.com)
+- [Velux API](https://www.velux.com/api/klf200)
 
 ## Supported Things
 
@@ -52,7 +52,7 @@ In addition there are some optional Configuration Parameters.
 |-------------------------|------------------|:--------:|--------------------------------------------------------------|
 | ipAddress               |                  |   Yes    | Hostname or address for accessing the Velux Bridge.          |
 | password                | velux123         |   Yes    | Password for authentication against the Velux Bridge.(\*\*)  |
-| timeoutMsecs            | 2000             |    No    | Communication timeout in milliseconds.                       |
+| timeoutMsecs            | 3000             |    No    | Communication timeout in milliseconds.                       |
 | protocol                | slip             |    No    | Underlying communication protocol (http/https/slip).         |
 | tcpPort                 | 51200            |    No    | TCP port (80 or 51200) for accessing the Velux Bridge.       |
 | retries                 | 5                |    No    | Number of retries during I/O.                                |
@@ -361,7 +361,7 @@ log:tail
 This, of course, is possible on command line with the commands:
 
 ```
-% openhab-cli console log:set TRACE org.openhab.binding.velux 
+% openhab-cli console log:set TRACE org.openhab.binding.velux
 % openhab-cli console log:tail org.openhab.binding.velux
 ```
 

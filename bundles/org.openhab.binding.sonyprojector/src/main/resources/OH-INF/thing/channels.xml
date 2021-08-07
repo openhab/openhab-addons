@@ -4,16 +4,14 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="power">
-		<item-type>Switch</item-type>
-		<label>Power</label>
-		<description>Power ON/OFF the projector</description>
-	</channel-type>
-
 	<channel-type id="powerstate">
 		<item-type>String</item-type>
 		<label>Power State</label>
 		<description>Current detailed power state of the projector</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 

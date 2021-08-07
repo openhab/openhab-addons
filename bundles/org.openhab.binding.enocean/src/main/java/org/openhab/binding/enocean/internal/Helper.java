@@ -42,4 +42,12 @@ public class Helper {
         }
         return result;
     }
+
+    public static int tryParseInt(String value, int defaultValue) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
 }

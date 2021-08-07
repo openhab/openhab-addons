@@ -30,7 +30,7 @@ import org.openhab.core.util.HexUtils;
 public class RFXComBlinds1MessageTest {
     private void testMessage(String hexMsg, SubType subType, int seqNbr, String deviceId, int signalLevel,
             RFXComBlinds1Message.Commands command) throws RFXComException {
-        final RFXComBlinds1Message msg = (RFXComBlinds1Message) RFXComMessageFactory
+        final RFXComBlinds1Message msg = (RFXComBlinds1Message) RFXComMessageFactoryImpl.INSTANCE
                 .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals(subType, msg.subType, "SubType");
         assertEquals(seqNbr, (short) (msg.seqNbr & 0xFF), "Seq Number");

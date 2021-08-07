@@ -38,51 +38,31 @@
 				<description>Pulse length of the device</description>
 				<default>350</default>
 			</parameter>
-			<parameter name="onCommandId" type="integer" required="true">
+			<parameter name="onCommandId" type="integer" required="false" min="0" max="15">
 				<label>On Command</label>
-				<description>Specifies command to be send when ON must be transmitted</description>
-				<options>
-					<option value="0">OFF (value 0)</option>
-					<option value="1">ON (value 1)</option>
-					<option value="2">OFF (value 2)</option>
-					<option value="3">ON (value 3)</option>
-					<option value="4">OFF (value 4)</option>
-					<option value="5">ON (value 5)</option>
-					<option value="6">value 5</option>
-					<option value="7">ON (value 7)</option>
-					<option value="8">value 8</option>
-					<option value="9">ON (value 9)</option>
-					<option value="10">ON (value 10)</option>
-					<option value="11">ON (value 11)</option>
-					<option value="12">ON (value 12)</option>
-					<option value="13">value 13</option>
-					<option value="14">OFF (value 14)</option>
-					<option value="15">value 15</option>
-				</options>
-				<default>1</default>
+				<description>Specifies command that represents ON for this device. If not
+					specified, will treat 1, 3, 5-13 and 15 as
+					ON commands for receiving message, and will send 1 as an ON
+					command. This behaviour is deprecated. In a future
+					version, if this is not specified, the on command will
+					not be available.</description>
 			</parameter>
-			<parameter name="offCommandId" type="integer" required="true">
+			<parameter name="offCommandId" type="integer" required="false" min="0" max="15">
 				<label>Off Command</label>
-				<description>Specifies command to be send when OFF must be transmitted</description>
-				<options>
-					<option value="0">OFF (value 0)</option>
-					<option value="1">ON (value 1)</option>
-					<option value="2">OFF (value 2)</option>
-					<option value="3">ON (value 3)</option>
-					<option value="4">OFF (value 4)</option>
-					<option value="5">ON (value 5)</option>
-					<option value="6">value 5</option>
-					<option value="7">ON (value 7)</option>
-					<option value="8">value 8</option>
-					<option value="9">ON (value 9)</option>
-					<option value="10">ON (value 10)</option>
-					<option value="11">ON (value 11)</option>
-					<option value="12">ON (value 12)</option>
-					<option value="13">value 13</option>
-					<option value="14">OFF (value 14)</option>
-					<option value="15">value 15</option>
-				</options>
-				<default>4</default>
+				<description>Specifies command that represents OFF for this device. For historical reasons, if not
+					specified, will
+					treat 0, 2, 4 and 14 as OFF commands for receiving message, and will send 4 as an OFF
+					command. This behaviour is
+					deprecated. In a future version, if this is not specified, the off command will
+					not be available.</description>
+			</parameter>
+			<parameter name="openCommandId" type="integer" required="false" min="0" max="15">
+				<label>Open Command</label>
+				<description>Specifies command that represents OPEN for this device.</description>
+			</parameter>
+			<parameter name="closedCommandId" type="integer" required="false" min="0" max="15">
+				<label>Closed Command</label>
+				<description>Specifies command that represents CLOSED for this device.</description>
 			</parameter>
 		</config-description>
 	</thing-type>

@@ -43,8 +43,8 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" required="true" unit="s">
-			<label>Update Interval</label>
+		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
+			<label>General Update Interval</label>
 			<description>Interval to query an update from the device.</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
@@ -62,6 +62,16 @@
 			<description>Password for HTTP API access.</description>
 			<context>password</context>
 		</parameter>
+		<parameter name="favoriteUP" type="integer" min="0" max="4" required="false">
+			<label>Favorite Id for UP</label>
+			<description>Which position favorite should be used for UP (0=none, favorites are defined in the Shelly App)</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="favoriteDOWN" type="integer" min="0" max="4" required="false">
+			<label>Favorite Id for DOWN</label>
+			<description>Which position favorite should be used for DOWN (0=none, favorites are defined in the Shelly App)</description>
+			<default>0</default>
+		</parameter>
 		<parameter name="deviceIp" type="text" required="true">
 			<label>Device IP Address</label>
 			<description>IP-Address of the Shelly device.</description>
@@ -71,7 +81,7 @@
 			<label>Enable Roller Events (Roller only)</label>
 			<description>True if the binding should register to get Roller Events.</description>
 			<advanced>true</advanced>
-			<default>true</default>
+			<default>false</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
 			<label>Enable CoIoT Events</label>
@@ -79,8 +89,8 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" required="true" unit="s">
-			<label>Update Interval</label>
+		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
+			<label>General Update Interval</label>
 			<description>Interval to query an update from the device.</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
@@ -104,7 +114,8 @@
 		</parameter>
 		<parameter name="brightnessAutoOn" type="boolean" required="false">
 			<label>Brightness Auto-ON</label>
-			<description>true: Turn device ON if brightness>0 is set; false: don't touch power status when brightness is set.</description>
+			<description>true: Turn device ON if brightness above 0 is set; false: don't touch power status when brightness is
+				set.</description>
 			<default>true</default>
 		</parameter>
 		<parameter name="eventsButton" type="boolean" required="false">
@@ -131,8 +142,8 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" required="true" unit="s">
-			<label>Update Interval</label>
+		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
+			<label>General Update Interval</label>
 			<description>Interval to query an update from the device.</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
@@ -172,8 +183,8 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" required="true" unit="s">
-			<label>Update Interval</label>
+		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
+			<label>General Update Interval</label>
 			<description>Interval to query an update from the device.</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
@@ -207,8 +218,8 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" required="true" unit="s">
-			<label>Update Interval</label>
+		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
+			<label>General Update Interval</label>
 			<description>Interval to query an update from the device.</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
@@ -250,10 +261,10 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" required="true" unit="s">
-			<label>Update Interval</label>
+		<parameter name="updateInterval" type="integer" min="60" required="true" unit="s">
+			<label>General Update Interval</label>
 			<description>Interval to query an update from the device.</description>
-			<default>3600</default>
+			<default>900</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
@@ -286,10 +297,10 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" required="true" unit="s">
+		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
 			<label>Update Interval</label>
 			<description>Interval to query an update from the device.</description>
-			<default>3600</default>
+			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>

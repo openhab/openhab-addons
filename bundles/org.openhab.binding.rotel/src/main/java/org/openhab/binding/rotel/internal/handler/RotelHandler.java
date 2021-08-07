@@ -858,6 +858,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 scheduleReconnectJob();
             } catch (InterruptedException e) {
                 logger.debug("Command {} from channel {} interrupted: {}", command, channel, e.getMessage());
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -1293,28 +1294,28 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     updateChannelState(CHANNEL_MAIN_TREBLE);
                     break;
                 case RotelConnector.KEY_SOURCE:
-                    source = connector.getModel().getSourceFromCommand(RotelCommand.getFromAsciiCommandV2(value));
+                    source = connector.getModel().getSourceFromCommand(RotelCommand.getFromAsciiCommand(value));
                     updateChannelState(CHANNEL_SOURCE);
                     updateChannelState(CHANNEL_MAIN_SOURCE);
                     break;
                 case RotelConnector.KEY_RECORD:
                     recordSource = connector.getModel()
-                            .getRecordSourceFromCommand(RotelCommand.getFromAsciiCommandV2(value));
+                            .getRecordSourceFromCommand(RotelCommand.getFromAsciiCommand(value));
                     updateChannelState(CHANNEL_MAIN_RECORD_SOURCE);
                     break;
                 case RotelConnector.KEY_SOURCE_ZONE2:
                     sourceZone2 = connector.getModel()
-                            .getZone2SourceFromCommand(RotelCommand.getFromAsciiCommandV2(value));
+                            .getZone2SourceFromCommand(RotelCommand.getFromAsciiCommand(value));
                     updateChannelState(CHANNEL_ZONE2_SOURCE);
                     break;
                 case RotelConnector.KEY_SOURCE_ZONE3:
                     sourceZone3 = connector.getModel()
-                            .getZone3SourceFromCommand(RotelCommand.getFromAsciiCommandV2(value));
+                            .getZone3SourceFromCommand(RotelCommand.getFromAsciiCommand(value));
                     updateChannelState(CHANNEL_ZONE3_SOURCE);
                     break;
                 case RotelConnector.KEY_SOURCE_ZONE4:
                     sourceZone4 = connector.getModel()
-                            .getZone4SourceFromCommand(RotelCommand.getFromAsciiCommandV2(value));
+                            .getZone4SourceFromCommand(RotelCommand.getFromAsciiCommand(value));
                     updateChannelState(CHANNEL_ZONE4_SOURCE);
                     break;
                 case RotelConnector.KEY_DSP_MODE:
@@ -1686,6 +1687,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     closeConnection();
                 } catch (InterruptedException e) {
                     logger.debug("Init sequence interrupted: {}", e.getMessage());
+                    Thread.currentThread().interrupt();
                 }
             }
         }, 2500, TimeUnit.MILLISECONDS);
@@ -1729,6 +1731,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     closeConnection();
                 } catch (InterruptedException e) {
                     logger.debug("Init sequence zone 2 interrupted: {}", e.getMessage());
+                    Thread.currentThread().interrupt();
                 }
             }
         }, 2500, TimeUnit.MILLISECONDS);
@@ -1772,6 +1775,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     closeConnection();
                 } catch (InterruptedException e) {
                     logger.debug("Init sequence zone 3 interrupted: {}", e.getMessage());
+                    Thread.currentThread().interrupt();
                 }
             }
         }, 2500, TimeUnit.MILLISECONDS);
@@ -1815,6 +1819,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     closeConnection();
                 } catch (InterruptedException e) {
                     logger.debug("Init sequence zone 4 interrupted: {}", e.getMessage());
+                    Thread.currentThread().interrupt();
                 }
             }
         }, 2500, TimeUnit.MILLISECONDS);

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:pushsafer:pushsafer-account">
+		<parameter name="apikey" type="text" required="true">
+			<context>password</context>
+			<label>Private or Alias Key</label>
+			<description>Your Private or Alias to access the Pushsafer Message API.</description>
+		</parameter>
+		<parameter name="user" type="text" required="true">
+			<label>Username</label>
+			<description>Your username or email address to validate against the Pushsafer Message API.</description>
+		</parameter>
+		<parameter name="device" type="text">
+			<label>Device ID</label>
+			<description>Device ID or Device Group ID to which devices you want to send push-notifications ("a" for all available
+				devices).</description>
+			<default>a</default>
+		</parameter>
+		<parameter name="title" type="text">
+			<label>Title</label>
+			<description>The default title of a message.</description>
+			<default>openHAB</default>
+		</parameter>
+		<parameter name="format" type="text">
+			<label>Format</label>
+			<description>The default format of a message.</description>
+			<default>none</default>
+			<options>
+				<option value="none">None</option>
+				<option value="html">HTML</option>
+				<option value="monospace">monospace</option>
+			</options>
+		</parameter>
+		<parameter name="sound" type="text">
+			<label>Notification Sound</label>
+			<description>The default notification sound on target device.</description>
+			<default>1</default>
+		</parameter>
+		<parameter name="vibration" type="text">
+			<label>Vibration</label>
+			<description>How often the device should vibrate. empty=device default or a number 1-3</description>
+			<default>1</default>
+		</parameter>
+		<parameter name="icon" type="text">
+			<label>Notification Icon</label>
+			<description>The default notification icon on target device.</description>
+			<default>1</default>
+		</parameter>
+		<parameter name="color" type="text">
+			<label>Icon Color</label>
+			<description>The color (hexadecimal) of notification icon (e.g. #FF0000).</description>
+			<default></default>
+		</parameter>
+		<parameter name="url" type="text">
+			<label>URL</label>
+			<description>URL or URL Scheme send with notification.</description>
+		</parameter>
+		<parameter name="urlTitle" type="text">
+			<label>URL Title</label>
+			<description>Title of URL.</description>
+		</parameter>
+		<parameter name="retry" type="integer" min="0" max="43200" step="1" unit="m">
+			<advanced>true</advanced>
+			<label>Retry</label>
+			<description>Integer 0-43200: Time in minutes, after a message automatically gets purged.</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="expire" type="integer" min="0" max="10800" step="60" unit="s">
+			<advanced>true</advanced>
+			<label>Expire</label>
+			<description>Integer 60-10800 (60s steps): Time in seconds, after the retry/resend should stop.</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="confirm" type="integer" min="0" max="10800" step="10" unit="s">
+			<advanced>true</advanced>
+			<label>Confirm</label>
+			<description>Integer 10-10800 (10s steps): Time in seconds after which a message should be sent again before it is
+				confirmed.</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="time2live" type="integer" min="0" max="43200" step="1" unit="m">
+			<advanced>true</advanced>
+			<label>Time to Live</label>
+			<description>Time in minutes, after a message automatically gets purged.</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="answer" type="boolean">
+			<advanced>true</advanced>
+			<label>Answer</label>
+			<description>true = Enable reply to push notifications, false otherwise.</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

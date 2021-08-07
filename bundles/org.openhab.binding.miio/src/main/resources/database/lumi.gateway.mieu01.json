@@ -1,0 +1,229 @@
+{
+	"deviceMapping": {
+		"id": [
+			"lumi.gateway.mieu01"
+		],
+		"propertyMethod": "get_prop",
+		"maxProperties": 4,
+		"channels": [
+			{
+				"property": "get_arming",
+				"friendlyName": "Guard",
+				"channel": "guard",
+				"type": "Switch",
+				"refresh": true,
+				"customRefreshCommand": "get_arming",
+				"actions": [
+					{
+						"command": "set_arming",
+						"parameterType": "ONOFF"
+					}
+				],
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				]
+			},
+			{
+				"property": "corridor_light",
+				"friendlyName": "Automatic Night Light",
+				"channel": "corridor",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_corridor_light",
+						"parameterType": "ONOFF"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "night_light_rgb",
+				"friendlyName": "Night Light",
+				"channel": "nightlight",
+				"type": "Color",
+				"refresh": true,
+				"transformation": "bRGBtoHSV",
+				"actions": [
+					{
+						"command": "set_night_light_rgb",
+						"parameterType": "COLOR",
+						"condition": {
+							"name": "HSVTOBRGB"
+						}
+					}
+				],
+				"category": "colorpicker",
+				"tags": [
+					"Control",
+					"Light"
+				]
+			},
+			{
+				"property": "rgb",
+				"friendlyName": "Colored Light",
+				"channel": "rgb",
+				"type": "Color",
+				"refresh": true,
+				"transformation": "bRGBtoHSV",
+				"actions": [
+					{
+						"command": "set_rgb",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "HSVTOBRGB"
+						}
+					}
+				],
+				"category": "colorpicker",
+				"tags": [
+					"Control",
+					"Light"
+				]
+			},
+			{
+				"property": "doorbell_volume",
+				"friendlyName": "Doorbell Volume",
+				"channel": "doorbell_volume",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_doorbell_volume",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Setpoint",
+					"SoundVolume"
+				]
+			},
+			{
+				"property": "alarming_volume",
+				"friendlyName": "Alarming Volume",
+				"channel": "alarming_volume",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_alarming_volume",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Setpoint",
+					"SoundVolume"
+				]
+			},
+			{
+				"property": "gateway_volume",
+				"friendlyName": "Gateway Volume",
+				"channel": "gateway_volume",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_gateway_volume",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Setpoint",
+					"SoundVolume"
+				]
+			},
+			{
+				"property": "get_arming_time",
+				"friendlyName": "Arming Time",
+				"channel": "arming_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"refresh": true,
+				"customRefreshCommand": "get_arming_time",
+				"actions": [
+					{
+						"command": "set_alarming_time",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "corridor_on_time",
+				"friendlyName": "Corridor on time",
+				"channel": "corridor_on_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_corridor_on_time",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "language",
+				"friendlyName": "Voice prompt Language",
+				"channel": "language",
+				"type": "String",
+				"refresh": true,
+				"customRefreshCommand": "get_device_prop[\"lumi.0\",\"gateway_lang\"]",
+				"actions": [],
+				"category": "settings"
+			},
+			{
+				"property": "get_zigbee_channel",
+				"friendlyName": "Zigbee Channel",
+				"channel": "zigbee_channel",
+				"type": "String",
+				"refresh": true,
+				"customRefreshCommand": "get_zigbee_channel",
+				"actions": [],
+				"category": "settings"
+			},
+			{
+				"property": "lumi_bind",
+				"friendlyName": "Lumi_bind info",
+				"channel": "lumi_bind",
+				"type": "String",
+				"refresh": true,
+				"customRefreshCommand": "get_lumi_bind",
+				"actions": [],
+				"category": "settings"
+			},
+			{
+				"property": "doorbell_push",
+				"friendlyName": "Doorbell Push",
+				"channel": "doorbell_push",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_doorbell_push",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "settings"
+			}
+		],
+		"readmeComment": "Used to control the gateway itself. Controlling child devices currently only possible via rules",
+		"experimental": false
+	}
+}

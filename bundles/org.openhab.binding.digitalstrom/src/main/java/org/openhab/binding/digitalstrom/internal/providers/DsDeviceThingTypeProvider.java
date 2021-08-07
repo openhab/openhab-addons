@@ -82,8 +82,8 @@ public class DsDeviceThingTypeProvider extends BaseDsI18n implements ThingTypePr
 
     private final Logger logger = LoggerFactory.getLogger(DsDeviceThingTypeProvider.class);
 
-    private final String DEVICE_WITH_POWER_SENSORS = "binding:digitalstrom:deviceWithPowerSensors";
-    private final String DEVICE_WITHOUT_POWER_SENSORS = "binding:digitalstrom:deviceWithoutPowerSensors";
+    private final String DEVICE_WITH_POWER_SENSORS = "thing-type:digitalstrom:deviceWithPowerSensors";
+    private final String DEVICE_WITHOUT_POWER_SENSORS = "thing-type:digitalstrom:deviceWithoutPowerSensors";
 
     @Activate
     @Override

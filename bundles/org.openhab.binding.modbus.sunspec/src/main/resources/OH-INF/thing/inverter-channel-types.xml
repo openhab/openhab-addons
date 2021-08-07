@@ -20,14 +20,14 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>AC Voltage</label>
 		<description>This phase's AC voltage relative to the next phase</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ac-voltage-to-n-type">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>AC Voltage Phase To N Value</label>
 		<description>This phase's AC voltage relative to N line</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ac-power-type">
