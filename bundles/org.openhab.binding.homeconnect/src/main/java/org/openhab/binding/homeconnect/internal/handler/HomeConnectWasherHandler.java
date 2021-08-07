@@ -84,7 +84,11 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
                 getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
         handlers.put(CHANNEL_WASHER_RINSE_PLUS,
                 getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_RINSE_HOLD,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
         handlers.put(CHANNEL_WASHER_SOAK,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_LOAD_RECOMMENDATION,
                 getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
         handlers.put(CHANNEL_PROGRAM_ENERGY,
                 getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
@@ -170,7 +174,9 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
                 || getLinkedChannel(CHANNEL_WASHER_LESS_IRONING).isPresent()
                 || getLinkedChannel(CHANNEL_WASHER_PRE_WASH).isPresent()
                 || getLinkedChannel(CHANNEL_WASHER_RINSE_PLUS).isPresent()
+                || getLinkedChannel(CHANNEL_WASHER_RINSE_HOLD).isPresent()
                 || getLinkedChannel(CHANNEL_WASHER_SOAK).isPresent()
+                || getLinkedChannel(CHANNEL_WASHER_LOAD_RECOMMENDATION).isPresent()
                 || getLinkedChannel(CHANNEL_PROGRAM_ENERGY).isPresent()
                 || getLinkedChannel(CHANNEL_PROGRAM_WATER).isPresent();
     }
@@ -230,7 +236,10 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
             getLinkedChannel(CHANNEL_WASHER_LESS_IRONING).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
             getLinkedChannel(CHANNEL_WASHER_PRE_WASH).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
             getLinkedChannel(CHANNEL_WASHER_RINSE_PLUS).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getLinkedChannel(CHANNEL_WASHER_RINSE_HOLD).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
             getLinkedChannel(CHANNEL_WASHER_SOAK).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getLinkedChannel(CHANNEL_WASHER_LOAD_RECOMMENDATION)
+                    .ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
             getLinkedChannel(CHANNEL_PROGRAM_ENERGY).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
             getLinkedChannel(CHANNEL_PROGRAM_WATER).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         }
