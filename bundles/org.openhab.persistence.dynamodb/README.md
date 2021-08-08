@@ -28,7 +28,7 @@ You must first set up an Amazon account as described below.
 Users are recommended to familiarize themselves with AWS pricing before using this service.
 Please note that there might be charges from Amazon when using this service to query/store data to DynamoDB.
 See [Amazon DynamoDB pricing pages](https://aws.amazon.com/dynamodb/pricing/) for more details.
-Please also note possible [Free Tier](https://aws.amazon.com/free/) benefits. 
+Please also note possible [Free Tier](https://aws.amazon.com/free/) benefits.
 
 ### Setting Up an Amazon Account
 
