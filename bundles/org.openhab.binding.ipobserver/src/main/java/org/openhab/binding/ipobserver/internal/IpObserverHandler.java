@@ -75,7 +75,7 @@ public class IpObserverHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(IpObserverHandler.class);
     private Map<String, ChannelHandler> channelHandlers = new HashMap<String, ChannelHandler>();
     private @Nullable ScheduledFuture<?> pollingFuture = null;
-    public IpObserverConfiguration config = new IpObserverConfiguration();
+    private IpObserverConfiguration config = new IpObserverConfiguration();
     private String idPass = "";
     // Config settings parsed from weather station.
     private boolean imperialTemperature = false;
