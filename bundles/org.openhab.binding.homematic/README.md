@@ -666,6 +666,15 @@ You have to delete the thing, start a scan and add it again.
 In case of problems in the discovery or if above mentioned error message appears in `openhab.log`, the size for the transmission buffer for the communication with the gateway is too small.
 The problem can be solved by increasing the `bufferSize` value in the bridge configuration.
 
+**Rollershutters are inverted**
+
+openHAB and the CCU are using different values for the same state of a rollershutter.
+Examples: HmIP-BROLL, HmIP-FROLL, HmIP-BBL, HmIP-FBL and HmIP-DRBLI4
+|         | Open | Closed |
+|---------|------|--------|
+| openHAB | 0%   | 100%   |
+| CCU     | 100% | 0%     |
+
 ### Debugging and Tracing
 
 If you want to see what's going on in the binding, switch the log level to DEBUG in the Karaf console
