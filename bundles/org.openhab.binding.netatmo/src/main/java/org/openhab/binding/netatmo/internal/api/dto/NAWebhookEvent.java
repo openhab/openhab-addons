@@ -58,10 +58,7 @@ public class NAWebhookEvent extends NAEvent {
 
     @Override
     public @Nullable String getPersonId() {
-        if (persons.size() > 0) {
-            return persons.keySet().iterator().next();
-        }
-        return null;
+        return persons.size() > 0 ? persons.keySet().iterator().next() : null;
     }
 
     @Override

@@ -28,13 +28,8 @@ public class NAModule extends NAThing {
     private int batteryPercent = -1;
 
     public int getBatteryPercent() {
-        if (batteryPercent != -1) {
-            return batteryPercent;
-        }
-        if (batteryState != BatteryState.UNKNOWN) {
-            return batteryState.getLevel();
-        }
-        return -1;
+        return batteryPercent != -1 ? batteryPercent
+                : batteryState != BatteryState.UNKNOWN ? batteryState.getLevel() : -1;
     }
 
     public BatteryState getBatteryState() {
