@@ -73,7 +73,7 @@ public class HostHandler extends ApiConsumerHandler {
         try {
             getApi().getLanManager().wakeOnLan(getMac());
         } catch (FreeboxException e) {
-            logger.warn("Error waking up host : {}", e);
+            logger.warn("Error waking up host : {}", e.getMessage());
         }
     }
 

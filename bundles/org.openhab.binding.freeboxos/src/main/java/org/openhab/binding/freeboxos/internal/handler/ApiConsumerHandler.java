@@ -85,7 +85,7 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
                         internalPoll();
                         updateStatus(ThingStatus.ONLINE);
                     } catch (FreeboxException e) {
-                        logger.warn("Error polling thing {} : {}", getThing().getUID(), e);
+                        logger.warn("Error polling thing {} : {}", getThing().getUID(), e.getMessage());
                         updateStatus(ThingStatus.OFFLINE);
                     }
                 }
@@ -107,7 +107,7 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
                 logger.warn("Unexpected command {} on channel {}", command, channelUID.getId());
             }
         } catch (FreeboxException e) {
-            logger.warn("Error handling command : {}", e);
+            logger.warn("Error handling command : {}", e.getMessage());
         }
     }
 

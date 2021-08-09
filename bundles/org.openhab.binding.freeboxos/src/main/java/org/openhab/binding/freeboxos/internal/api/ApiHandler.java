@@ -59,6 +59,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
+/**
+ * @author Gaël L'hopital - Initial contribution
+ */
 @NonNullByDefault
 public class ApiHandler {
     private final Logger logger = LoggerFactory.getLogger(ApiHandler.class);
@@ -324,7 +327,7 @@ public class ApiHandler {
                 getLoginManager().closeSession();
             }
         } catch (FreeboxException e) {
-            logger.warn("Error closing session : {}", e);
+            logger.warn("Error closing session : {}", e.getMessage());
         }
         httpHeaders.remove(AUTH_HEADER);
     }

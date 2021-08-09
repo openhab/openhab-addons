@@ -210,7 +210,7 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
                     getApi().getAirMediaManager().sendToReceiver(playerName, getPassword(), MediaAction.STOP,
                             MediaType.VIDEO);
                 } catch (FreeboxException e) {
-                    logger.warn("Exception while stopping audio stream playback: {}", e);
+                    logger.warn("Exception while stopping audio stream playback: {}", e.getMessage());
                 }
             } else {
                 String url = null;
@@ -235,10 +235,10 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
                         getApi().getAirMediaManager().sendToReceiver(playerName, getPassword(), MediaAction.START,
                                 MediaType.VIDEO, url);
                     } catch (FreeboxException e) {
-                        logger.warn("Audio stream playback failed: {}", e);
+                        logger.warn("Audio stream playback failed: {}", e.getMessage());
                     }
                 } catch (IOException e) {
-                    logger.warn("Exception while closing audioStream", e);
+                    logger.warn("Exception while closing audioStream : {}", e.getMessage());
                 }
             }
         }
@@ -281,7 +281,7 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
                 try {
                     getApi().execute(uriBuilder.build(), HttpMethod.GET, null, null, false);
                 } catch (FreeboxException e) {
-                    logger.warn("Error calling Player url : {}", e);
+                    logger.warn("Error calling Player url : {}", e.getMessage());
                 }
             } else {
                 logger.warn("A remote code must be configured in the on the player thing.");

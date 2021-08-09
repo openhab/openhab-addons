@@ -95,7 +95,7 @@ public abstract class FreeDeviceHandler extends HostHandler {
             });
             updateThing(editThing().withChannels(channels).build());
         } catch (FreeboxException e) {
-            logger.warn("Error getting list of optional channels : {}", e);
+            logger.warn("Error getting list of optional channels : {}", e.getMessage());
         }
     }
 
@@ -139,7 +139,7 @@ public abstract class FreeDeviceHandler extends HostHandler {
             stopRefreshJob();
             scheduler.schedule(this::initialize, 2, TimeUnit.MINUTES);
         } catch (FreeboxException e) {
-            logger.warn("Error rebooting device : {}", e);
+            logger.warn("Error rebooting device : {}", e.getMessage());
         }
     }
 }

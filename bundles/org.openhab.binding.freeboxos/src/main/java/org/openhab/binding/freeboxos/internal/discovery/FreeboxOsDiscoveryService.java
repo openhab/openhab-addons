@@ -123,7 +123,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                     discoverHosts(lanHosts);
                 }
             } catch (FreeboxException e) {
-                logger.warn("Error while requesting data for things discovery : {}", e);
+                logger.warn("Error while requesting data for things discovery : {}", e.getMessage());
             }
         }
     }

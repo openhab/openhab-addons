@@ -27,13 +27,12 @@ import org.openhab.binding.freeboxos.internal.api.phone.PhoneManager;
 import org.openhab.binding.freeboxos.internal.api.phone.PhoneStatus;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tech.units.indriya.unit.Units;
 
 /**
  * The {@link LandlineHandler} is responsible for handling everything associated to

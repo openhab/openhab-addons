@@ -121,7 +121,7 @@ public class ServerHandler extends FreeDeviceHandler {
                         break;
                 }
             } catch (FreeboxException e) {
-                logger.warn("Invalid command {} on channel {} : {}", command, channelUID.getId(), e);
+                logger.warn("Invalid command {} on channel {} : {}", command, channelUID.getId(), e.getMessage());
             }
         }
     }
