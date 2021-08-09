@@ -97,7 +97,7 @@ public class TokenManager {
          * The token service also provides the option to revoke a token, this is not used. Token stays until unless the
          * refresh fails.
          */
-        logger.debug("{}: Logging in, account={}", config.vehicle.vin, config.account.user);
+        logger.debug("{}: Logging in, account={}", config.api.brand, config.account.user);
         TokenOAuthFlow oauth = new TokenOAuthFlow(tokens.http);
         String url = authenticator.getLoginUrl(oauth);
         tokens.idToken = authenticator.login(url, oauth);
