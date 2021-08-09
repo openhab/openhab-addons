@@ -248,7 +248,7 @@
 
 	<channel-type id="metar" advanced="true">
 		<item-type>String</item-type>
-		<label>METAR weather report</label>
+		<label>METAR Weather Report</label>
 		<description>METAR formatted weather report</description>
 		<category>Sun_Clouds</category>
 		<state readOnly="true"/>
@@ -256,7 +256,7 @@
 
 	<channel-type id="clouds" advanced="true">
 		<item-type>String</item-type>
-		<label>Cloud cover</label>
+		<label>Cloud Cover</label>
 		<description>METAR style cloud cover.</description>
 		<category>Sun_Clouds</category>
 		<state readOnly="true"/>
@@ -278,7 +278,7 @@
 	<!-- for sensor 2 use leafwetness2 -->
 	<channel-type id="leafwetness" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Leaf wetness</label>
+		<label>Leaf Wetness</label>
 		<description>Leaf wetness in %.</description>
 		<category>Moisture</category>
 		<tags>
@@ -302,7 +302,7 @@
 
 	<channel-type id="uv">
 		<item-type>Number:Dimensionless</item-type>
-		<label>UV index</label>
+		<label>UV Index</label>
 		<description>UV index.</description>
 		<category>Sun</category>
 		<tags>

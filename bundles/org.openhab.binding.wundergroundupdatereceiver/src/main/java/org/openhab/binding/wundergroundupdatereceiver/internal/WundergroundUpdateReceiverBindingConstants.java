@@ -59,14 +59,14 @@ public class WundergroundUpdateReceiverBindingConstants {
     public static final String LAST_QUERY_TRIGGER = LAST_QUERY + "-trigger";
 
     // Channel groups
-    public static final String METADATA_GROUP = "metadata-group";
-    public static final String WIND_GROUP = "wind-group";
-    public static final String TEMPERATURE_GROUP = "temperature-group";
-    public static final String HUMIDITY_GROUP = "humidity-group";
-    public static final String RAIN_GROUP = "rain-group";
-    public static final String SUNLIGHT_GROUP = "sunlight-group";
-    public static final String PRESSURE_GROUP = "pressure-group";
-    public static final String POLLUTION_GROUP = "pollution-group";
+    public static final String METADATA_GROUP = "metadata";
+    public static final String WIND_GROUP = "wind";
+    public static final String TEMPERATURE_GROUP = "temperature";
+    public static final String HUMIDITY_GROUP = "humidity";
+    public static final String RAIN_GROUP = "rain";
+    public static final String SUNLIGHT_GROUP = "sunlight";
+    public static final String PRESSURE_GROUP = "pressure";
+    public static final String POLLUTION_GROUP = "pollution";
 
     // Known or observed request paramters received from weather stations submitting to wunderground.com
     public static final String DATEUTC = "dateutc";

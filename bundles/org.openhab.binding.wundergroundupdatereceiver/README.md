@@ -13,7 +13,7 @@ needs to be pointed at this address. If you can't configure the weather station 
 to set up a dns server that resolves rtupdate.wunderground.com to the IP-address of your server and provide as dns to the weather station
 does DHCP. Make sure not to use this dns server instance for any other DHCP clients. 
 
-The request is in itself simple to parse, so by redirecting it to your openhab server you can intercept the values and use them to
+The request is in itself simple to parse, so by redirecting it to your openHAB server you can intercept the values and use them to
 control items in your home. E.g. use measured wind-speed to close an awning or turn on the sprinkler system after some time without rain.
 This binding allows you to mix and match products from various manufacturers that otherwise have a closed system.
 
@@ -25,7 +25,7 @@ submit the same measurements to multiple weather services via multiple rules.
 
 Any weather station that sends weather measurement updates to the wunderground.com update URLs is supported.
 It is easiest to use with stations that have a configurable target address, but can be made to
-work with any internet-connected weather station, that gets it's dns server via DHCP or where the DNS server can be
+work with any internet-connected weather station, that gets its dns server via DHCP or where the DNS server can be
 set. 
 
 ## Discovery
@@ -51,7 +51,7 @@ Additionally there is a receipt timestamp and a trigger channel.
 
 | channel          | type                 | description                                                                                        |
 |------------------|----------------------|----------------------------------------------------------------------------------------------------|
-| lastQueryTrigger | String               | The part of the last query after the first unurlencoded ?                                          |
+| lastQueryTrigger | String               | The part of the last query after the first unurlencoded `?`                                          |
 
 The trigger channel's payload is the last querystring, so the following dsl rule script
 would send the measurements on to wunderground.com:
