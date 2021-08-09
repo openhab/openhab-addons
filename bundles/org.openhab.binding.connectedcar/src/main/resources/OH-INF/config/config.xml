@@ -34,56 +34,56 @@
 		</parameter>
 	</config-description>
 
-    <config-description uri="bridge-type:connectedcar:idaccount">
-        <parameter-group name="authentication">
-            <label>Authentication</label>
-            <description>Authentication settings.</description>
-        </parameter-group>
+	<config-description uri="bridge-type:connectedcar:idaccount">
+		<parameter-group name="authentication">
+			<label>Authentication</label>
+			<description>Authentication settings.</description>
+		</parameter-group>
 
-        <parameter name="user" type="text" required="true" groupName="authentication">
-            <label>Online User</label>
-            <description>User name for the Login.</description>
-        </parameter>
-        <parameter name="password" type="text" required="true" groupName="authentication">
-            <label>Password</label>
-            <context>password</context>
-            <description>Password to access the account.</description>
-        </parameter>
-    </config-description>
+		<parameter name="user" type="text" required="true" groupName="authentication">
+			<label>Online User</label>
+			<description>User name for the Login.</description>
+		</parameter>
+		<parameter name="password" type="text" required="true" groupName="authentication">
+			<label>Password</label>
+			<context>password</context>
+			<description>Password to access the account.</description>
+		</parameter>
+	</config-description>
 
-    <config-description uri="bridge-type:connectedcar:seaccount">
-        <parameter-group name="authentication">
-            <label>Authentication</label>
-            <description>Authentication settings.</description>
-        </parameter-group>
+	<config-description uri="bridge-type:connectedcar:seaccount">
+		<parameter-group name="authentication">
+			<label>Authentication</label>
+			<description>Authentication settings.</description>
+		</parameter-group>
 
-        <parameter name="user" type="text" required="true" groupName="authentication">
-            <label>Online User</label>
-            <description>User name for the Login.</description>
-        </parameter>
-        <parameter name="password" type="text" required="true" groupName="authentication">
-            <label>Password</label>
-            <context>password</context>
-            <description>Password to access the account.</description>
-        </parameter>
-    </config-description>
+		<parameter name="user" type="text" required="true" groupName="authentication">
+			<label>Online User</label>
+			<description>User name for the Login.</description>
+		</parameter>
+		<parameter name="password" type="text" required="true" groupName="authentication">
+			<label>Password</label>
+			<context>password</context>
+			<description>Password to access the account.</description>
+		</parameter>
+	</config-description>
 
-   <config-description uri="bridge-type:connectedcar:fordaccount">
-        <parameter-group name="authentication">
-            <label>Authentication</label>
-            <description>Authentication settings.</description>
-        </parameter-group>
+	<config-description uri="bridge-type:connectedcar:fordaccount">
+		<parameter-group name="authentication">
+			<label>Authentication</label>
+			<description>Authentication settings.</description>
+		</parameter-group>
 
-        <parameter name="user" type="text" required="true" groupName="authentication">
-            <label>Online User</label>
-            <description>User name for the Login.</description>
-        </parameter>
-        <parameter name="password" type="text" required="true" groupName="authentication">
-            <label>Password</label>
-            <context>password</context>
-            <description>Password to access the account.</description>
-        </parameter>
-    </config-description>
+		<parameter name="user" type="text" required="true" groupName="authentication">
+			<label>Online User</label>
+			<description>User name for the Login.</description>
+		</parameter>
+		<parameter name="password" type="text" required="true" groupName="authentication">
+			<label>Password</label>
+			<context>password</context>
+			<description>Password to access the account.</description>
+		</parameter>
+	</config-description>
 
 
 
@@ -173,7 +173,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:connectedcar:enyaqvehicle">
+	<config-description uri="thing-type:connectedcar:sevehicle">
 		<parameter name="vin" type="text" required="false">
 			<label>Vehicle Identification Number (VIN)</label>
 			<description>This is the unique ID to identify the vehicle</description>

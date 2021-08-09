@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleDetails;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.handler.AccountHandler;
-import org.openhab.binding.connectedcar.internal.handler.BridgeListener;
+import org.openhab.binding.connectedcar.internal.handler.AccountListener;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class ConnectedCarDiscoveryService extends AbstractDiscoveryService implements BridgeListener {
+public class ConnectedCarDiscoveryService extends AbstractDiscoveryService implements AccountListener {
     private final Logger logger = LoggerFactory.getLogger(ConnectedCarDiscoveryService.class);
     private final AccountHandler accountHandler;
     private ThingUID bridgeUID;
@@ -74,7 +74,7 @@ public class ConnectedCarDiscoveryService extends AbstractDiscoveryService imple
                     tuid = THING_TYPE_IDVEHICLE;
                     break;
                 case "ŠKODA":
-                case API_BRAND_ENYAK:
+                case API_BRAND_SKODA_E:
                     tuid = THING_TYPE_ENYAKVEHICLE;
                     break;
                 case API_BRAND_FORD:

@@ -70,11 +70,8 @@ public class VehicleCarNetHandler extends VehicleBaseHandler {
 
     @Override
     public boolean createBrandChannels(Map<String, ChannelIdMapEntry> channels) {
-        addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_RATELIM, ITEMT_NUMBER, null, false, true);
-        addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_LOCKED, ITEMT_SWITCH, null, false, true);
-        addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_MAINTREQ, ITEMT_SWITCH, null, false, true);
-        addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_WINCLOSED, ITEMT_SWITCH, null, false, true);
-        addChannel(channels, CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_TIRESOK, ITEMT_SWITCH, null, false, true);
+        addChannels(channels, true, CHANNEL_GENERAL_RATELIM, CHANNEL_GENERAL_LOCKED, CHANNEL_GENERAL_MAINTREQ,
+                CHANNEL_GENERAL_WINCLOSED, CHANNEL_GENERAL_TIRESOK);
         return true;
     }
 
@@ -182,9 +179,9 @@ public class VehicleCarNetHandler extends VehicleBaseHandler {
     @Override
     public boolean updateActionStatus(String service, String action, String statusDetail) {
         boolean updated = false;
-        updated |= updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION, getStringType(service + "." + action));
-        updated |= updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION_STATUS, getStringType(statusDetail));
-        updated |= updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION_PENDING,
+        updated |= updateChannel(CHANNEL_GENERAL_ACTION, getStringType(service + "." + action));
+        updated |= updateChannel(CHANNEL_GENERAL_ACTION_STATUS, getStringType(statusDetail));
+        updated |= updateChannel(CHANNEL_GENERAL_ACTION_PENDING,
                 CarNetPendingRequest.isInProgress(statusDetail) ? OnOffType.ON : OnOffType.OFF);
 
         if (!CarNetPendingRequest.isInProgress(statusDetail)) {
@@ -198,7 +195,7 @@ public class VehicleCarNetHandler extends VehicleBaseHandler {
                     break;
             }
             if (!channel.isEmpty()) {
-                updateChannel(CHANNEL_GROUP_CONTROL, channel, OnOffType.OFF);
+                updateChannel(channel, OnOffType.OFF);
             }
 
             forceUpdate = true; // refresh vehicle status

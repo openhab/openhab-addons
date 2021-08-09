@@ -45,7 +45,7 @@ public class ApiDataTypesDTO {
     public static final String API_BRAND_VWGO = "Go";
     public static final String API_BRAND_WECHARGE = "Wc";
     public static final String API_BRAND_SKODA = "Skoda";
-    public static final String API_BRAND_ENYAK = "Enyak";
+    public static final String API_BRAND_SKODA_E = "Skoda-E";
     public static final String API_BRAND_SEAT = "Seat";
     public static final String API_BRAND_FORD = "Ford";
     public static final String API_BRAND_NULL = "NULL";

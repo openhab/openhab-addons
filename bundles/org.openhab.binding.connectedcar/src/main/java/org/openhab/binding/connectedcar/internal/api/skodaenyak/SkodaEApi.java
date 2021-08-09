@@ -27,13 +27,13 @@ import javax.ws.rs.core.HttpHeaders;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.connectedcar.internal.api.ApiBase;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleDetails;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleStatus;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpMap;
+import org.openhab.binding.connectedcar.internal.api.ApiWithOAuth;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.TokenManager;
 import org.openhab.binding.connectedcar.internal.api.skodaenyak.SEApiJsonDTO.SEVehicleList;
@@ -50,17 +50,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link SkodaEnyakApi} implements the Skoda Enyaq API calls
+ * {@link SkodaEApi} implements the Skoda-E API calls
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class SkodaEnyakApi extends ApiBase implements BrandAuthenticator {
-    private final Logger logger = LoggerFactory.getLogger(SkodaEnyakApi.class);
+public class SkodaEApi extends ApiWithOAuth implements BrandAuthenticator {
+    private final Logger logger = LoggerFactory.getLogger(SkodaEApi.class);
     private Map<String, SEVehicle> vehicleData = new HashMap<>();
 
-    public SkodaEnyakApi(ApiHttpClient httpClient, TokenManager tokenManager,
-            @Nullable ApiEventListener eventListener) {
+    public SkodaEApi(ApiHttpClient httpClient, TokenManager tokenManager, @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
 

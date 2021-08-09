@@ -15,7 +15,7 @@ package org.openhab.binding.connectedcar.internal.api.skodaenyak;
 import java.util.ArrayList;
 
 /**
- * {@link SEApiJsonDTO} defines the Skoda Enyaq data formats
+ * {@link SEApiJsonDTO} defines the Skoda-E data formats
  *
  * @author Markus Michels - Initial contribution
  */

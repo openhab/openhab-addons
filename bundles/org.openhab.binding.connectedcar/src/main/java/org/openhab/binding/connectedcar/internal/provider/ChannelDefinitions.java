@@ -450,22 +450,24 @@ public class ChannelDefinitions {
 
         // Group general
         String group = CHANNEL_GROUP_GENERAL;
+        add("", "", CHANNEL_GENERAL_UPDATED, ITEMT_DATETIME, group);
         add("", "", CHANNEL_GENERAL_LOCKED, ITEMT_SWITCH, group);
         add("", "", CHANNEL_GENERAL_MAINTREQ, ITEMT_SWITCH, group);
         add("", "", CHANNEL_GENERAL_WINCLOSED, ITEMT_SWITCH, group);
         add("", "", CHANNEL_GENERAL_DOORSCLOSED, ITEMT_SWITCH, group);
         add("", "", CHANNEL_GENERAL_TIRESOK, ITEMT_SWITCH, group);
         add("", "", CHANNEL_GENERAL_TIMEINCAR, ITEMT_DATETIME, group);
-        add("", "", CHANNEL_GENERAL_UPDATED, ITEMT_DATETIME, group);
         add("", "", CHANNEL_GENERAL_ACTION, ITEMT_STRING, group);
         add("", "", CHANNEL_GENERAL_ACTION_STATUS, ITEMT_STRING, group);
         add("", "", CHANNEL_GENERAL_ACTION_PENDING, ITEMT_SWITCH, group);
         add("", "", CHANNEL_GENERAL_ACTION, ITEMT_STRING, group, null, false, true);
         add("", "", CHANNEL_GENERAL_ACTION_STATUS, ITEMT_STRING, group, null, false, true);
         add("", "", CHANNEL_GENERAL_ACTION_PENDING, ITEMT_SWITCH, group, null, false, true);
+        add("", "", CHANNEL_GENERAL_RATELIM, ITEMT_NUMBER, group, null, false, true);
 
         // Group control
         group = CHANNEL_GROUP_CONTROL;
+        add("", "", CHANNEL_CONTROL_UPDATE, ITEMT_SWITCH, group, null, false, false);
         add("", "", CHANNEL_CONTROL_LOCK, ITEMT_SWITCH, group, null, false, false);
         add("", "", CHANNEL_CONTROL_ENGINE, ITEMT_SWITCH, group, null, false, false);
         add("", "", CHANNEL_CONTROL_CHARGER, ITEMT_SWITCH, group, null, false, false);

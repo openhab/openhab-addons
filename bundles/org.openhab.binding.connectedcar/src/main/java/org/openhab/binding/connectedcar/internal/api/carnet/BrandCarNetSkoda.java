@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
 import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
+import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.TokenManager;
 
 /**
@@ -28,7 +29,7 @@ import org.openhab.binding.connectedcar.internal.api.TokenManager;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class BrandCarNetSkoda extends CarNetApi {
+public class BrandCarNetSkoda extends CarNetApi implements BrandAuthenticator {
     public BrandCarNetSkoda(ApiHttpClient httpClient, TokenManager tokenManager,
             @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);

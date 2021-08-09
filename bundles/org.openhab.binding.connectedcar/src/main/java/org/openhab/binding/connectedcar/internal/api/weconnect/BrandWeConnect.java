@@ -12,17 +12,25 @@
  */
 package org.openhab.binding.connectedcar.internal.api.weconnect;
 
-import static org.openhab.binding.connectedcar.internal.CarUtils.generateNonce;
+import static org.openhab.binding.connectedcar.internal.CarUtils.*;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_VWID;
 import static org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCAPI_BASE_URL;
 
+import javax.ws.rs.core.HttpHeaders;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
+import org.openhab.binding.connectedcar.internal.api.ApiHttpMap;
+import org.openhab.binding.connectedcar.internal.api.ApiToken;
+import org.openhab.binding.connectedcar.internal.api.ApiToken.OAuthToken;
 import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
+import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.TokenManager;
+import org.openhab.binding.connectedcar.internal.api.TokenOAuthFlow;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetImageUrlsVW;
 
 /**
@@ -31,7 +39,7 @@ import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.Car
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class BrandWeConnect extends WeConnectApi {
+public class BrandWeConnect extends WeConnectApi implements BrandAuthenticator {
     public BrandWeConnect(ApiHttpClient httpClient, TokenManager tokenManager,
             @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
@@ -61,12 +69,37 @@ public class BrandWeConnect extends WeConnectApi {
         return properties;
     }
 
-    /*
-     * @Override
-     * public String getLoginUrl() throws ApiException {
-     * return http.get(config.api.loginUrl, fillAppHeaders()).response;
-     * }
-     */
+    @Override
+    public String getLoginUrl(TokenOAuthFlow oauth) throws ApiException {
+        return oauth.clearData().get(config.api.loginUrl).getLocation();
+    }
+
+    @Override
+    public ApiToken grantAccess(TokenOAuthFlow oauth) throws ApiException {
+        /*
+         * state: jwtstate,
+         * id_token: jwtid_token,
+         * redirect_uri: redirerctUri,
+         * region: "emea",
+         * access_token: jwtaccess_token,
+         * authorizationCode: jwtauth_code,
+         * });
+         */
+        String json = oauth.clearHeader().header(HttpHeader.HOST, "login.apps.emea.vwapps.io")//
+                .clearData().data("state", oauth.state).data("id_token", oauth.idToken)
+                .data("redirect_uri", config.api.redirect_uri).data("region", "emea")
+                .data("access_token", oauth.accessToken).data("authorizationCode", oauth.code) //
+                .post("https://login.apps.emea.vwapps.io/login/v1", true).response;
+        return new ApiToken(fromJson(gson, json, OAuthToken.class).normalize());
+    }
+
+    @Override
+    public OAuthToken refreshToken(ApiToken token) throws ApiException {
+        ApiHttpMap headers = new ApiHttpMap().header(HttpHeaders.AUTHORIZATION, "Bearer " + token.getRefreshToken());
+        String json = http.get(config.api.tokenRefreshUrl, headers.getHeaders()).response;
+        return fromJson(gson, json, OAuthToken.class);
+    }
+
     @Override
     public String[] getImageUrls() throws ApiException {
         if (config.vstatus.imageUrls.length == 0) {

@@ -13,12 +13,10 @@
 package org.openhab.binding.connectedcar.internal.api;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.toQuantityType;
 
 import java.util.Map;
 
 import javax.measure.IncommensurableException;
-import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,10 +28,10 @@ import org.openhab.binding.connectedcar.internal.handler.AccountHandler;
 import org.openhab.binding.connectedcar.internal.handler.VehicleBaseHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -118,65 +116,26 @@ public class ApiBaseService {
     }
 
     public boolean addChannels(Map<String, ChannelIdMapEntry> channels, boolean condition, String... channel) {
-        return addChannels(channels, "", condition, channel);
+        return thingHandler.addChannels(channels, "", condition, channel);
     }
 
     public boolean addChannels(Map<String, ChannelIdMapEntry> channels, String group, boolean condition,
             String... channel) {
-        if (!condition) {
-            return false;
-        }
-        boolean created = false;
-        for (String ch : channel) {
-            ChannelIdMapEntry definition = idMapper.find(ch);
-            if (definition == null) {
-                throw new IllegalArgumentException("Missing channel definition for " + ch);
-            }
-            created |= addChannel(channels, !group.isEmpty() ? group : definition.groupName, ch, definition.itemType,
-                    definition.unit, definition.advanced, definition.readOnly);
-        }
-        return created;
+        return thingHandler.addChannels(channels, group, condition, channel);
     }
 
-    public boolean addChannel(Map<String, ChannelIdMapEntry> channels, String group, String channel, String itemType,
-            @Nullable Unit<?> unit, boolean advanced, boolean readOnly) {
-        return thingHandler.addChannel(channels, group, channel, itemType, unit, advanced, readOnly);
+    protected boolean updateChannel(String channel, State value) {
+        return thingHandler.updateChannel(channel, value);
     }
 
-    protected boolean updateChannel(String channelId, State value) {
-        return updateChannel("", channelId, value);
+    protected boolean updateChannel(String group, String channel, State value) {
+        return thingHandler.updateChannel(group, channel, value);
     }
 
-    protected boolean updateChannel(String gr, String channelId, State value) {
-        ChannelIdMapEntry definition = idMapper.find(channelId);
-        if (definition == null) {
-            throw new IllegalArgumentException(
-                    "Unable to update channel " + channelId + ", missing channel definition ");
-        }
-
-        if (channelId.equals(CHANNEL_MAINT_ABDIST)) {
-            int i = 1;
-        }
-        String group = gr.isEmpty() ? definition.groupName : gr;
-        Unit<?> unit = definition.unit;
-        if (unit != null && value instanceof DecimalType) {
-            return thingHandler.updateChannel(group, definition.channelName, toQuantityType(
-                    ((DecimalType) value).doubleValue(), definition.digits == -1 ? 1 : definition.digits, unit));
-        } else {
-            return thingHandler.updateChannel(group, definition.channelName, value);
-        }
+    protected boolean updateChannel(Channel channel, State value) {
+        return thingHandler.updateChannel(channel.getUID().getIdWithoutGroup(), value);
     }
 
-    /*
-     *
-     * protected boolean updateChannel(String group, String channel, State value, Unit<?> unit) {
-     * return thingHandler.updateChannel(group, channel, value, unit);
-     * }
-     *
-     * protected boolean updateChannel(String group, String channel, State value, int digits, Unit<?> unit) {
-     * return thingHandler.updateChannel(group, channel, value, digits, unit);
-     * }
-     */
     protected State getDateTime(String time) {
         return CarUtils.getDateTime(time, thingHandler.getZoneId());
     }

@@ -26,7 +26,7 @@ import org.openhab.core.thing.ThingStatusDetail;
  * @author Markus Michels - Initial Contribution
  */
 @NonNullByDefault
-public interface BridgeListener {
+public interface AccountListener {
     void informationUpdate(@Nullable List<VehicleDetails> vehicleList);
 
     void stateChanged(ThingStatus status, ThingStatusDetail detail, String message);

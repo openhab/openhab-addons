@@ -69,9 +69,9 @@
 		<config-description-ref uri="thing-type:connectedcar:idvehicle"/>
 	</thing-type>
 
-	<thing-type id="enyakvehicle">
-		<label>@text/thing-type.connectedcar.enyakvehicle.label</label>
-		<description>@text/thing-type.connectedcar.enyakvehicle.description</description>
+	<thing-type id="sevehicle">
+		<label>@text/thing-type.connectedcar.sevehicle.label</label>
+		<description>@text/thing-type.connectedcar.sevehicle.description</description>
 
 		<channel-groups>
 			<channel-group id="general" typeId="general"/>

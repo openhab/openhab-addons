@@ -104,11 +104,6 @@ public class CarNetServiceStatus extends ApiBaseService {
             }
         }
 
-        /*
-         * addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION, ITEMT_STRING, null, false, true);
-         * addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION_STATUS, ITEMT_STRING, null, false, true);
-         * addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_ACTION_PENDING, ITEMT_SWITCH, null, false, true);
-         */
         addChannels(channels, CHANNEL_GROUP_GENERAL, true, CHANNEL_GENERAL_ACTION, CHANNEL_GENERAL_ACTION_STATUS,
                 CHANNEL_GENERAL_ACTION_PENDING);
         return updated;
@@ -175,16 +170,11 @@ public class CarNetServiceStatus extends ApiBaseService {
         }
 
         // Update aggregated status
-        updated |= thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_LOCKED,
-                vehicleLocked ? OnOffType.ON : OnOffType.OFF);
-        updated |= thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_LOCK,
-                vehicleLocked ? OnOffType.ON : OnOffType.OFF);
-        updated |= thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_MAINTREQ,
-                maintenanceRequired ? OnOffType.ON : OnOffType.OFF);
-        updated |= thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_TIRESOK,
-                tiresOk ? OnOffType.ON : OnOffType.OFF);
-        updated |= thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_GENERAL_WINCLOSED,
-                windowsClosed ? OnOffType.ON : OnOffType.OFF);
+        updated |= updateChannel(CHANNEL_GENERAL_LOCKED, vehicleLocked ? OnOffType.ON : OnOffType.OFF);
+        updated |= updateChannel(CHANNEL_CONTROL_LOCK, vehicleLocked ? OnOffType.ON : OnOffType.OFF);
+        updated |= updateChannel(CHANNEL_GENERAL_MAINTREQ, maintenanceRequired ? OnOffType.ON : OnOffType.OFF);
+        updated |= updateChannel(CHANNEL_GENERAL_TIRESOK, tiresOk ? OnOffType.ON : OnOffType.OFF);
+        updated |= updateChannel(CHANNEL_GENERAL_WINCLOSED, windowsClosed ? OnOffType.ON : OnOffType.OFF);
 
         return updated;
     }
@@ -268,7 +258,7 @@ public class CarNetServiceStatus extends ApiBaseService {
             }
         }
         logger.debug("{}: Updating channel {} with {}", thingId, channel.getUID().getId(), state);
-        return thingHandler.updateChannel(channel, state);
+        return updateChannel(channel, state);
     }
 
     private boolean updateSwitchChannel(Channel channel, ChannelIdMapEntry definition, CNStatusField field) {
@@ -298,7 +288,7 @@ public class CarNetServiceStatus extends ApiBaseService {
                     : (on ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
             logger.debug("{}: Map {}={} to state {} for channel {}", thingId, definition.symbolicName, value, state,
                     definition.channelName);
-            return thingHandler.updateChannel(channel, state);
+            return updateChannel(channel, state);
         } catch (NumberFormatException e) {
             logger.debug("{}: Unable to parse field value for {}: {}", thingId, field.id, field.value);
             return false;

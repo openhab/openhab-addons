@@ -43,9 +43,9 @@
 		<config-description-ref uri="bridge-type:connectedcar:cnaccount"/>
 	</bridge-type>
 
-	<bridge-type id="enyak">
-		<label>Skoda Enyak Account</label>
-		<description>This thing represents a Skoda Enyak Account.</description>
+	<bridge-type id="skoda-e">
+		<label>Skoda Electrical Vehicle Account (Skoda-E)</label>
+		<description>This thing represents an account for Skoda electrical vehicles.</description>
 		<config-description-ref uri="bridge-type:connectedcar:seaccount"/>
 	</bridge-type>
 

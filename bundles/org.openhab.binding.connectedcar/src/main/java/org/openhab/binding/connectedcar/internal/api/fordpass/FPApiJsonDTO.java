@@ -266,4 +266,18 @@ public class FPApiJsonDTO {
         public String version;
         public String status;
     }
+
+    public class FPRefreshResponse {
+        /*
+         * {
+         * "$id":"1",
+         * "commandId":"db8a4d86-5a21-4766-b114-0dc4cd52b09e",
+         * "status":200,
+         * "version":"1.0.0"
+         * }
+         */
+        public String commandId;
+        public String status;
+        public String version;
+    }
 }

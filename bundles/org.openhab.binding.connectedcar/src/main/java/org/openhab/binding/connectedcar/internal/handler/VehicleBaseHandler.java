@@ -77,7 +77,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public abstract class VehicleBaseHandler extends BaseThingHandler implements BridgeListener, ApiEventListener {
+public abstract class VehicleBaseHandler extends BaseThingHandler implements AccountListener, ApiEventListener {
     private final Logger logger = LoggerFactory.getLogger(VehicleBaseHandler.class);
     protected final TextResources resources;
     protected final ChannelDefinitions idMapper;
@@ -130,20 +130,43 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
             }
             accountHandler = handler;
 
-            config = accountHandler.getCombinedConfig();
-            config.vehicle = getConfigAs(VehicleConfiguration.class);
-            api = handler.createApi(config, this);
-            handler.registerListener(this);
-
-            setupPollingJob();
-
+            initializeConfig();
             if (config.vehicle.enableAddressLookup) {
                 // log to inform data protection sensible users
                 logger.info(
                         "{}: Reverse address lookup based on vehicle's geo position is enabled (using OpenStreetMap)",
                         thingId);
             }
+
+            api = handler.createApi(config, this);
+            handler.registerListener(this);
+            forceUpdate = true;
+            setupPollingJob();
         }, 3, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Initialize config: get config from account thing + vehicle thing
+     */
+    private void initializeConfig() {
+        if (accountHandler != null) {
+            config = accountHandler.getCombinedConfig();
+            config.vehicle = getConfigAs(VehicleConfiguration.class);
+            skipCount = Math.max(config.vehicle.pollingInterval * 60 / POLL_INTERVAL_SEC, 2);
+            cache.clear();
+
+            if (config.vehicle.vin.isEmpty()) {
+                Map<String, String> properties = getThing().getProperties();
+                String vin = properties.get(PROPERTY_VIN);
+                if (vin != null) {
+                    // migrate config
+                    config.vehicle.vin = vin;
+                    Configuration thingConfig = this.editConfiguration();
+                    thingConfig.put(PROPERTY_VIN, vin);
+                    this.updateConfiguration(thingConfig);
+                }
+            }
+        }
     }
 
     /**
@@ -165,18 +188,7 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
                 return false;
             }
 
-            config = new CombinedConfig(handler.getCombinedConfig(), getConfigAs(VehicleConfiguration.class));
-            if (config.vehicle.vin.isEmpty()) {
-                Map<String, String> properties = getThing().getProperties();
-                String vin = properties.get(PROPERTY_VIN);
-                if (vin != null) {
-                    // migrate config
-                    config.vehicle.vin = vin;
-                    Configuration thingConfig = this.editConfiguration();
-                    thingConfig.put(PROPERTY_VIN, vin);
-                    this.updateConfiguration(thingConfig);
-                }
-            }
+            initializeConfig();
             if (config.vehicle.vin.isEmpty()) {
                 logger.warn("VIN not set");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "VIN not set");
@@ -185,21 +197,17 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
 
             // Some providers require a 2nd login (e. g. Skoda-E)
             BrandApiProperties prop = api.getProperties2();
-            if ((prop != null) && (accountHandler != null)) {
+            if (prop != null) {
                 // Vehicle endpoint uses different properties
                 config.api = prop;
                 handler.createTokenSet(config);
             }
             config = api.initialize(config.vehicle.vin, config);
-
             if (!config.user.id.isEmpty()) {
                 logger.debug("{}: Active userId = {}, role = {} (securityLevel {}), status = {}, Pairing Code {}",
                         thingId, config.user.id, config.user.role, config.user.securityLevel, config.user.status,
                         config.vstatus.pairingInfo.pairingCode);
             }
-
-            skipCount = Math.max(config.vehicle.pollingInterval * 60 / POLL_INTERVAL_SEC, 2);
-            cache.clear(); // clear any cached channels
 
             // Create services
             registerServices();
@@ -213,8 +221,7 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
             if (!channelsCreated) {
                 // General channels
                 Map<String, ChannelIdMapEntry> channels = new LinkedHashMap<>();
-                addChannel(channels, CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_UPDATED, ITEMT_DATETIME, null, false, true);
-                addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_UPDATE, ITEMT_SWITCH, null, false, false);
+                addChannels(channels, true, CHANNEL_GENERAL_UPDATED, CHANNEL_CONTROL_UPDATE);
                 createBrandChannels(channels);
                 for (int i = 0; i < config.vstatus.imageUrls.length; i++) {
                     addChannel(channels, CHANNEL_GROUP_PICTURES, CHANNEL_PICTURES_IMG_PREFIX + (i + 1), ITEMT_STRING,
@@ -239,7 +246,6 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
                     updateChannel(CHANNEL_GROUP_PICTURES, CHANNEL_PICTURES_IMG_PREFIX + (i + 1),
                             new StringType(config.vstatus.imageUrls[i]));
                 }
-
             }
         } catch (ApiException e) {
             ApiErrorDTO res = e.getApiResult().getApiError();
@@ -264,6 +270,9 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
         return successful;
     }
 
+    /**
+     * Thing Command handler
+     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -322,12 +331,16 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
      */
     @Override
     public void stateChanged(ThingStatus status, ThingStatusDetail detail, String message) {
+        initializeConfig();
         forceUpdate = true;
-        cache.clear();
     }
 
+    /**
+     * Thing configuration changed
+     */
     @Override
     public void informationUpdate(@Nullable List<VehicleDetails> vehicleList) {
+        initializeConfig();
         forceUpdate = true;
         channelsCreated = false;
     }
@@ -343,7 +356,80 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
         forceUpdate = true;
     }
 
-    protected boolean updateVehicleStatus() throws ApiException {
+    /**
+     * Sets up a polling job (using the scheduler) with the given interval.
+     *
+     * @param initialWaitTime The delay before the first refresh. Maybe 0 to immediately
+     *            initiate a refresh.
+     */
+    private void setupPollingJob() {
+        cancelPollingJob();
+        logger.debug("Setting up polling job with an interval of {} seconds", config.vehicle.pollingInterval * 60);
+
+        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+            ++updateCounter;
+            if ((updateCounter % API_REQUEST_CHECK_INT) == 0) {
+                // Check results for pending requests, remove expires ones from the list
+                api.checkPendingRequests();
+            }
+
+            if (forceUpdate || (updateCounter % skipCount == 0)) {
+                AccountHandler handler = accountHandler;
+                if (handler != null) {
+                    String error = "";
+                    boolean initialized = true;
+                    try {
+                        Bridge bridge = getBridge();
+                        ThingStatus s = getThing().getStatus();
+                        if ((bridge == null) || bridge.getStatus() != ThingStatus.ONLINE) {
+                            error = "Account Thing is offline";
+                            if (s != ThingStatus.OFFLINE) {
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                                        "Account Thing is offline!");
+                            }
+                        } else {
+                            boolean offline = (s == ThingStatus.UNKNOWN) || (s == ThingStatus.OFFLINE);
+                            if (offline) {
+                                initialized = initializeThing();
+                            }
+                            if (initialized) {
+                                updateVehicleStatus(); // on success thing must be online
+                            }
+                        }
+                    } catch (ApiException e) {
+                        if (e.isTooManyRequests() || e.isHttpNotModified()) {
+                            logger.debug("{}: Status update failed, ignore temporary error (HTTP {})", thingId,
+                                    e.getApiResult().httpCode);
+                        } else {
+                            error = getError(e);
+                        }
+                    } catch (RuntimeException e) {
+                        error = "General Error: " + getString(e.getMessage());
+                        logger.warn("{}: {}", thingId, error, e);
+                    }
+                    if (error.isEmpty()) {
+                        if ((updateCounter >= cacheCount) && !cache.isEnabled()) {
+                            logger.debug("{}: Enabling channel cache", thingId);
+                            cache.enable();
+                        }
+                        if (getThing().getStatus() != ThingStatus.ONLINE) {
+                            logger.debug("{}: Thing is now online", thingId);
+                            updateAllChannels();
+                            updateStatus(ThingStatus.ONLINE);
+                        }
+                    } else {
+                        if (getThing().getStatus() != ThingStatus.OFFLINE) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+                        }
+                    }
+                }
+                forceUpdate = false;
+            }
+
+        }, 1, POLL_INTERVAL_SEC, TimeUnit.SECONDS);
+    }
+
+    private boolean updateVehicleStatus() throws ApiException {
         boolean pending = false;
         // check for pending refresh
         Map<String, CarNetPendingRequest> requests = api.getPendingRequests();
@@ -359,7 +445,7 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
                 requestStatus = false;
                 String status = api.refreshVehicleStatus();
                 logger.debug("{}: Vehicle status refresh initiated, status={}", thingId, status);
-                updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_UPDATE, OnOffType.OFF);
+                updateChannel(CHANNEL_CONTROL_UPDATE, OnOffType.OFF);
             } catch (ApiException e) {
                 logger.debug("{}: Unable to request status refresh from vehicle: {}", thingId, e.toString());
             }
@@ -392,10 +478,6 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
         return updateLastUpdate(updated);
     }
 
-    public State getChannelValue(String group, String channel) {
-        return cache.getValue(group, channel);
-    }
-
     @Override
     public void onActionSent(String service, String action, String requestId) {
         logger.debug("{}: Action {}.{} sent, ID={}", thingId, service, action, requestId);
@@ -422,76 +504,11 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
 
     @Override
     public void onRateLimit(int rateLimit) {
-        updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_RATELIM, new DecimalType(rateLimit));
+        updateChannel(CHANNEL_GENERAL_RATELIM, new DecimalType(rateLimit));
     }
 
     public boolean updateActionStatus(String service, String action, String statusDetail) {
         return updateLastUpdate(true);
-    }
-
-    /**
-     * Sets up a polling job (using the scheduler) with the given interval.
-     *
-     * @param initialWaitTime The delay before the first refresh. Maybe 0 to immediately
-     *            initiate a refresh.
-     */
-    private void setupPollingJob() {
-        cancelPollingJob();
-        logger.debug("Setting up polling job with an interval of {} seconds", config.vehicle.pollingInterval * 60);
-
-        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-            ++updateCounter;
-            if ((updateCounter % API_REQUEST_CHECK_INT) == 0) {
-                // Check results for pending requests, remove expires ones from the list
-                api.checkPendingRequests();
-            }
-
-            if (forceUpdate || (updateCounter % skipCount == 0)) {
-                AccountHandler handler = accountHandler;
-                if (handler != null) {
-                    String error = "";
-                    boolean initialized = true;
-                    try {
-                        ThingStatus s = getThing().getStatus();
-                        boolean offline = (s == ThingStatus.UNKNOWN) || (s == ThingStatus.OFFLINE);
-                        if (offline) {
-                            initialized = initializeThing();
-                        }
-                        if (initialized) {
-                            updateVehicleStatus(); // on success thing must be online
-                        }
-                    } catch (ApiException e) {
-                        if (e.isTooManyRequests() || e.isHttpNotModified()) {
-                            logger.debug("{}: Status update failed, ignore temporary error (HTTP {})", thingId,
-                                    e.getApiResult().httpCode);
-                        } else {
-                            error = getError(e);
-                        }
-                    } catch (RuntimeException e) {
-                        error = "General Error: " + getString(e.getMessage());
-                        logger.warn("{}: {}", thingId, error, e);
-                    }
-                    if (error.isEmpty()) {
-                        if (getThing().getStatus() != ThingStatus.ONLINE) {
-                            logger.debug("{}: Thing is now online", thingId);
-                            updateAllChannels();
-                            updateStatus(ThingStatus.ONLINE);
-                        }
-                    } else {
-                        if (getThing().getStatus() != ThingStatus.OFFLINE) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
-                        }
-                    }
-
-                    if ((updateCounter >= cacheCount) && !cache.isEnabled()) {
-                        logger.debug("{}: Enabling channel cache", thingId);
-                        cache.enable();
-                    }
-                }
-                forceUpdate = false;
-            }
-
-        }, 1, POLL_INTERVAL_SEC, TimeUnit.SECONDS);
     }
 
     private void cancelPollingJob() {
@@ -544,7 +561,7 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
         return created;
     }
 
-    public boolean addChannel(Map<String, ChannelIdMapEntry> channels, String group, String channel, String itemType,
+    private boolean addChannel(Map<String, ChannelIdMapEntry> channels, String group, String channel, String itemType,
             @Nullable Unit<?> unit, boolean advanced, boolean readOnly) {
         if (!channels.containsKey(mkChannelId(group, channel))) {
             logger.debug("{}: Adding channel definition for channel {}", thingId, mkChannelId(group, channel));
@@ -552,6 +569,27 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
             return true;
         }
         return false;
+    }
+
+    public boolean addChannels(Map<String, ChannelIdMapEntry> channels, String group, boolean condition,
+            String... channel) {
+        if (!condition) {
+            return false;
+        }
+        boolean created = false;
+        for (String ch : channel) {
+            ChannelIdMapEntry definition = idMapper.find(ch);
+            if (definition == null) {
+                throw new IllegalArgumentException("Missing channel definition for " + ch);
+            }
+            created |= addChannel(channels, !group.isEmpty() ? group : definition.groupName, ch, definition.itemType,
+                    definition.unit, definition.advanced, definition.readOnly);
+        }
+        return created;
+    }
+
+    public boolean addChannels(Map<String, ChannelIdMapEntry> channels, boolean condition, String... channel) {
+        return addChannels(channels, "", condition, channel);
     }
 
     protected void updateAllChannels() {
@@ -562,31 +600,47 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
 
     protected boolean updateLastUpdate(boolean updated) {
         if (updated) {
-            updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_UPDATED, getTimestamp(zoneId));
+            updateChannel(CHANNEL_GENERAL_UPDATED, getTimestamp(zoneId));
         }
         return updated;
     }
 
-    public boolean updateChannel(String channelId, State value) {
-        return cache.updateChannel(channelId, value, false);
+    public boolean updateChannel(String gr, String channel, State value) {
+        ChannelIdMapEntry definition = idMapper.find(channel);
+        if (definition == null) {
+            throw new IllegalArgumentException("Unable to update channel " + channel + ", missing channel definition ");
+        }
+
+        String group = gr.isEmpty() ? definition.groupName : gr;
+        String channelId = mkChannelId(group, definition.channelName);
+        Unit<?> unit = definition.unit;
+        if (unit != null && value instanceof DecimalType) {
+            return cache.updateChannel(channelId, toQuantityType(((DecimalType) value).doubleValue(),
+                    definition.digits == -1 ? 1 : definition.digits, unit));
+        } else {
+            return cache.updateChannel(channelId, value);
+        }
     }
 
-    public boolean updateChannel(String group, String channel, State value) {
-        return updateChannel(mkChannelId(group, channel), value);
-    }
-
-    public boolean updateChannel(String group, String channel, State value, Unit<?> unit) {
-        return updateChannel(group, channel, toQuantityType((Number) value, unit));
-    }
-
-    public boolean updateChannel(String group, String channel, State value, int digits, Unit<?> unit) {
-        return updateChannel(group, channel, toQuantityType(((DecimalType) value).doubleValue(), digits, unit));
+    public boolean updateChannel(String channel, State value) {
+        return updateChannel("", channel, value);
     }
 
     public boolean updateChannel(Channel channel, State value) {
-        return updateChannel(channel.getUID().getId(), value);
+        return updateChannel(channel.getUID().getIdWithoutGroup(), value);
     }
 
+    public State getChannelValue(String group, String channel) {
+        return cache.getValue(group, channel);
+    }
+
+    /**
+     * Do the channel update
+     *
+     * @param channelId Channel Id (group#channel)
+     * @param value State value
+     * @return true: update called, false: update skipped
+     */
     public boolean publishState(String channelId, State value) {
         if (!stopping && isLinked(channelId)) {
             updateState(channelId, value);
@@ -636,25 +690,6 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
         return message;
     }
 
-    protected String getReason(ApiErrorDTO error) {
-        return "";
-    }
-
-    public void registerServices() {
-        // default: none
-    }
-
-    protected boolean addService(ApiBaseService service) {
-        String serviceId = service.getServiceId();
-        boolean available = false;
-        if (!services.containsKey(serviceId) && service.isEnabled()) {
-            services.put(serviceId, service);
-            available = true;
-        }
-        logger.debug("{}: Remote Control Service {} {} available", thingId, serviceId, available ? "is" : "is NOT");
-        return available;
-    }
-
     protected String getApiStatus(String errorMessage, String errorClass) {
         if (errorMessage.contains(errorClass)) {
             // extract the error code like VSR.security.9007
@@ -662,6 +697,10 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
                     + substringBefore(substringAfterLast(errorMessage, API_STATUS_CLASS_SECURUTY + "."), ")").trim();
             return resources.get(key);
         }
+        return "";
+    }
+
+    protected String getReason(ApiErrorDTO error) {
         return "";
     }
 
@@ -677,15 +716,15 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
         return zoneId;
     }
 
-    public boolean createBrandChannels(Map<String, ChannelIdMapEntry> channels) {
-        return false;
-    }
-
-    /**
-     * Device specific command handlers are overriding this method to do additional stuff
-     */
-    public boolean handleBrandCommand(ChannelUID channelUID, Command command) throws ApiException {
-        return false;
+    protected boolean addService(ApiBaseService service) {
+        String serviceId = service.getServiceId();
+        boolean available = false;
+        if (!services.containsKey(serviceId) && service.isEnabled()) {
+            services.put(serviceId, service);
+            available = true;
+        }
+        logger.debug("{}: Remote Control Service {} {} available", thingId, serviceId, available ? "is" : "is NOT");
+        return available;
     }
 
     @Override
@@ -694,5 +733,17 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Bri
         logger.debug("Handler has been disposed");
         cancelPollingJob();
         super.dispose();
+    }
+
+    public boolean createBrandChannels(Map<String, ChannelIdMapEntry> channels) {
+        return false;
+    }
+
+    public boolean handleBrandCommand(ChannelUID channelUID, Command command) throws ApiException {
+        return false;
+    }
+
+    public void registerServices() {
+        // default: none
     }
 }

@@ -30,6 +30,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.CarPosition
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleDetails;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleStatus;
 import org.openhab.binding.connectedcar.internal.api.ApiToken.JwtToken;
+import org.openhab.binding.connectedcar.internal.api.ApiToken.OAuthToken;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetPendingRequest;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.openhab.binding.connectedcar.internal.config.VehicleConfiguration;
@@ -46,7 +47,7 @@ import com.google.gson.Gson;
  *
  */
 @NonNullByDefault
-public class ApiBase implements BrandAuthenticator, ApiBrandInterface {
+public class ApiBase implements ApiBrandInterface, BrandAuthenticator {
     private static final String SUCCESSFUL = API_REQUEST_SUCCESSFUL;
     private static final String UNSUPPORTED = API_REQUEST_UNSUPPORTED;
 
@@ -351,7 +352,7 @@ public class ApiBase implements BrandAuthenticator, ApiBrandInterface {
     }
 
     @Override
-    public String getLoginUrl() throws ApiException {
+    public String getLoginUrl(TokenOAuthFlow oauth) throws ApiException {
         return "";
     }
 
@@ -366,9 +367,9 @@ public class ApiBase implements BrandAuthenticator, ApiBrandInterface {
     }
 
     @Override
-    public ApiToken refreshToken(CombinedConfig config, ApiToken token) throws ApiException {
+    public OAuthToken refreshToken(ApiToken token) throws ApiException {
         if (config.authenticator != null) {
-            return config.authenticator.refreshToken(config, token);
+            return config.authenticator.refreshToken(token);
         }
         throw new ApiException("BrandAuthenticator.refreshToken() is missing");
     }

@@ -28,7 +28,6 @@ import javax.measure.IncommensurableException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.connectedcar.internal.api.ApiBase;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.CarPosition;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleDetails;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleStatus;
@@ -38,6 +37,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
 import org.openhab.binding.connectedcar.internal.api.ApiResult;
 import org.openhab.binding.connectedcar.internal.api.ApiToken.JwtToken;
+import org.openhab.binding.connectedcar.internal.api.ApiWithOAuth;
 import org.openhab.binding.connectedcar.internal.api.TokenManager;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNChargerInfo;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNChargerInfo.CarNetChargerStatus;
@@ -90,7 +90,7 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetApi extends ApiBase {
+public class CarNetApi extends ApiWithOAuth {
     private final Logger logger = LoggerFactory.getLogger(CarNetApi.class);
 
     public CarNetApi(ApiHttpClient httpClient, TokenManager tokenManager, @Nullable ApiEventListener eventListener) {

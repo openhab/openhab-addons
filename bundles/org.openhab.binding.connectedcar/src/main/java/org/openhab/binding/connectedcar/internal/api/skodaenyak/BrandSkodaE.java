@@ -12,41 +12,49 @@
  */
 package org.openhab.binding.connectedcar.internal.api.skodaenyak;
 
-import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_ENYAK;
+import static org.openhab.binding.connectedcar.internal.BindingConstants.CONTENT_TYPE_FORM_URLENC;
+import static org.openhab.binding.connectedcar.internal.CarUtils.fromJson;
+import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_SKODA_E;
 import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_VW_TOKEN_URL;
+
+import javax.ws.rs.core.HttpHeaders;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
+import org.openhab.binding.connectedcar.internal.api.ApiToken;
 import org.openhab.binding.connectedcar.internal.api.ApiToken.JwtToken;
+import org.openhab.binding.connectedcar.internal.api.ApiToken.OAuthToken;
 import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
+import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.TokenManager;
+import org.openhab.binding.connectedcar.internal.api.TokenOAuthFlow;
 import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetSkoda;
 
 /**
- * {@link BrandSkodaEnyak} provides the Brand interface for Skoda Enyak
+ * {@link BrandSkodaE} provides the Brand interface for Skoda Enyak
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class BrandSkodaEnyak extends SkodaEnyakApi {
+public class BrandSkodaE extends SkodaEApi implements BrandAuthenticator {
     private final static String API_URL = "https://api.connect.skoda-auto.cz/api";
 
-    public BrandSkodaEnyak(ApiHttpClient httpClient, TokenManager tokenManager,
-            @Nullable ApiEventListener eventListener) {
+    public BrandSkodaE(ApiHttpClient httpClient, TokenManager tokenManager, @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
 
     @Override
     public BrandApiProperties getProperties() {
-        // Properties for the Enyaq native API
+        // Properties for the Skoda-E native API
         // required to get the vehicle list
         BrandApiProperties properties = new BrandApiProperties();
         properties.userAgent = "OneConnect/000000023 CFNetwork/978.0.7 Darwin/18.7.0";
         properties.apiDefaultUrl = API_URL;
-        properties.brand = API_BRAND_ENYAK;
+        properties.brand = API_BRAND_SKODA_E;
         properties.xcountry = "CZ";
         properties.clientId = "f9a2359a-b776-46d9-bd0c-db1904343117@apps_vw-dilab_com";
         properties.xClientId = "28cd30c6-dee7-4529-a0e6-b1e07ff90b79";
@@ -65,11 +73,20 @@ public class BrandSkodaEnyak extends SkodaEnyakApi {
     public @Nullable BrandApiProperties getProperties2() {
         // The vehicle API uses a different endpoint / client id
         BrandApiProperties properties = BrandCarNetSkoda.getSkodaProperties();
-        properties.brand = API_BRAND_ENYAK;
+        properties.brand = API_BRAND_SKODA_E;
         properties.apiDefaultUrl = API_URL;
         properties.authScope = "openid profile phone address cars email birthdate badge dealers driversLicense mbb";
         properties.responseType = "code id_token";
         return properties;
+    }
+
+    @Override
+    public ApiToken grantAccess(TokenOAuthFlow oauth) throws ApiException {
+        String json = oauth.clearHeader().header(HttpHeader.HOST, "tokenrefreshservice.apps.emea.vwapps.io")//
+                .header(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE_FORM_URLENC).clearData().data("auth_code", oauth.code)
+                .data("id_token", oauth.idToken).data("brand", "skoda") //
+                .post("https://tokenrefreshservice.apps.emea.vwapps.io/exchangeAuthCode", false).response;
+        return new ApiToken(fromJson(gson, json, OAuthToken.class));
     }
 
     @Override

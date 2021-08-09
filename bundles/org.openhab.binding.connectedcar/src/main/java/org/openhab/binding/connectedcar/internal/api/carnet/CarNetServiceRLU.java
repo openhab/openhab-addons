@@ -50,7 +50,7 @@ public class CarNetServiceRLU extends ApiBaseService {
 
     @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws ApiException {
-        addChannel(channels, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_LOCK, ITEMT_SWITCH, null, false, false);
+        addChannels(channels, CHANNEL_GROUP_CONTROL, true, CHANNEL_CONTROL_LOCK);
         int count = getConfig().vehicle.numRluHistory;
         for (int i = 1; i <= count; i++) {
             String group = CHANNEL_GROUP_RLUHIST + i;

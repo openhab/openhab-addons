@@ -115,6 +115,12 @@ public class ApiToken {
         }
     }
 
+    public static class TokenSet {
+        public ApiToken apiToken = new ApiToken();
+        public ApiToken idToken = new ApiToken();
+        public ApiHttpClient http = new ApiHttpClient();
+    }
+
     public ApiToken() {
     }
 
@@ -125,6 +131,7 @@ public class ApiToken {
     }
 
     public ApiToken(OAuthToken token) {
+        token.normalize();
         idToken = getString(token.idToken);
         accessToken = getString(token.accessToken);
         securityToken = getString(token.securityToken);

@@ -27,7 +27,7 @@ An account is required to setup the connection (register on the manufacture's po
 The  Account Thing has to be added manually giving the necessary credentials.
 Once the account is online the binding can query all registered vehicles and creates a vehicle thing for each of them.
 
-Make sure to select the correct type of Account Think (e.g. select Sokda Enyaq instead of Skoda, which is for non-electrical models).
+Make sure to select the correct type of Account Think (e.g. select Sokda Electrical instead of Skoda, which is for non-electrical models).
 
 ## connectedcar: Audi, VW, Skoda
 
@@ -404,12 +404,12 @@ If you don't already have one you need to create a Volkswagen ID and add the veh
 |              | remainingClimatisation      | Number:Time          | yes     | Remaining time for climatisation                                                                |
 |              | targetTemperature           | Number:Temperature   | yes     | Target temperature for the A/C climater                                                         |
 
-## Skoda Enyaq
+## Skoda Electrical Vehicles
 
-Select this account type only if you have a Skoda Enyaq electrical car.
+Select this account type only if you have a electrical Skoda  vehicle (e.g. Enyaq).
 For other models select the Skoda (CarNet) account thing type (see above for further information).
 
-### Enyaq Account Thing (enyak)
+### Skoda-E Account Thing (skoda-e)
 
 You need the credentials used for the Skoda Connect portal.
 
@@ -418,9 +418,9 @@ You need the credentials used for the Skoda Connect portal.
 |user                 | User ID for your CarNet account (same as login id for the manuafacturer's portal)         | yes     | none      |
 |password             | Password for the CarNet account (same as portal)                                          | yes     | none      |
 
-### Enyaq Vehicle thing (enyakvehicle)
+### Skoda-E Vehicle thing (sevehicle)
 
-### Channels for the Enyaq Vehicles
+### Channels for the Skoda-E Vehicles
 
 | Group        | Channel                     | Item Type            |Read only| Description                    |
 |--------------|-----------------------------|----------------------|---------|--------------------------------|

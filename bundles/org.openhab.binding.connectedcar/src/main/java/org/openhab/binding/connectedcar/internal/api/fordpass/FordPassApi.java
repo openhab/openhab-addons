@@ -37,6 +37,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpMap;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.TokenManager;
+import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPRefreshResponse;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleListData;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleListData.FPVehicleData.FPVehicle;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleStatusData;
@@ -96,18 +97,13 @@ public class FordPassApi extends ApiBase implements BrandAuthenticator {
         if (vehicleList.containsKey(vin)) {
             VehicleDetails details = new VehicleDetails();
             FPVehicle vehicle = vehicleList.get(vin);
-            details.vin = vehicle.vin;
-            details.brand = API_BRAND_FORD;
-            details.color = vehicle.color;
-            String model = details.brand + " " + vehicle.vehicleType;
-            details.model = !vehicle.nickName.isEmpty() ? vehicle.nickName + " (" + model + ")" : model;
-
-            String data;
-            ApiHttpMap params = createApiParameters();
-            // https://github.com/ianjwhite99/sync-connect-sdk/blob/0f3cfbfa680b5c578cfcd06801b4c3f242e979f2/syncconnect/vehicle.py
-            // data = callApi("", "vehicles/v2/{2}/drivers", params.getHeaders(), "getVehicleDrivers", String.class);
-            // data = callApi("", "vehicles/{2}/authstatus" + URL_PARM_LRDT, params.getHeaders(), "getVehicleDrivers",
-            // String.class);
+            if (vehicle != null) {
+                details.vin = vehicle.vin;
+                details.brand = API_BRAND_FORD;
+                details.color = vehicle.color;
+                String model = details.brand + " " + vehicle.vehicleType;
+                details.model = !vehicle.nickName.isEmpty() ? vehicle.nickName + " (" + model + ")" : model;
+            }
             return details;
         }
         throw new IllegalArgumentException("Unknown VIN " + vin);
@@ -123,15 +119,9 @@ public class FordPassApi extends ApiBase implements BrandAuthenticator {
     @Override
     public String refreshVehicleStatus() throws ApiException {
         ApiHttpMap parms = createApiParameters();
-        String json = http.put("vehicles/v4/{2}/status", parms.getHeaders(), "").response;
-        /*
-         * response = self.api.get(
-         * const.API_URL,
-         * 'vehicles/v3/' +
-         * self.vehicle_id +
-         * '/statusrefresh/ffe168a3-657f-4b74-9668-909c60e2379f')
-         */
-        return API_REQUEST_SUCCESSFUL;
+        String json = http.put("vehicles/v2/{2}/status", parms.getHeaders(), "").response;
+        FPRefreshResponse rsp = fromJson(gson, json, FPRefreshResponse.class);
+        return "200".equals(rsp.status) ? API_REQUEST_SUCCESSFUL : API_REQUEST_FAILED;
     }
 
     @Override

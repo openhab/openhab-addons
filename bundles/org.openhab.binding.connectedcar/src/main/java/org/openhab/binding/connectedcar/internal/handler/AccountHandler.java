@@ -44,7 +44,7 @@ import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetSeat;
 import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetSkoda;
 import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetVW;
 import org.openhab.binding.connectedcar.internal.api.fordpass.BrandFordPass;
-import org.openhab.binding.connectedcar.internal.api.skodaenyak.BrandSkodaEnyak;
+import org.openhab.binding.connectedcar.internal.api.skodaenyak.BrandSkodaE;
 import org.openhab.binding.connectedcar.internal.api.weconnect.BrandWeConnect;
 import org.openhab.binding.connectedcar.internal.config.AccountConfiguration;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
@@ -77,7 +77,7 @@ public class AccountHandler extends BaseBridgeHandler {
 
     private ApiBase api = new BrandNull();
     private List<VehicleDetails> vehicleList = new CopyOnWriteArrayList<>();
-    private List<BridgeListener> vehicleInformationListeners = new CopyOnWriteArrayList<>();
+    private List<AccountListener> vehicleInformationListeners = new CopyOnWriteArrayList<>();
     private @Nullable ScheduledFuture<?> refreshJob;
 
     private static Client sslStrongCipher = new Client();
@@ -97,7 +97,7 @@ public class AccountHandler extends BaseBridgeHandler {
         brandMap.put(THING_VWWC, API_BRAND_WECHARGE);
         brandMap.put(THING_SEAT, API_BRAND_SEAT);
         brandMap.put(THING_SKODA, API_BRAND_SKODA);
-        brandMap.put(THING_ENYAK, API_BRAND_ENYAK);
+        brandMap.put(THING_SKODA_E, API_BRAND_SKODA_E);
         brandMap.put(THING_FORD, API_BRAND_FORD);
     }
 
@@ -227,8 +227,8 @@ public class AccountHandler extends BaseBridgeHandler {
                 return new BrandCarNetSkoda(httpClient, tokenManager, apiListener);
             case API_BRAND_SEAT:
                 return new BrandCarNetSeat(httpClient, tokenManager, apiListener);
-            case API_BRAND_ENYAK:
-                return new BrandSkodaEnyak(httpClient, tokenManager, apiListener);
+            case API_BRAND_SKODA_E:
+                return new BrandSkodaE(httpClient, tokenManager, apiListener);
             case API_BRAND_FORD:
                 return new BrandFordPass(httpClient, tokenManager, apiListener);
             default:
@@ -261,7 +261,7 @@ public class AccountHandler extends BaseBridgeHandler {
      *
      * @param listener Listener interface provided by Vehicle Handler
      */
-    public void registerListener(BridgeListener listener) {
+    public void registerListener(AccountListener listener) {
         vehicleInformationListeners.add(listener);
     }
 
@@ -270,7 +270,7 @@ public class AccountHandler extends BaseBridgeHandler {
      *
      * @param listener Listener interface provided by Vehicle Handler
      */
-    public void unregisterListener(BridgeListener listener) {
+    public void unregisterListener(AccountListener listener) {
         vehicleInformationListeners.remove(listener);
     }
 

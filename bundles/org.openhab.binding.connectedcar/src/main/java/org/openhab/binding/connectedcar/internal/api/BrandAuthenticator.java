@@ -13,7 +13,7 @@
 package org.openhab.binding.connectedcar.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
+import org.openhab.binding.connectedcar.internal.api.ApiToken.OAuthToken;
 
 /**
  * {@link BrandAuthenticator} defines the interface for brand specific authentication support/flow
@@ -22,13 +22,13 @@ import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
  */
 @NonNullByDefault
 public interface BrandAuthenticator {
-    public String getLoginUrl() throws ApiException;
+    public String getLoginUrl(TokenOAuthFlow oauth) throws ApiException;
 
     public ApiToken login(String loginUrl, TokenOAuthFlow oauth) throws ApiException;
 
     public ApiToken grantAccess(TokenOAuthFlow oauth) throws ApiException;
 
-    public ApiToken refreshToken(CombinedConfig config, ApiToken token) throws ApiException;
+    public OAuthToken refreshToken(ApiToken token) throws ApiException;
 
     public String updateAuthorizationUrl(String url) throws ApiException;
 }

@@ -50,7 +50,7 @@ public class BindingConstants {
     public static final String THING_VWWC = "wecharge";
     public static final String THING_SEAT = "seat";
     public static final String THING_SKODA = "skoda";
-    public static final String THING_ENYAK = "enyak";
+    public static final String THING_SKODA_E = "skoda-e";
     public static final String THING_FORD = "ford";
 
     public static final ThingTypeUID THING_TYPE_MYAUDI = new ThingTypeUID(BINDING_ID, THING_MYAUDI);
@@ -59,14 +59,14 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_VWGO = new ThingTypeUID(BINDING_ID, THING_VWGO);
     public static final ThingTypeUID THING_TYPE_SKODA = new ThingTypeUID(BINDING_ID, THING_SKODA);
     public static final ThingTypeUID THING_TYPE_SEAT = new ThingTypeUID(BINDING_ID, THING_SEAT);
-    public static final ThingTypeUID THING_TYPE_ENYAK = new ThingTypeUID(BINDING_ID, THING_ENYAK);
+    public static final ThingTypeUID THING_TYPE_ENYAK = new ThingTypeUID(BINDING_ID, THING_SKODA_E);
     public static final ThingTypeUID THING_TYPE_FORD = new ThingTypeUID(BINDING_ID, THING_FORD);
 
     public static final ThingTypeUID THING_TYPE_CNVEHICLE = new ThingTypeUID(BINDING_ID, "cnvehicle");
     public static final ThingTypeUID THING_TYPE_IDVEHICLE = new ThingTypeUID(BINDING_ID, "idvehicle");
     public static final ThingTypeUID THING_TYPE_GOPLUG = new ThingTypeUID(BINDING_ID, "goplug");
     public static final ThingTypeUID THING_TYPE_WCWALLBOX = new ThingTypeUID(BINDING_ID, "wcbox");
-    public static final ThingTypeUID THING_TYPE_ENYAKVEHICLE = new ThingTypeUID(BINDING_ID, "enyakvehicle");
+    public static final ThingTypeUID THING_TYPE_ENYAKVEHICLE = new ThingTypeUID(BINDING_ID, "sevehicle");
     public static final ThingTypeUID THING_TYPE_FORDVEHICLE = new ThingTypeUID(BINDING_ID, "fordvehicle");
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream

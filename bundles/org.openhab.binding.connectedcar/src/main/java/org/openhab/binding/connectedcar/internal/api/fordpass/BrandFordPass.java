@@ -24,9 +24,9 @@ import org.openhab.binding.connectedcar.internal.api.ApiHttpMap;
 import org.openhab.binding.connectedcar.internal.api.ApiToken;
 import org.openhab.binding.connectedcar.internal.api.ApiToken.OAuthToken;
 import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
+import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.TokenManager;
 import org.openhab.binding.connectedcar.internal.api.TokenOAuthFlow;
-import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 
 /**
  * {@link BrandApiFord} provides the brand specific functions of the API
@@ -34,7 +34,7 @@ import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class BrandFordPass extends FordPassApi {
+public class BrandFordPass extends FordPassApi implements BrandAuthenticator {
     static BrandApiProperties properties = new BrandApiProperties();
     static {
         properties.brand = API_BRAND_FORD;
@@ -64,7 +64,7 @@ public class BrandFordPass extends FordPassApi {
     }
 
     @Override
-    public String getLoginUrl() {
+    public String getLoginUrl(TokenOAuthFlow oauth) {
         return properties.loginUrl;
     }
 
@@ -90,12 +90,11 @@ public class BrandFordPass extends FordPassApi {
     }
 
     @Override
-    public ApiToken refreshToken(CombinedConfig config, ApiToken apiToken) throws ApiException {
+    public OAuthToken refreshToken(ApiToken apiToken) throws ApiException {
         ApiHttpMap params = super.createApiParameters() //
                 .data("refresh_token", apiToken.getRefreshToken());
         String json = http.put(config.api.tokenRefreshUrl, params.getHeaders(), //
                 params.getRequestData(true)).response;
-        OAuthToken newToken = fromJson(gson, json, OAuthToken.class).normalize();
-        return apiToken.updateToken(newToken);
+        return fromJson(gson, json, OAuthToken.class).normalize();
     }
 }
