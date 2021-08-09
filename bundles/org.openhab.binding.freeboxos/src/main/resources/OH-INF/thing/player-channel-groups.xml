@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-group-type id="player-actions">
-		<label>Player settings</label>
+		<label>Player Settings</label>
 		<channels>
 			<channel id="airmedia-status" typeId="airmedia-status"/>
 			<channel id="key-code" typeId="key-code"/>
@@ -13,7 +13,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="player-status">
-		<label>Player status</label>
+		<label>Player Status</label>
 		<channels>
 			<channel id="player-status" typeId="player-status"/>
 		</channels>

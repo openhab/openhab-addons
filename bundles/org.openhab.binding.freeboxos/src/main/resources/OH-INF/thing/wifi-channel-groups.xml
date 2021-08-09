@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-group-type id="wifi">
-		<label>Wifi related informations</label>
+		<label>Wifi Related Information</label>
 		<channels>
 			<channel id="rssi" typeId="rssi"/>
 			<channel id="wifi-quality" typeId="system.signal-strength"/>

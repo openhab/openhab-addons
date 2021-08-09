@@ -42,7 +42,6 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,16 +70,6 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
 
     public ApiHandler getApi() {
         return bridgeHandler.getApi();
-    }
-
-    @Override
-    public boolean isLinked(ChannelUID channelUID) {
-        return super.isLinked(channelUID);
-    }
-
-    @Override
-    public void updateState(ChannelUID channelUID, State state) {
-        super.updateState(channelUID, state);
     }
 
     @Override

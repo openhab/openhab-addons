@@ -8,7 +8,7 @@
 		<label>Repeater Settings</label>
 		<channels>
 			<channel id="start-timestamp" typeId="timestamp">
-				<label>Started since</label>
+				<label>Started Since</label>
 			</channel>
 			<channel id="led" typeId="led"/>
 			<channel id="connection-status" typeId="connection-status"/>

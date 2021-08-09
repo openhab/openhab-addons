@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-group-type id="sensors">
-		<label>System sensors</label>
+		<label>System Sensors</label>
 	</channel-group-type>
 
 	<channel-group-type id="sysinfo">
@@ -17,7 +17,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="actions">
-		<label>Server settings</label>
+		<label>Server Settings</label>
 		<channels>
 			<channel id="wifi-status" typeId="wifi-status"/>
 			<channel id="ftp-status" typeId="ftp-status"/>
@@ -26,7 +26,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="samba">
-		<label>Windows file sharing</label>
+		<label>Windows File Sharing</label>
 		<channels>
 			<channel id="fileshare-status" typeId="fileshare-status"/>
 			<channel id="printershare-status" typeId="printershare-status"/>
@@ -34,7 +34,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="display">
-		<label>Front display panel</label>
+		<label>Front Display Panel</label>
 		<channels>
 			<channel id="lcd-brightness" typeId="lcd-brightness"/>
 			<channel id="lcd-orientation" typeId="lcd-orientation"/>
@@ -43,7 +43,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="connection-status">
-		<label>Connection Status details</label>
+		<label>Connection Status Details</label>
 		<channels>
 			<channel id="line-status" typeId="line-status"/>
 			<channel id="ip-address" typeId="ip-address">

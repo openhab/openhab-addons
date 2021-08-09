@@ -31,10 +31,10 @@
 				<description>Caller phone number</description>
 			</channel>
 			<channel id="call-duration" typeId="call-duration">
-				<label>Incoming call Duration</label>
+				<label>Incoming Call Duration</label>
 			</channel>
 			<channel id="call-timestamp" typeId="timestamp">
-				<label>Incoming call timestamp</label>
+				<label>Incoming Call Timestamp</label>
 			</channel>
 			<channel id="call-name" typeId="call-name">
 				<label>Accepted Caller</label>
@@ -52,7 +52,7 @@
 				<description>Caller phone number</description>
 			</channel>
 			<channel id="call-timestamp" typeId="timestamp">
-				<label>Missed call timestamp</label>
+				<label>Missed Call Timestamp</label>
 			</channel>
 			<channel id="call-name" typeId="call-name">
 				<label>Missed Caller</label>
@@ -70,10 +70,10 @@
 				<description>Called phone number</description>
 			</channel>
 			<channel id="call-duration" typeId="call-duration">
-				<label>Outgoing call duration</label>
+				<label>Outgoing Call Duration</label>
 			</channel>
 			<channel id="call-timestamp" typeId="timestamp">
-				<label>Outgoing call timestamp</label>
+				<label>Outgoing Call Timestamp</label>
 			</channel>
 			<channel id="call-name" typeId="call-name">
 				<label>Called Name</label>

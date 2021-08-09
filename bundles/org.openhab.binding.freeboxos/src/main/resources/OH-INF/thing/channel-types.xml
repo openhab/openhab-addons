@@ -62,7 +62,7 @@
 
 	<channel-type id="alternate-ring">
 		<item-type>Switch</item-type>
-		<label>Alternating ring</label>
+		<label>Alternating Ring</label>
 		<category>Switch</category>
 	</channel-type>
 
