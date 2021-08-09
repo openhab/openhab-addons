@@ -23,13 +23,12 @@ import org.openhab.binding.nuki.internal.constants.NukiLinkBuilder;
 import org.openhab.binding.nuki.internal.dto.BridgeApiAuthDto;
 import org.openhab.binding.nuki.internal.dto.WebApiBridgeDiscoveryDto;
 import org.openhab.binding.nuki.internal.dto.WebApiBridgeDto;
+import org.openhab.binding.nuki.internal.service.NukiThingRegistryService;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.id.InstanceUUID;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -51,12 +50,15 @@ public class NukiBridgeDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(NukiBridgeDiscoveryService.class);
 
     private final HttpClient httpClient;
+    private final NukiThingRegistryService thingService;
     private final Gson gson = new Gson();
 
     @Activate
-    public NukiBridgeDiscoveryService(@Reference final HttpClientFactory httpClientFactory) {
+    public NukiBridgeDiscoveryService(@Reference final HttpClientFactory httpClientFactory,
+            @Reference final NukiThingRegistryService thingService) {
         super(Collections.singleton(NukiBindingConstants.THING_TYPE_BRIDGE), 30, false);
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.thingService = thingService;
     }
 
     @Override
@@ -84,16 +86,15 @@ public class NukiBridgeDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    private static String generateBridgeId(String bridgeNukiId) {
-        String hash = NukiLinkBuilder.sha256(InstanceUUID.get() + ":" + bridgeNukiId);
-        return hash.substring(0, 10);
-    }
-
     private void discoverBridges(WebApiBridgeDiscoveryDto discoveryResult) {
         logger.debug("Discovery finished, found {} bridges", discoveryResult);
 
         discoveryResult.getBridges().forEach(bridge -> {
-            scheduler.execute(new BridgeInitializer(bridge));
+            if (thingService.thingExists(bridge.getThingUid())) {
+                logger.debug("Bridge {} already exists, skipping discovery", bridge.getThingUid());
+            } else {
+                scheduler.execute(new BridgeInitializer(bridge));
+            }
         });
     }
 
@@ -108,10 +109,8 @@ public class NukiBridgeDiscoveryService extends AbstractDiscoveryService {
             name = "Nuki Bridge";
         }
 
-        DiscoveryResult result = DiscoveryResultBuilder
-                .create(new ThingUID(NukiBindingConstants.THING_TYPE_BRIDGE,
-                        generateBridgeId(bridgeData.getBridgeId())))
-                .withLabel(name).withProperty(NukiBindingConstants.PROPERTY_BRIDGE_ID, bridgeData.getBridgeId())
+        DiscoveryResult result = DiscoveryResultBuilder.create(bridgeData.getThingUid()).withLabel(name)
+                .withProperty(NukiBindingConstants.PROPERTY_BRIDGE_ID, bridgeData.getBridgeId())
                 .withProperty(NukiBindingConstants.CONFIG_IP, bridgeData.getIp())
                 .withProperty(NukiBindingConstants.CONFIG_PORT, bridgeData.getPort())
                 .withProperty(NukiBindingConstants.CONFIG_API_TOKEN, token)

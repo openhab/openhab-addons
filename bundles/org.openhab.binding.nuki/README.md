@@ -6,9 +6,8 @@ This binding allows you to integrate, view, control and configure the Nuki Bridg
 ## Prerequisites
 
 1. At least one Nuki Smart Lock or Nuki Opener which is paired via Bluetooth with a Nuki Bridge. For this go and get either:
-    * a [Nuki Smart Lock](https://nuki.io/en/smart-lock/) and a [Nuki Bridge](https://nuki.io/en/bridge/) or
-    * the [Nuki Combo](https://nuki.io/en/shop/nuki-combo/) or
-    * a [Nuki Smart Lock](https://nuki.io/en/smart-lock/) and the Nuki [Nuki Software Bridge](https://play.google.com/store/apps/details?id=io.nuki.bridge)
+    * [Nuki Smart Lock](https://nuki.io/en/smart-lock/) and a [Nuki Bridge](https://nuki.io/en/bridge/)
+    * [Nuki Combo](https://nuki.io/en/shop/nuki-combo/)
 2. The Bridge HTTP-API has to be enabled during [Initial Bridge setup](https://nuki.io/en/support/bridge/bridge-setup/initial-bridge-setup/).
 
 It is absolutely recommended to configure static IP addresses for both, the openHAB server and the Nuki Bridge!  
@@ -59,27 +58,34 @@ connected to is configured and online.
 The following configuration options are available:
 
 | Parameter | Description                                                                                                                                                                                               | Comment       |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
 | unlatch   | If set to `true` the Nuki Smart Lock will unlock the door but then also automatically pull the latch of the door lock. Usually, if the door hinges are correctly adjusted, the door will then swing open. | Default false |
 
 #### Supported Channels
 
-- **lock** (Switch)  
-    Use this channel with a Switch Item to lock and unlock the door.
+| Channel          | Type   | Description                                                                                                                                                                             |
+|------------------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| lock             | Switch | Switch to lock and unlock doors. If `unlatch` configuration parameter is set, unlocking will also unlatch the door.                                                                     |
+| lockState        | Number | Channel which accepts [Supported commands](#supported-lockstate-commands) for performing actions, and produces [supported values](#supported-lockstate-values) when lock state changes. |
+| lowBattery       | Switch | Low battery warning channel                                                                                                                                                             |
+| keypadLowBattery | Switch | Indicates if keypad connected to Nuki Lock has low battery                                                                                                                              |
+| batteryLevel     | Number | Current battery level                                                                                                                                                                   |
+| batteryCharging  | Swtich | Flag indicating if the batteries of the Nuki device are charging at the moment                                                                                                          |
+| doorsensorState  | Number | Read only channel for monitoring door sensor state, see [supported values](#supported-doorsensorstate-values)                                                                           |
 
-- **lockState** (Number)  
-    Use this channel if you want to execute other supported lock actions or to display the current lock state.  
-    Supported actions are:
+  ##### Supported lockState commands
 
-  | Action | Name                     |
-  |--------|--------------------------|
-  | 1      | Unlock                   |
-  | 2      | Lock                     |
-  | 3      | Unlatch                  |
-  | 4      | Lock 'n' Go              |
-  | 5      | Lock 'n' Go with Unlatch |
+  These values can be sent to _lockState_ channel as a commands:
 
-  Supported lock states are:
+  | Command | Name                     |
+  |---------|--------------------------|
+  | 1       | Unlock                   |
+  | 2       | Lock                     |
+  | 3       | Unlatch                  |
+  | 4       | Lock 'n' Go              |
+  | 5       | Lock 'n' Go with Unlatch |
+
+  ##### Supported lockState values
 
   | State  | Name                     |
   |--------|--------------------------|
@@ -96,23 +102,9 @@ The following configuration options are available:
 
   Unfortunately the Nuki Bridge is not reporting any transition states (e.g. for Lock 'n' Go).
 
-- **lowBattery** (Switch)  
-    Use this channel to receive a low battery warning.
-  
-- **keypadLowBattery** (Switch)
-    Use this channel to receive a low battery warning for keypad paired with smart lock.
-  
-- **batteryLevel** (Number)
-    Use this channel to monitor current battery level of smart lock.
-  
-- **batteryCharging** (Switch)
-    Use this channel to monitor charging of smart lock.
+##### Supported doorSensorState values
 
-- **doorsensorState** (Number)
-    Use this channel if you want to display the current door state provided by the door sensor.
-
-
-  | Action | Name                     |
+  | State  | Name                     |
   |--------|--------------------------|
   | 0      | Unavailable              |
   | 1      | Deactivated              |
@@ -127,19 +119,25 @@ Nuki Opener has no configuration properties.
 
 #### Supported channels
 
-- **openerState** (Number)
-  Use this channel if you want to execute supported Opener actions or monitor current Opener state.
-  Supported actions are:
+  | Channel             | Type     | Description                                                                                                                                                                      |
+  |---------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+  | openerState         | Number   | Channel for sending [supported commands](#supported-openerstate-commands) to Opener, produces one of [supported values](#supported-openerstate-values) when Opener state changes |
+  | openerMode          | Number   | Id of current Opener mode, see [Supported values](#supported-openermode-values)                                                                                                  |
+  | openerLowBattery    | Switch   | Low battery warning channel                                                                                                                                                      |
+  | ringActionState     | Trigger  | Channel triggers 'RINGING' event when the doorbell is being rung. This can trigger at most once every 30s                                                                        |
+  | ringActionTimestamp | DateTime | Timestamp of last time doorbell was rung.                                                                                                                                        |
 
-  | Action | Name                       |
-  |--------|----------------------------|
-  | 1      | Activate ring to open      |
-  | 2      | Deactivate ring to open    |
-  | 3      | Electric strike actuation  |
-  | 4      | Activate continuous mode   |
-  | 5      | Deactivate continuous mode |
+  ##### Supported openerState commands
 
-  Supported opener states are:
+  | Command | Name                       |
+  |---------|----------------------------|
+  | 1       | Activate ring to open      |
+  | 2       | Deactivate ring to open    |
+  | 3       | Electric strike actuation  |
+  | 4       | Activate continuous mode   |
+  | 5       | Deactivate continuous mode |
+
+  ##### Supported openerState values
 
   | State  | Name                |
   |--------|---------------------|
@@ -151,22 +149,13 @@ Nuki Opener has no configuration properties.
   | 253    | Boot run            |
   | 255    | Undefined           |
 
-- **openerMode** (Number)
-  Use this channel to monitor opener modes. Supported values are:
+ ##### Supported openerMode values
   
   | Mode   | Name            |
   |--------|-----------------|
   | 2      | Door mode       |
   | 3      | Continuous mode |
 
-- **openerLowBattery** (Switch)
-  Use this channel to receive a low battery warning.
-
-- **ringActionState** (Switch)
-  Use this channel to receive notification when doorbell rings.
-
-- **ringActionTimestamp** (DateTime)
-  Use this channel to get timestamp of last time doorbell was rung.
 
 ## Troubleshooting
 

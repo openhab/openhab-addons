@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.nuki.internal.dto;
 
+import org.openhab.binding.nuki.internal.constants.NukiBindingConstants;
+import org.openhab.binding.nuki.internal.constants.NukiLinkBuilder;
+import org.openhab.core.id.InstanceUUID;
+import org.openhab.core.thing.ThingUID;
+
 /**
  * The {@link WebApiBridgeDiscoveryDto} class defines the Data Transfer Object (POJO) for bridge object
  * the https://api.nuki.io/discover/bridges Web API.
@@ -60,5 +65,10 @@ public class WebApiBridgeDto {
     public String toString() {
         return "WebApiBridgeDto{" + "bridgeId='" + bridgeId + '\'' + ", ip='" + ip + '\'' + ", port=" + port
                 + ", dateUpdated='" + dateUpdated + '\'' + '}';
+    }
+
+    public ThingUID getThingUid() {
+        String hash = NukiLinkBuilder.sha256(InstanceUUID.get() + ":" + getBridgeId()).substring(0, 10);
+        return new ThingUID(NukiBindingConstants.THING_TYPE_BRIDGE, hash);
     }
 }

@@ -21,12 +21,15 @@ import org.openhab.binding.nuki.internal.dataexchange.NukiApiServlet;
 import org.openhab.binding.nuki.internal.handler.NukiBridgeHandler;
 import org.openhab.binding.nuki.internal.handler.NukiOpenerHandler;
 import org.openhab.binding.nuki.internal.handler.NukiSmartLockHandler;
+import org.openhab.binding.nuki.internal.service.NukiThingRegistryService;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
@@ -52,14 +55,17 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
     private final NetworkAddressService networkAddressService;
+    private final NukiThingRegistryService thingService;
     private NukiApiServlet nukiApiServlet;
 
     @Activate
     public NukiHandlerFactory(@Reference HttpService httpService, @Reference final HttpClientFactory httpClientFactory,
-            @Reference NetworkAddressService networkAddressService) {
+            @Reference NetworkAddressService networkAddressService,
+            @Reference final NukiThingRegistryService thingService) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.networkAddressService = networkAddressService;
         this.nukiApiServlet = new NukiApiServlet(httpService);
+        this.thingService = thingService;
     }
 
     @Override
@@ -70,6 +76,7 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        this.thingService.thingCreated(thing.getUID());
 
         if (NukiBindingConstants.THING_TYPE_BRIDGE_UIDS.contains(thingTypeUID)) {
             String callbackUrl = createCallbackUrl(thing.getUID().getId());
@@ -83,6 +90,17 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
         }
         logger.warn("No valid Handler found for Thing[{}]!", thingTypeUID);
         return null;
+    }
+
+    @Override
+    protected @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID) {
+        return super.createThing(thingTypeUID, configuration, thingUID);
+    }
+
+    @Override
+    public void removeThing(ThingUID thingUID) {
+        super.removeThing(thingUID);
+        this.thingService.thingDestroyed(thingUID);
     }
 
     @Override
