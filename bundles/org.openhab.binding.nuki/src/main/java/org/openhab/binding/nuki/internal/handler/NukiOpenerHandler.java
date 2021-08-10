@@ -46,7 +46,7 @@ public class NukiOpenerHandler extends AbstractNukiDeviceHandler<NukiDeviceConfi
         updateState(NukiBindingConstants.CHANNEL_OPENER_LOW_BATTERY, state.isBatteryCritical(), OnOffType::from);
         updateState(NukiBindingConstants.CHANNEL_OPENER_STATE, state.getState(), DecimalType::new);
         updateState(NukiBindingConstants.CHANNEL_OPENER_MODE, state.getMode(), DecimalType::new);
-        updateState(NukiBindingConstants.CHANNEL_OPENER_RING_ACTION_TIMESTAMP, state.getRingActionTimestamp(),
+        updateState(NukiBindingConstants.CHANNEL_OPENER_RING_ACTION_TIMESTAMP, state.getRingactionTimestamp(),
                 this::toDateTime);
 
         if (state.getRingactionState() && Duration.between(lastRingAction, Instant.now()).getSeconds() > 30) {

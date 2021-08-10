@@ -27,7 +27,7 @@ public class BridgeApiDeviceStateDto {
     private Boolean keypadBatteryCritical;
     private Integer doorsensorState;
     private String doorsensorStateName;
-    private String ringActionTimestamp;
+    private String ringactionTimestamp;
     private Boolean ringactionState;
 
     public int getMode() {
@@ -94,12 +94,12 @@ public class BridgeApiDeviceStateDto {
         this.doorsensorState = doorsensorState;
     }
 
-    public String getRingActionTimestamp() {
-        return ringActionTimestamp;
+    public String getRingactionTimestamp() {
+        return ringactionTimestamp;
     }
 
-    public void setRingActionTimestamp(String ringActionTimestamp) {
-        this.ringActionTimestamp = ringActionTimestamp;
+    public void setRingactionTimestamp(String ringactionTimestamp) {
+        this.ringactionTimestamp = ringactionTimestamp;
     }
 
     public Boolean getRingactionState() {
