@@ -55,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link PhilipsAirUpnpDiscoveryParticipantTest} is responsible for discovering
@@ -137,22 +138,38 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     }
 
     public void discovered(String response, String host) {
-        logger.debug("Creating Philips Air Purifier (COAP protocol) discovery result for: IP={}, {}", host, response);
-        PhilipsAirPurifierDeviceDTO info = gson.fromJson(response, PhilipsAirPurifierDeviceDTO.class);
-        ThingUID thingUid = new ThingUID(PhilipsAirBindingConstants.THING_TYPE_COAP, info.getDeviceId());
-        Map<String, Object> properties = new HashMap<>();
-        addProperty(properties, PhilipsAirConfiguration.CONFIG_HOST, host);
-        addProperty(properties, PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID, info.getDeviceId());
-        addProperty(properties, PhilipsAirBindingConstants.PROPERTY_MANUFACTURER, "Philips");
-        addProperty(properties, PROPERTY_VENDOR, PhilipsAirBindingConstants.VENDOR);
-        addProperty(properties, PROPERTY_MODEL_ID, info.getModelId());
-        addProperty(properties, PROPERTY_DEV_TYPE, info.getType());
-        String label = String.format("Philips AirPurifier %s %s", info.getName(), info.getModelId());
-        DiscoveryResult result = DiscoveryResultBuilder.create(thingUid).withProperties(properties).withLabel(label)
-                .withRepresentationProperty(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID).build();
-
-        logger.debug("DiscoveryResult with uid {} label : {} ", result.getThingUID().getAsString(), result.getLabel());
-        thingDiscovered(result);
+        try {
+            PhilipsAirPurifierDeviceDTO info = gson.fromJson(response, PhilipsAirPurifierDeviceDTO.class);
+            if (info == null) {
+                logger.debug(
+                        "Philips Air Purifier (COAP protocol) discovery result could not parse response from IP={}, '{}'",
+                        host, response);
+                return;
+            }
+            if (info.getDeviceId() == null) {
+                logger.debug("Philips Air Purifier (COAP protocol) discovery result could not find deviceId  IP={}, {}",
+                        host, response);
+                return;
+            }
+            logger.debug("Creating Philips Air Purifier (COAP protocol) discovery result for: IP={}, {}", host,
+                    response);
+            ThingUID thingUid = new ThingUID(PhilipsAirBindingConstants.THING_TYPE_COAP, info.getDeviceId());
+            Map<String, Object> properties = new HashMap<>();
+            addProperty(properties, PhilipsAirConfiguration.CONFIG_HOST, host);
+            addProperty(properties, PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID, info.getDeviceId());
+            addProperty(properties, PhilipsAirBindingConstants.PROPERTY_MANUFACTURER, "Philips");
+            addProperty(properties, PROPERTY_VENDOR, PhilipsAirBindingConstants.VENDOR);
+            addProperty(properties, PROPERTY_MODEL_ID, info.getModelId());
+            addProperty(properties, PROPERTY_DEV_TYPE, info.getType());
+            String label = String.format("Philips AirPurifier %s %s", info.getName(), info.getModelId());
+            DiscoveryResult result = DiscoveryResultBuilder.create(thingUid).withProperties(properties).withLabel(label)
+                    .withRepresentationProperty(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID).build();
+            logger.debug("DiscoveryResult with uid {} label : {} ", result.getThingUID().getAsString(),
+                    result.getLabel());
+            thingDiscovered(result);
+        } catch (JsonSyntaxException e) {
+            logger.debug("Error while processing discovery result from IP={}, {}", host, response);
+        }
     }
 
     private static void addProperty(Map<String, Object> properties, String key, @Nullable String value) {
@@ -208,7 +225,10 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
             if (response != null) {
                 InetSocketAddress ip = response.advanced().getSourceContext().getPeerAddress();
                 logger.debug("Received coap response from '{}' - {}", ip, Utils.prettyPrint(response));
-                philipsAirCoapDiscovery.discovered(response.getResponseText(), ip.getHostString());
+                String resTxt = response.getResponseText();
+                if (resTxt != null && !resTxt.isBlank()) {
+                    philipsAirCoapDiscovery.discovered(response.getResponseText(), ip.getHostString());
+                }
             } else {
                 logger.debug("Received NULL coap response ");
             }
