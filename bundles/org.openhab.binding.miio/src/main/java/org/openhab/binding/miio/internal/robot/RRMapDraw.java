@@ -65,6 +65,7 @@ public class RRMapDraw {
     private static final Color COLOR_MAP_INSIDE = new Color(32, 115, 185);
     private static final Color COLOR_MAP_OUTSIDE = new Color(19, 87, 148);
     private static final Color COLOR_MAP_WALL = new Color(100, 196, 254);
+    private static final Color COLOR_CARPET = new Color(0xDF, 0xDF, 0xDF, 0xA0);
     private static final Color COLOR_GREY_WALL = new Color(93, 109, 126);
     private static final Color COLOR_PATH = new Color(147, 194, 238);
     private static final Color COLOR_ZONES = new Color(0xAD, 0xD8, 0xFF, 0x8F);
@@ -186,6 +187,33 @@ public class RRMapDraw {
                 sb.append(" " + r.toString());
             }
             logger.debug("Identified rooms in map:{}", sb.toString());
+        }
+    }
+
+    /**
+     * draws the carpet map
+     */
+    private void drawCarpetMap(Graphics2D g2d, float scale) {
+        if (rmfp.getCarpetMap().length == 0) {
+            return;
+        }
+        Stroke stroke = new BasicStroke(1.1f * scale);
+        g2d.setStroke(stroke);
+        for (int y = 0; y < rmfp.getImgHeight() - 1; y++) {
+            for (int x = 0; x < rmfp.getImgWidth() + 1; x++) {
+                int carpetType = rmfp.getCarpetMap()[x + rmfp.getImgWidth() * y];
+                switch (carpetType) {
+                    case 0:
+                        // ignore
+                        break;
+                    default:
+                        g2d.setColor(COLOR_CARPET);
+                        float xPos = scale * (rmfp.getImgWidth() - x);
+                        float yP = scale * y;
+                        g2d.draw(new Line2D.Float(xPos, yP, xPos, yP));
+                        break;
+                }
+            }
         }
     }
 
@@ -445,6 +473,7 @@ public class RRMapDraw {
         tx.translate(-width, -height);
         g2d.setTransform(tx);
         drawMap(g2d, scale);
+        drawCarpetMap(g2d, scale);
         drawZones(g2d, scale);
         drawNoGo(g2d, scale);
         drawWalls(g2d, scale);
