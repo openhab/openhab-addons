@@ -63,7 +63,7 @@ public class PlayerManager extends RestManager {
     }
 
     public void reboot(int id) throws FreeboxException {
-        post(buildSubPath(id, "system/reboot"), null);
+        post(buildSubPath(id, "system/reboot"));
     }
 
     // Response classes and validity evaluations

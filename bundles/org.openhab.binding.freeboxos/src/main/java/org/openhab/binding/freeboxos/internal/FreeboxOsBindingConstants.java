@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.freeboxos.internal;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -45,7 +44,7 @@ public class FreeboxOsBindingConstants {
     public static final ThingTypeUID THING_TYPE_REPEATER = new ThingTypeUID(BINDING_ID, "repeater");
 
     // All supported Thing types
-    public static final Set<ThingTypeUID> BRIDGE_TYPE_UID = Collections.singleton(BRIDGE_TYPE_API);
+    public static final Set<ThingTypeUID> BRIDGE_TYPE_UID = Set.of(BRIDGE_TYPE_API);
     public static final Set<ThingTypeUID> THINGS_TYPES_UIDS = Set.of(THING_TYPE_LANDLINE, THING_TYPE_HOST,
             THING_TYPE_VM, THING_TYPE_PLAYER, THING_TYPE_DELTA, THING_TYPE_REVOLUTION, THING_TYPE_REPEATER,
             THING_TYPE_WIFI_HOST);
@@ -104,10 +103,10 @@ public class FreeboxOsBindingConstants {
     public static final String LAST_SEEN = "last-seen";
     public static final String ALTERNATE_RING = "lcd-forced";
     public static final String DECT_ACTIVE = "dect-active";
+    public static final String UPNPAV_STATUS = "upnpav-status";
 
     // Freebox player channels
     public static final String AIRMEDIA_STATUS = "airmedia-status";
-    public static final String UPNPAV_STATUS = "upnpav-status";
     public static final String KEY_CODE = "key-code";
 
     // Virtual machine channels

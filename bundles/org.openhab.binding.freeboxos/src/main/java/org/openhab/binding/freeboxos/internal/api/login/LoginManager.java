@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.freeboxos.internal.api.login;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.ApiHandler;
@@ -34,43 +31,46 @@ import org.osgi.framework.FrameworkUtil;
  */
 @NonNullByDefault
 public class LoginManager extends RestManager {
-    private static Bundle BUNDLE = FrameworkUtil.getBundle(LoginManager.class);
-    private static String APP_NAME = BUNDLE.getHeaders().get("Bundle-Name");
-    private static String DEVICE_NAME = BUNDLE.getHeaders().get("Bundle-Vendor");
-    private static String APP_VERSION = BUNDLE.getVersion().toString();
-    private static String APP_ID = "org.openhab.binding.freebox"; // TODO : BUNDLE.getSymbolicName();
-    private Map<Permission, @Nullable Boolean> permissions = new HashMap<>();
+    private static final String LOGIN_PATH = "login";
+    private static final String AUTHORIZE_PATH = "authorize";
+    private static final String LOGOUT_PATH = "logout";
+    private static final String SESSION_PATH = "session";
+    private static final Bundle BUNDLE = FrameworkUtil.getBundle(LoginManager.class);
+    private static final String APP_ID = "org.openhab.binding.freebox"; // TODO : BUNDLE.getSymbolicName();
+
+    private @Nullable Session session;
 
     public LoginManager(ApiHandler apiHandler) {
-        super(apiHandler, "login");
+        super(apiHandler, LOGIN_PATH);
     }
 
     public String openSession(String appToken) throws FreeboxException {
         String challenge = get(null, ChallengeResponse.class, false).getChallenge();
         if (challenge != null) {
             OpenSessionData payload = new OpenSessionData(APP_ID, appToken, challenge);
-            Session session = post("session", payload, SessionResponse.class);
-            permissions.clear();
-            permissions.putAll(session.getPermissions());
-            return session.getSessionToken();
+            session = post(SESSION_PATH, payload, SessionResponse.class);
+            String sessionToken = session.getSessionToken();
+            if (sessionToken != null) {
+                return sessionToken;
+            }
+            throw new FreeboxException("No session token provided.");
         }
-        throw new FreeboxException("No challenge was provided ?!?");
+        throw new FreeboxException("No challenge was provided.");
     }
 
     public void closeSession() throws FreeboxException {
-        post("logout", null);
+        post(LOGOUT_PATH);
     }
 
     private Status trackAuthorize(int trackId) throws FreeboxException {
         if (trackId != 0) {
-            return get("authorize/" + trackId, ChallengeResponse.class, false).getStatus();
+            return get(String.format("%s/%d", AUTHORIZE_PATH, trackId), ChallengeResponse.class, false).getStatus();
         }
         throw new FreeboxException("no trackId");
     }
 
     public String grant() throws FreeboxException {
-        AuthorizeData payload = new AuthorizeData(APP_ID, APP_NAME, APP_VERSION, DEVICE_NAME);
-        Authorize authorize = post("authorize", payload, AuthorizeResponse.class);
+        Authorize authorize = post(AUTHORIZE_PATH, new AuthorizeData(APP_ID, BUNDLE), AuthorizeResponse.class);
         Status track = Status.PENDING;
         try {
             while (track == Status.PENDING) {
@@ -87,7 +87,7 @@ public class LoginManager extends RestManager {
     }
 
     public boolean hasPermission(Permission checked) {
-        return Boolean.TRUE.equals(permissions.get(checked));
+        return session != null ? Boolean.TRUE.equals(session.getPermissions().get(checked)) : false;
     }
 
     // Response classes and validity evaluations
@@ -103,7 +103,7 @@ public class LoginManager extends RestManager {
         @Override
         protected @Nullable String internalEvaluate() {
             String error = super.internalEvaluate();
-            return error != null ? error : getResult().getSessionToken().isEmpty() ? "No session token" : null;
+            return error != null ? error : getResult().getSessionToken() == null ? "No session token" : null;
         }
     }
 

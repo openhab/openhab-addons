@@ -27,8 +27,11 @@ import org.openhab.binding.freeboxos.internal.api.RestManager;
 @NonNullByDefault
 public class SystemManager extends RestManager {
 
+    private static final String REBOOT_SUB_PATH = "reboot";
+    private static final String SYSTEM_PATH = "system";
+
     public SystemManager(ApiHandler apiHandler) {
-        super(apiHandler, "system");
+        super(apiHandler, SYSTEM_PATH);
     }
 
     public SystemConf getConfig() throws FreeboxException {
@@ -36,7 +39,7 @@ public class SystemManager extends RestManager {
     }
 
     public void reboot() throws FreeboxException {
-        post("reboot", null);
+        post(REBOOT_SUB_PATH);
     }
 
     // Response classes and validity evaluations

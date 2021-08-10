@@ -22,8 +22,6 @@
 			<channel-group typeId="connectivity" id="connectivity"/>
 		</channel-groups>
 
-		<representation-property>hostAddress</representation-property>
-
 		<config-description-ref uri="thing-type:freeboxos:server"/>
 	</thing-type>
 
@@ -43,8 +41,6 @@
 			<channel-group typeId="connection-status" id="connection-status"/>
 			<channel-group typeId="connectivity" id="connectivity"/>
 		</channel-groups>
-
-		<representation-property>hostAddress</representation-property>
 
 		<config-description-ref uri="thing-type:freeboxos:server"/>
 	</thing-type>

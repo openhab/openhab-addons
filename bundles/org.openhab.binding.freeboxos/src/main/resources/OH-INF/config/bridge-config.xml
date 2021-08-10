@@ -6,7 +6,7 @@
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="bridge-type:freeboxos:api">
-		<parameter name="apiDomain" type="text" required="true">
+		<parameter name="apiDomain" type="text">
 			<label>Freebox Server Address</label>
 			<context>network-address</context>
 			<description>The domain to use in place of hardcoded Freebox ip</description>
@@ -41,16 +41,6 @@
 		</parameter>
 		<parameter name="apiVersion" type="text">
 			<label>API Version</label>
-			<advanced>true</advanced>
-			<default>7.1</default>
-		</parameter>
-		<parameter name="websocketidletimeout" type="integer" min="0" max="3600" unit="s" groupName="advanced">
-			<unitLabel>seconds</unitLabel>
-			<label>WebSocket Idle Timeout in Seconds</label>
-			<description>The WebSocket is the connection to the innogy service that listens to status updates. If no data is
-				received over the websocket connection for the given time, the websocket will reconnect. 0 will disable the idle
-				timeout. Default is 900 seconds (15 minutes).</description>
-			<default>900</default>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

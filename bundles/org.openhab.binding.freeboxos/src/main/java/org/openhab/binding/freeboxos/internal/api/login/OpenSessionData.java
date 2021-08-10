@@ -49,9 +49,9 @@ public class OpenSessionData {
 
             // Compute the hmac on input data bytes
             byte[] rawHmac = mac.doFinal(challenge.getBytes());
+
             // Convert raw bytes to Hex
             this.password = DatatypeConverter.printHexBinary(rawHmac).toLowerCase();
-            //
         } catch (IllegalArgumentException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new FreeboxException("Error encoding session password", e, BaseResponse.of(ErrorCode.INVALID_TOKEN));
         }

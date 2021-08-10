@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link ApiConfiguration} is responsible for holding
- * configuration informations needed to access/poll the Freebox API
+ * configuration informations needed to access the Freebox API
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -33,12 +33,12 @@ public class ApiConfiguration {
     public int httpsPort = 15682;
     public boolean discoverNetDevice;
     public boolean httpsAvailable;
-    private String apiVersion = "5.0";
     public String appToken = "";
-    public int websocketidletimeout = 900;
+    public String baseUrl = "/api/";
+
+    private String apiVersion = "7.1";
 
     public String apiMajorVersion() {
-        String[] elements = apiVersion.split("\\.");
-        return elements[0];
+        return apiVersion.split("\\.")[0];
     }
 }

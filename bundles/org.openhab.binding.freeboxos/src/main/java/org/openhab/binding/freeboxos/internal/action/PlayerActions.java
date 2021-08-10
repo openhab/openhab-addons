@@ -70,7 +70,7 @@ public class PlayerActions implements ThingActions {
     }
 
     @RuleAction(label = "send multiple keys to player", description = "Sends multiple keys to the player, comma separated")
-    public void sendMultipleKeys(@ActionInput(name = "key") String keys) {
+    public void sendMultipleKeys(@ActionInput(name = "keys") String keys) {
         logger.debug("Sending keys {} to player", keys);
         PlayerHandler playerHandler = this.handler;
         if (playerHandler != null) {

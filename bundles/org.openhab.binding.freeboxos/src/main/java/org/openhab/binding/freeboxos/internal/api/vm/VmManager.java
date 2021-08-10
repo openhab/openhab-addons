@@ -43,7 +43,7 @@ public class VmManager extends RestManager {
     }
 
     public void power(int vmId, boolean startIt) throws FreeboxException {
-        post(String.format("%d/%s", vmId, startIt ? "start" : "powerbutton"), null);
+        post(String.format("%d/%s", vmId, startIt ? "start" : "powerbutton"));
     }
 
     public List<VirtualMachine> getVms() throws FreeboxException {

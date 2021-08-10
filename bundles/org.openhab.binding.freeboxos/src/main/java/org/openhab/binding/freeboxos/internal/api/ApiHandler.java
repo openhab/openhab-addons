@@ -64,20 +64,20 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class ApiHandler {
-    private final Logger logger = LoggerFactory.getLogger(ApiHandler.class);
-
-    private final Map<String, String> httpHeaders = new HashMap<>(2);
     private static final String AUTH_HEADER = "X-Fbx-App-Auth";
     private static final String CONTENT_TYPE = "application/json; charset=utf-8";
-    private static final int DEFAULT_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(10);
+    private static final long DEFAULT_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(10);
+
+    private final Logger logger = LoggerFactory.getLogger(ApiHandler.class);
+    private final Map<String, String> httpHeaders = new HashMap<>(2);
+    private final Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
+    private final HttpClient httpClient;
+    private final ApiBridgeHandler apiBridgeHandler;
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
-    private @NonNullByDefault({}) UriBuilder uriBuilder;
 
-    private Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
-    private final HttpClient httpClient;
     private @NonNullByDefault({}) ApiConfiguration configuration;
-    private final ApiBridgeHandler apiBridgeHandler;
+    private @NonNullByDefault({}) UriBuilder uriBuilder;
 
     public ApiHandler(ApiBridgeHandler apiBridgeHandler, HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -255,10 +255,7 @@ public class ApiHandler {
     public <F, T extends Response<F>> F execute(URI url, HttpMethod method, @Nullable Object aPayload,
             @Nullable Class<T> classOfT, boolean retryAuth) throws FreeboxException {
         Object serialized = executeUrl(url, method, aPayload, classOfT, retryAuth, 3);
-        if (classOfT != null) {
-            return ((T) serialized).getResult();
-        }
-        return null;
+        return classOfT != null ? ((T) serialized).getResult() : null;
     }
 
     <F, T extends ListResponse<F>> List<F> executeList(URI anUrl, HttpMethod method, @Nullable String aPayload,

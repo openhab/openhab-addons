@@ -46,7 +46,7 @@ public class PhoneManager extends RestManager {
     }
 
     public void ring(boolean startIt) throws FreeboxException {
-        post(String.format("fxs_ring_%s", (startIt ? "start" : "stop")), null);
+        post(String.format("fxs_ring_%s", (startIt ? "start" : "stop")));
     }
 
     public void activateDect(boolean status) throws FreeboxException {

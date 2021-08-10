@@ -63,8 +63,12 @@ public class RestManager {
         return apiHandler.execute(buildUri(path), HttpMethod.GET, null, classOfT, retryAuth);
     }
 
-    public void post(String path, @Nullable Object payload) throws FreeboxException {
+    public void post(String path, Object payload) throws FreeboxException {
         apiHandler.execute(buildUri(path), HttpMethod.POST, payload, null, true);
+    }
+
+    public void post(String path) throws FreeboxException {
+        apiHandler.execute(buildUri(path), HttpMethod.POST, null, null, true);
     }
 
     public <F, T extends Response<F>> F post(String path, @Nullable Object payload, Class<T> classOfT)

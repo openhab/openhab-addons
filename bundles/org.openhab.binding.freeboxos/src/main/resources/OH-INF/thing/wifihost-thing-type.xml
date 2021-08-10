@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Wifi Device</label>
-		<description>Provides network device reachability</description>
+		<description>Provides Wifi device reachability</description>
 
 		<channel-groups>
 			<channel-group typeId="connectivity" id="connectivity"/>

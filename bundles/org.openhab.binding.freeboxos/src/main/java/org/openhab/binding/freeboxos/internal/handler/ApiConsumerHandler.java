@@ -61,7 +61,7 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
 
     private final ZoneId zoneId;
     private @NonNullByDefault({}) ScheduledFuture<?> globalJob;
-    protected @NonNullByDefault({}) ApiBridgeHandler bridgeHandler;
+    private @NonNullByDefault({}) ApiBridgeHandler bridgeHandler;
 
     ApiConsumerHandler(Thing thing, ZoneId zoneId) {
         super(thing);

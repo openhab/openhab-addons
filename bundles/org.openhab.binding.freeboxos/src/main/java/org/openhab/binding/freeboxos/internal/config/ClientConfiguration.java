@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link ClientConfiguration} is responsible for holding
- * configuration informations for a controlable client of the API
+ * configuration informations for a controllable client of the API
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -24,5 +24,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ClientConfiguration extends HostConfiguration {
     public static final String ID = "id";
 
-    public int id;
+    public int id = 1;
 }

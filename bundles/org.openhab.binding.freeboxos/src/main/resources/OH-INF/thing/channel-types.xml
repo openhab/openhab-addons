@@ -37,13 +37,13 @@
 	<channel-type id="ssid" advanced="true">
 		<item-type>String</item-type>
 		<label>SSID</label>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="wifi-host" advanced="true">
 		<item-type>String</item-type>
 		<label>Access Point</label>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="lcd-forced" advanced="true">
@@ -135,7 +135,7 @@
 		<item-type>String</item-type>
 		<label>Line Status</label>
 		<description>Status of network line connexion</description>
-		<state readOnly="true">
+		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="GOING_UP">Connection is initializing</option>
 				<option value="UP">Connection is active</option>
@@ -149,7 +149,7 @@
 		<item-type>String</item-type>
 		<label>Player Status</label>
 		<description>Status of the Freebox TV player</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="wifi-status">
@@ -198,7 +198,7 @@
 	<channel-type id="phone-number">
 		<item-type>String</item-type>
 		<label>Phone Number</label>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="call-info">
@@ -227,7 +227,7 @@
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>Called name for outgoing calls. Caller name for incoming calls</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="reachable">
@@ -259,7 +259,7 @@
 		<item-type>String</item-type>
 		<label>Remote Key Code</label>
 		<description>Simulates pushing a remote control button</description>
-		<state readOnly="false">
+		<state readOnly="false" pattern="%s">
 			<options>
 				<option value="red">Red</option>
 				<option value="green">Green</option>
@@ -312,7 +312,7 @@
 		<item-type>String</item-type>
 		<label>IP Address</label>
 		<description>IP address of the client</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="led">
@@ -320,21 +320,21 @@
 		<label>Led Activated</label>
 		<description>Led indicator status</description>
 		<category>Switch</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="connection-status">
 		<item-type>String</item-type>
 		<label>Connection</label>
 		<description>Connection Status</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="host-count">
 		<item-type>Number</item-type>
 		<label>Host Count</label>
 		<description>Number of hosts connected to the device</description>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

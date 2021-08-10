@@ -13,6 +13,7 @@
 package org.openhab.binding.freeboxos.internal.api.login;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.osgi.framework.Bundle;
 
 /**
  * The {@link AuthorizeData} holds and handle data needed to
@@ -28,10 +29,10 @@ class AuthorizeData {
     protected final String appVersion;
     protected final String deviceName;
 
-    AuthorizeData(String appId, String appName, String appVersion, String deviceName) {
+    AuthorizeData(String appId, Bundle bundle) {
         this.appId = appId;
-        this.appName = appName;
-        this.appVersion = appVersion;
-        this.deviceName = deviceName;
+        this.appName = bundle.getHeaders().get("Bundle-Name");
+        this.appVersion = bundle.getVersion().toString();
+        this.deviceName = bundle.getHeaders().get("Bundle-Vendor");
     }
 }

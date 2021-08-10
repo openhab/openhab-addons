@@ -28,7 +28,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Session {
-    public enum Permission {
+    public static enum Permission {
         @SerializedName("parental")
         PARENTAL,
         @SerializedName("contacts")
@@ -59,11 +59,11 @@ public class Session {
         PLAYER;
     }
 
-    private @NonNullByDefault({}) String sessionToken;
+    private @Nullable String sessionToken;
     private @Nullable String challenge;
-    private @NonNullByDefault({}) Map<Permission, @Nullable Boolean> permissions;
+    private Map<Permission, @Nullable Boolean> permissions = Map.of();
 
-    public String getSessionToken() {
+    public @Nullable String getSessionToken() {
         return sessionToken;
     }
 
