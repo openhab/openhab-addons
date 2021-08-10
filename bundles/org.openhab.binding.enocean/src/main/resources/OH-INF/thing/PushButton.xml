@@ -14,12 +14,11 @@
 		<description>Represents a physical Push Button (EEP: F6-01, D2-03)</description>
 
 		<config-description>
-			<parameter name="enoceanId" type="text">
+			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>
 				<description>EnOceanId of device this thing belongs to</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="receivingEEPId" type="text">
+			<parameter name="receivingEEPId" type="text" required="true">
 				<label>EEP</label>
 				<description>EEP which is used by push button</description>
 				<options>
@@ -28,7 +27,6 @@
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<default>F6_01_01</default>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</thing-type>

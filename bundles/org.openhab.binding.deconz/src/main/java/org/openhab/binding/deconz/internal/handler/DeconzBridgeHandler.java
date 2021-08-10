@@ -16,7 +16,12 @@ import static org.openhab.binding.deconz.internal.BindingConstants.*;
 import static org.openhab.binding.deconz.internal.Util.buildUrl;
 
 import java.net.SocketTimeoutException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledFuture;
@@ -236,7 +241,10 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
             }
-            logger.warn("Initial full state parsing failed", e);
+            logger.warn("Initial full state request or result parsing failed", e);
+            if (!thingDisposing) {
+                scheduledFuture = scheduler.schedule(this::initializeBridgeState, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
+            }
             return null;
         });
     }

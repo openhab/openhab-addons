@@ -18,6 +18,7 @@
 			<channel id="tempincomingbeforeheating" typeId="tempincomingbeforeheating"/>
 			<channel id="tempincoming" typeId="tempincoming"/>
 			<channel id="humidity" typeId="humidity"/>
+			<channel id="co2" typeId="co2"/>
 			<channel id="cellstate" typeId="cellstate"/>
 			<channel id="uptimeyears" typeId="uptimeyears"/>
 			<channel id="uptimehours" typeId="uptimehours"/>
@@ -54,7 +55,6 @@
 			<parameter name="updateinterval" type="integer" required="false">
 				<label>Update Interval</label>
 				<description>Data update interval in seconds (default: 60s)</description>
-				<required>false</required>
 				<default>60</default>
 			</parameter>
 		</config-description>
@@ -149,6 +149,13 @@
 		<label>Humidity</label>
 		<description>Current humidity of the air flow exhausting the building.</description>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="co2">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CO2</label>
+		<description>CO2 measurement</description>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="cellstate">

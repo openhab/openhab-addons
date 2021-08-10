@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.model;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import java.util.Objects;
 
 /**
  * Simple representation of a datapoint.
@@ -92,7 +91,7 @@ public class HmDatapointInfo {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(address).append(paramsetType).append(channel).append(name).toHashCode();
+        return Objects.hash(address, paramsetType, channel, name);
     }
 
     @Override
@@ -101,8 +100,8 @@ public class HmDatapointInfo {
             return false;
         }
         HmDatapointInfo comp = (HmDatapointInfo) obj;
-        return new EqualsBuilder().append(address, comp.getAddress()).append(paramsetType, comp.getParamsetType())
-                .append(channel, comp.getChannel()).append(name, comp.getName()).isEquals();
+        return Objects.equals(address, comp.getAddress()) && Objects.equals(paramsetType, comp.getParamsetType())
+                && Objects.equals(channel, comp.getChannel()) && Objects.equals(name, comp.getName());
     }
 
     @Override

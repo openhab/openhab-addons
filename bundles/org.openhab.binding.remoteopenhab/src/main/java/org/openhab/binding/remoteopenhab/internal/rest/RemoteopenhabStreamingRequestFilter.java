@@ -13,6 +13,7 @@
 package org.openhab.binding.remoteopenhab.internal.rest;
 
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -21,6 +22,8 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Inserts Authorization and Cache-Control headers for requests on the streaming REST API.
@@ -30,20 +33,28 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class RemoteopenhabStreamingRequestFilter implements ClientRequestFilter {
 
-    private final String accessToken;
+    private final Logger logger = LoggerFactory.getLogger(RemoteopenhabStreamingRequestFilter.class);
 
-    public RemoteopenhabStreamingRequestFilter(String accessToken) {
-        this.accessToken = accessToken;
-    }
+    private final ConcurrentHashMap<String, String> credentialTokens = new ConcurrentHashMap<>();
 
     @Override
     public void filter(@Nullable ClientRequestContext requestContext) throws IOException {
         if (requestContext != null) {
             MultivaluedMap<String, Object> headers = requestContext.getHeaders();
-            if (!accessToken.isEmpty()) {
-                headers.putSingle(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+            String credentialToken = credentialTokens.get(requestContext.getUri().toString());
+            if (credentialToken != null) {
+                if (!credentialToken.isEmpty()) {
+                    headers.putSingle(HttpHeaders.AUTHORIZATION, "Basic " + credentialToken);
+                }
+            } else {
+                logger.warn("No credential token set! uri={}", requestContext.getUri());
             }
             headers.putSingle(HttpHeaders.CACHE_CONTROL, "no-cache");
         }
+    }
+
+    public void setCredentialToken(String target, String token) {
+        logger.debug("Set credential token. target={}, token={}", target, token);
+        credentialTokens.put(target, token);
     }
 }

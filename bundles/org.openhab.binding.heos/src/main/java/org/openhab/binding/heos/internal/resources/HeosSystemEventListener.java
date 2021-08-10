@@ -27,10 +27,11 @@ import org.openhab.binding.heos.internal.json.payload.Media;
  * the class which extends this {@link HeosSystemEventListener}
  *
  * @author Johannes Einig - Initial contribution
+ * @author Martin van Wingerden - change handling of stop/pause depending on playing item type
  */
 @NonNullByDefault
 public class HeosSystemEventListener {
-    private Set<HeosEventListener> listenerList = new CopyOnWriteArraySet<>();
+    private final Set<HeosEventListener> listenerList = new CopyOnWriteArraySet<>();
 
     /**
      * Register a listener from type {@link HeosEventListener} to be notified by

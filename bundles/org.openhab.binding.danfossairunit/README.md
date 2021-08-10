@@ -52,7 +52,8 @@ The channel will then be identified by `<air unit id>:<channel group>#<channel>`
 
 You can also manually configure your air unit in case you don't want to use autodiscovery
  (e. g. if you want to have a portable configuration):
-Create a new file, e. g. `danfoss.things`, in your _things_ configuration folder: 
+Create a new file, e. g. `danfoss.things`, in your _things_ configuration folder:
+
 ```
 Thing danfossairunit:airunit:myairunit [host="192.168.0.7",
 refreshInterval=5,

@@ -37,7 +37,7 @@
 				"friendlyName": "Water Temperature",
 				"channel": "waterTemp",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"refresh": true,
 				"actions": [
 					{
@@ -56,7 +56,7 @@
 				"friendlyName": "Target Temperature",
 				"channel": "targetTemp",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"refresh": true,
 				"actions": [
 					{

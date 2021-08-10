@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * unexpected values will likely be shown if exposed to users. Most bit-level
  * operations should still work (addition, multiplication, shifting, etc).
  *
- * @author Tim Buckley
+ * @author Tim Buckley - Initial contribution
  */
 @NonNullByDefault
 public class UInt64Field extends Field<Long> {

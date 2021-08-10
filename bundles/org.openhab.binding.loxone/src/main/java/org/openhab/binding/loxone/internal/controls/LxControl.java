@@ -264,6 +264,8 @@ public class LxControl {
         Callbacks c = callbacks.get(channelId);
         if (c != null && c.commandCallback != null) {
             c.commandCallback.handleCommand(command);
+        } else {
+            logger.debug("Control UUID={} has no command handler", getUuid());
         }
     }
 

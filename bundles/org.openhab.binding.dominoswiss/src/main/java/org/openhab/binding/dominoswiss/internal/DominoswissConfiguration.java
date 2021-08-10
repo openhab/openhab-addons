@@ -32,7 +32,7 @@ public class DominoswissConfiguration {
     public int port = 1318;
 
     /**
-     * Language for TTS
+     * Language for TTS has to be fix to EN as only English commands are allowed
      */
-    public String language = "EN";
+    public final String language = "EN";
 }

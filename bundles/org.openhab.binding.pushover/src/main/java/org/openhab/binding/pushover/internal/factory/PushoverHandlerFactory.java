@@ -31,8 +31,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link PushoverHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link PushoverHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

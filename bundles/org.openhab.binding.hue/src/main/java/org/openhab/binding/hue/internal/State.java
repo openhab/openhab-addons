@@ -27,7 +27,7 @@ public class State {
     int hue;
     int sat;
     private float[] xy;
-    private int ct;
+    int ct;
     private String alert;
     private String effect;
     String colormode;
@@ -51,7 +51,7 @@ public class State {
         HS,
 
         /**
-         * Color temperature in mirek
+         * Color temperature in mired
          */
         CT
     }
@@ -287,9 +287,6 @@ public class State {
         if (sat != other.sat) {
             return false;
         }
-        if (!Arrays.equals(xy, other.xy)) {
-            return false;
-        }
-        return true;
+        return Arrays.equals(xy, other.xy);
     }
 }

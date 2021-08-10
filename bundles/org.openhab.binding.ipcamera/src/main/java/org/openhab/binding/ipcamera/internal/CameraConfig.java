@@ -94,6 +94,10 @@ public class CameraConfig {
         return ffmpegOutput;
     }
 
+    public void setFfmpegOutput(String path) {
+        ffmpegOutput = path;
+    }
+
     public boolean getPtzContinuous() {
         return ptzContinuous;
     }

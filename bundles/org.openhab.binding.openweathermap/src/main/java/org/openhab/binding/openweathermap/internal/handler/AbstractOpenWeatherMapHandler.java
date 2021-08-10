@@ -17,11 +17,8 @@ import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingC
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.measure.Unit;
 
@@ -69,9 +66,9 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AbstractOpenWeatherMapHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_WEATHER_AND_FORECAST, THING_TYPE_UVINDEX,
-                    THING_TYPE_ONECALL_WEATHER_AND_FORECAST, THING_TYPE_ONECALL_HISTORY).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_WEATHER_AND_FORECAST,
+            THING_TYPE_UVINDEX, THING_TYPE_AIR_POLLUTION, THING_TYPE_ONECALL_WEATHER_AND_FORECAST,
+            THING_TYPE_ONECALL_HISTORY);
 
     private final TimeZoneProvider timeZoneProvider;
 

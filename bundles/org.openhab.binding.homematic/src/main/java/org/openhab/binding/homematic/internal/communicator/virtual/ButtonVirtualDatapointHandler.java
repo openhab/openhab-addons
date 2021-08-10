@@ -14,13 +14,13 @@ package org.openhab.binding.homematic.internal.communicator.virtual;
 
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.VIRTUAL_DATAPOINT_NAME_BUTTON;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmValueType;
 import org.openhab.core.thing.CommonTriggerEvents;
+import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +59,8 @@ public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandl
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
         HmDatapoint vdp = getVirtualDatapoint(dp.getChannel());
         if (MiscUtils.isTrueValue(dp.getValue())) {
-            String pressType = StringUtils.substringAfter(dp.getName(), "_");
+            int usPos = dp.getName().indexOf("_");
+            String pressType = usPos == -1 ? dp.getName() : dp.getName().substring(usPos + 1);
             switch (pressType) {
                 case "SHORT":
                     if (dp.getValue() == null || !dp.getValue().equals(dp.getPreviousValue())) {

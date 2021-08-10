@@ -182,7 +182,7 @@ abstract class NikobusModuleHandler extends NikobusBaseThingHandler {
         }
 
         if (previousValue == null || previousValue.intValue() != value) {
-            updateState(channelId, stateFromValue(value));
+            updateState(channelId, stateFromValue(channelId, value));
         }
     }
 
@@ -195,7 +195,7 @@ abstract class NikobusModuleHandler extends NikobusBaseThingHandler {
             Integer digits;
 
             if (channelId.equals(channelUID.getId())) {
-                digits = valueFromCommand(command);
+                digits = valueFromCommand(channelId, command);
                 updateStateAndCacheValue(channelId, digits.intValue());
             } else {
                 synchronized (cachedStates) {
@@ -233,7 +233,7 @@ abstract class NikobusModuleHandler extends NikobusBaseThingHandler {
         }
     }
 
-    protected abstract int valueFromCommand(Command command);
+    protected abstract int valueFromCommand(String channelId, Command command);
 
-    protected abstract State stateFromValue(int value);
+    protected abstract State stateFromValue(String channelId, int value);
 }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wlanthermo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- System Group ESP32 -->
+	<channel-group-type id="cg_system_esp32">
+		<label>System Channels</label>
+		<description>This group contains all system channels</description>
+		<channels>
+			<channel id="soc" typeId="system.battery-level"/>
+			<channel id="charge" typeId="charging"/>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="rssi_signalstrength" typeId="system.signal-strength"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Temperature Group ESP32 -->
+	<channel-group-type id="cg_temperature_esp32">
+		<label>Temperature Sensor</label>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name"/>
+			<channel id="typ" typeId="typ"/>
+			<channel id="temp" typeId="temperature"/>
+			<channel id="min" typeId="temperature_min"/>
+			<channel id="max" typeId="temperature_max"/>
+			<channel id="alarm_device" typeId="alarm_device"/>
+			<channel id="alarm_push" typeId="alarm_push"/>
+			<channel id="alarm_openhab" typeId="alarm_openhab"/>
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low"/>
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high"/>
+			<channel id="color" typeId="color"/>
+			<channel id="color_name" typeId="color_name_esp32"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Pitmaster ESP32 -->
+	<channel-group-type id="cg_pitmaster_esp32">
+		<label>Pitmaster</label>
+		<category>Sensor</category>
+		<channels>
+			<channel id="state" typeId="pitmaster_type"/>
+			<channel id="setpoint" typeId="temperature_setpoint"/>
+			<channel id="duty_cycle" typeId="duty_cycle"/>
+			<channel id="channel_id" typeId="channel_id"/>
+			<channel id="pid_id" typeId="pid_id"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

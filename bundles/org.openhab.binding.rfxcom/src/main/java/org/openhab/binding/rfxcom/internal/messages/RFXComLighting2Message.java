@@ -18,8 +18,11 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.Pac
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting2Message.Commands.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
@@ -155,7 +158,7 @@ public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighti
      */
     public static int getDimLevelFromPercentType(PercentType pt) {
         return pt.toBigDecimal().multiply(BigDecimal.valueOf(15))
-                .divide(PercentType.HUNDRED.toBigDecimal(), 0, BigDecimal.ROUND_UP).intValue();
+                .divide(PercentType.HUNDRED.toBigDecimal(), 0, RoundingMode.UP).intValue();
     }
 
     /**
@@ -168,11 +171,12 @@ public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighti
         value = Math.min(value, 15);
 
         return new PercentType(BigDecimal.valueOf(value).multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(15), 0, BigDecimal.ROUND_UP).intValue());
+                .divide(BigDecimal.valueOf(15), 0, RoundingMode.UP).intValue());
     }
 
     @Override
-    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
+            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
         switch (channelId) {
             case CHANNEL_DIMMING_LEVEL:
                 return RFXComLighting2Message.getPercentTypeFromDimLevel(dimmingLevel);
@@ -210,7 +214,7 @@ public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighti
                 }
 
             default:
-                return super.convertToState(channelId, deviceState);
+                return super.convertToState(channelId, config, deviceState);
         }
     }
 

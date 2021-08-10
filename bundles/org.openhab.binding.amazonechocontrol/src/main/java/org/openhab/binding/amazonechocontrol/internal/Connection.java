@@ -26,7 +26,20 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -1194,7 +1207,6 @@ public class Connection {
                                     .collect(Collectors.joining(" / ")));
                 }
             }
-
         } catch (URISyntaxException e) {
             logger.warn("URL '{}' has invalid format for request '{}': {}", url, requestBody, e.getMessage());
         }
@@ -1223,7 +1235,6 @@ public class Connection {
             String json = makeRequestAndReturnString(alexaServer + "/api/device-notification-state");
             JsonDeviceNotificationState result = parseJson(json, JsonDeviceNotificationState.class);
             return Objects.requireNonNullElse(result.deviceNotificationStates, List.of());
-
         } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.info("Error getting device notification states", e);
         }
@@ -1877,7 +1888,7 @@ public class Connection {
 
     public @Nullable JsonAutomation @Nullable [] getRoutines()
             throws IOException, URISyntaxException, InterruptedException {
-        String json = makeRequestAndReturnString(alexaServer + "/api/behaviors/automations?limit=2000");
+        String json = makeRequestAndReturnString(alexaServer + "/api/behaviors/v2/automations?limit=2000");
         JsonAutomation[] result = parseJson(json, JsonAutomation[].class);
         return result;
     }

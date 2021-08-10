@@ -10,6 +10,7 @@ As described in the Telegram Bot API (https://core.telegram.org/bots#6-botfather
 
 - On a Telegram client open a chat with BotFather.
 - Send `/newbot` to BotFather and fill in all the needed information. The authentication token that is given will be needed in the next steps.
+- The token is a combination with double point separated parts of numbers and letters e.g.: 158642643:ABCHL_O-MUovQ1NzrDF5R_nqLbFhPPrg9Jps
 
 2. Create the destination chat
 
@@ -17,7 +18,7 @@ As described in the Telegram Bot API (https://core.telegram.org/bots#6-botfather
 
 3. Get the chatID
 
-- Open a browser and invoke `https://api.telegram.org/bot<token>/getUpdates` (where `<token>` is the authentication token previously obtained)
+- Open a browser and invoke `https://api.telegram.org/bot<token>/getUpdates` (where `<token>` is the authentication token previously obtained e.g.:  `https://api.telegram.org/bot158642643:ABCHL_O-MUovQ1NzrDF5R_nqLbFhPPrg9Jps/getUpdates`)
 - Look at the JSON result to find the value of `id`: that's the chatID.
 
 Note that if using a Telegram group chat, the group chatIDs are prefixed with a dash that must be included in the config (e.g. `-22334455`).
@@ -32,8 +33,8 @@ Note bots may work or not at any time so eventually you need to try another one.
 - `https://api.telegram.org/bot<token>/sendMessage?chat_id=<chatId>&text=testing`
 - Your Telegram-bot should send you a message with the text: `testing`
 
-**Notice:** By default your bot will only receive messages that either start with the '/' symbol or mention the bot by username (or if you talk to it directly). 
-However, if you add your bot to a group you must either talk to BotFather and send the command "/setprivacy" and then disable it or you give admin rights to your bot in that group. 
+**Notice:** By default your bot will only receive messages that either start with the '/' symbol or mention the bot by username (or if you talk to it directly).
+However, if you add your bot to a group you must either talk to BotFather and send the command "/setprivacy" and then disable it or you give admin rights to your bot in that group.
 Otherwise you will not be able to receive those messages.
 
 ## Supported Things
@@ -70,7 +71,7 @@ By default chat ids are bi-directionally, i.e. they can send and receive message
 They can be prefixed with an access modifier:
 
 - `<` restricts the chat to send only, i.e. this chat id can send messages to openHAB, but will never receive a notification.
-- `>` restricts the chat to receive only, i.e. this chat id will receive all notifications, but messages from this chat id will be discarded. 
+- `>` restricts the chat to receive only, i.e. this chat id will receive all notifications, but messages from this chat id will be discarded.
 
 To use the reply function, chat ids need to be bi-directional.
 
@@ -92,7 +93,7 @@ telegram.thing (markdown format):
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", parseMode ="Markdown" ]
 ```
 
-telegram.thing (SOCKS5 proxy server is used): 
+telegram.thing (SOCKS5 proxy server is used):
 
 ```
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyHost="HOST", proxyPort="PORT", proxyType="TYPE" ]
@@ -119,7 +120,7 @@ Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyH
 All channels are read-only.
 Either `lastMessageText` or `lastMessageURL` are populated for a given message.
 If the message did contain text, the content is written to `lastMessageText`.
-If the message did contain an audio, photo, video or voice, the URL to retrieve that content can be found in `lastMessageURL`. 
+If the message did contain an audio, photo, video or voice, the URL to retrieve that content can be found in `lastMessageURL`.
 
 ## Rule Actions
 
@@ -213,7 +214,7 @@ when
     Item Light_GF_Living_Table changed
 then
     val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
-    telegramAction.sendTelegramPhoto("http://www.openhab.org/assets/images/openhab-logo-top.png",
+    telegramAction.sendTelegramPhoto("https://www.openhab.org/openhab-logo-top.png",
         "sent from openHAB")
 end
 ```
@@ -226,7 +227,7 @@ when
     Item Light_GF_Living_Table changed
 then
     val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
-    telegramAction.sendTelegramPhoto("http://www.openhab.org/assets/images/openhab-logo-top.png",
+    telegramAction.sendTelegramPhoto("https://www.openhab.org/openhab-logo-top.png",
         null)
 end
 ```
@@ -256,10 +257,10 @@ then
     // image as base64 string
     var String base64Image = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAS1BMVEUAAABAQEA9QUc7P0Y0OD88QEY+QUhmaW7c3N3w8PBlaG0+QUjb29w5PUU3O0G+vsigoas6P0WfoKo4O0I9QUdkZ2w9Qkg+QkkkSUnT3FKbAAAAGXRSTlMACJbx//CV9v//9pT/7Ur//+z/SfD2kpMHrnfDaAAAAGhJREFUeAHt1bUBAzAMRFGZmcL7LxpOalN5r/evLIlgGwBgXMhxSjP64sa6cdYH+hLWzYiKvqSbI4kQeEt5PlBealsMFIkAAgi8HNriOLcjduLTafWwBB9n3p8v/+Ma1Mxxvd4IAGCzB4xDPuBRkEZiAAAAAElFTkSuQmCC"
     telegramAction.sendTelegramPhoto(base64Image, "battery of motion sensor is empty")
-    
+
     // image as base64 string in data URI scheme
     var String base64ImageDataURI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAS1BMVEUAAABAQEA9QUc7P0Y0OD88QEY+QUhmaW7c3N3w8PBlaG0+QUjb29w5PUU3O0G+vsigoas6P0WfoKo4O0I9QUdkZ2w9Qkg+QkkkSUnT3FKbAAAAGXRSTlMACJbx//CV9v//9pT/7Ur//+z/SfD2kpMHrnfDaAAAAGhJREFUeAHt1bUBAzAMRFGZmcL7LxpOalN5r/evLIlgGwBgXMhxSjP64sa6cdYH+hLWzYiKvqSbI4kQeEt5PlBealsMFIkAAgi8HNriOLcjduLTafWwBB9n3p8v/+Ma1Mxxvd4IAGCzB4xDPuBRkEZiAAAAAElFTkSuQmCC"
-    telegramAction.sendTelegramPhoto(base64ImageDataURI, "battery of motion sensor is empty")    
+    telegramAction.sendTelegramPhoto(base64ImageDataURI, "battery of motion sensor is empty")
 end
 ```
 
@@ -339,7 +340,7 @@ then
     if (telegramMessage.state.toString == "Yes")
     {
         gLights.sendCommand(OFF)
-        telegramAction.sendTelegramAnswer(telegramReplyId.state.toString, "Ok, lights are *off* now.") 
+        telegramAction.sendTelegramAnswer(telegramReplyId.state.toString, "Ok, lights are *off* now.")
     }
     else
     {

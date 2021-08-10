@@ -232,7 +232,7 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
     }
 
     protected byte convertAlarmChannelUIDToChannelByte(ChannelUID channelUID) {
-        return Byte.parseByte(channelUID.getIdWithoutGroup());
+        return Byte.parseByte(channelUID.getIdWithoutGroup().replaceAll(CHANNEL, ""));
     }
 
     protected boolean isTextAnalogInputChannel(ChannelUID channelUID) {
@@ -246,11 +246,12 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
     }
 
     protected byte convertRawAnalogInputChannelUIDToChannelByte(ChannelUID channelUID) {
-        return Byte.parseByte(channelUID.getIdWithoutGroup().replaceAll(RAW_CHANNEL_SUFFIX, ""));
+        return Byte
+                .parseByte(channelUID.getIdWithoutGroup().replaceAll(CHANNEL, "").replaceAll(RAW_CHANNEL_SUFFIX, ""));
     }
 
     protected byte convertTextAnalogInputChannelUIDToChannelByte(ChannelUID channelUID) {
-        return Byte.parseByte(channelUID.getIdWithoutGroup());
+        return Byte.parseByte(channelUID.getIdWithoutGroup().replaceAll(CHANNEL, ""));
     }
 
     protected String convertAnalogInputChannelByteToRawChannelUID(byte channelByte) {
@@ -258,7 +259,7 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
     }
 
     protected String convertAnalogInputChannelByteToChannelUID(byte channelByte) {
-        return ANALOG_INPUT_GROUP + "#" + channelByte;
+        return ANALOG_INPUT_GROUP + "#" + CHANNEL + channelByte;
     }
 
     protected boolean isAnalogOutputChannel(ChannelUID channelUID) {
@@ -266,6 +267,11 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
     }
 
     protected byte convertAnalogOutputChannelUIDToChannelByte(ChannelUID channelUID) {
-        return Byte.parseByte(channelUID.getIdWithoutGroup());
+        return Byte.parseByte(channelUID.getIdWithoutGroup().replaceAll(CHANNEL, ""));
+    }
+
+    @Override
+    protected int getClockAlarmAndProgramSelectionIndexInModuleStatus() {
+        return 8;
     }
 }

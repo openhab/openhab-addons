@@ -16,6 +16,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.DateTimeException;
@@ -23,6 +24,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.measure.Unit;
 
@@ -40,6 +42,9 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
 /**
  * {@link ShellyUtils} provides general utility functions
  *
@@ -47,6 +52,82 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class ShellyUtils {
+    private static final String PRE = "Unable to create object of type ";
+    public static final DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern(DateTimeType.DATE_PATTERN);
+
+    public static <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT) throws ShellyApiException {
+        @Nullable
+        T o = fromJson(gson, json, classOfT, true);
+        if (o == null) {
+            throw new ShellyApiException("Unable to create JSON object");
+        }
+        return o;
+    }
+
+    public static @Nullable <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT, boolean exceptionOnNull)
+            throws ShellyApiException {
+        String className = substringAfter(classOfT.getName(), "$");
+
+        if (json == null) {
+            if (exceptionOnNull) {
+                throw new IllegalArgumentException(PRE + className + ": json is null!");
+            } else {
+                return null;
+            }
+        }
+
+        if (classOfT.isInstance(json)) {
+            return wrap(classOfT).cast(json);
+        } else if (json.isEmpty()) { // update GSON might return null
+            throw new ShellyApiException(PRE + className + "from empty JSON");
+        } else {
+            try {
+                @Nullable
+                T obj = gson.fromJson(json, classOfT);
+                if ((obj == null) && exceptionOnNull) { // new in OH3: fromJson may return null
+                    throw new ShellyApiException(PRE + className + "from JSON: " + json);
+                }
+                return obj;
+            } catch (JsonSyntaxException e) {
+                throw new ShellyApiException(PRE + className + "from JSON (syntax/format error): " + json, e);
+            } catch (RuntimeException e) {
+                throw new ShellyApiException(PRE + className + "from JSON: " + json, e);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Class<T> wrap(Class<T> type) {
+        if (type == int.class) {
+            return (Class<T>) Integer.class;
+        }
+        if (type == float.class) {
+            return (Class<T>) Float.class;
+        }
+        if (type == byte.class) {
+            return (Class<T>) Byte.class;
+        }
+        if (type == double.class) {
+            return (Class<T>) Double.class;
+        }
+        if (type == long.class) {
+            return (Class<T>) Long.class;
+        }
+        if (type == char.class) {
+            return (Class<T>) Character.class;
+        }
+        if (type == boolean.class) {
+            return (Class<T>) Boolean.class;
+        }
+        if (type == short.class) {
+            return (Class<T>) Short.class;
+        }
+        if (type == void.class) {
+            return (Class<T>) Void.class;
+        }
+        return type;
+    }
+
     public static String mkChannelId(String group, String channel) {
         return group + "#" + channel;
     }
@@ -86,13 +167,14 @@ public class ShellyUtils {
     }
 
     public static String substringAfterLast(@Nullable String string, String pattern) {
-        if (string != null) {
-            int pos = string.lastIndexOf(pattern);
-            if (pos != -1) {
-                return string.substring(pos + pattern.length());
-            }
+        if (string == null) {
+            return "";
         }
-        return "";
+        int pos = string.lastIndexOf(pattern);
+        if (pos != -1) {
+            return string.substring(pos + pattern.length());
+        }
+        return string;
     }
 
     public static String substringBetween(@Nullable String string, String begin, String end) {
@@ -171,7 +253,7 @@ public class ShellyUtils {
             return UnDefType.NULL;
         }
         BigDecimal bd = new BigDecimal(value.doubleValue());
-        return toQuantityType(bd.setScale(digits, BigDecimal.ROUND_HALF_UP), unit);
+        return toQuantityType(bd.setScale(digits, RoundingMode.HALF_UP), unit);
     }
 
     public static State toQuantityType(@Nullable Number value, Unit<?> unit) {
@@ -188,12 +270,11 @@ public class ShellyUtils {
         }
     }
 
-    public static String urlEncode(String input) throws ShellyApiException {
+    public static String urlEncode(String input) {
         try {
             return URLEncoder.encode(input, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
-            throw new ShellyApiException(
-                    "Unsupported encoding format: " + StandardCharsets.UTF_8.toString() + ", input=" + input, e);
+            return input;
         }
     }
 
@@ -208,7 +289,7 @@ public class ShellyUtils {
     public static DateTimeType getTimestamp(String zone, long timestamp) {
         try {
             if (timestamp == 0) {
-                return getTimestamp();
+                throw new IllegalArgumentException("Timestamp value 0 is invalid");
             }
             ZoneId zoneId = !zone.isEmpty() ? ZoneId.of(zone) : ZoneId.systemDefault();
             ZonedDateTime zdt = LocalDateTime.now().atZone(zoneId);
@@ -218,6 +299,18 @@ public class ShellyUtils {
             // Unable to convert device's timezone, use system one
             return getTimestamp();
         }
+    }
+
+    public static String getTimestamp(DateTimeType dt) {
+        return dt.getZonedDateTime().toString().replace('T', ' ').replace('-', '/');
+    }
+
+    public static String convertTimestamp(long ts) {
+        if (ts == 0) {
+            return "";
+        }
+        String time = DATE_TIME.format(ZonedDateTime.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault()));
+        return time.replace('T', ' ').replace('-', '/');
     }
 
     public static Integer getLightIdFromGroup(String groupName) {
@@ -233,7 +326,7 @@ public class ShellyUtils {
     }
 
     public static String buildWhiteGroupName(ShellyDeviceProfile profile, Integer channelId) {
-        return profile.isBulb || profile.isDuo && !profile.inColor ? CHANNEL_GROUP_WHITE_CONTROL
+        return profile.isBulb || profile.isDuo ? CHANNEL_GROUP_WHITE_CONTROL
                 : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
     }
 

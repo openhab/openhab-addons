@@ -22,8 +22,6 @@ Every rollershutter must be known by eGate and can be called by it's number of s
 
 The bridge "eGate" has one channel "getconfig" which returns the config of this bridge. 
 The eGate is configured with both an `ipAddress` and a port.
-The `ipAddress` might be in format like 192.168.1.1 or as the hostname representing the eGate in your network.
-Port is represented as a number.
 
 |Property|Default|Required|Description|
 |--------|-------|--------|-----------|

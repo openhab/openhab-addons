@@ -20,6 +20,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,6 +50,7 @@ public class OpenAPIUtils {
 
     // Regular expression for firmware version
     private static final Pattern FIRMWARE_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)");
+    private static final Pattern FIRMWARE_VERSION_PATTERN_BETA = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)-(\\d+)");
 
     public static Request requestBuilder(HttpClient httpClient, NanoleafControllerConfig controllerConfig,
             String apiOperation, HttpMethod method) throws NanoleafException {
@@ -56,7 +58,7 @@ public class OpenAPIUtils {
         LOGGER.trace("RequestBuilder: Sending Request {}:{} {} ", requestURI.getHost(), requestURI.getPort(),
                 requestURI.getPath());
 
-        return httpClient.newRequest(requestURI).method(method);
+        return httpClient.newRequest(requestURI).method(method).timeout(10, TimeUnit.SECONDS);
     }
 
     public static URI getUri(NanoleafControllerConfig controllerConfig, String apiOperation, @Nullable String query)
@@ -162,11 +164,21 @@ public class OpenAPIUtils {
         return true;
     }
 
-    private static int[] getFirmwareVersionNumbers(String firmwareVersion) throws IllegalArgumentException {
+    public static int[] getFirmwareVersionNumbers(String firmwareVersion) throws IllegalArgumentException {
+        LOGGER.debug("firmwareVersion: {}", firmwareVersion);
         Matcher m = FIRMWARE_VERSION_PATTERN.matcher(firmwareVersion);
-        if (!m.matches()) {
-            throw new IllegalArgumentException("Malformed controller firmware version");
+
+        if (m.matches()) {
+            return new int[] { Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)),
+                    Integer.parseInt(m.group(3)) };
+        } else {
+            m = FIRMWARE_VERSION_PATTERN_BETA.matcher(firmwareVersion);
+            if (m.matches()) {
+                return new int[] { Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)),
+                        Integer.parseInt(m.group(3)), Integer.parseInt(m.group(4)) };
+            } else {
+                throw new IllegalArgumentException("Malformed controller firmware version " + firmwareVersion);
+            }
         }
-        return new int[] { Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)), Integer.parseInt(m.group(3)) };
     }
 }

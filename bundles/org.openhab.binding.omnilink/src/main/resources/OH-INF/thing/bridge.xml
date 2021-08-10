@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- OmniLink Controller Bridge -->
+	<bridge-type id="controller">
+		<label>OmniLink Controller</label>
+		<description>An OmniLink controller.</description>
+		<channels>
+			<channel id="sysdate" typeId="sysDate"/>
+			<channel id="enable_disable_beeper" typeId="console_enable_disable_beeper">
+				<label>Console Beepers</label>
+			</channel>
+			<channel id="beep" typeId="console_beep">
+				<label>Beep Consoles</label>
+			</channel>
+			<channel id="last_log" typeId="last_log"/>
+			<channel id="phone_line_event" typeId="phone_line_event"/>
+			<channel id="ac_power_event" typeId="ac_power_event"/>
+			<channel id="battery_event" typeId="battery_event"/>
+			<channel id="dcm_event" typeId="dcm_event"/>
+			<channel id="energy_cost_event" typeId="energy_cost_event"/>
+			<channel id="camera_trigger_event" typeId="camera_trigger_event"/>
+			<channel id="upb_link_activated_event" typeId="upb_link_activated_event"/>
+			<channel id="upb_link_deactivated_event" typeId="upb_link_deactivated_event"/>
+		</channels>
+		<properties>
+			<property name="model number"/>
+			<property name="major version"/>
+			<property name="minor version"/>
+			<property name="revision"/>
+			<property name="phone number"/>
+		</properties>
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP or Host Name</label>
+				<description>The IP or host name of the controller.</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>The port of the controller.</description>
+				<default>4369</default>
+			</parameter>
+			<parameter name="key1" type="text" required="true">
+				<label>Key 1</label>
+				<description>The first network encription key.</description>
+			</parameter>
+			<parameter name="key2" type="text" required="true">
+				<label>Key 2</label>
+				<description>The second network encription key.</description>
+			</parameter>
+			<parameter name="logPollingInterval" type="integer" required="true">
+				<label>Log Polling Interval</label>
+				<description>The interval to poll for new log messages on the controller.</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+
+	<!-- Controller Channels -->
+	<channel-type id="sysDate">
+		<item-type>DateTime</item-type>
+		<label>Date/Time</label>
+		<description>Set controller date/time.</description>
+		<category>Time</category>
+		<state pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+	<channel-type id="last_log">
+		<item-type>String</item-type>
+		<label>Last Log Entry</label>
+		<description>Last log message on the controller, represented in JSON.</description>
+		<category>Text</category>
+	</channel-type>
+
+	<channel-type id="upb_link_activated_event">
+		<kind>trigger</kind>
+		<label>UPB Link</label>
+		<description>Event sent when a UPB link is activated.</description>
+	</channel-type>
+
+	<channel-type id="upb_link_deactivated_event">
+		<kind>trigger</kind>
+		<label>UPB Link</label>
+		<description>Event sent when a UPB link is deactivated.</description>
+	</channel-type>
+
+	<channel-type id="phone_line_event">
+		<kind>trigger</kind>
+		<label>Phone Line Event</label>
+		<description>Event sent when the phone line changes state.</description>
+		<event>
+			<options>
+				<option value="ON_HOOK">On Hook</option>
+				<option value="OFF_HOOK">Off Hook</option>
+				<option value="DEAD">Dead</option>
+				<option value="RING">Ring</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="ac_power_event">
+		<kind>trigger</kind>
+		<label>AC Power Event</label>
+		<description>Event sent when AC trouble conditions are detected.</description>
+		<event>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="RESTORED">Restored</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="battery_event">
+		<kind>trigger</kind>
+		<label>Battery Event</label>
+		<description>Event sent when battery trouble conditions are detected.</description>
+		<event>
+			<options>
+				<option value="LOW">Low</option>
+				<option value="OK">OK</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="dcm_event">
+		<kind>trigger</kind>
+		<label>DCM Event</label>
+		<description>Event sent when digital communicator trouble conditions are detected.</description>
+		<event>
+			<options>
+				<option value="TROUBLE">Trouble</option>
+				<option value="OK">OK</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="energy_cost_event">
+		<kind>trigger</kind>
+		<label>Energy Cost Event</label>
+		<description>Event sent when the cost of energy changes.</description>
+		<event>
+			<options>
+				<option value="LOW">Trouble</option>
+				<option value="MID">Mid</option>
+				<option value="HIGH">High</option>
+				<option value="CRITCAL">Critical</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="camera_trigger_event">
+		<kind>trigger</kind>
+		<label>Camera Trigger Event</label>
+		<description>Event sent when a camera trigger is detected.</description>
+		<event>
+			<options>
+				<option value="1">Camera 1</option>
+				<option value="2">Camera 2</option>
+				<option value="3">Camera 3</option>
+				<option value="4">Camera 4</option>
+				<option value="5">Camera 5</option>
+				<option value="6">Camera 6</option>
+			</options>
+		</event>
+	</channel-type>
+
+</thing:thing-descriptions>

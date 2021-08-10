@@ -32,7 +32,6 @@ import org.openhab.binding.velbus.internal.packets.VelbusScanPacket;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -48,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class VelbusThingDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService, VelbusPacketListener {
+        implements ThingHandlerService, VelbusPacketListener {
     private static final int SEARCH_TIME = 60;
 
     private final Logger logger = LoggerFactory.getLogger(VelbusThingDiscoveryService.class);
@@ -303,6 +302,10 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
             case MODULE_TYPE_VMBRFR8S:
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBRFR8S, 8);
+                break;
+            case MODULE_TYPE_VMBVP1:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBVP1, 8);
                 break;
         }
 

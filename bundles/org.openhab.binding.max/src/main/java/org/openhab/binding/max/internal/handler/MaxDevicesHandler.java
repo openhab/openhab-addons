@@ -158,7 +158,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                     configurationParameter.getKey(), configurationParameter.getValue());
 
             // Test if it is a part of the configuration properties.
-            // As paperUI sends all parameters as changed, we need to determine which ones really changed.
+            // With the update all parameters are sends, so we need to determine which ones really changed.
             if (deviceProperties.containsKey(configurationParameter.getKey())) {
                 if (deviceProperties.get(configurationParameter.getKey()).equals(configurationParameter.getValue())) {
                     logger.trace("Device {} Property {} value {} unchanged.", getThing().getUID(),

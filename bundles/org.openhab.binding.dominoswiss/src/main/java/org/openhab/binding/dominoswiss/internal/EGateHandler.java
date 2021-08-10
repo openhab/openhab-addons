@@ -24,16 +24,12 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.common.NamedThreadFactory;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -65,14 +61,11 @@ public class EGateHandler extends BaseBridgeHandler {
     private @Nullable BufferedReader reader;
     private @Nullable Future<?> refreshJob;
     private @Nullable Map<String, ThingUID> registeredBlinds;
-    private final ScheduledExecutorService scheduler;
     private @Nullable ScheduledFuture<?> pollingJob;
 
     public EGateHandler(Bridge thing) {
         super(thing);
         registeredBlinds = new HashMap<String, ThingUID>();
-        scheduler = (ScheduledExecutorService) Executors
-                .newSingleThreadExecutor(new NamedThreadFactory(thing.getUID().getAsString(), true));
     }
 
     @Override
@@ -84,17 +77,14 @@ public class EGateHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        Configuration config;
-        config = this.getConfig();
-        host = (String) config.get("ipAddress");
-        port = 1318; // default Port
-        if (!config.get("port").toString().isEmpty()) {
-            port = Integer.parseInt(config.get("port").toString()); // take configured Port
-        }
+        DominoswissConfiguration config;
+        config = this.getConfigAs(DominoswissConfiguration.class);
+        host = config.ipAddress;
+        port = config.port;
 
         if (host != null && port > 0) {
             // Create a socket to eGate
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingConfig, 0, 30, TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::pollingConfig, 0, 30, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to dominoswiss eGate gateway. host IP address or port are not set.");
@@ -109,11 +99,11 @@ public class EGateHandler extends BaseBridgeHandler {
             reader.close();
             if (pollingJob != null) {
                 pollingJob.cancel(true);
+                pollingJob = null;
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "EGate Disposed");
             logger.debug("EGate Handler connection closed, disposing");
         } catch (IOException e) {
-            logger.error("EGate Handler Error on dispose: {} ", e.toString());
+            logger.debug("EGate Handler Error on dispose: {} ", e.toString());
         }
     }
 
@@ -140,22 +130,15 @@ public class EGateHandler extends BaseBridgeHandler {
     public void tiltUp(String id) throws InterruptedException {
         for (int i = 0; i < 3; i++) {
             pulseUp(id);
-            // try {
             Thread.sleep(150); // sleep to not confuse the blinds
-            // } catch (InterruptedException e) {
-            // logger.error("EGate tiltUp error: {}", e.toString());
-            // }
+
         }
     }
 
     public void tiltDown(String id) throws InterruptedException {
         for (int i = 0; i < 3; i++) {
             pulseDown(id);
-            // try {
             Thread.sleep(150);// sleep to not confuse the blinds
-            // } catch (InterruptedException e) {
-            // logger.error("EGate tiltDown error: {} ", e.toString());
-            // }
         }
     }
 
@@ -212,36 +195,43 @@ public class EGateHandler extends BaseBridgeHandler {
         }
     }
 
-    private final Runnable pollingConfig = new Runnable() {
-        @Override
-        public void run() {
+    private void pollingConfig() {
+        if (!isConnected()) {
             synchronized (lock) {
                 try {
                     egateSocket = new Socket();
+                    logger.debug("before connect");
                     egateSocket.connect(new InetSocketAddress(host, port));
+                    logger.debug("after connect");
                     egateSocket.setSoTimeout(SOCKET_TIMEOUT_SEC);
+                    logger.debug("before writer");
                     writer = new BufferedWriter(new OutputStreamWriter(egateSocket.getOutputStream()));
                     writer.write("SilenceModeSet;Value=0;" + CR);
                     writer.flush();
 
                 } catch (IOException e) {
-                    logger.debug("unknown socket host {}", host);
+                    logger.debug("IOException in pollingConfig: {} host {} port {}", e.toString(), host, port);
                     try {
                         egateSocket.close();
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, e.toString());
+                        egateSocket = null;
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
                     } catch (IOException e1) {
-                        logger.warn("EGate Socket not closed {}", e1.toString());
+                        logger.debug("EGate Socket not closed {}", e1.toString());
                     }
                     egateSocket = null;
                 }
                 if (egateSocket != null) {
                     updateStatus(ThingStatus.ONLINE);
+                    startAutomaticRefresh();
+                    logger.debug("EGate Handler started automatic refresh, status: {} ",
+                            getThing().getStatus().toString());
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    logger.debug("Something went wrong: Host {} Port {}", host, port);
                 }
-                startAutomaticRefresh();
-                logger.debug("EGate Handler connected and online, Status {} ", getThing().getStatus().toString());
             }
         }
-    };
+    }
 
     private void startAutomaticRefresh() {
         Runnable runnable = () -> {
@@ -256,7 +246,7 @@ public class EGateHandler extends BaseBridgeHandler {
                     onData(input);
                 }
             } catch (IOException e) {
-                logger.error("Error while reading command from Dominoswiss eGate Server {} ", e.toString());
+                logger.debug("Error while reading command from Dominoswiss eGate Server {} ", e.toString());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
             }
         };
@@ -287,14 +277,13 @@ public class EGateHandler extends BaseBridgeHandler {
     protected void onData(String input) {
         // Instruction=2;ID=19;Command=1;Value=0;Priority=0;
         Map<String, String> map = new HashMap<String, String>();
-        // Thing blind;
         // split on ;
         String[] parts = input.split(";");
-
-        for (int i = 0; i < parts.length; i += 2) {
-            map.put(parts[i], parts[i + 1]);
+        if (parts.length >= 2) {
+            for (int i = 0; i < parts.length; i += 2) {
+                map.put(parts[i], parts[i + 1]);
+            }
         }
-
         // only use FSSReceive Commands
         /*
          * Will be used in a Future Release

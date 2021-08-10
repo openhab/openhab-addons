@@ -14,6 +14,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.core.types.Type;
 
@@ -40,8 +41,12 @@ public interface RFXComMessage {
 
     /**
      * Procedure for converting openHAB state to RFXCOM object.
+     *
+     * @throws RFXComUnsupportedChannelException If we do not support setting this channel
+     * @throws RFXComInvalidStateException If the state (type) is invalid for the channel
      */
-    void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException;
+    void convertFromState(String channelId, Type type)
+            throws RFXComUnsupportedChannelException, RFXComInvalidStateException;
 
     /**
      * Procedure to pass configuration to a message

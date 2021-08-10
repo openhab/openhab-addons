@@ -39,6 +39,8 @@
 		<label>Insteon Device</label>
 		<description>Insteon devices such as switches, dimmers, keypads, sensors, etc.</description>
 
+		<representation-property>address</representation-property>
+
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<label>Address</label>

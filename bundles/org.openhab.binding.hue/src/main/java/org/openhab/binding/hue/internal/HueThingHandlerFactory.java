@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueGroupHandler;
 import org.openhab.binding.hue.internal.handler.HueLightHandler;
-import org.openhab.binding.hue.internal.handler.HueStateDescriptionOptionProvider;
+import org.openhab.binding.hue.internal.handler.HueStateDescriptionProvider;
 import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.openhab.binding.hue.internal.handler.sensors.DimmerSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.GeofencePresenceHandler;
@@ -67,11 +67,11 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
                     ClipHandler.SUPPORTED_THING_TYPES.stream(), HueGroupHandler.SUPPORTED_THING_TYPES.stream())
             .flatMap(i -> i).collect(Collectors.toSet()));
 
-    private final HueStateDescriptionOptionProvider stateOptionProvider;
+    private final HueStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
-    public HueThingHandlerFactory(final @Reference HueStateDescriptionOptionProvider stateOptionProvider) {
-        this.stateOptionProvider = stateOptionProvider;
+    public HueThingHandlerFactory(final @Reference HueStateDescriptionProvider stateDescriptionProvider) {
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -142,9 +142,9 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            return new HueBridgeHandler((Bridge) thing, stateOptionProvider);
+            return new HueBridgeHandler((Bridge) thing, stateDescriptionProvider);
         } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            return new HueLightHandler(thing);
+            return new HueLightHandler(thing, stateDescriptionProvider);
         } else if (DimmerSwitchHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new DimmerSwitchHandler(thing);
         } else if (TapSwitchHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
@@ -160,7 +160,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
         } else if (ClipHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new ClipHandler(thing);
         } else if (HueGroupHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            return new HueGroupHandler(thing, stateOptionProvider);
+            return new HueGroupHandler(thing, stateDescriptionProvider);
         } else {
             return null;
         }

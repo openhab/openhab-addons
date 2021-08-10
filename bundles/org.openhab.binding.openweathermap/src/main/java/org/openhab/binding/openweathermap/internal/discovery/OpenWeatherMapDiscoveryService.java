@@ -90,10 +90,11 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        if (discoveryJob == null || discoveryJob.isCancelled()) {
+        ScheduledFuture<?> localDiscoveryJob = discoveryJob;
+        if (localDiscoveryJob == null || localDiscoveryJob.isCancelled()) {
             logger.debug("Start OpenWeatherMap Location background discovery job at interval {} s.",
                     DISCOVERY_INTERVAL_SECONDS);
-            discoveryJob = scheduler.scheduleWithFixedDelay(() -> {
+            localDiscoveryJob = scheduler.scheduleWithFixedDelay(() -> {
                 scanForNewLocation(true);
             }, 0, DISCOVERY_INTERVAL_SECONDS, TimeUnit.SECONDS);
         }
@@ -101,9 +102,10 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        if (discoveryJob != null && !discoveryJob.isCancelled()) {
+        ScheduledFuture<?> localDiscoveryJob = discoveryJob;
+        if (localDiscoveryJob != null && !localDiscoveryJob.isCancelled()) {
             logger.debug("Stop OpenWeatherMap Location background discovery job.");
-            if (discoveryJob.cancel(true)) {
+            if (localDiscoveryJob.cancel(true)) {
                 discoveryJob = null;
             }
         }
@@ -127,33 +129,33 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
         String locationString = location.toFullString();
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         createWeatherAndForecastResult(locationString, bridgeUID);
-        createUVIndexResult(locationString, bridgeUID);
+        createAirPollutionResult(locationString, bridgeUID);
         createOneCallResult(locationString, bridgeUID);
         createOneCallHistoryResult(locationString, bridgeUID);
     }
 
     private void createWeatherAndForecastResult(String location, ThingUID bridgeUID) {
         thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_WEATHER_AND_FORECAST, bridgeUID, LOCAL))
-                .withLabel("Local weather and forecast").withProperty(CONFIG_LOCATION, location)
+                .withLabel("Local Weather and Forecast").withProperty(CONFIG_LOCATION, location)
                 .withRepresentationProperty(CONFIG_LOCATION).withBridge(bridgeUID).build());
     }
 
-    private void createUVIndexResult(String location, ThingUID bridgeUID) {
-        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_UVINDEX, bridgeUID, LOCAL))
-                .withLabel("Local UV Index").withProperty(CONFIG_LOCATION, location)
+    private void createAirPollutionResult(String location, ThingUID bridgeUID) {
+        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_AIR_POLLUTION, bridgeUID, LOCAL))
+                .withLabel("Local Air Pollution").withProperty(CONFIG_LOCATION, location)
                 .withRepresentationProperty(CONFIG_LOCATION).withBridge(bridgeUID).build());
     }
 
     private void createOneCallResult(String location, ThingUID bridgeUID) {
         thingDiscovered(
                 DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_ONECALL_WEATHER_AND_FORECAST, bridgeUID, LOCAL))
-                        .withLabel("One Call API weather and forecast").withProperty(CONFIG_LOCATION, location)
+                        .withLabel("One Call API Weather and Forecast").withProperty(CONFIG_LOCATION, location)
                         .withRepresentationProperty(CONFIG_LOCATION).withBridge(bridgeUID).build());
     }
 
     private void createOneCallHistoryResult(String location, ThingUID bridgeUID) {
         thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_ONECALL_HISTORY, bridgeUID, LOCAL))
-                .withLabel("One Call API history data").withProperty(CONFIG_LOCATION, location)
+                .withLabel("One Call API History Data").withProperty(CONFIG_LOCATION, location)
                 .withRepresentationProperty(CONFIG_LOCATION).withBridge(bridgeUID).build());
     }
 }

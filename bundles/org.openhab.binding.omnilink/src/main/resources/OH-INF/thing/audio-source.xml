@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Audio Source Thing -->
+	<thing-type id="audio_source">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>Audio Source</label>
+		<description>An audio source configured in the controller.</description>
+		<channels>
+			<channel id="source_text_1" typeId="audio_source_text"/>
+			<channel id="source_text_2" typeId="audio_source_text"/>
+			<channel id="source_text_3" typeId="audio_source_text"/>
+			<channel id="source_text_4" typeId="audio_source_text"/>
+			<channel id="source_text_5" typeId="audio_source_text"/>
+			<channel id="source_text_6" typeId="audio_source_text"/>
+			<channel id="polling" typeId="audio_source_polling"/>
+		</channels>
+		<properties>
+			<property name="name"/>
+		</properties>
+		<representation-property>number</representation-property>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Audio Source Number</label>
+				<description>The audio source number.</description>
+			</parameter>
+			<parameter name="autostart" type="boolean" required="false">
+				<label>Autostart Polling</label>
+				<description>Autostart polling of audio source on creation of thing.</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Audio Source Channels -->
+	<channel-type id="audio_source_text">
+		<item-type>String</item-type>
+		<label>Source Data</label>
+		<description>A line of metadata from this audio source.</description>
+		<category>Text</category>
+	</channel-type>
+
+	<channel-type id="audio_source_polling">
+		<item-type>Switch</item-type>
+		<label>Audio Source Polling</label>
+		<description>Enable or disable polling of this audio source.</description>
+		<category>Switch</category>
+	</channel-type>
+
+</thing:thing-descriptions>

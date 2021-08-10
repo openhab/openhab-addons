@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
-import java.util.Collections;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +27,7 @@ import org.openhab.binding.hue.internal.FullLight;
 import org.openhab.binding.hue.internal.State.ColorMode;
 import org.openhab.binding.hue.internal.StateUpdate;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -37,6 +38,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.Command;
 
 import com.google.gson.Gson;
@@ -60,8 +62,9 @@ public class HueLightHandlerTest {
     private static final int MAX_COLOR_TEMPERATURE = 500;
     private static final int COLOR_TEMPERATURE_RANGE = MAX_COLOR_TEMPERATURE - MIN_COLOR_TEMPERATURE;
 
-    private static final String OSRAM_MODEL_TYPE = "PAR16 50 TW";
-    private static final String OSRAM_MODEL_TYPE_ID = "PAR16_50_TW";
+    private static final String OSRAM = "OSRAM";
+    private static final String OSRAM_MODEL_TYPE = HueLightHandler.OSRAM_PAR16_50_TW_MODEL_ID;
+    private static final String OSRAM_MODEL_TYPE_ID = HueLightHandler.OSRAM_PAR16_50_TW_MODEL_ID;
 
     private Gson gson;
 
@@ -73,25 +76,26 @@ public class HueLightHandlerTest {
     @Test
     public void assertCommandForOsramPar1650ForColorTemperatureChannelOn() {
         String expectedReply = "{\"on\" : true, \"bri\" : 254}";
-        assertSendCommandForColorTempForPar16(OnOffType.ON, new HueLightState(OSRAM_MODEL_TYPE), expectedReply);
+        assertSendCommandForColorTempForPar16(OnOffType.ON, new HueLightState(OSRAM_MODEL_TYPE, OSRAM), expectedReply);
     }
 
     @Test
     public void assertCommandForOsramPar1650ForColorTemperatureChannelOff() {
         String expectedReply = "{\"on\" : false, \"transitiontime\" : 0}";
-        assertSendCommandForColorTempForPar16(OnOffType.OFF, new HueLightState(OSRAM_MODEL_TYPE), expectedReply);
+        assertSendCommandForColorTempForPar16(OnOffType.OFF, new HueLightState(OSRAM_MODEL_TYPE, OSRAM), expectedReply);
     }
 
     @Test
     public void assertCommandForOsramPar1650ForBrightnessChannelOn() {
         String expectedReply = "{\"on\" : true, \"bri\" : 254}";
-        assertSendCommandForBrightnessForPar16(OnOffType.ON, new HueLightState(OSRAM_MODEL_TYPE), expectedReply);
+        assertSendCommandForBrightnessForPar16(OnOffType.ON, new HueLightState(OSRAM_MODEL_TYPE, OSRAM), expectedReply);
     }
 
     @Test
     public void assertCommandForOsramPar1650ForBrightnessChannelOff() {
         String expectedReply = "{\"on\" : false, \"transitiontime\" : 0}";
-        assertSendCommandForBrightnessForPar16(OnOffType.OFF, new HueLightState(OSRAM_MODEL_TYPE), expectedReply);
+        assertSendCommandForBrightnessForPar16(OnOffType.OFF, new HueLightState(OSRAM_MODEL_TYPE, OSRAM),
+                expectedReply);
     }
 
     @Test
@@ -134,6 +138,24 @@ public class HueLightHandlerTest {
     public void assertCommandForColorTemperatureChannel1000Percent() {
         String expectedReply = "{\"ct\" : 500, \"transitiontime\" : 4}";
         assertSendCommandForColorTemp(new PercentType(100), new HueLightState(), expectedReply);
+    }
+
+    @Test
+    public void assertCommandForColorTemperatureAbsChannel6500Kelvin() {
+        String expectedReply = "{\"ct\" : 153, \"transitiontime\" : 4}";
+        assertSendCommandForColorTempAbs(new DecimalType(6500), new HueLightState(), expectedReply);
+    }
+
+    @Test
+    public void assertCommandForColorTemperatureAbsChannel4500Kelvin() {
+        String expectedReply = "{\"ct\" : 222, \"transitiontime\" : 4}";
+        assertSendCommandForColorTempAbs(new DecimalType(4500), new HueLightState(), expectedReply);
+    }
+
+    @Test
+    public void assertCommandForColorTemperatureAbsChannel2000Kelvin() {
+        String expectedReply = "{\"ct\" : 500, \"transitiontime\" : 4}";
+        assertSendCommandForColorTempAbs(new DecimalType(2000), new HueLightState(), expectedReply);
     }
 
     @Test
@@ -321,12 +343,12 @@ public class HueLightHandlerTest {
 
     private void assertSendCommandForColorTempForPar16(Command command, HueLightState currentState,
             String expectedReply) {
-        assertSendCommand(CHANNEL_COLORTEMPERATURE, command, currentState, expectedReply, OSRAM_MODEL_TYPE_ID, "OSRAM");
+        assertSendCommand(CHANNEL_COLORTEMPERATURE, command, currentState, expectedReply, OSRAM_MODEL_TYPE_ID, OSRAM);
     }
 
     private void assertSendCommandForBrightnessForPar16(Command command, HueLightState currentState,
             String expectedReply) {
-        assertSendCommand(CHANNEL_BRIGHTNESS, command, currentState, expectedReply, OSRAM_MODEL_TYPE_ID, "OSRAM");
+        assertSendCommand(CHANNEL_BRIGHTNESS, command, currentState, expectedReply, OSRAM_MODEL_TYPE_ID, OSRAM);
     }
 
     private void assertSendCommandForColor(Command command, HueLightState currentState, String expectedReply) {
@@ -335,6 +357,10 @@ public class HueLightHandlerTest {
 
     private void assertSendCommandForColorTemp(Command command, HueLightState currentState, String expectedReply) {
         assertSendCommand(CHANNEL_COLORTEMPERATURE, command, currentState, expectedReply);
+    }
+
+    private void assertSendCommandForColorTempAbs(Command command, HueLightState currentState, String expectedReply) {
+        assertSendCommand(CHANNEL_COLORTEMPERATURE_ABS, command, currentState, expectedReply);
     }
 
     private void asserttoColorTemperaturePercentType(int ctValue, int expectedPercent) {
@@ -358,6 +384,7 @@ public class HueLightHandlerTest {
         assertSendCommand(channel, command, currentState, expectedReply, "LCT001", "Philips");
     }
 
+    @SuppressWarnings("null")
     private void assertSendCommand(String channel, Command command, HueLightState currentState, String expectedReply,
             String expectedModel, String expectedVendor) {
         FullLight light = gson.fromJson(currentState.toString(), FullConfig.class).getLights().get(0);
@@ -366,14 +393,14 @@ public class HueLightHandlerTest {
         when(mockBridge.getStatus()).thenReturn(ThingStatus.ONLINE);
 
         Thing mockThing = mock(Thing.class);
-        when(mockThing.getConfiguration()).thenReturn(new Configuration(Collections.singletonMap(LIGHT_ID, "1")));
+        when(mockThing.getConfiguration()).thenReturn(new Configuration(Map.of(LIGHT_ID, "1")));
 
         HueClient mockClient = mock(HueClient.class);
         when(mockClient.getLightById(any())).thenReturn(light);
 
         long fadeTime = 400;
 
-        HueLightHandler hueLightHandler = new HueLightHandler(mockThing) {
+        HueLightHandler hueLightHandler = new HueLightHandler(mockThing, mock(HueStateDescriptionProvider.class)) {
             @Override
             protected synchronized HueClient getHueClient() {
                 return mockClient;
@@ -384,6 +411,7 @@ public class HueLightHandlerTest {
                 return mockBridge;
             }
         };
+        hueLightHandler.setCallback(mock(ThingHandlerCallback.class));
         hueLightHandler.initialize();
 
         verify(mockThing).setProperty(eq(Thing.PROPERTY_MODEL_ID), eq(expectedModel));
@@ -398,9 +426,8 @@ public class HueLightHandlerTest {
     }
 
     private void assertJson(String expected, String actual) {
-        JsonParser parser = new JsonParser();
-        JsonElement jsonExpected = parser.parse(expected);
-        JsonElement jsonActual = parser.parse(actual);
+        JsonElement jsonExpected = JsonParser.parseString(expected);
+        JsonElement jsonActual = JsonParser.parseString(actual);
         assertEquals(jsonExpected, jsonActual);
     }
 }

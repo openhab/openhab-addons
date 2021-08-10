@@ -12,33 +12,59 @@
  */
 package org.openhab.binding.irobot.internal.handler;
 
-import static org.openhab.binding.irobot.internal.IRobotBindingConstants.*;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.BIN_FULL;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.BIN_OK;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.BIN_REMOVED;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.BOOST_AUTO;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.BOOST_ECO;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.BOOST_PERFORMANCE;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_ALWAYS_FINISH;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_BATTERY;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_BIN;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_CLEAN_PASSES;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_COMMAND;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_CYCLE;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_EDGE_CLEAN;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_ERROR;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_LAST_COMMAND;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_MAP_UPLOAD;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_PHASE;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_POWER_BOOST;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_RSSI;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_SCHEDULE;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_SCHED_SWITCH;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_SCHED_SWITCH_PREFIX;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CHANNEL_SNR;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CMD_CLEAN;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CMD_CLEAN_REGIONS;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CMD_DOCK;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CMD_PAUSE;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.CMD_STOP;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.PASSES_1;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.PASSES_2;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.PASSES_AUTO;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.ROBOT_BLID;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.ROBOT_PASSWORD;
+import static org.openhab.binding.irobot.internal.IRobotBindingConstants.UNKNOWN;
+import static org.openhab.core.thing.ThingStatus.INITIALIZING;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
+import static org.openhab.core.thing.ThingStatus.UNINITIALIZED;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Hashtable;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.irobot.internal.RawMQTT;
-import org.openhab.binding.irobot.internal.RoombaConfiguration;
-import org.openhab.binding.irobot.internal.dto.IdentProtocol;
-import org.openhab.binding.irobot.internal.dto.IdentProtocol.IdentData;
+import org.openhab.binding.irobot.internal.config.IRobotConfiguration;
 import org.openhab.binding.irobot.internal.dto.MQTTProtocol;
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
-import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
+import org.openhab.binding.irobot.internal.utils.LoginRequester;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
-import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
-import org.openhab.core.io.transport.mqtt.reconnect.PeriodicReconnectStrategy;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -65,18 +91,15 @@ import com.google.gson.stream.JsonReader;
  *
  * @author hkuhn42 - Initial contribution
  * @author Pavel Fedin - Rewrite for 900 series
+ * @author Florian Binder - added cleanRegions command and lastCommand channel
+ * @author Alexander Falkenstern - Add support for I7 series
  */
 @NonNullByDefault
-public class RoombaHandler extends BaseThingHandler implements MqttConnectionObserver, MqttMessageSubscriber {
+public class RoombaHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(RoombaHandler.class);
+
     private final Gson gson = new Gson();
-    private static final int RECONNECT_DELAY_SEC = 5; // In seconds
-    private @Nullable Future<?> reconnectReq;
-    // Dummy RoombaConfiguration object in order to shut up Eclipse warnings
-    // The real one is set in initialize()
-    private RoombaConfiguration config = new RoombaConfiguration();
-    private @Nullable String blid = null;
-    private @Nullable MqttBrokerConnection connection;
+
     private Hashtable<String, State> lastState = new Hashtable<>();
     private MQTTProtocol.@Nullable Schedule lastSchedule = null;
     private boolean autoPasses = true;
@@ -85,20 +108,51 @@ public class RoombaHandler extends BaseThingHandler implements MqttConnectionObs
     private @Nullable Boolean vacHigh = null;
     private boolean isPaused = false;
 
+    private @Nullable Future<?> credentialRequester;
+    protected IRobotConnectionHandler connection = new IRobotConnectionHandler() {
+        @Override
+        public void receive(final String topic, final String json) {
+            RoombaHandler.this.receive(topic, json);
+        }
+
+        @Override
+        public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
+            super.connectionStateChanged(state, error);
+            if (state == MqttConnectionState.CONNECTED) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                String message = (error != null) ? error.getMessage() : "Unknown reason";
+                updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            }
+        }
+    };
+
     public RoombaHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void initialize() {
-        config = getConfigAs(RoombaConfiguration.class);
-        updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(this::connect);
+        IRobotConfiguration config = getConfigAs(IRobotConfiguration.class);
+
+        if (UNKNOWN.equals(config.getPassword()) || UNKNOWN.equals(config.getBlid())) {
+            final String message = "Robot authentication is required";
+            updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+            scheduler.execute(this::getCredentials);
+        } else {
+            scheduler.execute(this::connect);
+        }
     }
 
     @Override
     public void dispose() {
-        scheduler.execute(this::disconnect);
+        Future<?> requester = credentialRequester;
+        if (requester != null) {
+            requester.cancel(false);
+            credentialRequester = null;
+        }
+
+        scheduler.execute(connection::disconnect);
     }
 
     // lastState.get() can return null if the key is not found according
@@ -128,7 +182,25 @@ public class RoombaHandler extends BaseThingHandler implements MqttConnectionObs
                     cmd = isPaused ? "resume" : "start";
                 }
 
-                sendRequest(new MQTTProtocol.CommandRequest(cmd));
+                if (cmd.startsWith(CMD_CLEAN_REGIONS)) {
+                    // format: cleanRegions:<pmid>;<region_id1>,<region_id2>,...
+                    if (Pattern.matches("cleanRegions:[^:;,]+;.+(,[^:;,]+)*", cmd)) {
+                        String[] cmds = cmd.split(":");
+                        String[] params = cmds[1].split(";");
+
+                        String mapId = params[0];
+                        String[] regionIds = params[1].split(",");
+
+                        MQTTProtocol.Request request = new MQTTProtocol.CleanRoomsRequest("start", mapId, regionIds);
+                        connection.send(request.getTopic(), gson.toJson(request));
+                    } else {
+                        logger.warn("Invalid request: {}", cmd);
+                        logger.warn("Correct format: cleanRegions:<pmid>;<region_id1>,<region_id2>,...>");
+                    }
+                } else {
+                    MQTTProtocol.Request request = new MQTTProtocol.CommandRequest(cmd);
+                    connection.send(request.getTopic(), gson.toJson(request));
+                }
             }
         } else if (ch.startsWith(CHANNEL_SCHED_SWITCH_PREFIX)) {
             MQTTProtocol.Schedule schedule = lastSchedule;
@@ -169,6 +241,10 @@ public class RoombaHandler extends BaseThingHandler implements MqttConnectionObs
             sendDelta(new MQTTProtocol.PowerBoost(command.equals(BOOST_AUTO), command.equals(BOOST_PERFORMANCE)));
         } else if (ch.equals(CHANNEL_CLEAN_PASSES)) {
             sendDelta(new MQTTProtocol.CleanPasses(!command.equals(PASSES_AUTO), command.equals(PASSES_2)));
+        } else if (ch.equals(CHANNEL_MAP_UPLOAD)) {
+            if (command instanceof OnOffType) {
+                sendDelta(new MQTTProtocol.MapUploadAllowed(command.equals(OnOffType.ON)));
+            }
         }
     }
 
@@ -182,166 +258,82 @@ public class RoombaHandler extends BaseThingHandler implements MqttConnectionObs
     }
 
     private void sendDelta(MQTTProtocol.StateValue state) {
-        sendRequest(new MQTTProtocol.DeltaRequest(state));
+        MQTTProtocol.Request request = new MQTTProtocol.DeltaRequest(state);
+        connection.send(request.getTopic(), gson.toJson(request));
     }
 
-    private void sendRequest(MQTTProtocol.Request request) {
-        MqttBrokerConnection conn = connection;
-
-        if (conn != null) {
-            String json = gson.toJson(request);
-            logger.trace("Sending {}: {}", request.getTopic(), json);
-            // 1 here actually corresponds to MQTT qos 0 (AT_MOST_ONCE). Only this value is accepted
-            // by Roomba, others just cause it to reject the command and drop the connection.
-            conn.publish(request.getTopic(), json.getBytes(), 1, false);
-        }
-    }
-
-    // In order not to mess up our connection state we need to make sure
-    // that connect() and disconnect() are never running concurrently, so
-    // they are synchronized
-    private synchronized void connect() {
-        logger.debug("Connecting to {}", config.ipaddress);
-
-        try {
-            InetAddress host = InetAddress.getByName(config.ipaddress);
-            String blid = this.blid;
-
-            if (blid == null) {
-                DatagramSocket identSocket = IdentProtocol.sendRequest(host);
-                DatagramPacket identPacket = IdentProtocol.receiveResponse(identSocket);
-                IdentProtocol.IdentData ident;
-
-                identSocket.close();
-
+    private synchronized void getCredentials() {
+        ThingStatus status = thing.getStatusInfo().getStatus();
+        IRobotConfiguration config = getConfigAs(IRobotConfiguration.class);
+        if (UNINITIALIZED.equals(status) || INITIALIZING.equals(status) || OFFLINE.equals(status)) {
+            if (UNKNOWN.equals(config.getBlid())) {
+                @Nullable
+                String blid = null;
                 try {
-                    ident = IdentProtocol.decodeResponse(identPacket);
-                } catch (JsonParseException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Malformed IDENT response");
-                    return;
+                    blid = LoginRequester.getBlid(config.getIpAddress());
+                } catch (IOException exception) {
+                    updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, exception.toString());
                 }
 
-                if (ident.ver < IdentData.MIN_SUPPORTED_VERSION) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Unsupported version " + ident.ver);
-                    return;
+                if (blid != null) {
+                    org.openhab.core.config.core.Configuration configuration = editConfiguration();
+                    configuration.put(ROBOT_BLID, blid);
+                    updateConfiguration(configuration);
                 }
-
-                if (!ident.product.equals(IdentData.PRODUCT_ROOMBA)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Not a Roomba: " + ident.product);
-                    return;
-                }
-
-                blid = ident.blid;
-                this.blid = blid;
             }
 
-            logger.debug("BLID is: {}", blid);
-
-            if (config.password.isEmpty()) {
-                RawMQTT mqtt;
-
+            if (UNKNOWN.equals(config.getPassword())) {
+                @Nullable
+                String password = null;
                 try {
-                    mqtt = new RawMQTT(host, 8883);
-                } catch (KeyManagementException | NoSuchAlgorithmException e1) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e1.toString());
+                    password = LoginRequester.getPassword(config.getIpAddress());
+                } catch (KeyManagementException | NoSuchAlgorithmException exception) {
+                    updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, exception.toString());
                     return; // This is internal system error, no retry
+                } catch (IOException exception) {
+                    updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, exception.toString());
                 }
 
-                mqtt.requestPassword();
-                RawMQTT.Packet response = mqtt.readPacket();
-                mqtt.close();
-
-                if (response != null && response.isValidPasswdPacket()) {
-                    RawMQTT.PasswdPacket passwdPacket = new RawMQTT.PasswdPacket(response);
-                    String password = passwdPacket.getPassword();
-
-                    if (password != null) {
-                        config.password = password;
-
-                        Configuration configuration = editConfiguration();
-
-                        configuration.put("password", password);
-                        updateConfiguration(configuration);
-
-                        logger.debug("Password successfully retrieved");
-                    }
+                if (password != null) {
+                    org.openhab.core.config.core.Configuration configuration = editConfiguration();
+                    configuration.put(ROBOT_PASSWORD, password.trim());
+                    updateConfiguration(configuration);
                 }
             }
+        }
 
-            if (config.password.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "Authentication on the robot is required");
-                scheduleReconnect();
-                return;
-            }
-
-            // BLID is used as both client ID and username. The name of BLID also came from Roomba980-python
-            MqttBrokerConnection connection = new MqttBrokerConnection(config.ipaddress, RawMQTT.ROOMBA_MQTT_PORT, true,
-                    blid);
-
-            this.connection = connection;
-
-            // Disable sending UNSUBSCRIBE request before disconnecting becuase Roomba doesn't like it.
-            // It just swallows the request and never sends any response, so stop() method never completes.
-            connection.setUnsubscribeOnStop(false);
-            connection.setCredentials(blid, config.password);
-            connection.setTrustManagers(RawMQTT.getTrustManagers());
-            // 1 here actually corresponds to MQTT qos 0 (AT_MOST_ONCE). Only this value is accepted
-            // by Roomba, others just cause it to reject the command and drop the connection.
-            connection.setQos(1);
-            // MQTT connection reconnects itself, so we don't have to call scheduleReconnect()
-            // when it breaks. Just set the period in ms.
-            connection.setReconnectStrategy(
-                    new PeriodicReconnectStrategy(RECONNECT_DELAY_SEC * 1000, RECONNECT_DELAY_SEC * 1000));
-            connection.start().exceptionally(e -> {
-                connectionStateChanged(MqttConnectionState.DISCONNECTED, e);
-                return false;
-            }).thenAccept(v -> {
-                if (!v) {
-                    connectionStateChanged(MqttConnectionState.DISCONNECTED, new TimeoutException("Timeout"));
-                } else {
-                    connectionStateChanged(MqttConnectionState.CONNECTED, null);
-                }
-            });
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            scheduleReconnect();
+        credentialRequester = null;
+        if (UNKNOWN.equals(config.getBlid()) || UNKNOWN.equals(config.getPassword())) {
+            credentialRequester = scheduler.schedule(this::getCredentials, 10000, TimeUnit.MILLISECONDS);
+        } else {
+            scheduler.execute(this::connect);
         }
     }
 
-    private synchronized void disconnect() {
-        Future<?> reconnectReq = this.reconnectReq;
-        MqttBrokerConnection connection = this.connection;
+    // In order not to mess up our connection state we need to make sure that connect()
+    // and disconnect() are never running concurrently, so they are synchronized
+    private synchronized void connect() {
+        IRobotConfiguration config = getConfigAs(IRobotConfiguration.class);
+        final String address = config.getIpAddress();
+        logger.debug("Connecting to {}", address);
 
-        if (reconnectReq != null) {
-            reconnectReq.cancel(false);
-            this.reconnectReq = null;
+        final String blid = config.getBlid();
+        final String password = config.getPassword();
+        if (UNKNOWN.equals(blid) || UNKNOWN.equals(password)) {
+            final String message = "Robot authentication is required";
+            updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+            scheduler.execute(this::getCredentials);
+        } else {
+            final String message = "Robot authentication is successful";
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, message);
+            connection.connect(address, blid, password);
         }
-
-        if (connection != null) {
-            connection.stop();
-            logger.trace("Closed connection to {}", config.ipaddress);
-            this.connection = null;
-        }
     }
 
-    private void scheduleReconnect() {
-        reconnectReq = scheduler.schedule(this::connect, RECONNECT_DELAY_SEC, TimeUnit.SECONDS);
-    }
-
-    public void onConnected() {
-        updateStatus(ThingStatus.ONLINE);
-    }
-
-    @Override
-    public void processMessage(String topic, byte[] payload) {
-        String jsonStr = new String(payload);
+    public void receive(final String topic, final String json) {
         MQTTProtocol.StateMessage msg;
 
-        logger.trace("Got topic {} data {}", topic, jsonStr);
+        logger.trace("Got topic {} data {}", topic, json);
 
         try {
             // We are not consuming all the fields, so we have to create the reader explicitly
@@ -349,11 +341,11 @@ public class RoombaHandler extends BaseThingHandler implements MqttConnectionObs
             // "JSON not fully consumed" exception, because not all the reader's content has been
             // used up. We want to avoid that also for compatibility reasons because newer iRobot
             // versions may add fields.
-            JsonReader jsonReader = new JsonReader(new StringReader(jsonStr));
+            JsonReader jsonReader = new JsonReader(new StringReader(json));
             msg = gson.fromJson(jsonReader, MQTTProtocol.StateMessage.class);
-        } catch (JsonParseException e) {
-            logger.warn("Failed to parse JSON message from {}: {}", config.ipaddress, e.toString());
-            logger.warn("Raw contents: {}", payload);
+        } catch (JsonParseException exception) {
+            logger.warn("Failed to parse JSON message for {}: {}", thing.getLabel(), exception.toString());
+            logger.warn("Raw contents: {}", json);
             return;
         }
 
@@ -370,7 +362,7 @@ public class RoombaHandler extends BaseThingHandler implements MqttConnectionObs
             String phase = reported.cleanMissionStatus.phase;
             String command;
 
-            if (cycle.equals("none")) {
+            if ("none".equals(cycle)) {
                 command = CMD_STOP;
             } else {
                 switch (phase) {
@@ -489,12 +481,34 @@ public class RoombaHandler extends BaseThingHandler implements MqttConnectionObs
             }
         }
 
+        if (reported.lastCommand != null) {
+            reportString(CHANNEL_LAST_COMMAND, reported.lastCommand.toString());
+        }
+
+        if (reported.mapUploadAllowed != null) {
+            reportSwitch(CHANNEL_MAP_UPLOAD, reported.mapUploadAllowed);
+        }
+
         reportProperty(Thing.PROPERTY_FIRMWARE_VERSION, reported.softwareVer);
         reportProperty("navSwVer", reported.navSwVer);
         reportProperty("wifiSwVer", reported.wifiSwVer);
         reportProperty("mobilityVer", reported.mobilityVer);
         reportProperty("bootloaderVer", reported.bootloaderVer);
         reportProperty("umiVer", reported.umiVer);
+        reportProperty("sku", reported.sku);
+        reportProperty("batteryType", reported.batteryType);
+
+        if (reported.subModSwVer != null) {
+            // This is used by i7 model. It has more capabilities, perhaps a dedicated
+            // handler should be written by someone who owns it.
+            reportProperty("subModSwVer.nav", reported.subModSwVer.nav);
+            reportProperty("subModSwVer.mob", reported.subModSwVer.mob);
+            reportProperty("subModSwVer.pwr", reported.subModSwVer.pwr);
+            reportProperty("subModSwVer.sft", reported.subModSwVer.sft);
+            reportProperty("subModSwVer.mobBtl", reported.subModSwVer.mobBtl);
+            reportProperty("subModSwVer.linux", reported.subModSwVer.linux);
+            reportProperty("subModSwVer.con", reported.subModSwVer.con);
+        }
     }
 
     private void reportVacHigh() {
@@ -525,49 +539,6 @@ public class RoombaHandler extends BaseThingHandler implements MqttConnectionObs
     private void reportProperty(String property, @Nullable String value) {
         if (value != null) {
             updateProperty(property, value);
-        }
-    }
-
-    @Override
-    public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
-        if (state == MqttConnectionState.CONNECTED) {
-            MqttBrokerConnection connection = this.connection;
-
-            if (connection == null) {
-                // This would be very strange, but Eclipse forces us to do the check
-                logger.warn("Established connection without broker pointer");
-                return;
-            }
-
-            updateStatus(ThingStatus.ONLINE);
-
-            // Roomba sends us two topics:
-            // "wifistat" - reports singnal strength and current robot position
-            // "$aws/things/<BLID>/shadow/update" - the rest of messages
-            // Subscribe to everything since we're interested in both
-            connection.subscribe("#", this).exceptionally(e -> {
-                logger.warn("MQTT subscription failed: {}", e.getMessage());
-                return false;
-            }).thenAccept(v -> {
-                if (!v) {
-                    logger.warn("Subscription timeout");
-                } else {
-                    logger.trace("Subscription done");
-                }
-            });
-
-        } else {
-            String message;
-
-            if (error != null) {
-                message = error.getMessage();
-                logger.warn("MQTT connection failed: {}", message);
-            } else {
-                message = null;
-                logger.warn("MQTT connection failed for unspecified reason");
-            }
-
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
     }
 }

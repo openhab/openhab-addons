@@ -89,7 +89,7 @@ The transition time is the time to move between two states and is configured in 
 The resolution provided is 1/10s.
 If no value is provided, the default value of the device is used.
 
-`extendedcolorlight` and `colorlight` have different modes for setting the color.
+`extendedcolorlight`, `colorlight` and `lightgroup` have different modes for setting the color.
 Some devices accept only XY, others HSB, others both modes and the binding tries to autodetect the correct mode.
 If this fails, the advanced `colormode` parameter can be set to `xy` or `hs`.
 
@@ -170,6 +170,7 @@ Other devices support
 | effect            | String                   |     R/W     | Effect selection. Allowed commands are set dynamically                                  | `colorlight`                                    |
 | effectSpeed       | Number                   |     W       | Effect Speed                          | `colorlight`                                    |
 | lock              | Switch                   |     R/W     | Lock (ON) or unlock (OFF) the doorlock| `doorlock`                                      |                 
+| ontime            | Number:Time              |     W       | Timespan for which the light is turned on | all lights |
 | position          | Rollershutter            |     R/W     | Position of the blind                 | `windowcovering`                                |
 | heatsetpoint      | Number:Temperature       |     R/W     | Target Temperature in °C              | `thermostat`                                    |
 | valve             | Number:Dimensionless     |     R       | Valve position in %                   | `thermostat`                                    |

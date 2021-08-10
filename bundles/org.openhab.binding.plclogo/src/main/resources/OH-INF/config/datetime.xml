@@ -5,12 +5,11 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:plclogo:datetime">
-		<parameter name="block" type="text" pattern="VW(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d)">
+		<parameter name="block" type="text" pattern="VW(\d|[1-9]\d|[1-7]\d{2}|8[0-4]\d)" required="true">
 			<label>LOGO! Memory Address</label>
 			<description>LOGO! memory address</description>
-			<required>true</required>
 		</parameter>
-		<parameter name="type" type="text">
+		<parameter name="type" type="text" required="true">
 			<label>Send Value As</label>
 			<description>Interpret received channel value as date or time</description>
 			<options>
@@ -18,13 +17,11 @@
 				<option value="time">time</option>
 			</options>
 			<default>time</default>
-			<required>true</required>
 		</parameter>
-		<parameter name="force" type="boolean">
+		<parameter name="force" type="boolean" required="false">
 			<label>Force Channels Update</label>
 			<description>Propagate channels update to openHAB whether value changed or not</description>
 			<default>false</default>
-			<required>false</required>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

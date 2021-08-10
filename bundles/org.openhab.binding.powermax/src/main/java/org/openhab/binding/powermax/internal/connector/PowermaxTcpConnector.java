@@ -16,9 +16,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,35 +51,21 @@ public class PowermaxTcpConnector extends PowermaxConnector {
     }
 
     @Override
-    public void open() {
+    public void open() throws Exception {
         logger.debug("open(): Opening TCP Connection");
 
-        try {
-            tcpSocket = new Socket();
-            tcpSocket.setSoTimeout(250);
-            SocketAddress socketAddress = new InetSocketAddress(ipAddress, tcpPort);
-            tcpSocket.connect(socketAddress, connectTimeout);
+        tcpSocket = new Socket();
+        tcpSocket.setSoTimeout(250);
+        SocketAddress socketAddress = new InetSocketAddress(ipAddress, tcpPort);
+        tcpSocket.connect(socketAddress, connectTimeout);
 
-            setInput(tcpSocket.getInputStream());
-            setOutput(tcpSocket.getOutputStream());
+        setInput(tcpSocket.getInputStream());
+        setOutput(tcpSocket.getOutputStream());
 
-            setReaderThread(new PowermaxReaderThread(this, readerThreadName));
-            getReaderThread().start();
+        setReaderThread(new PowermaxReaderThread(this, readerThreadName));
+        getReaderThread().start();
 
-            setConnected(true);
-        } catch (UnknownHostException e) {
-            logger.debug("open(): Unknown Host Exception: {}", e.getMessage(), e);
-            setConnected(false);
-        } catch (SocketException e) {
-            logger.debug("open(): Socket Exception: {}", e.getMessage(), e);
-            setConnected(false);
-        } catch (IOException e) {
-            logger.debug("open(): IO Exception: {}", e.getMessage(), e);
-            setConnected(false);
-        } catch (Exception e) {
-            logger.debug("open(): Exception: {}", e.getMessage(), e);
-            setConnected(false);
-        }
+        setConnected(true);
     }
 
     @Override

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.unifi.internal;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.unifi.internal.handler.UniFiControllerThingHandler;
 
 /**
@@ -32,6 +31,8 @@ public class UniFiControllerThingConfig {
     private String password = "";
 
     private int refresh = 10;
+
+    private boolean unifios = false;
 
     public String getHost() {
         return host;
@@ -53,13 +54,17 @@ public class UniFiControllerThingConfig {
         return refresh;
     }
 
+    public boolean isUniFiOS() {
+        return unifios;
+    }
+
     public boolean isValid() {
-        return StringUtils.isNotBlank(host) && StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password);
+        return !host.isBlank() && !username.isBlank() && !password.isBlank();
     }
 
     @Override
     public String toString() {
         return "UniFiControllerConfig{host = " + host + ", port = " + port + ", username = " + username
-                + ", password = *****, refresh = " + refresh + "}";
+                + ", password = *****, refresh = " + refresh + ", unifios = " + unifios + "}";
     }
 }

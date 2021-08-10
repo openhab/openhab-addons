@@ -7,16 +7,12 @@
   <parent>
     <groupId>org.openhab.addons.itests</groupId>
     <artifactId>org.openhab.addons.reactor.itests</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.mqtt.homeassistant.tests</artifactId>
 
   <name>openHAB Add-ons :: Integration Tests :: MQTT HomeAssistant Tests</name>
-
-  <properties>
-    <netty.version>4.1.42.Final</netty.version>
-  </properties>
 
   <dependencies>
     <dependency>

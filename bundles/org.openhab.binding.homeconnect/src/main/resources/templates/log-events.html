@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="base :: head"></head>
+
+<body>
+<nav th:replace="base :: topNav"></nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="base :: sidebarMenu (current='log-events')"></nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Events</h1>
+            </div>
+
+            <div th:if="${bridgeHandlers.size() == 0}" class="mb-4"><span class="text-muted">No events</span></div>
+            <div class="mb-4" th:each="bridgeHandler: ${bridgeHandlers}" th:with="thing=${bridgeHandler.getThing()}, queue=${bridgeHandler.getEventSourceClient().getLatestEvents()}, status=${bridgeHandler.getThing().getStatus().toString()}, uid=${bridgeHandler.getThing().getUID().getAsString()}">
+                <h2 th:text="${thing.getLabel() + ' (' + uid + ')'}" style="display: inline-block;">Section title</h2>
+                <div class="btn-toolbar float-right">
+                    <button type="button" class="btn btn-sm btn-outline-secondary reload-page mr-2"><span data-feather="refresh-cw"></span></button>
+                    <a th:href="@{/homeconnect/log/events(export='json',bridgeId=${uid})}" class="btn btn-sm btn-outline-secondary">Export</a>
+                </div>
+
+                <div th:if="${queue.size() == 0}"><span class="text-muted">No events</span></div>
+                <div th:if="${queue.size() > 0}" class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>HaId</th>
+                            <th>Type</th>
+                            <th>Level</th>
+                            <th>Handling</th>
+                            <th>URI</th>
+                            <th>Name</th>
+                            <th>Value</th>
+                            <th>Unit</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="entry: ${queue}">
+                            <td th:text="${#temporals.format(entry.creation, 'yyyy-MM-dd HH:mm:ss.SSS Z')}">27.04.2020 14:30</td>
+                            <td><span th:text="${entry.haId}" class="badge badge-light">align-middle</span></td>
+                            <td><span th:text="${entry.type}" class="badge badge-secondary"></span></td>
+                            <td><span th:if="${entry.level}" th:text="${entry.level}" class="badge" th:classappend="|${entry.level.getLevel() == 'critical' || entry.level.getLevel() == 'alert' ? 'badge-danger' : ''} ${entry.level.getLevel() == 'info' || entry.level.getLevel() == 'hint' ? 'badge-success' : ''} ${entry.level.getLevel() == 'warning' ? 'badge-warning' : ''}|">hint</span></td>
+                            <td><span class="badge badge-light" th:text="${entry.handling}">none</span></td>
+                            <td class="text-break" th:text="${entry.uri}">/api/homeappliances/BOSCH-HNG6764B6-0000000011FF/programs/active/options/Cooking.Oven.Option.SetpointTemperature</td>
+                            <td th:text="${entry.name}">Target temperature for the oven</td>
+                            <td th:text="${entry.value}">200</td>
+                            <td th:text="${entry.unit}">°C</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!--/*/ <th:block th:include="base :: js">
+    </th:block> /*/-->
+
+</body>
+</html>

@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.russound.internal.RussoundHandlerFactory;
 import org.openhab.binding.russound.internal.net.SocketChannelSession;
 import org.openhab.binding.russound.internal.net.SocketSession;
@@ -148,7 +148,7 @@ public class RioSystemDeviceDiscoveryService extends AbstractDiscoveryService {
     private void discoverControllers() {
         for (int c = 1; c < 7; c++) {
             final String type = sendAndGet("GET C[" + c + "].type", RSP_CONTROLLERNOTIFICATION, 3);
-            if (StringUtils.isNotEmpty(type)) {
+            if (type != null && !type.isEmpty()) {
                 logger.debug("Controller #{} found - {}", c, type);
 
                 final ThingUID thingUID = new ThingUID(RioConstants.BRIDGE_TYPE_CONTROLLER,
@@ -172,7 +172,7 @@ public class RioSystemDeviceDiscoveryService extends AbstractDiscoveryService {
     private void discoverSources() {
         for (int s = 1; s < 9; s++) {
             final String type = sendAndGet("GET S[" + s + "].type", RSP_SRCNOTIFICATION, 3);
-            if (StringUtils.isNotEmpty(type)) {
+            if (type != null && !type.isEmpty()) {
                 final String name = sendAndGet("GET S[" + s + "].name", RSP_SRCNOTIFICATION, 3);
                 logger.debug("Source #{} - {}/{}", s, type, name);
 
@@ -181,8 +181,8 @@ public class RioSystemDeviceDiscoveryService extends AbstractDiscoveryService {
 
                 final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(RioSourceConfig.SOURCE, s).withBridge(sysHandler.getThing().getUID())
-                        .withLabel((StringUtils.isEmpty(name) || name.equalsIgnoreCase("null") ? "Source" : name) + " ("
-                                + s + ")")
+                        .withLabel((name == null || name.isEmpty() || name.equalsIgnoreCase("null") ? "Source" : name)
+                                + " (" + s + ")")
                         .build();
                 thingDiscovered(discoveryResult);
             }
@@ -207,7 +207,7 @@ public class RioSystemDeviceDiscoveryService extends AbstractDiscoveryService {
         }
         for (int z = 1; z < 9; z++) {
             final String name = sendAndGet("GET C[" + c + "].Z[" + z + "].name", RSP_ZONENOTIFICATION, 4);
-            if (StringUtils.isNotEmpty(name)) {
+            if (name != null && !name.isEmpty()) {
                 logger.debug("Controller #{}, Zone #{} found - {}", c, z, name);
 
                 final ThingUID thingUID = new ThingUID(RioConstants.THING_TYPE_ZONE, controllerUID, String.valueOf(z));
@@ -232,8 +232,8 @@ public class RioSystemDeviceDiscoveryService extends AbstractDiscoveryService {
      * @throws IllegalArgumentException if message is null or empty, if the pattern is null
      * @throws IllegalArgumentException if groupNum is less than 0
      */
-    private String sendAndGet(String message, Pattern respPattern, int groupNum) {
-        if (StringUtils.isEmpty(message)) {
+    private @Nullable String sendAndGet(String message, Pattern respPattern, int groupNum) {
+        if (message == null || message.isEmpty()) {
             throw new IllegalArgumentException("message cannot be a null or empty string");
         }
         if (respPattern == null) {

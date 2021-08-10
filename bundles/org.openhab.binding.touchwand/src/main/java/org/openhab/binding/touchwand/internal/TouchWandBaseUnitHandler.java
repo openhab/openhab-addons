@@ -47,7 +47,8 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
     private static final int UNITS_STATUS_UPDATE_DELAY_SEC = 1;
     protected final Logger logger = LoggerFactory.getLogger(TouchWandBaseUnitHandler.class);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SHUTTER, THING_TYPE_SWITCH,
-            THING_TYPE_WALLCONTROLLER, THING_TYPE_DIMMER, THING_TYPE_ALARMSENSOR);
+            THING_TYPE_WALLCONTROLLER, THING_TYPE_DIMMER, THING_TYPE_ALARMSENSOR, THING_TYPE_BSENSOR,
+            THING_TYPE_THERMOSTAT);
     protected String unitId = "";
 
     protected @Nullable TouchWandBridgeHandler bridgeHandler;

@@ -16,7 +16,6 @@ import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.
 
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPresetControl;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithTunerBandControl;
@@ -172,7 +171,7 @@ public class InputWithTunerDABControlXML extends AbstractInputControlXML
         // store last state of band
         bandState = msgForBand;
 
-        if (StringUtils.isEmpty(msgForBand.band)) {
+        if (msgForBand.band.isEmpty()) {
             logger.warn("Band is unknown for input {}, therefore preset and playback information will not be available",
                     inputID);
         } else {

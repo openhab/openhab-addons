@@ -100,7 +100,7 @@ public class Main {
         ipAddress = parser.getIpAddress();
         logger.info("IP150 IP Address: {}", ipAddress);
 
-        port = new Integer(parser.getPort());
+        port = Integer.parseInt(parser.getPort());
         logger.info("IP150 port: {}", port);
     }
 }

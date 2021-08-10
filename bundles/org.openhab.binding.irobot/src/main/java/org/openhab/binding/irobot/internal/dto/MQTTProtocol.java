@@ -12,15 +12,48 @@
  */
 package org.openhab.binding.irobot.internal.dto;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.google.gson.JsonElement;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * iRobot MQTT protocol messages
  *
  * @author Pavel Fedin - Initial contribution
+ * @author Florian Binder - Added CleanRoomsRequest
  *
  */
 public class MQTTProtocol {
     public interface Request {
         public String getTopic();
+    }
+
+    public static class CleanRoomsRequest extends CommandRequest {
+        public int ordered;
+        @SerializedName("pmap_id")
+        public String pmapId;
+        public List<Region> regions;
+
+        public CleanRoomsRequest(String cmd, String mapId, String[] regions) {
+            super(cmd);
+            ordered = 1;
+            pmapId = mapId;
+            this.regions = Arrays.stream(regions).map(i -> new Region(i)).collect(Collectors.toList());
+        }
+
+        public static class Region {
+            @SerializedName("region_id")
+            public String regionId;
+            public String type;
+
+            public Region(String id) {
+                this.regionId = id;
+                this.type = "rid";
+            }
+        }
     }
 
     public static class CommandRequest implements Request {
@@ -31,7 +64,7 @@ public class MQTTProtocol {
         public CommandRequest(String cmd) {
             command = cmd;
             time = System.currentTimeMillis() / 1000;
-            initiator = "localApp";
+            initiator = "openhab";
         }
 
         @Override
@@ -56,6 +89,7 @@ public class MQTTProtocol {
     public static class CleanMissionStatus {
         public String cycle;
         public String phase;
+        public String initiator;
         public int error;
     }
 
@@ -146,6 +180,24 @@ public class MQTTProtocol {
         }
     }
 
+    public static class MapUploadAllowed extends StateValue {
+        public boolean mapUploadAllowed;
+
+        public MapUploadAllowed(boolean mapUploadAllowed) {
+            this.mapUploadAllowed = mapUploadAllowed;
+        }
+    }
+
+    public static class SubModSwVer {
+        public String nav;
+        public String mob;
+        public String pwr;
+        public String sft;
+        public String mobBtl;
+        public String linux;
+        public String con;
+    }
+
     // "reported" messages never contain the full state, only a part.
     // Therefore all the fields in this class are nullable
     public static class GenericState extends StateValue {
@@ -171,6 +223,8 @@ public class MQTTProtocol {
         public Boolean noAutoPasses;
         // "twoPass":true
         public Boolean twoPass;
+        // "mapUploadAllowed":true
+        public Boolean mapUploadAllowed;
         // "softwareVer":"v2.4.6-3"
         public String softwareVer;
         // "navSwVer":"01.12.01#1"
@@ -183,6 +237,21 @@ public class MQTTProtocol {
         public String bootloaderVer;
         // "umiVer":"6",
         public String umiVer;
+        // "sku":"R981040"
+        public String sku;
+        // "batteryType":"lith"
+        public String batteryType;
+        // Used by i7:
+        // "subModSwVer":{
+        // "nav": "lewis-nav+3.2.4-EPMF+build-HEAD-7834b608797+12", "mob":"3.2.4-XX+build-HEAD-7834b608797+12",
+        // "pwr": "0.5.0+build-HEAD-7834b608797+12",
+        // "sft":"1.1.0+Lewis-Builds/Lewis-Certified-Safety/lewis-safety-bbbe81f2c82+21",
+        // "mobBtl": "4.2", "linux":"linux+2.1.6_lock-1+lewis-release-rt419+12",
+        // "con":"2.1.6-tags/release-2.1.6@c6b6585a/build"}
+        public SubModSwVer subModSwVer;
+        // "lastCommand":
+        // {"command":"start","initiator":"localApp","time":1610283995,"ordered":1,"pmap_id":"AAABBBCCCSDDDEEEFFF","regions":[{"region_id":"6","type":"rid"}]}
+        public JsonElement lastCommand;
     }
 
     // Data comes as JSON string: {"state":{"reported":<Actual content here>}}
@@ -195,5 +264,70 @@ public class MQTTProtocol {
 
     public static class StateMessage {
         public ReportedState state;
+    }
+
+    // DISCOVERY
+    public static class RobotCapabilities {
+        public Integer pose;
+        public Integer ota;
+        public Integer multiPass;
+        public Integer carpetBoost;
+        public Integer pp;
+        public Integer binFullDetect;
+        public Integer langOta;
+        public Integer maps;
+        public Integer edge;
+        public Integer eco;
+        public Integer scvConf;
+    }
+
+    /*
+     * JSON of the following contents (addresses are undisclosed):
+     * @formatter:off
+     * {
+     *   "ver":"3",
+     *   "hostname":"Roomba-<blid>",
+     *   "robotname":"Roomba",
+     *   "robotid":"<blid>", --> available on some models only
+     *   "ip":"XXX.XXX.XXX.XXX",
+     *   "mac":"XX:XX:XX:XX:XX:XX",
+     *   "sw":"v2.4.6-3",
+     *   "sku":"R981040",
+     *   "nc":0,
+     *   "proto":"mqtt",
+     *   "cap":{
+     *     "pose":1,
+     *     "ota":2,
+     *     "multiPass":2,
+     *     "carpetBoost":1,
+     *     "pp":1,
+     *     "binFullDetect":1,
+     *     "langOta":1,
+     *     "maps":1,
+     *     "edge":1,
+     *     "eco":1,
+     *     "svcConf":1
+     *   }
+     * }
+     * @formatter:on
+     */
+    public static class DiscoveryResponse {
+        public String ver;
+        public String hostname;
+        public String robotname;
+        public String robotid;
+        public String ip;
+        public String mac;
+        public String sw;
+        public String sku;
+        public String nc;
+        public String proto;
+        public RobotCapabilities cap;
+    }
+
+    // LoginRequester
+    public static class BlidResponse {
+        public String robotid;
+        public String hostname;
     }
 };

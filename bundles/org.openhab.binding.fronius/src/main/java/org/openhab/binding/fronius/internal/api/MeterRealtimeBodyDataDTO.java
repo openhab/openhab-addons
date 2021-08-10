@@ -32,17 +32,17 @@ public class MeterRealtimeBodyDataDTO {
     @SerializedName("Enable")
     private int enable;
     @SerializedName("EnergyReactive_VArAC_Sum_Consumed")
-    private int energyReactiveVArACSumConsumed;
+    private double energyReactiveVArACSumConsumed;
     @SerializedName("EnergyReactive_VArAC_Sum_Produced")
-    private int energyReactiveVArACSumProduced;
+    private double energyReactiveVArACSumProduced;
     @SerializedName("EnergyReal_WAC_Minus_Absolute")
-    private int energyRealWACMinusAbsolute;
+    private double energyRealWACMinusAbsolute;
     @SerializedName("EnergyReal_WAC_Plus_Absolute")
-    private int energyRealWACPlusAbsolute;
+    private double energyRealWACPlusAbsolute;
     @SerializedName("EnergyReal_WAC_Sum_Consumed")
-    private int energyRealWACSumConsumed;
+    private double energyRealWACSumConsumed;
     @SerializedName("EnergyReal_WAC_Sum_Produced")
-    private int energyRealWACSumProduced;
+    private double energyRealWACSumProduced;
     @SerializedName("Frequency_Phase_Average")
     private double frequencyPhaseAverage;
     @SerializedName("Meter_Location_Current")
@@ -54,7 +54,7 @@ public class MeterRealtimeBodyDataDTO {
     @SerializedName("PowerApparent_S_Phase_3")
     private double powerApparentSPhase3;
     @SerializedName("PowerApparent_S_Sum")
-    private int powerApparentSSum;
+    private double powerApparentSSum;
     @SerializedName("PowerFactor_Phase_1")
     private double powerFactorPhase1;
     @SerializedName("PowerFactor_Phase_2")
@@ -139,51 +139,51 @@ public class MeterRealtimeBodyDataDTO {
         this.enable = enable;
     }
 
-    public int getEnergyReactiveVArACSumConsumed() {
+    public double getEnergyReactiveVArACSumConsumed() {
         return energyReactiveVArACSumConsumed;
     }
 
-    public void setEnergyReactiveVArACSumConsumed(int energyReactiveVArACSumConsumed) {
+    public void setEnergyReactiveVArACSumConsumed(double energyReactiveVArACSumConsumed) {
         this.energyReactiveVArACSumConsumed = energyReactiveVArACSumConsumed;
     }
 
-    public int getEnergyReactiveVArACSumProduced() {
+    public double getEnergyReactiveVArACSumProduced() {
         return energyReactiveVArACSumProduced;
     }
 
-    public void setEnergyReactiveVArACSumProduced(int energyReactiveVArACSumProduced) {
+    public void setEnergyReactiveVArACSumProduced(double energyReactiveVArACSumProduced) {
         this.energyReactiveVArACSumProduced = energyReactiveVArACSumProduced;
     }
 
-    public int getEnergyRealWACMinusAbsolute() {
+    public double getEnergyRealWACMinusAbsolute() {
         return energyRealWACMinusAbsolute;
     }
 
-    public void setEnergyRealWACMinusAbsolute(int energyRealWACMinusAbsolute) {
+    public void setEnergyRealWACMinusAbsolute(double energyRealWACMinusAbsolute) {
         this.energyRealWACMinusAbsolute = energyRealWACMinusAbsolute;
     }
 
-    public int getEnergyRealWACPlusAbsolute() {
+    public double getEnergyRealWACPlusAbsolute() {
         return energyRealWACPlusAbsolute;
     }
 
-    public void setEnergyRealWACPlusAbsolute(int energyRealWACPlusAbsolute) {
+    public void setEnergyRealWACPlusAbsolute(double energyRealWACPlusAbsolute) {
         this.energyRealWACPlusAbsolute = energyRealWACPlusAbsolute;
     }
 
-    public int getEnergyRealWACSumConsumed() {
+    public double getEnergyRealWACSumConsumed() {
         return energyRealWACSumConsumed;
     }
 
-    public void setEnergyRealWACSumConsumed(int energyRealWACSumConsumed) {
+    public void setEnergyRealWACSumConsumed(double energyRealWACSumConsumed) {
         this.energyRealWACSumConsumed = energyRealWACSumConsumed;
     }
 
-    public int getEnergyRealWACSumProduced() {
+    public double getEnergyRealWACSumProduced() {
         return energyRealWACSumProduced;
     }
 
-    public void setEnergyRealWACSumProduced(int energyRealWACSumProduced) {
+    public void setEnergyRealWACSumProduced(double energyRealWACSumProduced) {
         this.energyRealWACSumProduced = energyRealWACSumProduced;
     }
 
@@ -227,11 +227,11 @@ public class MeterRealtimeBodyDataDTO {
         this.powerApparentSPhase3 = powerApparentSPhase3;
     }
 
-    public int getPowerApparentSSum() {
+    public double getPowerApparentSSum() {
         return powerApparentSSum;
     }
 
-    public void setPowerApparentSSum(int powerApparentSSum) {
+    public void setPowerApparentSSum(double powerApparentSSum) {
         this.powerApparentSSum = powerApparentSSum;
     }
 

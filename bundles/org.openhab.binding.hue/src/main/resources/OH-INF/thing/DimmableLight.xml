@@ -13,7 +13,7 @@
 		<description>A dimmable light.</description>
 
 		<channels>
-			<channel id="brightness" typeId="brightness"/>
+			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="alert" typeId="alert"/>
 		</channels>
 

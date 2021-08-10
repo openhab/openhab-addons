@@ -16,6 +16,7 @@ import static org.openhab.binding.dominoswiss.internal.DominoswissBindingConstan
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -50,7 +51,10 @@ public class BlindHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Blind got command: {} and ChannelUID: {} ", command.toFullString(),
                 channelUID.getIdWithoutGroup());
-        dominoswissHandler = (EGateHandler) getBridge().getHandler();
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            dominoswissHandler = (EGateHandler) bridge.getHandler();
+        }
         if (dominoswissHandler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "EGate not available");
             logger.debug("Blind thing {} has no server configured, ignoring command: {}", getThing().getUID(), command);
@@ -114,7 +118,7 @@ public class BlindHandler extends BaseThingHandler {
                     try {
                         dominoswissHandler.tiltDown(id);
                     } catch (InterruptedException e) {
-                        logger.error("EGate tiltDown error: {} ", e.toString());
+                        logger.debug("EGate tiltDown error: {} ", e.toString());
                     }
                 }
                 break;
@@ -124,7 +128,7 @@ public class BlindHandler extends BaseThingHandler {
                     try {
                         dominoswissHandler.tiltUp(id);
                     } catch (InterruptedException e) {
-                        logger.error("EGate tiltUP error: {} ", e.toString());
+                        logger.debug("EGate tiltUP error: {} ", e.toString());
                     }
                 }
                 break;
@@ -146,24 +150,26 @@ public class BlindHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         this.id = getConfig().as(BlindConfig.class).id;
-        dominoswissHandler = (EGateHandler) getBridge().getHandler();
-        dominoswissHandler.registerBlind(this.id, getThing().getUID());
-        try {
-            ThingStatus bridgeStatus = getBridge().getStatus();
-            if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-                dominoswissHandler = (EGateHandler) getBridge().getHandler();
-            } else if (bridgeStatus == ThingStatus.OFFLINE) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            }
-        } catch (Exception e) {
-            logger.error("Could not update ThingStatus ", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.toString());
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            dominoswissHandler = (EGateHandler) bridge.getHandler();
+            dominoswissHandler.registerBlind(this.id, getThing().getUID());
+            try {
+                ThingStatus bridgeStatus = getBridge().getStatus();
+                if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                    dominoswissHandler = (EGateHandler) getBridge().getHandler();
+                } else if (bridgeStatus == ThingStatus.OFFLINE) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                }
+            } catch (Exception e) {
+                logger.debug("Could not update ThingStatus ", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.toString());
 
+            }
         }
     }
 

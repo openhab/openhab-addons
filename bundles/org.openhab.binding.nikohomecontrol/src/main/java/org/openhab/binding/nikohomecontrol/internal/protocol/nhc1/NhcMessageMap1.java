@@ -15,6 +15,8 @@ package org.openhab.binding.nikohomecontrol.internal.protocol.nhc1;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Class {@link NhcMessageMap1} used as output from gson for cmd or event feedback from Niko Home Control where the
  * data part is a simple json string. Extends {@link NhcMessageBase1}.
@@ -23,6 +25,7 @@ import java.util.Map;
  *
  * @author Mark Herwege - Initial Contribution
  */
+@NonNullByDefault
 class NhcMessageMap1 extends NhcMessageBase1 {
 
     private Map<String, String> data = new HashMap<>();

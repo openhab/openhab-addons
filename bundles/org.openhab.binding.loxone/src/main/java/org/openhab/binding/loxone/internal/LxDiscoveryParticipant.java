@@ -71,7 +71,7 @@ public class LxDiscoveryParticipant implements UpnpDiscoveryParticipant {
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, serial);
 
             return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
-                    .withRepresentationProperty(serial).build();
+                    .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build();
         }
         return null;
     }

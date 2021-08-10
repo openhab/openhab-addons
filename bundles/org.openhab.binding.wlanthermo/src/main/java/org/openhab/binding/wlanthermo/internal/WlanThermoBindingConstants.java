@@ -13,6 +13,7 @@
 package org.openhab.binding.wlanthermo.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -27,11 +28,17 @@ public class WlanThermoBindingConstants {
     private static final String BINDING_ID = "wlanthermo";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_WLANTHERMO_NANO = new ThingTypeUID(BINDING_ID, "nano");
+    public static final ThingTypeUID THING_TYPE_WLANTHERMO_NANO_V1 = new ThingTypeUID(BINDING_ID, "nano");
     public static final ThingTypeUID THING_TYPE_WLANTHERMO_MINI = new ThingTypeUID(BINDING_ID, "mini");
+    public static final ThingTypeUID THING_TYPE_WLANTHERMO_ESP32 = new ThingTypeUID(BINDING_ID, "esp32");
 
-    // ThreadPool
-    public static final String WLANTHERMO_THREAD_POOL = "wlanthermo";
+    // Properties
+    public static final String PROPERTY_MODEL = "model";
+    public static final String PROPERTY_SERIAL = "serial";
+    public static final String PROPERTY_ESP32_BT_ENABLED = "esp32_bt_enabled";
+    public static final String PROPERTY_ESP32_PM_ENABLED = "esp32_pm_enabled";
+    public static final String PROPERTY_ESP32_TEMP_CHANNELS = "esp32_temp_channels";
+    public static final String PROPERTY_ESP32_PM_CHANNELS = "esp32_pm_channels";
 
     // List of all Channel ids
     // System Channels
@@ -43,16 +50,7 @@ public class WlanThermoBindingConstants {
     public static final String SYSTEM_CPU_LOAD = "cpu_load";
     public static final String SYSTEM_CPU_TEMP = "cpu_temp";
 
-    public static final String CHANNEL0 = "channel0";
-    public static final String CHANNEL1 = "channel1";
-    public static final String CHANNEL2 = "channel2";
-    public static final String CHANNEL3 = "channel3";
-    public static final String CHANNEL4 = "channel4";
-    public static final String CHANNEL5 = "channel5";
-    public static final String CHANNEL6 = "channel6";
-    public static final String CHANNEL7 = "channel7";
-    public static final String CHANNEL8 = "channel8";
-    public static final String CHANNEL9 = "channel9";
+    public static final String CHANNEL_PREFIX = "channel";
 
     public static final String CHANNEL_NAME = "name";
     public static final String CHANNEL_TYP = "typ";
@@ -67,6 +65,9 @@ public class WlanThermoBindingConstants {
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_COLOR_NAME = "color_name";
 
+    public static final String CHANNEL_PITMASTER_PREFIX = "pit";
+    public static final String CHANNEL_PITMASTER_1 = "pit1";
+    public static final String CHANNEL_PITMASTER_2 = "pit2";
     public static final String CHANNEL_PITMASTER_ENABLED = "enabled"; // Mini
     public static final String CHANNEL_PITMASTER_CURRENT = "current"; // Mini
     public static final String CHANNEL_PITMASTER_SETPOINT = "setpoint"; // Mini+Nano
@@ -76,7 +77,12 @@ public class WlanThermoBindingConstants {
     public static final String CHANNEL_PITMASTER_STATE = "state"; // Nano
     public static final String CHANNEL_PITMASTER_PIDPROFILE = "pid_id"; // Nano
 
-    public static final String TRIGGER_ALARM_OFF = "OFF";
+    public static final String TRIGGER_NONE = "";
     public static final String TRIGGER_ALARM_MIN = "MIN";
     public static final String TRIGGER_ALARM_MAX = "MAX";
+
+    public static final DecimalType SIGNAL_STRENGTH_4 = new DecimalType(4);
+    public static final DecimalType SIGNAL_STRENGTH_3 = new DecimalType(3);
+    public static final DecimalType SIGNAL_STRENGTH_2 = new DecimalType(2);
+    public static final DecimalType SIGNAL_STRENGTH_1 = new DecimalType(1);
 }

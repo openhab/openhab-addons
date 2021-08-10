@@ -4,12 +4,12 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="push-button:trigger-filter:config">
+	<config-description uri="channel-type:nikobus:trigger-filter">
 		<parameter name="command" type="text">
 			<label>Command</label>
 			<description>Command to send</description>
 		</parameter>
-		<parameter name="delay" type="integer" required="true" min="0" unit="ms">
+		<parameter name="delay" type="integer" min="0" unit="ms">
 			<label>Delay</label>
 			<description>Delay in milliseconds before triggered</description>
 			<default>0</default>
@@ -20,22 +20,22 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="push-button:trigger-button:config">
-		<parameter name="threshold" type="integer" required="true" min="0" unit="ms">
+	<config-description uri="channel-type:nikobus:trigger-button">
+		<parameter name="threshold" type="integer" min="0" unit="ms">
 			<label>Threshold</label>
 			<description>Long-press threshold in milliseconds</description>
 			<default>1000</default>
 		</parameter>
 	</config-description>
 
-	<config-description uri="module:address:config">
+	<config-description uri="thing-type:nikobus:module">
 		<parameter name="address" type="text" required="true">
 			<label>Address</label>
 			<description>The Nikobus address of the module</description>
 		</parameter>
 	</config-description>
 
-	<config-description uri="rollershutter-module:rollershutter-output:config">
+	<config-description uri="channel-type:nikobus:rollershutter-output">
 		<parameter name="duration" type="integer" min="1" unit="s">
 			<label>Duration</label>
 			<description>Duration in seconds required for a rollershutter to get from open to closed</description>
@@ -43,6 +43,10 @@
 		<parameter name="delay" type="integer" min="0" unit="s">
 			<label>Delay</label>
 			<description>Delay specifying how many seconds after duration module's output is set to OFF. Defaults to 5 seconds</description>
+		</parameter>
+		<parameter name="reverse" type="boolean">
+			<label>Reverse Direction</label>
+			<description>Reverse direction of rollershutters. Defaults to false</description>
 		</parameter>
 	</config-description>
 

@@ -53,11 +53,6 @@ public class DigitalSTROMBindingConstants {
     public static final String OPTION_COMBINED_FIRST_ON = "90";
     public static final String OPTION_COMBINED_SECOND_ON = "130";
 
-    /* config URIs */
-    public static final String DEVICE_CONFIG = "binding:digitalstrom:device";
-    public static final String GRAY_DEVICE_CONFIG = "binding:digitalstrom:grayDevice";
-    public static final String DSS_BRIDE_CONFIG = "binding:digitalstrom:dssBridge";
-
     /* Bridge config properties */
 
     public static final String HOST = "dSSAddress";

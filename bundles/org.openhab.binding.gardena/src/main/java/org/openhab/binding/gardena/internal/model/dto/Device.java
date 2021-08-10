@@ -19,7 +19,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openhab.binding.gardena.internal.exception.GardenaException;
-import org.openhab.binding.gardena.internal.model.dto.api.*;
+import org.openhab.binding.gardena.internal.model.dto.api.CommonServiceDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.DataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.DeviceDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.LocationDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.MowerServiceDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.PowerSocketServiceDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.SensorServiceDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.ValveServiceDataItem;
+import org.openhab.binding.gardena.internal.model.dto.api.ValveSetServiceDataItem;
 import org.openhab.binding.gardena.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

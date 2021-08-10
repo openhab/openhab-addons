@@ -13,6 +13,6 @@
 			<channel id="nightlight" typeId="nightlight"/>
 			<channel id="command" typeId="command"/>
 		</channels>
-		<config-description-ref uri="thing-type:device:base"/>
+		<config-description-ref uri="thing-type:yeelight:device"/>
 	</thing-type>
 </thing:thing-descriptions>

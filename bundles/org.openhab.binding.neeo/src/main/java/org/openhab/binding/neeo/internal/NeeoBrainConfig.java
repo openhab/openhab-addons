@@ -14,10 +14,9 @@ package org.openhab.binding.neeo.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.neeo.internal.handler.NeeoBrainHandler;
 
 /**
- * The configuration class a neeo brain and used by {@link NeeoBrainHandler}
+ * Configuration used by {@link org.openhab.binding.neeo.internal.handler.NeeoBrainHandler}
  *
  * @author Tim Roberts - initial contribution
  */

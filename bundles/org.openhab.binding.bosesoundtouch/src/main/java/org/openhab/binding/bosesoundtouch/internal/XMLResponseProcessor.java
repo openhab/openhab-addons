@@ -41,6 +41,7 @@ public class XMLResponseProcessor {
 
     public void handleMessage(String msg) throws SAXException, IOException {
         XMLReader reader = XMLReaderFactory.createXMLReader();
+        reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         reader.setContentHandler(new XMLResponseHandler(handler, stateSwitchingMap));
         reader.parse(new InputSource(new StringReader(msg)));
     }

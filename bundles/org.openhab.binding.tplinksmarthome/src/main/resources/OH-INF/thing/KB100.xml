@@ -16,6 +16,6 @@
 
 		<representation-property>deviceId</representation-property>
 
-		<config-description-ref uri="thing-type:device:bulb"/>
+		<config-description-ref uri="thing-type:tplinksmarthome:device-bulb"/>
 	</thing-type>
 </thing:thing-descriptions>

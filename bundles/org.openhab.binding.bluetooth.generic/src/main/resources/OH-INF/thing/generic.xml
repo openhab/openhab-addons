@@ -5,6 +5,12 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="generic">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="roaming"/>
+			<bridge-type-ref id="bluegiga"/>
+			<bridge-type-ref id="bluez"/>
+		</supported-bridge-type-refs>
+
 		<label>Generic Bluetooth Device</label>
 		<description>A generic bluetooth device that supports GATT characteristics</description>
 
@@ -18,6 +24,11 @@
 				<label>Polling Interval</label>
 				<description>The frequency at which readable characteristics refreshed</description>
 				<default>30</default>
+			</parameter>
+			<parameter name="alwaysConnected" type="boolean">
+				<label>Connect Automatically</label>
+				<description>If enabled, will automatically connect to the device and reconnect if connection is lost.</description>
+				<default>true</default>
 			</parameter>
 		</config-description>
 

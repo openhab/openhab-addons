@@ -28,8 +28,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openhab.binding.deconz.internal.CommandDescriptionProvider;
-import org.openhab.binding.deconz.internal.StateDescriptionProvider;
+import org.openhab.binding.deconz.internal.DeconzDynamicCommandDescriptionProvider;
+import org.openhab.binding.deconz.internal.DeconzDynamicStateDescriptionProvider;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.handler.LightThingHandler;
 import org.openhab.binding.deconz.internal.types.LightType;
@@ -60,8 +60,8 @@ public class LightsTest {
     private @NonNullByDefault({}) Gson gson;
 
     private @Mock @NonNullByDefault({}) ThingHandlerCallback thingHandlerCallback;
-    private @Mock @NonNullByDefault({}) StateDescriptionProvider stateDescriptionProvider;
-    private @Mock @NonNullByDefault({}) CommandDescriptionProvider commandDescriptionProvider;
+    private @Mock @NonNullByDefault({}) DeconzDynamicStateDescriptionProvider stateDescriptionProvider;
+    private @Mock @NonNullByDefault({}) DeconzDynamicCommandDescriptionProvider commandDescriptionProvider;
 
     @BeforeEach
     public void initialize() {
@@ -116,7 +116,7 @@ public class LightsTest {
 
         lightThingHandler.initialize();
 
-        Mockito.verify(stateDescriptionProvider).setDescription(eq(channelUID_ct), any());
+        Mockito.verify(stateDescriptionProvider).setDescriptionFragment(eq(channelUID_ct), any());
     }
 
     @Test
