@@ -13,7 +13,6 @@
 package org.openhab.binding.freeboxos.internal.discovery;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
-import static org.openhab.binding.freeboxos.internal.config.ApiConfiguration.API_VERSION;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -208,7 +207,6 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                 properties.put(Thing.PROPERTY_MAC_ADDRESS, player.getMac());
                 properties.put(ClientConfiguration.ID, player.getId());
                 properties.put(Thing.PROPERTY_MODEL_ID, player.getModel());
-                properties.put(API_VERSION, player.getApiVersion());
                 properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.getSerial());
                 properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion());
 

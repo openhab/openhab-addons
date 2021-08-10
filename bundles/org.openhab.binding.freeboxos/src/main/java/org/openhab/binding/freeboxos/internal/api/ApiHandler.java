@@ -78,6 +78,7 @@ public class ApiHandler {
 
     private @NonNullByDefault({}) ApiConfiguration configuration;
     private @NonNullByDefault({}) UriBuilder uriBuilder;
+    private @NonNullByDefault({}) ApiVersion version;
 
     public ApiHandler(ApiBridgeHandler apiBridgeHandler, HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -87,10 +88,20 @@ public class ApiHandler {
 
     public void openConnection(ApiConfiguration configuration) {
         this.configuration = configuration;
-        uriBuilder = UriBuilder.fromPath("api").scheme(configuration.httpsAvailable ? "https" : "http")
-                .port(configuration.httpsAvailable ? configuration.httpsPort : 80).host(configuration.apiDomain)
-                .path("v" + configuration.apiMajorVersion());
-        getLoginManager();
+
+        try {
+            uriBuilder = UriBuilder.fromPath("/").scheme(configuration.getScheme()).port(configuration.getPort())
+                    .host(configuration.apiDomain);
+
+            Request request = httpClient.newRequest(getUriBuilder().path("api_version").build()).method(HttpMethod.GET);
+            version = gson.fromJson(sendRequest(request), ApiVersion.class);
+
+            uriBuilder.path(version.baseUrl());
+
+            getLoginManager();
+        } catch (FreeboxException e) {
+            apiBridgeHandler.pushStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        }
     }
 
     public UriBuilder getUriBuilder() {
@@ -245,7 +256,7 @@ public class ApiHandler {
     public synchronized @Nullable PlayerManager getPlayerManager() {
         PlayerManager manager = (PlayerManager) managers.get(PlayerManager.class);
         if (manager == null && getLoginManager().hasPermission(PlayerManager.associatedPermission())) {
-            manager = new PlayerManager(this, "/api/", configuration.apiMajorVersion());
+            manager = new PlayerManager(this, version);
             managers.put(PlayerManager.class, manager);
         }
         return manager;
@@ -264,12 +275,20 @@ public class ApiHandler {
         return serialized.getResult();
     }
 
+    private String sendRequest(Request request) throws FreeboxException {
+        try {
+            ContentResponse response = request.timeout(DEFAULT_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
+            return new String(response.getContent(), StandardCharsets.UTF_8);
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            throw new FreeboxException("Exception while calling " + request.getURI(), e);
+        }
+    }
+
     private synchronized <T extends BaseResponse> T executeUrl(URI url, HttpMethod method, @Nullable Object aPayload,
             @Nullable Class<T> classOfT, boolean retryAuth, int retryCount) throws FreeboxException {
         logger.debug("executeUrl {} - {} ", method, url);
         try {
-            Request request = httpClient.newRequest(url).method(method).timeout(DEFAULT_TIMEOUT_MS,
-                    TimeUnit.MILLISECONDS);
+            Request request = httpClient.newRequest(url).method(method);
             httpHeaders.entrySet().forEach(entry -> request.header(entry.getKey(), entry.getValue()));
 
             if (aPayload != null) {
@@ -279,13 +298,9 @@ public class ApiHandler {
                     request.content(contentProvider, null);
                 }
             }
-            ContentResponse response = request.send();
-            String responseBody = new String(response.getContent(), StandardCharsets.UTF_8);
-            T serialized = deserialize(classOfT, responseBody);
+            T serialized = deserialize(classOfT, sendRequest(request));
             serialized.evaluate();
             return serialized;
-        } catch (ExecutionException | TimeoutException | InterruptedException e) {
-            throw new FreeboxException("Exception while calling " + url, e);
         } catch (FreeboxException e) {
             BaseResponse response = e.getResponse();
             if (response != null) {

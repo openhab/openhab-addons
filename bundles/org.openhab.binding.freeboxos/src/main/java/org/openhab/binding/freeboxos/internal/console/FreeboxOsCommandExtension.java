@@ -20,7 +20,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants;
 import org.openhab.binding.freeboxos.internal.handler.ApiBridgeHandler;
-import org.openhab.binding.freeboxos.internal.handler.ServerHandler;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
@@ -53,24 +52,35 @@ public class FreeboxOsCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public void execute(String[] args, Console console) {
         if (args.length == 2) {
+            Thing thing = null;
+            try {
+                ThingUID thingUID = new ThingUID(args[0]);
+                thing = thingRegistry.get(thingUID);
+            } catch (IllegalArgumentException e) {
+                thing = null;
+            }
+            ThingHandler thingHandler = null;
             ApiBridgeHandler handler = null;
-            ThingUID thingUID = new ThingUID(args[0]);
-            Thing thing = thingRegistry.get(thingUID);
             if (thing != null) {
-                ThingHandler thingHandler = thing.getHandler();
-                if (thingHandler instanceof ServerHandler) {
+                thingHandler = thing.getHandler();
+                if (thingHandler instanceof ApiBridgeHandler) {
                     handler = (ApiBridgeHandler) thingHandler;
                 }
             }
-            if (handler == null) {
-                console.println(String.format("Bad thing id '%s'", args[0]));
+            if (thing == null) {
+                console.println("Bad thing id '" + args[0] + "'");
+                printUsage(console);
+            } else if (thingHandler == null) {
+                console.println("No handler initialized for the thing id '" + args[0] + "'");
+                printUsage(console);
+            } else if (handler == null) {
+                console.println("'" + args[0] + "' is not a freebox bridge id");
                 printUsage(console);
             } else {
                 switch (args[1]) {
                     case APP_TOKEN:
                         String token = handler.getConfiguration().appToken;
-                        console.println(
-                                String.format("Your application token is %s", token.isEmpty() ? "undefined" : token));
+                        console.println("Your application token is " + (!token.isEmpty() ? token : "undefined"));
                         break;
                     default:
                         printUsage(console);

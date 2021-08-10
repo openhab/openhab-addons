@@ -26,19 +26,19 @@ public class ApiConfiguration {
     public static final String HTTPS_AVAILABLE = "httpsAvailable";
     public static final String HTTPS_PORT = "httpsPort";
     public static final String APP_TOKEN = "appToken";
-    public static final String API_VERSION = "apiVersion";
-    public static final String BASE_URL = "baseUrl";
+
+    private int httpsPort = 15682;
+    private boolean httpsAvailable;
 
     public String apiDomain = "mafreebox.freebox.fr";
-    public int httpsPort = 15682;
-    public boolean discoverNetDevice;
-    public boolean httpsAvailable;
     public String appToken = "";
-    public String baseUrl = "/api/";
+    public boolean discoverNetDevice;
 
-    private String apiVersion = "7.1";
+    public String getScheme() {
+        return httpsAvailable ? "https" : "http";
+    }
 
-    public String apiMajorVersion() {
-        return apiVersion.split("\\.")[0];
+    public int getPort() {
+        return httpsAvailable ? httpsPort : 80;
     }
 }

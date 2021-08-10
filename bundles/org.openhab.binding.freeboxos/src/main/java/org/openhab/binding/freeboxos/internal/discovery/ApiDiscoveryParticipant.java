@@ -59,8 +59,6 @@ public class ApiDiscoveryParticipant implements MDNSDiscoveryParticipant {
         ThingUID thingUID = getThingUID(service);
         if (thingUID != null) {
             Map<String, Object> properties = new HashMap<>();
-            properties.put(API_VERSION, service.getPropertyString("api_version"));
-            properties.put(BASE_URL, service.getPropertyString("api_base_url"));
             properties.put(HTTPS_PORT, service.getPropertyString("https_port"));
             properties.put(HTTPS_AVAILABLE, "1".equals(service.getPropertyString("https_available")));
             properties.put(API_DOMAIN, service.getPropertyString("api_domain"));

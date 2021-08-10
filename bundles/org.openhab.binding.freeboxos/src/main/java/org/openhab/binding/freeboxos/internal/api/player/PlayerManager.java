@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.ApiHandler;
+import org.openhab.binding.freeboxos.internal.api.ApiVersion;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
@@ -37,17 +38,15 @@ public class PlayerManager extends RestManager {
         return Permission.PLAYER;
     }
 
-    private final String baseUrl;
-    private final String apiVersion;
+    private final ApiVersion version;
 
-    public PlayerManager(ApiHandler apiHandler, String baseUrl, String apiVersion) {
+    public PlayerManager(ApiHandler apiHandler, ApiVersion version) {
         super(apiHandler, PLAYER_URL);
-        this.baseUrl = baseUrl;
-        this.apiVersion = apiVersion;
+        this.version = version;
     }
 
     private String buildSubPath(int playerId, String path) {
-        return String.format("%d%sv%s/%s", playerId, baseUrl, apiVersion, path);
+        return String.format("%d%s/%s", playerId, version.baseUrl(), path);
     }
 
     public List<Player> getPlayers() throws FreeboxException {

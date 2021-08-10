@@ -10,34 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeboxos.internal.api.player;
+package org.openhab.binding.freeboxos.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * The {@link ApiVersion} is the Java class used to map the api_version
+ * answer
+ * http://mafreebox.freebox.fr/api_version
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class Player {
-    private @NonNullByDefault({}) String mac;
-    private int id;
-    private @NonNullByDefault({}) String deviceName;
-    private @NonNullByDefault({}) String deviceModel;
+public class ApiVersion {
+    private @NonNullByDefault({}) String apiBaseUrl;
+    private @NonNullByDefault({}) String apiVersion;
 
-    public String getMac() {
-        return mac.toLowerCase();
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getModel() {
-        return deviceModel;
-    }
-
-    public String getName() {
-        return deviceName;
+    // Returns a string like '/api/v8'
+    public String baseUrl() {
+        return apiBaseUrl + "v" + apiVersion.split("\\.")[0];
     }
 }
