@@ -30,7 +30,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Performs supporting crypto for coap protocol messages
@@ -41,9 +40,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PhilipsAirCoapCipher {
     private static final String SHARED_SECRET = "JiangPan";
-    private static final Logger logger = LoggerFactory.getLogger(PhilipsAirCoapCipher.class);
 
-    public static String decryptMsg(@Nullable String responseText) {
+    public static String decryptMsg(@Nullable String responseText, Logger logger) {
         if (responseText == null || responseText.isBlank()) {
             return "";
         }
@@ -75,11 +73,11 @@ public class PhilipsAirCoapCipher {
         return "Could not decrypt";
     }
 
-    public @Nullable static String encryptedMsg(String commandText, long counter) {
-        return encryptedMsg(commandText, String.format("%08X", counter));
+    public @Nullable static String encryptedMsg(String commandText, long counter, Logger logger) {
+        return encryptedMsg(commandText, String.format("%08X", counter), logger);
     }
 
-    public @Nullable static String encryptedMsg(String commandText, String sequence) {
+    public @Nullable static String encryptedMsg(String commandText, String sequence, Logger logger) {
         try {
             String keyAndIv = toMD5(SHARED_SECRET + sequence);
             String secret = keyAndIv.substring(0, keyAndIv.length() / 2);

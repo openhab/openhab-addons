@@ -33,7 +33,6 @@ import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.network.CoapEndpoint;
 import org.eclipse.californium.core.network.config.NetworkConfig;
 import org.eclipse.californium.elements.exception.ConnectorException;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants;
@@ -72,7 +71,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     private static final int DISCOVERY_TIME = 10;
     private static final String PATH = "sys/dev/info";
     private static final int COAP_PORT = 5683;
-    private static final long BACKGROUND_DISCOVERY_INTERVAL_ = 600;
+    private static final long BACKGROUND_DISCOVERY_INTERVAL = 600;
 
     private final Gson gson = new Gson();
 
@@ -99,7 +98,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         ScheduledFuture<?> coapDiscoveryJob = this.coapDiscoveryJob;
         if (coapDiscoveryJob == null || coapDiscoveryJob.isCancelled()) {
             logger.debug("Starting PhilipsAir (COAP) background discovery job");
-            coapDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 0, BACKGROUND_DISCOVERY_INTERVAL_,
+            coapDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 0, BACKGROUND_DISCOVERY_INTERVAL,
                     TimeUnit.SECONDS);
         }
     }
@@ -114,7 +113,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     }
 
     @Override
-    public Set<@NonNull ThingTypeUID> getSupportedThingTypes() {
+    public Set<ThingTypeUID> getSupportedThingTypes() {
         return PhilipsAirBindingConstants.SUPPORTED_COAP_THING_TYPES_UIDS;
     }
 
