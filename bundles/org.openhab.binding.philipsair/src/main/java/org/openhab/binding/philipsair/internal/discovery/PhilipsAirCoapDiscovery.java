@@ -147,7 +147,8 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
                 return;
             }
             if (info.getDeviceId() == null) {
-                logger.debug("Philips Air Purifier (COAP protocol) discovery result could not find deviceId  IP={}, {}",
+                logger.debug(
+                        "Philips Air Purifier (COAP protocol) discovery result could not find deviceId  IP={}, '{}'",
                         host, response);
                 return;
             }
@@ -224,7 +225,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
             on();
             if (response != null) {
                 InetSocketAddress ip = response.advanced().getSourceContext().getPeerAddress();
-                logger.debug("Received coap response from '{}' - {}", ip, Utils.prettyPrint(response));
+                logger.trace("Received coap response from '{}' - {}", ip, Utils.prettyPrint(response));
                 String resTxt = response.getResponseText();
                 if (resTxt != null && !resTxt.isBlank()) {
                     philipsAirCoapDiscovery.discovered(response.getResponseText(), ip.getHostString());
