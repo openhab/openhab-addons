@@ -121,7 +121,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Start COAP discovery");
-        HashSet<String> broadcastAddresses = new HashSet(NetUtil.getAllBroadcastAddresses());
+        HashSet<String> broadcastAddresses = new HashSet<String>(NetUtil.getAllBroadcastAddresses());
         String configuredBroadcastAddress = networkAddressService.getConfiguredBroadcastAddress();
         if (configuredBroadcastAddress != null) {
             broadcastAddresses.add(configuredBroadcastAddress);
