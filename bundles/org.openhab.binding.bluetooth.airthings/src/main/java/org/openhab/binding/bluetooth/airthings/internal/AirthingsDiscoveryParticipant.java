@@ -33,6 +33,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Pauli Anttila - Initial contribution
  * @author Kai Kreuzer - Added Airthings Wave Mini support
+ * @author Davy Wong - Added Airthings Wave Gen 1 support
  *
  */
 @NonNullByDefault
@@ -43,6 +44,7 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
 
     private static final String WAVE_PLUS_MODEL = "2930";
     private static final String WAVE_MINI_MODEL = "2920";
+    private static final String WAVE_GEN1_MODEL = "2900"; // Wave 1st Gen SN 2900xxxxxx
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -58,6 +60,10 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
             }
             if (WAVE_MINI_MODEL.equals(device.getModel())) {
                 return new ThingUID(AirthingsBindingConstants.THING_TYPE_AIRTHINGS_WAVE_MINI,
+                        device.getAdapter().getUID(), device.getAddress().toString().toLowerCase().replace(":", ""));
+            }
+            if (WAVE_GEN1_MODEL.equals(device.getModel())) {
+                return new ThingUID(AirthingsBindingConstants.THING_TYPE_AIRTHINGS_WAVE_GEN1,
                         device.getAdapter().getUID(), device.getAddress().toString().toLowerCase().replace(":", ""));
             }
         }
@@ -78,6 +84,9 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
         }
         if (WAVE_MINI_MODEL.equals(device.getModel())) {
             return createResult(device, thingUID, "Airthings Wave Mini");
+        }
+        if (WAVE_GEN1_MODEL.equals(device.getModel())) {
+            return createResult(device, thingUID, "Airthings Wave Gen 1");
         }
         return null;
     }

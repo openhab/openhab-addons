@@ -37,7 +37,6 @@ public final class PairAccountServlet extends AbstractShowPageServlet {
     public static final String MISSING_BRIDGE_ID_PARAMETER_NAME = "missingBridgeId";
     public static final String MISSING_EMAIL_PARAMETER_NAME = "missingEmail";
     public static final String MALFORMED_BRIDGE_ID_PARAMETER_NAME = "malformedBridgeId";
-    public static final String MALFORMED_EMAIL_PARAMETER_NAME = "malformedEmail";
     public static final String FAILED_TO_DERIVE_REDIRECT_URL_PARAMETER_NAME = "failedToDeriveRedirectUrl";
     public static final String ONGOING_AUTHORIZATION_IN_STEP1_EXPIRES_IN_MINUTES_PARAMETER_NAME = "ongoingAuthorizationInStep1ExpiresInMinutes";
     public static final String ONGOING_AUTHORIZATION_UNKNOWN_EXPIRY_TIME = "unknown";
@@ -93,9 +92,6 @@ public final class PairAccountServlet extends AbstractShowPageServlet {
         } else if (ServletUtil.isParameterEnabled(request, MALFORMED_BRIDGE_ID_PARAMETER_NAME)) {
             return skeleton.replace(ERROR_MESSAGE_PLACEHOLDER,
                     "<div class=\"alert alert-danger\" role=\"alert\">Malformed bridge ID. A bridge ID may only contain letters, numbers, '-' and '_'!</div>");
-        } else if (ServletUtil.isParameterEnabled(request, MALFORMED_EMAIL_PARAMETER_NAME)) {
-            return skeleton.replace(ERROR_MESSAGE_PLACEHOLDER,
-                    "<div class=\"alert alert-danger\" role=\"alert\">Malformed e-mail address.</div>");
         } else if (ServletUtil.isParameterEnabled(request, FAILED_TO_DERIVE_REDIRECT_URL_PARAMETER_NAME)) {
             return skeleton.replace(ERROR_MESSAGE_PLACEHOLDER,
                     "<div class=\"alert alert-danger\" role=\"alert\">Failed to derive redirect URL.</div>");

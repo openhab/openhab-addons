@@ -15,13 +15,16 @@ package org.openhab.binding.hydrawise.internal;
 import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.*;
 
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.hydrawise.internal.handler.HydrawiseAccountHandler;
+import org.openhab.binding.hydrawise.internal.handler.HydrawiseControllerHandler;
+import org.openhab.binding.hydrawise.internal.handler.HydrawiseLocalHandler;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -40,14 +43,15 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.hydrawise", service = ThingHandlerFactory.class)
 public class HydrawiseHandlerFactory extends BaseThingHandlerFactory {
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_CLOUD, THING_TYPE_LOCAL)
-            .collect(Collectors.toSet());
-
-    private final HttpClient httpClient;
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT,
+            THING_TYPE_CONTROLLER, THING_TYPE_LOCAL);
+    private HttpClient httpClient;
+    private OAuthFactory oAuthFactory;
 
     @Activate
-    public HydrawiseHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
+    public HydrawiseHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
+            final @Reference OAuthFactory oAuthFactory) {
+        this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
@@ -60,8 +64,12 @@ public class HydrawiseHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_CLOUD.equals(thingTypeUID)) {
-            return new HydrawiseCloudHandler(thing, httpClient);
+        if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
+            return new HydrawiseAccountHandler((Bridge) thing, httpClient, oAuthFactory);
+        }
+
+        if (THING_TYPE_CONTROLLER.equals(thingTypeUID)) {
+            return new HydrawiseControllerHandler(thing);
         }
 
         if (THING_TYPE_LOCAL.equals(thingTypeUID)) {

@@ -81,7 +81,7 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
         try {
             if (msg instanceof HttpRequest) {
                 HttpRequest httpRequest = (HttpRequest) msg;
-                if (!whiteList.equals("DISABLE")) {
+                if (!"DISABLE".equals(whiteList)) {
                     String requestIP = "("
                             + ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress() + ")";
                     if (!whiteList.contains(requestIP)) {
