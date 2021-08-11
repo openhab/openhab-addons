@@ -131,7 +131,7 @@ public class NukiApiServlet extends HttpServlet {
                     nukiBridgeHandler.getThing().getUID(), nukiId);
             List<Thing> allSmartLocks = nukiBridgeHandler.getThing().getThings();
             for (Thing thing : allSmartLocks) {
-                nukiIdThing = thing.getProperties().get(NukiBindingConstants.PROPERTY_NUKI_ID);
+                nukiIdThing = String.valueOf(thing.getConfiguration().get(NukiBindingConstants.PROPERTY_NUKI_ID));
                 if (nukiIdThing != null && nukiIdThing.equals(nukiId)) {
                     logger.debug("Processing ThingUID[{}] - nukiId[{}]", thing.getUID(), nukiId);
                     AbstractNukiDeviceHandler nsh = getDeviceHandler(thing);
