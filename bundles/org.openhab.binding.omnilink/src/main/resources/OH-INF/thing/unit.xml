@@ -198,6 +198,10 @@
 		<label>Unit Level</label>
 		<description>Increase/Decrease the level of this unit.</description>
 		<category>Slider</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -206,6 +210,10 @@
 		<label>Switch</label>
 		<description>Turn this unit on/off.</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="on_for_seconds">
@@ -273,6 +281,10 @@
 		<label>Switch</label>
 		<description>Turn this room on/off.</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="scene_toggle">

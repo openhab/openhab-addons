@@ -38,6 +38,9 @@
 		<label>Contact State</label>
 		<description>Contact state information of this zone.</description>
 		<category>Contact</category>
+		<tags>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

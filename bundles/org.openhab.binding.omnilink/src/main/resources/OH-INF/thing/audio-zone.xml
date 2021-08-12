@@ -37,6 +37,10 @@
 		<label>Audio Zone Power</label>
 		<description>Power status of this audio zone.</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="audio_zone_mute">

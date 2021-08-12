@@ -77,6 +77,9 @@
 		<label>Area Alarm</label>
 		<description>Indicates if an alarm is active.</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -77,6 +77,10 @@
 		<label>Temperature</label>
 		<description>The current temperature at this thermostat.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -85,6 +89,10 @@
 		<label>Outdoor Temperature</label>
 		<description>The current outdoor temperature detected by this thermostat.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -109,6 +117,10 @@
 		<label>Humidity</label>
 		<description>The relative humidity at this thermostat.</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 

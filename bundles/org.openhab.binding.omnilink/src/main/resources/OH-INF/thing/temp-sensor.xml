@@ -35,6 +35,10 @@
 		<label>Temperature</label>
 		<description>The current temperature at this temperature sensor.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
