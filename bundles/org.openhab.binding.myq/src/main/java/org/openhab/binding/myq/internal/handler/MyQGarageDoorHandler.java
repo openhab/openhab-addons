@@ -92,8 +92,6 @@ public class MyQGarageDoorHandler extends BaseThingHandler implements MyQDeviceH
     protected void updateState() {
         final DeviceDTO localState = deviceState;
         if (localState != null) {
-            updateState("closeerror", localState.state.isUnattendedCloseAllowed ? OnOffType.OFF : OnOffType.ON);
-            updateState("openerror", localState.state.isUnattendedOpenAllowed ? OnOffType.OFF : OnOffType.ON);
             String doorState = localState.state.doorState;
             updateState("status", new StringType(doorState));
             switch (doorState) {
@@ -114,6 +112,8 @@ public class MyQGarageDoorHandler extends BaseThingHandler implements MyQDeviceH
                     updateState("rollershutter", UnDefType.UNDEF);
                     break;
             }
+            updateState("closeerror", localState.state.isUnattendedCloseAllowed ? OnOffType.OFF : OnOffType.ON);
+            updateState("openerror", localState.state.isUnattendedOpenAllowed ? OnOffType.OFF : OnOffType.ON);
         }
     }
 
