@@ -58,6 +58,7 @@ public class IpObserverUpdateReceiver extends HttpServlet {
         if (stationUpdate == null) {
             return;
         }
+        logger.debug("Weather station packet received from {}", req.getRemoteHost());
         for (IpObserverHandler ipObserverHandler : listOfHandlers) {
             ipObserverHandler.processServerQuery(stationUpdate);
         }
