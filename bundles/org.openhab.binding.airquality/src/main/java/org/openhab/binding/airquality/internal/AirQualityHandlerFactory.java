@@ -17,6 +17,7 @@ import static org.openhab.binding.airquality.internal.AirQualityBindingConstants
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airquality.internal.handler.AirQualityHandler;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -38,12 +39,15 @@ import com.google.gson.Gson;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.airquality")
 @NonNullByDefault
 public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
-    private final Gson gson = new Gson();
+    private static final Gson gson = new Gson();
     private final TimeZoneProvider timeZoneProvider;
+    private final LocationProvider locationProvider;
 
     @Activate
-    public AirQualityHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider) {
+    public AirQualityHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider,
+            @Reference LocationProvider locationProvider) {
         this.timeZoneProvider = timeZoneProvider;
+        this.locationProvider = locationProvider;
     }
 
     @Override
@@ -55,10 +59,8 @@ public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_AQI.equals(thingTypeUID)) {
-            return new AirQualityHandler(thing, gson, timeZoneProvider);
-        }
-
-        return null;
+        return THING_TYPE_AQI.equals(thingTypeUID)
+                ? new AirQualityHandler(thing, gson, timeZoneProvider, locationProvider)
+                : null;
     }
 }
