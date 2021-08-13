@@ -22,7 +22,6 @@
 				<label>EEP</label>
 				<description>EEP which is used by device</description>
 				<options>
-					<option value="D2_06_01_Soda">D2_06_01 (Soda handle)</option>
 					<option value="D2_06_50_Siegenia">D2_06_50 (Siegenia Senso Secure)</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
