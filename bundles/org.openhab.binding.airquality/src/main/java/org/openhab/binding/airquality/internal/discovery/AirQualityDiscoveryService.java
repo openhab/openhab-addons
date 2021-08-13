@@ -15,7 +15,6 @@ package org.openhab.binding.airquality.internal.discovery;
 import static org.openhab.binding.airquality.internal.AirQualityBindingConstants.*;
 import static org.openhab.binding.airquality.internal.AirQualityConfiguration.LOCATION;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
@@ -44,11 +43,10 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, configurationPid = "discovery.airquality")
 @NonNullByDefault
 public class AirQualityDiscoveryService extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(AirQualityDiscoveryService.class);
-
     private static final int DISCOVER_TIMEOUT_SECONDS = 10;
     private static final int LOCATION_CHANGED_CHECK_INTERVAL = 60;
 
+    private final Logger logger = LoggerFactory.getLogger(AirQualityDiscoveryService.class);
     private final LocationProvider locationProvider;
     private @Nullable ScheduledFuture<?> discoveryJob;
     private @Nullable PointType previousLocation;
@@ -102,10 +100,9 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService {
 
     public void createResults(PointType location) {
         ThingUID localAirQualityThing = new ThingUID(THING_TYPE_AQI, LOCAL);
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(LOCATION, String.format("%s,%s", location.getLatitude(), location.getLongitude()));
         thingDiscovered(DiscoveryResultBuilder.create(localAirQualityThing).withLabel("Local Air Quality")
-                .withProperties(properties).build());
+                .withProperty(LOCATION, String.format("%s,%s", location.getLatitude(), location.getLongitude()))
+                .build());
     }
 
     @Override

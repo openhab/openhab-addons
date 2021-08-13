@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.airquality.internal.json;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,21 +19,31 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link AirQualityJsonData} is responsible for storing
+ * The {@link AirQualityData} is responsible for storing
  * the "data" node from the waqi.org JSON response
  *
  * @author Kuba Wolanin - Initial contribution
  */
 @NonNullByDefault
-public class AirQualityJsonData {
+public class AirQualityData {
+
+    public enum AlertLevel {
+        GOOD,
+        MODERATE,
+        UNHEALTHY_FOR_SENSITIVE,
+        UNHEALTHY,
+        VERY_UNHEALTHY,
+        HAZARDOUS,
+        UNKNOWN;
+    }
 
     private int aqi;
     private int idx;
 
-    private @NonNullByDefault({}) AirQualityJsonTime time;
-    private @NonNullByDefault({}) AirQualityJsonCity city;
-    private List<Attribute> attributions = new ArrayList<>();
-    private Map<String, AirQualityValue> iaqi = new HashMap<>();
+    private @NonNullByDefault({}) AirQualityTime time;
+    private @NonNullByDefault({}) AirQualityCity city;
+    private List<Attribute> attributions = List.of();
+    private Map<String, AirQualityValue> iaqi = Map.of();
     private String dominentpol = "";
 
     /**
@@ -61,7 +69,7 @@ public class AirQualityJsonData {
      *
      * @return {AirQualityJsonTime}
      */
-    public AirQualityJsonTime getTime() {
+    public AirQualityTime getTime() {
         return time;
     }
 
@@ -70,7 +78,7 @@ public class AirQualityJsonData {
      *
      * @return {AirQualityJsonCity}
      */
-    public AirQualityJsonCity getCity() {
+    public AirQualityCity getCity() {
         return city;
     }
 
@@ -82,8 +90,7 @@ public class AirQualityJsonData {
      * @return {String}
      */
     public String getAttributions() {
-        String attributionsString = attributions.stream().map(Attribute::getName).collect(Collectors.joining(", "));
-        return "Attributions : " + attributionsString;
+        return attributions.stream().map(Attribute::getName).collect(Collectors.joining(", "));
     }
 
     public String getDominentPol() {
@@ -92,9 +99,26 @@ public class AirQualityJsonData {
 
     public double getIaqiValue(String key) {
         AirQualityValue result = iaqi.get(key);
-        if (result != null) {
-            return result.getValue();
+        return result != null ? result.getValue() : -1;
+    }
+
+    /**
+     * Interprets the current aqi value within the ranges
+     */
+    public AlertLevel getAlertLevel() {
+        if (aqi > 300) {
+            return AlertLevel.HAZARDOUS;
+        } else if (aqi >= 201) {
+            return AlertLevel.VERY_UNHEALTHY;
+        } else if (aqi >= 151) {
+            return AlertLevel.UNHEALTHY;
+        } else if (aqi >= 101) {
+            return AlertLevel.UNHEALTHY_FOR_SENSITIVE;
+        } else if (aqi >= 51) {
+            return AlertLevel.MODERATE;
+        } else if (aqi > 0) {
+            return AlertLevel.GOOD;
         }
-        return -1;
+        return AlertLevel.UNKNOWN;
     }
 }

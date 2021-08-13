@@ -13,7 +13,6 @@
 package org.openhab.binding.airquality.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link AirQualityConfiguration} is the class used to match the
@@ -23,11 +22,11 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class AirQualityConfiguration {
-
     public static final String LOCATION = "location";
+    public static final String STATION_ID = "stationId";
 
     public String apikey = "";
     public String location = "";
-    public @Nullable Integer stationId;
+    public int stationId = 0;
     public int refresh = 60;
 }
