@@ -3,43 +3,22 @@
 This binding communicates with the www.wolf-smartset.de API and provides values readonly. 
 Wolf systems are connected with official gateways (Wolf Link Home or Wolf Link Pro) https://www.wolf.eu/produkte/smarthome/ 
 
-## Configuration via the UI
-
-1. Manually add a thing
-
-    ![Manually add a thing](doc/images/step1.png "step 1 - Manually add a thing")
-2. Select the WolfSmartset Binding
-    
-    ![Select the WolfSmartset Binding](doc/images/step2.png "step 2 - Select the WolfSmartset Binding")
-3. Select the WolfSmartset account
-    
-    ![Select the WolfSmartset account](doc/images/step3.png "step 3 - Select the WolfSmartset account")
-4. Enter account credentials and create the system thing
-    
-    ![Enter account credentials](doc/images/step4.png "step 4 - Enter account credentials")
-5. Wait until the the systems show up in the inbox. Select system from inbox and create thing.
-    
-    ![Select system from inbox](doc/images/inbox-system.png "step 5 - Select system from inbox")
-5. Wait until the the units show up in the inbox. Select unit from inbox and create thing
-    
-    ![Select unit from inbox](doc/images/inbox-units.png "step 5 - Select unit from inbox")
-6. Add points or equipment to your model
-    
-    ![Add points or equipment to your model](doc/images/channels-unit.png "step 6 - Add points or equipment to your model")
-
-## Configuration via file
-
-Since the system bridge and the units require unique IDs from the Wolf-Smartset cloud-system, configuration via files is not recommended and therefore not documented.
-
 ## Supported Things
 
 - Account (bridge)
 - System (bridge)
 - Unit
 
+## Discovery
+
+The configuration via the interface is the recommended way:
+1. create an "Account-Thing (bridge)" and enter your credentials
+2. if the account bridge is successfully connected, a "System-Thing (bridge)" will appear in the inbox (a manual scan may be necessary). 
+3. After the system has been added, discovery will add the unit-things to the inbox.
+
 ## Thing configuration
 
-### Account
+### Account (bridge)
 
 | Parameter       | Type    | Defaut | Description                                                         |
 |-----------------|---------|----------|---------------------------------------------------------------------|
@@ -49,7 +28,7 @@ Since the system bridge and the units require unique IDs from the Wolf-Smartset 
 | refreshIntervalValues | integer | 15 | Specifies time in seconds to refresh values |
 | discoveryEnabled | boolean | true | disable the Thing discovery |
 
-### System
+### System (bridge)
 
 | Parameter       | Type    | Defaut | Description                                                         |
 |-----------------|---------|----------|---------------------------------------------------------------------|
@@ -69,6 +48,59 @@ Since the system bridge and the units require unique IDs from the Wolf-Smartset 
 | CGB-2             | 3.1             | WOLF Link home|
 
 Note: Please update this table if you did a successfull test
+
+
+## Channels
+
+| channel  | type   | description                  |
+|----------|--------|------------------------------|
+| number  | number | a generic number  |
+| contact  | Contact | a generic contact  |
+| temperature  | Number:Temperature | a generic temperature  |
+| string  | String | a generic String  |
+| datetime  | nuDateTimember | a generic DateTime  |
+
+## Full Example
+
+### Things
+````
+Bridge wolfsmartset:account:account "Wolf Smartset Account" [ username="User", password="Password" ] {
+    Bridge system 32122305166 "WolfSmartset System CSZ" [ systemId="32122305166" ] {
+        Thing unitId uinit0 "CSZ Heizgerät" [ unitId="unit0" ] {
+        }
+    }
+}
+````
+_You need to use the corrosponding systemId and unitId returned by the discovery_
+
+### Items
+
+````
+"Number CSZHeizgerat_Raumtemperatur "Raumtemperatur" { channel="wolfsmartset:unit:account:32122305166:uinit0:1000900000"}
+Number CSZHeizgerat_Flamme "Flamme" { channel="wolfsmartset:unit:account:32122305166:uinit0:1000900001"}
+Number CSZHeizgerat_AnalogeFernbedienung "Analoge Fernbedienung" { channel="wolfsmartset:unit:account:32122305166:uinit0:1000900002"}
+Number CSZHeizgerat_Raumsolltemperatur "Raumsolltemperatur" { channel="wolfsmartset:unit:account:32122305166:uinit0:1000900003"}
+Number CSZHeizgerat_AusgangA1 "Ausgang A1" { channel="wolfsmartset:unit:account:32122305166:uinit0:1000900004"}
+String CSZHeizgerat_ZeitprogrammdirekterHeizkreis "Zeitprogramm direkter Heizkreis" { channel="wolfsmartset:unit:account:32122305166:uinit0:1000900005"}
+Number CSZHeizgerat_Ventil1 "Ventil 1" { channel="wolfsmartset:unit:account:32122305166:uinit0:1000900006"}
+Number CSZHeizgerat_Ventil2 "Ventil 2" { channel="wolfsmartset:unit:account:32122305166:uinit0:1000900007"}
+Number CSZHeizgerat_WiSoUmschaltung "Wi/So Umschaltung" { channel="wolfsmartset:unit:account:32122305166:uinit0:1000900008"}
+Number CSZHeizgerat_Tagtemperatur "Tagtemperatur" { channel="wolfsmartset:unit:account:32122305166:uinit0:1000900009"}
+Number CSZHeizgerat_PWMPumpe "PWM Pumpe" { channel="wolfsmartset:unit:account:32122305166:uinit0:10009000010"}
+Number CSZHeizgerat_Speichersolltemperatur "Speichersolltemperatur" { channel="wolfsmartset:unit:account:32122305166:uinit0:10009000011"}
+Number CSZHeizgerat_Heizkurve "Heizkurve" { channel="wolfsmartset:unit:account:32122305166:uinit0:10009000012"}
+Number CSZHeizgerat_Raumeinfluss "Raumeinfluss" { channel="wolfsmartset:unit:account:32122305166:uinit0:10009000013"}
+Number CSZHeizgerat_TWVorlauf "TW-Vorlauf" { channel="wolfsmartset:unit:account:32122305166:uinit0:10009000014"}
+Number CSZHeizgerat_Spartemperatur "Spartemperatur" { channel="wolfsmartset:unit:account:32122305166:uinit0:10009000015"}
+Number CSZHeizgerat_Geblase "Gebläse" { channel="wolfsmartset:unit:account:32122305166:uinit0:10009000016"}
+Number CSZHeizgerat_Vorlaufsolltemperatur "Vorlaufsolltemperatur" { channel="wolfsmartset:unit:account:32122305166:uinit0:10009000017"}
+Group CSZHeizgerat "CSZ Heizgerät" { channel="wolfsmartset:unit:account:32122305166:uinit0:10009000018"}
+Number CSZHeizgerat_ECOABS "ECO/ABS" { channel="wolfsmartset:unit:account:32122305166:uinit0:10009000019"}
+Number CSZHeizgerat_Netzbetriebstunden "Netzbetriebstunden" { channel="wolfsmartset:unit:account:32122305166:uinit0:10009000020"}
+Number CSZHeizgerat_TWAbgas "TW-Abgas" { channel="wolfsmartset:unit:account:32122305166:uinit0:10009000021"}
+Number CSZHeizgerat_HGStatus "HG Status" { channel="wolfsmartset:unit:account:32122305166:uinit0:10009000022"}
+Number CSZHeizgerat_EingangE1 "Eingang E1" { channel="wolfsmartset:unit:account:32122305166:uinit0:10009000023"}"
+````
 
 ## Supported Heating-Devices
 
@@ -106,4 +138,3 @@ full functionality only for devices with current software version.
 
 ``*`` Modbus interface required in the device,
 Special programming cannot be mapped.
-
