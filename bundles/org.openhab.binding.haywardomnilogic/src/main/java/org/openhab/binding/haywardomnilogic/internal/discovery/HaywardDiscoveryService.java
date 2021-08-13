@@ -119,10 +119,14 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                 HaywardBindingConstants.THING_TYPE_COLORLOGIC, null);
 
         // Find Filters
-        final List<String> filterProperty1 = bridgehandler.evaluateXPath("//Filter/Min-Pump-Speed/text()", xmlResponse);
-        final List<String> filterProperty2 = bridgehandler.evaluateXPath("//Filter/Max-Pump-Speed/text()", xmlResponse);
-        final List<String> filterProperty3 = bridgehandler.evaluateXPath("//Filter/Min-Pump-RPM/text()", xmlResponse);
-        final List<String> filterProperty4 = bridgehandler.evaluateXPath("//Filter/Max-Pump-RPM/text()", xmlResponse);
+        final List<String> filterProperty1 = bridgehandler.evaluateXPath("//Body-of-water/Filter/Min-Pump-Speed/text()",
+                xmlResponse);
+        final List<String> filterProperty2 = bridgehandler.evaluateXPath("//Body-of-water/Filter/Max-Pump-Speed/text()",
+                xmlResponse);
+        final List<String> filterProperty3 = bridgehandler.evaluateXPath("//Body-of-water/Filter/Min-Pump-RPM/text()",
+                xmlResponse);
+        final List<String> filterProperty4 = bridgehandler.evaluateXPath("//Body-of-water/Filter/Max-Pump-RPM/text()",
+                xmlResponse);
 
         discoverDevices(bridgehandler, xmlResponse, "Filter", HaywardTypeToRequest.FILTER,
                 HaywardBindingConstants.THING_TYPE_FILTER, (props, i) -> {
@@ -137,10 +141,14 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                 HaywardBindingConstants.THING_TYPE_HEATER, null);
 
         // Find Pumps
-        final List<String> pumpProperty1 = bridgehandler.evaluateXPath("//Pump/Min-Pump-Speed/text()", xmlResponse);
-        final List<String> pumpProperty2 = bridgehandler.evaluateXPath("//Pump/Max-Pump-Speed/text()", xmlResponse);
-        final List<String> pumpProperty3 = bridgehandler.evaluateXPath("//Pump/Min-Pump-RPM/text()", xmlResponse);
-        final List<String> pumpProperty4 = bridgehandler.evaluateXPath("//Pump/Max-Pump-RPM/text()", xmlResponse);
+        final List<String> pumpProperty1 = bridgehandler.evaluateXPath("//Body-of-water/Pump/Min-Pump-Speed/text()",
+                xmlResponse);
+        final List<String> pumpProperty2 = bridgehandler.evaluateXPath("//Body-of-water/Pump/Max-Pump-Speed/text()",
+                xmlResponse);
+        final List<String> pumpProperty3 = bridgehandler.evaluateXPath("//Body-of-water/Pump/Min-Pump-RPM/text()",
+                xmlResponse);
+        final List<String> pumpProperty4 = bridgehandler.evaluateXPath("//Body-of-water/Pump/Max-Pump-RPM/text()",
+                xmlResponse);
 
         discoverDevices(bridgehandler, xmlResponse, "Pump", HaywardTypeToRequest.PUMP,
                 HaywardBindingConstants.THING_TYPE_FILTER, (props, i) -> {
@@ -166,7 +174,8 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
     private void discoverDevices(HaywardBridgeHandler bridgehandler, String xmlResponse, String xmlSearchTerm,
             HaywardTypeToRequest type, ThingTypeUID thingType,
             @Nullable BiConsumer<Map<String, Object>, Integer> additionalPropertyConsumer) {
-        List<String> systemIDs = bridgehandler.evaluateXPath("//" + xmlSearchTerm + "/System-Id/text()", xmlResponse);
+        List<String> systemIDs = bridgehandler.evaluateXPath("//Body-of-water/" + xmlSearchTerm + "/System-Id/text()",
+                xmlResponse);
         List<String> names;
 
         // Set Virtual Heater Name
@@ -174,7 +183,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
             names = new ArrayList<>(systemIDs);
             Collections.fill(names, "Heater");
         } else {
-            names = bridgehandler.evaluateXPath("//" + xmlSearchTerm + "/Name/text()", xmlResponse);
+            names = bridgehandler.evaluateXPath("//Body-of-water/" + xmlSearchTerm + "/Name/text()", xmlResponse);
         }
 
         for (int i = 0; i < systemIDs.size(); i++) {

@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.haywardomnilogic.internal.handler;
 
+import java.io.IOException;
 import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -259,9 +262,13 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         String xmlResponse = httpXmlResponse(urlParameters);
 
         // Debug: Inject xml file for testing
-        // String path =
-        // "C:/Users/Controls/openhab-2-5-x/git/openhab-addons/bundles/org.openhab.binding.haywardomnilogic/getConfig.xml";
-        // xmlResponse = new String(Files.readAllBytes(Paths.get(path)));
+        String path = "C:/Users/Controls/Desktop/stagF15 getMSP.txt";
+        try {
+            xmlResponse = new String(Files.readAllBytes(Paths.get(path)));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         if (xmlResponse.isEmpty()) {
             logger.debug("Hayward Connection thing: requestConfig XML response was null");
@@ -300,6 +307,15 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                 + "</Parameter></Parameters></Request>";
 
         String xmlResponse = httpXmlResponse(urlParameters);
+
+        // Debug: Inject xml file for testing
+        String path = "C:/Users/Controls/Desktop/stagF15 getTelemetry.txt";
+        try {
+            xmlResponse = new String(Files.readAllBytes(Paths.get(path)));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         if (xmlResponse.isEmpty()) {
             logger.debug("Hayward Connection thing: getTelemetry XML response was null");

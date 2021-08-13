@@ -99,6 +99,8 @@ public class HaywardBindingConstants {
     // List of all Channel ids (pump)
     public static final String CHANNEL_PUMP_ENABLE = "pumpEnable";
     public static final String CHANNEL_PUMP_SPEED = "pumpSpeed";
+    public static final String CHANNEL_PUMP_STATE = "filterState";
+    public static final String CHANNEL_PUMP_LASTSPEED = "filterLastSpeed";
 
     public static final String PROPERTY_PUMP_MINPUMPSPEED = "Min Pump Speed";
     public static final String PROPERTY_PUMP_MAXPUMPSPEED = "Min Pump Speed";
