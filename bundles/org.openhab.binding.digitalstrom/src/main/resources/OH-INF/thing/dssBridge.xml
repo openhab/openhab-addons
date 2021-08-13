@@ -16,7 +16,7 @@
 		<properties>
 			<property name="serverCert"></property>
 		</properties>
-		<config-description-ref uri="binding:digitalstrom:dssBridge"/>
+		<config-description-ref uri="bridge-type:digitalstrom:dssBridge"/>
 	</bridge-type>
 
 </thing:thing-descriptions>

@@ -122,7 +122,7 @@ DateTime Aqi_ObservationTime "Time of observation [%1$tH:%1$tM]" <clock> (AirQua
 
 Number:Temperature  Aqi_Temperature     "Temperature" <temperature> (AirQuality) { channel="airquality:aqi:home:temperature" }
 Number:Pressure     Aqi_Pressure        "Pressure" <pressure> (AirQuality) { channel="airquality:aqi:home:pressure" }
-Number:DimensionLess Aqi_Humidity        "Humidity" <humidity> (AirQuality) { channel="airquality:aqi:home:humidity" }
+Number:Dimensionless Aqi_Humidity        "Humidity" <humidity> (AirQuality) { channel="airquality:aqi:home:humidity" }
 ```
 
 airquality.sitemap:

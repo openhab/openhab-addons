@@ -18,22 +18,37 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * AvailableProgram model
  *
  * @author Jonas Brüstel - Initial contribution
+ * @author Laurent Garnier - field "supported" added
  *
  */
 @NonNullByDefault
 public class AvailableProgram {
     private final String key;
+    private final boolean supported;
     private final boolean available;
     private final String execution;
 
-    public AvailableProgram(String key, boolean available, String execution) {
+    public AvailableProgram(String key, boolean supported, boolean available, String execution) {
         this.key = key;
+        this.supported = supported;
         this.available = available;
         this.execution = execution;
     }
 
+    public AvailableProgram(String key, boolean available, String execution) {
+        this(key, true, available, execution);
+    }
+
+    public AvailableProgram(String key, boolean supported) {
+        this(key, supported, true, "");
+    }
+
     public String getKey() {
         return key;
+    }
+
+    public boolean isSupported() {
+        return supported;
     }
 
     public boolean isAvailable() {
@@ -46,6 +61,7 @@ public class AvailableProgram {
 
     @Override
     public String toString() {
-        return "AvailableProgram [key=" + key + ", available=" + available + ", execution=" + execution + "]";
+        return "AvailableProgram [key=" + key + ", supported=" + supported + ", available=" + available + ", execution="
+                + execution + "]";
     }
 }

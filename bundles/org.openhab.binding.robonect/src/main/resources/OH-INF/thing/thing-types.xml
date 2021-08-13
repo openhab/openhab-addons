@@ -165,7 +165,7 @@
 		<item-type>Switch</item-type>
 		<label>Mowing Job</label>
 		<description>Starts a mowing job</description>
-		<config-description-ref uri="channel-type:job:config"/>
+		<config-description-ref uri="channel-type:robonect:jobType"/>
 	</channel-type>
 
 	<channel-type id="timerStatusType">

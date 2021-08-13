@@ -47,6 +47,15 @@
 			<default>32</default>
 		</parameter>
 
+		<parameter name="whiteThreshold" type="integer" required="true" min="-1" max="99">
+			<label>White Threshold</label>
+			<description>Saturation values at or below this value on a RGBW color control will trigger the white mode. -1 will
+				disable
+				this feature.
+			</description>
+			<default>6</default>
+		</parameter>
+
 		<parameter name="favouriteWhite" type="integer" required="true" min="153" max="370">
 			<label>Favourite White</label>
 			<description>When a shortcut triggers white mode, use this for the colour white.</description>
@@ -101,7 +110,8 @@
 
 		<parameter name="whiteThreshold" type="integer" required="true" min="-1" max="99">
 			<label>White Threshold</label>
-			<description>RGBW saturation changes, will trigger the white mode. -1 will disable this feature.
+			<description>Saturation values at or below this value on a RGBW color control will trigger the white mode. -1 will
+				disable this feature.
 			</description>
 			<default>12</default>
 		</parameter>

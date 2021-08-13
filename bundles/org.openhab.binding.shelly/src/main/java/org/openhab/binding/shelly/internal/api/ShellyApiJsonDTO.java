@@ -576,6 +576,9 @@ public class ShellyApiJsonDTO {
         public Double maxPower;
 
         public ArrayList<ShellySettingsRelay> relays;
+        public Double voltage; // AC voltage for Shelly 2.5
+        @SerializedName("supply_voltage")
+        public Long supplyVoltage; // Shelly 1PM/1L: 0=110V, 1=220V
         public ArrayList<ShellySettingsDimmer> dimmers;
         public ArrayList<ShellySettingsRgbwLight> lights;
         public ArrayList<ShellySettingsEMeter> emeters;
@@ -677,6 +680,8 @@ public class ShellyApiJsonDTO {
         public ShellyActionsStats astats;
 
         public ArrayList<ShellySettingsRelay> relays;
+        public Double voltage; // Shelly 2.5
+
         public ArrayList<ShellySettingsRoller> rollers;
         public Integer input; // RGBW2 has no JSON array
         public ArrayList<ShellyInputState> inputs;

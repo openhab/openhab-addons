@@ -336,8 +336,20 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
         boolean updated = false;
         // Check for Relay in Standard Mode
         if (profile.hasRelays && !profile.isRoller && !profile.isDimmer) {
-            logger.trace("{}: Updating {} relay(s)", thingName, profile.numRelays);
+            double voltage = -1;
+            if (status.voltage == null && profile.settings.supplyVoltage != null) {
+                // Shelly 1PM/1L (fix)
+                voltage = profile.settings.supplyVoltage == 0 ? 110.0 : 220.0;
+            } else {
+                // Shelly 2.5 (measured)
+                voltage = getDouble(status.voltage);
+            }
+            if (voltage > 0) {
+                updated |= updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_VOLTAGE,
+                        toQuantityType(voltage, DIGITS_VOLT, Units.VOLT));
+            }
 
+            logger.trace("{}: Updating {} relay(s)", thingName, profile.numRelays);
             int i = 0;
             ShellyStatusRelay rstatus = api.getRelayStatus(i);
             for (ShellyShortStatusRelay relay : rstatus.relays) {

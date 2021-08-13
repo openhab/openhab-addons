@@ -14,7 +14,6 @@ package org.openhab.binding.pushover.internal.connection;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,9 +102,8 @@ public class PushoverAPIConnection {
         final JsonObject sounds = json == null || !json.has("sounds") ? null : json.get("sounds").getAsJsonObject();
 
         return sounds == null ? List.of()
-                : Collections.unmodifiableList(sounds.entrySet().stream()
-                        .map(entry -> new Sound(entry.getKey(), entry.getValue().getAsString()))
-                        .collect(Collectors.toList()));
+                : sounds.entrySet().stream().map(entry -> new Sound(entry.getKey(), entry.getValue().getAsString()))
+                        .collect(Collectors.toUnmodifiableList());
     }
 
     private String buildURL(String url, Map<String, String> requestParams) {
@@ -134,7 +132,8 @@ public class PushoverAPIConnection {
             throws PushoverCommunicationException, PushoverConfigurationException {
         logger.trace("Pushover request: {} - URL = '{}'", httpMethod, url);
         try {
-            final Request request = httpClient.newRequest(url).method(httpMethod).timeout(10, TimeUnit.SECONDS);
+            final Request request = httpClient.newRequest(url).method(httpMethod).timeout(config.timeout,
+                    TimeUnit.SECONDS);
 
             if (body != null) {
                 if (logger.isTraceEnabled()) {

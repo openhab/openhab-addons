@@ -175,11 +175,12 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
      */
     private void updateChannels(final Map<WasteType, CollectionDate> collectionDates) {
         for (final Channel channel : this.getThing().getChannels()) {
+
             final WasteType wasteType = getWasteTypeByChannel(channel.getUID().getId());
 
             final CollectionDate collectionDate = collectionDates.get(wasteType);
             if (collectionDate == null) {
-                this.logger.warn("No collection dates found for waste type: {}", wasteType);
+                this.logger.debug("No collection dates found for waste type: {}", wasteType);
                 continue;
             }
 
