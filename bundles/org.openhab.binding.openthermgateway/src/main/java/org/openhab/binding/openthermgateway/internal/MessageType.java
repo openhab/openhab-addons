@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link MessageType} indicates the type of message received by the OpenTherm Gateway, based
  * on the OpenTherm specification.
  * 
  * @author Arjen Korevaar - Initial contribution
  */
+@NonNullByDefault
 public enum MessageType {
     READDATA, // 000
     READACK, // 100

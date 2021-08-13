@@ -22,11 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface OpenThermGatewayCallback {
-    void connecting();
 
-    void connected();
-
-    void disconnected();
+    void connectionStateChanged(ConnectionState state);
 
     void receiveMessage(Message message);
 }

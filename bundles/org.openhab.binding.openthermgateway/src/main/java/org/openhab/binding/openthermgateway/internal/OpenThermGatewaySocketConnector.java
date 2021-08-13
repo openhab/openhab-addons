@@ -25,9 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,10 +45,10 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     private final String ipaddress;
     private final int port;
 
+    private @Nullable Socket socket;
     private @Nullable PrintWriter writer;
 
-    private volatile boolean stopping;
-    private boolean connected;
+    private volatile boolean stopping = false;
 
     private Map<String, Entry<Long, GatewayCommand>> pendingCommands = new ConcurrentHashMap<>();
 
@@ -63,22 +60,18 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
     @Override
     public void run() {
-        stopping = false;
-        connected = false;
-
         logger.debug("Connecting OpenThermGatewaySocketConnector to {}:{}", this.ipaddress, this.port);
-
-        callback.connecting();
+        callback.connectionStateChanged(ConnectionState.CONNECTING);
 
         try (Socket socket = new Socket()) {
+            // Make socket accessible on class level
+            this.socket = socket;
+
             socket.connect(new InetSocketAddress(this.ipaddress, this.port), COMMAND_TIMEOUT_MILLISECONDS);
             socket.setSoTimeout(COMMAND_TIMEOUT_MILLISECONDS);
 
-            connected = true;
-
-            callback.connected();
-
             logger.debug("OpenThermGatewaySocketConnector connected");
+            callback.connectionStateChanged(ConnectionState.CONNECTED);
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     PrintWriter wrt = new PrintWriter(socket.getOutputStream(), true)) {
@@ -96,21 +89,17 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                     if (message != null) {
                         handleMessage(message);
                     } else {
-                        logger.debug("Connection closed by OpenTherm Gateway");
+                        logger.debug("Received NULL message from OpenTherm Gateway (EOF)");
                         break;
                     }
                 }
-
-                logger.debug("Stopping OpenThermGatewaySocketConnector");
             } finally {
-                connected = false;
-
                 logger.debug("OpenThermGatewaySocketConnector disconnected");
-                callback.disconnected();
+                callback.connectionStateChanged(ConnectionState.DISCONNECTED);
             }
         } catch (IOException ex) {
             logger.warn("Unable to connect to the OpenTherm Gateway.", ex);
-            callback.disconnected();
+            callback.connectionStateChanged(ConnectionState.DISCONNECTED);
         }
     }
 
@@ -118,29 +107,31 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     public void stop() {
         logger.debug("Stopping OpenThermGatewaySocketConnector");
         stopping = true;
+        Thread.currentThread().interrupt();
     }
 
     @Override
     public boolean isConnected() {
-        return connected;
+        return (socket != null && socket.isConnected());
     }
 
     @Override
     public void sendCommand(GatewayCommand command) {
         @Nullable
-        PrintWriter wrtr = writer;
+        PrintWriter wrt = writer;
 
-        String msg = command.toFullString();
+        @Nullable
+        Socket sck = socket;
 
         pendingCommands.put(command.getCode(),
                 new AbstractMap.SimpleImmutableEntry<>(System.currentTimeMillis(), command));
 
-        if (connected) {
+        String msg = command.toFullString();
+
+        if (sck != null && sck.isConnected() && wrt != null) {
             logger.debug("Sending message: {}", msg);
-            if (wrtr != null) {
-                wrtr.print(msg + "\r\n");
-                wrtr.flush();
-            }
+            wrt.print(msg + "\r\n");
+            wrt.flush();
         } else {
             logger.debug("Unable to send message: {}. OpenThermGatewaySocketConnector is not connected.", msg);
         }
@@ -176,37 +167,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             logger.trace("Received message: {}, (unknown)", message);
             return;
         } else {
-            logger.trace("Received message: {}, {} {} {}", message, msg.getID(), msg.getCode(), msg.getMessageType());
-        }
-
-        if (DataItemGroup.dataItemGroups.containsKey(msg.getID())) {
-            DataItem[] dataItems = DataItemGroup.dataItemGroups.get(msg.getID());
-
-            for (DataItem dataItem : dataItems) {
-                State state = null;
-
-                switch (dataItem.getDataType()) {
-                    case FLAGS:
-                        state = OnOffType.from(msg.getBit(dataItem.getByteType(), dataItem.getBitPos()));
-                        break;
-                    case UINT8:
-                    case UINT16:
-                        state = new DecimalType(msg.getUInt(dataItem.getByteType()));
-                        break;
-                    case INT8:
-                    case INT16:
-                        state = new DecimalType(msg.getInt(dataItem.getByteType()));
-                        break;
-                    case FLOAT:
-                        state = new DecimalType(msg.getFloat());
-                        break;
-                    case DOWTOD:
-                        break;
-                }
-
-                logger.trace("  Data: {} {} {} {}", dataItem.getID(), dataItem.getSubject(), dataItem.getDataType(),
-                        state == null ? "" : state);
-            }
+            logger.trace("Received message: {}, {} {} {}", message, msg.getID(), msg.getCodeType(),
+                    msg.getMessageType());
         }
 
         if (msg.getMessageType() == MessageType.READACK || msg.getMessageType() == MessageType.WRITEDATA

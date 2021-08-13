@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.openthermgateway.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link Msg} flag is used to indicate whether the message is sent for Reading, Writing
  * or both, based on the OpenTherm specification.
  * 
  * @author Arjen Korevaar - Initial contribution
  */
+@NonNullByDefault
 public enum Msg {
     READ,
     WRITE,

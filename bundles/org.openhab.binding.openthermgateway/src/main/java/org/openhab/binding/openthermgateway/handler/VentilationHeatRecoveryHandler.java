@@ -10,18 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openthermgateway.internal;
+package org.openhab.binding.openthermgateway.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.Thing;
 
 /**
- * The {@link ByteType} enum specifies whether the upper, lower or both bytes are used
- * 
+ * The {@link VentilationHeatRecoveryHandler} represents a Ventilation/Heat Recovery unit.
+ *
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
-public enum ByteType {
-    HIGHBYTE,
-    LOWBYTE,
-    BOTH
+public class VentilationHeatRecoveryHandler extends BaseDeviceHandler {
+
+    public VentilationHeatRecoveryHandler(Thing thing) {
+        super(thing);
+    }
 }
