@@ -138,9 +138,8 @@ public class MiotParser {
                     if (service.siid == 1 && SKIP_SIID_1) {
                         continue;
                     }
-                    if (property.access.contains("read")) {
+                    if (property.access.contains("read") || property.access.contains("write")) {
                         MiIoBasicChannel miIoBasicChannel = new MiIoBasicChannel();
-                        // miIoBasicChannel.setProperty(prop);
                         miIoBasicChannel
                                 .setFriendlyName((isPureAscii(service.description) && !service.description.isBlank()
                                         ? captializedName(service.description)
@@ -233,7 +232,7 @@ public class MiotParser {
                                 logger.info("no type mapping for {}", property.format);
                                 break;
                         }
-                        miIoBasicChannel.setRefresh(true);
+                        miIoBasicChannel.setRefresh(property.access.contains("read"));
                         // add option values
                         if (property.valueList != null && property.valueList.size() > 0) {
                             StateDescriptionDTO stateDescription = miIoBasicChannel.getStateDescription();
