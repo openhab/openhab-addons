@@ -206,14 +206,6 @@ public class SkodaEApi extends ApiWithOAuth implements BrandAuthenticator {
         return API_REQUEST_STARTED;
     }
 
-    @Override
-    public void checkPendingRequests() {
-    }
-
-    public String getRequestStatus(String requestId, String rstatus) throws ApiException {
-        return API_REQUEST_SUCCESSFUL;
-    }
-
     private ApiHttpMap crerateParameters() throws ApiException {
         /*
          * accept: "application/json",

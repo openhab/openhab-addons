@@ -13,12 +13,10 @@
 package org.openhab.binding.connectedcar.internal.api;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleDetails;
-import org.openhab.binding.connectedcar.internal.api.carnet.CarNetPendingRequest;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.openhab.core.library.types.PointType;
 
@@ -43,12 +41,6 @@ public interface ApiBrandInterface {
     abstract @Nullable BrandApiProperties getProperties2();
 
     abstract void setConfig(CombinedConfig config);
-
-    abstract ApiHttpClient getHttp();
-
-    abstract Map<String, CarNetPendingRequest> getPendingRequests();
-
-    abstract void checkPendingRequests();
 
     abstract boolean refreshTokens() throws ApiException;
 

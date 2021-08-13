@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.connectedcar.internal.api;
 
+import static org.openhab.binding.connectedcar.internal.BindingConstants.API_REQUEST_TIMEOUT_SEC;
 import static org.openhab.binding.connectedcar.internal.CarUtils.getString;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -23,6 +25,8 @@ import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNS
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNVehicleDetails.CarNetVehicleDetails;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetCoordinate;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetVehicleStatus;
+import org.openhab.binding.connectedcar.internal.api.carnet.CarNetPendingRequest;
+import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPActionRequest;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleStatusData;
 import org.openhab.binding.connectedcar.internal.api.skodaenyak.SEApiJsonDTO.SEVehicleList.SEVehicle;
 import org.openhab.binding.connectedcar.internal.api.skodaenyak.SEApiJsonDTO.SEVehicleStatusData;
@@ -59,9 +63,10 @@ public class ApiDataTypesDTO {
     public static final String API_REQUEST_FETCHED = "fetched"; // rclima
     public static final String API_REQUEST_STARTED = "request_started"; // rhonk
     public static final String API_REQUEST_FAILED = "failed";
-    public static final String API_REQUEST_ERROR = "api_error";
-    public static final String API_REQUEST_TIMEOUT = "timoute";
     public static final String API_REQUEST_REJECTED = "rejected";
+    public static final String API_REQUEST_ERROR = "api_error";
+    public static final String API_REQUEST_TIMEOUT = "timout";
+    public static final String API_REQUEST_SECURITY = "request_security";
     public static final String API_REQUEST_UNSUPPORTED = "unsupported";
 
     public static final String API_STATUS_MSG_PREFIX = "api-status";
@@ -196,6 +201,54 @@ public class ApiDataTypesDTO {
 
         public String getParkingTime() {
             return parkingTimeUTC;
+        }
+    }
+
+    public static class ApiActionRequest {
+        public String vin = "";
+        public String service = "";
+        public String action = "";
+        public String requestId = ""; // request id returned from API
+        public String checkUrl = ""; // URL to query request status
+        public String status = ""; // status code, usualle API_REQUEST_xxx
+        public String error = ""; // error message/details
+        public Date creationTime = new Date();
+        public long timeout = API_REQUEST_TIMEOUT_SEC;
+
+        public ApiActionRequest() {
+        }
+
+        public ApiActionRequest(CarNetPendingRequest req) {
+            this();
+            this.vin = req.vin;
+            this.service = req.service;
+            this.action = req.action;
+            this.checkUrl = req.checkUrl;
+            this.requestId = req.requestId;
+        }
+
+        public ApiActionRequest(FPActionRequest req) {
+            this();
+            this.service = req.service;
+            this.action = req.action;
+            this.checkUrl = req.checkUrl;
+            this.requestId = req.requestId;
+        }
+
+        public static boolean isInProgress(String status) {
+            String st = status;
+            return API_REQUEST_IN_PROGRESS.equals(st) || API_REQUEST_QUEUED.equals(st) || API_REQUEST_FETCHED.equals(st)
+                    || API_REQUEST_STARTED.equals(st);
+        }
+
+        public boolean isInProgress() {
+            return isInProgress(this.status);
+        }
+
+        public boolean isExpired() {
+            Date currentTime = new Date();
+            long diff = currentTime.getTime() - creationTime.getTime();
+            return (diff / 1000) > timeout;
         }
     }
 }

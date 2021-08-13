@@ -13,12 +13,10 @@
 package org.openhab.binding.connectedcar.internal.api.carnet;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.API_REQUEST_TIMEOUT_SEC;
-import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
 import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.*;
 
-import java.util.Date;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.ApiActionRequest;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetActionResponse.CNActionResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,29 +27,19 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class CarNetPendingRequest {
+public class CarNetPendingRequest extends ApiActionRequest {
     private final Logger logger = LoggerFactory.getLogger(CarNetPendingRequest.class);
-
-    public String vin = "";
-    public String service = "";
-    public String action = "";
-    public String checkUrl = "";
-    public String requestId = "";
-    public String status = "";
-    public Date creationTime = new Date();
-    public long timeout = API_REQUEST_TIMEOUT_SEC;
 
     public CarNetPendingRequest(String service, String action, CNActionResponse rsp) {
         // normalize the resonse type
         this.service = service;
         this.action = action;
-
         switch (service) {
             case CNAPI_SERVICE_VEHICLE_STATUS_REPORT:
                 this.requestId = rsp.currentVehicleDataResponse.requestId;
                 this.vin = rsp.currentVehicleDataResponse.vin;
                 checkUrl = "bs/vsr/v1/{0}/{1}/vehicles/{2}/requests/" + requestId + "/jobstatus";
-                timeout = 5 * API_REQUEST_TIMEOUT_SEC;
+                timeout = 2 * API_REQUEST_TIMEOUT_SEC;
                 break;
             case CNAPI_SERVICE_REMOTE_LOCK_UNLOCK:
                 if (rsp.rluActionResponse != null) {
@@ -93,17 +81,5 @@ public class CarNetPendingRequest {
             default:
                 logger.debug("Unable to queue request, unknown service type {}}.{}", service, action);
         }
-    }
-
-    public static boolean isInProgress(String status) {
-        String st = status.toLowerCase();
-        return API_REQUEST_IN_PROGRESS.equals(st) || API_REQUEST_QUEUED.equals(st) || API_REQUEST_FETCHED.equals(st)
-                || API_REQUEST_STARTED.equals(st);
-    }
-
-    public boolean isExpired() {
-        Date currentTime = new Date();
-        long diff = currentTime.getTime() - creationTime.getTime();
-        return (diff / 1000) > timeout;
     }
 }

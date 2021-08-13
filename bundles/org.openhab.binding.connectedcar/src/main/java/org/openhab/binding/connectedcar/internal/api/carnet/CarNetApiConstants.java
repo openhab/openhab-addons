@@ -34,7 +34,6 @@ public class CarNetApiConstants {
     // URIs: {0}=brand, {1} = country, {2} = VIN, {3} = userId
     public static final String CNAPI_VWG_MAL_1A_CONNECT = "https://mal-1a.prd.ece.vwg-connect.com/api";
 
-    public static final String CNAPI_URL_GET_SEC_TOKEN = "https://mbboauth-1d.prd.ece.vwg-connect.com/mbbcoauth/mobile/oauth2/v1/token";
     public static final String CNAPI_VW_TOKEN_URL = "https://mbboauth-1d.prd.ece.vwg-connect.com/mbbcoauth/mobile/oauth2/v1/token";
     public static final String CNAPI_URL_LOGIN = "https://login.apps.emea.vwapps.io/login/v1";
 

@@ -77,7 +77,7 @@ public class TokenManager {
         }
 
         // First try to refresh token
-        if (!tokens.apiToken.refreshToken.isEmpty() && refreshToken(config, tokens.apiToken)) {
+        if (!tokens.apiToken.refreshToken.isEmpty() && refreshToken(config, tokens, tokens.apiToken)) {
             // successful, return new token, otherwise re-login
             return tokens.apiToken.accessToken;
         }
@@ -97,20 +97,20 @@ public class TokenManager {
          * The token service also provides the option to revoke a token, this is not used. Token stays until unless the
          * refresh fails.
          */
-        logger.debug("{}: Logging in, account={}", config.api.brand, config.account.user);
+        logger.debug("{}: Logging in, account={}", config.getLogId(), config.account.user);
         TokenOAuthFlow oauth = new TokenOAuthFlow(tokens.http);
         String url = authenticator.getLoginUrl(oauth);
         tokens.idToken = authenticator.login(url, oauth);
 
-        logger.debug("{}: OAuth: Login successful, create token", config.vehicle.vin);
+        logger.debug("{}: Login successful, grating API access", config.getLogId());
         tokens.apiToken = authenticator.grantAccess(oauth);
-        logger.debug("{}: accessToken was created, valid for {}sec", config.api.brand, tokens.apiToken.validity);
-        if (tokens.apiToken.accessToken.isEmpty() && tokens.apiToken.idToken.isEmpty()) {
+        logger.debug("{}: accessToken was created, valid for {}sec", config.getLogId(), tokens.apiToken.validity);
+        if (tokens.apiToken.accessToken.isEmpty() && tokens.idToken.idToken.isEmpty()) {
             throw new ApiSecurityException("Authentication failed: Unable to get access token!");
         }
+
         tokens.apiToken.xcsrf = oauth.csrf;
         updateTokenSet(config.tokenSetId, tokens);
-        logger.debug("{}: OAuth: Access token created successful", config.vehicle.vin);
         return tokens.apiToken.accessToken;
     }
 
@@ -124,7 +124,7 @@ public class TokenManager {
         TokenSet tokens = getTokenSet(config.tokenSetId);
         if (!tokens.idToken.isValid() || tokens.idToken.isExpired()) {
             // Token got invalid, force recreation
-            logger.debug("{}: idToken experied, re-login", config.vehicle.vin);
+            logger.debug("{}: idToken experied, re-login", config.getLogId());
             tokens.apiToken.invalidate();
             createAccessToken(config);
         }
@@ -191,7 +191,8 @@ public class TokenManager {
         CarNetSecurityPinAuthInfo authInfo = fromJson(gson, json, CarNetSecurityPinAuthInfo.class);
         String pinHash = sha512(config.vehicle.pin, authInfo.securityPinAuthInfo.securityPinTransmission.challenge)
                 .toUpperCase();
-        logger.debug("Authenticating SPIN, retires={}", authInfo.securityPinAuthInfo.remainingTries);
+        logger.debug("{}: Authenticating SPIN, retires={}", config.getLogId(),
+                authInfo.securityPinAuthInfo.remainingTries);
 
         // Request authentication
         CarNetSecurityPinAuthentication pinAuth = new CarNetSecurityPinAuthentication();
@@ -207,7 +208,7 @@ public class TokenManager {
         if (securityToken.securityToken.isEmpty()) {
             throw new ApiSecurityException("Authentication failed: Unable to get access token!");
         }
-        logger.debug("securityToken granted successful!");
+        logger.debug("{}: securityToken granted successful!", config.getLogId());
         synchronized (securityTokens) {
             securityToken.setService(service);
             if (securityTokens.contains(securityToken)) {
@@ -223,7 +224,7 @@ public class TokenManager {
             TokenSet tokens = getTokenSet(config.tokenSetId);
             return tokens.apiToken.isValid();
         } catch (IllegalArgumentException e) {
-            logger.debug("Invalid token!");
+            logger.debug("{}: Invalid token!", config.getLogId());
             return false;
         }
     }
@@ -242,14 +243,15 @@ public class TokenManager {
     public boolean refreshTokens(CombinedConfig config) throws ApiException {
         try {
             TokenSet tokens = getTokenSet(config.tokenSetId);
-            refreshToken(config, tokens.apiToken);
+            refreshToken(config, tokens, tokens.apiToken);
+            updateTokenSet(config.tokenSetId, tokens);
 
             Iterator<ApiToken> it = securityTokens.iterator();
             while (it.hasNext()) {
                 ApiToken stoken = it.next();
-                if (!refreshToken(config, stoken)) {
+                if (!refreshToken(config, tokens, stoken)) {
                     // Token invalid / refresh failed -> remove
-                    logger.debug("{}: Security token for service {} expired, remove", config.vehicle.vin,
+                    logger.debug("{}: Security token for service {} expired, remove", config.getLogId(),
                             stoken.service);
                     securityTokens.remove(stoken);
                 }
@@ -257,7 +259,8 @@ public class TokenManager {
             return true;
         } catch (ApiException e) {
             // Ignore problems with the idToken or securityToken if the accessToken was requested successful
-            logger.debug("Unable to refresh token: {}", e.toString()); // "normal, no stack trace"
+            logger.debug("{}: Unable to refresh token: {}", config.getLogId(), e.toString()); // "normal, no stack
+                                                                                              // trace"
         } catch (IllegalArgumentException e) {
             logger.debug("Invalid tokenSet!");
         }
@@ -272,43 +275,42 @@ public class TokenManager {
      * @return new token
      * @throws ApiException
      */
-    public boolean refreshToken(CombinedConfig config, ApiToken token) throws ApiException {
+    public boolean refreshToken(CombinedConfig config, TokenSet tokenSet, ApiToken token) throws ApiException {
         if (!token.isValid()) {
             return false;
         }
 
-        TokenSet tokens = getTokenSet(config.tokenSetId);
-        if (tokens.apiToken.refreshToken.isEmpty()) {
-            logger.debug("{}: No refreshToken available, token is now invalid", config.vehicle.vin);
+        if (tokenSet.apiToken.refreshToken.isEmpty()) {
+            logger.debug("{}: No refreshToken available, token is now invalid", config.getLogId());
             token.invalidate();
             return false;
         }
 
         if (token.isExpired()) {
-            logger.debug("{}: Refreshing Token {}", config.vehicle.vin, token.accessToken);
-            BrandAuthenticator authenticator = config.authenticator;
-            if (authenticator == null) {
-                throw new ApiSecurityException("No authenticator available");
-            }
             try {
+                logger.debug("{}: Refreshing Token {}", config.getLogId(), token.accessToken);
+                BrandAuthenticator authenticator = config.authenticator;
+                if (authenticator == null) {
+                    throw new ApiSecurityException("No authenticator available");
+                }
+
+                // OAuthToken newToken = authenticator.refreshToken(token).normalize();
                 OAuthToken newToken = authenticator.refreshToken(token);
-                newToken.normalize();
-                tokens.apiToken.accessToken = newToken.accessToken;
-                tokens.apiToken.setValidity(getInteger(newToken.validity));
-                updateTokenSet(config.tokenSetId, tokens);
-                logger.debug("{}: Token refresh successful, valid for {} sec, new token={}", config.vehicle.vin,
-                        tokens.apiToken.validity, tokens.apiToken.accessToken);
+                // tokens.apiToken.accessToken = newToken.accessToken;
+                // tokens.apiToken.setValidity(getInteger(newToken.validity));
+                logger.debug("{}: Token refresh successful, valid for {} sec", config.getLogId(), newToken.validity);
+                logger.trace("{}: new token={}", config.getLogId(), newToken.accessToken);
+                token.updateToken(newToken.normalize());
             } catch (ApiException e) {
-                logger.debug("{}: Unable to refresh token: {}", config.vehicle.vin, e.toString());
+                logger.debug("{}: Unable to refresh token: {}", config.getLogId(), e.toString());
                 // Invalidate token (triggers a new login when accessToken is required)
                 if (token.isExpired()) {
-                    tokens.apiToken.invalidate();
-                    updateTokenSet(config.tokenSetId, tokens);
-                    logger.debug("Token refresh failed and current accessToken is expired");
+                    token.invalidate();
+                    logger.debug("{}: Token refresh failed and current accessToken is expired", config.getLogId());
+                    return false;
                 } else {
-                    logger.debug("Token refresh failed, but accessToken is still valid");
+                    logger.debug("{}: Token refresh failed, but accessToken is still valid", config.getLogId());
                 }
-                return false;
             }
         }
         return true;
@@ -329,6 +331,10 @@ public class TokenManager {
     }
 
     TokenSet getTokenSet(String tokenSetId) {
+        if (tokenSetId.isEmpty()) {
+            int i = 1;
+            return new TokenSet();
+        }
         TokenSet ts = accountTokens.get(tokenSetId);
         if (ts != null) {
             return ts;

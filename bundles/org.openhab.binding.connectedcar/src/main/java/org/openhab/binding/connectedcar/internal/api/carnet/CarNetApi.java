@@ -28,10 +28,10 @@ import javax.measure.IncommensurableException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpHeader;
+import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.ApiActionRequest;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.CarPosition;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleDetails;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleStatus;
-import org.openhab.binding.connectedcar.internal.api.ApiErrorDTO;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
@@ -513,13 +513,7 @@ public class CarNetApi extends ApiWithOAuth {
         return API_REQUEST_REJECTED;
     }
 
-    public String getTripStats(String tripType) throws ApiException {
-        String json = callApi("bs/tripstatistics/v1/{0}/{1}/vehicles/{2}/tripdata/" + tripType + "?newest", "",
-                String.class);
-        return json;
-    }
-
-    private String queuePendingAction(String service, String action, String json) throws ApiException {
+    public String queuePendingAction(String service, String action, String json) throws ApiException {
         CNActionResponse in;
         if (CNAPI_SERVICE_REMOTE_HONK_AND_FLASH.equals(service)) {
             // Honk&Flash has special format
@@ -528,136 +522,33 @@ public class CarNetApi extends ApiWithOAuth {
         } else {
             in = fromJson(gson, json, CNActionResponse.class);
         }
-        CarNetPendingRequest rsp = new CarNetPendingRequest(service, action, in);
-        logger.debug("{}: Request {} queued for status updates", config.vehicle.vin, rsp.requestId);
-        pendingRequests.put(rsp.requestId, rsp);
-        if (eventListener != null) {
-            eventListener.onActionSent(service, action, rsp.requestId);
-        }
-
-        // Check if action was accepted
-        return getRequestStatus(rsp.requestId, rsp.status);
+        CarNetPendingRequest req = new CarNetPendingRequest(service, action, in);
+        return queuePendingAction(new ApiActionRequest(req));
     }
 
-    private boolean isRequestPending(String serviceId) {
-        for (Map.Entry<String, CarNetPendingRequest> r : pendingRequests.entrySet()) {
-            if (r.getValue().service.equals(serviceId)) {
-                return true;
-            }
-        }
-        return false;
+    public String getTripStats(String tripType) throws ApiException {
+        String json = callApi("bs/tripstatistics/v1/{0}/{1}/vehicles/{2}/tripdata/" + tripType + "?newest", "",
+                String.class);
+        return json;
     }
 
     @Override
-    public void checkPendingRequests() {
-        Map<String, CarNetPendingRequest> requests = getPendingRequests();
-        if (!requests.isEmpty()) {
-            logger.debug("{}: Checking status for {} pending requets", thingId, requests.size());
-            for (Map.Entry<String, CarNetPendingRequest> e : requests.entrySet()) {
-                CarNetPendingRequest request = e.getValue();
-                try {
-                    request.status = getRequestStatus(request.requestId, "");
-                } catch (ApiException ex) {
-                    ApiErrorDTO error = ex.getApiResult().getApiError();
-                    if (error.isTechValidationError()) {
-                        // Id is no longer valid
-                        request.status = API_REQUEST_ERROR;
-                    }
-                }
+    public String getApiRequestStatus(ApiActionRequest req) throws ApiException {
+        String status = "", error = "";
+        CNRequestStatus rs = callApi(req.checkUrl, "getRequestStatus", CNRequestStatus.class);
+        if (rs.requestStatusResponse != null) {
+            status = rs.requestStatusResponse.status;
+            if (rs.requestStatusResponse.error != null) {
+                error = "" + rs.requestStatusResponse.error;
             }
+        } else if (rs.action != null) {
+            status = getString(rs.action.actionState);
+            error = "" + getInteger(rs.action.errorCode);
+        } else if (rs.status != null) {
+            status = getString(rs.status.statusCode);
         }
-    }
-
-    @Override
-    public Map<String, CarNetPendingRequest> getPendingRequests() {
-        return pendingRequests;
-    }
-
-    public String getRequestStatus(String requestId, String rstatus) throws ApiException {
-        if (!pendingRequests.containsKey(requestId)) {
-            throw new IllegalArgumentException("Invalid requestId");
-        }
-
-        boolean remove = false;
-        String status = rstatus;
-        CarNetPendingRequest request = pendingRequests.get(requestId);
-        if (request == null) {
-            return "";
-        }
-        if (request.isExpired()) {
-            status = API_REQUEST_TIMEOUT;
-            remove = true;
-            if (eventListener != null) {
-                eventListener.onActionTimeout(request.service, request.action, request.requestId);
-            }
-        } else {
-            try {
-                int error = -1;
-                if (status.isEmpty()) {
-                    if (request.checkUrl.isEmpty()) {
-                        // this should not happen
-                        logger.warn("{}: Unable to check request {} status for action {}.{}; checkUrl is missing!",
-                                config.vehicle.vin, request.requestId, request.service, request.action);
-                    } else {
-                        logger.debug("{}: Check request {} status for action {}.{}; checkUrl={}", config.vehicle.vin,
-                                request.requestId, request.service, request.action, request.checkUrl);
-                        CNRequestStatus rs = callApi(request.checkUrl, "getRequestStatus", CNRequestStatus.class);
-                        if (rs.requestStatusResponse != null) {
-                            status = rs.requestStatusResponse.status;
-                            if (rs.requestStatusResponse.error != null) {
-                                error = rs.requestStatusResponse.error;
-                            }
-                        } else if (rs.action != null) {
-                            status = getString(rs.action.actionState);
-                            error = getInteger(rs.action.errorCode);
-                        } else if (rs.status != null) {
-                            status = getString(rs.status.statusCode);
-                        }
-                    }
-                }
-
-                status = status.toLowerCase(); // Hon&Flash returns in upper case
-                String actionStatus = status;
-                switch (status) {
-                    case API_REQUEST_SUCCESSFUL:
-                    case API_REQUEST_SUCCEEDED:
-                        actionStatus = API_REQUEST_SUCCESSFUL; // normalize status
-                        remove = true;
-                        break;
-                    case API_REQUEST_IN_PROGRESS:
-                    case API_REQUEST_QUEUED:
-                    case API_REQUEST_FETCHED:
-                    case API_REQUEST_STARTED:
-                        actionStatus = API_REQUEST_IN_PROGRESS; // normalize status
-                        break;
-                    case API_REQUEST_NOT_FOUND:
-                    case API_REQUEST_FAIL:
-                    case API_REQUEST_FAILED:
-                        logger.warn("{}: Action {}.{} failed with status {}, error={} (requestId={})",
-                                config.vehicle.vin, request.service, request.action, status, error, request.requestId);
-                        remove = true;
-                        actionStatus = API_REQUEST_FAILED; // normalize status
-                        break;
-                    default:
-                        logger.debug("{}: Request {} has unknown status: {}", config.vehicle.vin, requestId, status);
-                }
-
-                if (eventListener != null) {
-                    eventListener.onActionResult(request.service, request.action, request.requestId,
-                            actionStatus.toUpperCase(), status);
-                }
-            } catch (ApiException e) {
-                logger.debug("{}: Unable to validate request {}, {}", config.vehicle.vin, requestId, e.toString());
-            } catch (RuntimeException e) {
-                logger.debug("{}: Unable to validate request {}", config.vehicle.vin, requestId, e);
-            }
-        }
-
-        if (remove) {
-            logger.debug("{}: Remove request {} for action {}.{} from queue, status is {}", config.vehicle.vin,
-                    request.requestId, request.service, request.action, status);
-            pendingRequests.remove(request.requestId);
-        }
+        req.status = status;
+        req.error = error;
         return status;
     }
 

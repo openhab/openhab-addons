@@ -154,7 +154,7 @@ public class ApiToken {
         if (!getString(token.securityToken).isEmpty()) {
             this.securityToken = getString(token.securityToken);
         }
-        if (token.validity != null) {
+        if (token.validity != -1) {
             setValidity(token.validity);
         }
         return this;
@@ -163,7 +163,7 @@ public class ApiToken {
     public void setValidity(int expiresIn) {
         creationTime = new Date();
         int value = expiresIn <= 0 ? DEFAULT_TOKEN_VALIDITY_SEC : expiresIn;
-        double offset = value * 0.2;
+        double offset = value * 0.9;
         this.validity = value - (int) offset; // reduce by 20% treshhold
     }
 

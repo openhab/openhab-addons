@@ -65,11 +65,12 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
 
     @Override
     public ApiToken login(String loginUrl, TokenOAuthFlow oauth) throws ApiException {
+        String logId = config.getLogId();
         try {
             ApiResult res = oauth.get(loginUrl);
             String url = oauth.location;
             if (url.contains("error=consent_required")) {
-                logger.debug("Missing consent: {}", url);
+                logger.debug("{}: Missing consent: {}", logId, url);
                 String message = URLDecoder.decode(url, UTF_8);
                 message = substringBefore(substringAfter(message, "&error_description="), "&");
                 throw new ApiSecurityException(
@@ -77,38 +78,34 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
             }
             res = oauth.follow();
             if (oauth.csrf.isEmpty() || oauth.relayState.isEmpty() || oauth.hmac.isEmpty()) {
-                logger.debug("{}: OAuth failed, can't get parameters\nHTML {}: {}", config.vehicle.vin, res.httpCode,
-                        res.response);
+                logger.debug("{}: OAuth failed, can't get parameters\nHTML {}: {}", logId, res.httpCode, res.response);
                 throw new ApiSecurityException("Unable to login - can't get OAuth parameters!");
             }
 
             // Authenticate: Username
-            logger.trace("{}: OAuth input: User", config.vehicle.vin);
+            logger.trace("{}: OAuth input: User", logId);
             // "/signin-service/v1/" + config.api.clientId + "/login/identifier";
             url = config.api.issuerRegionMappingUrl + oauth.action;
             oauth.clearData().data("_csrf", oauth.csrf).data("relayState", oauth.relayState).data("hmac", oauth.hmac)
                     .data("email", URLEncoder.encode(config.account.user, UTF_8));
             oauth.post(url, false);
             if (oauth.location.isEmpty()) {
-                logger.debug("{}: OAuth failed, can't input password - HTML {}: {}", config.vehicle.vin, res.httpCode,
-                        res.response);
+                logger.debug("{}: OAuth failed, can't input password; HTML {}: {}", logId, res.httpCode, res.response);
                 throw new ApiSecurityException("Unable to login - can't get OAuth parameters!");
             }
 
             // Authenticate: Password
-            logger.trace("{}: OAuth input: Password", config.vehicle.vin);
+            logger.trace("{}: OAuth input: Password", logId);
             url = config.api.issuerRegionMappingUrl + oauth.location; // Signin URL
             res = oauth.get(url);
 
-            logger.trace("{}: OAuth input: Authenticate", config.vehicle.vin);
-            // "/signin-service/v1/" + config.api.clientId + "/login/authenticate";
+            logger.trace("{}: OAuth input: Authenticate", logId);
             url = config.api.issuerRegionMappingUrl + oauth.action;
-            oauth.clearData().data("_csrf", oauth.csrf).data("relayState", oauth.relayState).data("hmac", oauth.hmac)
-                    .data("email", URLEncoder.encode(config.account.user, UTF_8))
-                    .data("password", URLEncoder.encode(config.account.password, UTF_8));
-            res = oauth.post(url, false);
+            res = oauth.clearData().data("_csrf", oauth.csrf).data("relayState", oauth.relayState)
+                    .data("hmac", oauth.hmac).data("email", URLEncoder.encode(config.account.user, UTF_8))
+                    .data("password", URLEncoder.encode(config.account.password, UTF_8)).post(url, false);
             url = oauth.location; // Continue URL
-            if (url.contains("error=login.error.password_invalid")) {
+            if (url.contains("error=login.errors.password_invalid")) {
                 throw new ApiSecurityException("Login failed due to invalid password or locked account!");
             }
             if (url.contains("error=login.errors.throttled")) {
@@ -137,7 +134,7 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
             if (oauth.idToken.isEmpty()) {
                 if (res.response.contains("Allow access")) // additional consent required
                 {
-                    logger.debug("Consent missing, URL={}\n   HTML: {}", res.url, res.response);
+                    logger.debug("{}: Consent missing, URL={}\n   HTML: {}", logId, res.url, res.response);
                     throw new ApiSecurityException(
                             "Consent missing. Login to the Web App and give consent: " + config.api.authScope);
                 }
@@ -148,11 +145,9 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
             }
 
             // In this case the id and access token were returned by the login process
-            logger.trace("{}: OAuth successful, idToken was retrieved, valid for {}sec", config.vehicle.vin,
-                    oauth.expiresIn);
             return new ApiToken(oauth.idToken, oauth.accessToken, Integer.parseInt(oauth.expiresIn, 10));
         } catch (UnsupportedEncodingException e) {
-            logger.warn("Technical problem with algorithms", e);
+            logger.warn("{}: Technical problem with algorithms", logId, e);
             throw new ApiException("Technical problem with algorithms", e);
         }
     }
@@ -162,23 +157,25 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
         // Last step: Request the access token from the VW token management
         // We save the generated tokens as tokenSet. Account handler and vehicle handler(s) are sharing the same
         // tokens. The tokenSetId provides access to that set.
-        logger.debug("{}: Get Access Token", config.vehicle.vin);
-        String json = oauth.clearHeader().header(HttpHeader.USER_AGENT, "okhttp/3.7.0")
-                .header(CNAPI_HEADER_CLIENTID, config.api.xClientId)
-                .header(HttpHeader.HOST.toString(), "mbboauth-1d.prd.ece.vwg-connect.com")
+        String json = oauth.clearHeader().header(HttpHeader.USER_AGENT, CNAPI_HEADER_USER_AGENT)
+                .header(HttpHeader.ACCEPT, "*/*").header(HttpHeader.HOST, "mbboauth-1d.prd.ece.vwg-connect.com")
                 .header(CNAPI_HEADER_APP, config.api.xappName).header(CNAPI_HEADER_VERS, config.api.xappVersion)
-                .header(HttpHeader.ACCEPT, "*/*") //
+                .header(CNAPI_HEADER_CLIENTID, config.api.xClientId)//
                 .clearData().data("grant_type", "id_token").data("token", oauth.idToken).data("scope", "sc2:fal") //
-                .post(CNAPI_URL_GET_SEC_TOKEN, false).response;
+                .post(config.api.tokenUrl, false).response;
         return new ApiToken(fromJson(gson, json, OAuthToken.class));
     }
 
     @Override
     public OAuthToken refreshToken(ApiToken token) throws ApiException {
-
-        ApiHttpMap data = new ApiHttpMap().data("grant_type", "refresh_token").data("refresh_token", token.refreshToken)
+        ApiHttpMap map = new ApiHttpMap().header(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT)
+                .header(HttpHeader.CONTENT_TYPE.toString(), "application/x-www-form-urlencoded")
+                .header(HttpHeader.HOST, "mbboauth-1d.prd.ece.vwg-connect.com")
+                .header(CNAPI_HEADER_APP, config.api.xappName).header(CNAPI_HEADER_VERS, config.api.xappVersion)
+                .header(CNAPI_HEADER_CLIENTID, config.api.xClientId) //
+                .data("grant_type", "refresh_token").data("refresh_token", token.refreshToken)
                 .data("scope", "sc2%3Afal");
-        String json = http.post(config.api.tokenRefreshUrl, http.fillRefreshHeaders(), data.getData(), false).response;
+        String json = http.post(config.api.tokenRefreshUrl, map.getHeaders(), map.getData(), false).response;
         return fromJson(gson, json, OAuthToken.class);
     }
 }

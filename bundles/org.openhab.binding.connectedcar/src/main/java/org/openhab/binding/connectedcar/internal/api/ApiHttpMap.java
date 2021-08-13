@@ -38,6 +38,11 @@ public class ApiHttpMap {
         return header(header.toString(), value);
     }
 
+    public ApiHttpMap headers(Map<String, String> headers) {
+        this.headers.putAll(headers);
+        return this;
+    }
+
     public ApiHttpMap data(String attribute, String value) {
         data.put(attribute, value);
         return this;

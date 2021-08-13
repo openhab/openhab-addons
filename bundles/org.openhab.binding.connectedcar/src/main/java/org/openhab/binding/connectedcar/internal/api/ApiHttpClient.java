@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -181,7 +180,7 @@ public class ApiHttpClient {
             fillPostData(request, data);
 
             // Do request and get response
-            logger.debug("HTTP {} {}\n", request.getMethod(), request.getURI());
+            logger.debug("HTTP {} {}", request.getMethod(), request.getURI());
             logger.trace("  Headers: \n{}", request.getHeaders().toString());
             if (!data.isEmpty()) {
                 logger.trace("  Body/Data: {}", data);
@@ -268,21 +267,6 @@ public class ApiHttpClient {
         if (!headers.containsKey(HttpHeaders.AUTHORIZATION.toString())) {
             headers.put(HttpHeader.AUTHORIZATION.toString(), "Bearer " + token);
         }
-        return headers;
-    }
-
-    /**
-     * Fill http headers for token refresh request
-     *
-     * @return
-     */
-    public Map<String, String> fillRefreshHeaders() {
-        Map<String, String> headers = new HashMap<>();
-        headers.put(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT);
-        headers.put(CNAPI_HEADER_APP, config.api.xappName);
-        headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
-        headers.put(HttpHeader.CONTENT_TYPE.toString(), "application/x-www-form-urlencoded");
-        headers.put("X-Client-Id", config.api.xClientId);
         return headers;
     }
 

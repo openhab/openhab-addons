@@ -22,7 +22,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,7 +30,6 @@ import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleDeta
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleStatus;
 import org.openhab.binding.connectedcar.internal.api.ApiToken.JwtToken;
 import org.openhab.binding.connectedcar.internal.api.ApiToken.OAuthToken;
-import org.openhab.binding.connectedcar.internal.api.carnet.CarNetPendingRequest;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.openhab.binding.connectedcar.internal.config.VehicleConfiguration;
 import org.openhab.core.library.types.PointType;
@@ -47,7 +45,7 @@ import com.google.gson.Gson;
  *
  */
 @NonNullByDefault
-public class ApiBase implements ApiBrandInterface, BrandAuthenticator {
+public class ApiBase extends ApiRequestQueue implements ApiBrandInterface, BrandAuthenticator {
     private static final String SUCCESSFUL = API_REQUEST_SUCCESSFUL;
     private static final String UNSUPPORTED = API_REQUEST_UNSUPPORTED;
 
@@ -60,7 +58,6 @@ public class ApiBase implements ApiBrandInterface, BrandAuthenticator {
     protected ApiHttpClient http = new ApiHttpClient();
     protected TokenManager tokenManager = new TokenManager();
     protected @Nullable ApiEventListener eventListener;
-    protected Map<String, CarNetPendingRequest> pendingRequests = new ConcurrentHashMap<>();
 
     protected boolean initialzed = false;
 
@@ -91,6 +88,8 @@ public class ApiBase implements ApiBrandInterface, BrandAuthenticator {
         // config.api = getProperties();
         this.config = config;
         http.setConfig(this.config);
+        thingId = config.vehicle.vin;
+        setupRequestQueue(thingId, eventListener);
     }
 
     @Override
@@ -149,10 +148,6 @@ public class ApiBase implements ApiBrandInterface, BrandAuthenticator {
 
     public VehicleStatus getVehicleStatus() throws ApiException {
         return new VehicleStatus();
-    }
-
-    @Override
-    public void checkPendingRequests() {
     }
 
     @Override
@@ -341,14 +336,8 @@ public class ApiBase implements ApiBrandInterface, BrandAuthenticator {
         http.setConfig(this.config);
     }
 
-    @Override
     public ApiHttpClient getHttp() {
         return this.http;
-    }
-
-    @Override
-    public Map<String, CarNetPendingRequest> getPendingRequests() {
-        return pendingRequests;
     }
 
     @Override

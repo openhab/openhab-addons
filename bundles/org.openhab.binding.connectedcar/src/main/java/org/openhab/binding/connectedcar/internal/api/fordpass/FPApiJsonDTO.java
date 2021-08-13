@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.connectedcar.internal.api.fordpass;
 
+import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
+
 import java.util.ArrayList;
 
+import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.ApiActionRequest;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleStatusData.FPVehicleStatus.FPStatusBattery.FPStatusBatHealth;
 
 import com.google.gson.annotations.SerializedName;
@@ -267,17 +270,46 @@ public class FPApiJsonDTO {
         public String status;
     }
 
-    public class FPRefreshResponse {
-        /*
-         * {
-         * "$id":"1",
-         * "commandId":"db8a4d86-5a21-4766-b114-0dc4cd52b09e",
-         * "status":200,
-         * "version":"1.0.0"
-         * }
-         */
-        public String commandId;
-        public String status;
-        public String version;
+    public static class FPActionRequest extends ApiActionRequest {
+        public FPActionRequest(String service, String action, FPActionResponse rsp) {
+            // normalize the resonse type
+            this.service = service;
+            this.action = action;
+            this.requestId = rsp.commandId;
+        }
+
+        public class FPActionResponse {
+            /*
+             * {
+             * "$id":"1",
+             * "commandId":"db8a4d86-5a21-4766-b114-0dc4cd52b09e",
+             * "status":200,
+             * "version":"1.0.0"
+             * }
+             */
+            public String commandId;
+            public String status;
+            public String version;
+
+            public String mapStatusCode() {
+                // seems to be a http status code, but not sure if other values could be reported
+                switch (status) {
+                    case "200":
+                        return API_REQUEST_SUCCESSFUL;
+                    case "401":
+                        return API_REQUEST_SECURITY;
+                    case "552":
+                        return API_REQUEST_IN_PROGRESS;
+                    case "402": // payment required?
+                    default:
+                        return API_REQUEST_ERROR;
+                }
+            }
+
+            public boolean isError() {
+                return status.equalsIgnoreCase(API_REQUEST_ERROR);
+            }
+        }
     }
+
 }

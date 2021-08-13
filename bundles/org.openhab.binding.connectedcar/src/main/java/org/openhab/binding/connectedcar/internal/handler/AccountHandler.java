@@ -319,10 +319,11 @@ public class AccountHandler extends BaseBridgeHandler {
 
     private void refreshStatus() {
         try {
-            if (getThing().getStatus() == ThingStatus.OFFLINE) {
+            ThingStatus status = getThing().getStatus();
+            if (status == ThingStatus.OFFLINE) {
                 logger.debug("{}: Re-initialize with account {}", thingId, config.account.user);
                 initializeThing();
-            } else {
+            } else if (status == ThingStatus.ONLINE) {
                 api.refreshTokens();
             }
         } catch (ApiException e) {

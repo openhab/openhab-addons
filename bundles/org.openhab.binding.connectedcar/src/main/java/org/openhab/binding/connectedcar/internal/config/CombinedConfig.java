@@ -71,4 +71,8 @@ public class CombinedConfig {
         this.oidcConfig = new CarNetOidcConfig();
         this.user = new UserConfig();
     }
+
+    public String getLogId() {
+        return !vehicle.vin.isEmpty() ? vehicle.vin : !api.brand.isEmpty() ? api.brand : account.brand;
+    }
 }

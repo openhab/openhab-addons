@@ -16,19 +16,19 @@ import static org.openhab.binding.connectedcar.internal.BindingConstants.CONTENT
 import static org.openhab.binding.connectedcar.internal.CarUtils.*;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
 import static org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.*;
-import static org.openhab.binding.connectedcar.internal.api.skodaenyak.SEApiJsonDTO.SESERVICE_CHARGING;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.measure.IncommensurableException;
 import javax.ws.rs.core.HttpHeaders;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.connectedcar.internal.api.ApiBase;
+import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.ApiActionRequest;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleDetails;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleStatus;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
@@ -37,12 +37,11 @@ import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpMap;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.TokenManager;
-import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPRefreshResponse;
+import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPActionRequest;
+import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPActionRequest.FPActionResponse;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleListData;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleListData.FPVehicleData.FPVehicle;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleStatusData;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +50,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Michels - Initial contribution
  */
+@NonNullByDefault
 public class FordPassApi extends ApiBase implements BrandAuthenticator {
     private final Logger logger = LoggerFactory.getLogger(FordPassApi.class);
     private final Map<String, FPVehicle> vehicleList = new HashMap<>();
@@ -72,9 +72,8 @@ public class FordPassApi extends ApiBase implements BrandAuthenticator {
 
     @Override
     public ArrayList<String> getVehicles() throws ApiException {
-        ApiHttpMap params = createApiParameters();
-        FPVehicleListData data = callApi("", "users/vehicles", params.getHeaders(), "getVehicleList",
-                FPVehicleListData.class);
+        Map<String, String> params = createApiParameters();
+        FPVehicleListData data = callApi("", "users/vehicles", params, "getVehicleList", FPVehicleListData.class);
 
         /*
          * String details = callApi("", "users/vehicles/{2}/detail", params.getHeaders(), "getVehicleDetails",
@@ -111,93 +110,46 @@ public class FordPassApi extends ApiBase implements BrandAuthenticator {
 
     @Override
     public VehicleStatus getVehicleStatus() throws ApiException {
-        ApiHttpMap params = createApiParameters();
-        String json = http.get("vehicles/v4/{2}/status" + URL_PARM_LRDT, params.getHeaders()).response;
+        String json = http.get("vehicles/v4/{2}/status" + URL_PARM_LRDT, createApiParameters()).response;
         return new VehicleStatus(fromJson(gson, json, FPVehicleStatusData.class));
     }
 
     @Override
     public String refreshVehicleStatus() throws ApiException {
-        ApiHttpMap parms = createApiParameters();
-        String json = http.put("vehicles/v2/{2}/status", parms.getHeaders(), "").response;
-        FPRefreshResponse rsp = fromJson(gson, json, FPRefreshResponse.class);
+        String json = http.put("vehicles/v2/{2}/status", createApiParameters(), "").response;
+        FPActionResponse rsp = fromJson(gson, json, FPActionResponse.class);
         return "200".equals(rsp.status) ? API_REQUEST_SUCCESSFUL : API_REQUEST_FAILED;
     }
 
     @Override
+    public String controlLock(boolean lock) throws ApiException {
+        return sendAction(FPSERVICE_DOORS, lock ? "lock" : "unlock", "lock", lock);
+    }
+
+    @Override
     public String controlEngine(boolean start) throws ApiException {
-        return sendAction(FPSERVICE_ENGINE, start);
+        return sendAction(FPSERVICE_ENGINE, start ? "start" : "stop", "start", start);
     }
 
-    @Override
-    public String controlClimater(boolean start, String heaterSource) throws ApiException {
-        return sendAction(FPSERVICE_CLIMATISATION, start);
-    }
-
-    @Override
-    public String controlClimaterTemp(double tempC, String heaterSource) throws ApiException {
-        try {
-            Double tempK = SIUnits.CELSIUS.getConverterToAny(Units.KELVIN).convert(tempC);
-            String payload = "";
-            return sendSettings(FPSERVICE_CLIMATISATION, payload);
-        } catch (IncommensurableException e) {
-            throw new ApiException("Unable to convert temperature", e);
-        }
-    }
-
-    @Override
-    public String controlCharger(boolean start) throws ApiException {
-        String action = (start ? "Start" : "Stop");
-        return sendAction(FPSERVICE_CHARGER, start);
-    }
-
-    @Override
-    public String controlWindowHeating(boolean start) throws ApiException {
-        return super.controlWindowHeating(start);
-    }
-
-    @Override
-    public String controlMaxCharge(int maxCurrent) throws ApiException {
-        String payload = "";
-        return sendSettings(SESERVICE_CHARGING, payload);
-    }
-
-    @Override
-    public String controlTargetChgLevel(int targetLevel) throws ApiException {
-        String payload = "";
-        return sendSettings(SESERVICE_CHARGING, payload);
-    }
-
-    private String sendAction(String service, boolean start) throws ApiException {
-        ApiHttpMap headers = createApiParameters();
+    private String sendAction(String service, String action, String command, boolean start) throws ApiException {
+        logger.debug("{}: Sending action {} ({}, {}))", thingId, action, command, start);
         HttpMethod method = start ? HttpMethod.PUT : HttpMethod.DELETE;
-        String action = start ? "start" : "stop";
-        String uri = "/vehicles/v2/{2}/" + service + "/" + action;
-        return http.request(method, uri, "", headers.getHeaders(), "", "", "", false).response;
-    }
-
-    private String sendSettings(String service, String body) throws ApiException {
-        ApiHttpMap headers = createApiParameters();
-        return API_REQUEST_STARTED;
+        String uri = "/vehicles/v2/{2}/" + service + "/" + command;
+        String json = http.request(method, uri, "", createApiParameters(), "", "", "", false).response;
+        FPActionRequest req = new FPActionRequest(service, action, fromJson(gson, json, FPActionResponse.class));
+        req.checkUrl = uri + "/" + req.requestId;
+        return queuePendingAction(new ApiActionRequest(req));
     }
 
     @Override
-    public void checkPendingRequests() {
-        // https://github.com/d4v3y0rk/ffpass-module/blob/47eff3118be54167561a29e31ef8863c696ad640/index.js#L212
-        /*
-         * if (command == 'start' || command == 'stop') {
-         * url = `vehicles/v2/{2}/engine/start/${commandId}`
-         * } else if (command == 'lock' || command == 'unlock') {
-         * url = `vehicles/v2/{2}/doors/lock/${commandId}`
-         * } else {
-         */
-        /*
-         * url: `vehicles/v3/{2}/statusrefresh/${commandId}`,
-         */
-    }
-
-    public String getRequestStatus(String requestId, String rstatus) throws ApiException {
-        return API_REQUEST_SUCCESSFUL;
+    public String getApiRequestStatus(ApiActionRequest req) throws ApiException {
+        String json = http.get(req.checkUrl, createApiParameters()).response;
+        FPActionResponse rsp = fromJson(gson, json, FPActionResponse.class);
+        if (rsp.isError()) {
+            req.error = "API returned error: " + rsp.status;
+            logger.debug("{}: Unexpected API status code: {}", thingId, req.error);
+        }
+        return rsp.mapStatusCode();
     }
 
     protected ApiHttpMap createDefaultParameters() throws ApiException {
@@ -205,7 +157,7 @@ public class FordPassApi extends ApiBase implements BrandAuthenticator {
                 "en-us");
     }
 
-    protected ApiHttpMap createApiParameters() throws ApiException {
+    protected Map<String, String> createApiParameters(String token) throws ApiException {
         /*
          * 'Accept': '* /*',
          * 'Accept-Language': 'en-us',
@@ -213,6 +165,11 @@ public class FordPassApi extends ApiBase implements BrandAuthenticator {
          */
         return createDefaultParameters().header("Application-Id", config.api.xClientId)
                 .header(HttpHeaders.ACCEPT, CONTENT_TYPE_JSON)//
-                .header("Auth-Token", createAccessToken());
+                .header("Auth-Token", token.isEmpty() ? createAccessToken() : token) //
+                .getHeaders();
+    }
+
+    protected Map<String, String> createApiParameters() throws ApiException {
+        return createApiParameters(createAccessToken());
     }
 }

@@ -91,7 +91,7 @@ public class BrandFordPass extends FordPassApi implements BrandAuthenticator {
 
     @Override
     public OAuthToken refreshToken(ApiToken apiToken) throws ApiException {
-        ApiHttpMap params = super.createApiParameters() //
+        ApiHttpMap params = new ApiHttpMap().headers(createApiParameters(apiToken.getAccessToken())) //
                 .data("refresh_token", apiToken.getRefreshToken());
         String json = http.put(config.api.tokenRefreshUrl, params.getHeaders(), //
                 params.getRequestData(true)).response;

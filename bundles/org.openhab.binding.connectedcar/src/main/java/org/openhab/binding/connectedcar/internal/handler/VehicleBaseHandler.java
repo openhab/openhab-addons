@@ -40,7 +40,6 @@ import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiResult;
 import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
 import org.openhab.binding.connectedcar.internal.api.BrandNull;
-import org.openhab.binding.connectedcar.internal.api.carnet.CarNetPendingRequest;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.openhab.binding.connectedcar.internal.config.VehicleConfiguration;
 import org.openhab.binding.connectedcar.internal.provider.CarChannelTypeProvider;
@@ -368,7 +367,8 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Acc
 
         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
             ++updateCounter;
-            if ((updateCounter % API_REQUEST_CHECK_INT) == 0) {
+            ThingStatus status = getThing().getStatus();
+            if (((updateCounter % API_REQUEST_CHECK_INT) == 0) && (status == ThingStatus.ONLINE)) {
                 // Check results for pending requests, remove expires ones from the list
                 api.checkPendingRequests();
             }
@@ -380,15 +380,14 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Acc
                     boolean initialized = true;
                     try {
                         Bridge bridge = getBridge();
-                        ThingStatus s = getThing().getStatus();
                         if ((bridge == null) || bridge.getStatus() != ThingStatus.ONLINE) {
                             error = "Account Thing is offline";
-                            if (s != ThingStatus.OFFLINE) {
+                            if (status != ThingStatus.OFFLINE) {
                                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                                         "Account Thing is offline!");
                             }
                         } else {
-                            boolean offline = (s == ThingStatus.UNKNOWN) || (s == ThingStatus.OFFLINE);
+                            boolean offline = (status == ThingStatus.UNKNOWN) || (status == ThingStatus.OFFLINE);
                             if (offline) {
                                 initialized = initializeThing();
                             }
@@ -430,16 +429,7 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Acc
     }
 
     private boolean updateVehicleStatus() throws ApiException {
-        boolean pending = false;
-        // check for pending refresh
-        Map<String, CarNetPendingRequest> requests = api.getPendingRequests();
-        for (Map.Entry<String, CarNetPendingRequest> e : requests.entrySet()) {
-            CarNetPendingRequest request = e.getValue();
-            if (CarNetPendingRequest.isInProgress(request.requestId)) {
-                pending = true;
-            }
-        }
-
+        boolean pending = api.areRequestsPending();
         if (!pending && requestStatus) {
             try {
                 requestStatus = false;
@@ -471,16 +461,12 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Acc
             }
         }
 
-        if (!api.isAccessTokenValid()) {
-            throw new ApiException("Access Token expired, renewal failed!");
-        }
-
         return updateLastUpdate(updated);
     }
 
     @Override
     public void onActionSent(String service, String action, String requestId) {
-        logger.debug("{}: Action {}.{} sent, ID={}", thingId, service, action, requestId);
+        logger.debug("{}: Action {}.{} sent, requestId={}", thingId, service, action, requestId);
         updateActionStatus(service, action, API_REQUEST_STARTED);
     }
 
@@ -730,7 +716,7 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Acc
     @Override
     public void dispose() {
         stopping = true;
-        logger.debug("Handler has been disposed");
+        logger.debug("{}: Vehicle Handler has been disposed", thingId);
         cancelPollingJob();
         super.dispose();
     }
