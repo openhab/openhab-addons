@@ -71,7 +71,7 @@
 			#sqltype.CONTACT = VARCHAR(6)
 			#sqltype.DATETIME = DATETIME
 			#sqltype.DIMMER = TINYINT
-			#sqltype.LOCATION = VARCHAR(30)
+			#sqltype.LOCATION = VARCHAR(50)
 			#sqltype.NUMBER = DOUBLE
 			#sqltype.ROLLERSHUTTER = TINYINT
 			#sqltype.STRING = VARCHAR(65500)
@@ -109,7 +109,7 @@
 		</parameter>
 		<parameter name="sqltype.LOCATION" type="text">
 			<label>SqlType LOCATION</label>
-			<description><![CDATA[Overrides used JDBC/SQL datatype for LOCATION <br>(optional, default: "VARCHAR(30)").]]></description>
+			<description><![CDATA[Overrides used JDBC/SQL datatype for LOCATION <br>(optional, default: "VARCHAR(50)").]]></description>
 		</parameter>
 		<parameter name="sqltype.NUMBER" type="text">
 			<label>SqlType NUMBER</label>

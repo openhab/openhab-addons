@@ -124,6 +124,14 @@ public class CloudConnector {
         return cl.sendRPCCommand(device, country.trim().toLowerCase(), command.getCommandString());
     }
 
+    public String sendCloudCommand(String urlPart, String country, String parameters) throws MiCloudException {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        if (cl == null || !isConnected()) {
+            throw new MiCloudException("Cannot execute request. Cloud service not available");
+        }
+        return cl.request(urlPart, country, parameters);
+    }
+
     public @Nullable RawType getMap(String mapId, String country) throws MiCloudException {
         logger.debug("Getting vacuum map {} from Xiaomi cloud server: '{}'", mapId, country);
         String mapCountry;
@@ -208,10 +216,9 @@ public class CloudConnector {
         if (deviceListState != DeviceListState.AVAILABLE) {
             return null;
         }
-        String did = Long.toString(Long.parseUnsignedLong(id, 16));
         List<CloudDeviceDTO> devicedata = new ArrayList<>();
         for (CloudDeviceDTO deviceDetails : deviceList) {
-            if (deviceDetails.getDid().contentEquals(did)) {
+            if (deviceDetails.getDid().contentEquals(id)) {
                 devicedata.add(deviceDetails);
             }
         }

@@ -81,7 +81,7 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping [\"auto\"\u003d\"Auto\",\"favorite\"\u003d\"Favorite\",\"silent\"\u003d\"Silent\",\"high\"\u003d\"High\",\"medium\"\u003d\"Medium\",\"idle\"\u003d\"Idle\",\"strong\"\u003d\"Strong\"]"
+				"readmeComment": "Value mapping `[\"auto\"\u003d\"Auto\",\"favorite\"\u003d\"Favorite\",\"silent\"\u003d\"Silent\",\"high\"\u003d\"High\",\"medium\"\u003d\"Medium\",\"idle\"\u003d\"Idle\",\"strong\"\u003d\"Strong\"]`"
 			},
 			{
 				"property": "humidity",
@@ -289,14 +289,14 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Favorite 0\",\"1\"\u003d\"Favorite 1\",\"2\"\u003d\"Favorite 2\",\"3\"\u003d\"Favorite 3\",\"4\"\u003d\"Favorite 4\",\"5\"\u003d\"Favorite 5\",\"6\"\u003d\"Favorite 6\",\"7\"\u003d\"Favorite 7\",\"8\"\u003d\"Favorite 8\",\"9\"\u003d\"Favorite 9\",\"10\"\u003d\"Favorite 10\",\"11\"\u003d\"Favorite 11\",\"12\"\u003d\"Favorite 13\",\"13\"\u003d\"Favorite 13\",\"14\"\u003d\"Favorite 14\",\"15\"\u003d\"Favorite 15\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Favorite 0\",\"1\"\u003d\"Favorite 1\",\"2\"\u003d\"Favorite 2\",\"3\"\u003d\"Favorite 3\",\"4\"\u003d\"Favorite 4\",\"5\"\u003d\"Favorite 5\",\"6\"\u003d\"Favorite 6\",\"7\"\u003d\"Favorite 7\",\"8\"\u003d\"Favorite 8\",\"9\"\u003d\"Favorite 9\",\"10\"\u003d\"Favorite 10\",\"11\"\u003d\"Favorite 11\",\"12\"\u003d\"Favorite 13\",\"13\"\u003d\"Favorite 13\",\"14\"\u003d\"Favorite 14\",\"15\"\u003d\"Favorite 15\"]`"
 			},
 			{
 				"property": "temp_dec",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"stateDescription": {
 					"pattern": "%.1f %unit%",
 					"readOnly": true

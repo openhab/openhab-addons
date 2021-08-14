@@ -52,7 +52,7 @@ The supported devices include
  * Drainback DeDietrich
  * Diemasol C
 
-A more complete list can be found in the doc of the [resol-vbus-java library](http://danielwippermann.github.io/resol-vbus/vbus-packets.html).
+A more complete list can be found in the doc of the [resol-vbus-java library](https://danielwippermann.github.io/resol-vbus/vbus-packets.html).
 
 ### Emulated Extension Module EM
 
@@ -245,7 +245,7 @@ sitemap resol label="DeltaSol MX" {
     Frame label="Emulated EM" {
         Default item=Emu_Switch_2
         Setpoint item=EM_BAS_Set_Temperature_3 label="Room Temperature Adjust [%.1f °C]" step=0.5 minValue=-15 maxValue=15
-    }    
+    }
 }
 
 ```

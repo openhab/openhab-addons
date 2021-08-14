@@ -43,7 +43,7 @@
 	</config-description>
 
 	<config-description uri="thing-type:lcn:module">
-		<parameter name="moduleId" type="integer" required="true" min="5" max="254">
+		<parameter name="moduleId" type="integer" required="true" min="1" max="254">
 			<label>Module ID</label>
 			<description>The module ID, configured in LCN-PRO</description>
 		</parameter>
@@ -58,7 +58,7 @@
 			<label>Group Number</label>
 			<description>The group number, configured in LCN-PRO</description>
 		</parameter>
-		<parameter name="moduleId" type="integer" required="true" min="5" max="254">
+		<parameter name="moduleId" type="integer" required="true" min="1" max="254">
 			<label>Module ID</label>
 			<description>The module ID of any module in the group. The state of this module is used for visualization of the
 				group as representative for all modules.</description>

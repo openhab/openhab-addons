@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="somfytahoma"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="bioclimaticpergola">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Somfy Bioclimatic Pergola</label>
+		<channels>
+			<channel id="slats" typeId="slats"></channel>
+			<channel id="orientation" typeId="orientation"></channel>
+			<channel id="pergola_command" typeId="pergola_command"></channel>
+		</channels>
+		<representation-property>url</representation-property>
+		<config-description-ref uri="thing-type:somfytahoma:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

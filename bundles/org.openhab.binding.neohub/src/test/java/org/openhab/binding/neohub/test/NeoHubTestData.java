@@ -20,6 +20,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,16 @@ import org.openhab.core.library.unit.SIUnits;
 public class NeoHubTestData {
 
     /*
+     * to actually run tests on a physical device you must have a hub physically available, and its IP address must be
+     * correctly configured in the "hubIPAddress" string constant e.g. "192.168.1.123"
+     * note: only run the test if such a device is actually available
+     */
+    private static final String hubIpAddress = "192.168.1.xxx";
+
+    private static final Pattern VALID_IP_V4_ADDRESS = Pattern
+            .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
+
+    /*
      * Load the test JSON payload string from a file
      */
     private String load(String fileName) {
@@ -64,6 +75,7 @@ public class NeoHubTestData {
     /*
      * Test an INFO JSON response string as produced by older firmware versions
      */
+    @SuppressWarnings("null")
     @Test
     public void testInfoJsonOld() {
         // load INFO JSON response string in old JSON format
@@ -124,6 +136,7 @@ public class NeoHubTestData {
     /*
      * Test an INFO JSON response string as produced by newer firmware versions
      */
+    @SuppressWarnings("null")
     @Test
     public void testInfoJsonNew() {
         // load INFO JSON response string in new JSON format
@@ -148,12 +161,14 @@ public class NeoHubTestData {
     /*
      * Test for a READ_DCB JSON string that has valid CORF C response
      */
+    @SuppressWarnings("null")
     @Test
     public void testReadDcbJson() {
         // load READ_DCB JSON response string with valid CORF C response
         NeoHubReadDcbResponse dcbResponse = NeoHubReadDcbResponse.createSystemData(load("dcb_celsius"));
         assertNotNull(dcbResponse);
         assertEquals(SIUnits.CELSIUS, dcbResponse.getTemperatureUnit());
+        assertEquals("2134", dcbResponse.getFirmwareVersion());
 
         // load READ_DCB JSON response string with valid CORF F response
         dcbResponse = NeoHubReadDcbResponse.createSystemData(load("dcb_fahrenheit"));
@@ -174,6 +189,7 @@ public class NeoHubTestData {
     /*
      * Test an INFO JSON string that has a door contact and a temperature sensor
      */
+    @SuppressWarnings("null")
     @Test
     public void testInfoJsonWithSensors() {
         /*
@@ -228,6 +244,7 @@ public class NeoHubTestData {
      * From NeoHub rev2.6 onwards the READ_DCB command is "deprecated" so we can
      * also test the replacement GET_SYSTEM command (valid CORF response)
      */
+    @SuppressWarnings("null")
     @Test
     public void testGetSystemJson() {
         // load GET_SYSTEM JSON response string
@@ -235,12 +252,14 @@ public class NeoHubTestData {
         dcbResponse = NeoHubReadDcbResponse.createSystemData(load("system"));
         assertNotNull(dcbResponse);
         assertEquals(SIUnits.CELSIUS, dcbResponse.getTemperatureUnit());
+        assertEquals("2134", dcbResponse.getFirmwareVersion());
     }
 
     /*
      * From NeoHub rev2.6 onwards the INFO command is "deprecated" so we must test
      * the replacement GET_LIVE_DATA command
      */
+    @SuppressWarnings("null")
     @Test
     public void testGetLiveDataJson() {
         // load GET_LIVE_DATA JSON response string
@@ -329,6 +348,7 @@ public class NeoHubTestData {
      * element is not returned in the GET_LIVE_DATA call so we must test the
      * replacement GET_ENGINEERS command
      */
+    @SuppressWarnings("null")
     @Test
     public void testGetEngineersJson() {
         // load GET_ENGINEERS JSON response string
@@ -346,7 +366,7 @@ public class NeoHubTestData {
      * send JSON request to the socket and retrieve JSON response
      */
     private String testCommunicationInner(String requestJson) {
-        NeoHubSocket socket = new NeoHubSocket("192.168.1.109", 4242, 5);
+        NeoHubSocket socket = new NeoHubSocket(hubIpAddress, 4242, 5);
         String responseJson = "";
         try {
             responseJson = socket.sendMessage(requestJson);
@@ -359,8 +379,17 @@ public class NeoHubTestData {
     /*
      * Test the communications
      */
+    @SuppressWarnings("null")
     @Test
     public void testCommunications() {
+        /*
+         * tests the actual communication with a real physical device on 'hubIpAddress'
+         * note: only run the test if such a device is actually available
+         */
+        if (!VALID_IP_V4_ADDRESS.matcher(hubIpAddress).matches()) {
+            return;
+        }
+
         String responseJson = testCommunicationInner(CMD_CODE_INFO);
         assertFalse(responseJson.isEmpty());
 

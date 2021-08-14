@@ -12,7 +12,7 @@
 				"friendlyName": "Seat Temperature",
 				"channel": "seat_temp",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"refresh": true,
 				"actions": [
 					{
@@ -40,7 +40,7 @@
 				"friendlyName": "Water Temperature",
 				"channel": "water_temp_t",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"refresh": true,
 				"actions": [
 					{
@@ -59,7 +59,7 @@
 				"friendlyName": "Fan Temperature",
 				"channel": "fan_temp",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"refresh": true,
 				"actions": [
 					{

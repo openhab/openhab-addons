@@ -1,0 +1,6 @@
+{
+  "command": "sdm.devices.commands.CameraEventImage.GenerateImage",
+  "params": {
+    "eventId": "FWWVQVUdGNUlTU2V4MGV2aTNXV..."
+  }
+}

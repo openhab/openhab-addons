@@ -104,7 +104,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         }
 
         String stale = Helper.searchString(authenticate, "stale=\"");
-        if (stale.equalsIgnoreCase("true")) {
+        if ("true".equalsIgnoreCase(stale)) {
             logger.debug("Camera reported stale=true which normally means the NONCE has expired.");
         }
 

@@ -1,0 +1,4 @@
+{
+  "command": "sdm.devices.commands.CameraLiveStream.GenerateRtspStream",
+  "params": {}
+}

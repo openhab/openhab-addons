@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
-	<config-description uri="thing-type:kostalpiko1020_config">
+	<config-description uri="thing-type:kostalinverter:kostalpiko1020">
 		<parameter name="url" type="text" required="true">
 			<label>IP Address</label>
 			<description>IP address of the inverter.</description>

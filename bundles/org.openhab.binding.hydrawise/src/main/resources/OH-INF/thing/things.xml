@@ -4,14 +4,50 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="cloud">
-		<label>Hydrawise Cloud Thing</label>
-		<description>Hydrawise cloud connected irrigation system</description>
+	<bridge-type id="account">
+		<label>Hydrawise Account Thing</label>
+		<description>Hydrawise account</description>
+		<config-description>
+			<parameter name="userName" type="text" required="true">
+				<label>User Name</label>
+				<description>Your Hydrawise account user name</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<label>Password</label>
+				<context>password</context>
+				<description>Your Hydrawise account password, for security this will not be saved after the first login attempt
+					unless the "Save Password" option is enabled</description>
+			</parameter>
+			<parameter name="savePassword" type="boolean" required="false">
+				<label>Save Password</label>
+				<description>By default, the password will not be persisted after the first login attempt unless this is enabled</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false" min="30" unit="s">
+				<label>Refresh interval</label>
+				<description>Specifies the refresh interval in seconds</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="controller">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Hydrawise Controller Thing</label>
+		<description>Hydrawise connected irrigation controller</description>
 
 		<!-- Until we have https://github.com/eclipse/smarthome/issues/1118 fixed, we need to list all possible channel groups.
 			Once this is fixed we can dynamically add them to the thing and not list them here. -->
 		<channel-groups>
+
+			<!-- System -->
+
+			<channel-group id="system" typeId="system"/>
+
+			<!-- Sensors -->
+
 			<channel-group id="sensor1" typeId="sensor">
 				<label>Sensor 1</label>
 				<description>Sensor 1</description>
@@ -29,6 +65,8 @@
 				<description>Sensor 4</description>
 			</channel-group>
 
+			<!-- Forecasts -->
+
 			<channel-group id="forecast1" typeId="forecast">
 				<label>Today's Weather</label>
 				<description>Today's weather forecast</description>
@@ -41,12 +79,12 @@
 				<label>Day 3 Weather</label>
 				<description>Day 3 weather forecast</description>
 			</channel-group>
-			<channel-group id="forecast4" typeId="forecast">
-				<label>Day 4 Weather</label>
-				<description>Day 4 weather forecast</description>
-			</channel-group>
+
+			<!-- All Zones -->
 
 			<channel-group id="allzones" typeId="allzones"/>
+
+			<!-- Zones -->
 
 			<channel-group id="zone1" typeId="zone">
 				<label>Zone 1</label>
@@ -194,19 +232,9 @@
 			</channel-group>
 		</channel-groups>
 		<config-description>
-			<parameter name="apiKey" type="text" required="true">
-				<label>API Key</label>
-				<description>API Key from https://app.hydrawise.com/config/account</description>
-			</parameter>
-			<parameter name="refresh" type="integer" required="true">
-				<label>Refresh interval</label>
-				<description>Specifies the refresh interval in seconds</description>
-				<default>30</default>
-			</parameter>
-			<parameter name="controllerId" type="integer" required="false">
-				<label>Optional Controller ID interval</label>
-				<description>Optional parameter to specify the Hydrawise controller ID if you have more then one associated with
-					your account.
+			<parameter name="controllerId" type="integer" required="true">
+				<label>Controller ID</label>
+				<description>The ID of a cloud connected irrigation controller
 				</description>
 			</parameter>
 		</config-description>
@@ -214,7 +242,7 @@
 
 	<thing-type id="local">
 		<label>Hydrawise Local Thing</label>
-		<description>Hydrawise local connected irrigation system</description>
+		<description>Hydrawise local connected irrigation controller</description>
 		<channel-groups>
 			<channel-group id="zone1" typeId="zone">
 				<label>Zone 1</label>
@@ -383,6 +411,4 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
-
 </thing:thing-descriptions>

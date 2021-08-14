@@ -66,10 +66,6 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
 
     private final Logger logger = LoggerFactory.getLogger(Powerline546EHandler.class);
 
-    /**
-     * keeps track of the current state for handling of increase/decrease
-     */
-    private @Nullable AVMFritzBaseModel state;
     private @Nullable String identifier;
 
     /**
@@ -128,7 +124,6 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device not present");
             }
-            state = device;
 
             updateProperties(device);
 
@@ -272,11 +267,8 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
                 }
                 break;
             case CHANNEL_OUTLET:
-                fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
                 if (command instanceof OnOffType) {
-                    if (state != null) {
-                        state.getSwitch().setState(OnOffType.ON.equals(command) ? SwitchModel.ON : SwitchModel.OFF);
-                    }
+                    fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
                 }
                 break;
             default:

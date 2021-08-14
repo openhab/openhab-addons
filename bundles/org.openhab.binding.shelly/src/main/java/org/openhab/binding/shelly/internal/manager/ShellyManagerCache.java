@@ -91,7 +91,7 @@ public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
             long currentTime = new Date().getTime();
             for (K key : timeMap.keySet()) {
                 if (currentTime > (timeMap.get(key) + expiryInMillis)) {
-                    V value = remove(key);
+                    remove(key);
                     timeMap.remove(key);
                 }
             }

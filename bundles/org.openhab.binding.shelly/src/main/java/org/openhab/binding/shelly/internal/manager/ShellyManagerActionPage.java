@@ -92,7 +92,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     refreshTimer = 3;
                     break;
                 case ACTION_RESTART:
-                    if (update.equalsIgnoreCase("yes")) {
+                    if ("yes".equalsIgnoreCase(update)) {
                         message = getMessageP("action.restart.info", MCINFO);
                         actionButtonLabel = "Ok";
                         new Thread(() -> { // schedule asynchronous reboot
@@ -116,7 +116,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                         break;
                     }
 
-                    if (!update.equalsIgnoreCase("yes")) {
+                    if (!"yes".equalsIgnoreCase(update)) {
                         ShellySettingsLogin status = api.getLoginSettings();
                         message = getMessage("action.protect.status", getBool(status.enabled) ? "enabled" : "disabled",
                                 status.username)
@@ -137,7 +137,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     }
 
                     String peer = getString(profile.settings.coiot.peer);
-                    boolean mcast = peer.isEmpty() || peer.equalsIgnoreCase(SHELLY_COIOT_MCAST);
+                    boolean mcast = peer.isEmpty() || SHELLY_COIOT_MCAST.equalsIgnoreCase(peer);
                     String newPeer = mcast ? localIp + ":" + ShellyCoapJSonDTO.COIOT_PORT : SHELLY_COIOT_MCAST;
                     String displayPeer = mcast ? newPeer : "Multicast";
 
@@ -147,7 +147,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                         break;
                     }
 
-                    if (!update.equalsIgnoreCase("yes")) {
+                    if (!"yes".equalsIgnoreCase(update)) {
                         message = getMessageP("coiot.current-peer", MCMESSAGE, mcast ? "Multicast" : peer)
                                 + getMessageP("coiot.new-peer", MCINFO, displayPeer)
                                 + getMessageP(mcast ? "coiot.mode-peer" : "coiot.mode-mcast", MCMESSAGE);
@@ -176,7 +176,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     refreshTimer = 20;
                     break;
                 case ACTION_RESET:
-                    if (!update.equalsIgnoreCase("yes")) {
+                    if (!"yes".equalsIgnoreCase(update)) {
                         message = getMessageP("action.reset.warning", MCWARNING, serviceName);
                         actionUrl = buildActionUrl(uid, action);
                     } else {
@@ -204,8 +204,8 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     break;
                 case ACTION_ENDEBUG:
                 case ACTION_DISDEBUG:
-                    boolean enable = action.equalsIgnoreCase(ACTION_ENDEBUG);
-                    if (!update.equalsIgnoreCase("yes")) {
+                    boolean enable = ACTION_ENDEBUG.equalsIgnoreCase(action);
+                    if (!"yes".equalsIgnoreCase(update)) {
                         message = getMessage(enable ? "action.debug-enable" : "action.debug-disable");
                         actionUrl = buildActionUrl(uid, action);
                     } else {
@@ -222,12 +222,12 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     }
                     break;
                 case ACTION_RESSTA:
-                    if (!update.equalsIgnoreCase("yes")) {
+                    if (!"yes".equalsIgnoreCase(update)) {
                         message = getMessage("action.resetsta-info");
                         actionUrl = buildActionUrl(uid, action);
                     } else {
                         try {
-                            String result = api.resetStaCache();
+                            api.resetStaCache();
                             message = getMessage("action.resetsta-confirm");
                         } catch (ShellyApiException e) {
                             message = getMessageP("action.resetsta-failed", e.toString());
@@ -237,13 +237,13 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     break;
                 case ACTION_ENWIFIREC:
                 case ACTION_DISWIFIREC:
-                    enable = action.equalsIgnoreCase(ACTION_ENWIFIREC);
-                    if (!update.equalsIgnoreCase("yes")) {
+                    enable = ACTION_ENWIFIREC.equalsIgnoreCase(action);
+                    if (!"yes".equalsIgnoreCase(update)) {
                         message = getMessage(enable ? "action.setwifirec-enable" : "action.setwifirec-disable");
                         actionUrl = buildActionUrl(uid, action);
                     } else {
                         try {
-                            String result = api.setWiFiRecovery(enable);
+                            api.setWiFiRecovery(enable);
                             message = getMessage("action.setwifirec-confirm", enable ? "enabled" : "disabled");
                         } catch (ShellyApiException e) {
                             message = getMessage("action.setwifirec-failed", e.toString());
@@ -254,13 +254,13 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
 
                 case ACTION_ENAPROAMING:
                 case ACTION_DISAPROAMING:
-                    enable = action.equalsIgnoreCase(ACTION_ENAPROAMING);
-                    if (!update.equalsIgnoreCase("yes")) {
+                    enable = ACTION_ENAPROAMING.equalsIgnoreCase(action);
+                    if (!"yes".equalsIgnoreCase(update)) {
                         message = getMessage(enable ? "action.aproaming-enable" : "action.aproaming-disable");
                         actionUrl = buildActionUrl(uid, action);
                     } else {
                         try {
-                            String result = api.setApRoaming(enable);
+                            api.setApRoaming(enable);
                             message = getMessage("action.aproaming-confirm", enable ? "enabled" : "disabled");
                         } catch (ShellyApiException e) {
                             message = getMessage("action.aproaming-failed", e.toString());
@@ -272,7 +272,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                 case ACTION_GETDEB:
                 case ACTION_GETDEB1:
                     try {
-                        message = api.getDebugLog(action.equalsIgnoreCase(ACTION_GETDEB) ? "log" : "log1");
+                        message = api.getDebugLog(ACTION_GETDEB.equalsIgnoreCase(action) ? "log" : "log1");
                         message = message.replaceAll("[\r]", "").replaceAll("[\r\n]", "<br>");
                     } catch (ShellyApiException e) {
                         message = getMessage("action.getdebug-failed", e.toString());
@@ -308,7 +308,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
 
         if ((profile.settings.coiot != null) && (profile.settings.coiot.peer != null) && !profile.isMotion) {
             boolean mcast = profile.settings.coiot.peer.isEmpty()
-                    || profile.settings.coiot.peer.equalsIgnoreCase(SHELLY_COIOT_MCAST);
+                    || SHELLY_COIOT_MCAST.equalsIgnoreCase(profile.settings.coiot.peer);
             list.put(mcast ? ACTION_SETCOIOT_PEER : ACTION_SETCOIOT_MCAST,
                     mcast ? "Set CoIoT Peer Mode" : "Set CoIoT Multicast Mode");
         }
@@ -332,7 +332,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
         list.put(ACTION_RESET, "-Factory Reset");
         if (profile.extFeatures) {
             list.put(ACTION_OTACHECK, "Check for Update");
-            boolean debug_enable = getBool(profile.settings.debug_enable);
+            boolean debug_enable = getBool(profile.settings.debugEnable);
             list.put(!debug_enable ? ACTION_ENDEBUG : ACTION_DISDEBUG,
                     !debug_enable ? "Enable Debug" : "Disable Debug");
             if (debug_enable) {

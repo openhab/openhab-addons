@@ -28,7 +28,7 @@
 		<label>Current Setpoint</label>
 		<description>Current Setpoint</description>
 		<category>Temperature</category>
-		<state min="65" max="90" step="1.0" pattern="%1f %unit%" readOnly="false"/>
+		<state min="65" max="90" step="1.0" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -7,6 +7,8 @@
 	<bridge-type id="generic">
 		<label>Generic CPE</label>
 
+		<representation-property>host</representation-property>
+
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>
@@ -32,6 +34,8 @@
 	<bridge-type id="fritzbox">
 		<label>FritzBox</label>
 		<description>A physical FritzBox Device.</description>
+
+		<representation-property>host</representation-property>
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
@@ -109,6 +113,8 @@
 		<label>Sub-Device</label>
 		<description>A virtual sub-device.</description>
 
+		<representation-property>uuid</representation-property>
+
 		<config-description>
 			<parameter name="uuid" type="text" required="true">
 				<label>UUID</label>
@@ -129,6 +135,8 @@
 		</supported-bridge-type-refs>
 		<label>Sub-Device (LAN)</label>
 		<description>A virtual Sub-Device (LAN).</description>
+
+		<representation-property>uuid</representation-property>
 
 		<config-description>
 			<parameter name="uuid" type="text" required="true">

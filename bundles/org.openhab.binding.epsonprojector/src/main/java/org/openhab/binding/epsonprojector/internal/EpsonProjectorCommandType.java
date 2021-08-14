@@ -16,6 +16,7 @@ import java.io.InvalidClassException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.items.Item;
+import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
@@ -49,7 +50,7 @@ public enum EpsonProjectorCommandType {
     HPOSITION("HorizontalPosition", NumberItem.class),
     VPOSITION("VerticalPosition", NumberItem.class),
     GAMMA("Gamma", StringItem.class),
-    VOLUME("Volume", NumberItem.class),
+    VOLUME("Volume", DimmerItem.class),
     MUTE("Mute", SwitchItem.class),
     HREVERSE("HorizontalReverse", SwitchItem.class),
     VREVERSE("VerticalReverse", SwitchItem.class),

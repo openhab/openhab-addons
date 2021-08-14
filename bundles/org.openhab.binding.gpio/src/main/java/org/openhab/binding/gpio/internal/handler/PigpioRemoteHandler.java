@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.gpio.internal.InvalidPullUpDownException;
 import org.openhab.binding.gpio.internal.NoGpioIdException;
 import org.openhab.binding.gpio.internal.configuration.GPIOInputConfiguration;
 import org.openhab.binding.gpio.internal.configuration.GPIOOutputConfiguration;
@@ -105,6 +106,8 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                 }
             } catch (PigpioException e) {
                 logger.warn("Failed to initialize {}: {}", channelUID, e.getMessage());
+            } catch (InvalidPullUpDownException e) {
+                logger.warn("Failed to initialize {}: Invalid Pull Up/Down resistor configuration", channelUID);
             } catch (NoGpioIdException e) {
                 logger.warn("Failed to initialize {}: GpioId is not set", channelUID);
             }

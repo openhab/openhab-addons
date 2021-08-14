@@ -1,7 +1,5 @@
 # LuftdatenInfo Binding
 
-<img align="right" src="./doc/logo-rund.png"/>
-
 Binding for the Sensor Community [luftdaten.info](https://luftdaten.info/). The community provides instructions to build sensors on your own and they can be integrated into the database.
 With this binding you can integrate your sensor, a sensor nearby or even any sensors you want into openHAB.
 
@@ -21,9 +19,20 @@ There's no auto discovery. See Thing configuration how to setup a Sensor.
 
 ## Thing Configuration
 
+Choose either a local IP address of your personal owned sensor _or_ a sensor id of an external one.
+
 | Parameter       | Description                                                          |
 |-----------------|----------------------------------------------------------------------|
+| ipAddress       | Local IP address of your personal owned sensor                       |
 | sensorid        | Sensor ID obtained from https://deutschland.maps.sensor.community/   |
+
+### Local Sensor
+
+Please check in your browser if you can access your sensor with your local IP address.
+
+![Luftdaten.info Logo](doc/local-sensor.png)
+
+### External Sensor
 
 Perform the following steps to get the appropriate Sensor ID
 
@@ -69,9 +78,9 @@ Perform the following steps to get the appropriate Sensor ID
 luftdaten.things
 
 ```
-Thing luftdateninfo:particulate:pm_sensor   "PM Sensor"         [ sensorid=28842]
-Thing luftdateninfo:conditions:cond_sensor  "Condition Sensor"  [ sensorid=28843]
-Thing luftdateninfo:noise:noise_sensor      "Noise Sensor"      [ sensorid=39745]
+Thing luftdateninfo:particulate:pm_sensor   "PM Sensor"         [ ipAddress=192.168.178.50 ]
+Thing luftdateninfo:conditions:cond_sensor  "Condition Sensor"  [ sensorid=28843 ]
+Thing luftdateninfo:noise:noise_sensor      "Noise Sensor"      [ sensorid=39745 ]
 ```
 
 ### Items

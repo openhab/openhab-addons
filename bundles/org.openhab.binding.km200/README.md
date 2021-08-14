@@ -9,19 +9,19 @@ It is possible to receive and send parameters like string or float values.
 
 This binding supports 11 different things types
 
-| Thing            | Paper UI Only | Description                                               |
-| ---------------- | ------------- |---------------------------------------------------------- |
-| `appliance`      |               | The appliance (The heater inside of this heating system). |
-| `dhwCircuit`     |               | A hot water circuit.                                      |
-| `gateway`        |               | The gateway. (The connected KM200/100/50 device).         |
-| `heatingCircuit` |               | A heating circuit.                                        |
-| `heatSource`     |               | The heat source.                                          |
-| `holidayMode`    |               | The holiday modes configuration.                          |
-| `sensor`         |               | The sensors.                                              |
-| `solarCircuit`   |               | A solar circuit.                                          |
-| `system`         |               | The system without sensors and appliance.                 |
-| `notification`   |               | The notifications.                                        |
-| `switchProgram`  |       X       | A switch program.                                         |
+| Thing            | UI Only | Description                                               |
+|------------------|:-------:|-----------------------------------------------------------|
+| `appliance`      |         | The appliance (The heater inside of this heating system). |
+| `dhwCircuit`     |         | A hot water circuit.                                      |
+| `gateway`        |         | The gateway. (The connected KM200/100/50 device).         |
+| `heatingCircuit` |         | A heating circuit.                                        |
+| `heatSource`     |         | The heat source.                                          |
+| `holidayMode`    |         | The holiday modes configuration.                          |
+| `sensor`         |         | The sensors.                                              |
+| `solarCircuit`   |         | A solar circuit.                                          |
+| `system`         |         | The system without sensors and appliance.                 |
+| `notification`   |         | The notifications.                                        |
+| `switchProgram`  |    X    | A switch program.                                         |
 
 ### KM 50/100/200
 
@@ -47,9 +47,9 @@ The *kmdevice* bridge requires the following configuration parameters:
 
 ### Channels
 
-This binding creates the channels depending on the connected heating system fully automatically. 
-These channels depend on the connected heating system. 
-You can see the complete list of supported channels of the thing in the Paper UI. 
+This binding creates the channels depending on the connected heating system fully automatically.
+These channels depend on the connected heating system.
+You can see the complete list of supported channels of the thing in the UI.
 There is no official documentation for the parameters available from Buderus, so the names of the channels is all that reflects their purpose.
 
 ## Full Examples

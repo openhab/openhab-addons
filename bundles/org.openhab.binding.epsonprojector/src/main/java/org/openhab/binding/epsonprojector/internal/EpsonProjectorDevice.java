@@ -62,6 +62,10 @@ public class EpsonProjectorDevice {
             94, 99, 104, 109, 114, 120, 125, 130, 135, 141, 146, 151, 156, 161, 167, 172, 177, 182, 188, 193, 198, 203,
             208, 214, 219, 224, 229, 235, 240, 245, 250 };
 
+    private static final int[] MAP40 = new int[] { 0, 6, 12, 18, 24, 31, 37, 43, 49, 56, 62, 68, 74, 81, 87, 93, 99,
+            106, 112, 118, 124, 131, 137, 143, 149, 156, 162, 168, 174, 181, 187, 193, 199, 206, 212, 218, 224, 231,
+            237, 243, 249 };
+
     private static final int[] MAP20 = new int[] { 0, 12, 24, 36, 48, 60, 73, 85, 97, 109, 121, 134, 146, 158, 170, 182,
             195, 207, 219, 231, 243 };
 
@@ -78,6 +82,7 @@ public class EpsonProjectorDevice {
 
     private static final String ON = "ON";
     private static final String ERR = "ERR";
+    private static final String IMEVENT = "IMEVENT";
 
     private final Logger logger = LoggerFactory.getLogger(EpsonProjectorDevice.class);
 
@@ -118,7 +123,7 @@ public class EpsonProjectorDevice {
         response = response.replace("\r:", "");
         logger.debug("Response: '{}'", response);
 
-        if (ERR.equals(response)) {
+        if (ERR.equals(response) || response.startsWith(IMEVENT)) {
             throw new EpsonProjectorCommandException("Error response received for command: " + query);
         }
 
@@ -522,19 +527,36 @@ public class EpsonProjectorDevice {
     /*
      * Volume
      */
-    public int getVolume() throws EpsonProjectorCommandException, EpsonProjectorException {
-        int vol = queryInt("VOL?");
-        for (int i = 0; i < MAP20.length; i++) {
-            if (vol == MAP20[i]) {
+    public int getVolume(int maxVolume) throws EpsonProjectorCommandException, EpsonProjectorException {
+        int vol = this.queryInt("VOL?");
+        switch (maxVolume) {
+            case 20:
+                return this.getMappingValue(MAP20, vol);
+            case 40:
+                return this.getMappingValue(MAP40, vol);
+        }
+        return 0;
+    }
+
+    private int getMappingValue(int[] map, int value) {
+        for (int i = 0; i < map.length; i++) {
+            if (value == map[i]) {
                 return i;
             }
         }
         return 0;
     }
 
-    public void setVolume(int value) throws EpsonProjectorCommandException, EpsonProjectorException {
-        if (value >= 0 && value <= 20) {
-            sendCommand(String.format("VOL %d", MAP20[value]));
+    public void setVolume(int value, int maxVolume) throws EpsonProjectorCommandException, EpsonProjectorException {
+        if (value >= 0 && value <= maxVolume) {
+            switch (maxVolume) {
+                case 20:
+                    this.sendCommand(String.format("VOL %d", MAP20[value]));
+                    return;
+                case 40:
+                    this.sendCommand(String.format("VOL %d", MAP40[value]));
+                    return;
+            }
         }
     }
 
