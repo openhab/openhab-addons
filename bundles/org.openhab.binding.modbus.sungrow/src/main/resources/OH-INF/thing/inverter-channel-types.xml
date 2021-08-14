@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="ac-grid-state-type">
+		<item-type>String</item-type>
+		<label>Grid State</label>
+		<description>Grid state</description>
+		<state readOnly="true">
+			<options>
+				<option value="0xAA">Off Grid</option>
+				<option value="0x55">On Grid</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ac-total-current-type">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>AC Total Current Value</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ac-phase-current-type">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>AC Phase Current Value</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ac-voltage-to-next-type">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>AC Voltage</label>
+		<description>This phase's AC voltage relative to the next phase</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ac-voltage-to-n-type">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>AC Voltage Phase To N Value</label>
+		<description>This phase's AC voltage relative to N line</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ac-power-type">
+		<item-type>Number:Power</item-type>
+		<label>AC Power Value</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="nominal-output-power-type">
+		<item-type>Number:Power</item-type>
+		<label>Nominal Output Power</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="ac-frequency-type">
+		<item-type>Number:Frequency</item-type>
+		<label>AC Frequency Value</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ac-apparent-power-type" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>AC Apparent Power Value</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="ac-reactive-power-type" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>AC Reactive Power Value</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="ac-power-factor-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>AC Power Factor</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ac-lifetime-energy-type">
+		<item-type>Number:Energy</item-type>
+		<label>AC Lifetime Energy Production</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="dc-current-type">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>DC Current Value</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="dc-voltage-type">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>DC Voltage Value</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="dc-power-type">
+		<item-type>Number:Power</item-type>
+		<label>DC Power Value</label>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="dc-total-power-type">
+		<item-type>Number:Power</item-type>
+		<label>DC Total Power</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="load-power-type">
+		<item-type>Number:Power</item-type>
+		<label>Load Power</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="grid-power-type">
+		<item-type>Number:Power</item-type>
+		<label>Grid Power</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="cabinet-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Cabinet Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="inside-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Inside Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="status-type">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Device status</description>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">Off</option>
+				<option value="SLEEP">Sleeping / Night mode</option>
+				<option value="ON">On - producing power</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="device-type-type">
+		<item-type>String</item-type>
+		<label>Device Type</label>
+		<description>Device Type</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output-type-type">
+		<item-type>String</item-type>
+		<label>Output Type</label>
+		<description>Output Type</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Single Phase</option>
+				<option value="1">3P4L</option>
+				<option value="2">3P3L</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="running-state-type">
+		<item-type>String</item-type>
+		<label>Running State</label>
+		<description>Running state of the inverter</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-voltage-type">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="battery-current-type">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Battery Current</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="battery-power-type">
+		<item-type>Number:Power</item-type>
+		<label>Battery Power</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="battery-level-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Level</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="battery-q-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Health</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="battery-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>
