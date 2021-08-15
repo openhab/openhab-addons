@@ -10,17 +10,10 @@ This binding uses the Electrolux Delta REST API.
 
 This binding supports the following thing types:
 
-- Bridge - Implements the API that is used to communicate with the Air Purifier
+- api: Bridge - Implements the API that is used to communicate with the Air Purifier
 
-```
-Bridge electroluxair:api:myAPI
-```
 
-- Electrolux Pure A9 - The Pure A9 Air Purifier
-
-```
-Thing electroluxpurea9 myElectroluxPureA9`
-```
+- electroluxpurea9: The Pure A9 Air Purifier
 
 
 ## Discovery
@@ -41,7 +34,6 @@ Only the bridge require manual configuration. The Electrolux Pure A9 thing can b
 | password  | The password used to connect to the Electrolux Wellbeing app | String | NA       | yes      |
 | refresh   | Specifies the refresh interval in second                     | Number | 600      | yes      |
 
-
 #### Electrolux Pure A9
 
 | Parameter | Description                                                             | Type   | Default  | Required | 
@@ -51,25 +43,25 @@ Only the bridge require manual configuration. The Electrolux Pure A9 thing can b
 
 ## Channels
 
+
 ### Electrolux Pure A9
 
 The following channels are supported:
 
-| Channel Type ID             | Item Type             | Description                                                                 | 
-|-----------------------------|-----------------------|-----------------------------------------------------------------------------|
-| temperature                 | Number:Temperature    | This channel reports the current temperature.                               |
-| humidity                    | Number:Dimensionless  | This channel reports the current humidity in percentage.                    |
-| tvoc                        | Number:Density        | This channel reports the total Volatile Organic Compounds in microgram/m3.  |
-| pm1                         | Number:Dimensionless  | This channel reports the Particulate Matter 1 in ppb.                       |
-| pm2_5                       | Number:Dimensionless  | This channel reports the Particulate Matter 2.5 in ppb.                     |
-| pm10                        | Number:Dimensionless  | This channel reports the Particulate Matter 10 in ppb.                      |
-| co2                         | Number:Dimensionless  | This channel reports the CO2 level in ppm.                                  |
-| fanSpeed                    | Number                | This channel sets and reports the current fan speed (1-9).                  |
-| filterLife                  | Number:Dimensionless  | This channel reports the remaining filter life in %.                        |
-| ionizer                     | Switch                | This channel sets and reports the status of the ionizer function (On/Off).  |
-| doorOpen                    | Contact               | This channel reports the status of door (Opened/Closed).                    |
+| Channel Type ID             | Item Type             | Description                                                                  | 
+|-----------------------------|-----------------------|------------------------------------------------------------------------------|
+| temperature                 | Number:Temperature    | This channel reports the current temperature.                                |
+| humidity                    | Number:Dimensionless  | This channel reports the current humidity in percentage.                     |
+| tvoc                        | Number:Density        | This channel reports the total Volatile Organic Compounds in microgram/m3.   |
+| pm1                         | Number:Dimensionless  | This channel reports the Particulate Matter 1 in ppb.                        |
+| pm2_5                       | Number:Dimensionless  | This channel reports the Particulate Matter 2.5 in ppb.                      |
+| pm10                        | Number:Dimensionless  | This channel reports the Particulate Matter 10 in ppb.                       |
+| co2                         | Number:Dimensionless  | This channel reports the CO2 level in ppm.                                   |
+| fanSpeed                    | Number                | This channel sets and reports the current fan speed (1-9).                   |
+| filterLife                  | Number:Dimensionless  | This channel reports the remaining filter life in %.                         |
+| ionizer                     | Switch                | This channel sets and reports the status of the ionizer function (On/Off).   |
+| doorOpen                    | Contact               | This channel reports the status of door (Opened/Closed).                     |
 | workMode                    | String                | This channel sets and reports the current work mode (Auto, Manual, PowerOff.)|
-
 
 
 
