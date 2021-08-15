@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal;
+package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -21,6 +21,7 @@ import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
 
 /**
@@ -29,14 +30,14 @@ import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStat
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelConfiguration> {
+public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
     public static final String sensorChannelID = "sensor"; // Randomly chosen channel "ID"
     private static final Pattern triggerIcons = Pattern.compile("^mdi:(toggle|gesture).*$");
 
     /**
      * Configuration class for MQTT component
      */
-    static class ChannelConfiguration extends BaseChannelConfiguration {
+    static class ChannelConfiguration extends AbstractChannelConfiguration {
         ChannelConfiguration() {
             super("MQTT Sensor");
         }
@@ -53,11 +54,10 @@ public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelCo
         protected @Nullable List<String> json_attributes;
     }
 
-    public ComponentSensor(CFactory.ComponentConfiguration componentConfiguration) {
+    public Sensor(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
         Value value;
-
         String uom = channelConfiguration.unit_of_measurement;
 
         if (uom != null && !uom.isBlank()) {
@@ -66,16 +66,16 @@ public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelCo
             value = new TextValue();
         }
 
-        String icon = channelConfiguration.icon;
+        String icon = channelConfiguration.getIcon();
 
         boolean trigger = triggerIcons.matcher(icon).matches();
 
-        buildChannel(sensorChannelID, value, channelConfiguration.name, getListener(componentConfiguration, value))
-                .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
+        buildChannel(sensorChannelID, value, channelConfiguration.getName(), getListener(componentConfiguration, value))
+                .stateTopic(channelConfiguration.state_topic, channelConfiguration.getValueTemplate())//
                 .trigger(trigger).build();
     }
 
-    private ChannelStateUpdateListener getListener(CFactory.ComponentConfiguration componentConfiguration,
+    private ChannelStateUpdateListener getListener(ComponentFactory.ComponentConfiguration componentConfiguration,
             Value value) {
         ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
 
