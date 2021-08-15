@@ -10,11 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal;
+package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 
 /**
  * A MQTT alarm control panel, following the https://www.home-assistant.io/components/alarm_control_panel.mqtt/
@@ -26,7 +27,7 @@ import org.openhab.binding.mqtt.generic.values.TextValue;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentAlarmControlPanel extends AbstractComponent<ComponentAlarmControlPanel.ChannelConfiguration> {
+public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.ChannelConfiguration> {
     public static final String stateChannelID = "alarm"; // Randomly chosen channel "ID"
     public static final String switchDisarmChannelID = "disarm"; // Randomly chosen channel "ID"
     public static final String switchArmHomeChannelID = "armhome"; // Randomly chosen channel "ID"
@@ -35,7 +36,7 @@ public class ComponentAlarmControlPanel extends AbstractComponent<ComponentAlarm
     /**
      * Configuration class for MQTT component
      */
-    static class ChannelConfiguration extends BaseChannelConfiguration {
+    static class ChannelConfiguration extends AbstractChannelConfiguration {
         ChannelConfiguration() {
             super("MQTT Alarm");
         }
@@ -55,30 +56,33 @@ public class ComponentAlarmControlPanel extends AbstractComponent<ComponentAlarm
         protected String payload_arm_away = "ARM_AWAY";
     }
 
-    public ComponentAlarmControlPanel(CFactory.ComponentConfiguration componentConfiguration) {
+    public AlarmControlPanel(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
         final String[] state_enum = { channelConfiguration.state_disarmed, channelConfiguration.state_armed_home,
                 channelConfiguration.state_armed_away, channelConfiguration.state_pending,
                 channelConfiguration.state_triggered };
-        buildChannel(stateChannelID, new TextValue(state_enum), channelConfiguration.name,
+        buildChannel(stateChannelID, new TextValue(state_enum), channelConfiguration.getName(),
                 componentConfiguration.getUpdateListener())
-                        .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
+                        .stateTopic(channelConfiguration.state_topic, channelConfiguration.getValueTemplate())//
                         .build();
 
         String command_topic = channelConfiguration.command_topic;
         if (command_topic != null) {
             buildChannel(switchDisarmChannelID, new TextValue(new String[] { channelConfiguration.payload_disarm }),
-                    channelConfiguration.name, componentConfiguration.getUpdateListener())
-                            .commandTopic(command_topic, channelConfiguration.retain).build();
+                    channelConfiguration.getName(), componentConfiguration.getUpdateListener())
+                            .commandTopic(command_topic, channelConfiguration.isRetain(), channelConfiguration.getQos())
+                            .build();
 
             buildChannel(switchArmHomeChannelID, new TextValue(new String[] { channelConfiguration.payload_arm_home }),
-                    channelConfiguration.name, componentConfiguration.getUpdateListener())
-                            .commandTopic(command_topic, channelConfiguration.retain).build();
+                    channelConfiguration.getName(), componentConfiguration.getUpdateListener())
+                            .commandTopic(command_topic, channelConfiguration.isRetain(), channelConfiguration.getQos())
+                            .build();
 
             buildChannel(switchArmAwayChannelID, new TextValue(new String[] { channelConfiguration.payload_arm_away }),
-                    channelConfiguration.name, componentConfiguration.getUpdateListener())
-                            .commandTopic(command_topic, channelConfiguration.retain).build();
+                    channelConfiguration.getName(), componentConfiguration.getUpdateListener())
+                            .commandTopic(command_topic, channelConfiguration.isRetain(), channelConfiguration.getQos())
+                            .build();
         }
     }
 }
