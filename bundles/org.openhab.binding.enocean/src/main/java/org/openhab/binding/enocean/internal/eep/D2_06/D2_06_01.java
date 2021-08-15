@@ -136,18 +136,18 @@ public class D2_06_01 extends _VLDMessage {
                     int buttonEvent = bytes[3] >>> 4;
                     switch (buttonEvent) {
                         case 0x01:
-                            return "PRESSED";
+                            return CommonTriggerEvents.PRESSED;
                         case 0x02:
-                            return "RELEASED";
+                            return CommonTriggerEvents.RELEASED;
                     }
                     break;
                 case CHANNEL_PUSHBUTTON2:
                     int buttonEvent2 = bytes[3] & 0x0F;
                     switch (buttonEvent2) {
                         case 0x01:
-                            return "PRESSED";
+                            return CommonTriggerEvents.PRESSED;
                         case 0x02:
-                            return "RELEASED";
+                            return CommonTriggerEvents.RELEASED;
                     }
                     break;
                 case CHANNEL_VACATIONMODETOGGLEEVENT:
