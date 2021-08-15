@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.miio.internal.robot;
 
 import java.awt.Color;
@@ -23,7 +35,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * This DTO class provides the configuration for the vacuum map drawing
+ * This class provides the configuration for the vacuum map drawing
  *
  * @author Marcel Verpaalen - Initial contribution
  */
@@ -74,6 +86,7 @@ public class RRMapDrawOptions {
                 }
             }).registerTypeAdapter(Color.class, new JsonDeserializer<Color>() {
                 @Override
+                @Nullable
                 public Color deserialize(@Nullable JsonElement json, @Nullable Type typeOfT,
                         @Nullable JsonDeserializationContext context) throws JsonParseException {
                     if (json == null) {
@@ -276,11 +289,11 @@ public class RRMapDrawOptions {
         this.cropBorder = cropBorder;
     }
 
-    public static void writeOptionsToFile(RRMapDrawOptions options, String path, Logger logger) {
+    public static void writeOptionsToFile(RRMapDrawOptions options, String fileName, Logger logger) {
         String json = GSON.toJson(options, RRMapDrawOptions.class);
-        try (PrintWriter out = new PrintWriter(path)) {
-            out.println(json);
-            logger.debug("Vacuum map draw options file created: {}", path);
+        try (PrintWriter pw = new PrintWriter(fileName)) {
+            pw.println(json);
+            logger.debug("Vacuum map draw options file created: {}", fileName);
         } catch (FileNotFoundException e) {
             logger.info("Error writing Vacuum map draw options file: {}", e.getMessage());
         }
@@ -291,7 +304,7 @@ public class RRMapDrawOptions {
             RRMapDrawOptions options = GSON.fromJson(new FileReader(fileName), RRMapDrawOptions.class);
             return options;
         } catch (FileNotFoundException e) {
-            logger.debug("Vacuum map draw options file {} not found. Using defaults", fileName, e.getMessage());
+            logger.debug("Vacuum map draw options file {} not found. Using defaults", fileName);
             return new RRMapDrawOptions();
         } catch (JsonParseException e) {
             logger.info("Error reading vacuum map draw options file {}: {}", fileName, e.getMessage());
@@ -301,5 +314,4 @@ public class RRMapDrawOptions {
         writeOptionsToFile(options, fileName, logger);
         return new RRMapDrawOptions();
     }
-
 }

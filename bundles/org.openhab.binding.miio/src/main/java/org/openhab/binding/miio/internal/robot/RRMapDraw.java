@@ -57,19 +57,23 @@ import org.slf4j.LoggerFactory;
 public class RRMapDraw {
 
     private static final float MM = 50.0f;
-    
+
     private static final int MAP_OUTSIDE = 0x00;
     private static final int MAP_WALL = 0x01;
     private static final int MAP_INSIDE = 0xFF;
     private static final int MAP_SCAN = 0x07;
-    
+
     private final @Nullable Bundle bundle = FrameworkUtil.getBundle(getClass());
     private final RRMapFileParser rmfp;
     private final Logger logger = LoggerFactory.getLogger(RRMapDraw.class);
 
     private RRMapDrawOptions drawOptions = new RRMapDrawOptions();
     private boolean multicolor = false;
-    
+    private int firstX = 0;
+    private int lastX = 0;
+    private int firstY = 0;
+    private int lastY = 0;
+
     public RRMapDraw(RRMapFileParser rmfp) {
         this.rmfp = rmfp;
     }
@@ -398,14 +402,15 @@ public class RRMapDraw {
         if (fontName == null) {
             return; // no available fonts to draw text
         }
-        Font font = new Font(fontName, Font.BOLD, (int) (drawOptions.getTextFontSize() * scale));
+        int fz = (int) (drawOptions.getTextFontSize() * scale);
+        Font font = new Font(fontName, Font.BOLD, fz);
         g2d.setFont(font);
         String message = drawOptions.getText();
         FontMetrics fontMetrics = g2d.getFontMetrics();
         int stringWidth = fontMetrics.stringWidth(message);
-        if ((stringWidth + textPos) > rmfp.getImgWidth() * scale) {
-            font = new Font(fontName, Font.BOLD, (int) Math.floor(drawOptions.getTextFontSize()
-                    * (rmfp.getImgWidth() * scale - textPos - offset * scale) / stringWidth));
+        if ((stringWidth + textPos) > width) {
+            int fzn = (int) Math.floor(((float) (width - textPos) / stringWidth) * fz);
+            font = new Font(fontName, Font.BOLD, fzn > 0 ? fzn : 1);
             g2d.setFont(font);
         }
         int stringHeight = fontMetrics.getAscent();
@@ -431,6 +436,39 @@ public class RRMapDraw {
         }
         // Preferred fonts not available... just go with the first one
         return fonts[0];
+    }
+
+    /**
+     * Finds the perimeter of the used area in the map
+     */
+    private void getMapArea(Graphics2D g2d, float scale) {
+        int firstX = rmfp.getImgWidth();
+        int lastX = 0;
+        int firstY = rmfp.getImgHeight();
+        int lastY = 0;
+        for (int y = 0; y < rmfp.getImgHeight() - 1; y++) {
+            for (int x = 0; x < rmfp.getImgWidth() + 1; x++) {
+                int walltype = rmfp.getImage()[x + rmfp.getImgWidth() * y] & 0xFF;
+                if (walltype > MAP_OUTSIDE) {
+                    if (y < firstY) {
+                        firstY = y;
+                    }
+                    if (y > lastY) {
+                        lastY = y;
+                    }
+                    if (x < firstX) {
+                        firstX = x;
+                    }
+                    if (x > lastX) {
+                        lastX = x;
+                    }
+                }
+            }
+        }
+        this.firstX = firstX;
+        this.lastX = lastX;
+        this.firstY = rmfp.getImgHeight() - lastY;
+        this.lastY = rmfp.getImgHeight() - firstY;
     }
 
     private @Nullable URL getImageUrl(String image) {
@@ -469,11 +507,34 @@ public class RRMapDraw {
         drawRobo(g2d, scale);
         drawGoTo(g2d, scale);
         drawObstacles(g2d, scale);
-        g2d = bi.createGraphics();
-        if (drawOptions.isShowLogo()) {
-            drawOpenHabRocks(g2d, width, height, scale);
+        if (drawOptions.getCropBorder() < 0) {
+            g2d = bi.createGraphics();
+            if (drawOptions.isShowLogo()) {
+                drawOpenHabRocks(g2d, width, height, scale);
+            }
+            return bi;
         }
-        return bi;
+        // crop the image to the used perimeter
+        getMapArea(g2d, scale);
+        int firstX = (this.firstX - drawOptions.getCropBorder()) > 0 ? this.firstX - drawOptions.getCropBorder() : 0;
+        int lastX = (this.lastX + drawOptions.getCropBorder()) < rmfp.getImgWidth()
+                ? this.lastX + drawOptions.getCropBorder()
+                : rmfp.getImgWidth();
+        int firstY = (this.firstY - drawOptions.getCropBorder()) > 0 ? this.firstY - drawOptions.getCropBorder() : 0;
+        int lastY = (this.lastY + drawOptions.getCropBorder() + (int) (8 * scale)) < rmfp.getImgHeight()
+                ? this.lastY + drawOptions.getCropBorder() + (int) (8 * scale)
+                : rmfp.getImgHeight();
+        int nwidth = (int) Math.floor((lastX - firstX) * scale);
+        int nheight = (int) Math.floor((lastY - firstY) * scale);
+        BufferedImage bo = new BufferedImage(nwidth, nheight, BufferedImage.TYPE_3BYTE_BGR);
+        Graphics2D crop = bo.createGraphics();
+        crop.transform(AffineTransform.getTranslateInstance(-firstX * scale, -firstY * scale));
+        crop.drawImage(bi, 0, 0, null);
+        if (drawOptions.isShowLogo()) {
+            crop = bo.createGraphics();
+            drawOpenHabRocks(crop, nwidth, nheight, scale * .75f);
+        }
+        return bo;
     }
 
     public boolean writePic(String filename, String formatName, float scale) throws IOException {
