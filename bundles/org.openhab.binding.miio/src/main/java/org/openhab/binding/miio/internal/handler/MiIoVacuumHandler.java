@@ -110,14 +110,12 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private boolean hasChannelStructure;
     private ConcurrentHashMap<RobotCababilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
-    private RRMapDrawOptions mapDrawOptions;
+    private RRMapDrawOptions mapDrawOptions = new RRMapDrawOptions();
 
     public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
             CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, miIoDatabaseWatchService, cloudConnector);
         this.channelTypeRegistry = channelTypeRegistry;
-        this.mapDrawOptions = RRMapDrawOptions
-                .getOptionsFromFile(BINDING_USERDATA_PATH + File.separator + "mapConfig.json", logger);
         mapChannelUid = new ChannelUID(thing.getUID(), CHANNEL_VACUUM_MAP);
         status = new ExpiringCache<>(CACHE_EXPIRY, () -> {
             try {
