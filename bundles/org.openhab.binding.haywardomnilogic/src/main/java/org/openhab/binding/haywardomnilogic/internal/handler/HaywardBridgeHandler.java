@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.haywardomnilogic.internal.handler;
 
-import java.io.IOException;
 import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -145,6 +142,18 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
+            if (logger.isTraceEnabled()) {
+                if (!(getApiDef())) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Unable to getApiDef from Hayward's server");
+                    clearPolling(pollTelemetryFuture);
+                    clearPolling(pollAlarmsFuture);
+                    commFailureCount = 50;
+                    initPolling(60);
+                    return;
+                }
+            }
+
             if (this.thing.getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -202,7 +211,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
     public synchronized boolean getApiDef() throws HaywardException, InterruptedException {
         String xmlResponse;
 
-        // *****getConfig from Hayward server
+        // *****getApiDef from Hayward server
         String urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request><Name>GetAPIDef</Name><Parameters>"
                 + "<Parameter name=\"Token\" dataType=\"String\">" + account.token + "</Parameter>"
                 + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + account.mspSystemID + "</Parameter>;"
@@ -262,13 +271,12 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         String xmlResponse = httpXmlResponse(urlParameters);
 
         // Debug: Inject xml file for testing
-        String path = "C:/Users/Controls/Desktop/stagF15 getMSP.txt";
-        try {
-            xmlResponse = new String(Files.readAllBytes(Paths.get(path)));
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        // String path = "C:/Users/Controls/Desktop/stagF15 getMSP.txt";
+        // try {
+        // xmlResponse = new String(Files.readAllBytes(Paths.get(path)));
+        // } catch (IOException e) {
+        // e.printStackTrace();
+        // }
 
         if (xmlResponse.isEmpty()) {
             logger.debug("Hayward Connection thing: requestConfig XML response was null");
@@ -309,13 +317,12 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         String xmlResponse = httpXmlResponse(urlParameters);
 
         // Debug: Inject xml file for testing
-        String path = "C:/Users/Controls/Desktop/stagF15 getTelemetry.txt";
-        try {
-            xmlResponse = new String(Files.readAllBytes(Paths.get(path)));
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        // String path = "C:/Users/Controls/Desktop/stagF15 getTelemetry.txt";
+        // try {
+        // xmlResponse = new String(Files.readAllBytes(Paths.get(path)));
+        // } catch (IOException e) {
+        // e.printStackTrace();
+        // }
 
         if (xmlResponse.isEmpty()) {
             logger.debug("Hayward Connection thing: getTelemetry XML response was null");
