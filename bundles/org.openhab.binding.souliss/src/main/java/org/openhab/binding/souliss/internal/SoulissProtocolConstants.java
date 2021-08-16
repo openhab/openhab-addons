@@ -53,31 +53,26 @@ public final class SoulissProtocolConstants {
     public static final byte SOULISS_T12 = 0x12;
     public static final byte SOULISS_T13 = 0x13;
     public static final byte SOULISS_T14 = 0x14;
-    public static final byte SOULISS_T1N_RGB = 0x15;// RGB Light
+    // RGB Light
+    public static final byte SOULISS_T1N_RGB = 0x15;
     public static final byte SOULISS_T16 = 0x16;
     public static final byte SOULISS_T18 = 0x18;
     public static final byte SOULISS_T19 = 0x19;
     public static final byte SOULISS_T1A = 0x1A;
 
-    public static final byte SOULISS_T21 = 0x21;// Motorized devices with limit
-                                                // switches
-    public static final byte SOULISS_T22 = 0x22;// Motorized devices with limit
-                                                // switches and middle
-                                                // position
+    // Motorized devices with limit switches
+    public static final byte SOULISS_T21 = 0x21;
+    // Motorized devices with limit switches and middle position
+    public static final byte SOULISS_T22 = 0x22;
     public static final byte SOULISS_T31 = 0x31;
     public static final byte SOULISS_T32_IRCOM_AIRCON = 0x32;
 
-    public static final byte SOULISS_T42_ANTITHEFT_GROUP = 0x40; // Anti-theft
-                                                                 // group
-                                                                 // (used w/
-                                                                 // massive
-                                                                 // commands)
-    public static final byte SOULISS_T41_ANTITHEFT_MAIN = 0x41; // Anti-theft
-                                                                // integration
-                                                                // (Main)
-    public static final byte SOULISS_T42_ANTITHEFT_PEER = 0x42; // Anti-theft
-                                                                // integration
-                                                                // (Peer)
+    // Anti-theft group (used with massive commands)
+    public static final byte SOULISS_T42_ANTITHEFT_GROUP = 0x40;
+    // Anti-theft integration (Main)
+    public static final byte SOULISS_T41_ANTITHEFT_MAIN = 0x41;
+    // Anti-theft integration (Peer)
+    public static final byte SOULISS_T42_ANTITHEFT_PEER = 0x42;
 
     public static final byte SOULISS_T51 = 0x51;
     public static final byte SOULISS_T52_TEMPERATURE_SENSOR = 0x52;
@@ -159,18 +154,23 @@ public final class SoulissProtocolConstants {
     public static final byte SOULISS_T1N_OFF_COIL = 0x00;
     public static final byte SOULISS_T1N_ON_COIL_AUTO = (byte) 0xF1;
     public static final byte SOULISS_T1N_OFF_COIL_AUTO = (byte) 0xF0;
-    public static final byte SOULISS_T1N_SET = 0x22; // Set a state
+    // Set a state
+    public static final byte SOULISS_T1N_SET = 0x22;
 
-    public static final byte SOULISS_T1N_BRIGHT_UP = 0x10; // Increase Light
-    public static final byte SOULISS_T1N_BRIGHT_DOWN = 0x20; // Decrease Light
-    public static final byte SOULISS_T1N_FLASH = 0x21; // Flash Light
+    // Increase Light
+    public static final byte SOULISS_T1N_BRIGHT_UP = 0x10;
+    // Decrease Light
+    public static final byte SOULISS_T1N_BRIGHT_DOWN = 0x20;
+    // Flash Light
+    public static final byte SOULISS_T1N_FLASH = 0x21;
 
     public static final byte SOULISS_T1N_ON_FEEDBACK = 0x23;
     public static final byte SOULISS_T1N_OFF_FEEDBACK = 0x24;
     public static final String SOULISS_T12_USE_OF_SLOT_AUTO_MODE = "autoMode";
     public static final String SOULISS_T12_USE_OF_SLOT_SWITCH = "switch";
 
-    public static final long SOULISS_T16_RED = 0x22FF0000; // Set a state
+    // Set a state
+    public static final long SOULISS_T16_RED = 0x22FF0000;
     public static final long SOULISS_T16_GREEN = 0x2200FF00;
     public static final long SOULISS_T16_BLUE = 0x220000FF;
     public static final long SOULISS_T18_PULSE = 0xA1;
@@ -213,18 +213,26 @@ public final class SoulissProtocolConstants {
     public static final byte SOULISS_T2N_CLOSE_CMD = 0x01;
     public static final byte SOULISS_T2N_OPEN_CMD = 0x02;
     public static final byte SOULISS_T2N_STOP_CMD = 0x04;
-    public static final byte SOULISS_T2N_CLOSE_CMD_LOCAL = 0x08; // Close Command (only from local pushbutton)
-    public static final byte SOULISS_T2N_OPEN_CMD_LOCAL = 0x10; // Open Command (only from local pushbutton)
+    // Close Command (only from local pushbutton)
+    public static final byte SOULISS_T2N_CLOSE_CMD_LOCAL = 0x08;
+    // Open Command (only from local pushbutton)
+    public static final byte SOULISS_T2N_OPEN_CMD_LOCAL = 0x10;
     public static final byte SOULISS_T2N_TOGGLE_CMD = 0x08;
     public static final byte SOULISS_T2N_RST_CMD = 0x00;
-    public static final byte SOULISS_T2N_TIMER_VAL = (byte) 0xC0; // Timer set value
-    public static final byte SOULISS_T2N_TIMER_OFF = (byte) 0xA0; // Timer expired value
-    public static final byte SOULISS_T2N_TIMEDSTOP_VAL = (byte) 0xC2; // Timed stop value
-    public static final byte SOULISS_T2N_TIMEDSTOP_OFF = (byte) 0xC0; // Timed stop exipred value
+    // Timer set value
+    public static final byte SOULISS_T2N_TIMER_VAL = (byte) 0xC0;
+    // Timer expired value
+    public static final byte SOULISS_T2N_TIMER_OFF = (byte) 0xA0;
+    // Timed stop value
+    public static final byte SOULISS_T2N_TIMEDSTOP_VAL = (byte) 0xC2;
+    // Timed stop exipred value
+    public static final byte SOULISS_T2N_TIMEDSTOP_OFF = (byte) 0xC0;
     public static final byte SOULISS_T2N_LIMSWITCH_CLOSE = 0x14;
     public static final byte SOULISS_T2N_LIMSWITCH_OPEN = 0x16;
-    public static final byte SOULISS_T2N_STATE_CLOSE = 0x08; // Close Feedback from Limit Switch
-    public static final byte SOULISS_T2N_STATE_OPEN = 0x10; // Open Feedback from Limit Switch
+    // Close Feedback from Limit Switch
+    public static final byte SOULISS_T2N_STATE_CLOSE = 0x08;
+    // Open Feedback from Limit Switch
+    public static final byte SOULISS_T2N_STATE_OPEN = 0x10;
 
     public static final byte SOULISS_T2N_NOLIMSWITCH = 0x20;
     public static final byte SOULISS_T2N_COIL_CLOSE = 0x01;
@@ -269,21 +277,22 @@ public final class SoulissProtocolConstants {
     public static final String SOULISS_T3N_FAN_ON_3 = "0x20";
 
     // General defines for T4n
-    public static final byte SOULISS_T4N_ALARM = 0x01; // Alarm Condition
-                                                       // Detected (Input)
+
+    // Alarm Condition Detected (Input)
+    public static final byte SOULISS_T4N_ALARM = 0x01;
     public static final byte SOULISS_T4N_RST_CMD = 0x00;
-    public static final byte SOULISS_T4N_REARM = 0x03; // Silence and Arm
-                                                       // Command
-    public static final byte SOULISS_T4N_NOT_ARMED = 0x04; // Anti-theft not
-                                                           // Armed Command
-    public static final byte SOULISS_T4N_ARMED = 0x05; // Anti-theft Armed
-                                                       // Command
-    public static final byte SOULISS_T4N_ANTITHEFT = 0x01; // Anti-theft Armed
-                                                           // Feedback
-    public static final byte SOULISS_T4N_NO_ANTITHEFT = 0x00; // Anti-theft not
-                                                              // Armed
-                                                              // Feedback
-    public static final byte SOULISS_T4N_IN_ALARM = 0x03; // Anti-theft in Alarm
+    // Silence and Arm Command
+    public static final byte SOULISS_T4N_REARM = 0x03;
+    // Anti-theft not Armed Command
+    public static final byte SOULISS_T4N_NOT_ARMED = 0x04;
+    // Anti-theft Armed Command
+    public static final byte SOULISS_T4N_ARMED = 0x05;
+    // Anti-theft Armed Feedback
+    public static final byte SOULISS_T4N_ANTITHEFT = 0x01;
+    // Anti-theft not Armed Feedback
+    public static final byte SOULISS_T4N_NO_ANTITHEFT = 0x00;
+    // Anti-theft in Alarm
+    public static final byte SOULISS_T4N_IN_ALARM = 0x03;
 
     public static final byte SOULISS_RST_CMD = 0x00;
     public static final byte SOULISS_NOT_TRIGGED = 0x00;
