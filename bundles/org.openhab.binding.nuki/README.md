@@ -47,6 +47,8 @@ is working by checking [discovery API endpoint](https://api.nuki.io/discover/bri
 Pressing bridge button is required for binding to obtain valid API token. If the button isn't pressed during discovery, bridge will
 be created but token must be set manually for binding to work.
 
+If bridge is connected to network but not discovered, enter [Manage Bridge](https://support.nuki.io/hc/en-us/articles/360016489018-Manage-Bridge) menu
+in Nuki mobile app, check server connection then disconnect and let the bridge restart.
 
 ## Supported Things
 

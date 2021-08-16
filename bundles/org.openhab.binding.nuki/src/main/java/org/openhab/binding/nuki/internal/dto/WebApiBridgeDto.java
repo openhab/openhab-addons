@@ -13,8 +13,6 @@
 package org.openhab.binding.nuki.internal.dto;
 
 import org.openhab.binding.nuki.internal.constants.NukiBindingConstants;
-import org.openhab.binding.nuki.internal.constants.NukiLinkBuilder;
-import org.openhab.core.id.InstanceUUID;
 import org.openhab.core.thing.ThingUID;
 
 /**
@@ -68,7 +66,6 @@ public class WebApiBridgeDto {
     }
 
     public ThingUID getThingUid() {
-        String hash = NukiLinkBuilder.sha256(InstanceUUID.get() + ":" + getBridgeId()).substring(0, 10);
-        return new ThingUID(NukiBindingConstants.THING_TYPE_BRIDGE, hash);
+        return new ThingUID(NukiBindingConstants.THING_TYPE_BRIDGE, getBridgeId());
     }
 }

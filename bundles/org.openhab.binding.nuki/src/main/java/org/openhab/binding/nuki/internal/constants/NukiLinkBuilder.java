@@ -110,12 +110,12 @@ public class NukiLinkBuilder {
         return buildWithAuth(builder(PATH_LIST));
     }
 
-    public static UriBuilder callbackPath(String bridgeId) {
-        return UriBuilder.fromPath(CALLBACK_ENDPOINT).queryParam("bridgeId", bridgeId);
+    public static UriBuilder callbackPath(String callbackId) {
+        return UriBuilder.fromPath(CALLBACK_ENDPOINT).queryParam("callbackId", callbackId);
     }
 
-    public static URI callbackUri(String host, int port, String bridgeId) {
-        return callbackPath(bridgeId).host(host).port(port).scheme("http").build();
+    public static URI callbackUri(String host, int port, String callbackId) {
+        return callbackPath(callbackId).host(host).port(port).scheme("http").build();
     }
 
     private URI buildWithAuth(UriBuilder builder) {

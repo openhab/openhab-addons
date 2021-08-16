@@ -23,6 +23,7 @@ import org.openhab.binding.nuki.internal.handler.NukiOpenerHandler;
 import org.openhab.binding.nuki.internal.handler.NukiSmartLockHandler;
 import org.openhab.binding.nuki.internal.service.NukiThingRegistryService;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.id.InstanceUUID;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
@@ -79,7 +80,7 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
         this.thingService.thingCreated(thing.getUID());
 
         if (NukiBindingConstants.THING_TYPE_BRIDGE_UIDS.contains(thingTypeUID)) {
-            String callbackUrl = createCallbackUrl(thing.getUID().getId());
+            String callbackUrl = createCallbackUrl(InstanceUUID.get());
             NukiBridgeHandler nukiBridgeHandler = new NukiBridgeHandler((Bridge) thing, httpClient, callbackUrl);
             nukiApiServlet.add(nukiBridgeHandler);
             return nukiBridgeHandler;
@@ -112,7 +113,7 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private @Nullable String createCallbackUrl(String bridgeId) {
+    private @Nullable String createCallbackUrl(String id) {
         final String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
         if (ipAddress == null) {
             logger.warn("No network interface could be found to get callback address");
@@ -124,7 +125,7 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
             logger.warn("Cannot find port of the http service.");
             return null;
         }
-        String callbackUrl = NukiLinkBuilder.callbackUri(ipAddress, port, bridgeId).toString();
+        String callbackUrl = NukiLinkBuilder.callbackUri(ipAddress, port, id).toString();
         logger.trace("callbackUrl[{}]", callbackUrl);
         return callbackUrl;
     }
