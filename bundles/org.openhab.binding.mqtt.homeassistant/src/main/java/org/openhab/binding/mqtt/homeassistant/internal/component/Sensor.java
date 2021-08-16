@@ -24,6 +24,8 @@ import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A MQTT sensor, following the https://www.home-assistant.io/components/sensor.mqtt/ specification.
  *
@@ -42,15 +44,23 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
             super("MQTT Sensor");
         }
 
+        @SerializedName("unit_of_measurement")
         protected @Nullable String unit_of_measurement;
+        @SerializedName("device_class")
         protected @Nullable String device_class;
+        @SerializedName("force_update")
         protected boolean force_update = false;
+        @SerializedName("expire_after")
         protected @Nullable Integer expire_after;
 
+        @SerializedName("state_topic")
         protected String state_topic = "";
 
+        @SerializedName("json_attributes_topic")
         protected @Nullable String json_attributes_topic;
+        @SerializedName("json_attributes_template")
         protected @Nullable String json_attributes_template;
+        @SerializedName("json_attributes")
         protected @Nullable List<String> json_attributes;
     }
 

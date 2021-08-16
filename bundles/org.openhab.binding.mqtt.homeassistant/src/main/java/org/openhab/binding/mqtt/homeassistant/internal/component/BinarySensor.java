@@ -23,6 +23,8 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChanne
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.OffDelayUpdateStateListener;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A MQTT BinarySensor, following the https://www.home-assistant.io/components/binary_sensor.mqtt/ specification.
  *
@@ -40,17 +42,27 @@ public class BinarySensor extends AbstractComponent<BinarySensor.ChannelConfigur
             super("MQTT Binary Sensor");
         }
 
+        @SerializedName("device_class")
         protected @Nullable String device_class;
+        @SerializedName("force_update")
         protected boolean force_update = false;
+        @SerializedName("expire_after")
         protected @Nullable Integer expire_after;
+        @SerializedName("off_delay")
         protected @Nullable Integer off_delay;
 
+        @SerializedName("state_topic")
         protected String state_topic = "";
+        @SerializedName("payload_on")
         protected String payload_on = "ON";
+        @SerializedName("payload_off")
         protected String payload_off = "OFF";
 
+        @SerializedName("json_attributes_topic")
         protected @Nullable String json_attributes_topic;
+        @SerializedName("json_attributes_template")
         protected @Nullable String json_attributes_template;
+        @SerializedName("json_attributes")
         protected @Nullable List<String> json_attributes;
     }
 

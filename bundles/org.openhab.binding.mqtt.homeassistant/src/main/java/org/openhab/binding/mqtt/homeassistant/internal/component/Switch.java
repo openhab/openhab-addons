@@ -17,6 +17,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A MQTT switch, following the https://www.home-assistant.io/components/switch.mqtt/ specification.
  *
@@ -36,15 +38,23 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
 
         protected @Nullable Boolean optimistic;
 
+        @SerializedName("command_topic")
         protected @Nullable String command_topic;
+        @SerializedName("state_topic")
         protected String state_topic = "";
 
+        @SerializedName("state_on")
         protected @Nullable String state_on;
+        @SerializedName("state_off")
         protected @Nullable String state_off;
+        @SerializedName("payload_on")
         protected String payload_on = "ON";
+        @SerializedName("payload_off")
         protected String payload_off = "OFF";
 
+        @SerializedName("json_attributes_topic")
         protected @Nullable String json_attributes_topic;
+        @SerializedName("json_attributes_template")
         protected @Nullable String json_attributes_template;
     }
 

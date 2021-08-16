@@ -30,6 +30,8 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A MQTT climate component, following the https://www.home-assistant.io/components/climate.mqtt/ specification.
  *
@@ -68,71 +70,120 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
             super("MQTT HVAC");
         }
 
+        @SerializedName("action_template")
         protected @Nullable String action_template;
+        @SerializedName("action_topic")
         protected @Nullable String action_topic;
 
+        @SerializedName("aux_command_topic")
         protected @Nullable String aux_command_topic;
+        @SerializedName("aux_state_template")
         protected @Nullable String aux_state_template;
+        @SerializedName("aux_state_topic")
         protected @Nullable String aux_state_topic;
 
+        @SerializedName("away_mode_command_topic")
         protected @Nullable String away_mode_command_topic;
+        @SerializedName("away_mode_state_template")
         protected @Nullable String away_mode_state_template;
+        @SerializedName("away_mode_state_topic")
         protected @Nullable String away_mode_state_topic;
 
+        @SerializedName("current_temperature_template")
         protected @Nullable String current_temperature_template;
+        @SerializedName("current_temperature_topic")
         protected @Nullable String current_temperature_topic;
 
+        @SerializedName("fan_mode_command_template")
         protected @Nullable String fan_mode_command_template;
+        @SerializedName("fan_mode_command_topic")
         protected @Nullable String fan_mode_command_topic;
+        @SerializedName("fan_mode_state_template")
         protected @Nullable String fan_mode_state_template;
+        @SerializedName("fan_mode_state_topic")
         protected @Nullable String fan_mode_state_topic;
+        @SerializedName("fan_modes")
         protected List<String> fan_modes = Arrays.asList("auto", "low", "medium", "high");
 
+        @SerializedName("hold_command_template")
         protected @Nullable String hold_command_template;
+        @SerializedName("hold_command_topic")
         protected @Nullable String hold_command_topic;
+        @SerializedName("hold_state_template")
         protected @Nullable String hold_state_template;
+        @SerializedName("hold_state_topic")
         protected @Nullable String hold_state_topic;
+        @SerializedName("hold_modes")
         protected @Nullable List<String> hold_modes; // Are there default modes? Now the channel will be ignored without
                                                      // hold modes.
 
+        @SerializedName("json_attributes_template")
         protected @Nullable String json_attributes_template; // Attributes are not supported yet
+        @SerializedName("json_attributes_topic")
         protected @Nullable String json_attributes_topic;
 
+        @SerializedName("mode_command_template")
         protected @Nullable String mode_command_template;
+        @SerializedName("mode_command_topic")
         protected @Nullable String mode_command_topic;
+        @SerializedName("mode_state_template")
         protected @Nullable String mode_state_template;
+        @SerializedName("mode_state_topic")
         protected @Nullable String mode_state_topic;
         protected List<String> modes = Arrays.asList("auto", "off", "cool", "heat", "dry", "fan_only");
 
+        @SerializedName("swing_command_template")
         protected @Nullable String swing_command_template;
+        @SerializedName("swing_command_topic")
         protected @Nullable String swing_command_topic;
+        @SerializedName("swing_state_template")
         protected @Nullable String swing_state_template;
+        @SerializedName("swing_state_topic")
         protected @Nullable String swing_state_topic;
+        @SerializedName("swing_modes")
         protected List<String> swing_modes = Arrays.asList("on", "off");
 
+        @SerializedName("temperature_command_template")
         protected @Nullable String temperature_command_template;
+        @SerializedName("temperature_command_topic")
         protected @Nullable String temperature_command_topic;
+        @SerializedName("temperature_state_template")
         protected @Nullable String temperature_state_template;
+        @SerializedName("temperature_state_topic")
         protected @Nullable String temperature_state_topic;
 
+        @SerializedName("temperature_high_command_template")
         protected @Nullable String temperature_high_command_template;
+        @SerializedName("temperature_high_command_topic")
         protected @Nullable String temperature_high_command_topic;
+        @SerializedName("temperature_high_state_template")
         protected @Nullable String temperature_high_state_template;
+        @SerializedName("temperature_high_state_topic")
         protected @Nullable String temperature_high_state_topic;
 
+        @SerializedName("temperature_low_command_template")
         protected @Nullable String temperature_low_command_template;
+        @SerializedName("temperature_low_command_topic")
         protected @Nullable String temperature_low_command_topic;
+        @SerializedName("temperature_low_state_template")
         protected @Nullable String temperature_low_state_template;
+        @SerializedName("temperature_low_state_topic")
         protected @Nullable String temperature_low_state_topic;
 
+        @SerializedName("power_command_topic")
         protected @Nullable String power_command_topic;
 
         protected Integer initial = 21;
+        @SerializedName("max_temp")
         protected @Nullable Float max_temp;
+        @SerializedName("min_temp")
         protected @Nullable Float min_temp;
+        @SerializedName("temperature_unit")
         protected String temperature_unit = CELSIUM; // System unit by default
+        @SerializedName("temp_step")
         protected Float temp_step = 1f;
         protected @Nullable Float precision;
+        @SerializedName("send_if_off")
         protected Boolean send_if_off = true;
     }
 

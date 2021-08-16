@@ -29,6 +29,8 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A MQTT light, following the https://www.home-assistant.io/components/light.mqtt/ specification.
  *
@@ -51,46 +53,73 @@ public class Light extends AbstractComponent<Light.ChannelConfiguration> impleme
             super("MQTT Light");
         }
 
+        @SerializedName("brightness_scale")
         protected int brightness_scale = 255;
         protected boolean optimistic = false;
+        @SerializedName("effect_list")
         protected @Nullable List<String> effect_list;
 
         // Defines when on the payload_on is sent. Using last (the default) will send any style (brightness, color, etc)
         // topics first and then a payload_on to the command_topic. Using first will send the payload_on and then any
         // style topics. Using brightness will only send brightness commands instead of the payload_on to turn the light
         // on.
+        @SerializedName("on_command_type")
         protected String on_command_type = "last";
 
+        @SerializedName("state_topic")
         protected @Nullable String state_topic;
+        @SerializedName("command_topic")
         protected @Nullable String command_topic;
+        @SerializedName("state_value_template")
         protected @Nullable String state_value_template;
 
+        @SerializedName("brightness_state_topic")
         protected @Nullable String brightness_state_topic;
+        @SerializedName("brightness_command_topic")
         protected @Nullable String brightness_command_topic;
+        @SerializedName("brightness_value_template")
         protected @Nullable String brightness_value_template;
 
+        @SerializedName("color_temp_state_topic")
         protected @Nullable String color_temp_state_topic;
+        @SerializedName("color_temp_command_topic")
         protected @Nullable String color_temp_command_topic;
+        @SerializedName("color_temp_value_template")
         protected @Nullable String color_temp_value_template;
 
+        @SerializedName("effect_command_topic")
         protected @Nullable String effect_command_topic;
+        @SerializedName("effect_state_topic")
         protected @Nullable String effect_state_topic;
+        @SerializedName("effect_value_template")
         protected @Nullable String effect_value_template;
 
+        @SerializedName("rgb_command_topic")
         protected @Nullable String rgb_command_topic;
+        @SerializedName("rgb_state_topic")
         protected @Nullable String rgb_state_topic;
+        @SerializedName("rgb_value_template")
         protected @Nullable String rgb_value_template;
+        @SerializedName("rgb_command_template")
         protected @Nullable String rgb_command_template;
 
+        @SerializedName("white_value_command_topic")
         protected @Nullable String white_value_command_topic;
+        @SerializedName("white_value_state_topic")
         protected @Nullable String white_value_state_topic;
+        @SerializedName("white_value_template")
         protected @Nullable String white_value_template;
 
+        @SerializedName("xy_command_topic")
         protected @Nullable String xy_command_topic;
+        @SerializedName("xy_state_topic")
         protected @Nullable String xy_state_topic;
+        @SerializedName("xy_value_template")
         protected @Nullable String xy_value_template;
 
+        @SerializedName("payload_on")
         protected String payload_on = "ON";
+        @SerializedName("payload_off")
         protected String payload_off = "OFF";
     }
 
