@@ -33,7 +33,7 @@ In Souliss Framework a Typical is one of predefined logic dedicated to smart hom
 
 Typical can be one of T11, T12, T13, T14, etc... 
 
-It are defined [here](https://github.com/souliss/souliss/wiki/Typicals).
+They are defined [here](https://github.com/souliss/souliss/wiki/Typicals).
 
 Typicals match directly with openHAB Thing type.
 
