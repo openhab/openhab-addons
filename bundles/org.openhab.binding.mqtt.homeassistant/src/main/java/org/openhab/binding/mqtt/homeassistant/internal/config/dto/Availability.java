@@ -22,17 +22,17 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Availability {
     @SerializedName("payload_available")
-    protected String payload_available = "online";
+    protected String payloadAvailable = "online";
     @SerializedName("payload_not_available")
-    protected String payload_not_available = "offline";
+    protected String payloadNotAvailable = "offline";
     protected String topic;
 
-    public String getPayload_available() {
-        return payload_available;
+    public String getPayloadAvailable() {
+        return payloadAvailable;
     }
 
-    public String getPayload_not_available() {
-        return payload_not_available;
+    public String getPayloadNotAvailable() {
+        return payloadNotAvailable;
     }
 
     public String getTopic() {

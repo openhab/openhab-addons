@@ -26,7 +26,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
-    public static final String switchChannelID = "switch"; // Randomly chosen channel "ID"
+    public static final String SWITCH_CHANNEL_ID = "switch"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
@@ -39,46 +39,46 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
         protected @Nullable Boolean optimistic;
 
         @SerializedName("command_topic")
-        protected @Nullable String command_topic;
+        protected @Nullable String commandTopic;
         @SerializedName("state_topic")
-        protected String state_topic = "";
+        protected String stateTopic = "";
 
         @SerializedName("state_on")
-        protected @Nullable String state_on;
+        protected @Nullable String stateOn;
         @SerializedName("state_off")
-        protected @Nullable String state_off;
+        protected @Nullable String stateOff;
         @SerializedName("payload_on")
-        protected String payload_on = "ON";
+        protected String payloadOn = "ON";
         @SerializedName("payload_off")
-        protected String payload_off = "OFF";
+        protected String payloadOff = "OFF";
 
         @SerializedName("json_attributes_topic")
-        protected @Nullable String json_attributes_topic;
+        protected @Nullable String jsonAttributesTopic;
         @SerializedName("json_attributes_template")
-        protected @Nullable String json_attributes_template;
+        protected @Nullable String jsonAttributesTemplate;
     }
 
     public Switch(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
         boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
-                : channelConfiguration.state_topic.isBlank();
+                : channelConfiguration.stateTopic.isBlank();
 
-        if (optimistic && !channelConfiguration.state_topic.isBlank()) {
+        if (optimistic && !channelConfiguration.stateTopic.isBlank()) {
             throw new UnsupportedOperationException("Component:Switch does not support forced optimistic mode");
         }
 
-        String state_on = channelConfiguration.state_on != null ? channelConfiguration.state_on
-                : channelConfiguration.payload_on;
-        String state_off = channelConfiguration.state_off != null ? channelConfiguration.state_off
-                : channelConfiguration.payload_off;
+        String stateOn = channelConfiguration.stateOn != null ? channelConfiguration.stateOn
+                : channelConfiguration.payloadOn;
+        String stateOff = channelConfiguration.stateOff != null ? channelConfiguration.stateOff
+                : channelConfiguration.payloadOff;
 
-        OnOffValue value = new OnOffValue(state_on, state_off, channelConfiguration.payload_on,
-                channelConfiguration.payload_off);
+        OnOffValue value = new OnOffValue(stateOn, stateOff, channelConfiguration.payloadOn,
+                channelConfiguration.payloadOff);
 
-        buildChannel(switchChannelID, value, "state", componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.state_topic, channelConfiguration.getValueTemplate())
-                .commandTopic(channelConfiguration.command_topic, channelConfiguration.isRetain(),
+        buildChannel(SWITCH_CHANNEL_ID, value, "state", componentConfiguration.getUpdateListener())
+                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
+                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
                 .build();
     }
