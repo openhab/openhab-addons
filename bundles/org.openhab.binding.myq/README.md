@@ -31,10 +31,10 @@ Once an account has been added, garage doors and lamps will automatically be dis
 | Channel       | Item Type     | Thing Type       | States                                                 |
 |---------------|---------------|------------------|--------------------------------------------------------|
 | status        | String        | garagedoor       | opening, closed, closing, stopped, transition, unknown |
-| rollershutter | Rollershutter | garagedoor       | UP, DOWN, 0%, 100%     
-| closeError    | Switch        | garagedoor       | ON (has error), OFF (doesn't have error)
-| openError     | Switch        | garagedoor       | ON (has error), OFF (doesn't have error)|
-| switch        | Switch        | garagedoor, lamp | ON (open), OFF (closed)
+| rollershutter | Rollershutter | garagedoor       | UP, DOWN, 0%, 100%                                     |
+| closeError    | Switch        | garagedoor       | ON (has error), OFF (doesn't have error)               |
+| openError     | Switch        | garagedoor       | ON (has error), OFF (doesn't have error)               |
+| switch        | Switch        | garagedoor, lamp | ON (open), OFF (closed)                                
 
 ## Full Example
 
@@ -65,7 +65,7 @@ Switch MyQGarageDoorLamp "Lamp [%s]" {channel = "myq:lamp:home:efgh6789:switch"}
 sitemap MyQ label="MyQ Demo Sitemap" {
   Frame label="Garage Door" {
     String item=MyQGarageDoor1Status
-    Switch item=MyQGarageDoor1Switch    
+    Switch item=MyQGarageDoor1Switch
     Rollershutter item=MyQGarageDoor1Rollershutter
   }                
 }
