@@ -34,7 +34,8 @@
 							]
 						}
 					}
-				]
+				],
+				"readmeComment": "Value mapping `[\"fan-toggle\"\u003d\"Fan Toggle\"]`"
 			},
 			{
 				"property": "on",
@@ -272,7 +273,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"NO\",\"1\"\u003d\"LEFT\",\"2\"\u003d\"RIGHT\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"NO\",\"1\"\u003d\"LEFT\",\"2\"\u003d\"RIGHT\"]`"
 			},
 			{
 				"property": "speed-level",
