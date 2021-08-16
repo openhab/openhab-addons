@@ -117,8 +117,11 @@ public class VerisureSession {
     public boolean refresh() {
         try {
             if (logIn()) {
-                updateStatus();
-                return true;
+                if (updateStatus()) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }
@@ -246,13 +249,20 @@ public class VerisureSession {
     }
 
     public @Nullable String getPinCode(BigDecimal installationId) {
-        return verisureInstallations.get(installationId).getPinCode();
+        VerisureInstallation inst = verisureInstallations.get(installationId);
+        if (inst != null) {
+            return inst.getPinCode();
+        } else {
+            logger.debug("Installation is null!");
+            return null;
+        }
     }
 
     private void setPasswordFromCookie() {
         CookieStore c = httpClient.getCookieStore();
         List<HttpCookie> cookies = c.getCookies();
-        cookies.forEach(cookie -> {
+        final List<HttpCookie> unmodifiableList = List.of(cookies.toArray(new HttpCookie[] {}));
+        unmodifiableList.forEach(cookie -> {
             logger.trace("Response Cookie: {}", cookie);
             if (cookie.getName().equals(PASSWORD_NAME)) {
                 password = cookie.getValue();
@@ -347,6 +357,9 @@ public class VerisureSession {
                     // Maybe Verisure has switched API server in use?
                     logger.debug("Changed API server! Response: {}", content);
                     setApiServerInUse(getNextApiServer());
+                } else if (content.contains("\"message\":\"Request Failed")
+                        && content.contains("Invalid session cookie")) {
+                    throw new PostToAPIException("Invalid session cookie");
                 } else {
                     String contentChomped = content.trim();
                     logger.trace("Response body: {}", content);
@@ -515,9 +528,10 @@ public class VerisureSession {
         }
     }
 
-    private void updateStatus() {
+    private boolean updateStatus() {
         logger.debug("Update status");
-        verisureInstallations.forEach((installationId, installation) -> {
+        for (Map.Entry<BigDecimal, VerisureInstallation> verisureInstallations : verisureInstallations.entrySet()) {
+            VerisureInstallation installation = verisureInstallations.getValue();
             try {
                 configureInstallationInstance(installation.getInstallationId());
                 int httpResultCode = setSessionCookieAuthLogin();
@@ -534,11 +548,14 @@ public class VerisureSession {
                     updateGatewayStatus(installation);
                 } else {
                     logger.debug("Failed to set session cookie and auth login, HTTP result code: {}", httpResultCode);
+                    return false;
                 }
-            } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            } catch (ExecutionException | InterruptedException | TimeoutException | PostToAPIException e) {
                 logger.debug("Failed to update status {}", e.getMessage());
+                return false;
             }
-        });
+        }
+        return true;
     }
 
     private String createOperationJSON(String operation, VariablesDTO variables, String query) {
@@ -549,7 +566,7 @@ public class VerisureSession {
         return gson.toJson(Collections.singletonList(operationJSON));
     }
 
-    private synchronized void updateAlarmStatus(VerisureInstallation installation) {
+    private synchronized void updateAlarmStatus(VerisureInstallation installation) throws PostToAPIException {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "ArmState";
@@ -567,8 +584,7 @@ public class VerisureSession {
             String deviceId = "alarm" + installationId;
             thing.setDeviceId(deviceId);
             notifyListenersIfChanged(thing, installation, deviceId);
-        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
-                | PostToAPIException e) {
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
             logger.warn("Failed to send a POST to the API {}", e.getMessage());
         }
     }
