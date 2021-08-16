@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal;
+package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.util.List;
 
@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.Value;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.OffDelayUpdateStateListener;
 
@@ -28,13 +29,13 @@ import org.openhab.binding.mqtt.homeassistant.internal.listener.OffDelayUpdateSt
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentBinarySensor extends AbstractComponent<ComponentBinarySensor.ChannelConfiguration> {
+public class BinarySensor extends AbstractComponent<BinarySensor.ChannelConfiguration> {
     public static final String sensorChannelID = "sensor"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class ChannelConfiguration extends BaseChannelConfiguration {
+    static class ChannelConfiguration extends AbstractChannelConfiguration {
         ChannelConfiguration() {
             super("MQTT Binary Sensor");
         }
@@ -53,16 +54,16 @@ public class ComponentBinarySensor extends AbstractComponent<ComponentBinarySens
         protected @Nullable List<String> json_attributes;
     }
 
-    public ComponentBinarySensor(CFactory.ComponentConfiguration componentConfiguration) {
+    public BinarySensor(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
         OnOffValue value = new OnOffValue(channelConfiguration.payload_on, channelConfiguration.payload_off);
 
         buildChannel(sensorChannelID, value, "value", getListener(componentConfiguration, value))
-                .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template).build();
+                .stateTopic(channelConfiguration.state_topic, channelConfiguration.getValueTemplate()).build();
     }
 
-    private ChannelStateUpdateListener getListener(CFactory.ComponentConfiguration componentConfiguration,
+    private ChannelStateUpdateListener getListener(ComponentFactory.ComponentConfiguration componentConfiguration,
             Value value) {
         ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
 

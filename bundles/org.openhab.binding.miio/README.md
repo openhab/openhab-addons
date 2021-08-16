@@ -211,6 +211,7 @@ Currently the miio binding supports more than 290 different models.
 | Mi Smart Tower Fan           | miio:basic       | [dmaker.fan.p9](#dmaker-fan-p9) | Yes       |            |
 | Mi Smart Standing Fan 2      | miio:basic       | [dmaker.fan.p10](#dmaker-fan-p10) | Yes       |            |
 | Mi Smart Standing Fan Pro    | miio:basic       | [dmaker.fan.p15](#dmaker-fan-p15) | Yes       | Identified manual actions for execution<br />`action{"did":"off-delay-time-toggle","siid":3,"aiid":1,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel. |
+| Mi Smart Standing Fan 2      | miio:basic       | [dmaker.fan.p18](#dmaker-fan-p18) | Yes       | Identified manual actions for execution<br />`action{"did":"fan-toggle","siid":2,"aiid":1,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Robot Vacuum Mop 1C STYTJ01ZHM | miio:basic       | [dreame.vacuum.mc1808](#dreame-vacuum-mc1808) | Yes       | Identified manual actions for execution<br />`action{"did":"battery-start-charge","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-start-sweep","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":3,"aiid":2,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":26,"aiid":1,"in":[]}`<br />`action{"did":"filter-reset-filter-life","siid":27,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":28,"aiid":1,"in":[]}`<br />`action{"did":"clean-start-clean","siid":18,"aiid":1,"in":[]}`<br />`action{"did":"clean-stop-clean","siid":18,"aiid":2,"in":[]}`<br />`action{"did":"remote-start-remote","siid":21,"aiid":1,"in":[1.0, 2.0]}`<br />`action{"did":"remote-stop-remote","siid":21,"aiid":2,"in":[]}`<br />`action{"did":"remote-exit-remote","siid":21,"aiid":3,"in":[]}`<br />`action{"did":"map-map-req","siid":23,"aiid":1,"in":[2.0]}`<br />`action{"did":"audio-position","siid":24,"aiid":1,"in":[]}`<br />`action{"did":"audio-set-voice","siid":24,"aiid":2,"in":[]}`<br />`action{"did":"audio-play-sound","siid":24,"aiid":3,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel. |
 | Dreame Robot Vacuum-Mop F9   | miio:basic       | [dreame.vacuum.p2008](#dreame-vacuum-p2008) | Yes       | Identified manual actions for execution<br />`action{"did":"vacuum-start-sweep","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":2,"aiid":2,"in":[]}`<br />`action{"did":"battery-start-charge","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":9,"aiid":1,"in":[]}`<br />`action{"did":"brush-cleaner-reset-brush-life","siid":10,"aiid":1,"in":[]}`<br />`action{"did":"filter-reset-filter-life","siid":11,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-extend-start-clean","siid":4,"aiid":1,"in":[10.0]}`<br />`action{"did":"vacuum-extend-stop-clean","siid":4,"aiid":2,"in":[]}`<br />`action{"did":"map-map-req","siid":6,"aiid":1,"in":[2.0]}`<br />`action{"did":"map-update-map","siid":6,"aiid":2,"in":[4.0]}`<br />`action{"did":"audio-position","siid":7,"aiid":1,"in":[]}`<br />`action{"did":"audio-play-sound","siid":7,"aiid":2,"in":[]}`<br />`action{"did":"time-delete-timer","siid":8,"aiid":1,"in":[3.0]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Dreame Robot Vacuum D9       | miio:basic       | [dreame.vacuum.p2009](#dreame-vacuum-p2009) | Yes       | Identified manual actions for execution not linked in the database >`action{"did":"vacuum-extend-start-clean","siid":4,"aiid":1,"in":[10.0]}`<br />`action{"did":"vacuum-extend-stop-clean","siid":4,"aiid":2,"in":[]}`<br />`action{"did":"map-map-req","siid":6,"aiid":1,"in":[2.0]}`<br />`action{"did":"map-update-map","siid":6,"aiid":2,"in":[4.0]}`<br />`action{"did":"audio-position","siid":7,"aiid":1,"in":[]}`<br />`action{"did":"audio-play-sound","siid":7,"aiid":2,"in":[]}`<br />`action{"did":"time-delete-timer","siid":8,"aiid":1,"in":[3.0]}`<br /> |
@@ -831,6 +832,23 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | off_delay_time       | Number:Time          | Off Delay Time - Off Delay Time          |            |
 | actions              | String               | Actions                                  | Value mapping `["off-delay-time-toggle"="Off Delay Time Toggle"]` |
 
+### Mi Smart Standing Fan 2 (<a name="dmaker-fan-p18">dmaker.fan.p18</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Actions                                  | Value mapping `["fan-toggle"="Fan Toggle"]` |
+| on                   | Switch               | Fan - Switch Status                      |            |
+| fan_level            | Number               | Fan - Fan Level                          | Value mapping `["1"="Level1","2"="Level2","3"="Level3","4"="Level4"]` |
+| mode                 | Number               | Fan - Mode                               | Value mapping `["0"="Straight Wind","1"="Natural Wind"]` |
+| horizontal_swing     | Switch               | Fan - Horizontal Swing                   |            |
+| horizontal_angle     | Number               | Fan - Horizontal Angle                   | Value mapping `["30"="30","60"="60","90"="90","120"="120","140"="140"]` |
+| off_delay_time       | Number:Time          | Fan - Power Off Delay Time               |            |
+| brightness           | Switch               | Fan - Brightness                         |            |
+| alarm                | Switch               | Fan - Alarm                              |            |
+| motor_control        | Number               | Fan - Motor Control                      | Value mapping `["0"="NO","1"="LEFT","2"="RIGHT"]` |
+| speed_level          | Number               | Fan - Speed Level                        |            |
+| physical_controls_locked | Switch               | Physical Control Locked - Physical Control Locked |            |
+
 ### Mi Robot Vacuum Mop 1C STYTJ01ZHM (<a name="dreame-vacuum-mc1808">dreame.vacuum.mc1808</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
@@ -1374,19 +1392,20 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | mode                 | Number               | Robot Cleaner - Mode                     | Value mapping `["1"="Auto-clean","2"="Spot-clean","3"="Wallflow-clean"]` |
 | target-water-level   | Number               | Robot Cleaner - Target Water Level       | Value mapping `["1"="Level1","2"="Level2","3"="Level3"]` |
 | fan-level            | Number               | Robot Cleaner - Fan Level                | Value mapping `["0"="Silence","1"="Stanrd","2"="Middle","3"="Enchance"]` |
-| battery-level        | Number               | Battery - Battery Level                  |            |
+| battery-level        | Number:Dimensionless | Battery - Battery Level                  |            |
 | charging-state       | Number               | Battery - Charging State                 | Value mapping `["0"="Not-charging","1"="Charging","2"="Charging-competely"]` |
 | alarm                | Switch               | Alarm - Alarm                            |            |
-| volume               | Number               | Alarm - Volume                           |            |
-| filter-life-level    | Number               | Filter - Filter Life Level               |            |
-| filter-left-time     | Number               | Filter - Filter Left Time                |            |
-| brush-life-level     | Number               | Brush Cleaner - Brush Life Level         |            |
-| brush-left-time      | Number               | Brush Cleaner - Brush Left Time          |            |
-| brush-life-level1    | Number               | Brush Cleaner - Brush Life Level         |            |
-| brush-left-time1     | Number               | Brush Cleaner - Brush Left Time          |            |
+| volume               | Number:Dimensionless | Alarm - Volume                           |            |
+| filter_life_level    | Number:Dimensionless | Filter - Filter Life Level               |            |
+| filter-left-time     | Number:Time          | Filter - Filter Left Time                |            |
+| brush-life-level     | Number:Dimensionless | Brush Cleaner - Brush Life Level         |            |
+| brush-left-time      | Number:Time          | Brush Cleaner - Brush Left Time          |            |
+| brush-life-level1    | Number:Dimensionless | Brush Cleaner - Brush Life Level         |            |
+| brush-left-time1     | Number:Time          | Brush Cleaner - Brush Left Time          |            |
+| direction_key        | Number               | Remote Control - Direction Key           | Value mapping `["0"="direction 0","1"="direction 1","2"="direction 2","3"="direction 3","4"="direction 4"]` |
 | clean-area           | Number:Area          | Clean Record - Clean Area                |            |
-| clean-time           | Number:Time          | Clean Record - Clean Time                |            |
-| total-clean-area     | Number               | Clean Record - Total Clean Area          |            |
+| clean_time           | Number               | Clean Record - Clean Time                |            |
+| total-clean-area     | Number:Area          | Clean Record - Total Clean Area          |            |
 | total-clean-time     | Number               | Clean Record - Total Clean Time          |            |
 | total-clean-count    | Number               | Clean Record - Total Clean Count         |            |
 | language             | Number               | Language - Language                      | Value mapping `["0"="English","1"="简体中文","2"="Español","3"="Русский","4"="Italiano","5"="Français","6"="Deutsch","7"="한국어","8"="Polski"]` |
@@ -2017,14 +2036,15 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| powerUsage           | Number               | Power Consumption                        |            |
+| mode                 | String               | Mode                                     | Value mapping `["normal"="Normal","green"="Green"]` |
+| powerUsage           | Number:Power         | Power Consumption                        |            |
+| voltage              | Number:ElectricPotential | Voltage                                  |            |
 | led                  | Switch               | wifi LED                                 |            |
-| power_price          | Number               | power_price                              |            |
-| current              | Number               | Current                                  |            |
+| power_price          | Number               | Power Price                              |            |
+| power_factor         | Number               | Power Factor                             |            |
+| current              | Number:ElectricCurrent | Current                                  |            |
+| elec_leakage         | Number:ElectricCurrent | Electic Leakage                          |            |
 | temperature          | Number:Temperature   | Temperature                              |            |
-| lp_autooff           | Number               | Low Power Auto Off                       |            |
-| lp_autooff_delay     | Number               | Low Power Limit Time                     |            |
-| lp_threshold         | Number               | Low Power Threshold                      |            |
 
 ### PTX OneKey Switch (WIFI) (<a name="090615-switch-xswitch01">090615.switch.xswitch01</a>) Channels
 
@@ -5492,6 +5512,26 @@ Number:Time off_delay_time "Off Delay Time - Off Delay Time" (G_fan) {channel="m
 String actions "Actions" (G_fan) {channel="miio:basic:fan:actions"}
 ```
 
+### Mi Smart Standing Fan 2 (dmaker.fan.p18) item file lines
+
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_fan "Mi Smart Standing Fan 2" <status>
+String actions "Actions" (G_fan) {channel="miio:basic:fan:actions"}
+Switch on "Fan - Switch Status" (G_fan) {channel="miio:basic:fan:on"}
+Number fan_level "Fan - Fan Level" (G_fan) {channel="miio:basic:fan:fan_level"}
+Number mode "Fan - Mode" (G_fan) {channel="miio:basic:fan:mode"}
+Switch horizontal_swing "Fan - Horizontal Swing" (G_fan) {channel="miio:basic:fan:horizontal_swing"}
+Number horizontal_angle "Fan - Horizontal Angle" (G_fan) {channel="miio:basic:fan:horizontal_angle"}
+Number:Time off_delay_time "Fan - Power Off Delay Time" (G_fan) {channel="miio:basic:fan:off_delay_time"}
+Switch brightness "Fan - Brightness" (G_fan) {channel="miio:basic:fan:brightness"}
+Switch alarm "Fan - Alarm" (G_fan) {channel="miio:basic:fan:alarm"}
+Number motor_control "Fan - Motor Control" (G_fan) {channel="miio:basic:fan:motor_control"}
+Number speed_level "Fan - Speed Level" (G_fan) {channel="miio:basic:fan:speed_level"}
+Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_fan) {channel="miio:basic:fan:physical_controls_locked"}
+```
+
 ### Mi Robot Vacuum Mop 1C STYTJ01ZHM (dreame.vacuum.mc1808) item file lines
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -6136,19 +6176,20 @@ Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacu
 Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
 Number target_water_level "Robot Cleaner - Target Water Level" (G_vacuum) {channel="miio:basic:vacuum:target-water-level"}
 Number fan_level "Robot Cleaner - Fan Level" (G_vacuum) {channel="miio:basic:vacuum:fan-level"}
-Number battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery-level"}
 Number charging_state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging-state"}
 Switch alarm "Alarm - Alarm" (G_vacuum) {channel="miio:basic:vacuum:alarm"}
-Number volume "Alarm - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
-Number filter_life_level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter-life-level"}
-Number filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter-left-time"}
-Number brush_life_level "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level"}
-Number brush_left_time "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time"}
-Number brush_life_level1 "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level1"}
-Number brush_left_time1 "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time1"}
+Number:Dimensionless volume "Alarm - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter_life_level"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter-left-time"}
+Number:Dimensionless brush_life_level "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level"}
+Number:Time brush_left_time "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time"}
+Number:Dimensionless brush_life_level1 "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush-life-level1"}
+Number:Time brush_left_time1 "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush-left-time1"}
+Number direction_key "Remote Control - Direction Key" (G_vacuum) {channel="miio:basic:vacuum:direction_key"}
 Number:Area clean_area "Clean Record - Clean Area" (G_vacuum) {channel="miio:basic:vacuum:clean-area"}
-Number:Time clean_time "Clean Record - Clean Time" (G_vacuum) {channel="miio:basic:vacuum:clean-time"}
-Number total_clean_area "Clean Record - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total-clean-area"}
+Number clean_time "Clean Record - Clean Time" (G_vacuum) {channel="miio:basic:vacuum:clean_time"}
+Number:Area total_clean_area "Clean Record - Total Clean Area" (G_vacuum) {channel="miio:basic:vacuum:total-clean-area"}
 Number total_clean_time "Clean Record - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total-clean-time"}
 Number total_clean_count "Clean Record - Total Clean Count" (G_vacuum) {channel="miio:basic:vacuum:total-clean-count"}
 Number language "Language - Language" (G_vacuum) {channel="miio:basic:vacuum:language"}
@@ -6917,14 +6958,15 @@ note: Autogenerated example. Replace the id (powerstrip) in the channel with you
 ```
 Group G_powerstrip "CHINGMI Smart Power Strip v1" <status>
 Switch power "Power" (G_powerstrip) {channel="miio:basic:powerstrip:power"}
-Number powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
+String mode "Mode" (G_powerstrip) {channel="miio:basic:powerstrip:mode"}
+Number:Power powerUsage "Power Consumption" (G_powerstrip) {channel="miio:basic:powerstrip:powerUsage"}
+Number:ElectricPotential voltage "Voltage" (G_powerstrip) {channel="miio:basic:powerstrip:voltage"}
 Switch led "wifi LED" (G_powerstrip) {channel="miio:basic:powerstrip:led"}
-Number power_price "power_price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
-Number current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
+Number power_price "Power Price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
+Number power_factor "Power Factor" (G_powerstrip) {channel="miio:basic:powerstrip:power_factor"}
+Number:ElectricCurrent current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
+Number:ElectricCurrent elec_leakage "Electic Leakage" (G_powerstrip) {channel="miio:basic:powerstrip:elec_leakage"}
 Number:Temperature temperature "Temperature" (G_powerstrip) {channel="miio:basic:powerstrip:temperature"}
-Number lp_autooff "Low Power Auto Off" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff"}
-Number lp_autooff_delay "Low Power Limit Time" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff_delay"}
-Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
 ```
 
 ### PTX OneKey Switch (WIFI) (090615.switch.xswitch01) item file lines
