@@ -156,16 +156,6 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 
 ## Full Example
 
-Examples to configure things 
-Thing <binding_id>:<type_id>:<thing_id> "Label" @ "Location" [ <parameters> ]
-    
-The general syntax for .things files is defined as follows (parts in <..> are required):
-
-```
-Bridge <binding_id>:<bridge_thing_type_id>:<bridge_uid> "<Souliss Gateway Label>" [ <parameters> ]
-{  
-Thing <thing_type_id> <thing_uid> "<Souliss Thing Label>" [ <parameters> ]
-}
 
 ```
 
