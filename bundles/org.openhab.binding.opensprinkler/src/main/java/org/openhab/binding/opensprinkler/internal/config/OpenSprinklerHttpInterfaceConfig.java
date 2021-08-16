@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.opensprinkler.internal.config;
 
-import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.DEFAULT_REFRESH_RATE;
-import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.DEFAULT_ADMIN_PASSWORD;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link OpenSprinklerHttpInterfaceConfig} class defines the configuration options
@@ -21,16 +22,17 @@ import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiCon
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 public class OpenSprinklerHttpInterfaceConfig {
     /**
      * Hostname of the OpenSprinkler API.
      */
-    public String hostname = null;
+    public String hostname = "";
 
     /**
      * The port the OpenSprinkler API is listening on.
      */
-    public int port = DEFAULT_API_PORT;
+    public int port = 80;
 
     /**
      * The password to connect to the OpenSprinkler API.
@@ -40,13 +42,13 @@ public class OpenSprinklerHttpInterfaceConfig {
     /**
      * Number of seconds in between refreshes from the OpenSprinkler device.
      */
-    public int refresh = DEFAULT_REFRESH_RATE;
+    public int refresh = 60;
     /**
      * The basic auth username to use when the OpenSprinkler device is behind a reverse proxy with basic auth enabled.
      */
-    public String basicUsername = null;
+    public String basicUsername = "";
     /**
      * The basic auth password to use when the OpenSprinkler device is behind a reverse proxy with basic auth enabled.
      */
-    public String basicPassword = null;
+    public String basicPassword = "";
 }

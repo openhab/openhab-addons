@@ -271,7 +271,7 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
             transceiverType = TransceiverType._UNKNOWN;
             logger.warn(
                     "The transceiver type reported ({}) isn't known to the RFXCom binding. Please raise an issue at https://github.com/openhab/openhab-addons/ to have it included.",
-                    data[5]);
+                    Byte.toUnsignedInt(data[5]));
         }
 
         hardwareVersion1 = data[11];
@@ -373,4 +373,32 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
     public void convertFromState(String channelId, Type type) {
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * Command to reset RFXCOM controller.
+     *
+     */
+    public static final byte[] CMD_RESET = new byte[] { 0x0D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00 };
+
+    /**
+     * Command to get RFXCOM controller status.
+     *
+     */
+    public static final byte[] CMD_GET_STATUS = new byte[] { 0x0D, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00 };
+
+    /**
+     * Command to save RFXCOM controller configuration.
+     *
+     */
+    public static final byte[] CMD_SAVE = new byte[] { 0x0D, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00 };
+
+    /**
+     * Command to start RFXCOM receiver.
+     *
+     */
+    public static final byte[] CMD_START_RECEIVER = new byte[] { 0x0D, 0x00, 0x00, 0x03, 0x07, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00 };
 }

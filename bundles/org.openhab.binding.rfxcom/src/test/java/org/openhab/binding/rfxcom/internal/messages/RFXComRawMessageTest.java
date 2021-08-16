@@ -13,14 +13,18 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.binding.rfxcom.internal.RFXComTestHelper.commandChannelUID;
 
 import java.nio.ByteBuffer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.rfxcom.internal.config.RFXComRawDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageTooLongException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.types.Command;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -30,10 +34,10 @@ import org.openhab.core.util.HexUtils;
  */
 @NonNullByDefault
 public class RFXComRawMessageTest {
-
-    private void testMessage(String hexMsg, RFXComRawMessage.SubType subType, int seqNbr, int repeat, String pulses)
+    private void testMessageRx(String hexMsg, RFXComRawMessage.SubType subType, int seqNbr, int repeat, String pulses)
             throws RFXComException {
-        final RFXComRawMessage msg = (RFXComRawMessage) RFXComMessageFactory.createMessage(HexUtils.hexToBytes(hexMsg));
+        final RFXComRawMessage msg = (RFXComRawMessage) RFXComMessageFactoryImpl.INSTANCE
+                .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals(subType, msg.subType, "SubType");
         assertEquals(seqNbr, (short) (msg.seqNbr & 0xFF), "Seq Number");
         assertEquals("RAW", msg.getDeviceId(), "Device Id");
@@ -41,25 +45,42 @@ public class RFXComRawMessageTest {
         byte[] payload = new byte[msg.pulses.length * 2];
         ByteBuffer.wrap(payload).asShortBuffer().put(msg.pulses);
         assertEquals(pulses, HexUtils.bytesToHex(payload), "Pulses");
+    }
 
+    @Test
+    public void testSomeRxMessages() throws RFXComException {
+        testMessageRx("087F0027051356ECC0", RFXComRawMessage.SubType.RAW_PACKET1, 0x27, 5, "1356ECC0");
+    }
+
+    private void testMessageTx(RFXComRawDeviceConfiguration config, Command command, String hexMsg)
+            throws RFXComException {
+        RFXComRawMessage msg = (RFXComRawMessage) RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.RAW,
+                config, commandChannelUID, command);
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals(hexMsg, HexUtils.bytesToHex(decoded), "Message converted back");
+        assertEquals(hexMsg, HexUtils.bytesToHex(decoded), "Transmitted message");
     }
 
     @Test
-    public void testSomeMessages() throws RFXComException {
-        testMessage("087F0027051356ECC0", RFXComRawMessage.SubType.RAW_PACKET1, 0x27, 5, "1356ECC0");
+    public void testTxBasicPulses() throws RFXComException {
+        RFXComRawDeviceConfiguration config = new RFXComRawDeviceConfiguration();
+        config.deviceId = "RAW";
+        config.subType = "RAW_PACKET1";
+        config.repeat = 5;
+        config.onPulsesArray = new short[] { 0x10, 0x20, 0x30, 0x40 };
+
+        testMessageTx(config, OnOffType.ON, "0C7F0000050010002000300040");
     }
 
     @Test
-    public void testLongMessage() throws RFXComException {
-        RFXComRawMessage msg = (RFXComRawMessage) RFXComMessageFactory.createMessage(PacketType.RAW);
-        msg.subType = RFXComRawMessage.SubType.RAW_PACKET1;
-        msg.seqNbr = 1;
-        msg.repeat = 5;
-        msg.pulses = new short[125];
+    public void testTxMissingPulses() throws RFXComException {
+        RFXComRawDeviceConfiguration config = new RFXComRawDeviceConfiguration();
+        config.deviceId = "RAW";
+        config.subType = "RAW_PACKET1";
+        config.repeat = 5;
+        config.onPulsesArray = new short[] { 0x10, 0x20, 0x30, 0x40 };
 
-        assertThrows(RFXComMessageTooLongException.class, () -> msg.decodeMessage());
+        assertThrows(RFXComInvalidStateException.class,
+                () -> testMessageTx(config, OnOffType.OFF, "0C7F0000050010002000300040"));
     }
 }

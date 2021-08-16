@@ -85,7 +85,7 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
                             boolean enabled = data.getValueAsBoolean();
                             if (enabled) {
                                 Data brightnessData = apiClient.get().getFunctionalLightBrightnessState(getThingHaId());
-                                getThingChannel(CHANNEL_FUNCTIONAL_LIGHT_BRIGHTNESS_STATE)
+                                getLinkedChannel(CHANNEL_FUNCTIONAL_LIGHT_BRIGHTNESS_STATE)
                                         .ifPresent(channel -> updateState(channel.getUID(),
                                                 new PercentType(brightnessData.getValueAsInt())));
                             }
@@ -120,7 +120,7 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
 
         // register hood specific SSE event handlers
         handlers.put(EVENT_HOOD_INTENSIVE_LEVEL,
-                event -> getThingChannel(CHANNEL_HOOD_INTENSIVE_LEVEL).ifPresent(channel -> {
+                event -> getLinkedChannel(CHANNEL_HOOD_INTENSIVE_LEVEL).ifPresent(channel -> {
                     String hoodIntensiveLevel = event.getValue();
                     if (hoodIntensiveLevel != null) {
                         updateState(channel.getUID(), new StringType(mapStageStringType(hoodIntensiveLevel)));
@@ -129,7 +129,7 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
                     }
                 }));
         handlers.put(EVENT_HOOD_VENTING_LEVEL,
-                event -> getThingChannel(CHANNEL_HOOD_VENTING_LEVEL).ifPresent(channel -> {
+                event -> getLinkedChannel(CHANNEL_HOOD_VENTING_LEVEL).ifPresent(channel -> {
                     String hoodVentingLevel = event.getValue();
                     if (hoodVentingLevel != null) {
                         updateState(channel.getUID(), new StringType(mapStageStringType(hoodVentingLevel)));
@@ -206,7 +206,7 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
         if (apiClient.isPresent()) {
             try {
                 ArrayList<StateOption> stateOptions = new ArrayList<>();
-                apiClient.get().getPrograms(getThingHaId()).forEach(availableProgram -> {
+                getPrograms().forEach(availableProgram -> {
                     if (PROGRAM_HOOD_AUTOMATIC.equals(availableProgram.getKey())) {
                         stateOptions.add(new StateOption(COMMAND_AUTOMATIC, mapStringType(availableProgram.getKey())));
                     } else if (PROGRAM_HOOD_DELAYED_SHUT_OFF.equals(availableProgram.getKey())) {
@@ -216,7 +216,7 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
                         try {
                             List<AvailableProgramOption> availableProgramOptions = apiClient.get()
                                     .getProgramOptions(getThingHaId(), PROGRAM_HOOD_VENTING);
-                            if (availableProgramOptions.isEmpty()) {
+                            if (availableProgramOptions == null || availableProgramOptions.isEmpty()) {
                                 throw new CommunicationException("Program " + PROGRAM_HOOD_VENTING + " is unsupported");
                             }
                             availableProgramOptions.forEach(option -> {
@@ -269,9 +269,9 @@ public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
     @Override
     protected void resetProgramStateChannels(boolean offline) {
         super.resetProgramStateChannels(offline);
-        getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_HOOD_INTENSIVE_LEVEL).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_HOOD_VENTING_LEVEL).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+        getLinkedChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+        getLinkedChannel(CHANNEL_HOOD_INTENSIVE_LEVEL).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+        getLinkedChannel(CHANNEL_HOOD_VENTING_LEVEL).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
     }
 
     private StateOption createVentingStateOption(String optionKey) {

@@ -16,12 +16,19 @@ import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.RAW;
 
 import java.nio.ByteBuffer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
+import org.openhab.binding.rfxcom.internal.config.RFXComRawDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageTooLongException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
@@ -67,6 +74,8 @@ public class RFXComRawMessage extends RFXComDeviceMessageImpl<RFXComRawMessage.S
     public SubType subType;
     public byte repeat;
     public short[] pulses;
+
+    private RFXComRawDeviceConfiguration config;
 
     public RFXComRawMessage() {
         super(RAW);
@@ -114,7 +123,7 @@ public class RFXComRawMessage extends RFXComDeviceMessageImpl<RFXComRawMessage.S
         data[1] = RAW.toByte();
         data[2] = subType.toByte();
         data[3] = seqNbr;
-        data[4] = repeat;
+        data[4] = (byte) config.repeat;
 
         ByteBuffer.wrap(data, 5, pulsesByteLen).asShortBuffer().put(pulses);
 
@@ -127,7 +136,14 @@ public class RFXComRawMessage extends RFXComDeviceMessageImpl<RFXComRawMessage.S
     }
 
     @Override
-    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
+    public void setConfig(RFXComDeviceConfiguration config) throws RFXComException {
+        super.setConfig(config);
+        this.config = (RFXComRawDeviceConfiguration) config;
+    }
+
+    @Override
+    public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
+            throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_RAW_MESSAGE:
                 return new StringType(HexUtils.bytesToHex(rawMessage));
@@ -137,6 +153,11 @@ public class RFXComRawMessage extends RFXComDeviceMessageImpl<RFXComRawMessage.S
                 ByteBuffer.wrap(payload).asShortBuffer().put(pulses);
                 return new StringType(HexUtils.bytesToHex(payload));
 
+            case CHANNEL_PULSES:
+                return new StringType(IntStream.range(0, pulses.length)
+                        .mapToObj(s -> Integer.toString(Short.toUnsignedInt(pulses[s])))
+                        .collect(Collectors.joining(" ")));
+
             default:
                 throw new RFXComUnsupportedChannelException("Nothing relevant for " + channelId);
         }
@@ -144,33 +165,46 @@ public class RFXComRawMessage extends RFXComDeviceMessageImpl<RFXComRawMessage.S
 
     @Override
     public void setSubType(SubType subType) {
-        throw new UnsupportedOperationException();
+        this.subType = subType;
     }
 
     @Override
     public void setDeviceId(String deviceId) {
-        throw new UnsupportedOperationException();
+        // Nothing to do here
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+    public void convertFromState(String channelId, Type type)
+            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
         switch (channelId) {
             case CHANNEL_RAW_MESSAGE:
-                if (type instanceof StringType) {
-                    // TODO: Check the raw message for validity (length, no more than 124 shorts, multiple of 4 bytes in
-                    // payload)
-                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " inot yet implemented");
+            case CHANNEL_RAW_PAYLOAD:
+            case CHANNEL_PULSES:
+                throw new RFXComUnsupportedChannelException("Cannot send on channel " + channelId);
+
+            case CHANNEL_COMMAND:
+                if (type instanceof OnOffType) {
+                    if (type == OnOffType.ON) {
+                        this.pulses = config.onPulsesArray;
+                    } else {
+                        this.pulses = config.offPulsesArray;
+                    }
+                } else if (type instanceof OpenClosedType) {
+                    if (type == OpenClosedType.OPEN) {
+                        this.pulses = config.openPulsesArray;
+                    } else {
+                        this.pulses = config.closedPulsesArray;
+                    }
                 } else {
                     throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
 
-            case CHANNEL_RAW_PAYLOAD:
-                if (type instanceof StringType) {
-                    // TODO: Check the payload for validity (no more than 124 shorts, multiple of 4 bytes
-                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " not yet implemented");
-                } else {
-                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
+                if (this.pulses == null) {
+                    throw new RFXComInvalidStateException(channelId, null,
+                            "No pulses provided in the device configuration for command" + type);
                 }
+
+                break;
 
             default:
                 throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");

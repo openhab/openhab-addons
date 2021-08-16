@@ -75,7 +75,11 @@ public class HomeConnectWasherDryerHandler extends AbstractHomeConnectThingHandl
                 getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
         handlers.put(CHANNEL_WASHER_RINSE_PLUS,
                 getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_RINSE_HOLD,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
         handlers.put(CHANNEL_WASHER_SOAK,
+                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_WASHER_LOAD_RECOMMENDATION,
                 getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
         handlers.put(CHANNEL_PROGRAM_ENERGY,
                 getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
@@ -103,26 +107,29 @@ public class HomeConnectWasherDryerHandler extends AbstractHomeConnectThingHandl
 
         // register washer specific event handlers
         handlers.put(EVENT_WASHER_TEMPERATURE,
-                event -> getThingChannel(CHANNEL_WASHER_TEMPERATURE).ifPresent(channel -> updateState(channel.getUID(),
+                event -> getLinkedChannel(CHANNEL_WASHER_TEMPERATURE).ifPresent(channel -> updateState(channel.getUID(),
                         event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue()))));
         handlers.put(EVENT_WASHER_SPIN_SPEED,
-                event -> getThingChannel(CHANNEL_WASHER_SPIN_SPEED).ifPresent(channel -> updateState(channel.getUID(),
+                event -> getLinkedChannel(CHANNEL_WASHER_SPIN_SPEED).ifPresent(channel -> updateState(channel.getUID(),
                         event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue()))));
         // register dryer specific event handlers
         handlers.put(EVENT_DRYER_DRYING_TARGET,
-                event -> getThingChannel(CHANNEL_DRYER_DRYING_TARGET).ifPresent(channel -> updateState(channel.getUID(),
-                        event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue()))));
+                event -> getLinkedChannel(CHANNEL_DRYER_DRYING_TARGET)
+                        .ifPresent(channel -> updateState(channel.getUID(),
+                                event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue()))));
     }
 
     @Override
     protected boolean isChannelLinkedToProgramOptionNotFullySupportedByApi() {
-        return (getThingChannel(CHANNEL_WASHER_VARIO_PERFECT).isPresent() && isLinked(CHANNEL_WASHER_VARIO_PERFECT))
-                || (getThingChannel(CHANNEL_WASHER_LESS_IRONING).isPresent() && isLinked(CHANNEL_WASHER_LESS_IRONING))
-                || (getThingChannel(CHANNEL_WASHER_PRE_WASH).isPresent() && isLinked(CHANNEL_WASHER_PRE_WASH))
-                || (getThingChannel(CHANNEL_WASHER_RINSE_PLUS).isPresent() && isLinked(CHANNEL_WASHER_RINSE_PLUS))
-                || (getThingChannel(CHANNEL_WASHER_SOAK).isPresent() && isLinked(CHANNEL_WASHER_SOAK))
-                || (getThingChannel(CHANNEL_PROGRAM_ENERGY).isPresent() && isLinked(CHANNEL_PROGRAM_ENERGY))
-                || (getThingChannel(CHANNEL_PROGRAM_WATER).isPresent() && isLinked(CHANNEL_PROGRAM_WATER));
+        return getLinkedChannel(CHANNEL_WASHER_VARIO_PERFECT).isPresent()
+                || getLinkedChannel(CHANNEL_WASHER_LESS_IRONING).isPresent()
+                || getLinkedChannel(CHANNEL_WASHER_PRE_WASH).isPresent()
+                || getLinkedChannel(CHANNEL_WASHER_RINSE_PLUS).isPresent()
+                || getLinkedChannel(CHANNEL_WASHER_RINSE_HOLD).isPresent()
+                || getLinkedChannel(CHANNEL_WASHER_SOAK).isPresent()
+                || getLinkedChannel(CHANNEL_WASHER_LOAD_RECOMMENDATION).isPresent()
+                || getLinkedChannel(CHANNEL_PROGRAM_ENERGY).isPresent()
+                || getLinkedChannel(CHANNEL_PROGRAM_WATER).isPresent();
     }
 
     @Override
@@ -162,20 +169,23 @@ public class HomeConnectWasherDryerHandler extends AbstractHomeConnectThingHandl
     @Override
     protected void resetProgramStateChannels(boolean offline) {
         super.resetProgramStateChannels(offline);
-        getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+        getLinkedChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+        getLinkedChannel(CHANNEL_PROGRAM_PROGRESS_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+        getLinkedChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         if (offline) {
-            getThingChannel(CHANNEL_WASHER_TEMPERATURE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-            getThingChannel(CHANNEL_WASHER_SPIN_SPEED).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-            getThingChannel(CHANNEL_WASHER_VARIO_PERFECT).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-            getThingChannel(CHANNEL_WASHER_LESS_IRONING).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-            getThingChannel(CHANNEL_WASHER_PRE_WASH).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-            getThingChannel(CHANNEL_WASHER_RINSE_PLUS).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-            getThingChannel(CHANNEL_WASHER_SOAK).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-            getThingChannel(CHANNEL_PROGRAM_ENERGY).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-            getThingChannel(CHANNEL_PROGRAM_WATER).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-            getThingChannel(CHANNEL_DRYER_DRYING_TARGET).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getLinkedChannel(CHANNEL_WASHER_TEMPERATURE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getLinkedChannel(CHANNEL_WASHER_SPIN_SPEED).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getLinkedChannel(CHANNEL_WASHER_VARIO_PERFECT).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getLinkedChannel(CHANNEL_WASHER_LESS_IRONING).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getLinkedChannel(CHANNEL_WASHER_PRE_WASH).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getLinkedChannel(CHANNEL_WASHER_RINSE_PLUS).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getLinkedChannel(CHANNEL_WASHER_RINSE_HOLD).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getLinkedChannel(CHANNEL_WASHER_SOAK).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getLinkedChannel(CHANNEL_WASHER_LOAD_RECOMMENDATION)
+                    .ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getLinkedChannel(CHANNEL_PROGRAM_ENERGY).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getLinkedChannel(CHANNEL_PROGRAM_WATER).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getLinkedChannel(CHANNEL_DRYER_DRYING_TARGET).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         }
     }
 }

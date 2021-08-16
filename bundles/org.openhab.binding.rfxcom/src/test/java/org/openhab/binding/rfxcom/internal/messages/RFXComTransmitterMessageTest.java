@@ -31,7 +31,7 @@ import org.openhab.core.util.HexUtils;
 @NonNullByDefault
 public class RFXComTransmitterMessageTest {
     private void testMessage(String hexMsg, Response response, SubType subType, int seqNbr) throws RFXComException {
-        final RFXComTransmitterMessage msg = (RFXComTransmitterMessage) RFXComMessageFactory
+        final RFXComTransmitterMessage msg = (RFXComTransmitterMessage) RFXComMessageFactoryImpl.INSTANCE
                 .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals(subType, msg.subType, "SubType");
         assertEquals(response, msg.response, "Response");

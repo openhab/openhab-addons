@@ -24,7 +24,6 @@ import org.openhab.binding.mielecloud.internal.auth.OAuthException;
 import org.openhab.binding.mielecloud.internal.config.OAuthAuthorizationHandler;
 import org.openhab.binding.mielecloud.internal.config.exception.NoOngoingAuthorizationException;
 import org.openhab.binding.mielecloud.internal.config.exception.OngoingAuthorizationException;
-import org.openhab.binding.mielecloud.internal.util.EmailValidator;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,18 +69,25 @@ public final class ForwardToLoginServlet extends AbstractRedirectionServlet {
             logger.warn("Request is missing client ID.");
             return getErrorRedirectionUrl(PairAccountServlet.MISSING_CLIENT_ID_PARAMETER_NAME);
         }
+        clientId = clientId.strip();
+
         if (clientSecret == null || clientSecret.isEmpty()) {
             logger.warn("Request is missing client secret.");
             return getErrorRedirectionUrl(PairAccountServlet.MISSING_CLIENT_SECRET_PARAMETER_NAME);
         }
+        clientSecret = clientSecret.strip();
+
         if (bridgeId == null || bridgeId.isEmpty()) {
             logger.warn("Request is missing bridge ID.");
             return getErrorRedirectionUrl(PairAccountServlet.MISSING_BRIDGE_ID_PARAMETER_NAME);
         }
+        bridgeId = bridgeId.strip();
+
         if (email == null || email.isEmpty()) {
             logger.warn("Request is missing e-mail address.");
             return getErrorRedirectionUrl(PairAccountServlet.MISSING_EMAIL_PARAMETER_NAME);
         }
+        email = email.strip();
 
         ThingUID bridgeUid = null;
         try {
@@ -89,11 +95,6 @@ public final class ForwardToLoginServlet extends AbstractRedirectionServlet {
         } catch (IllegalArgumentException e) {
             logger.warn("Passed bridge ID '{}' is invalid.", bridgeId);
             return getErrorRedirectionUrl(PairAccountServlet.MALFORMED_BRIDGE_ID_PARAMETER_NAME);
-        }
-
-        if (!EmailValidator.isValid(email)) {
-            logger.warn("Passed e-mail address '{}' is invalid.", email);
-            return getErrorRedirectionUrl(PairAccountServlet.MALFORMED_EMAIL_PARAMETER_NAME);
         }
 
         try {

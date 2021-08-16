@@ -15,6 +15,7 @@ package org.openhab.binding.roku.internal;
 import java.util.Set;
 
 import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -52,9 +53,17 @@ public class RokuBindingConstants {
     public static final String PLAY_MODE = "playMode";
     public static final String TIME_ELAPSED = "timeElapsed";
     public static final String TIME_TOTAL = "timeTotal";
+    public static final String ACTIVE_CHANNEL = "activeChannel";
+    public static final String SIGNAL_MODE = "signalMode";
+    public static final String SIGNAL_QUALITY = "signalQuality";
+    public static final String CHANNEL_NAME = "channelName";
+    public static final String PROGRAM_TITLE = "programTitle";
+    public static final String PROGRAM_DESCRIPTION = "programDescription";
+    public static final String PROGRAM_RATING = "programRating";
 
     // Units of measurement of the data delivered by the API
     public static final Unit<Time> API_SECONDS_UNIT = Units.SECOND;
+    public static final Unit<Dimensionless> API_PERCENT_UNIT = Units.PERCENT;
 
     public static final String STOP = "stop";
     public static final String CLOSE = "close";
@@ -63,4 +72,6 @@ public class RokuBindingConstants {
     public static final String ROKU_HOME_ID = "-1";
     public static final String ROKU_HOME_BUTTON = "Home";
     public static final String NON_DIGIT_PATTERN = "[^\\d]";
+    public static final String TV_APP = "tvinput.dtv";
+    public static final String TV_INPUT = "tvinput";
 }
