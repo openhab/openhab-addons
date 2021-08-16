@@ -34,7 +34,7 @@ Once an account has been added, garage doors and lamps will automatically be dis
 | rollershutter | Rollershutter | garagedoor       | UP, DOWN, 0%, 100%                                     |
 | closeError    | Switch        | garagedoor       | ON (has error), OFF (doesn't have error)               |
 | openError     | Switch        | garagedoor       | ON (has error), OFF (doesn't have error)               |
-| switch        | Switch        | garagedoor, lamp | ON (open), OFF (closed)                                
+| switch        | Switch        | garagedoor, lamp | ON (open), OFF (closed)                                |
 
 ## Full Example
 
