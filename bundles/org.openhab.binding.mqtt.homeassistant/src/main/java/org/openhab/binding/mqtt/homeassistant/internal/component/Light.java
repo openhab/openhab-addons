@@ -41,9 +41,9 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Light extends AbstractComponent<Light.ChannelConfiguration> implements ChannelStateUpdateListener {
-    public static final String switchChannelID = "light"; // Randomly chosen channel "ID"
-    public static final String brightnessChannelID = "brightness"; // Randomly chosen channel "ID"
-    public static final String colorChannelID = "color"; // Randomly chosen channel "ID"
+    public static final String SWITCH_CHANNEL_ID = "light"; // Randomly chosen channel "ID"
+    public static final String BRIGHTNESS_CHANNEL_ID = "brightness"; // Randomly chosen channel "ID"
+    public static final String COLOR_CHANNEL_ID = "color"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
@@ -54,73 +54,73 @@ public class Light extends AbstractComponent<Light.ChannelConfiguration> impleme
         }
 
         @SerializedName("brightness_scale")
-        protected int brightness_scale = 255;
+        protected int brightnessScale = 255;
         protected boolean optimistic = false;
         @SerializedName("effect_list")
-        protected @Nullable List<String> effect_list;
+        protected @Nullable List<String> effectList;
 
         // Defines when on the payload_on is sent. Using last (the default) will send any style (brightness, color, etc)
         // topics first and then a payload_on to the command_topic. Using first will send the payload_on and then any
         // style topics. Using brightness will only send brightness commands instead of the payload_on to turn the light
         // on.
         @SerializedName("on_command_type")
-        protected String on_command_type = "last";
+        protected String onCommandType = "last";
 
         @SerializedName("state_topic")
-        protected @Nullable String state_topic;
+        protected @Nullable String stateTopic;
         @SerializedName("command_topic")
-        protected @Nullable String command_topic;
+        protected @Nullable String commandTopic;
         @SerializedName("state_value_template")
-        protected @Nullable String state_value_template;
+        protected @Nullable String stateValueTemplate;
 
         @SerializedName("brightness_state_topic")
-        protected @Nullable String brightness_state_topic;
+        protected @Nullable String brightnessStateTopic;
         @SerializedName("brightness_command_topic")
-        protected @Nullable String brightness_command_topic;
+        protected @Nullable String brightnessCommandTopic;
         @SerializedName("brightness_value_template")
-        protected @Nullable String brightness_value_template;
+        protected @Nullable String brightnessValueTemplate;
 
         @SerializedName("color_temp_state_topic")
-        protected @Nullable String color_temp_state_topic;
+        protected @Nullable String colorTempStateTopic;
         @SerializedName("color_temp_command_topic")
-        protected @Nullable String color_temp_command_topic;
+        protected @Nullable String colorTempCommandTopic;
         @SerializedName("color_temp_value_template")
-        protected @Nullable String color_temp_value_template;
+        protected @Nullable String colorTempValueTemplate;
 
         @SerializedName("effect_command_topic")
-        protected @Nullable String effect_command_topic;
+        protected @Nullable String effectCommandTopic;
         @SerializedName("effect_state_topic")
-        protected @Nullable String effect_state_topic;
+        protected @Nullable String effectStateTopic;
         @SerializedName("effect_value_template")
-        protected @Nullable String effect_value_template;
+        protected @Nullable String effectValueTemplate;
 
         @SerializedName("rgb_command_topic")
-        protected @Nullable String rgb_command_topic;
+        protected @Nullable String rgbCommandTopic;
         @SerializedName("rgb_state_topic")
-        protected @Nullable String rgb_state_topic;
+        protected @Nullable String rgbStateTopic;
         @SerializedName("rgb_value_template")
-        protected @Nullable String rgb_value_template;
+        protected @Nullable String rgbValueTemplate;
         @SerializedName("rgb_command_template")
-        protected @Nullable String rgb_command_template;
+        protected @Nullable String rgbCommandTemplate;
 
         @SerializedName("white_value_command_topic")
-        protected @Nullable String white_value_command_topic;
+        protected @Nullable String whiteValueCommandTopic;
         @SerializedName("white_value_state_topic")
-        protected @Nullable String white_value_state_topic;
+        protected @Nullable String whiteValueStateTopic;
         @SerializedName("white_value_template")
-        protected @Nullable String white_value_template;
+        protected @Nullable String whiteValueTemplate;
 
         @SerializedName("xy_command_topic")
-        protected @Nullable String xy_command_topic;
+        protected @Nullable String xyCommandTopic;
         @SerializedName("xy_state_topic")
-        protected @Nullable String xy_state_topic;
+        protected @Nullable String xyStateTopic;
         @SerializedName("xy_value_template")
-        protected @Nullable String xy_value_template;
+        protected @Nullable String xyValueTemplate;
 
         @SerializedName("payload_on")
-        protected String payload_on = "ON";
+        protected String payloadOn = "ON";
         @SerializedName("payload_off")
-        protected String payload_off = "OFF";
+        protected String payloadOff = "OFF";
     }
 
     protected ComponentChannel colorChannel;
@@ -131,30 +131,30 @@ public class Light extends AbstractComponent<Light.ChannelConfiguration> impleme
     public Light(ComponentFactory.ComponentConfiguration builder) {
         super(builder, ChannelConfiguration.class);
         this.channelStateUpdateListener = builder.getUpdateListener();
-        ColorValue value = new ColorValue(ColorMode.RGB, channelConfiguration.payload_on,
-                channelConfiguration.payload_off, 100);
+        ColorValue value = new ColorValue(ColorMode.RGB, channelConfiguration.payloadOn,
+                channelConfiguration.payloadOff, 100);
 
         // Create three MQTT subscriptions and use this class object as update listener
-        switchChannel = buildChannel(switchChannelID, value, channelConfiguration.getName(), this)
-                .stateTopic(channelConfiguration.state_topic, channelConfiguration.state_value_template,
+        switchChannel = buildChannel(SWITCH_CHANNEL_ID, value, channelConfiguration.getName(), this)
+                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.stateValueTemplate,
                         channelConfiguration.getValueTemplate())
-                .commandTopic(channelConfiguration.command_topic, channelConfiguration.isRetain(),
+                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
                 .build(false);
 
-        colorChannel = buildChannel(colorChannelID, value, channelConfiguration.getName(), this)
-                .stateTopic(channelConfiguration.rgb_state_topic, channelConfiguration.rgb_value_template)
-                .commandTopic(channelConfiguration.rgb_command_topic, channelConfiguration.isRetain(),
+        colorChannel = buildChannel(COLOR_CHANNEL_ID, value, channelConfiguration.getName(), this)
+                .stateTopic(channelConfiguration.rgbStateTopic, channelConfiguration.rgbValueTemplate)
+                .commandTopic(channelConfiguration.rgbCommandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
                 .build(false);
 
-        brightnessChannel = buildChannel(brightnessChannelID, value, channelConfiguration.getName(), this)
-                .stateTopic(channelConfiguration.brightness_state_topic, channelConfiguration.brightness_value_template)
-                .commandTopic(channelConfiguration.brightness_command_topic, channelConfiguration.isRetain(),
+        brightnessChannel = buildChannel(BRIGHTNESS_CHANNEL_ID, value, channelConfiguration.getName(), this)
+                .stateTopic(channelConfiguration.brightnessStateTopic, channelConfiguration.brightnessValueTemplate)
+                .commandTopic(channelConfiguration.brightnessCommandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
                 .build(false);
 
-        channels.put(colorChannelID, colorChannel);
+        channels.put(COLOR_CHANNEL_ID, colorChannel);
     }
 
     @Override

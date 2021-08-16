@@ -28,7 +28,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
-    public static final String switchChannelID = "fan"; // Randomly chosen channel "ID"
+    public static final String SWITCH_CHANNEL_ID = "fan"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
@@ -39,23 +39,24 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
         }
 
         @SerializedName("state_topic")
-        protected @Nullable String state_topic;
+        protected @Nullable String stateTopic;
         @SerializedName("command_topic")
-        protected String command_topic = "";
+        protected String commandTopic = "";
         @SerializedName("payload_on")
-        protected String payload_on = "ON";
+        protected String payloadOn = "ON";
         @SerializedName("payload_off")
-        protected String payload_off = "OFF";
+        protected String payloadOff = "OFF";
     }
 
     public Fan(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        OnOffValue value = new OnOffValue(channelConfiguration.payload_on, channelConfiguration.payload_off);
-        buildChannel(switchChannelID, value, channelConfiguration.getName(), componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.state_topic, channelConfiguration.getValueTemplate())
-                .commandTopic(channelConfiguration.command_topic, channelConfiguration.isRetain(),
-                        channelConfiguration.getQos())
-                .build();
+        OnOffValue value = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
+        buildChannel(SWITCH_CHANNEL_ID, value, channelConfiguration.getName(),
+                componentConfiguration.getUpdateListener())
+                        .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
+                        .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
+                                channelConfiguration.getQos())
+                        .build();
     }
 }

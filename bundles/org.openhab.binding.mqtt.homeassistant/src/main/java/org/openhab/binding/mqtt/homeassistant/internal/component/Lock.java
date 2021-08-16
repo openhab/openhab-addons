@@ -26,7 +26,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
-    public static final String switchChannelID = "lock"; // Randomly chosen channel "ID"
+    public static final String SWITCH_CHANNEL_ID = "lock"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
@@ -39,28 +39,28 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
         protected boolean optimistic = false;
 
         @SerializedName("state_topic")
-        protected String state_topic = "";
+        protected String stateTopic = "";
         @SerializedName("payload_lock")
-        protected String payload_lock = "LOCK";
+        protected String payloadLock = "LOCK";
         @SerializedName("payload_unlock")
-        protected String payload_unlock = "UNLOCK";
+        protected String payloadUnlock = "UNLOCK";
         @SerializedName("command_topic")
-        protected @Nullable String command_topic;
+        protected @Nullable String commandTopic;
     }
 
     public Lock(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
         // We do not support all HomeAssistant quirks
-        if (channelConfiguration.optimistic && !channelConfiguration.state_topic.isBlank()) {
+        if (channelConfiguration.optimistic && !channelConfiguration.stateTopic.isBlank()) {
             throw new UnsupportedOperationException("Component:Lock does not support forced optimistic mode");
         }
 
-        buildChannel(switchChannelID,
-                new OnOffValue(channelConfiguration.payload_lock, channelConfiguration.payload_unlock),
+        buildChannel(SWITCH_CHANNEL_ID,
+                new OnOffValue(channelConfiguration.payloadLock, channelConfiguration.payloadUnlock),
                 channelConfiguration.getName(), componentConfiguration.getUpdateListener())
-                        .stateTopic(channelConfiguration.state_topic, channelConfiguration.getValueTemplate())
-                        .commandTopic(channelConfiguration.command_topic, channelConfiguration.isRetain(),
+                        .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
+                        .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                                 channelConfiguration.getQos())
                         .build();
     }

@@ -52,7 +52,6 @@ import org.openhab.core.types.State;
 
 /**
  * Abstract class for components tests.
- * TODO: need a way to test all channel properties, not only topics.
  *
  * @author Anton Kharuzhy - Initial contribution
  */
