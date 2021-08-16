@@ -154,7 +154,7 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 | T6x        |                                   |                                                                                                       |
 
 
-## Manual Things Configuration - Full Example
+## Full Example
 
 Examples to configure things 
 Thing <binding_id>:<type_id>:<thing_id> "Label" @ "Location" [ <parameters> ]
