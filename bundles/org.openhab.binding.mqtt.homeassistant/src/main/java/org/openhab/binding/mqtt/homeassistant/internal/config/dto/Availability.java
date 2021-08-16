@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.config.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * MQTT topic subscribed to receive availability (online/offline) updates. Must not be used together with
  * availability_topic
@@ -19,7 +21,9 @@ package org.openhab.binding.mqtt.homeassistant.internal.config.dto;
  * @author Anton Kharuzhy - Initial contribution
  */
 public class Availability {
+    @SerializedName("payload_available")
     protected String payload_available = "online";
+    @SerializedName("payload_not_available")
     protected String payload_not_available = "offline";
     protected String topic;
 

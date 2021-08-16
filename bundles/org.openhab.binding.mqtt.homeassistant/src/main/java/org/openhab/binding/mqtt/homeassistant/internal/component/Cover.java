@@ -17,6 +17,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.RollershutterValue;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A MQTT Cover component, following the https://www.home-assistant.io/components/cover.mqtt/ specification.
  *
@@ -36,10 +38,15 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
             super("MQTT Cover");
         }
 
+        @SerializedName("state_topic")
         protected @Nullable String state_topic;
+        @SerializedName("command_topic")
         protected @Nullable String command_topic;
+        @SerializedName("payload_open")
         protected String payload_open = "OPEN";
+        @SerializedName("payload_close")
         protected String payload_close = "CLOSE";
+        @SerializedName("payload_stop")
         protected String payload_stop = "STOP";
     }
 

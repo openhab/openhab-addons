@@ -17,6 +17,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A MQTT Fan component, following the https://www.home-assistant.io/components/fan.mqtt/ specification.
  *
@@ -36,9 +38,13 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
             super("MQTT Fan");
         }
 
+        @SerializedName("state_topic")
         protected @Nullable String state_topic;
+        @SerializedName("command_topic")
         protected String command_topic = "";
+        @SerializedName("payload_on")
         protected String payload_on = "ON";
+        @SerializedName("payload_off")
         protected String payload_off = "OFF";
     }
 

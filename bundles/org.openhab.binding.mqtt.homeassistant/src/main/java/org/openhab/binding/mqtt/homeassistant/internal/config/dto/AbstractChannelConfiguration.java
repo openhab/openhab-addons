@@ -36,12 +36,18 @@ public abstract class AbstractChannelConfiguration {
     protected String icon = "";
     protected int qos; // defaults to 0 according to HA specification
     protected boolean retain; // defaults to false according to HA specification
+    @SerializedName("value_template")
     protected @Nullable String value_template;
+    @SerializedName("unique_id")
     protected @Nullable String unique_id;
 
+    @SerializedName("availability_mode")
     protected AvailabilityMode availability_mode = AvailabilityMode.LATEST;
+    @SerializedName("availability_topic")
     protected @Nullable String availability_topic;
+    @SerializedName("payload_available")
     protected String payload_available = "online";
+    @SerializedName("payload_not_available")
     protected String payload_not_available = "offline";
 
     /**

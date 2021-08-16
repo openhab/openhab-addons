@@ -17,6 +17,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A MQTT lock, following the https://www.home-assistant.io/components/lock.mqtt/ specification.
  *
@@ -36,9 +38,13 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
 
         protected boolean optimistic = false;
 
+        @SerializedName("state_topic")
         protected String state_topic = "";
+        @SerializedName("payload_lock")
         protected String payload_lock = "LOCK";
+        @SerializedName("payload_unlock")
         protected String payload_unlock = "UNLOCK";
+        @SerializedName("command_topic")
         protected @Nullable String command_topic;
     }
 

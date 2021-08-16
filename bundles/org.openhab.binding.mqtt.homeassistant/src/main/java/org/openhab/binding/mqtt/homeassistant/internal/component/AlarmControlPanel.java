@@ -17,6 +17,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A MQTT alarm control panel, following the https://www.home-assistant.io/components/alarm_control_panel.mqtt/
  * specification.
@@ -43,16 +45,26 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
 
         protected @Nullable String code;
 
+        @SerializedName("state_topic")
         protected String state_topic = "";
+        @SerializedName("state_disarmed")
         protected String state_disarmed = "disarmed";
+        @SerializedName("state_armed_home")
         protected String state_armed_home = "armed_home";
+        @SerializedName("state_armed_away")
         protected String state_armed_away = "armed_away";
+        @SerializedName("state_pending")
         protected String state_pending = "pending";
+        @SerializedName("state_triggered")
         protected String state_triggered = "triggered";
 
+        @SerializedName("command_topic")
         protected @Nullable String command_topic;
+        @SerializedName("payload_disarm")
         protected String payload_disarm = "DISARM";
+        @SerializedName("payload_arm_home")
         protected String payload_arm_home = "ARM_HOME";
+        @SerializedName("payload_arm_away")
         protected String payload_arm_away = "ARM_AWAY";
     }
 
