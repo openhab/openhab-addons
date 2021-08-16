@@ -49,8 +49,6 @@ public class SoulissT11Handler extends SoulissGenericHandler {
         super(thing);
     }
 
-    // called on every status change or change request
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
