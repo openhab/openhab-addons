@@ -10,10 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal;
+package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.values.ImageValue;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 
 /**
  * A MQTT camera, following the https://www.home-assistant.io/components/camera.mqtt/ specification.
@@ -23,13 +24,13 @@ import org.openhab.binding.mqtt.generic.values.ImageValue;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentCamera extends AbstractComponent<ComponentCamera.ChannelConfiguration> {
+public class Camera extends AbstractComponent<Camera.ChannelConfiguration> {
     public static final String cameraChannelID = "camera"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class ChannelConfiguration extends BaseChannelConfiguration {
+    static class ChannelConfiguration extends AbstractChannelConfiguration {
         ChannelConfiguration() {
             super("MQTT Camera");
         }
@@ -37,12 +38,12 @@ public class ComponentCamera extends AbstractComponent<ComponentCamera.ChannelCo
         protected String topic = "";
     }
 
-    public ComponentCamera(CFactory.ComponentConfiguration componentConfiguration) {
+    public Camera(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
         ImageValue value = new ImageValue();
 
-        buildChannel(cameraChannelID, value, channelConfiguration.name, componentConfiguration.getUpdateListener())
+        buildChannel(cameraChannelID, value, channelConfiguration.getName(), componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.topic).build();
     }
 }

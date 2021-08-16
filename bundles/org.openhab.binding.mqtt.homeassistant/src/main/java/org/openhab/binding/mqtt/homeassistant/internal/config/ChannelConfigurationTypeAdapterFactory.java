@@ -10,13 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal;
+package org.openhab.binding.mqtt.homeassistant.internal.config;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.homeassistant.internal.MappingJsonReader;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Device;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
@@ -28,12 +31,16 @@ import com.google.gson.stream.JsonWriter;
 /**
  * This a Gson type adapter factory.
  *
- * It will create a type adapter for every class derived from {@link BaseChannelConfiguration} and ensures,
+ * <p>
+ * It will create a type adapter for every class derived from {@link
+ * AbstractChannelConfiguration} and ensures,
  * that abbreviated names are replaces with their long versions during the read.
  *
+ * <p>
  * In elements, whose name end in'_topic' '~' replacement is performed.
  *
- * The adapters also handle {@link BaseChannelConfiguration.Device}
+ * <p>
+ * The adapters also handle {@link Device}
  *
  * @author Jochen Klein - Initial contribution
  */
@@ -46,21 +53,22 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
         if (gson == null || type == null) {
             return null;
         }
-        if (BaseChannelConfiguration.class.isAssignableFrom(type.getRawType())) {
+        if (AbstractChannelConfiguration.class.isAssignableFrom(type.getRawType())) {
             return createHAConfig(gson, type);
         }
-        if (BaseChannelConfiguration.Device.class.isAssignableFrom(type.getRawType())) {
+        if (Device.class.isAssignableFrom(type.getRawType())) {
             return createHADevice(gson, type);
         }
         return null;
     }
 
     /**
-     * Handle {@link BaseChannelConfiguration}
+     * Handle {@link
+     * AbstractChannelConfiguration}
      *
-     * @param gson
-     * @param type
-     * @return
+     * @param gson parser
+     * @param type type
+     * @return adapter
      */
     private <T> TypeAdapter<T> createHAConfig(Gson gson, TypeToken<T> type) {
         /* The delegate is the 'default' adapter */
@@ -72,7 +80,7 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
                 /* read the object using the default adapter, but translate the names in the reader */
                 T result = delegate.read(MappingJsonReader.getConfigMapper(in));
                 /* do the '~' expansion afterwards */
-                expandTidleInTopics(BaseChannelConfiguration.class.cast(result));
+                expandTidleInTopics(AbstractChannelConfiguration.class.cast(result));
                 return result;
             }
 
@@ -102,10 +110,10 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
         };
     }
 
-    private void expandTidleInTopics(BaseChannelConfiguration config) {
+    private void expandTidleInTopics(AbstractChannelConfiguration config) {
         Class<?> type = config.getClass();
 
-        String tilde = config.tilde;
+        String tilde = config.getTilde();
 
         while (type != Object.class) {
             Field[] fields = type.getDeclaredFields();
@@ -127,9 +135,7 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
                         }
 
                         field.set(config, newValue);
-                    } catch (IllegalArgumentException e) {
-                        throw new RuntimeException(e);
-                    } catch (IllegalAccessException e) {
+                    } catch (IllegalArgumentException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
                 }

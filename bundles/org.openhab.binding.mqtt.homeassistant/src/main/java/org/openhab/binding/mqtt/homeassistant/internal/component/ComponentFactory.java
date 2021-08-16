@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal;
+package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -19,6 +19,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
+import org.openhab.binding.mqtt.homeassistant.internal.HaID;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +34,8 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class CFactory {
-    private static final Logger logger = LoggerFactory.getLogger(CFactory.class);
+public class ComponentFactory {
+    private static final Logger logger = LoggerFactory.getLogger(ComponentFactory.class);
 
     /**
      * Create a HA MQTT component. The configuration JSon string is required.
@@ -41,7 +43,7 @@ public class CFactory {
      * @param thingUID The Thing UID that this component will belong to.
      * @param haID The location of this component. The HomeAssistant ID contains the object-id, node-id and
      *            component-id.
-     * @param configJSON Most components expect a "name", a "state_topic" and "command_topic" like with
+     * @param channelConfigurationJSON Most components expect a "name", a "state_topic" and "command_topic" like with
      *            "{name:'Name',state_topic:'homeassistant/switch/0/object/state',command_topic:'homeassistant/switch/0/object/set'".
      * @param updateListener A channel state update listener
      * @return A HA MQTT Component
@@ -56,25 +58,25 @@ public class CFactory {
         try {
             switch (haID.component) {
                 case "alarm_control_panel":
-                    return new ComponentAlarmControlPanel(componentConfiguration);
+                    return new AlarmControlPanel(componentConfiguration);
                 case "binary_sensor":
-                    return new ComponentBinarySensor(componentConfiguration);
+                    return new BinarySensor(componentConfiguration);
                 case "camera":
-                    return new ComponentCamera(componentConfiguration);
+                    return new Camera(componentConfiguration);
                 case "cover":
-                    return new ComponentCover(componentConfiguration);
+                    return new Cover(componentConfiguration);
                 case "fan":
-                    return new ComponentFan(componentConfiguration);
+                    return new Fan(componentConfiguration);
                 case "climate":
-                    return new ComponentClimate(componentConfiguration);
+                    return new Climate(componentConfiguration);
                 case "light":
-                    return new ComponentLight(componentConfiguration);
+                    return new Light(componentConfiguration);
                 case "lock":
-                    return new ComponentLock(componentConfiguration);
+                    return new Lock(componentConfiguration);
                 case "sensor":
-                    return new ComponentSensor(componentConfiguration);
+                    return new Sensor(componentConfiguration);
                 case "switch":
-                    return new ComponentSwitch(componentConfiguration);
+                    return new Switch(componentConfiguration);
             }
         } catch (UnsupportedOperationException e) {
             logger.warn("Not supported", e);
@@ -92,6 +94,14 @@ public class CFactory {
         private final ScheduledExecutorService scheduler;
         private @Nullable TransformationServiceProvider transformationServiceProvider;
 
+        /**
+         * Provide a thingUID and HomeAssistant topic ID to determine the channel group UID and type.
+         *
+         * @param thingUID A ThingUID
+         * @param haID A HomeAssistant topic ID
+         * @param configJSON The configuration string
+         * @param gson A Gson instance
+         */
         protected ComponentConfiguration(ThingUID thingUID, HaID haID, String configJSON, Gson gson,
                 ChannelStateUpdateListener updateListener, AvailabilityTracker tracker,
                 ScheduledExecutorService scheduler) {
@@ -143,8 +153,8 @@ public class CFactory {
             return scheduler;
         }
 
-        public <C extends BaseChannelConfiguration> C getConfig(Class<C> clazz) {
-            return BaseChannelConfiguration.fromString(configJSON, gson, clazz);
+        public <C extends AbstractChannelConfiguration> C getConfig(Class<C> clazz) {
+            return AbstractChannelConfiguration.fromString(configJSON, gson, clazz);
         }
     }
 }
