@@ -32,8 +32,7 @@ public class SoulissDiscoverJob implements Runnable {
 
     private int resendCounter = 0;
 
-    @Nullable
-    private SoulissGatewayHandler gwHandler;
+    private @Nullable SoulissGatewayHandler gwHandler;
 
     public SoulissDiscoverJob(SoulissGatewayHandler soulissGwHandler) {
         this.gwHandler = soulissGwHandler;

@@ -40,25 +40,23 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 // @Component(service = DiscoveryService.class, configurationPid = "discovery.souliss")
 public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements DiscoverResult {
+    private @Nullable ScheduledFuture<?> discoveryJob = null;
     private final Logger logger = LoggerFactory.getLogger(SoulissGatewayDiscovery.class);
-    @Nullable
-    private SoulissDiscoverJob soulissDiscoverRunnableClass = null;
+
+    private @Nullable SoulissDiscoverJob soulissDiscoverRunnableClass = null;
 
     private SoulissGatewayHandler soulissGwHandler;
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
-    }
-
-    @Nullable
-    private ScheduledFuture<?> discoveryJob = null;
 
     public SoulissGatewayDiscovery(SoulissGatewayHandler bridgeHandler) {
         super(SoulissBindingConstants.SUPPORTED_THING_TYPES_UIDS, SoulissBindingConstants.DISCOVERY_TIMEOUT_IN_SECONDS,
                 false);
         this.soulissGwHandler = bridgeHandler;
         bridgeHandler.discoverResult = this;
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
     }
 
     /**

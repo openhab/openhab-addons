@@ -64,8 +64,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     private @Nullable SoulissGatewayDiscovery discoveryService;
 
-    @Nullable
-    public DiscoverResult discoverResult = null;
+    public @Nullable DiscoverResult discoverResult = null;
 
     public boolean thereIsAThingDetection = true;
 

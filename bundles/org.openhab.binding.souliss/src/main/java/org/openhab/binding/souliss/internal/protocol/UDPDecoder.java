@@ -68,13 +68,10 @@ import org.slf4j.LoggerFactory;
 public class UDPDecoder {
 
     private final Logger logger = LoggerFactory.getLogger(UDPDecoder.class);
-    @Nullable
-    private DiscoverResult discoverResult;
-    @Nullable
-    private SoulissGatewayHandler gwHandler;
+    private @Nullable DiscoverResult discoverResult;
+    private @Nullable SoulissGatewayHandler gwHandler;
 
-    @Nullable
-    private Byte lastByteGatewayIp = null;
+    private @Nullable Byte lastByteGatewayIp = null;
 
     public UDPDecoder(Bridge bridge, @Nullable DiscoverResult pDiscoverResult) {
         this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();

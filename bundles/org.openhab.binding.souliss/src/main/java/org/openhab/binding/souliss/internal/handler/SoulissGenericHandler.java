@@ -165,8 +165,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         }
     }
 
-    @Nullable
-    public GatewayConfig getGatewayConfig() {
+    public @Nullable GatewayConfig getGatewayConfig() {
         var bridge = getBridge();
         if (bridge != null) {
             SoulissGatewayHandler bridgeHandler = (SoulissGatewayHandler) bridge.getHandler();
@@ -178,8 +177,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         return null;
     }
 
-    @Nullable
-    public String getLabel() {
+    public @Nullable String getLabel() {
         return thingGeneric.getLabel();
     }
 
@@ -210,8 +208,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         return null;
     }
 
-    @Nullable
-    protected OpenClosedType getOhStateOpenCloseFromSoulissVal(byte sVal) {
+    protected @Nullable OpenClosedType getOhStateOpenCloseFromSoulissVal(byte sVal) {
         if (sVal == SoulissProtocolConstants.SOULISS_T1N_ON_COIL) {
             return OpenClosedType.CLOSED;
         } else if (sVal == SoulissProtocolConstants.SOULISS_T1N_OFF_COIL) {

@@ -24,8 +24,7 @@ import org.openhab.core.thing.Bridge;
 @NonNullByDefault
 public class SoulissGatewayJobSubscription implements Runnable {
 
-    @Nullable
-    private SoulissGatewayHandler gwHandler;
+    private @Nullable SoulissGatewayHandler gwHandler;
 
     public SoulissGatewayJobSubscription(Bridge bridge) {
         this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();

@@ -43,8 +43,7 @@ public class UDPListenDiscoverRunnable implements Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(UDPListenDiscoverRunnable.class);
 
-    @Nullable
-    private SoulissGatewayHandler gwHandler;
+    private @Nullable SoulissGatewayHandler gwHandler;
 
     public UDPListenDiscoverRunnable(Bridge bridge, @Nullable DiscoverResult pDiscoverResult) {
         this.gwHandler = (SoulissGatewayHandler) bridge.getHandler();

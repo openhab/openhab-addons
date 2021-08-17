@@ -42,8 +42,7 @@ public class SendDispatcherRunnable implements Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(SendDispatcherRunnable.class);
 
-    @Nullable
-    private SoulissGatewayHandler gwHandler;
+    private @Nullable SoulissGatewayHandler gwHandler;
     static boolean bPopSuspend = false;
     protected static ArrayList<PacketStruct> packetsList = new ArrayList<>();
     private long startTime = System.currentTimeMillis();
@@ -313,8 +312,7 @@ public class SendDispatcherRunnable implements Runnable {
         }
     }
 
-    @Nullable
-    private SoulissGenericHandler getHandler(int node, int slot, Logger logger) {
+    private @Nullable SoulissGenericHandler getHandler(int node, int slot, Logger logger) {
         SoulissGatewayHandler localGwHandler = this.gwHandler;
 
         Iterator<Thing> thingsIterator;
@@ -362,8 +360,7 @@ public class SendDispatcherRunnable implements Runnable {
     /**
      * Pop SocketAndPacket from ArrayList PacketList
      */
-    @Nullable
-    private synchronized PacketStruct pop() {
+    private @Nullable synchronized PacketStruct pop() {
         synchronized (this) {
             @Nullable
             SoulissGatewayHandler localGwHandler = this.gwHandler;

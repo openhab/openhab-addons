@@ -25,8 +25,7 @@ import org.openhab.core.thing.Bridge;
 @NonNullByDefault
 public class SoulissGatewayJobPing implements Runnable {
 
-    @Nullable
-    private SoulissGatewayHandler gwHandler;
+    private @Nullable SoulissGatewayHandler gwHandler;
 
     private final CommonCommands commonCommands = new CommonCommands();
 
