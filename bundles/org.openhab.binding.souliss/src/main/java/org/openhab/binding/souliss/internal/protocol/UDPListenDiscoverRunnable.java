@@ -38,8 +38,7 @@ import org.slf4j.LoggerFactory;
 public class UDPListenDiscoverRunnable implements Runnable {
 
     protected boolean bExit = false;
-    @Nullable
-    UDPDecoder decoder = null;
+    private @Nullable UDPDecoder decoder = null;
 
     private final Logger logger = LoggerFactory.getLogger(UDPListenDiscoverRunnable.class);
 

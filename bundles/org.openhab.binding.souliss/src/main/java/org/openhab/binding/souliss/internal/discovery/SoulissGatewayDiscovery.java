@@ -96,7 +96,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
     @Override
     protected synchronized void stopScan() {
-        @Nullable
         ScheduledFuture<?> localDiscoveryJob = this.discoveryJob;
         if (localDiscoveryJob != null) {
             localDiscoveryJob.cancel(false);
@@ -125,7 +124,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
     @Override
     public void thingDetectedTypicals(byte lastByteGatewayIP, byte typical, byte node, byte slot) {
-        @Nullable
         ThingUID thingUID = null;
         var label = "";
         DiscoveryResult discoveryResult;

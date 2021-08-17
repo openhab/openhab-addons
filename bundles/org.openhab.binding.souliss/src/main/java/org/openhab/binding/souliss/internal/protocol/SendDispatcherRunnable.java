@@ -209,7 +209,6 @@ public class SendDispatcherRunnable implements Runnable {
     public void safeSendCheck() {
         int node;
         int iSlot;
-        @Nullable
         SoulissGenericHandler localTyp;
         var sCmd = "";
         byte bExpected;
@@ -293,7 +292,6 @@ public class SendDispatcherRunnable implements Runnable {
                     // è scaduto allora pongo il flag SENT a false
                     long time = System.currentTimeMillis();
 
-                    @Nullable
                     SoulissGatewayHandler localGwHandler = this.gwHandler;
                     if (localGwHandler != null) {
                         if ((localGwHandler.gwConfig.timeoutToRequeue < time - packetsList.get(i).getTime())
@@ -362,7 +360,6 @@ public class SendDispatcherRunnable implements Runnable {
      */
     private @Nullable synchronized PacketStruct pop() {
         synchronized (this) {
-            @Nullable
             SoulissGatewayHandler localGwHandler = this.gwHandler;
 
             // non esegue il pop se bPopSuspend=true

@@ -13,7 +13,6 @@
 package org.openhab.binding.souliss.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
 import org.openhab.core.config.core.Configuration;
@@ -88,7 +87,6 @@ public class SoulissT42Handler extends SoulissGenericHandler {
         super.setLastStatusStored();
         // update item state only if it is different from previous
         if (t4nRawState != rawState) {
-            @Nullable
             OnOffType onOffVal = getOhStateOnOffFromSoulissVal(rawState);
             if (onOffVal != null) {
                 this.setState(onOffVal);

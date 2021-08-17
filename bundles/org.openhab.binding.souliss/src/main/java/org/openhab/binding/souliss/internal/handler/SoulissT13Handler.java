@@ -64,14 +64,12 @@ public class SoulissT13Handler extends SoulissGenericHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.STATEONOFF_CHANNEL:
-                    @Nullable
                     OnOffType valonOff = getOhStateOnOffFromSoulissVal(t1nRawState);
                     if (valonOff != null) {
                         updateState(channelUID, valonOff);
                     }
                     break;
                 case SoulissBindingConstants.STATEOPENCLOSE_CHANNEL:
-                    @Nullable
                     OpenClosedType valOpenClose = getOhStateOpenCloseFromSoulissVal(t1nRawState);
                     if (valOpenClose != null) {
                         updateState(channelUID, valOpenClose);

@@ -38,7 +38,6 @@ public class SoulissGatewayJobPing implements Runnable {
 
     @Override
     public void run() {
-        @Nullable
         SoulissGatewayHandler localGwHandler = this.gwHandler;
         if (localGwHandler != null) {
             sendPing(localGwHandler);

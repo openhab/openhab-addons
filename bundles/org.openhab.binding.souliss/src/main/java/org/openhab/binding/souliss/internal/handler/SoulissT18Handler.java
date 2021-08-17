@@ -65,7 +65,6 @@ public class SoulissT18Handler extends SoulissGenericHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.PULSE_CHANNEL:
-                    @Nullable
                     OnOffType valPulse = getOhStateOnOffFromSoulissVal(t1nRawState);
                     if (valPulse != null) {
                         updateState(channelUID, valPulse);
