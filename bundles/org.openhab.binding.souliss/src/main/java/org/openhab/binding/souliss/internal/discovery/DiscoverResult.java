@@ -17,10 +17,10 @@ import java.net.InetAddress;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Result callback interface.
+ *
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
- *
- *         Result callback interface.
  */
 @NonNullByDefault
 public interface DiscoverResult {

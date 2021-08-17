@@ -27,13 +27,11 @@ import org.openhab.core.types.PrimitiveType;
 import org.openhab.core.types.RefreshType;
 
 /**
+ * The {@link SoulissT12Handler} is responsible for handling commands, which are
+ * sent to one of the channels.
+ *
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
- *
- *         The {@link SoulissT12Handler} is responsible for handling commands, which are
- *         sent to one of the channels.
- *
- *
  */
 @NonNullByDefault
 public class SoulissT12Handler extends SoulissGenericHandler {

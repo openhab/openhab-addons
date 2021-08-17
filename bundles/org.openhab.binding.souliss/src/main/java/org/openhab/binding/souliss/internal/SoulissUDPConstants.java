@@ -15,12 +15,11 @@ package org.openhab.binding.souliss.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Network constants. The class {@link SoulissUDPConstants} contains Souliss constants. Original version is
+ * taken from SoulissApp. For scope of this binding not all constants are used.
+ *
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
- *
- *         Network constants This class contains Souliss constants. Original version is
- *         taken from SoulissApp. For scope of this binding not all constants are used.
- *
  * @author Alessandro Del Pex - @since 1.7.0
  */
 @NonNullByDefault

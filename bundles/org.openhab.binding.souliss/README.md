@@ -162,6 +162,7 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 souliss.things:
 
 ```
+
 Bridge souliss:gateway:105 "Souliss Gateway - 105" [gatewayLanAddress="192.168.1.105", gatewayPortNumber=230, preferredLocalPortNumber=0, pingInterval=30, subscriptionInterval=2, healthyInterval=38, userIndex=72, nodeIndex=38,  timeoutToRequeue=5000, timeoutToRemovePacket=20000]
 {  
 Thing t14 1-6 "Portoncino"@"Rientro" [node=1,slot=6] //thing UID is named as node-slot only as mnemonic convention, but you are free to assign other values
@@ -203,6 +204,7 @@ You have to write your Gateway IP Number and leave all other to default values
 default.items:
 
 ```
+
 Group    Home                 "Tonino"        <house>
 
 Group    FamilyRoom           "Soggiorno"     <parents_2_4>   (Home)
@@ -253,6 +255,7 @@ Number TermostatoSoggiorno_healthy "Salute" <keyring> (TermostatoSoggiorno, Diag
 default.sitemaps:
 
 ```
+
 sitemap default label="Tonino" {
     Frame {
         Text label="Rientro casa" icon="light" {
@@ -298,14 +301,10 @@ Text label="Termostato soggiorno" icon="temperature" {
             Default item=termostatoSoggiorno_healthy
 	        Slider item=termostatoSoggiorno_displayBright
 	}		
+ }
 }
 
-
-}
 ```
-
-
-
 ## Community
 
 Souliss is a small community and doesn't have sufficient human resources to be more active on openHAB official community.
