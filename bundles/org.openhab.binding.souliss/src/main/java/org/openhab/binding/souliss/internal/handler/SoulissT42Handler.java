@@ -75,7 +75,7 @@ public class SoulissT42Handler extends SoulissGenericHandler {
                     break;
             }
         }
-        // // Resetto il tasto di rearm. Questo perchè se premuto non torna da solo in off
+        // // Reset the rearm button. This is because if pressed, it does not turn off by itself
         updateState(SoulissBindingConstants.T4N_REARMALARM_CHANNEL, OnOffType.OFF);
 
         super.setLastStatusStored();

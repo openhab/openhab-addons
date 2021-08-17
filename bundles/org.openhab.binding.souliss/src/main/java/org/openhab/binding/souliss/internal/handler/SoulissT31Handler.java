@@ -245,7 +245,7 @@ public class SoulissT31Handler extends SoulissGenericHandler {
         }
         this.setState(StringType.valueOf(sMessage));
 
-        // button indicante se il sistema sta andando o meno
+        // button indicating whether the system is running or not
         switch (getBitState(rawStateByte0, 1) + getBitState(rawStateByte0, 2)) {
             case 0:
                 sMessage = SoulissBindingConstants.T31_OFF_MESSAGE_FIRE_CHANNEL;

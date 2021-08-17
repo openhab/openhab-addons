@@ -65,35 +65,41 @@ public class CommonCommands {
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE);
 
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x0);// PUTIN
-        macacoFrame.add((byte) 0x0);// PUTIN
+        // PUTIN
+        macacoFrame.add((byte) 0x0);
+        // PUTIN
+        macacoFrame.add((byte) 0x0);
 
         macacoFrame.add((byte) (idNode));// Start Offset
 
         if (byte1 == null && byte2 == null && byte3 == null) {
-            macacoFrame.add((byte) ((byte) slot + 1)); // Number Of
+            // Number Of
+            macacoFrame.add((byte) ((byte) slot + 1));
         } else if (byte2 == null && byte3 == null) {
-            macacoFrame.add((byte) ((byte) slot + 2)); // Number Of byte of
-                                                       // payload= command +
-                                                       // set byte
+            // Number Of byte of payload= command + set byte
+            macacoFrame.add((byte) ((byte) slot + 2));
         } else {
-            macacoFrame.add((byte) ((byte) slot + 4)); // Number Of byte of
-                                                       // payload= OnOFF + Red
-                                                       // + Green + Blu
+            // Number Of byte of payload= OnOFF + Red + Green + Blu
+            macacoFrame.add((byte) ((byte) slot + 4));
         }
 
         for (var i = 0; i <= slot - 1; i++) {
-            macacoFrame.add((byte) 00); // pongo a zero i byte precedenti lo
-                                        // slot da modificare
+            // I set the bytes preceding the slot to be modified to zero
+            macacoFrame.add((byte) 00);
         }
-        macacoFrame.add(shortCommand);// PAYLOAD
+        // PAYLOAD
+        macacoFrame.add(shortCommand);
 
         if (byte1 != null && byte2 != null && byte3 != null) {
-            macacoFrame.add(byte1);// PAYLOAD RED
-            macacoFrame.add(byte2);// PAYLOAD GREEN
-            macacoFrame.add(byte3);// PAYLOAD BLUE
+            // PAYLOAD RED
+            macacoFrame.add(byte1);
+            // PAYLOAD GREEN
+            macacoFrame.add(byte2);
+            // PAYLOAD BLUE
+            macacoFrame.add(byte3);
         } else if (byte1 != null) {
-            macacoFrame.add(byte1);// PAYLOAD DIMMER
+            // PAYLOAD DIMMER
+            macacoFrame.add(byte1);
         }
 
         logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame), gwConfig);
@@ -101,7 +107,7 @@ public class CommonCommands {
     }
 
     /*
-     * T61 send framte to push the setpoint value
+     * T61 send frame to push the setpoint value
      */
 
     public final void sendFORCEFrameT61SetPoint(GatewayConfig gwConfig, int idNode, int slot, Byte byte1, Byte byte2) {
@@ -109,19 +115,24 @@ public class CommonCommands {
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE);
 
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) 0x00);// PUTIN
-
-        macacoFrame.add((byte) (idNode));// Start Offset
-        macacoFrame.add((byte) ((byte) slot + 2)); // Number Of byte of payload= command + set byte
+        // PUTIN
+        macacoFrame.add((byte) 0x00);
+        // PUTIN
+        macacoFrame.add((byte) 0x00);
+        // Start Offset
+        macacoFrame.add((byte) (idNode));
+        // Number Of byte of payload= command + set byte
+        macacoFrame.add((byte) ((byte) slot + 2));
 
         for (var i = 0; i <= slot - 1; i++) {
-            macacoFrame.add((byte) 00); // pongo a zero i byte precedenti lo
-                                        // slot da modificare
+            // I set the bytes preceding the slot to be modified to zero
+            macacoFrame.add((byte) 00);
         }
         // PAYLOAD
-        macacoFrame.add(byte1);// first byte Setpoint Value
-        macacoFrame.add(byte2);// second byte Setpoint Value
+        // first byte Setpoint Value
+        macacoFrame.add(byte1);
+        // second byte Setpoint Value
+        macacoFrame.add(byte2);
 
         logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame), gwConfig);
 
@@ -137,8 +148,10 @@ public class CommonCommands {
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE);
 
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) 0x00);// PUTIN
+        // PUTIN
+        macacoFrame.add((byte) 0x00);
+        // PUTIN
+        macacoFrame.add((byte) 0x00);
 
         macacoFrame.add((byte) (idNode));// Start Offset
         macacoFrame.add((byte) ((byte) slot + 5)); // Number Of byte of payload= command + set byte

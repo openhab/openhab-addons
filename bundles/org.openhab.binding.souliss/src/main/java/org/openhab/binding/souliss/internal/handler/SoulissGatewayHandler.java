@@ -114,9 +114,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         healthScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobHealthyRunnable, 5,
                 this.gwConfig.healthyInterval, TimeUnit.SECONDS);
 
-        // il ciclo Send è schedulato con la costante
-        // SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_cicleInMillis
-        // internamente il ciclo viene rallentato al timer impostato da configurazione (PaperUI o File)
         var soulissSendDispatcherRunnable = new SendDispatcherRunnable(this.bridge);
         scheduler.scheduleWithFixedDelay(soulissSendDispatcherRunnable, 15,
                 SoulissBindingConstants.SEND_DISPATCHER_MIN_DELAY_CYCLE_IN_MILLIS, TimeUnit.MILLISECONDS);
@@ -148,7 +145,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
                     maxNode = thingNode;
                 }
             }
-            // alla fine la lunghezza della lista sarà uguale al numero di nodi presenti
+            // at the end the length of the list will be equal to the number of present nodes
         }
         return maxNode + 1;
     }
