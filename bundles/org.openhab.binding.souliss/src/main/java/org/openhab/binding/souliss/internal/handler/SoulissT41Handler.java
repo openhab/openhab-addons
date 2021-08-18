@@ -48,7 +48,7 @@ public class SoulissT41Handler extends SoulissGenericHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (!(command instanceof RefreshType)) {
-            if (channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_ONOFFALARM_CHANNEL)) {
+            if (channelUID.getId().equals(SoulissBindingConstants.T4N_ONOFFALARM_CHANNEL)) {
                 if (command instanceof OnOffType) {
                     if (command.equals(OnOffType.OFF)) {
                         commandSEND(SoulissProtocolConstants.SOULISS_T4N_NOT_ARMED);
@@ -72,7 +72,7 @@ public class SoulissT41Handler extends SoulissGenericHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
-        gwConfigurationMap = thingGeneric.getConfiguration();
+        gwConfigurationMap = getThing().getConfiguration();
         if (gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND) != null) {
             bSecureSend = ((Boolean) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND)).booleanValue();
         }

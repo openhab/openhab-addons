@@ -18,6 +18,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
@@ -52,8 +53,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     private final CommonCommands commonCommands = new CommonCommands();
 
-    private ExecutorService udpExecutorService = Executors
-            .newSingleThreadExecutor(new NamedThreadFactory("binding-souliss"));
+    private @Nullable ExecutorService udpExecutorService;
 
     private @Nullable Future<?> udpListenerJob;
     private @Nullable ScheduledFuture<?> pingScheduler;
@@ -97,6 +97,9 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         // and exec on thread
         var localUdpListenerJob = this.udpListenerJob;
         if (localUdpListenerJob == null || localUdpListenerJob.isCancelled()) {
+
+            this.udpExecutorService = Executors
+                    .newSingleThreadExecutor(new NamedThreadFactory(getThing().getUID().getAsString()));
             this.udpExecutorService.submit(udpServerDefaultPortRunnableClass);
         }
 
@@ -169,7 +172,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         if (++countPingKo > 3) {
             var bridgeHandler = bridge.getHandler();
             if (bridgeHandler != null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Gateway " + bridgeHandler.getThing().getUID() + " do not respond to " + countPingKo + " ping");
             }
         }
@@ -219,7 +222,15 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
             localUdpListenerJob.cancel(true);
         }
         var localUdpExecutorService = this.udpExecutorService;
-        localUdpExecutorService.shutdownNow();
+        if (localUdpExecutorService != null) {
+            localUdpExecutorService.shutdownNow();
+        }
+
         super.dispose();
+    }
+
+    @Override
+    protected void updateStatus(@NonNull ThingStatus status) {
+        super.updateStatus(status);
     }
 }

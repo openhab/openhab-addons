@@ -28,7 +28,6 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +50,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class SoulissGenericHandler extends BaseThingHandler implements TypicalCommonMethods {
 
-    Thing thingGeneric;
-
     private int iSlot;
     private int iNode;
     private final Logger logger = LoggerFactory.getLogger(SoulissGenericHandler.class);
@@ -64,8 +61,18 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
 
     protected SoulissGenericHandler(Thing thing) {
         super(thing);
-        this.thingGeneric = thing;
 
+    }
+
+    /**
+     * @return the iSlot
+     */
+    public int getSlot() {
+        return iSlot;
+    }
+
+    @Override
+    public void initialize() {
         try {
             var cfg = thing.getConfiguration();
             var props = cfg.getProperties();
@@ -79,14 +86,8 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
             }
         } catch (Exception e) {
             logger.warn("Error getting node/slot from souliss typical (thing config).");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "configuration error");
         }
-    }
-
-    /**
-     * @return the iSlot
-     */
-    public int getSlot() {
-        return iSlot;
     }
 
     /**
@@ -153,16 +154,6 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     @Override
     public void thingUpdated(Thing thing) {
         updateThing(thing);
-        this.thingGeneric = thing;
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
-        } else if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
     }
 
     public @Nullable GatewayConfig getGatewayConfig() {
@@ -178,7 +169,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
     }
 
     public @Nullable String getLabel() {
-        return thingGeneric.getLabel();
+        return getThing().getLabel();
     }
 
     public void setHealthy(byte shHealthy) {

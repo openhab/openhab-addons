@@ -123,8 +123,7 @@ public class UDPDecoder {
                 try {
                     decodePingBroadcast(macacoPck);
                 } catch (UnknownHostException e) {
-                    logger.debug("Error: {}", e.getLocalizedMessage());
-                    logger.error("Error:", e);
+                    logger.warn("Error:", e.getLocalizedMessage());
                 }
                 break;
 

@@ -115,7 +115,8 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
         label = "Topic. Number: " + topicNumber + ", Variant: " + sTopicVariant;
 
         discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label).withProperty("number", topicNumber)
-                .withProperty("variant", sTopicVariant).withBridge(gatewayUID).build();
+                .withProperty("variant", sTopicVariant).withRepresentationProperty("number").withBridge(gatewayUID)
+                .build();
         thingDiscovered(discoveryResult);
     }
 
