@@ -113,7 +113,7 @@
 	<channel-group-type id="service">
 		<label>Service</label>
 		<channels>
-			<channel id="battery_life" typeId="percentage">
+			<channel id="battery_life" typeId="system.battery-level">
 				<label>Battery Life</label>
 				<description>Remaining Air Dial Battery Level</description>
 			</channel>
