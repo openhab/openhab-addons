@@ -40,16 +40,16 @@ Hayward OmniLogic Connection Parameters:
 ## Channels
 
 ### Backyard Channels
-
-| backyardAirTemp | Number:Temperature | Backyard air temp sensor reading | R |
-|-----------------|--------------------|----------------------------------|:-:|
-| backyardStatus  | String             | Backyard status                  | R |
-| backyardState   | String             | Backyard state                   | R |
-| backyardAlarm1  | String             | Backyard alarm #1                | R |
-| backyardAlarm2  | String             | Backyard alarm #2                | R |
-| backyardAlarm3  | String             | Backyard alarm #3                | R |
-| backyardAlarm4  | String             | Backyard alarm #4                | R |
-| backyardAlarm5  | String             | Backyard alarm #5                | R |
+| Channel Type ID | Item Type          | Description                      | Read Write |
+|-----------------|--------------------|----------------------------------|:----------:|
+| backyardAirTemp | Number:Temperature | Backyard air temp sensor reading |      R     |
+| backyardStatus  | String             | Backyard status                  |      R     |
+| backyardState   | String             | Backyard state                   |      R     |
+| backyardAlarm1  | String             | Backyard alarm #1                |      R     |
+| backyardAlarm2  | String             | Backyard alarm #2                |      R     |
+| backyardAlarm3  | String             | Backyard alarm #3                |      R     |
+| backyardAlarm4  | String             | Backyard alarm #4                |      R     |
+| backyardAlarm5  | String             | Backyard alarm #5                |      R     |
 
 ### Body of Water Channels
 
