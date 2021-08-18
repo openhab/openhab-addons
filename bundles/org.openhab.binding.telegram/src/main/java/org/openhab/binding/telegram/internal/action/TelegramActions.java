@@ -56,8 +56,6 @@ import com.pengrad.telegrambot.request.SendVideo;
 import com.pengrad.telegrambot.response.BaseResponse;
 import com.pengrad.telegrambot.response.SendResponse;
 
-import io.netty.util.CharsetUtil;
-
 /**
  * Provides the actions for the Telegram API.
  *
@@ -314,8 +312,9 @@ public class TelegramActions implements ThingActions {
                 if (username != null && password != null) {
                     AuthenticationStore auth = client.getAuthenticationStore();
                     URI uri = URI.create(photoURL);
-                    auth.addAuthenticationResult(new BasicResult(HttpHeader.AUTHORIZATION, uri, "Basic " + Base64
-                            .getEncoder().encodeToString((username + ":" + password).getBytes(CharsetUtil.UTF_8))));
+                    auth.addAuthenticationResult(
+                            new BasicResult(HttpHeader.AUTHORIZATION, uri, "Basic " + Base64.getEncoder()
+                                    .encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8))));
                 }
                 try {
                     // API has 10mb limit to jpg file size, without this it can only accept 2mb
