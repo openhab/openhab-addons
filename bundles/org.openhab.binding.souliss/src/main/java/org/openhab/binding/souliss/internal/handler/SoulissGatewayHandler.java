@@ -18,7 +18,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
@@ -227,10 +226,5 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         }
 
         super.dispose();
-    }
-
-    @Override
-    protected void updateStatus(@NonNull ThingStatus status) {
-        super.updateStatus(status);
     }
 }
