@@ -153,19 +153,27 @@ public class CommonCommands {
         // PUTIN
         macacoFrame.add((byte) 0x00);
 
-        macacoFrame.add((byte) (idNode));// Start Offset
-        macacoFrame.add((byte) ((byte) slot + 5)); // Number Of byte of payload= command + set byte
+        // Start Offset
+        macacoFrame.add((byte) (idNode));
+        // Number Of byte of payload= command + set byte
+        macacoFrame.add((byte) ((byte) slot + 5));
 
         for (var i = 0; i <= slot - 1; i++) {
-            macacoFrame.add((byte) 00); // pongo a zero i byte precedenti lo
-                                        // slot da modificare
+            // prvious byte to zero
+            macacoFrame.add((byte) 00);
+            // slot to be changed
         }
-        macacoFrame.add(shortCommand);// PAYLOAD
+        // PAYLOAD
+        macacoFrame.add(shortCommand);
 
-        macacoFrame.add((byte) 0x0);// Empty - Temperature Measured Value
-        macacoFrame.add((byte) 0x0);// Empty - Temperature Measured Value
-        macacoFrame.add(byte1);// Temperature Setpoint Value
-        macacoFrame.add(byte2);// Temperature Setpoint Value
+        // Empty - Temperature Measured Value
+        macacoFrame.add((byte) 0x0);
+        // Empty - Temperature Measured Value
+        macacoFrame.add((byte) 0x0);
+        // Temperature Setpoint Value
+        macacoFrame.add(byte1);
+        // Temperature Setpoint Value
+        macacoFrame.add(byte2);
 
         logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame), gwConfig);
         queueToDispatcher(macacoFrame, gwConfig);
@@ -174,23 +182,17 @@ public class CommonCommands {
     public final void sendDBStructFrame(GatewayConfig gwConfig) {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add((byte) SoulissUDPConstants.SOULISS_UDP_FUNCTION_DBSTRUCT_REQ);
-        macacoFrame.add((byte) 0x0);// PUTIN
-        macacoFrame.add((byte) 0x0);// PUTIN
-        macacoFrame.add((byte) 0x0);// Start Offset
-        macacoFrame.add((byte) 0x0); // Number Of
+        // PUTIN
+        macacoFrame.add((byte) 0x0);
+        // PUTIN
+        macacoFrame.add((byte) 0x0);
+        // Start Offset
+        macacoFrame.add((byte) 0x0);
+        // Number Of
+        macacoFrame.add((byte) 0x0);
 
         logger.debug("sendDBStructFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame), gwConfig);
         queueToDispatcher(macacoFrame, gwConfig);
-
-        // Note:
-        // Structure of DBStructFrame:
-        // nodes = mac.get(5);
-        // maxnodes = mac.get(6);
-        // maxTypicalXnode = mac.get(7);
-        // maxrequests = mac.get(8);
-        // MaCacoIN_s = mac.get(9);
-        // MaCacoTyp_s = mac.get(10);
-        // MaCacoOUT_s = mac.get(11);
     }
 
     /*
@@ -294,21 +296,24 @@ public class CommonCommands {
             }
             byte[] dude = ip.getAddress();
 
-            frame.add((byte) 23);// Port
+            // Port
+            frame.add((byte) 23);
+            // es 192.168.1.XX BOARD
+            frame.add((byte) (dude[3] & 0xFF));
 
-            frame.add((byte) (dude[3] & 0xFF));// es 192.168.1.XX BOARD
-
-            // n broadcast : La comunicazione avviene utilizzando l'indirizzo IP
-            // 255.255.255.255 a cui associare l'indirizzo vNet 0xFFFF.
+            // n broadcast : communication by Ip
+            // 255.255.255.255 to associate vNet 0xFFFF address.
             frame.add(gatewayLanAddress.compareTo(SoulissUDPConstants.BROADCASTADDR) == 0 ? dude[2] : 0);
-            // 192.168.XX.0
+            // NODE INDEX - source vNet address User Interface
+            frame.add(iNodeIndex);
+            // USER INDEX - source vNet address User Interface
+            frame.add(iUserIndex);
 
-            frame.add(iNodeIndex); // NODE INDEX - source vNet address User Interface
-            frame.add(iUserIndex);// USER INDEX - source vNet address User Interface
-
-            // aggiunge in testa il calcolo
-            frame.add(0, (byte) (frame.size() + macacoFrame2.size() + 1)); // Length
-            frame.add(0, (byte) (frame.size() + macacoFrame2.size() + 1));// Length Check 2
+            // adds the calculation in the head
+            // Length
+            frame.add(0, (byte) (frame.size() + macacoFrame2.size() + 1));
+            // Length Check 2
+            frame.add(0, (byte) (frame.size() + macacoFrame2.size() + 1));
 
             frame.addAll(macacoFrame2);
             return frame;
@@ -339,13 +344,16 @@ public class CommonCommands {
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE_MASSIVE);
 
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x0);// PUTIN
-        macacoFrame.add((byte) 0x0);// PUTIN
-
-        macacoFrame.add(typical);// Start Offset
-        macacoFrame.add((byte) 1); // Number Of
-
-        macacoFrame.add(shortCommand);// PAYLOAD
+        // PUTIN
+        macacoFrame.add((byte) 0x0);
+        // PUTIN
+        macacoFrame.add((byte) 0x0);
+        // Start Offset
+        macacoFrame.add(typical);
+        // Number Of
+        macacoFrame.add((byte) 1);
+        // PAYLOAD
+        macacoFrame.add(shortCommand);
         logger.debug("sendMULTICASTFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame),
                 gwConfig);
         queueToDispatcher(macacoFrame, gwConfig);
@@ -360,11 +368,14 @@ public class CommonCommands {
             macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_PING_REQ);
 
             // PUTIN, STARTOFFEST, NUMBEROF
-            macacoFrame.add((byte) 0x00);// PUTIN
-            macacoFrame.add((byte) 0x00);// PUTIN
-
-            macacoFrame.add((byte) 0x00);// Start Offset
-            macacoFrame.add((byte) 0x00); // Number Of
+            // PUTIN
+            macacoFrame.add((byte) 0x00);
+            // PUTIN
+            macacoFrame.add((byte) 0x00);
+            // Start Offset
+            macacoFrame.add((byte) 0x00);
+            // Number Of
+            macacoFrame.add((byte) 0x00);
             logger.debug("sendPing - {}, IP: {} ", macacoToString(macacoFrame), gwConfig);
             queueToDispatcher(macacoFrame, gwConfig);
         } else {
@@ -380,11 +391,14 @@ public class CommonCommands {
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_DISCOVER_GW_NODE_BCAST_REQ);
 
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x05);// PUTIN
-        macacoFrame.add((byte) 0x00);// PUTIN
-
-        macacoFrame.add((byte) 0x00);// Start Offset
-        macacoFrame.add((byte) 0x00); // Number Of
+        // PUTIN
+        macacoFrame.add((byte) 0x05);
+        // PUTIN
+        macacoFrame.add((byte) 0x00);
+        // Start Offset
+        macacoFrame.add((byte) 0x00);
+        // Number Of
+        macacoFrame.add((byte) 0x00);
         logger.debug("sendBroadcastPing - {} ", macacoToString(macacoFrame));
         sendBroadcastNow(macacoFrame);
     }
@@ -397,8 +411,10 @@ public class CommonCommands {
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_SUBSCRIBE_REQ);
 
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) 0x00);// PUTIN
+        // PUTIN
+        macacoFrame.add((byte) 0x00);
+        // PUTIN
+        macacoFrame.add((byte) 0x00);
         macacoFrame.add((byte) 0x00);
 
         macacoFrame.add((byte) iNodes);
@@ -414,8 +430,10 @@ public class CommonCommands {
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_HEALTHY_REQ);
 
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) 0x00);// PUTIN
+        // PUTIN
+        macacoFrame.add((byte) 0x00);
+        // PUTIN
+        macacoFrame.add((byte) 0x00);
         macacoFrame.add((byte) 0x00);
         macacoFrame.add((byte) iNodes);
         logger.debug("sendHealthyRequestFrame - {}, IP: {} ", macacoToString(macacoFrame), gwConfig);
@@ -429,11 +447,14 @@ public class CommonCommands {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_TYP_REQ);
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) 0x00); // startOffset
-
-        macacoFrame.add((byte) nodes); // iNodes
+        // PUTIN
+        macacoFrame.add((byte) 0x00);
+        // PUTIN
+        macacoFrame.add((byte) 0x00);
+        // startOffset
+        macacoFrame.add((byte) 0x00);
+        // iNodes
+        macacoFrame.add((byte) nodes);
         logger.debug("sendTypicalRequestFrame - {}, IP: {} ", macacoToString(macacoFrame), gwConfig.gatewayLanAddress);
         queueToDispatcher(macacoFrame, gwConfig);
     }
@@ -445,11 +466,14 @@ public class CommonCommands {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_TYP_REQ);
         // PUTIN, STARTOFFEST, NUMBEROF
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) 0x00);// PUTIN
-        macacoFrame.add((byte) start); // startOffset
-
-        macacoFrame.add((byte) nodes); // iNodes
+        // PUTIN
+        macacoFrame.add((byte) 0x00);
+        // PUTIN
+        macacoFrame.add((byte) 0x00);
+        // startOffset
+        macacoFrame.add((byte) start);
+        // iNodes
+        macacoFrame.add((byte) nodes);
         logger.debug("sendTypicalRequestFrame - {}, IP: {} ", macacoToString(macacoFrame), gwConfig.gatewayLanAddress);
         queueToDispatcher(macacoFrame, gwConfig);
     }
@@ -457,7 +481,7 @@ public class CommonCommands {
     boolean flag = true;
 
     private final String macacoToString(ArrayList<Byte> mACACOframe) {
-        // copio array per evitare modifiche concorrenti
+        // I copy arrays to avoid concurrent changes
         ArrayList<Byte> mACACOframe2 = new ArrayList<>();
         mACACOframe2.addAll(mACACOframe);
         flag = false;

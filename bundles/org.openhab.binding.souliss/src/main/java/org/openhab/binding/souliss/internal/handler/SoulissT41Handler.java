@@ -129,7 +129,6 @@ public class SoulissT41Handler extends SoulissGenericHandler {
     @Override
     public byte getExpectedRawState(byte bCmd) {
         if (bSecureSend) {
-
             if (bCmd == SoulissProtocolConstants.SOULISS_T4N_ARMED) {
                 return SoulissProtocolConstants.SOULISS_T4N_ANTITHEFT;
             } else if (bCmd == SoulissProtocolConstants.SOULISS_T4N_NOT_ARMED) {

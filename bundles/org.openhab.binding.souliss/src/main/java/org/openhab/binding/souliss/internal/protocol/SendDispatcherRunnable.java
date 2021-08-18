@@ -59,8 +59,8 @@ public class SendDispatcherRunnable implements Runnable {
     public static synchronized void put(DatagramPacket packetToPUT, Logger logger) {
         bPopSuspend = true;
         var bPacchettoGestito = false;
-        // estraggo il nodo indirizzato dal pacchetto in ingresso
-        // restituisce -1 se il pacchetto non è del tipo SOULISS_UDP_FUNCTION_FORCE
+        // I extract the node addressed by the incoming packet. returns -1 if the package is not of the
+        // SOULISS_UDP_FUNCTION_FORCE type
         int node = getNode(packetToPUT);
         if (node >= 0) {
             logger.debug("Push packet in queue - Node {}", node);
@@ -69,27 +69,25 @@ public class SendDispatcherRunnable implements Runnable {
         if (packetsList.isEmpty() || node < 0) {
             bPacchettoGestito = false;
         } else {
-            // OTTIMIZZATORE
-            // scansione lista pacchetti da inviare
+            // OPTIMIZER
+            // scan packets list to sent
             for (var i = 0; i < packetsList.size(); i++) {
                 if (node >= 0 && getNode(packetsList.get(i).getPacket()) == node && !packetsList.get(i).getSent()) {
-                    // frame per lo stesso nodo già  presente in lista
+                    // frame for the same node already present in the list
                     logger.debug("Frame UPD per nodo {} già presente in coda. Esecuzione ottimizzazione.", node);
                     bPacchettoGestito = true;
-                    // se il pacchetto da inserire è più corto (o uguale) di
-                    // quello in coda allora sovrascrivo i byte del pacchetto
-                    // presente nella coda
+                    // if the packet to be inserted is shorter (or equal) than the one in the queue
+                    // then I overwrite the bytes of the packet present in the queue
                     if (packetToPUT.getData().length <= packetsList.get(i).getPacket().getData().length) {
-                        // scorre i byte di comando e se il byte è diverso da
-                        // zero sovrascrive il byte presente nel pacchetto in
-                        // coda
+                        // it scrolls the command bytes and if the byte is non-zero overwrites the byte present in the
+                        // queued packet
                         logger.trace("Optimizer. Packet to push: {}", macacoToString(packetToPUT.getData()));
                         logger.trace("Optimizer. Previous frame: {}",
                                 macacoToString(packetsList.get(i).getPacket().getData()));
-                        // i valori dei tipici partono dal byte 12 in poi
+                        // typical values ​​start from byte 12 onwards
                         for (var j = 12; j < packetToPUT.getData().length; j++) {
-                            // se il j-esimo byte è diverso da zero allora lo
-                            // sovrascrivo al byte del pacchetto già presente
+                            // if the j-th byte is different from zero then
+                            // I overwrite it with the byte of the packet already present
                             if (packetToPUT.getData()[j] != 0) {
                                 packetsList.get(i).getPacket().getData()[j] = packetToPUT.getData()[j];
                             }
@@ -97,30 +95,28 @@ public class SendDispatcherRunnable implements Runnable {
                         logger.debug("Optimizer. Previous frame modified to: {}",
                                 macacoToString(packetsList.get(i).getPacket().getData()));
                     } else {
-                        // se il pacchetto da inserire è più lungo di quello in
-                        // lista allora sovrascrivo i byte del pacchetto da
-                        // inserire, poi elimino quello in lista ed inserisco
-                        // quello nuovo
+                        // if the packet to be inserted is longer than the one in the list then
+                        // I overwrite the bytes of the packet to be inserted, then I delete the one in the list
+                        // and insert the new one
                         if (packetToPUT.getData().length > packetsList.get(i).getPacket().getData().length) {
                             for (var j = 12; j < packetsList.get(i).getPacket().getData().length; j++) {
-                                // se il j-esimo byte è diverso da zero allora
-                                // lo sovrascrivo al byte del pacchetto già
-                                // presente
+                                // if the j-th byte is different from zero then I overwrite it with the byte of the
+                                // packet already present
                                 if ((packetsList.get(i).getPacket().getData()[j] != 0)
                                         && (packetToPUT.getData()[j] == 0)) {
-                                    // sovrascrive i byte dell'ultimo frame
-                                    // soltanto se il byte è uguale a zero.
-                                    // Se è diverso da zero l'ultimo frame
-                                    // ha la precedenza e deve sovrascrivere
+                                    // overwrite the bytes of the last frame
+                                    // only if the byte equals zero.
+                                    // If the last frame is nonzero
+                                    // takes precedence and must override
                                     packetToPUT.getData()[j] = packetsList.get(i).getPacket().getData()[j];
 
                                 }
                             }
-                            // rimuove il pacchetto
+                            // removes the packet
                             logger.debug("Optimizer. Remove frame: {}",
                                     macacoToString(packetsList.get(i).getPacket().getData()));
                             packetsList.remove(i);
-                            // inserisce il nuovo
+                            // inserts the new
                             logger.debug("Optimizer. Add frame: {}", macacoToString(packetToPUT.getData()));
                             packetsList.add(new PacketStruct(packetToPUT));
                         }
@@ -161,8 +157,8 @@ public class SendDispatcherRunnable implements Runnable {
                     }
                 }
 
-                // confronta gli stati in memoria con i frame inviati. Se
-                // corrispondono cancella il frame dalla lista inviati
+                // compare the states in memory with the frames sent.
+                // If match deletes the frame from the sent list
                 safeSendCheck();
 
                 resetTime();
@@ -180,8 +176,8 @@ public class SendDispatcherRunnable implements Runnable {
      * Get node number from packet
      */
     private static int getNode(DatagramPacket packet) {
-        // 7 è il byte del frame VNet al quale trovo il codice comando
-        // 10 è il byte del frame VNet al quale trovo l'ID del nodo
+        // 7 is the byte of the VNet frame at which I find the command code
+        // 10 is the byte of the VNet frame at which I find the node ID
         if (packet.getData()[7] == SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE) {
             return packet.getData()[10];
         }
@@ -202,10 +198,7 @@ public class SendDispatcherRunnable implements Runnable {
     /**
      * check frame updates with packetList, where flag "sent" is true. If all
      * commands was executed there delete packet in list.
-     * Confronta gli aggiornamenti ricevuti con i frame inviati. Se corrispondono allora cancella il
-     * frame nella lista inviati .
      */
-
     public void safeSendCheck() {
         int node;
         int iSlot;
@@ -215,32 +208,33 @@ public class SendDispatcherRunnable implements Runnable {
 
         var sExpected = "";
 
-        // scansione lista pacchetti inviati
+        // scan of the sent packets list
         for (var i = 0; i < packetsList.size(); i++) {
 
             if (packetsList.get(i).getSent()) {
                 node = getNode(packetsList.get(i).getPacket());
                 iSlot = 0;
                 for (var j = 12; j < packetsList.get(i).getPacket().getData().length; j++) {
-                    // controllo lo slot solo se il comando è diverso da ZERO
+                    // I check the slot only if the command is different from ZERO
                     if ((packetsList.get(i).getPacket().getData()[j] != 0) && (this.gwHandler != null)) {
                         localTyp = getHandler(node, iSlot, this.logger);
 
                         if (localTyp != null) {
                             bExpected = localTyp.getExpectedRawState(packetsList.get(i).getPacket().getData()[j]);
 
-                            // se il valore atteso dal tipico è -1 allora vuol dire che il tipico non supporta la
-                            // funzione
+                            // if the expected value of the typical is -1 then it means that the typical does not
+                            // support the
+                            // function
                             // secureSend
                             if (bExpected < 0) {
                                 localTyp = null;
                             }
 
-                            // traduce il comando inviato con lo stato previsto e
-                            // poi fa il confronto con lo stato attuale
+                            // translate the command sent with the expected state e
+                            // then compare with the current state
                             if (logger.isDebugEnabled() && localTyp != null) {
                                 sCmd = Integer.toHexString(packetsList.get(i).getPacket().getData()[j]);
-                                // comando inviato
+                                // command sent
                                 sCmd = sCmd.length() < 2 ? "0x0" + sCmd.toUpperCase() : "0x" + sCmd.toUpperCase();
                                 sExpected = Integer.toHexString(bExpected);
                                 sExpected = sExpected.length() < 2 ? "0x0" + sExpected.toUpperCase()
@@ -251,25 +245,23 @@ public class SendDispatcherRunnable implements Runnable {
                             }
 
                             if (localTyp != null && checkExpectedState(localTyp.getRawState(), bExpected)) {
-                                // se il valore del tipico coincide con il valore
-                                // trasmesso allora pongo il byte a zero.
-                                // quando tutti i byte saranno uguale a zero allora
-                                // si
-                                // cancella il frame
+                                // if the value of the typical matches the value
+                                // transmitted then I set the byte to zero.
+                                // when all bytes are equal to zero then
+                                // delete the frame
                                 packetsList.get(i).getPacket().getData()[j] = 0;
                                 logger.debug("{} Node: {} Slot: {} - OK Expected State", localTyp.getLabel(), node,
                                         iSlot);
                             } else if (localTyp == null) {
                                 if (bExpected < 0) {
-                                    // se il tipico non viene gestito allora metto a zero il byte del relativo
-                                    // slot
+                                    // if the typical is not managed then I set the byte of the relative slot to zero
                                     packetsList.get(i).getPacket().getData()[j] = 0;
                                 } else {
-                                    // se allo slot j non esiste un tipico allora vuol dire che si tratta di uno
+                                    // if there is no typical at slot j then it means that it is one
                                     // slot
-                                    // collegato
-                                    // al precedente (es: RGB, T31,...)
-                                    // allora se lo slot j-1=0 allora anche j puÃ² essere messo a 0
+                                    // connected
+                                    // to the previous one (ex: RGB, T31, ...)
+                                    // then if slot j-1 = 0 then j can also be set to 0
                                     if (packetsList.get(i).getPacket().getData()[j - 1] == 0) {
                                         packetsList.get(i).getPacket().getData()[j] = 0;
                                     }
@@ -281,15 +273,15 @@ public class SendDispatcherRunnable implements Runnable {
                     iSlot++;
                 }
 
-                // se il valore di tutti i byte che costituiscono il pacchetto è 0 allora rimuovo il pacchetto dalla
-                // lista
-                // inoltre se è trascorso il timout allora imposto il pacchetto per essere trasmesso nuovamente
+                // if the value of all bytes that make up the packet is 0 then I remove the packet from
+                // list
+                // also if the timout has elapsed then I set the packet to be resent
                 if (checkAllsSlotZero(packetsList.get(i).getPacket())) {
                     logger.debug("Command packet executed - Removed");
                     packetsList.remove(i);
                 } else {
-                    // se il frame non è uguale a zero controllo il TIMEOUT e se
-                    // è scaduto allora pongo il flag SENT a false
+                    // if the frame is not equal to zero I check the TIMEOUT and if
+                    // it has expired so I set the SENT flag to false
                     long time = System.currentTimeMillis();
 
                     SoulissGatewayHandler localGwHandler = this.gwHandler;
@@ -362,17 +354,15 @@ public class SendDispatcherRunnable implements Runnable {
         synchronized (this) {
             SoulissGatewayHandler localGwHandler = this.gwHandler;
 
-            // non esegue il pop se bPopSuspend=true
-            // bPopSuspend è impostato dal metodo put
-
+            // don't pop if bPopSuspend = true
+            // bPopSuspend is set by the put method
             if ((localGwHandler != null) && (!bPopSuspend)) {
                 t = System.currentTimeMillis();
 
                 /*
-                 * riporta l'intervallo al minimo solo se:
-                 * - la lunghezza della coda minore o uguale a 1;
-                 * - se è trascorso il tempo SEND_DELAY.
-                 *
+                 * brings the interval to the minimum only if:
+                 * - the length of the tail less than or equal to 1;
+                 * - if the SEND_DELAY time has elapsed.
                  */
 
                 if (packetsList.size() <= 1) {
@@ -384,7 +374,7 @@ public class SendDispatcherRunnable implements Runnable {
 
                 var iPacket = 0;
                 var bFlagWhile = true;
-                // scarta i pacchetti già  inviati
+                // discard packages already sent
                 while ((iPacket < packetsList.size()) && bFlagWhile) {
                     if (packetsList.get(iPacket).getSent()) {
                         iPacket++;
@@ -395,9 +385,9 @@ public class SendDispatcherRunnable implements Runnable {
 
                 boolean tFlag = (t - tPrec) >= localGwHandler.gwConfig.sendInterval;
 
-                // se siamo arrivati alla fine della lista e quindi tutti i
-                // pacchetti sono già  stati inviati allora pongo anche il tFlag
-                // a false (come se il timeout non fosse ancora trascorso)
+                // if we have reached the end of the list and then all
+                // packets have already been sent so I also place the tFlag
+                // to false (as if the timeout hasn't elapsed yet)
                 if (iPacket >= packetsList.size()) {
                     tFlag = false;
                 }
@@ -405,16 +395,16 @@ public class SendDispatcherRunnable implements Runnable {
                 if ((!packetsList.isEmpty()) && tFlag) {
                     tPrec = System.currentTimeMillis();
 
-                    // estratto il primo elemento della lista
+                    // extract the first element of the list
                     PacketStruct sp = packetsList.get(iPacket);
 
-                    // GESTIONE PACCHETTO: eliminato dalla lista oppure
-                    // contrassegnato come inviato se è un FORCE
+                    // PACKAGE MANAGEMENT: deleted from the list or
+                    // marked as sent if it is a FORCE
                     if (packetsList.get(iPacket).getPacket()
                             .getData()[7] == SoulissUDPConstants.SOULISS_UDP_FUNCTION_FORCE) {
-                        // flag inviato a true
+                        // flag sent set to true
                         packetsList.get(iPacket).setSent(true);
-                        // imposto time
+                        // set time
                         packetsList.get(iPacket).setTime(System.currentTimeMillis());
                     } else {
                         packetsList.remove(iPacket);

@@ -50,7 +50,7 @@ public class PacketStruct {
     }
 
     public void setTime(long time) {
-        // imposta il tempo solo se non è già stato impostato una volta
+        // set the time only if it has not already been set once
         if (this.time == 0) {
             this.time = time;
         }

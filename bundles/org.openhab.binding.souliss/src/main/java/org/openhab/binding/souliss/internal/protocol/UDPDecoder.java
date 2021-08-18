@@ -138,13 +138,14 @@ public class UDPDecoder {
                 decodeStateRequest(macacoPck);
                 break;
 
-            case SoulissUDPConstants.SOULISS_UDP_FUNCTION_TYP_RESP:// Answer for assigned typical logic
+            // Answer for assigned typical logic
+            case SoulissUDPConstants.SOULISS_UDP_FUNCTION_TYP_RESP:
                 logger.debug("Received functional code: 0x{}- Read typical logic answer",
                         Integer.toHexString(functionalCode));
                 decodeTypRequest(lastByteGatewayIP, macacoPck);
                 break;
-
-            case SoulissUDPConstants.SOULISS_UDP_FUNCTION_HEALTHY_RESP:// Answer
+            // Answer
+            case SoulissUDPConstants.SOULISS_UDP_FUNCTION_HEALTHY_RESP:
                 // nodes healthy
                 logger.debug("Received functional code: 0x{} - Nodes Healthy", Integer.toHexString(functionalCode));
                 decodeHealthyRequest(macacoPck);
@@ -179,8 +180,10 @@ public class UDPDecoder {
      * @param mac
      */
     private void decodePing(ArrayList<Byte> mac) {
-        int putIn1 = mac.get(1); // not used
-        int putIn2 = mac.get(2); // not used
+        // not used
+        int putIn1 = mac.get(1);
+        // not used
+        int putIn2 = mac.get(2);
         logger.debug("decodePing: putIn code: {}, {}", putIn1, putIn2);
         var localGwHandler = this.gwHandler;
         if (localGwHandler != null) {
@@ -221,7 +224,8 @@ public class UDPDecoder {
 
             // creates Souliss nodes
             for (var j = 0; j < numberOf; j++) {
-                if (mac.get(5 + j) != 0) {// create only not-empty typicals
+                // create only not-empty typicals
+                if (mac.get(5 + j) != 0) {
                     if ((mac.get(5 + j) != SoulissProtocolConstants.SOULISS_T_RELATED)) {
                         byte typical = mac.get(5 + j);
                         byte slot = (byte) (j % typXnodo);
@@ -381,19 +385,22 @@ public class UDPDecoder {
             Thing typ = null;
             while (thingsIterator.hasNext() && !bFound) {
                 typ = thingsIterator.next();
-                if (typ.getThingTypeUID().equals(SoulissBindingConstants.TOPICS_THING_TYPE)) { // if a topic continue
-                                                                                               // ignoring it
+                // if a topic continue
+                // ignoring it
+                if (typ.getThingTypeUID().equals(SoulissBindingConstants.TOPICS_THING_TYPE)) {
                     continue;
                 }
                 String[] sUIDArray = typ.getUID().getAsString().split(":");
                 ThingHandler handler = typ.getHandler();
-                if (handler != null) { // execute it only if binding is Souliss and update is for my
-                                       // Gateway
-                    if (((SoulissGenericHandler) handler).getNode() == tgtnode) { // execute it
-                                                                                  // only
-                                                                                  // if it is
-                                                                                  // node
-                                                                                  // to update
+                // execute it only if binding is Souliss and update is for my
+                // Gateway
+                if (handler != null) {
+                    // execute it
+                    // only
+                    // if it is
+                    // node
+                    // to update
+                    if (((SoulissGenericHandler) handler).getNode() == tgtnode) {
                         // ...now check slot
                         int slot = ((SoulissGenericHandler) handler).getSlot();
                         // get typical value
@@ -561,7 +568,7 @@ public class UDPDecoder {
     private float getFloatAtSlot(ArrayList<Byte> mac, int slot) {
         int iOutput = mac.get(5 + slot) & 0xFF;
         int iOutput2 = mac.get(5 + slot + 1) & 0xFF;
-        // ora ho i due bytes, li converto
+        // we have two bytes, convert them...
         int shifted = iOutput2 << 8;
         return HalfFloatUtils.toFloat(shifted + iOutput);
     }
