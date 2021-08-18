@@ -14,8 +14,8 @@
 		<channels>
 			<channel id="pumpEnable" typeId="system.power"/>
 			<channel id="pumpSpeed" typeId="pumpSpeed"/>
-            <channel id="pumpState" typeId="pumpState"/>
-            <channel id="pumpLastSpeed" typeId="pumpLastSpeed"/>
+			<channel id="pumpState" typeId="pumpState"/>
+			<channel id="pumpLastSpeed" typeId="pumpLastSpeed"/>
 		</channels>
 
 		<properties>
@@ -36,33 +36,33 @@
 		<state min="0" max="100" step="1.0" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
-    <channel-type id="pumpState">
-        <item-type>String</item-type>
-        <label>Filter State</label>
-        <description>Filter State</description>
-        <state readOnly="true">
-            <options>
-                <option value="0">Off</option>
-                <option value="1">Running</option>
-                <option value="2">Priming</option>
-                <option value="3">Waiting to Turn Off</option>
-                <option value="4">Waiting to Turn Off Manual</option>
-                <option value="5">Heater Extend</option>
-                <option value="6">Heater Cool Down</option>
-                <option value="7">Suspended</option>
-                <option value="8">CSAD Extend</option>
-                <option value="9">Filter Superchlorinate</option>
-                <option value="10">Filter Force Priming</option>
-                <option value="11">Filter Waiting for Pump to Turn Off</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="pumpState">
+		<item-type>String</item-type>
+		<label>Filter State</label>
+		<description>Filter State</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Running</option>
+				<option value="2">Priming</option>
+				<option value="3">Waiting to Turn Off</option>
+				<option value="4">Waiting to Turn Off Manual</option>
+				<option value="5">Heater Extend</option>
+				<option value="6">Heater Cool Down</option>
+				<option value="7">Suspended</option>
+				<option value="8">CSAD Extend</option>
+				<option value="9">Filter Superchlorinate</option>
+				<option value="10">Filter Force Priming</option>
+				<option value="11">Filter Waiting for Pump to Turn Off</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="pumpLastSpeed">
-        <item-type>Number:Dimensionless</item-type>
-        <label>Last Speed</label>
-        <description>Last Speed</description>
-        <state pattern="%d %unit%" readOnly="true"/>
-    </channel-type>
-    
+	<channel-type id="pumpLastSpeed">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Last Speed</label>
+		<description>Last Speed</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>
