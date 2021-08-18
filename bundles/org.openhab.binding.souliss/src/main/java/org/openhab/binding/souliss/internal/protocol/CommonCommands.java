@@ -216,7 +216,7 @@ public class CommonCommands {
     }
 
     /*
-     * send broadcast UDP frame - unused in this version - to Test
+     * send broadcast UDP frame - unused in this version
      */
     private final void sendBroadcastNow(ArrayList<Byte> macacoFrame) {
         byte iUserIndex = (byte) 120;
@@ -291,7 +291,7 @@ public class CommonCommands {
             try {
                 ip = InetAddress.getByName(gatewayLanAddress);
             } catch (UnknownHostException e) {
-                logger.error("{}", e.getMessage());
+                logger.warn("{}", e.getMessage());
                 return frame;
             }
             byte[] dude = ip.getAddress();
@@ -429,7 +429,7 @@ public class CommonCommands {
         ArrayList<Byte> macacoFrame = new ArrayList<>();
         macacoFrame.add(SoulissUDPConstants.SOULISS_UDP_FUNCTION_HEALTHY_REQ);
 
-        // PUTIN, STARTOFFEST, NUMBEROF
+        // PUTIN, STARTOFFSET, NUMBEROF
         // PUTIN
         macacoFrame.add((byte) 0x00);
         // PUTIN

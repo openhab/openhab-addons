@@ -90,7 +90,7 @@ public class SoulissT11Handler extends SoulissGenericHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
-        gwConfigurationMap = thingGeneric.getConfiguration();
+        gwConfigurationMap = getThing().getConfiguration();
         if (gwConfigurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL) != null) {
             xSleepTime = ((BigDecimal) gwConfigurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL)).byteValue();
         }
