@@ -128,6 +128,7 @@
 	<channel-type id="currentTime">
 		<item-type>DateTime</item-type>
 		<label>Current Time</label>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="mode">
@@ -146,26 +147,31 @@
 	<channel-type id="manualFanSpeed">
 		<item-type>Dimmer</item-type>
 		<label>Manual Fan Speed</label>
+		<category>Fan</category>
 		<state step="10" min="0" max="100"/>
 	</channel-type>
 	<channel-type id="supplyFanSpeed">
 		<item-type>Number</item-type>
 		<label>Supply Fan Speed</label>
+		<category>Fan</category>
 		<state pattern="%.0f rpm" readOnly="true" min="0"/>
 	</channel-type>
 	<channel-type id="extractFanSpeed">
 		<item-type>Number</item-type>
 		<label>Extract Fan Speed</label>
+		<category>Fan</category>
 		<state pattern="%.0f rpm" readOnly="true" min="0"/>
 	</channel-type>
 	<channel-type id="supplyFanStep">
 		<item-type>Dimmer</item-type>
 		<label>Supply Fan Step</label>
+		<category>Fan</category>
 		<state step="10" min="0" max="100" readOnly="true"/>
 	</channel-type>
 	<channel-type id="extractFanStep">
 		<item-type>Dimmer</item-type>
 		<label>Extract Fan Step</label>
+		<category>Fan</category>
 		<state step="10" min="0" max="100" readOnly="true"/>
 	</channel-type>
 	<channel-type id="percentage">
@@ -192,6 +198,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
+		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
