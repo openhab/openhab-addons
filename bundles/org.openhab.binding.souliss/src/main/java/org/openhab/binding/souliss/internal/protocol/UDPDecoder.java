@@ -191,7 +191,6 @@ public class UDPDecoder {
         }
     }
 
-    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private void decodePingBroadcast(ArrayList<Byte> macaco) throws UnknownHostException {
         String ip = macaco.get(5) + "." + macaco.get(6) + "." + macaco.get(7) + "." + macaco.get(8);
         byte[] addr = { (macaco.get(5)).byteValue(), (macaco.get(6)).byteValue(), (macaco.get(7)).byteValue(),

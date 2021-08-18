@@ -127,8 +127,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         this.nodes = nodes;
     }
 
-    int iPosNodeSlot = 2;
-
     public int getNodes() {
         var maxNode = 0;
         for (Thing thing : getThing().getThings()) {
@@ -160,13 +158,9 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     /**
      * The {@link gatewayDetected} is used to notify that UDPServer decoded a Ping Response from gateway
-     *
-     * @author Tonino Fazio - Initial contribution
-     * @author Luca Calcaterra - Refactor for OH3
      */
 
     public void gatewayDetected() {
-        logger.debug("Setting Gateway ONLINE");
         updateStatus(ThingStatus.ONLINE);
         countPingKo = 0; // reset counter
     }

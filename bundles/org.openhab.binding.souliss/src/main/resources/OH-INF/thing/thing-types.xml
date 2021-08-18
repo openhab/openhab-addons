@@ -42,7 +42,7 @@
 				<required>true</required>
 			</parameter>
 
-			<parameter name="pingInterval" type="integer" min="1" max="300">
+			<parameter name="pingInterval" type="integer" min="1" max="300" unit="s">
 				<label>Ping Interval</label>
 				<description>Interval in seconds to check for device presence.</description>
 				<default>30</default>
@@ -51,7 +51,7 @@
 			</parameter>
 			<parameter name="subscriptionInterval" type="integer" min="2" max="240">
 				<label>Subscription Interval</label>
-				<description>Interval in seconds to subcribe Souliss Gateway.
+				<description>Interval in seconds to subscribe Souliss Gateway.
 				</description>
 				<default>30</default>
 				<advanced>true</advanced>
@@ -353,14 +353,7 @@
 				<description>Set sleep timer in cycles</description>
 				<required>false</required>
 				<default>5</default>
-			</parameter>
-			<!-- To Implement -->
-			<!-- <parameter name="secureSend" type="boolean"> -->
-			<!-- <label>Secure Send</label> -->
-			<!-- <description></description> -->
-			<!-- <required>false</required> -->
-			<!-- <default>true</default> -->
-			<!-- </parameter> -->
+			</parameter>			
 		</config-description>
 	</thing-type>
 
@@ -1007,7 +1000,7 @@
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 		<label>Action Message</label>
-		<description>Look at: Souliss Wiki, Peer 2 Peer Communication. That are messages published in broadcast from souliss
+		<description>Look at: Souliss Wiki, Peer 2 Peer Communication. These are messages published in broadcast from souliss
 			nodes in channels defined by two value: number and variant.</description>
 		<channels>
 			<channel id="value" typeId="float6n"/>
@@ -1074,7 +1067,6 @@
 		<item-type>Switch</item-type>
 		<label>Set</label>
 		<description>Set</description>
-
 	</channel-type>
 
 	<channel-type id="onoff">
@@ -1206,7 +1198,7 @@
 
 	<channel-type id="lux">
 		<item-type>Number</item-type>
-		<label>kLux</label>
+		<label>Illuminance</label>
 		<description>Lux</description>
 		<tags>
 			<tag>sensors</tag>
@@ -1216,7 +1208,7 @@
 
 	<channel-type id="voltage">
 		<item-type>Number</item-type>
-		<label>V</label>
+		<label>Voltage</label>
 		<description>Current Voltage</description>
 		<category>Energy</category>
 		<tags>
@@ -1226,7 +1218,7 @@
 	</channel-type>
 	<channel-type id="ampere">
 		<item-type>Number</item-type>
-		<label>A</label>
+		<label>Current</label>
 		<description>Current Ampere</description>
 		<category>Energy</category>
 		<tags>
@@ -1237,7 +1229,7 @@
 
 	<channel-type id="power">
 		<item-type>Number</item-type>
-		<label>W</label>
+		<label>Power</label>
 		<description>Current Power</description>
 		<category>Energy</category>
 		<tags>
@@ -1248,7 +1240,7 @@
 
 	<channel-type id="pressure">
 		<item-type>Number</item-type>
-		<label>V</label>
+		<label>Pressure</label>
 		<description>Pressure</description>
 		<tags>
 			<tag>sensors</tag>
@@ -1259,7 +1251,7 @@
 	<channel-type id="ledColor">
 		<item-type>Color</item-type>
 		<label>Color</label>
-		<description>Color of the LED. Bind to a Dimmer to just set the brightness, bind to a Color chooser for the full
+		<description>Color of the LED. Bound to a Dimmer to just set the brightness, bind to a Color chooser for the full
 			control and bind to a Switch for turning the led on or off.</description>
 		<category>ColorLight</category>
 	</channel-type>

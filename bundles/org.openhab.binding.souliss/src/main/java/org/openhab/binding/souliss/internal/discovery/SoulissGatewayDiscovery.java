@@ -61,9 +61,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
     /**
      * The {@link gatewayDetected} callback used to create the Gateway
-     *
-     * @author Tonino Fazio - Initial contribution
-     * @author Luca Calcaterra - Refactor for OH3
      */
     @Override
     public void gatewayDetected(InetAddress addr, String id) {

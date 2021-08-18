@@ -61,7 +61,7 @@ public abstract class SoulissGenericActionMessage extends BaseThingHandler {
                 sTopicVariant = pTopicVariant.toString();
             }
         } catch (Exception e) {
-            logger.debug("Item Definition Error. Use ex:'souliss:t11:nodeNumber-slotNumber'");
+            logger.debug("Item Definition Error. Use ex:'souliss:t11:thing_id'");
         }
     }
 

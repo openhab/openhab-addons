@@ -16,6 +16,7 @@ package org.openhab.binding.souliss.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
+import org.openhab.binding.souliss.internal.protocol.HalfFloatUtils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -120,8 +121,7 @@ public class SoulissT31Handler extends SoulissGenericHandler {
                     break;
                 case SoulissBindingConstants.T31_SETPOINT_CHANNEL:
                     if (command instanceof DecimalType) {
-                        int uu = org.openhab.binding.souliss.internal.protocol.HalfFloatUtils
-                                .fromFloat(((DecimalType) command).floatValue());
+                        int uu = HalfFloatUtils.fromFloat(((DecimalType) command).floatValue());
                         byte b2 = (byte) (uu >> 8);
                         byte b1 = (byte) uu;
                         // setpoint command

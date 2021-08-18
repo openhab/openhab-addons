@@ -36,7 +36,6 @@ import org.openhab.core.types.RefreshType;
 public class SoulissT14Handler extends SoulissGenericHandler {
 
     private byte t1nRawState = 0xF;
-    // private byte xSleepTime = 0; // unused for now
 
     public SoulissT14Handler(Thing thing) {
         super(thing);
