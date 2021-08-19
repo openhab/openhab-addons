@@ -67,7 +67,7 @@ If `hasParameters=true` you can use parameters in the query string that can be d
  
 #### timeout
 
-A time-out in seconds to wait for the query result, if it's exceeded, result will be discarded and the addon will do its best effort to cancel the query.
+A time-out in seconds to wait for the query result, if it's exceeded, the result will be discarded and the addon will do its best to cancel the query.
 Currently it's ignored and it will be implemented in a future version.
 
 #### scalarResult 
