@@ -87,7 +87,7 @@ Query items offer the following channels to be able to query / bind them to item
 | Channel Type ID | Item Type | Description                                                                                                                        |
 |-----------------|-----------|------------------------------------------------------------------------------------------------------------------------------------|
 | execute         | Switch    | Send `ON` to execute the query manually. It also indicates if query is currently running (`ON`) or not running (`OFF`)          |
-| resultString    | String    | Result of last executed query as an String |
+| resultString    | String    | Result of last executed query as a String |
 | resultNumber    | Number    | Result of last executed query as a Number, query must have `scalarResult=true` |
 | resultDateTime  | DateTime  | Result of last executed query as a DateTime, query must have `scalarResult=true` |
 | resultContact   | Contact   | Result of last executed query as Contact, query must have `scalarResult=true` |
