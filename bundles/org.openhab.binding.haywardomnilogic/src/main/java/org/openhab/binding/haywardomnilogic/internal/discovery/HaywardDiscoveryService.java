@@ -151,11 +151,11 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                 xmlResponse);
 
         discoverDevices(bridgehandler, xmlResponse, "Pump", HaywardTypeToRequest.PUMP,
-                HaywardBindingConstants.THING_TYPE_FILTER, (props, i) -> {
-                    props.put(HaywardBindingConstants.PROPERTY_FILTER_MINPUMPSPEED, pumpProperty1.get(i));
-                    props.put(HaywardBindingConstants.PROPERTY_FILTER_MAXPUMPSPEED, pumpProperty2.get(i));
-                    props.put(HaywardBindingConstants.PROPERTY_FILTER_MINPUMPRPM, pumpProperty3.get(i));
-                    props.put(HaywardBindingConstants.PROPERTY_FILTER_MAXPUMPRPM, pumpProperty4.get(i));
+                HaywardBindingConstants.THING_TYPE_PUMP, (props, i) -> {
+                    props.put(HaywardBindingConstants.PROPERTY_PUMP_MINPUMPSPEED, pumpProperty1.get(i));
+                    props.put(HaywardBindingConstants.PROPERTY_PUMP_MAXPUMPSPEED, pumpProperty2.get(i));
+                    props.put(HaywardBindingConstants.PROPERTY_PUMP_MINPUMPRPM, pumpProperty3.get(i));
+                    props.put(HaywardBindingConstants.PROPERTY_PUMP_MAXPUMPRPM, pumpProperty4.get(i));
                 });
 
         // Find Relays
