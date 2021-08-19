@@ -121,7 +121,7 @@ Hayward OmniLogic Connection Parameters:
 ## Full Example
 
 After installing the binding, you will need to manually add the Hayward Connection thing and enter your credentials.
-All pool items can be autmatically discovered by scanning the bridge
+All pool items can be automatically discovered by scanning the bridge.  
 Goto the inbox and add the things.
 
 ### demo.items:
