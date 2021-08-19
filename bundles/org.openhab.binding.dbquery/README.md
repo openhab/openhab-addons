@@ -160,7 +160,8 @@ Use this action with care, because as the query is executed synchronously, it is
 
 #### setQueryParameters
 
-It's used for queries with parameters to set them. To execute the action you need to pass the parameters as a Map.
+It's used for queries with parameters to set them.
+To execute the action you need to pass the parameters as a Map.
 
 Example (using Jython script):
 
