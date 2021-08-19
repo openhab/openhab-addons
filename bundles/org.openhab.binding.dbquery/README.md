@@ -120,8 +120,7 @@ Triggers when there's a need to calculate parameters before query execution.
 When a query has `hasParameters=true` it fires the `calculateParameters` channel trigger and pauses the execution until `setQueryParameters` action is call in
  that query.
  
-In the case a query has parameters it's expected that there is some rule that catch the `calculateParameters` trigger, calculate the parameters
- with the corresponding logic and then call the `setQueryParameters` action, after that the query will be really executed.
+In the case a query has parameters, it's expected that there is a rule that catches the `calculateParameters` trigger, calculate the parameters with the corresponding logic and then calls the `setQueryParameters` action, after that the query will be executed.
  
 ## Actions
 
