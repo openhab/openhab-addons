@@ -15,7 +15,7 @@ Some use cases can be:
 
 There are two types of supported things: `influxdb2` and a `query`.
 For each different database you want to connect to, you must define a `Bridge` thing for that database.
-Then each `Bridge` can define as much as wanted `Query` things you want to execute.
+Then each `Bridge` can define as many `Query` things that you want to execute.
 
 Current supported `Bridge` is:
 
