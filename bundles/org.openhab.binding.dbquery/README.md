@@ -171,7 +171,8 @@ Example (using Jython script):
 
 #### getLastQueryResult
 
-It can be used in scripts to get the last query result. It doesn't have any parameters and returns an `ActionQueryResult` as defined in `executeQuery` action.
+It can be used in scripts to get the last query result.
+It doesn't have any parameters and returns an `ActionQueryResult` as defined in `executeQuery` action.
 
 Example (using Jython script):
 
