@@ -154,7 +154,7 @@ Example (using Jython script):
      log.info("execute query result is "+str(result.data))
     
 
-Use this action with care, because as the query is executed synchronously is not good to execute long-running queries and block script execution.
+Use this action with care, because as the query is executed synchronously, it is not good to execute long-running queries that can block script execution.
 
 ### For Queries
 
