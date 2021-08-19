@@ -17,10 +17,6 @@ There are two types of supported things: `influxdb2` and a `query`.
 For each different database you want to connect to, you must define a `Bridge` thing for that database.
 Then each `Bridge` can define as many `Query` things that you want to execute.
 
-Current supported `Bridge` is:
-
-- `influxdb2`
-
 ## Thing Configuration
 
 ### Bridges
