@@ -31,7 +31,6 @@ public class JDBCBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        // TODO: implement
     }
 
     @Override
