@@ -117,7 +117,7 @@ The `resultString` channel is the only valid one if `scalarResult=false`, and in
 #### calculateParameters
 
 Triggers when there's a need to calculate parameters before query execution.
-When a query has `hasParameters=true` it fires the `calculateParameters` channel trigger and pause the execution until `setQueryParameters` action is call in
+When a query has `hasParameters=true` it fires the `calculateParameters` channel trigger and pauses the execution until `setQueryParameters` action is call in
  that query.
  
 In the case a query has parameters it's expected that there is some rule that catch the `calculateParameters` trigger, calculate the parameters
