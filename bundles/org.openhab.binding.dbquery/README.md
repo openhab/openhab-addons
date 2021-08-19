@@ -11,7 +11,6 @@ Some use cases can be:
 - Query derived data from you openHAB persistence, for example with Influx2 tasks you can process your data to create a new one   
 - Bypass limitations of current openHAB persistence queries
 
-
 ## Supported Things
 
 There are two types of supported things: `influxdb2` and a `query`.
