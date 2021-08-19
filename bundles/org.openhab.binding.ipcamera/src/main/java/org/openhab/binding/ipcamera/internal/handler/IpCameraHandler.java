@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -189,7 +190,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private boolean isOnline = false; // Used so only 1 error is logged when a network issue occurs.
     private boolean firstAudioAlarm = false;
     private boolean firstMotionAlarm = false;
-    public Double motionThreshold = 0.0016;
+    public BigDecimal motionThreshold = BigDecimal.ZERO;
     public int audioThreshold = 35;
     @SuppressWarnings("unused")
     private @Nullable StreamServerHandler streamServerHandler;
@@ -1035,15 +1036,15 @@ public class IpCameraHandler extends BaseThingHandler {
                     String usersMotionOptions = cameraConfig.getMotionOptions();
                     if (usersMotionOptions.startsWith("-")) {
                         // Need to put the users custom options first in the chain before the motion is detected
-                        filterOptions += " " + usersMotionOptions + ",select='gte(scene," + motionThreshold
-                                + ")',metadata=print";
+                        filterOptions += " " + usersMotionOptions + ",select='gte(scene,"
+                                + motionThreshold.divide(BIG_DECIMAL_SCALE_MOTION) + ")',metadata=print";
                     } else {
                         filterOptions = filterOptions + " " + usersMotionOptions + " -vf select='gte(scene,"
-                                + motionThreshold + ")',metadata=print";
+                                + motionThreshold.divide(BIG_DECIMAL_SCALE_MOTION) + ")',metadata=print";
                     }
                 } else if (motionAlarmEnabled) {
-                    filterOptions = filterOptions
-                            .concat(" -vf select='gte(scene," + motionThreshold + ")',metadata=print");
+                    filterOptions = filterOptions.concat(" -vf select='gte(scene,"
+                            + motionThreshold.divide(BIG_DECIMAL_SCALE_MOTION) + ")',metadata=print");
                 }
                 ffmpegRtspHelper = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, input,
                         filterOptions, "-f null -", cameraConfig.getUser(), cameraConfig.getPassword());
@@ -1262,10 +1263,9 @@ public class IpCameraHandler extends BaseThingHandler {
                     } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
                         motionAlarmEnabled = false;
                         noMotionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                    } else {
+                    } else if (command instanceof PercentType) {
                         motionAlarmEnabled = true;
-                        motionThreshold = Double.valueOf(command.toString());
-                        motionThreshold = motionThreshold / 10000;
+                        motionThreshold = ((PercentType) command).toBigDecimal();
                     }
                     setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
                     return;

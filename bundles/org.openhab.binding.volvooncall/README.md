@@ -80,9 +80,13 @@ Following channels are currently available:
 | other#washerFluidLevel                        | Number               | Washer fluid level                                 | Normal / Low / VeryLow                         |
 | other#serviceWarning                          | String               | Warning if service is needed                       |                                                |
 | other#bulbFailure                             | Switch               | ON if at least one bulb is reported as failed      |                                                |
-| battery#batteryLevel                          | Number:Dimensionless | Battery level                                      | Only for Plugin hybrid / Twin Engine models    |
+| battery#batteryLevel                          | Number:Dimensionless | Battery level                                      | Only for Plugin hybrid / Twin Engine models. The binding reports undefined in situations where it knows the API is misleading. |
+| battery#batteryLevelRaw                       | Number:Dimensionless | Battery level                                      | Only for Plugin hybrid / Twin Engine models. Raw figure from the API, can be misleading. |
 | battery#batteryDistanceToEmpty                | Number:Length        | Distance until battery is empty                    | Only for Plugin hybrid / Twin Engine models    |
 | battery#chargeStatus                          | String               | Charging status                                    | Only for Plugin hybrid / Twin Engine models    |
+| battery#chargeStatusCable                     | Switch               | Is the cable plugged in                            | Only for Plugin hybrid / Twin Engine models    |
+| battery#chargeStatusCharging                  | Switch               | Is the car currently charging                      | Only for Plugin hybrid / Twin Engine models    |
+| battery#chargeStatusFullyCharged              | Switch               | Is the car fully charged                           | Only for Plugin hybrid / Twin Engine models    |
 | battery#timeToHVBatteryFullyCharged           | Number:Time          | Time in minutes until the battery is fully charged | Only for Plugin hybrid / Twin Engine models    |
 | battery#chargingEnd                           | DateTime             | Calculated time when the battery is fully charged  | Only for Plugin hybrid / Twin Engine models    |
 | lasttrip#tripConsumption                      | Number:Volume        | Last trip fuel consumption                         |                                                |

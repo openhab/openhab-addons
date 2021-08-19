@@ -50,10 +50,7 @@ public class IpCameraHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        if (SUPPORTED_THING_TYPES.contains(thingTypeUID) || GROUP_SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return true;
-        }
-        return false;
+        return (SUPPORTED_THING_TYPES.contains(thingTypeUID) || GROUP_SUPPORTED_THING_TYPES.contains(thingTypeUID));
     }
 
     @Override

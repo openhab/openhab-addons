@@ -275,6 +275,12 @@ curl -X POST --header "Content-Type: text/plain" --header "Accept: application/j
 
 Please replace `homeconnect_CoffeeMaker_BOSCH_HCS06COM1_B95E5103934D_basic_actions_state` with your item name (of channel type `basic_actions_state`).
 
+### How to avoid having to re-authorize the bridge after a new openHAB installation
+
+OAuth is storing data in two files: your access tokens in the file `userdata/jsondb/StorageHandler.For.OAuthClientService.json` and the encryption/decryption key in the file `userdata/config/SymmetricKeyCipher.config`.
+Consider backing up and restoring these two files when installing a new openHAB server from scratch.
+Otherwise, all you need to do is re-authorize your bridge.
+
 ## FAQ
 
 ### I can't start my oven via openHAB.

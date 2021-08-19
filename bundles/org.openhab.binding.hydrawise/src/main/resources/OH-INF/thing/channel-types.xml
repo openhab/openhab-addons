@@ -10,12 +10,14 @@
 		<channels>
 			<channel id="name" typeId="name"/>
 			<channel id="icon" typeId="icon"/>
-			<channel id="time" typeId="time"/>
 			<channel id="type" typeId="type"/>
-			<channel id="runcustom" typeId="runcustom"/>
 			<channel id="run" typeId="run"/>
+			<channel id="runcustom" typeId="runcustom"/>
 			<channel id="nextruntime" typeId="nextruntime"/>
+			<channel id="suspend" typeId="suspend"/>
+			<channel id="suspenduntil" typeId="suspenduntil"/>
 			<channel id="timeleft" typeId="timeleft"/>
+			<channel id="summary" typeId="summary"/>
 		</channels>
 	</channel-group-type>
 
@@ -25,6 +27,8 @@
 		<channels>
 			<channel id="runcustom" typeId="runcustom"/>
 			<channel id="run" typeId="run"/>
+			<channel id="suspend" typeId="suspend"/>
+			<channel id="suspenduntil" typeId="suspenduntil"/>
 		</channels>
 	</channel-group-type>
 
@@ -34,11 +38,11 @@
 		<channels>
 			<channel id="name" typeId="name"/>
 			<channel id="input" typeId="input"/>
-			<channel id="mode" typeId="mode"/>
-			<channel id="timer" typeId="timer"/>
+			<channel id="delay" typeId="delay"/>
 			<channel id="offtimer" typeId="offtimer"/>
 			<channel id="offlevel" typeId="offlevel"/>
 			<channel id="active" typeId="active"/>
+			<channel id="waterflow" typeId="waterflow"/>
 		</channels>
 	</channel-group-type>
 
@@ -49,13 +53,43 @@
 			<channel id="temperaturehigh" typeId="temperaturehigh"/>
 			<channel id="temperaturelow" typeId="temperaturelow"/>
 			<channel id="conditions" typeId="conditions"/>
-			<channel id="day" typeId="day"/>
+			<channel id="time" typeId="time"/>
 			<channel id="humidity" typeId="humidity"/>
 			<channel id="wind" typeId="wind"/>
+			<channel id="evapotranspiration" typeId="evapotranspiration"/>
+			<channel id="precipitation" typeId="precipitation"/>
+			<channel id="probabilityofprecipitation" typeId="probabilityofprecipitation"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="system">
+		<label>System</label>
+		<description>Controller system data</description>
+		<channels>
+			<channel id="name" typeId="name"/>
+			<channel id="summary" typeId="summary"/>
+			<channel id="lastcontacttime" typeId="lastcontacttime"/>
 		</channels>
 	</channel-group-type>
 
 	<!-- Controller -->
+
+	<channel-type id="lastcontacttime" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Contact Time</label>
+		<description>Last contact time of a controller</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="summary">
+		<item-type>String</item-type>
+		<label>Status Summary</label>
+		<description>Status summary</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- Zones -->
+
 	<channel-type id="name">
 		<item-type>String</item-type>
 		<label>Name</label>
@@ -70,10 +104,17 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="time" advanced="true">
-		<item-type>Number</item-type>
+	<channel-type id="starttime" advanced="true">
+		<item-type>DateTime</item-type>
 		<label>Start Time</label>
-		<description>Zone start time in seconds</description>
+		<description>Next zone start time</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="duration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<description>Next start duration</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -87,7 +128,7 @@
 	<channel-type id="nextruntime">
 		<item-type>DateTime</item-type>
 		<label>Next Run Time</label>
-		<description>Next time this zone is scheduled to run</description>
+		<description>The next time this zone is scheduled to run</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -98,13 +139,25 @@
 	</channel-type>
 
 	<channel-type id="runcustom">
-		<item-type>Number</item-type>
-		<label>Run Zones With Custom Duration </label>
-		<description>Run zones now for a custom duration of time in seconds</description>
+		<item-type>Number:Time</item-type>
+		<label>Run Zones With Custom Duration</label>
+		<description>Run zones now for a custom duration</description>
+	</channel-type>
+
+	<channel-type id="suspend">
+		<item-type>Switch</item-type>
+		<label>Suspend Zones</label>
+		<description>Suspends or resumes zones</description>
+	</channel-type>
+
+	<channel-type id="suspenduntil">
+		<item-type>DateTime</item-type>
+		<label>Suspend Zones</label>
+		<description>Suspends zones until this date</description>
 	</channel-type>
 
 	<channel-type id="timeleft">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Time Left Seconds</label>
 		<description>Time left that zone will run for</description>
 		<state readOnly="true"></state>
@@ -126,22 +179,15 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="mode" advanced="true">
-		<item-type>Number</item-type>
-		<label>Mode</label>
-		<description>Sensor mode</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="timer" advanced="true">
-		<item-type>Number</item-type>
-		<label>Timer</label>
-		<description>Sensor timer</description>
+	<channel-type id="delay" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Delay</label>
+		<description>Sensor delay</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="offtimer" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Off Timer</label>
 		<description>Sensor off timer</description>
 		<state readOnly="true"></state>
@@ -160,10 +206,18 @@
 		<description>Sensor off level</description>
 		<state readOnly="true"></state>
 	</channel-type>
+
 	<channel-type id="active">
 		<item-type>Switch</item-type>
 		<label>Active</label>
 		<description>Sensor active</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="waterflow" advanced="true">
+		<item-type>Number:Volume</item-type>
+		<label>Water Flow</label>
+		<description>Sensor water flow</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -198,10 +252,10 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="day">
-		<item-type>String</item-type>
-		<label>Day of Week</label>
-		<description>Day of week for the weather forecast</description>
+	<channel-type id="time">
+		<item-type>DateTime</item-type>
+		<label>Forecast Time</label>
+		<description>Forecast date and time</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -219,5 +273,26 @@
 		<description>Wind speed</description>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="evapotranspiration">
+		<item-type>Number</item-type>
+		<label>Evapotranspiration</label>
+		<description>Evapotranspiration amount</description>
+		<state readOnly="true" pattern="%.1f"/>
+	</channel-type>
+
+	<channel-type id="precipitation">
+		<item-type>Number</item-type>
+		<label>Precipitation</label>
+		<description>Precipitation amount</description>
+		<state readOnly="true" pattern="%.1f"/>
+	</channel-type>
+
+	<channel-type id="probabilityofprecipitation">
+		<item-type>Number</item-type>
+		<label>Probability Of Precipitation</label>
+		<description>Probability of precipitation percentage</description>
+		<state readOnly="true" pattern="%d%%"/>
 	</channel-type>
 </thing:thing-descriptions>

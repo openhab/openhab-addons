@@ -20,6 +20,7 @@
 /bundles/org.openhab.binding.amazondashbutton/ @OLibutzki
 /bundles/org.openhab.binding.amazonechocontrol/ @mgeramb
 /bundles/org.openhab.binding.ambientweather/ @mhilbush
+/bundles/org.openhab.binding.amplipi/ @kaikreuzer
 /bundles/org.openhab.binding.androiddebugbridge/ @GiviMAD
 /bundles/org.openhab.binding.astro/ @gerrieg
 /bundles/org.openhab.binding.atlona/ @tmrobert8
@@ -129,6 +130,7 @@
 /bundles/org.openhab.binding.insteon/ @robnielsen
 /bundles/org.openhab.binding.intesis/ @hmerk
 /bundles/org.openhab.binding.ipcamera/ @Skinah
+/bundles/org.openhab.binding.ipobserver/ @Skinah
 /bundles/org.openhab.binding.ipp/ @peuter
 /bundles/org.openhab.binding.irobot/ @Sonic-Amiga
 /bundles/org.openhab.binding.irtrans/ @kgoderis
@@ -222,6 +224,7 @@
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /bundles/org.openhab.binding.openwebnet/ @mvalla
 /bundles/org.openhab.binding.oppo/ @mlobstein
+/bundles/org.openhab.binding.orbitbhyve/ @octa22
 /bundles/org.openhab.binding.orvibo/ @tavalin
 /bundles/org.openhab.binding.paradoxalarm/ @theater
 /bundles/org.openhab.binding.pentair/ @jsjames
@@ -312,7 +315,7 @@
 /bundles/org.openhab.binding.verisure/ @jannegpriv
 /bundles/org.openhab.binding.vigicrues/ @clinique
 /bundles/org.openhab.binding.vitotronic/ @steand
-/bundles/org.openhab.binding.volvooncall/ @clinique
+/bundles/org.openhab.binding.volvooncall/ @clinique @Jamstah
 /bundles/org.openhab.binding.warmup/ @jamesmelville
 /bundles/org.openhab.binding.weathercompany/ @mhilbush
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo
