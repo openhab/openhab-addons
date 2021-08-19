@@ -50,7 +50,6 @@ public abstract class DatabaseBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.trace("initialize bridge {}", getThing().getUID());
         initConfig();
 
         database = createDatabase();
