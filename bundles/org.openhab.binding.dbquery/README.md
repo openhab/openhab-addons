@@ -3,8 +3,8 @@
 This binding allows creating items from the result of native database queries.
 It currently only supports InfluxDB 2.0.
 
-You can use the addon in any situation where you want to create an item from a native query, the source of the query can
-be any supported database, and don't need to be the one you use as persistence service in openHAB.
+You can use the addon in any situation where you want to create an item from a native query.
+The source of the query can be any supported database, and doesn't need to be the one you use as the persistence service in openHAB.
 Some use cases can be:
 
 - Integrate a device that stores its data in a database
