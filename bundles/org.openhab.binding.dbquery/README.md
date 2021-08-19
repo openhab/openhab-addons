@@ -50,7 +50,7 @@ The query items support the following parameters:
 | scalarResult | false    | true     | If query always returns a single value or not                         |
 | scalarColumn | false    |          | In case of multiple columns, it indicates which to use for scalarResult|
 
-that are described further in the following subsections
+These are described further in the following subsections.
 
 ##### query  
 
