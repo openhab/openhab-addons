@@ -4,7 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="mqtt:ha_channel">
+	<config-description uri="channel-type:mqtt:ha-channel">
 		<parameter name="component" type="text" readOnly="true" required="true">
 			<label>Component</label>
 			<description>HomeAssistant component type (e.g. binary_sensor, switch, light)</description>

@@ -576,87 +576,87 @@ public class OnvifConnection {
         }
         switch (topic) {
             case "RuleEngine/CellMotionDetector/Motion":
-                if (dataValue.equals("true")) {
+                if ("true".equals(dataValue)) {
                     ipCameraHandler.motionDetected(CHANNEL_CELL_MOTION_ALARM);
-                } else if (dataValue.equals("false")) {
+                } else if ("false".equals(dataValue)) {
                     ipCameraHandler.noMotionDetected(CHANNEL_CELL_MOTION_ALARM);
                 }
                 break;
             case "VideoSource/MotionAlarm":
-                if (dataValue.equals("true")) {
+                if ("true".equals(dataValue)) {
                     ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
-                } else if (dataValue.equals("false")) {
+                } else if ("false".equals(dataValue)) {
                     ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
                 }
                 break;
             case "AudioAnalytics/Audio/DetectedSound":
-                if (dataValue.equals("true")) {
+                if ("true".equals(dataValue)) {
                     ipCameraHandler.audioDetected();
-                } else if (dataValue.equals("false")) {
+                } else if ("false".equals(dataValue)) {
                     ipCameraHandler.noAudioDetected();
                 }
                 break;
             case "RuleEngine/FieldDetector/ObjectsInside":
-                if (dataValue.equals("true")) {
+                if ("true".equals(dataValue)) {
                     ipCameraHandler.motionDetected(CHANNEL_FIELD_DETECTION_ALARM);
-                } else if (dataValue.equals("false")) {
+                } else if ("false".equals(dataValue)) {
                     ipCameraHandler.noMotionDetected(CHANNEL_FIELD_DETECTION_ALARM);
                 }
                 break;
             case "RuleEngine/LineDetector/Crossed":
-                if (dataName.equals("ObjectId")) {
+                if ("ObjectId".equals(dataName)) {
                     ipCameraHandler.motionDetected(CHANNEL_LINE_CROSSING_ALARM);
                 } else {
                     ipCameraHandler.noMotionDetected(CHANNEL_LINE_CROSSING_ALARM);
                 }
                 break;
             case "RuleEngine/TamperDetector/Tamper":
-                if (dataValue.equals("true")) {
+                if ("true".equals(dataValue)) {
                     ipCameraHandler.changeAlarmState(CHANNEL_TAMPER_ALARM, OnOffType.ON);
-                } else if (dataValue.equals("false")) {
+                } else if ("false".equals(dataValue)) {
                     ipCameraHandler.changeAlarmState(CHANNEL_TAMPER_ALARM, OnOffType.OFF);
                 }
                 break;
             case "Device/HardwareFailure/StorageFailure":
-                if (dataValue.equals("true")) {
+                if ("true".equals(dataValue)) {
                     ipCameraHandler.changeAlarmState(CHANNEL_STORAGE_ALARM, OnOffType.ON);
-                } else if (dataValue.equals("false")) {
+                } else if ("false".equals(dataValue)) {
                     ipCameraHandler.changeAlarmState(CHANNEL_STORAGE_ALARM, OnOffType.OFF);
                 }
                 break;
             case "VideoSource/ImageTooDark/AnalyticsService":
             case "VideoSource/ImageTooDark/ImagingService":
             case "VideoSource/ImageTooDark/RecordingService":
-                if (dataValue.equals("true")) {
+                if ("true".equals(dataValue)) {
                     ipCameraHandler.changeAlarmState(CHANNEL_TOO_DARK_ALARM, OnOffType.ON);
-                } else if (dataValue.equals("false")) {
+                } else if ("false".equals(dataValue)) {
                     ipCameraHandler.changeAlarmState(CHANNEL_TOO_DARK_ALARM, OnOffType.OFF);
                 }
                 break;
             case "VideoSource/GlobalSceneChange/AnalyticsService":
             case "VideoSource/GlobalSceneChange/ImagingService":
             case "VideoSource/GlobalSceneChange/RecordingService":
-                if (dataValue.equals("true")) {
+                if ("true".equals(dataValue)) {
                     ipCameraHandler.changeAlarmState(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.ON);
-                } else if (dataValue.equals("false")) {
+                } else if ("false".equals(dataValue)) {
                     ipCameraHandler.changeAlarmState(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.OFF);
                 }
                 break;
             case "VideoSource/ImageTooBright/AnalyticsService":
             case "VideoSource/ImageTooBright/ImagingService":
             case "VideoSource/ImageTooBright/RecordingService":
-                if (dataValue.equals("true")) {
+                if ("true".equals(dataValue)) {
                     ipCameraHandler.changeAlarmState(CHANNEL_TOO_BRIGHT_ALARM, OnOffType.ON);
-                } else if (dataValue.equals("false")) {
+                } else if ("false".equals(dataValue)) {
                     ipCameraHandler.changeAlarmState(CHANNEL_TOO_BRIGHT_ALARM, OnOffType.OFF);
                 }
                 break;
             case "VideoSource/ImageTooBlurry/AnalyticsService":
             case "VideoSource/ImageTooBlurry/ImagingService":
             case "VideoSource/ImageTooBlurry/RecordingService":
-                if (dataValue.equals("true")) {
+                if ("true".equals(dataValue)) {
                     ipCameraHandler.changeAlarmState(CHANNEL_TOO_BLURRY_ALARM, OnOffType.ON);
-                } else if (dataValue.equals("false")) {
+                } else if ("false".equals(dataValue)) {
                     ipCameraHandler.changeAlarmState(CHANNEL_TOO_BLURRY_ALARM, OnOffType.OFF);
                 }
                 break;

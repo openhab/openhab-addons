@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.hydrawise.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Thrown for connection issues to the Hydrawise controller
  *
  * @author Dan Cunningham - Initial contribution
  */
-@SuppressWarnings("serial")
+@NonNullByDefault
 public class HydrawiseConnectionException extends Exception {
+    private static final long serialVersionUID = 1L;
 
     public HydrawiseConnectionException(Exception e) {
         super(e);

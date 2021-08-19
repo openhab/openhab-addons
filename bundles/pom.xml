@@ -92,7 +92,9 @@
     <module>org.openhab.binding.amazonechocontrol</module>
         
     <module>org.openhab.binding.ambientweather</module>
-        
+
+    <module>org.openhab.binding.amplipi</module>
+
     <module>org.openhab.binding.androiddebugbridge</module>
         
     <module>org.openhab.binding.astro</module>
@@ -308,7 +310,9 @@
     <module>org.openhab.binding.insteon</module>
         
     <module>org.openhab.binding.ipcamera</module>
-        
+
+    <module>org.openhab.binding.ipobserver</module>
+
     <module>org.openhab.binding.intesis</module>
         
     <module>org.openhab.binding.ipp</module>
@@ -496,7 +500,9 @@
     <module>org.openhab.binding.openwebnet</module>
         
     <module>org.openhab.binding.oppo</module>
-        
+
+    <module>org.openhab.binding.orbitbhyve</module>
+
     <module>org.openhab.binding.orvibo</module>
         
     <module>org.openhab.binding.paradoxalarm</module>

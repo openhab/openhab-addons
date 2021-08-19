@@ -14,11 +14,16 @@ package org.openhab.transform.javascript.internal;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.script.Bindings;
@@ -56,6 +61,8 @@ public class JavaScriptTransformationService implements TransformationService, C
     private static final String CONFIG_PARAM_FUNCTION = "function";
     private static final String[] FILE_NAME_EXTENSIONS = { "js" };
 
+    private static final String SCRIPT_DATA_WORD = "input";
+
     private final JavaScriptEngineManager manager;
 
     @Activate
@@ -70,25 +77,44 @@ public class JavaScriptTransformationService implements TransformationService, C
      * transformations one should use subfolders.
      *
      * @param filename the name of the file which contains the Java script
-     *            transformation rule. Transformation service inject input
-     *            (source) to 'input' variable.
+     *            transformation rule. Filename can also include additional
+     *            variables in URI query variable format which will be injected
+     *            to script engine. Transformation service inject input (source)
+     *            to 'input' variable.
      * @param source the input to transform
      */
     @Override
     public @Nullable String transform(String filename, String source) throws TransformationException {
-        if (filename == null || source == null) {
-            throw new TransformationException("the given parameters 'filename' and 'source' must not be null");
-        }
-
         final long startTime = System.currentTimeMillis();
         logger.debug("about to transform '{}' by the JavaScript '{}'", source, filename);
+
+        Map<String, String> vars = Collections.emptyMap();
+        String fn = filename;
+
+        if (filename.contains("?")) {
+            String[] parts = filename.split("\\?");
+            if (parts.length > 2) {
+                throw new TransformationException("Questionmark should be defined only once in the filename");
+            }
+            fn = parts[0];
+            try {
+                vars = splitQuery(parts[1]);
+            } catch (UnsupportedEncodingException e) {
+                throw new TransformationException("Illegal filename syntax");
+            }
+            if (isReservedWordUsed(vars)) {
+                throw new TransformationException(
+                        "'" + SCRIPT_DATA_WORD + "' word is reserved and can't be used in additional parameters");
+            }
+        }
 
         String result = "";
 
         try {
-            final CompiledScript cScript = manager.getScript(filename);
+            final CompiledScript cScript = manager.getScript(fn);
             final Bindings bindings = cScript.getEngine().createBindings();
-            bindings.put("input", source);
+            bindings.put(SCRIPT_DATA_WORD, source);
+            vars.forEach((k, v) -> bindings.put(k, v));
             result = String.valueOf(cScript.eval(bindings));
             return result;
         } catch (ScriptException e) {
@@ -97,6 +123,31 @@ public class JavaScriptTransformationService implements TransformationService, C
             logger.trace("JavaScript execution elapsed {} ms. Result: {}", System.currentTimeMillis() - startTime,
                     result);
         }
+    }
+
+    private boolean isReservedWordUsed(Map<String, String> map) {
+        for (String key : map.keySet()) {
+            if (SCRIPT_DATA_WORD.equals(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Map<String, String> splitQuery(@Nullable String query) throws UnsupportedEncodingException {
+        Map<String, String> result = new LinkedHashMap<>();
+        if (query != null) {
+            String[] pairs = query.split("&");
+            for (String pair : pairs) {
+                String[] keyval = pair.split("=");
+                if (keyval.length != 2) {
+                    throw new UnsupportedEncodingException();
+                } else {
+                    result.put(URLDecoder.decode(keyval[0], "UTF-8"), URLDecoder.decode(keyval[1], "UTF-8"));
+                }
+            }
+        }
+        return result;
     }
 
     @Override

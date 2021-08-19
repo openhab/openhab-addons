@@ -4,7 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
-	<config-description uri="binding:zway:zwayServer">
+	<config-description uri="bridge-type:zway:zwayServer">
 		<parameter-group name="zwayServer">
 			<label>Z-Way Server</label>
 			<description>The configuration of the Z-Way server. Except for the username and password all the information detected

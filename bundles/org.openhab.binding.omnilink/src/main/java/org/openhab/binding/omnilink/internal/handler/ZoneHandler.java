@@ -125,7 +125,6 @@ public class ZoneHandler extends AbstractOmnilinkStatusHandler<ExtendedZoneStatu
             default:
                 mode = -1;
         }
-        int areaNumber = getAreaNumber();
         logger.debug("mode {} on zone {} with code {}", mode, thingID, command.toFullString());
         char[] code = command.toFullString().toCharArray();
         if (code.length != 4) {
@@ -134,25 +133,30 @@ public class ZoneHandler extends AbstractOmnilinkStatusHandler<ExtendedZoneStatu
             try {
                 final OmnilinkBridgeHandler bridge = getOmnilinkBridgeHandler();
                 if (bridge != null) {
-                    SecurityCodeValidation codeValidation = bridge.reqSecurityCodeValidation(areaNumber,
-                            Character.getNumericValue(code[0]), Character.getNumericValue(code[1]),
-                            Character.getNumericValue(code[2]), Character.getNumericValue(code[3]));
-                    /*
-                     * 0 Invalid code
-                     * 1 Master
-                     * 2 Manager
-                     * 3 User
-                     */
-                    logger.debug("User code number: {} level: {}", codeValidation.getCodeNumber(),
-                            codeValidation.getAuthorityLevel());
-                    /*
-                     * Valid user code number are 1-99, 251 is duress code, 0 means code does not exist
-                     */
-                    if ((codeValidation.getCodeNumber() > 0 && codeValidation.getCodeNumber() <= 99)
-                            && codeValidation.getAuthorityLevel() > 0) {
-                        sendOmnilinkCommand(mode, codeValidation.getCodeNumber(), thingID);
+                    int areaNumber = getAreaNumber();
+                    if (areaNumber == -1) {
+                        logger.warn("Could not identify area, canceling bypass/restore command!");
                     } else {
-                        logger.warn("System reported an invalid code");
+                        SecurityCodeValidation codeValidation = bridge.reqSecurityCodeValidation(getAreaNumber(),
+                                Character.getNumericValue(code[0]), Character.getNumericValue(code[1]),
+                                Character.getNumericValue(code[2]), Character.getNumericValue(code[3]));
+                        /*
+                         * 0 Invalid code
+                         * 1 Master
+                         * 2 Manager
+                         * 3 User
+                         */
+                        logger.debug("User code number: {} level: {}", codeValidation.getCodeNumber(),
+                                codeValidation.getAuthorityLevel());
+                        /*
+                         * Valid user code number are 1-99, 251 is duress code, 0 means code does not exist
+                         */
+                        if ((codeValidation.getCodeNumber() > 0 && codeValidation.getCodeNumber() <= 99)
+                                && codeValidation.getAuthorityLevel() > 0) {
+                            sendOmnilinkCommand(mode, codeValidation.getCodeNumber(), thingID);
+                        } else {
+                            logger.warn("System reported an invalid code!");
+                        }
                     }
                 } else {
                     logger.debug("Received null bridge while sending zone command!");

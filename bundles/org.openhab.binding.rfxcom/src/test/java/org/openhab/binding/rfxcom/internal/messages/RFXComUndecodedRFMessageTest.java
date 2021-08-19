@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageTooLongException;
-import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -51,12 +50,9 @@ public class RFXComUndecodedRFMessageTest {
 
     @Test
     public void testLongMessage() throws RFXComException {
-        RFXComUndecodedRFMessage msg = (RFXComUndecodedRFMessage) RFXComMessageFactoryImpl.INSTANCE
-                .createMessage(PacketType.UNDECODED_RF_MESSAGE);
-        msg.subType = RFXComUndecodedRFMessage.SubType.ARC;
-        msg.seqNbr = 1;
-        msg.rawPayload = HexUtils.hexToBytes("000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F2021");
-
-        assertThrows(RFXComMessageTooLongException.class, () -> msg.decodeMessage());
+        assertThrows(RFXComMessageTooLongException.class,
+                () -> testMessage("25030101000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F2021",
+                        RFXComUndecodedRFMessage.SubType.ARC, 0x01,
+                        "000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F2021"));
     }
 }
