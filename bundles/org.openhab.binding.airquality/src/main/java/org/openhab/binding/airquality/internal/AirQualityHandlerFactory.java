@@ -39,7 +39,8 @@ import com.google.gson.Gson;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.airquality")
 @NonNullByDefault
 public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
-    private static final Gson gson = new Gson();
+    private static final Gson GSON = new Gson();
+
     private final TimeZoneProvider timeZoneProvider;
     private final LocationProvider locationProvider;
 
@@ -60,7 +61,7 @@ public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         return THING_TYPE_AQI.equals(thingTypeUID)
-                ? new AirQualityHandler(thing, gson, timeZoneProvider, locationProvider)
+                ? new AirQualityHandler(thing, GSON, timeZoneProvider, locationProvider)
                 : null;
     }
 }

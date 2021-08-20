@@ -103,7 +103,7 @@ NULL=No data
 NO_DATA=No data
 GOOD=Good
 MODERATE=Moderate
-UNHEALTHY_FOR_SENSITIVE=Unhealthy for sensitive groups
+UNHEALTHY_FSG=Unhealthy for sensitive groups
 UNHEALTHY=Unhealthy
 VERY_UNHEALTHY=Very unhealthy
 HAZARDOUS=Hazardous
@@ -157,7 +157,7 @@ sitemap airquality label="Air Quality" {
                 Aqi_Description=="HAZARDOUS"="#7e0023",
                 =="VERY_UNHEALTHY"="#660099",
                 =="UNHEALTHY"="#cc0033",
-                =="UNHEALTHY_FOR_SENSITIVE"="#ff9933",
+                =="UNHEALTHY_FSG"="#ff9933",
                 =="MODERATE"="#ffde33",
                 =="GOOD"="#009966"
             ]
@@ -199,7 +199,7 @@ then
             hsb = "280,100,60"
         case "UNHEALTHY":
             hsb = "345,100,80"
-        case "UNHEALTHY_FOR_SENSITIVE":
+        case "UNHEALTHY_FSG":
             hsb = "30,80,100"
         case "MODERATE":
             hsb = "50,80,100"

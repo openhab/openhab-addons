@@ -15,6 +15,7 @@ package org.openhab.binding.airquality.internal.handler;
 import static org.openhab.binding.airquality.internal.AirQualityBindingConstants.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,12 +23,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airquality.internal.AirQualityConfiguration;
+import org.openhab.binding.airquality.internal.aqi.Index;
+import org.openhab.binding.airquality.internal.aqi.Pollutant;
 import org.openhab.binding.airquality.internal.json.AirQualityData;
-import org.openhab.binding.airquality.internal.json.AirQualityData.AlertLevel;
 import org.openhab.binding.airquality.internal.json.AirQualityResponse;
 import org.openhab.binding.airquality.internal.json.AirQualityResponse.ResponseStatus;
 import org.openhab.core.config.core.Configuration;
@@ -36,7 +39,6 @@ import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -70,11 +72,7 @@ public class AirQualityHandler extends BaseThingHandler {
     private static final String URL = "http://api.waqi.info/feed/%query%/?token=%apikey%";
     private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(30);
 
-    private static final Map<AlertLevel, State> ALERT_COLORS = Map.of(AlertLevel.HAZARDOUS, HSBType.fromRGB(126, 0, 35),
-            AlertLevel.VERY_UNHEALTHY, HSBType.fromRGB(143, 63, 151), AlertLevel.UNHEALTHY, HSBType.fromRGB(255, 0, 0),
-            AlertLevel.UNHEALTHY_FOR_SENSITIVE, HSBType.fromRGB(255, 126, 0), AlertLevel.MODERATE,
-            HSBType.fromRGB(255, 255, 0), AlertLevel.GOOD, HSBType.fromRGB(0, 228, 0));
-
+    private final @NonNullByDefault({}) ClassLoader classLoader = AirQualityHandler.class.getClassLoader();
     private final Logger logger = LoggerFactory.getLogger(AirQualityHandler.class);
     private final Gson gson;
     private final TimeZoneProvider timeZoneProvider;
@@ -150,10 +148,11 @@ public class AirQualityHandler extends BaseThingHandler {
                 properties.put(DISTANCE, new QuantityType<>(distance, SIUnits.METRE).toString());
             }
 
-            POLLUTOR_CHANNEL_IDS.forEach(id -> {
-                double value = data.getIaqiValue(id);
+            Stream.of(Pollutant.values()).forEach(pollutant -> {
+                double value = data.getIaqiValue(pollutant);
                 if (value == -1) {
-                    channels.removeIf(channel -> channel.getUID().getId().contains(id));
+                    String groupName = pollutant.name().toLowerCase();
+                    channels.removeIf(channel -> groupName.equals(channel.getUID().getGroupId()));
                 }
             });
 
@@ -170,8 +169,9 @@ public class AirQualityHandler extends BaseThingHandler {
             // Update all channels from the updated AQI data
             getThing().getChannels().stream().filter(channel -> isLinked(channel.getUID().getId())).forEach(channel -> {
                 String channelId = channel.getUID().getIdWithoutGroup();
-                State state = getValue(channelId, data);
-                updateState(channelId, state);
+                String groupId = channel.getUID().getGroupId();
+                State state = getValue(channelId, groupId, data);
+                updateState(channel.getUID(), state);
             });
         });
     }
@@ -251,22 +251,24 @@ public class AirQualityHandler extends BaseThingHandler {
         return Optional.empty();
     }
 
-    private State getValue(String channelId, AirQualityData aqiResponse) {
+    private State extracted(String channelId, double idx, @Nullable Pollutant pollutant) {
+        if (idx != -1) {
+            if (channelId.equals(INDEX)) {
+                return new DecimalType(idx);
+            } else if (channelId.equals(VALUE) && pollutant != null) {
+                return pollutant.toQuantity(idx);
+            } else if (channelId.equals(CATEGORY)) {
+                Index index = Index.find(idx);
+                if (index != null) {
+                    return new StringType(index.getCategory().name());
+                }
+            }
+        }
+        return UnDefType.UNDEF;
+    }
+
+    private State getValue(String channelId, @Nullable String groupId, AirQualityData aqiResponse) {
         switch (channelId) {
-            case ALERT:
-                return new DecimalType(aqiResponse.getAlertLevel().ordinal());
-            case AQI:
-                return new DecimalType(aqiResponse.getAqi());
-            case AQIDESCRIPTION:
-                return new StringType(aqiResponse.getAlertLevel().name());
-            case PM25:
-            case PM10:
-            case O3:
-            case NO2:
-            case CO:
-            case SO2:
-                double value = aqiResponse.getIaqiValue(channelId);
-                return value != -1 ? new DecimalType(value) : UnDefType.UNDEF;
             case TEMPERATURE:
                 double temp = aqiResponse.getIaqiValue("t");
                 return temp != -1 ? new QuantityType<>(temp, API_TEMPERATURE_UNIT) : UnDefType.UNDEF;
@@ -276,15 +278,50 @@ public class AirQualityHandler extends BaseThingHandler {
             case HUMIDITY:
                 double hum = aqiResponse.getIaqiValue("h");
                 return hum != -1 ? new QuantityType<>(hum, API_HUMIDITY_UNIT) : UnDefType.UNDEF;
-            case OBSERVATIONTIME:
+            case TIMESTAMP:
                 return new DateTimeType(
                         aqiResponse.getTime().getObservationTime().withZoneSameLocal(timeZoneProvider.getTimeZone()));
-            case DOMINENTPOL:
+            case DOMINENT:
                 return new StringType(aqiResponse.getDominentPol());
-            case AQI_COLOR:
-                return ALERT_COLORS.getOrDefault(aqiResponse.getAlertLevel(), UnDefType.UNDEF);
-            default:
-                return UnDefType.UNDEF;
         }
+
+        double idx = -1;
+        Pollutant pollutant = null;
+        if (AQI.equals(groupId)) {
+            idx = aqiResponse.getAqi();
+        } else {
+            pollutant = Pollutant.valueOf(groupId.toUpperCase());
+            idx = aqiResponse.getIaqiValue(pollutant);
+        }
+        return extracted(channelId, idx, pollutant);
+
+        // if (globalIndex != null) {
+        // switch (channelId) {
+        // case ALERT:
+        // return new DecimalType(globalIndex.ordinal());
+        // case ICON:
+        // byte[] bytes = getResource(String.format("picto/%s.svg", globalIndex.name().toLowerCase()));
+        // return bytes != null ? new RawType(bytes, "image/svg+xml") : UnDefType.UNDEF;
+        // case AQI_COLOR:
+        // return globalIndex.getCategory().getColor();
+        // }
+        // }
+        // switch (channelId) {
+        // case AQI:
+        // return new DecimalType(aqiResponse.getAqi());
+        /*
+         */
+
+        // }
+        // return UnDefType.UNDEF;
+    }
+
+    private byte @Nullable [] getResource(String iconPath) {
+        try (InputStream stream = classLoader.getResourceAsStream(iconPath)) {
+            return stream != null ? stream.readAllBytes() : null;
+        } catch (IOException e) {
+            logger.warn("Unable to load ressource '{}' : {}", iconPath, e.getMessage());
+        }
+        return null;
     }
 }
