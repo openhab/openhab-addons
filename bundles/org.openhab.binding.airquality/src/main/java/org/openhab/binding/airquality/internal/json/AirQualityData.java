@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.airquality.internal.aqi.Pollutant;
 
 /**
  * The {@link AirQualityData} is responsible for storing
@@ -26,15 +27,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AirQualityData {
-
-    public enum AlertLevel {
-        GOOD,
-        MODERATE,
-        UNHEALTHY_FOR_SENSITIVE,
-        UNHEALTHY,
-        VERY_UNHEALTHY,
-        HAZARDOUS,
-        UNKNOWN;
+    public enum IaqiElements {
+        t,
+        p,
+        h
     }
 
     private int aqi;
@@ -97,28 +93,27 @@ public class AirQualityData {
         return dominentpol;
     }
 
+    // public Map.@Nullable Entry<?, Double> getIaqiValue(String key) {
+    // AirQualityValue result = iaqi.get(key);
+    // if (result != null) {
+    // try {
+    // Pollutant pollutant = Pollutant.valueOf(key.toUpperCase());
+    // return Map.entry(pollutant, result.getValue());
+    // } catch (IllegalArgumentException e) {
+    // IaqiElements element = IaqiElements.valueOf(key.toUpperCase());
+    // return Map.entry(element, result.getValue());
+    // }
+    // }
+    // return null;
+    // }
+
     public double getIaqiValue(String key) {
         AirQualityValue result = iaqi.get(key);
         return result != null ? result.getValue() : -1;
     }
 
-    /**
-     * Interprets the current aqi value within the ranges
-     */
-    public AlertLevel getAlertLevel() {
-        if (aqi > 300) {
-            return AlertLevel.HAZARDOUS;
-        } else if (aqi >= 201) {
-            return AlertLevel.VERY_UNHEALTHY;
-        } else if (aqi >= 151) {
-            return AlertLevel.UNHEALTHY;
-        } else if (aqi >= 101) {
-            return AlertLevel.UNHEALTHY_FOR_SENSITIVE;
-        } else if (aqi >= 51) {
-            return AlertLevel.MODERATE;
-        } else if (aqi > 0) {
-            return AlertLevel.GOOD;
-        }
-        return AlertLevel.UNKNOWN;
+    public double getIaqiValue(Pollutant pollutant) {
+        AirQualityValue result = iaqi.get(pollutant.name().toLowerCase());
+        return result != null ? result.getValue() : -1;
     }
 }

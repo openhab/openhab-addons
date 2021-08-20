@@ -47,25 +47,25 @@ public class AirQualityBindingConstants {
     public static final String CITY = "City";
     public static final String DISTANCE = "Distance";
 
+    // List of all Channel groups id's
+    public static final String AQI = "aqi";
+    public static final String WEATHER = "weather";
+
     // List of all Channel id's
-    public static final String ALERT = "alert";
-    public static final String AQI = "aqiLevel";
-    public static final String AQI_COLOR = "aqiColor";
-    public static final String AQIDESCRIPTION = "aqiDescription";
-    public static final String PM25 = "pm25";
-    public static final String PM10 = "pm10";
-    public static final String O3 = "o3";
-    public static final String NO2 = "no2";
-    public static final String CO = "co";
-    public static final String SO2 = "so2";
-    public static final String OBSERVATIONTIME = "observationTime";
+    public static final String INDEX = "index";
+    public static final String VALUE = "value";
+    public static final String CATEGORY = "category";
     public static final String TEMPERATURE = "temperature";
     public static final String PRESSURE = "pressure";
     public static final String HUMIDITY = "humidity";
-    public static final String DOMINENTPOL = "dominentpol";
+    public static final String TIMESTAMP = "timestamp";
+    public static final String DOMINENT = "dominent";
+
+    // public static final String ALERT = "alert";
+    // public static final String ICON = "icon";
+    // public static final String AQI_COLOR = "aqiColor";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_AQI);
-    public static final Set<String> POLLUTOR_CHANNEL_IDS = Set.of(PM25, PM10, O3, NO2, SO2, CO);
 
     // Units of measurement of the data delivered by the API
     public static final Unit<Temperature> API_TEMPERATURE_UNIT = SIUnits.CELSIUS;
