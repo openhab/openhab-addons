@@ -38,8 +38,36 @@ public class LayoutTest {
 
     @BeforeEach
     public void setup() {
-        layout1Json = "{\"numPanels\":14,\"sideLength\":100,\"positionData\":[{\"panelId\":41451,\"x\":350,\"y\":0,\"o\":0,\"shapeType\":3},{\"panelId\":8134,\"x\":350,\"y\":150,\"o\":0,\"shapeType\":2},{\"panelId\":58086,\"x\":200,\"y\":100,\"o\":270,\"shapeType\":2},{\"panelId\":38724,\"x\":300,\"y\":200,\"o\":0,\"shapeType\":2},{\"panelId\":48111,\"x\":200,\"y\":200,\"o\":270,\"shapeType\":2},{\"panelId\":56093,\"x\":100,\"y\":200,\"o\":0,\"shapeType\":2},{\"panelId\":55836,\"x\":0,\"y\":200,\"o\":0,\"shapeType\":2},{\"panelId\":31413,\"x\":100,\"y\":300,\"o\":90,\"shapeType\":2},{\"panelId\":9162,\"x\":300,\"y\":300,\"o\":90,\"shapeType\":2},{\"panelId\":13276,\"x\":400,\"y\":300,\"o\":90,\"shapeType\":2},{\"panelId\":17870,\"x\":400,\"y\":200,\"o\":0,\"shapeType\":2},{\"panelId\":5164,\"x\":500,\"y\":200,\"o\":0,\"shapeType\":2},{\"panelId\":64279,\"x\":600,\"y\":200,\"o\":0,\"shapeType\":2},{\"panelId\":39755,\"x\":500,\"y\":100,\"o\":90,\"shapeType\":2}]}";
-        // panel number is not consistent to returned panels in array but it should still work
+        layout1Json = "{\n" + "      \"numPanels\": 14,\n" + "      \"sideLength\": 0,\n"
+                + "      \"positionData\": [\n" + "        {\n" + "          \"panelId\": 60147,\n"
+                + "          \"x\": 199,\n" + "          \"y\": 99,\n" + "          \"o\": 0,\n"
+                + "          \"shapeType\": 3\n" + "        },\n" + "        {\n" + "          \"panelId\": 61141,\n"
+                + "          \"x\": 200,\n" + "          \"y\": 199,\n" + "          \"o\": 90,\n"
+                + "          \"shapeType\": 2\n" + "        },\n" + "        {\n" + "          \"panelId\": 42064,\n"
+                + "          \"x\": 100,\n" + "          \"y\": 200,\n" + "          \"o\": 180,\n"
+                + "          \"shapeType\": 2\n" + "        },\n" + "        {\n" + "          \"panelId\": 186,\n"
+                + "          \"x\": 0,\n" + "          \"y\": 200,\n" + "          \"o\": 180,\n"
+                + "          \"shapeType\": 2\n" + "        },\n" + "        {\n" + "          \"panelId\": 19209,\n"
+                + "          \"x\": 0,\n" + "          \"y\": 100,\n" + "          \"o\": 270,\n"
+                + "          \"shapeType\": 2\n" + "        },\n" + "        {\n" + "          \"panelId\": 36604,\n"
+                + "          \"x\": 300,\n" + "          \"y\": 99,\n" + "          \"o\": 0,\n"
+                + "          \"shapeType\": 2\n" + "        },\n" + "        {\n" + "          \"panelId\": 37121,\n"
+                + "          \"x\": 400,\n" + "          \"y\": 99,\n" + "          \"o\": 270,\n"
+                + "          \"shapeType\": 2\n" + "        },\n" + "        {\n" + "          \"panelId\": 45187,\n"
+                + "          \"x\": 400,\n" + "          \"y\": 199,\n" + "          \"o\": 270,\n"
+                + "          \"shapeType\": 2\n" + "        },\n" + "        {\n" + "          \"panelId\": 33626,\n"
+                + "          \"x\": 500,\n" + "          \"y\": 199,\n" + "          \"o\": 270,\n"
+                + "          \"shapeType\": 2\n" + "        },\n" + "        {\n" + "          \"panelId\": 10523,\n"
+                + "          \"x\": 600,\n" + "          \"y\": 199,\n" + "          \"o\": 270,\n"
+                + "          \"shapeType\": 2\n" + "        },\n" + "        {\n" + "          \"panelId\": 54086,\n"
+                + "          \"x\": 599,\n" + "          \"y\": 99,\n" + "          \"o\": 540,\n"
+                + "          \"shapeType\": 2\n" + "        },\n" + "        {\n" + "          \"panelId\": 3512,\n"
+                + "          \"x\": 699,\n" + "          \"y\": 99,\n" + "          \"o\": 540,\n"
+                + "          \"shapeType\": 2\n" + "        },\n" + "        {\n" + "          \"panelId\": 16398,\n"
+                + "          \"x\": 799,\n" + "          \"y\": 99,\n" + "          \"o\": 540,\n"
+                + "          \"shapeType\": 2\n" + "        },\n" + "        {\n" + "          \"panelId\": 39163,\n"
+                + "          \"x\": 800,\n" + "          \"y\": 199,\n" + "          \"o\": 630,\n"
+                + "          \"shapeType\": 2\n" + "        }\n" + "      ]\n" + "    }";
         layoutInconsistentPanelNoJson = "{\"numPanels\":15,\"sideLength\":100,\"positionData\":[{\"panelId\":41451,\"x\":350,\"y\":0,\"o\":0,\"shapeType\":3},{\"panelId\":8134,\"x\":350,\"y\":150,\"o\":0,\"shapeType\":2},{\"panelId\":58086,\"x\":200,\"y\":100,\"o\":270,\"shapeType\":2},{\"panelId\":38724,\"x\":300,\"y\":200,\"o\":0,\"shapeType\":2},{\"panelId\":48111,\"x\":200,\"y\":200,\"o\":270,\"shapeType\":2},{\"panelId\":56093,\"x\":100,\"y\":200,\"o\":0,\"shapeType\":2},{\"panelId\":55836,\"x\":0,\"y\":200,\"o\":0,\"shapeType\":2},{\"panelId\":31413,\"x\":100,\"y\":300,\"o\":90,\"shapeType\":2},{\"panelId\":9162,\"x\":300,\"y\":300,\"o\":90,\"shapeType\":2},{\"panelId\":13276,\"x\":400,\"y\":300,\"o\":90,\"shapeType\":2},{\"panelId\":17870,\"x\":400,\"y\":200,\"o\":0,\"shapeType\":2},{\"panelId\":5164,\"x\":500,\"y\":200,\"o\":0,\"shapeType\":2},{\"panelId\":64279,\"x\":600,\"y\":200,\"o\":0,\"shapeType\":2},{\"panelId\":39755,\"x\":500,\"y\":100,\"o\":90,\"shapeType\":2}]}";
     }
 
@@ -48,14 +76,10 @@ public class LayoutTest {
         @Nullable
         Layout layout = gson.fromJson(layout1Json, Layout.class);
         String layoutView = layout.getLayoutView();
-        assertThat(layoutView,
-                is(equalTo("            31413                    9162       13276                         \n"
-                        + "                                                                              \n"
-                        + "55836       56093       48111       38724       17870        5164       64279 \n"
-                        + "                                           8134                               \n"
-                        + "                        58086                               39755             \n"
-                        + "                                                                              \n"
-                        + "                                          41451                               \n")));
+        assertThat(layoutView, is(equalTo(
+                "  186       42064       61141                   45187       33626       10523                   39163 \n"
+                        + "                                                                                                      \n"
+                        + "19209                   60147       36604       37121                   54086        3512       16398 \n")));
     }
 
     @Test

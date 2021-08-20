@@ -65,7 +65,9 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService
     @Override
     public void deactivate() {
         if (bridgeHandler != null) {
-            bridgeHandler.unregisterControllerListener(this);
+            @SuppressWarnings("null")
+            Boolean result = bridgeHandler.unregisterControllerListener(this);
+            logger.debug("unregistration of controller was {}", result ? "successful" : "unsuccessful");
         }
         super.deactivate();
     }
@@ -95,6 +97,7 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService
             return;
         }
         if (controllerInfo != null) {
+            @SuppressWarnings("null")
             final PanelLayout panelLayout = controllerInfo.getPanelLayout();
             @Nullable
             Layout layout = panelLayout.getLayout();

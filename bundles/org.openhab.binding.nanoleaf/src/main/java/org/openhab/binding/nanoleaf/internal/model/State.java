@@ -40,6 +40,7 @@ public class State {
         return on;
     }
 
+    @SuppressWarnings("null")
     public OnOffType getOnOff() {
         return (on != null && on.getValue()) ? OnOffType.ON : OnOffType.OFF;
     }
