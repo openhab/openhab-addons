@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SoulissT11Handler extends SoulissGenericHandler {
 
-    private @NonNullByDefault({}) Configuration gwConfigurationMap;
+    private @Nullable Configuration gwConfigurationMap;
     private final Logger logger = LoggerFactory.getLogger(SoulissT11Handler.class);
     private byte t1nRawState = 0xF; // dummy value for first init
     private byte xSleepTime = 0;
