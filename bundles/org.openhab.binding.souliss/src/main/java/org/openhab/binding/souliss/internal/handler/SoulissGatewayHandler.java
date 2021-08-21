@@ -227,4 +227,10 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
         super.dispose();
     }
+
+    public void setBridgeStatus(boolean isOnline) {
+        logger.debug("setBridgeStatus(): Setting Bridge to {}", isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+
+        updateStatus(isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+    }
 }
