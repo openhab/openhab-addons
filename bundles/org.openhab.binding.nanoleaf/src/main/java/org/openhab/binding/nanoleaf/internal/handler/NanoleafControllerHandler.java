@@ -66,11 +66,7 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -545,20 +541,48 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     private void handleTouchEvents(TouchEvents touchEvents) {
         touchEvents.getEvents().forEach((event) -> {
             logger.info("panel: {} gesture id: {}", event.getPanelId(), event.getGesture());
-            getThing().getThings().forEach((child) -> {
-                NanoleafPanelHandler panelHandler = (NanoleafPanelHandler) child.getHandler();
-                if (panelHandler != null) {
-                    logger.trace("Checking available panel -{}- versus event panel -{}-", panelHandler.getPanelID(),
-                            event.getPanelId());
-                    if (panelHandler.getPanelID().equals(event.getPanelId())) {
-                        logger.debug("Panel {} found. Triggering item with gesture {}.", panelHandler.getPanelID(),
-                                event.getGesture());
-                        panelHandler.updatePanelGesture(event.getGesture());
+            // Swipes go to the controller, taps go to the individual panel
+            if (event.getPanelId().equals(CONTROLLER_PANEL_ID)) {
+                logger.debug("Triggering controller {} with gesture {}.", thing.getUID(), event.getGesture());
+                updateControllerGesture(event.getGesture());
+            } else {
+                getThing().getThings().forEach((child) -> {
+                    NanoleafPanelHandler panelHandler = (NanoleafPanelHandler) child.getHandler();
+                    if (panelHandler != null) {
+                        logger.trace("Checking available panel -{}- versus event panel -{}-", panelHandler.getPanelID(),
+                                event.getPanelId());
+                        if (panelHandler.getPanelID().equals(event.getPanelId())) {
+                            logger.debug("Panel {} found. Triggering item with gesture {}.", panelHandler.getPanelID(),
+                                    event.getGesture());
+                            panelHandler.updatePanelGesture(event.getGesture());
+                        }
                     }
-                }
 
-            });
+                });
+            }
         });
+    }
+
+    /**
+     * Apply the swipe gesture to the controller
+     *
+     * @param gesture Only swipes are supported on the complete nanoleaf panels
+     */
+    private void updateControllerGesture(int gesture) {
+        switch (gesture) {
+            case 2:
+                triggerChannel(CHANNEL_SWIPE, CHANNEL_SWIPE_EVENT_UP);
+                break;
+            case 3:
+                triggerChannel(CHANNEL_SWIPE, CHANNEL_SWIPE_EVENT_DOWN);
+                break;
+            case 4:
+                triggerChannel(CHANNEL_SWIPE, CHANNEL_SWIPE_EVENT_LEFT);
+                break;
+            case 5:
+                triggerChannel(CHANNEL_SWIPE, CHANNEL_SWIPE_EVENT_RIGHT);
+                break;
+        }
     }
 
     private void updateFromControllerInfo() throws NanoleafException {

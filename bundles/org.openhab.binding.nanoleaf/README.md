@@ -132,13 +132,15 @@ The controller bridge has the following channels:
 | rhythmState         | Switch    | Connection state of the rhythm module                                  | Yes       |
 | rhythmActive        | Switch    | Activity state of the rhythm module                                    | Yes       |
 | rhythmMode          | Number    | Sound source for the rhythm module. 0=Microphone, 1=Aux cable          | No        |
+| swipe               | Trigger   | [Canvas Only] Detects Swipes over the panel. LEFT, RIGHT, UP, DOWN events are supported.          | YES        |
+
 
 A lightpanel thing has the following channels:
 
 | Channel             | Type      | Description                                                            | Read Only |
 |---------------------|-----------|------------------------------------------------------------------------|-----------|
 | color               | Color     | Color of the individual light panel                                    | No        |
-| tap                 | Trigger   | [Canvas Only] Sends events of gestures. Currently, these are SHORT_PRESSED and DOUBLE_PRESSED events.                       | Yes       |
+| tap                 | Trigger   | [Canvas Only] Sends events of gestures. SHORT_PRESSED and DOUBLE_PRESSED events are supported.  | Yes       |
 
 The color channels support full color control with hue, saturation and brightness values.
 For example, brightness of *all* panels at once can be controlled by defining a dimmer item for the color channel of the *controller thing*.
@@ -155,15 +157,14 @@ The same applies to the color channel of an individual lightpanel.
 **Touch Support**
 
 Nanoleaf's Canvas introduces a whole new experience by supporting touch. This allows single and double taps on individual panels to be detected and processed via rules.
-Note that even gestures like up, down, left, right are sent but can only be detected on the whole set of panels and not on an individual panel. These four gestures are not yet supported by the binding but may be added in a later release.
+Note that even gestures like up, down, left, right can be detected on the whole set of panels though not on an individual panel. The four swipe gestures are supported by the binding. See below for a complex example on how to use it.
 
-To detect single and double taps the panels have been extended to have two additional channels named singleTap and doubleTap which act like switches that are turned on as soon as a tap type is detected.
-These switches then act as a pulse to further control anything else via rules.
+To detect single and double taps the panel provides a *tap* channel while the controller provides a *swipe* channel to detect swipes.
 
 Keep in mind that the double tap is used as an already built-in functionality by default when you buy the nanoleaf: it switches all panels (hence the controller) to on or off like a light switch for all the panels at once. To circumvent that
 
 - Within the nanoleaf app go to the dashboard and choose your device. Enter the settings for that device by clicking the cog icon in the upper right corner.
-- Enable "Touch Gesture" and assign the gestures you want to happen but set the double tap to unassigned.
+- Enable "Touch Gesture" (the first radio button) and make sure that none of the gestures you use with openhab are active. In general, it is recommended not to enable "touch sensitive gestures" (the second radio button). This prevents unexpected interference between openhab rules and nanoleaf settings.
 - To still have the possibility to switch on the whole canvas device with all its panels by double tapping a specific panel, you can easily write a rule that triggers on the tap channel of that panel and then sends an ON to the color channel of the controller. See the example below on Panel 1.
 
 More details can be found in the full example below.
@@ -319,7 +320,77 @@ then
         sendCommand(NanoleafPower,OFF)
     }
 end
+
+// This a complex rule controlling an item (e.g. a lamp) by swiping the nanoleaf but only if the swipe action has been triggered to become active.
+
+var brightnessMode = null
+var oldEffect = null
+
+/*
+
+The idea behind that rule is to use one panel to switch on / off brightness control for a specific openhab item.
+ 
+ - In this case the panel with the id=36604 has been created as a thing. 
+ - The controller color item is named SZNanoCanvas54B2_Color
+ - The controller effect item that holds the last chosen effect is SZNanoCanvas54B2_Effect
+ - Also that thing has channel to control the color of the panel
+ 
+We use that specific panel to toggle the brightness swipe mode on or off.
+We indicate that mode by  setting the canvas to red. When switching it
+off we make sure we return the effect that was on before.
+Only if the brightness swipe mode is ON we then use this to control the brightness of 
+another thing which in this case is a lamp. Every swipe changes the brightness by 10.
+By extending it futher this would also allow to select different items to control by 
+tapping different panels before.
+
+*/
+
+rule "Enable swipe brightness mode"
+when
+    Channel "nanoleaf:lightpanel:645E3A484A83:36604:tap" triggered SHORT_PRESSED
+then
+    if (brightnessMode == OFF || brightnessMode === null) {
+        brightnessMode = ON
+        oldEffect = SZNanoCanvas54B2_Effect.state.toString
+        SZNanoCanvas54B2_Color.sendCommand(new HSBType(new DecimalType(0), new PercentType(100), new PercentType(100)))
+    } else {
+        brightnessMode = OFF
+        sendCommand("SZNanoCanvas54B2_Effect",oldEffect)
+    }    
+end
+
+rule "Swipe Nano to control brightness"
+when
+    Channel "nanoleaf:controller:645E3A484A83:swipe" triggered 
+then
+    // Note: you can even control a rollershutter instead of a light dimmer
+    var dimItem = MyLampDimmerItem
+     
+    // only process the swipe if brightness mode is active
+    if (brightnessMode == ON) {
+        var currentBrightness = dimItem.state as Number
+        switch (receivedEvent) {
+            case "LEFT": {
+                if (currentBrightness >= 10) {
+                    currentBrightness = currentBrightness  - 10
+                } else {
+                    currentBrightness = 0;
+                }
+            }
+            case "RIGHT": {
+                if (currentBrightness <= 90) {
+                    currentBrightness = currentBrightness  + 10
+                } else {
+                    currentBrightness = 100;
+                }
+
+            }
+        }
+        sendCommand(dimItem,currentBrightness)
+    }
+end
 ```
+
 
 ### nanoleaf.map
 
