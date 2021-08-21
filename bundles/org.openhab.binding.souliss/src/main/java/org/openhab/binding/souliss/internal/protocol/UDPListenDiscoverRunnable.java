@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.discovery.DiscoverResult;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +76,7 @@ public class UDPListenDiscoverRunnable implements Runnable {
                     buf = packet.getData();
 
                     // **************** DECODER ********************
-                    logger.debug("Packet received (port {}) {}", socket.getLocalPort(), macacoToString(buf));
+                    logger.debug("Packet received (port {}) {}", socket.getLocalPort(), HexUtils.bytesToHex(buf));
 
                     var localDecoder = this.decoder;
                     if (localDecoder != null) {
@@ -108,15 +109,5 @@ public class UDPListenDiscoverRunnable implements Runnable {
                 }
             }
         }
-    }
-
-    private String macacoToString(byte[] frame) {
-        var sb = new StringBuilder();
-        sb.append("HEX: [");
-        for (byte b : frame) {
-            sb.append(String.format("%02X ", b));
-        }
-        sb.append("]");
-        return sb.toString();
     }
 }
