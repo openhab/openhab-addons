@@ -13,6 +13,8 @@
 
 package org.openhab.binding.souliss.internal.handler;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
@@ -20,7 +22,9 @@ import org.openhab.binding.souliss.internal.protocol.HalfFloatUtils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -51,7 +55,7 @@ public class SoulissT31Handler extends SoulissGenericHandler {
     StringType lastModeState = StringType.EMPTY;
     StringType modeStateValue = StringType.EMPTY;
 
-    DecimalType setMeasuredValue = DecimalType.ZERO;
+    QuantityType<Temperature> setMeasuredValue = new QuantityType<Temperature>("0 °C");
 
     public SoulissT31Handler(Thing pThing) {
         super(pThing);
@@ -203,9 +207,9 @@ public class SoulissT31Handler extends SoulissGenericHandler {
         }
     }
 
-    public void setMeasuredValue(DecimalType valueOf) {
-        if ((valueOf instanceof DecimalType) && (!setMeasuredValue.equals(valueOf))) {
-            this.updateState(SoulissBindingConstants.T31_VALUE_CHANNEL, valueOf);
+    public void setMeasuredValue(QuantityType<Temperature> valueOf) {
+        if ((valueOf instanceof QuantityType<?>) && (!setMeasuredValue.equals(valueOf))) {
+            this.updateState(SoulissBindingConstants.T31_VALUE_CHANNEL, new QuantityType<>(valueOf, SIUnits.CELSIUS));
             setMeasuredValue = valueOf;
         }
     }
@@ -282,7 +286,7 @@ public class SoulissT31Handler extends SoulissGenericHandler {
 
         // SLOT 1-2: Temperature Value
         if (!Float.isNaN(valTemp)) {
-            this.setMeasuredValue(DecimalType.valueOf(String.valueOf(valTemp)));
+            this.setMeasuredValue(QuantityType.valueOf(valTemp, SIUnits.CELSIUS));
         }
 
         // SLOT 3-4: Setpoint Value
