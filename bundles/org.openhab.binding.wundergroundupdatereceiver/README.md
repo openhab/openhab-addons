@@ -34,7 +34,7 @@ The binding starts listening at the above-mentioned URI as soon as it is initial
 stationId is recorded and if auto-discovery is enabled appers in the inbox, otherwise can be registered when a manual
 scan is initiated. For each request parameter a channel is generated, based on a list of known parameters from
 https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US and other observed parameters from various
-weather station. If you have a weather station that submits a parameter that is unknown in the current version of the
+weather stations. If you have a weather station that submits a parameter that is unknown in the current version of the
 binding please feel free to submit an issue to have it added.
 
 ## Thing Configuration
@@ -47,11 +47,76 @@ measurements to wunderground.com, it can be any unique non-empty string value.
 Each measurement type the wunderground.com update service accepts has a channel. The channels are named the same as the request parameters they receive.
 Additionally there is a receipt timestamp and a trigger channel.
 
-##### Trigger channel:
+### Request parameters are mapped to one of the following channel-types:
+#### Normal channel-types:
+| Request parameter |  Channel type id             | Type                 | Label                          | Description                                                                                         | Group       |
+|-------------------|------------------------------|----------------------|--------------------------------|-----------------------------------------------------------------------------------------------------|-------------|
+| winddir           | wind-direction               | Number:Angle         | Current Wind Direction         | Current wind direction                                                                              | Wind        |
+| windspeedmph      | wind-speed                   | Number:Speed         | Current Wind Speed             | Current wind speed, using software specific time period.                                            | Wind        | 
+| windgustmph       | wind-gust-speed              | Number:Speed         | Current Gust Speed             | Current wind gust speed, using software specific time period.                                       | Wind        | 
+| windgustdir       | wind-gust-direction          | Number:Angle         | Gust Direction                 | Current wind gust direction expressed as an angle using software specific time period.              | Wind        |
+| tempf             | temperature                  | Number:Temperature   | Outdoor Temperature            | Current outdoor temperatore                                                                         | Temperature |
+| indoortempf       | indoor-temperature           | Number:Temperature   | Indoor Temperature             | Indoor temperature.                                                                                 | Temperature | 
+| rainin            | rain                         | Number:Length        | Hourly Rain                    | Rain over the past hour.                                                                            | Rain        | 
+| dailyrainin       | rain-daily                   | Number:Length        | Daily Rain                     | Rain since the start of the day.                                                                    | Rain        | 
+| solarradiation    | solarradiation               | Number:Intensity     | Solar Radiation                | Solar radiation                                                                                     | Sun         | 
+| UV                | uv                           | Number:Dimensionless | UV Index                       | UV index.                                                                                           | Sun         | 
+| humidity          | humidity                     | Number:Dimensionless | Humidity                       | Humidity in %.                                                                                      | Humidity    | 
+| indoorhumidity    | indoor-humidity              | Number:Dimensionless | Indoor Humidity                | Indoor humidity in %.                                                                               | Humidity    |
+| baromin           |
 
-| channel          | type                 | description                                                                                        |
-|------------------|----------------------|----------------------------------------------------------------------------------------------------|
-| lastQueryTrigger | String               | The part of the last query after the first unurlencoded `?`                                          |
+#### Advanced channel-types:
+| Request parameter |  Channel type id             | Type                 | Label                          | Description                                                                                         | Group       |
+|-------------------|------------------------------|----------------------|--------------------------------|-----------------------------------------------------------------------------------------------------|-------------|
+| windspdmph_avg2m  | wind-speed-avg-2min          | Number:Speed         | Wind Speed 2min Average        | 2 minute average wind speed.                                                                        | Wind        | 
+| winddir_avg2m     | wind-direction-avg-2min      | Number:Angle         | Wind Direction 2min Average    | 2 minute average wind direction.                                                                    | Wind        | 
+| windgustmph_10m   | wind-gust-speed-10min        | Number:Speed         | Gust Speed 10min Average       | 10 minute average gust speed.                                                                       | Wind        | 
+| windgustdir_10m   | wind-gust-direction-10min    | Number:Angle         | Gust Direction 10min Average   | 10 minute average gust direction.                                                                   | Wind        | 
+| windchillf        | wind-chill                   | Number:Temperature   | Wind Chill                     | The apparent wind chill temperature.                                                                | Temperature | 
+| soiltempf         | soil-temperature             | Number:Temperature   | Soil Temperature               | Soil temperature.                                                                                   | Temperature | 
+| weeklyrainin      | rain-weekly                  | Number:Length        | Weekly Rain                    | Rain since the start of this week.                                                                  | Rain        | 
+| monthlyrainin     | rain-monthly                 | Number:Length        | Monthly Rain                   | Rain since the start if this month.                                                                 | Rain        | 
+| yearlyrainin      | rain-yearly                  | Number:Length        | Yearly Rain                    | Rain since the start of this year.                                                                  | Rain        | 
+| weather           | metar                        | String               | METAR Weather Report           | METAR formatted weather report                                                                      | Sun_Clouds  | 
+| clouds            | clouds                       | String               | Cloud Cover                    | METAR style cloud cover.                                                                            | Sun_Clouds  | 
+| visibility        | visibility                   | Number:Length        | Visibility                     | Visibility.                                                                                         | Sun_Clouds  | 
+| dewptf            | dew-point                    | Number:Temperature   | Dew Point                      | Outdoor dew point.                                                                                  | Humidity    | 
+| soilmoisture      | soil-moisture                | Number:Dimensionless | Soil Moisture                  | Soil moisture in %.                                                                                 | Moisture    | 
+| leafwetness       | leafwetness                  | Number:Dimensionless | Leaf Wetness                   | Leaf wetness in %.                                                                                  | Moisture    | 
+| AqNO              | nitric-oxide                 | Number:Dimensionless | Nitric Oxide                   | Nitric Oxide ppm.                                                                                   | Pollution   | 
+| AqNO2T            | nitrogen-dioxide-measured    | Number:Dimensionless | Nitrogen Dioxide               | Nitrogen Dioxide, true measure ppb.                                                                 | Pollution   | 
+| AqNO2             | nitrogen-dioxide-nox-no      | Number:Dimensionless | NO2 X computed                 | NO2 computed, NOx-NO ppb.                                                                           | Pollution   | 
+| AqNO2Y            | nitrogen-dioxide-noy-no      | Number:Dimensionless | NO2 Y computed, NOy-NO ppb     | NO2 computed, NOy-NO ppb.                                                                           | Pollution   | 
+| AqNOX             | nitrogen-oxides              | Number:Dimensionless | Nitrogen Oxides                | Nitrogen Oxides ppb.                                                                                | Pollution   | 
+| AqNOY             | total-reactive-nitrogen      | Number:Dimensionless | Total Reactive Nitrogen        | Total reactive nitrogen.                                                                            | Pollution   | 
+| AqNO3             | no3-ion                      | Number:Density       | NO3 ion                        | NO3 ion (nitrate, not adjusted for ammonium ion) µG/m3.                                             | Pollution   | 
+| AqSO4             | so4-ion                      | Number:Density       | SO4 ion                        | SO4 ion (sulfate, not adjusted for ammonium ion) µG/m3.                                             | Pollution   | 
+| AqSO2             | sulfur-dioxide               | Number:Dimensionless | Sulfur Dioxide                 | Sulfur Dioxide, conventional ppb.                                                                   | Pollution   | 
+| AqSO2T            | sulfur-dioxide-trace-levels  | Number:Dimensionless | Sulfur Dioxide Trace Levels    | Sulfur Dioxide, trace levels ppb.                                                                   | Pollution   | 
+| AqCO              | carbon-monoxide              | Number:Dimensionless | Carbon Monoxide                | Carbon Monoxide, conventional ppm.                                                                  | Pollution   | 
+| AqCOT             | carbon-monoxide-trace-levels | Number:Dimensionless | Carbon Monoxide Trace Levels   | Carbon Monoxide, trace levels ppb.                                                                  | Pollution   | 
+| AqEC              | elemental-carbon             | Number:Density       | Elemental Carbon               | Elemental Carbon, PM2.5 µG/m3.                                                                      | Pollution   | 
+| AqOC              | organic-carbon               | Number:Density       | Organic Carbon                 | Organic Carbon, not adjusted for oxygen and hydrogen, PM2.5 µG/m3.                                  | Pollution   | 
+| AqBC              | black-carbon                 | Number:Density       | Black Carbon                   | Black Carbon at 880 nm, µG/m3.                                                                      | Pollution   | 
+| AqUV-AETH         | aethalometer                 | Number:Density       | Second Channel of Aethalometer | second channel of Aethalometer at 370 nm, µG/m3.                                                    | Pollution   | 
+| AqPM2.5           | pm2_5-mass                   | Number:Density       | PM2.5 Mass                     | PM2.5 mass, µG/m3.                                                                                  | Pollution   | 
+| AqPM10            | pm10-mass                    | Number:Density       | PM10 Mass                      | PM10 mass, µG/m3.                                                                                   | Pollution   | 
+| AqOZONE           | ozone                        | Number:Dimensionless | Ozone                          | Ozone, ppb.                                                                                         | Pollution   | 
+
+#### Metadata channel-types:
+| Request parameter |  Channel type id             | Type                 | Label                             | Description                                                                                         | Group       |
+|-------------------|------------------------------|----------------------|-----------------------------------|-----------------------------------------------------------------------------------------------------|-------------|
+| dateutc           | datetime-utc                 | String               | Last Updated                      | The date and time of the last update in UTC as submitted by the weather station. This can be 'now'. | Metadata    | 
+| softwaretype      | softwaretype                 | String               | Software Type                     | A software type string from the weather station                                                     | Metadata    | 
+| rtfreq            | realtime-frequency           | Number               | Realtime Frequency                | How often does the weather station submit measurements                                              | Metadata    | 
+| lowbatt           |
+
+#### Programatically added channel-types:
+|  Channel type id       | Type                 | Channel type | Label          | Description                                                 | Group    |
+|------------------------|----------------------|--------------|----------------|-------------------------------------------------------------|----------|
+| last-received-datetime | DateTime             | state        | Last Received  | The date and time of the last update.                       | Metadata | 
+| last-query-state       | String               | state        | The last query | The part of the last query after the first unurlencoded '?' | Metadata |
+| last-query-trigger     | String               | trigger      | The last query | The part of the last query after the first unurlencoded '?' | Metadata |
 
 The trigger channel's payload is the last querystring, so the following dsl rule script
 would send the measurements on to wunderground.com:

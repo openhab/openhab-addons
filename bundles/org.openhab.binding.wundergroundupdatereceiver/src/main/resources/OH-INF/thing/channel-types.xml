@@ -553,7 +553,7 @@
 		<item-type>String</item-type>
 		<kind>state</kind>
 		<label>The last query</label>
-		<description>The part of the last query after the first unurlencoded ?</description>
+		<description>The part of the last query after the first unurlencoded '?'</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -561,7 +561,7 @@
 		<item-type>String</item-type>
 		<kind>trigger</kind>
 		<label>The last query</label>
-		<description>The part of the last query after the first unurlencoded ?</description>
+		<description>The part of the last query after the first unurlencoded '?'</description>
 		<event/>
 	</channel-type>
 
