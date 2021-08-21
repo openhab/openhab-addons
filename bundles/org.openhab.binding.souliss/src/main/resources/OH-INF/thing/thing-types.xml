@@ -1042,14 +1042,14 @@
 	</channel-type>
 
 	<channel-type id="button">
-        <kind>trigger</kind>        
+		<kind>trigger</kind>
 		<label>Button</label>
 		<description>Button to trigger something</description>
 		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="buttonReadOnly">
-        <kind>trigger</kind>        
+		<kind>trigger</kind>
 		<label>Button</label>
 		<description>Button to trigger something</description>
 		<category>Switch</category>
@@ -1057,10 +1057,10 @@
 
 
 	<channel-type id="pulse">
-        <kind>trigger</kind>        
+		<kind>trigger</kind>
 		<label>Pulse</label>
 		<description>Set</description>
-		<category>Switch</category>		
+		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="onoff">
