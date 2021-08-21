@@ -66,7 +66,7 @@ public class ConnectedCarDiscoveryService extends AbstractDiscoveryService imple
             return;
         }
         for (VehicleDetails vehicle : vehicleList) {
-            logger.debug("{} vehicle with VIN {} discovered", vehicle.brand, vehicle.vin);
+            logger.debug("{} Thing with id {} discovered", vehicle.brand, vehicle.vin);
             Map<String, Object> properties = new TreeMap<String, Object>();
             ThingTypeUID tuid;
             switch (vehicle.brand) {
@@ -75,10 +75,13 @@ public class ConnectedCarDiscoveryService extends AbstractDiscoveryService imple
                     break;
                 case "ŠKODA":
                 case API_BRAND_SKODA_E:
-                    tuid = THING_TYPE_ENYAKVEHICLE;
+                    tuid = THING_TYPE_SKODAEVEHICLE;
                     break;
                 case API_BRAND_FORD:
                     tuid = THING_TYPE_FORDVEHICLE;
+                    break;
+                case API_BRAND_WECHARGE:
+                    tuid = THING_TYPE_WCWALLBOX;
                     break;
                 default:
                     tuid = THING_TYPE_CNVEHICLE;

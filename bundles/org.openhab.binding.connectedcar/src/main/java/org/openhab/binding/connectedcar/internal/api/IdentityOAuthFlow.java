@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.connectedcar.internal.api;
 
+import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
 import static org.openhab.binding.connectedcar.internal.CarUtils.substringBetween;
 import static org.openhab.binding.connectedcar.internal.api.ApiHttpClient.getUrlParm;
 
@@ -21,6 +22,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpHeader;
@@ -28,13 +30,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link TokenOAuthFlow} implements some helpers for the oauth flow
+ * The {@link IdentityOAuthFlow} implements some helpers for the oauth flow
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class TokenOAuthFlow {
-    private final Logger logger = LoggerFactory.getLogger(TokenOAuthFlow.class);
+public class IdentityOAuthFlow extends ApiHttpMap {
+    private final Logger logger = LoggerFactory.getLogger(IdentityOAuthFlow.class);
 
     public String location = "";
     public String relayState = "", csrf = "", hmac = "", state = "";
@@ -43,58 +45,86 @@ public class TokenOAuthFlow {
     public String action = "";
     public ApiResult res = new ApiResult();
     private final ApiHttpClient http;
-    private final ApiHttpMap map;
 
-    public TokenOAuthFlow(ApiHttpClient http) {
+    public IdentityOAuthFlow(ApiHttpClient http) {
+        super();
         this.http = http;
-        this.map = new ApiHttpMap();
         http.clearCookies();
     }
 
-    public TokenOAuthFlow(ApiHttpClient http, ApiHttpMap map) {
+    public IdentityOAuthFlow(ApiHttpClient http, ApiHttpMap map) {
         this.http = http;
-        this.map = map;
         http.clearCookies();
+        init(map);
     }
 
-    public TokenOAuthFlow init(ApiHttpMap map) {
-        this.map.getHeaders().putAll(map.getHeaders());
-        this.map.getData().putAll(map.getData());
+    public IdentityOAuthFlow init(ApiHttpMap map) {
+        super.headers(map.getHeaders());
+        super.datas(map.getData());
         return this;
     }
 
-    public TokenOAuthFlow header(String header, String value) {
-        map.header(header, value);
+    @Override
+    public IdentityOAuthFlow header(String header, String value) {
+        super.header(header, value);
         return this;
     }
 
-    public TokenOAuthFlow header(HttpHeader header, String value) {
-        map.header(header.toString(), value);
+    @Override
+    public IdentityOAuthFlow header(HttpHeader header, String value) {
+        super.header(header.toString(), value);
         return this;
     }
 
-    public TokenOAuthFlow data(String attribute, String value) {
-        map.data(attribute, value);
+    @Override
+    public IdentityOAuthFlow headers(Map<String, String> headers) {
+        super.headers(headers);
         return this;
     }
 
-    public TokenOAuthFlow body(String body) {
-        map.body(body);
+    @Override
+    public IdentityOAuthFlow data(String attribute, String value) {
+        super.data(attribute, value);
+        return this;
+    }
+
+    @Override
+    public IdentityOAuthFlow datas(Map<String, String> data) {
+        super.datas(data);
+        return this;
+    }
+
+    @Override
+    public IdentityOAuthFlow body(String body) {
+        super.body(body);
+        return this;
+    }
+
+    @Override
+    public IdentityOAuthFlow clearHeader() {
+        super.clearHeader();
+        return this;
+    }
+
+    @Override
+    public IdentityOAuthFlow clearData() {
+        super.clearData();
         return this;
     }
 
     public ApiResult get(String url) throws ApiException {
-        res = http.get(url, map.getHeaders(), false);
+        res = http.get(url, headers, false);
         return update();
     }
 
     public ApiResult post(String url, boolean json) throws ApiException {
-        res = http.post(url, map.getHeaders(), map.getRequestData(json));
+        header(HttpHeader.CONTENT_TYPE, json ? CONTENT_TYPE_JSON : CONTENT_TYPE_FORM_URLENC);
+        res = http.post(url, headers, getRequestData(json));
         return update();
     }
 
     public ApiResult put(String url, boolean json) throws ApiException {
-        res = http.put(url, map.getHeaders(), map.getRequestData(json));
+        res = http.put(url, headers, getRequestData(json));
         return update();
     }
 
@@ -109,7 +139,7 @@ public class TokenOAuthFlow {
         return http.getCookieStore();
     }
 
-    private ApiResult update() {
+    private ApiResult update() throws ApiException {
         location = res.getLocation();
         action = substringBetween(res.response, "action=\"", "\">");
         if (!res.response.isEmpty()) {
@@ -125,6 +155,18 @@ public class TokenOAuthFlow {
         }
 
         if (!location.isEmpty()) {
+            if (location.contains("error=login.errors.password_invalid")) {
+                throw new ApiSecurityException("Login failed due to invalid password or locked account!");
+            }
+            if (location.contains("error=login.errors.throttled")) {
+                throw new ApiSecurityException(
+                        "Login failed due to invalid password, locked account or API throtteling!");
+            }
+            if (location.contains("&updated=dataprivacy")) {
+                throw new ApiSecurityException(
+                        "Login failed: New Terms&Conditions/Data Privacy Policy has to be accepted, login to Web portal");
+            }
+
             if (location.contains("relayState=")) {
                 relayState = getUrlParm(location, "relayState");
             }
@@ -132,7 +174,7 @@ public class TokenOAuthFlow {
                 hmac = getUrlParm(location, "hmac");
             }
 
-            if (location.contains("&code=")) {
+            if (location.contains("code=")) {
                 code = getUrlParm(location, "code");
             }
             if (location.contains("&userId")) {
@@ -183,15 +225,5 @@ public class TokenOAuthFlow {
         messageDigest.update(bytes, 0, bytes.length);
         byte[] digest = messageDigest.digest();
         return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
-    }
-
-    public TokenOAuthFlow clearHeader() {
-        map.clearHeader();
-        return this;
-    }
-
-    public TokenOAuthFlow clearData() {
-        map.clearData();
-        return this;
     }
 }

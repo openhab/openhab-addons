@@ -20,7 +20,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.connectedcar.internal.TextResources;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
-import org.openhab.binding.connectedcar.internal.api.weconnect.WCServiceStatus;
+import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectServiceStatus;
 import org.openhab.binding.connectedcar.internal.provider.CarChannelTypeProvider;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
@@ -33,16 +33,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link VehicleWeConnectHandler} implements the Vehicle Handler for WeConnect
+ * The {@link WeConnectVehicleHandler} implements the Vehicle Handler for WeConnect
  *
  * @author Markus Michels - Initial contribution
  *
  */
 @NonNullByDefault
-public class VehicleWeConnectHandler extends VehicleBaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(VehicleWeConnectHandler.class);
+public class WeConnectVehicleHandler extends ThingBaseHandler {
+    private final Logger logger = LoggerFactory.getLogger(WeConnectVehicleHandler.class);
 
-    public VehicleWeConnectHandler(Thing thing, TextResources resources, ZoneId zoneId, ChannelDefinitions idMapper,
+    public WeConnectVehicleHandler(Thing thing, TextResources resources, ZoneId zoneId, ChannelDefinitions idMapper,
             CarChannelTypeProvider channelTypeProvider) throws ApiException {
         super(thing, resources, zoneId, idMapper, channelTypeProvider);
     }
@@ -58,7 +58,7 @@ public class VehicleWeConnectHandler extends VehicleBaseHandler {
     @Override
     public void registerServices() {
         services.clear();
-        addService(new WCServiceStatus(this, api));
+        addService(new WeConnectServiceStatus(this, api));
     }
 
     @Override

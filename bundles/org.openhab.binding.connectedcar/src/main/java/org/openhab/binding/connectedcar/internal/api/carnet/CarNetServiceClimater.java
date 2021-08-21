@@ -26,7 +26,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiBaseService;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNClimater.CarNetClimaterStatus;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNClimater.CarNetClimaterStatus.CNClimaterStatus.CarNetClimaterStatusData;
-import org.openhab.binding.connectedcar.internal.handler.VehicleCarNetHandler;
+import org.openhab.binding.connectedcar.internal.handler.CarNetVehicleHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 public class CarNetServiceClimater extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(CarNetServiceClimater.class);
 
-    public CarNetServiceClimater(VehicleCarNetHandler thingHandler, CarNetApi api) {
+    public CarNetServiceClimater(CarNetVehicleHandler thingHandler, CarNetApi api) {
         super(CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION, thingHandler, api);
     }
 

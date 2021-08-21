@@ -16,8 +16,6 @@ import static org.openhab.binding.connectedcar.internal.BindingConstants.API_REQ
 import static org.openhab.binding.connectedcar.internal.CarUtils.getString;
 
 import java.util.Date;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNFindCarResponse;
@@ -28,8 +26,10 @@ import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.Car
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetPendingRequest;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPActionRequest;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleStatusData;
-import org.openhab.binding.connectedcar.internal.api.skodaenyak.SEApiJsonDTO.SEVehicleList.SEVehicle;
-import org.openhab.binding.connectedcar.internal.api.skodaenyak.SEApiJsonDTO.SEVehicleStatusData;
+import org.openhab.binding.connectedcar.internal.api.skodae.SEApiJsonDTO.SEVehicleList.SEVehicle;
+import org.openhab.binding.connectedcar.internal.api.skodae.SEApiJsonDTO.SEVehicleStatusData;
+import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WeChargeStationDetails;
+import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WeChargeStatus;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleList.WCVehicle;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleStatusData.WCVehicleStatus;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
@@ -47,7 +47,7 @@ public class ApiDataTypesDTO {
     public static final String API_BRAND_VW = "VW";
     public static final String API_BRAND_VWID = "Id";
     public static final String API_BRAND_VWGO = "Go";
-    public static final String API_BRAND_WECHARGE = "Wc";
+    public static final String API_BRAND_WECHARGE = "WeCharge";
     public static final String API_BRAND_SKODA = "Skoda";
     public static final String API_BRAND_SKODA_E = "Skoda-E";
     public static final String API_BRAND_SEAT = "Seat";
@@ -117,9 +117,10 @@ public class ApiDataTypesDTO {
                     + ")";
         }
 
-        public Map<String, String> getProperties() {
-            Map<String, String> properties = new TreeMap<String, String>();
-            return properties;
+        public VehicleDetails(CombinedConfig config, WeChargeStationDetails station) {
+            vin = station.id;
+            brand = config.api.brand;
+            model = station.name + "(" + station.location.description + ", " + station.model + ")";
         }
 
         public String getId() {
@@ -132,6 +133,7 @@ public class ApiDataTypesDTO {
         public @Nullable WCVehicleStatus wcStatus;
         public @Nullable SEVehicleStatusData seStatus;
         public @Nullable FPVehicleStatusData fpStatus;
+        public @Nullable WeChargeStatus weChargeStatus;
 
         public VehicleStatus() {
         }
@@ -151,18 +153,22 @@ public class ApiDataTypesDTO {
         public VehicleStatus(FPVehicleStatusData status) {
             fpStatus = status;
         }
+
+        public VehicleStatus(WeChargeStatus status) {
+            weChargeStatus = status;
+        }
     }
 
-    public static class CarPosition {
+    public static class GeoPosition {
         public CarNetCoordinate coordinate = new CarNetCoordinate();
         public String parkingTimeUTC = "";
         public String timestampCarSent = "";
         public String timestampTssReceived = "";
 
-        public CarPosition() {
+        public GeoPosition() {
         }
 
-        public CarPosition(CNFindCarResponse position) {
+        public GeoPosition(CNFindCarResponse position) {
             if (position != null && position.findCarResponse != null) {
                 coordinate = position.findCarResponse.carPosition.carCoordinate;
                 timestampCarSent = position.findCarResponse.carPosition.timestampCarSent;
@@ -171,14 +177,19 @@ public class ApiDataTypesDTO {
             }
         }
 
-        public CarPosition(CNStoredPosition position) {
+        public GeoPosition(CNStoredPosition position) {
             if (position != null && position.storedPositionResponse != null) {
                 coordinate = position.storedPositionResponse.position.carCoordinate;
                 parkingTimeUTC = position.storedPositionResponse.parkingTimeUTC;
             }
         }
 
-        public CarPosition(PointType point) {
+        public GeoPosition(String sLongitude, String sLatitude) {
+            coordinate.longitude = (int) (Double.parseDouble(sLongitude) * 1000000);
+            coordinate.latitude = (int) (Double.parseDouble(sLatitude) * 1000000);
+        }
+
+        public GeoPosition(PointType point) {
             coordinate.latitude = point.getLatitude().intValue() * 1000000;
             coordinate.longitude = point.getLongitude().intValue() * 1000000;
         }

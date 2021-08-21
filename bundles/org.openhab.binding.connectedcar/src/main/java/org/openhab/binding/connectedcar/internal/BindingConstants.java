@@ -46,34 +46,34 @@ public class BindingConstants {
     public static final String THING_MYAUDI = "myaudi";
     public static final String THING_VOLKSWAGEN = "volkswagen";
     public static final String THING_VWID = "vwid";
-    public static final String THING_VWGO = "wcgo";
-    public static final String THING_VWWC = "wecharge";
     public static final String THING_SEAT = "seat";
     public static final String THING_SKODA = "skoda";
     public static final String THING_SKODA_E = "skoda-e";
     public static final String THING_FORD = "ford";
+    public static final String THING_WECHARGE = "wecharge";
+    public static final String THING_VWGO = "wcgo";
 
     public static final ThingTypeUID THING_TYPE_MYAUDI = new ThingTypeUID(BINDING_ID, THING_MYAUDI);
     public static final ThingTypeUID THING_TYPE_VW = new ThingTypeUID(BINDING_ID, THING_VOLKSWAGEN);
     public static final ThingTypeUID THING_TYPE_VWID = new ThingTypeUID(BINDING_ID, THING_VWID);
-    public static final ThingTypeUID THING_TYPE_VWGO = new ThingTypeUID(BINDING_ID, THING_VWGO);
     public static final ThingTypeUID THING_TYPE_SKODA = new ThingTypeUID(BINDING_ID, THING_SKODA);
     public static final ThingTypeUID THING_TYPE_SEAT = new ThingTypeUID(BINDING_ID, THING_SEAT);
     public static final ThingTypeUID THING_TYPE_ENYAK = new ThingTypeUID(BINDING_ID, THING_SKODA_E);
     public static final ThingTypeUID THING_TYPE_FORD = new ThingTypeUID(BINDING_ID, THING_FORD);
+    public static final ThingTypeUID THING_TYPE_VWGO = new ThingTypeUID(BINDING_ID, THING_VWGO);
+    public static final ThingTypeUID THING_TYPE_WECHARGE = new ThingTypeUID(BINDING_ID, THING_WECHARGE);
 
     public static final ThingTypeUID THING_TYPE_CNVEHICLE = new ThingTypeUID(BINDING_ID, "cnvehicle");
     public static final ThingTypeUID THING_TYPE_IDVEHICLE = new ThingTypeUID(BINDING_ID, "idvehicle");
     public static final ThingTypeUID THING_TYPE_GOPLUG = new ThingTypeUID(BINDING_ID, "goplug");
-    public static final ThingTypeUID THING_TYPE_WCWALLBOX = new ThingTypeUID(BINDING_ID, "wcbox");
-    public static final ThingTypeUID THING_TYPE_ENYAKVEHICLE = new ThingTypeUID(BINDING_ID, "sevehicle");
+    public static final ThingTypeUID THING_TYPE_WCWALLBOX = new ThingTypeUID(BINDING_ID, "wcwallbox");
+    public static final ThingTypeUID THING_TYPE_SKODAEVEHICLE = new ThingTypeUID(BINDING_ID, "sevehicle");
     public static final ThingTypeUID THING_TYPE_FORDVEHICLE = new ThingTypeUID(BINDING_ID, "fordvehicle");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream
-                    .of(THING_TYPE_MYAUDI, THING_TYPE_VW, THING_TYPE_VWID, THING_TYPE_VWGO, THING_TYPE_SKODA,
-                            THING_TYPE_ENYAK, THING_TYPE_SEAT, THING_TYPE_FORD, THING_TYPE_CNVEHICLE,
-                            THING_TYPE_IDVEHICLE, THING_TYPE_ENYAKVEHICLE, THING_TYPE_FORDVEHICLE)
-                    .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
+            .of(THING_TYPE_MYAUDI, THING_TYPE_VW, THING_TYPE_VWID, THING_TYPE_VWGO, THING_TYPE_SKODA, THING_TYPE_ENYAK,
+                    THING_TYPE_SEAT, THING_TYPE_FORD, THING_TYPE_CNVEHICLE, THING_TYPE_IDVEHICLE,
+                    THING_TYPE_SKODAEVEHICLE, THING_TYPE_FORDVEHICLE, THING_TYPE_WECHARGE, THING_TYPE_WCWALLBOX)
+            .collect(Collectors.toSet()));
 
     // List of all ChannelGroups and Channels
     public static final String CHANNEL_GROUP_GENERAL = "general";
@@ -160,6 +160,10 @@ public class BindingConstants {
     public static final String CHANNEL_CHARGER_POWER = "chargingPower";
     public static final String CHANNEL_CHARGER_MAXCURRENT = "maxCurrent";
     public static final String CHANNEL_CHARGER_RATE = "chargingRate";
+    // Wallbox
+    public static final String CHANNEL_CHARGER_NAME = "chargerName";
+    public static final String CHANNEL_CHARGER_ADDRESS = "chargerAddress";
+    public static final String CHANNEL_CHARGER_LAST_CONNECT = "chargerLastConnect";
 
     public static final String CHANNEL_GROUP_TRIP_PRE = "trip";
     public static final String CHANNEL_TRIP_SHORT = "Short";
@@ -258,6 +262,35 @@ public class BindingConstants {
     public static final String CHANNEL_RLUHIST_OP = "rluOperation";
     public static final String CHANNEL_RLUHIST_RES = "rluResult";
 
+    // Subscriptions (Wallbox)
+    public static final String CHANNEL_GROUP_SUBSCRIPTION = "subscription";
+    public static final String CHANNEL_SUB_ENDDATE = "subEndDate";
+    public static final String CHANNEL_SUB_STATUS = "subStatus";
+    public static final String CHANNEL_SUB_TARIFF = "subTariff";
+    public static final String CHANNEL_SUB_MFEE = "subMonthlyFee";
+
+    // RFID cards (Wallbox)
+    public static final String CHANNEL_CHANNEL_GROUP_RFID = "rfid";
+    public static final String CHANNEL_RFID_ID = "rfidId";
+    public static final String CHANNEL_RFID_STATUS = "rfidStatus";
+    public static final String CHANNEL_RFID_PUBLIC = "rfidPublicCharging";
+    public static final String CHANNEL_RFID_UPDATE = "rfidLastUpdated";
+
+    // CHarging transactions
+    public static final String CHANNEL_CHANNEL_GROUP_TRANSACTIONS = "transaction";
+    public static final String CHANNEL_TRANS_ID = "transId";
+    public static final String CHANNEL_TRANS_LOCATION = "transLocation";
+    public static final String CHANNEL_TRANS_ADDRESS = "transAddress";
+    public static final String CHANNEL_TRANS_SUBID = "transSubscription";
+    public static final String CHANNEL_TRANS_EVSE = "transEvseId";
+    public static final String CHANNEL_TRANS_PTYPE = "transPowerType";
+    public static final String CHANNEL_TRANS_START = "transStart";
+    public static final String CHANNEL_TRANS_END = "transEnd";
+    public static final String CHANNEL_TRANS_ENERGY = "transEnergy";
+    public static final String CHANNEL_TRANS_PRICE = "transPrice";
+    public static final String CHANNEL_TRANS_DURATION = "transDuration";
+
+    // Thing Properties
     public static final String PROPERTY_VIN = "vin";
     public static final String PROPERTY_BRAND = "brand";
     public static final String PROPERTY_MODEL = "model";

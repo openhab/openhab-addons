@@ -21,9 +21,9 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.connectedcar.internal.api.ApiBaseService;
-import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.CarPosition;
+import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.GeoPosition;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
-import org.openhab.binding.connectedcar.internal.handler.VehicleCarNetHandler;
+import org.openhab.binding.connectedcar.internal.handler.CarNetVehicleHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 public class CarNetServiceCarFinder extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(CarNetServiceCarFinder.class);
 
-    public CarNetServiceCarFinder(VehicleCarNetHandler thingHandler, CarNetApi api) {
+    public CarNetServiceCarFinder(CarNetVehicleHandler thingHandler, CarNetApi api) {
         super(CNAPI_SERVICE_CAR_FINDER, thingHandler, api);
     }
 
@@ -56,7 +56,7 @@ public class CarNetServiceCarFinder extends ApiBaseService {
         boolean updated = false;
         try {
             logger.debug("{}: Get Vehicle Position", thingId);
-            CarPosition position = api.getVehiclePosition();
+            GeoPosition position = api.getVehiclePosition();
             updated |= updateChannel(CHANNEL_LOCATTION_GEO, position.getAsPointType());
 
             String time = position.getCarSentTime();
@@ -83,7 +83,7 @@ public class CarNetServiceCarFinder extends ApiBaseService {
         return updated;
     }
 
-    private boolean updateAddress(CarPosition position, String channel) {
+    private boolean updateAddress(GeoPosition position, String channel) {
         return updateLocationAddress(position.getAsPointType(), channel);
     }
 }

@@ -25,8 +25,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.connectedcar.internal.api.ApiToken.OAuthToken;
-import org.openhab.binding.connectedcar.internal.api.ApiToken.TokenSet;
+import org.openhab.binding.connectedcar.internal.api.ApiIdentity.OAuthToken;
+import org.openhab.binding.connectedcar.internal.api.ApiIdentity.TokenSet;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetSecurityPinAuthInfo;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetSecurityPinAuthentication;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
@@ -37,17 +37,17 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * {@link TokenManager} implements token creation and refreshing.
+ * {@link IdentityManager} implements token creation and refreshing.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@Component(service = TokenManager.class)
-public class TokenManager {
-    private final Logger logger = LoggerFactory.getLogger(TokenManager.class);
+@Component(service = IdentityManager.class)
+public class IdentityManager {
+    private final Logger logger = LoggerFactory.getLogger(IdentityManager.class);
     private final Gson gson = new Gson();
     private Map<String, TokenSet> accountTokens = new ConcurrentHashMap<>();
-    private CopyOnWriteArrayList<ApiToken> securityTokens = new CopyOnWriteArrayList<ApiToken>();
+    private CopyOnWriteArrayList<ApiIdentity> securityTokens = new CopyOnWriteArrayList<ApiIdentity>();
 
     public void setup(String tokenSetId, ApiHttpClient httpClient) {
         TokenSet tokens = getTokenSet(tokenSetId);
@@ -98,7 +98,7 @@ public class TokenManager {
          * refresh fails.
          */
         logger.debug("{}: Logging in, account={}", config.getLogId(), config.account.user);
-        TokenOAuthFlow oauth = new TokenOAuthFlow(tokens.http);
+        IdentityOAuthFlow oauth = new IdentityOAuthFlow(tokens.http).headers(config.api.loginHeaders);
         String url = authenticator.getLoginUrl(oauth);
         tokens.idToken = authenticator.login(url, oauth);
 
@@ -152,9 +152,9 @@ public class TokenManager {
         }
 
         // First check for a valid token
-        Iterator<ApiToken> it = securityTokens.iterator();
+        Iterator<ApiIdentity> it = securityTokens.iterator();
         while (it.hasNext()) {
-            ApiToken stoken = it.next();
+            ApiIdentity stoken = it.next();
             if (stoken.service.equals(service) && stoken.isValid()) {
                 // return stoken.securityToken;
             }
@@ -204,7 +204,7 @@ public class TokenManager {
         json = http.post(config.vstatus.rolesRightsUrl + "/rolesrights/authorization/v2/security-pin-auth-completed",
                 headers, data).response;
         OAuthToken t = fromJson(gson, json, OAuthToken.class);
-        ApiToken securityToken = new ApiToken(t);
+        ApiIdentity securityToken = new ApiIdentity(t);
         if (securityToken.securityToken.isEmpty()) {
             throw new ApiSecurityException("Authentication failed: Unable to get access token!");
         }
@@ -217,6 +217,11 @@ public class TokenManager {
             securityTokens.add(securityToken);
         }
         return securityToken.securityToken;
+    }
+
+    public String getWcAccessToken(CombinedConfig config) {
+        TokenSet tokens = getTokenSet(config.tokenSetId);
+        return tokens.apiToken.wcAccessToken;
     }
 
     public boolean isAccessTokenValid(CombinedConfig config) {
@@ -246,9 +251,9 @@ public class TokenManager {
             refreshToken(config, tokens, tokens.apiToken);
             updateTokenSet(config.tokenSetId, tokens);
 
-            Iterator<ApiToken> it = securityTokens.iterator();
+            Iterator<ApiIdentity> it = securityTokens.iterator();
             while (it.hasNext()) {
-                ApiToken stoken = it.next();
+                ApiIdentity stoken = it.next();
                 if (!refreshToken(config, tokens, stoken)) {
                     // Token invalid / refresh failed -> remove
                     logger.debug("{}: Security token for service {} expired, remove", config.getLogId(),
@@ -275,7 +280,7 @@ public class TokenManager {
      * @return new token
      * @throws ApiException
      */
-    public boolean refreshToken(CombinedConfig config, TokenSet tokenSet, ApiToken token) throws ApiException {
+    public boolean refreshToken(CombinedConfig config, TokenSet tokenSet, ApiIdentity token) throws ApiException {
         if (!token.isValid()) {
             return false;
         }
@@ -331,10 +336,6 @@ public class TokenManager {
     }
 
     TokenSet getTokenSet(String tokenSetId) {
-        if (tokenSetId.isEmpty()) {
-            int i = 1;
-            return new TokenSet();
-        }
         TokenSet ts = accountTokens.get(tokenSetId);
         if (ts != null) {
             return ts;

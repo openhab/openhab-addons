@@ -25,7 +25,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiBaseService;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNGeoFenceAlerts.CarNetGeoFenceAlerts;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNGeoFenceAlerts.CarNetGeoFenceAlerts.CarNetGeoFenceAlertEntry;
-import org.openhab.binding.connectedcar.internal.handler.VehicleCarNetHandler;
+import org.openhab.binding.connectedcar.internal.handler.CarNetVehicleHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 public class CarNetServiceGeoFenceAlerts extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(CarNetServiceGeoFenceAlerts.class);
 
-    public CarNetServiceGeoFenceAlerts(VehicleCarNetHandler thingHandler, CarNetApi api) {
+    public CarNetServiceGeoFenceAlerts(CarNetVehicleHandler thingHandler, CarNetApi api) {
         super(CNAPI_SERVICE_GEOFENCING, thingHandler, api);
     }
 

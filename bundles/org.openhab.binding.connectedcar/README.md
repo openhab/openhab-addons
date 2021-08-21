@@ -409,7 +409,7 @@ If you don't already have one you need to create a Volkswagen ID and add the veh
 Select this account type only if you have a electrical Skoda  vehicle (e.g. Enyaq).
 For other models select the Skoda (CarNet) account thing type (see above for further information).
 
-### Skoda-E Account Thing (skoda-e)
+### Skoda Enyaq Account Thing (skoda-e)
 
 You need the credentials used for the Skoda Connect portal.
 
@@ -418,9 +418,9 @@ You need the credentials used for the Skoda Connect portal.
 |user                 | User ID for your CarNet account (same as login id for the manuafacturer's portal)         | yes     | none      |
 |password             | Password for the CarNet account (same as portal)                                          | yes     | none      |
 
-### Skoda-E Vehicle thing (sevehicle)
+### Skoda Enyaq Vehicle thing (sevehicle)
 
-### Channels for the Skoda-E Vehicles
+### Channels for the Skoda Enyaq Vehicles
 
 | Group        | Channel                     | Item Type            |Read only| Description                    |
 |--------------|-----------------------------|----------------------|---------|--------------------------------|

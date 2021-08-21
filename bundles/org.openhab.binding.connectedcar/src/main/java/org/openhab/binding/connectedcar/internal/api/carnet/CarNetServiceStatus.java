@@ -30,7 +30,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetVehicleStatus;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetVehicleStatus.CNStoredVehicleDataResponse.CNVehicleData.CNStatusData;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetVehicleStatus.CNStoredVehicleDataResponse.CNVehicleData.CNStatusData.CNStatusField;
-import org.openhab.binding.connectedcar.internal.handler.VehicleCarNetHandler;
+import org.openhab.binding.connectedcar.internal.handler.CarNetVehicleHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 public class CarNetServiceStatus extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(CarNetServiceStatus.class);
 
-    public CarNetServiceStatus(VehicleCarNetHandler thingHandler, CarNetApi api) {
+    public CarNetServiceStatus(CarNetVehicleHandler thingHandler, CarNetApi api) {
         super(CNAPI_SERVICE_VEHICLE_STATUS_REPORT, thingHandler, api);
     }
 

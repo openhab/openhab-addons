@@ -21,17 +21,19 @@ import javax.ws.rs.core.HttpHeaders;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpHeader;
+import org.openhab.binding.connectedcar.internal.api.ApiBrandProperties;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpMap;
-import org.openhab.binding.connectedcar.internal.api.ApiToken;
-import org.openhab.binding.connectedcar.internal.api.ApiToken.OAuthToken;
-import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
+import org.openhab.binding.connectedcar.internal.api.ApiIdentity;
+import org.openhab.binding.connectedcar.internal.api.ApiIdentity.OAuthToken;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
-import org.openhab.binding.connectedcar.internal.api.TokenManager;
-import org.openhab.binding.connectedcar.internal.api.TokenOAuthFlow;
+import org.openhab.binding.connectedcar.internal.api.IdentityManager;
+import org.openhab.binding.connectedcar.internal.api.IdentityOAuthFlow;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetImageUrlsVW;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link BrandWeConnect} provides the VW ID.3/ID.4 specific functions of the API
@@ -40,21 +42,14 @@ import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.Car
  */
 @NonNullByDefault
 public class BrandWeConnect extends WeConnectApi implements BrandAuthenticator {
-    public BrandWeConnect(ApiHttpClient httpClient, TokenManager tokenManager,
-            @Nullable ApiEventListener eventListener) {
-        super(httpClient, tokenManager, eventListener);
-    }
-
-    @Override
-    public BrandApiProperties getProperties() {
-        BrandApiProperties properties = new BrandApiProperties();
-        String nonce = generateNonce();
+    private final Logger logger = LoggerFactory.getLogger(BrandWeConnect.class);
+    static ApiBrandProperties properties = new ApiBrandProperties();
+    static {
         properties.brand = API_BRAND_VWID;
-
         properties.userAgent = "WeConnect/5 CFNetwork/1206 Darwin/20.1.0";
         properties.xcountry = "DE";
         properties.apiDefaultUrl = WCAPI_BASE_URL;
-        properties.loginUrl = "https://login.apps.emea.vwapps.io/authorize?nonce=" + nonce
+        properties.loginUrl = "https://login.apps.emea.vwapps.io/authorize?nonce=" + generateNonce()
                 + "&redirect_uri=weconnect://authenticated";
         properties.tokenUrl = properties.apiDefaultUrl + "/login/v1";
         properties.tokenRefreshUrl = "https://login.apps.emea.vwapps.io/refresh/v1";
@@ -66,16 +61,32 @@ public class BrandWeConnect extends WeConnectApi implements BrandAuthenticator {
         properties.responseType = "code id_token token";
         properties.xappName = "";
         properties.xappVersion = "";
+
+        properties.stdHeaders.put("x-newrelic-id", "VgAEWV9QDRAEXFlRAAYPUA==");
+        properties.stdHeaders.put(HttpHeader.USER_AGENT.toString(), properties.userAgent);
+        properties.stdHeaders.put(HttpHeaders.ACCEPT.toString(), "*/*");
+        properties.stdHeaders.put(HttpHeader.ACCEPT_LANGUAGE.toString(), "de-de");
+    }
+
+    public BrandWeConnect(ApiHttpClient httpClient, IdentityManager tokenManager,
+            @Nullable ApiEventListener eventListener) {
+        super(httpClient, tokenManager, eventListener);
+    }
+
+    @Override
+    public ApiBrandProperties getProperties() {
+        properties.loginUrl = "https://login.apps.emea.vwapps.io/authorize?nonce=" + generateNonce()
+                + "&redirect_uri=weconnect://authenticated";
         return properties;
     }
 
     @Override
-    public String getLoginUrl(TokenOAuthFlow oauth) throws ApiException {
+    public String getLoginUrl(IdentityOAuthFlow oauth) throws ApiException {
         return oauth.clearData().get(config.api.loginUrl).getLocation();
     }
 
     @Override
-    public ApiToken grantAccess(TokenOAuthFlow oauth) throws ApiException {
+    public ApiIdentity grantAccess(IdentityOAuthFlow oauth) throws ApiException {
         /*
          * state: jwtstate,
          * id_token: jwtid_token,
@@ -84,17 +95,19 @@ public class BrandWeConnect extends WeConnectApi implements BrandAuthenticator {
          * access_token: jwtaccess_token,
          * authorizationCode: jwtauth_code,
          * });
+         *
          */
-        String json = oauth.clearHeader().header(HttpHeader.HOST, "login.apps.emea.vwapps.io")//
-                .clearData().data("state", oauth.state).data("id_token", oauth.idToken)
+        logger.debug("{}: Grant API access", config.getLogId());
+        String json = oauth.clearHeader().header(HttpHeader.HOST, "login.apps.emea.vwapps.io").clearData()//
+                .data("state", oauth.state).data("id_token", oauth.idToken)
                 .data("redirect_uri", config.api.redirect_uri).data("region", "emea")
                 .data("access_token", oauth.accessToken).data("authorizationCode", oauth.code) //
-                .post("https://login.apps.emea.vwapps.io/login/v1", true).response;
-        return new ApiToken(fromJson(gson, json, OAuthToken.class).normalize());
+                .post(config.api.tokenUrl, true).response;
+        return new ApiIdentity(fromJson(gson, json, OAuthToken.class).normalize());
     }
 
     @Override
-    public OAuthToken refreshToken(ApiToken token) throws ApiException {
+    public OAuthToken refreshToken(ApiIdentity token) throws ApiException {
         ApiHttpMap headers = new ApiHttpMap().header(HttpHeaders.AUTHORIZATION, "Bearer " + token.getRefreshToken());
         String json = http.get(config.api.tokenRefreshUrl, headers.getHeaders()).response;
         return fromJson(gson, json, OAuthToken.class);

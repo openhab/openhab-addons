@@ -20,7 +20,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.connectedcar.internal.TextResources;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
-import org.openhab.binding.connectedcar.internal.api.skodaenyak.SEServiceStatus;
+import org.openhab.binding.connectedcar.internal.api.skodae.SEServiceStatus;
 import org.openhab.binding.connectedcar.internal.provider.CarChannelTypeProvider;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
@@ -33,15 +33,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link VehicleSkodaEnyakHandler} implements the Vehicle Handler for Skoda Enyak
+ * The {@link EnyakVehicleHandler} implements the Vehicle Handler for Skoda Enyak
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class VehicleSkodaEnyakHandler extends VehicleBaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(VehicleSkodaEnyakHandler.class);
+public class EnyakVehicleHandler extends ThingBaseHandler {
+    private final Logger logger = LoggerFactory.getLogger(EnyakVehicleHandler.class);
 
-    public VehicleSkodaEnyakHandler(Thing thing, TextResources resources, ZoneId zoneId, ChannelDefinitions idMapper,
+    public EnyakVehicleHandler(Thing thing, TextResources resources, ZoneId zoneId, ChannelDefinitions idMapper,
             CarChannelTypeProvider channelTypeProvider) throws ApiException {
         super(thing, resources, zoneId, idMapper, channelTypeProvider);
     }

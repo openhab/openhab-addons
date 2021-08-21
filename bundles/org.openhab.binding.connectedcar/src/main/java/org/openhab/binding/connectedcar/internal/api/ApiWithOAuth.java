@@ -24,7 +24,7 @@ import java.util.UUID;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.connectedcar.internal.api.ApiToken.OAuthToken;
+import org.openhab.binding.connectedcar.internal.api.ApiIdentity.OAuthToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,25 +38,30 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
     private final Logger logger = LoggerFactory.getLogger(ApiWithOAuth.class);
     private static final String UTF_8 = StandardCharsets.UTF_8.name();
 
-    public ApiWithOAuth(ApiHttpClient httpClient, TokenManager tokenManager, @Nullable ApiEventListener eventListener) {
+    public ApiWithOAuth(ApiHttpClient httpClient, IdentityManager tokenManager,
+            @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
 
     @Override
-    public String getLoginUrl(TokenOAuthFlow oauth) throws ApiException {
+    public String getLoginUrl(IdentityOAuthFlow oauth) throws ApiException {
         String url;
         String nonce = generateNonce();
         String state = UUID.randomUUID().toString();
 
         String authUrl = config.api.issuerRegionMappingUrl + "/oidc/v1/authorize";
-        oauth.header(HttpHeader.USER_AGENT, CNAPI_HEADER_USER_AGENT).header(HttpHeader.ACCEPT,
+        oauth.headers(config.api.loginHeaders).header(HttpHeader.USER_AGENT, CNAPI_HEADER_USER_AGENT).header(
+                HttpHeader.ACCEPT,
                 "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3")
-                .header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded")
-                .header("x-requested-with", config.api.xrequest).header("upgrade-insecure-requests", "1");
-        url = authUrl + "?client_id=" + urlEncode(config.api.clientId) + "&scope="
-                + urlEncode(config.api.authScope).replace("%20", "+") + "&response_type="
-                + urlEncode(config.api.responseType).replace("%20", "+") + "&redirect_uri="
-                + urlEncode(config.api.redirect_uri) + "&nonce=" + nonce + "&state=" + state;
+                .header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
+        if (!config.api.xrequest.isEmpty()) {
+            oauth.header("x-requested-with", config.api.xrequest).header("upgrade-insecure-requests", "1");
+        }
+        url = authUrl + "?client_id=" + urlEncode(config.api.clientId) //
+                + "&scope=" + urlEncode(config.api.authScope).replace("%20", "+") //
+                + "&response_type=" + urlEncode(config.api.responseType).replace("%20", "+") //
+                + "&redirect_uri=" + urlEncode(config.api.redirect_uri) //
+                + "&nonce=" + nonce + "&state=" + state;
         if (config.authenticator != null) {
             url = config.authenticator.updateAuthorizationUrl(url);
         }
@@ -64,7 +69,7 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
     }
 
     @Override
-    public ApiToken login(String loginUrl, TokenOAuthFlow oauth) throws ApiException {
+    public ApiIdentity login(String loginUrl, IdentityOAuthFlow oauth) throws ApiException {
         String logId = config.getLogId();
         try {
             ApiResult res = oauth.get(loginUrl);
@@ -86,8 +91,13 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
             logger.trace("{}: OAuth input: User", logId);
             // "/signin-service/v1/" + config.api.clientId + "/login/identifier";
             url = config.api.issuerRegionMappingUrl + oauth.action;
+            // oauth.clearData().data("_csrf", oauth.csrf).data("relayState", oauth.relayState).data("hmac", oauth.hmac)
+            // .data("email", URLEncoder.encode(config.account.user, UTF_8));
             oauth.clearData().data("_csrf", oauth.csrf).data("relayState", oauth.relayState).data("hmac", oauth.hmac)
-                    .data("email", URLEncoder.encode(config.account.user, UTF_8));
+                    .data(config.api.authUserAttr, URLEncoder.encode(config.account.user, UTF_8));
+            if (config.authenticator != null) {
+                config.authenticator.updateSigninParameters(oauth);
+            }
             oauth.post(url, false);
             if (oauth.location.isEmpty()) {
                 logger.debug("{}: OAuth failed, can't input password; HTML {}: {}", logId, res.httpCode, res.response);
@@ -103,19 +113,9 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
             url = config.api.issuerRegionMappingUrl + oauth.action;
             res = oauth.clearData().data("_csrf", oauth.csrf).data("relayState", oauth.relayState)
                     .data("hmac", oauth.hmac).data("email", URLEncoder.encode(config.account.user, UTF_8))
-                    .data("password", URLEncoder.encode(config.account.password, UTF_8)).post(url, false);
+                    .data("password", URLEncoder.encode(config.account.password, UTF_8)) //
+                    .post(url, false);
             url = oauth.location; // Continue URL
-            if (url.contains("error=login.errors.password_invalid")) {
-                throw new ApiSecurityException("Login failed due to invalid password or locked account!");
-            }
-            if (url.contains("error=login.errors.throttled")) {
-                throw new ApiSecurityException(
-                        "Login failed due to invalid password, locked account or API throtteling!");
-            }
-            if (url.contains("&updated=dataprivacy")) {
-                throw new ApiSecurityException(
-                        "Login failed: New Terms&Conditions/Data Privacy Policy has to be accepted, login to Web portal");
-            }
 
             // Now we need to follow multiple redirects, required data is fetched from the redirect URLs
             // String userId = "";
@@ -131,7 +131,7 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
                 }
             }
 
-            if (oauth.idToken.isEmpty()) {
+            if (oauth.idToken.isEmpty() && oauth.code.isEmpty()) {
                 if (res.response.contains("Allow access")) // additional consent required
                 {
                     logger.debug("{}: Consent missing, URL={}\n   HTML: {}", logId, res.url, res.response);
@@ -140,12 +140,9 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
                 }
                 throw new ApiSecurityException("Login/OAuth failed, didn't got accessToken/idToken");
             }
-            if (oauth.userId.isEmpty() && oauth.idToken.isEmpty()) {
-                throw new ApiException("OAuth failed, check credentials!");
-            }
 
             // In this case the id and access token were returned by the login process
-            return new ApiToken(oauth.idToken, oauth.accessToken, Integer.parseInt(oauth.expiresIn, 10));
+            return new ApiIdentity(oauth.idToken, oauth.accessToken, Integer.parseInt(oauth.expiresIn, 10));
         } catch (UnsupportedEncodingException e) {
             logger.warn("{}: Technical problem with algorithms", logId, e);
             throw new ApiException("Technical problem with algorithms", e);
@@ -153,7 +150,7 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
     }
 
     @Override
-    public ApiToken grantAccess(TokenOAuthFlow oauth) throws ApiException {
+    public ApiIdentity grantAccess(IdentityOAuthFlow oauth) throws ApiException {
         // Last step: Request the access token from the VW token management
         // We save the generated tokens as tokenSet. Account handler and vehicle handler(s) are sharing the same
         // tokens. The tokenSetId provides access to that set.
@@ -163,11 +160,11 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
                 .header(CNAPI_HEADER_CLIENTID, config.api.xClientId)//
                 .clearData().data("grant_type", "id_token").data("token", oauth.idToken).data("scope", "sc2:fal") //
                 .post(config.api.tokenUrl, false).response;
-        return new ApiToken(fromJson(gson, json, OAuthToken.class));
+        return new ApiIdentity(fromJson(gson, json, OAuthToken.class));
     }
 
     @Override
-    public OAuthToken refreshToken(ApiToken token) throws ApiException {
+    public OAuthToken refreshToken(ApiIdentity token) throws ApiException {
         ApiHttpMap map = new ApiHttpMap().header(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT)
                 .header(HttpHeader.CONTENT_TYPE.toString(), "application/x-www-form-urlencoded")
                 .header(HttpHeader.HOST, "mbboauth-1d.prd.ece.vwg-connect.com")

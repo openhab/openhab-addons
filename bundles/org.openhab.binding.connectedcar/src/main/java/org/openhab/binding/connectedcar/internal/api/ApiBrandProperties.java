@@ -12,15 +12,18 @@
  */
 package org.openhab.binding.connectedcar.internal.api;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link BrandApiProperties} defines brand speficfic properties
+ * {@link ApiBrandProperties} defines brand speficfic properties
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class BrandApiProperties {
+public class ApiBrandProperties {
     public boolean weakSsl = false;
     public String userAgent = "";
     public String oidcDate = ""; // Date in getOIDC http response header
@@ -28,6 +31,8 @@ public class BrandApiProperties {
     public String issuerRegionMappingUrl = "https://identity.vwgroup.io";
     public String customerProfileServiceUrl = "https://customer-profile.apps.emea.vwapps.io/v3";
     public String loginUrl = "";
+    public String authUserAttr = "email";
+    public String authPwAttr = "password";
     public String tokenUrl = "";
     public String tokenRefreshUrl = "";
     public String brand = "";
@@ -45,4 +50,7 @@ public class BrandApiProperties {
     public String xappVersion = "";
     public String clientName = "";
     public String clientPlatform = "";
+
+    public Map<String, String> loginHeaders = new HashMap<>();
+    public Map<String, String> stdHeaders = new HashMap<>();
 }

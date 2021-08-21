@@ -22,7 +22,9 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.connectedcar.internal.api.ApiErrorDTO.CNApiError2;
+import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPErrorResponse;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCActionResponse.WCApiError;
+import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCActionResponse.WCApiError2;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -143,7 +145,14 @@ public class ApiResult {
             if (response.contains("\"error\":")) {
                 Gson gson = new Gson();
                 try {
-                    if (response.contains("\"group\": ")) {
+                    if (response.contains("Response: {\"httpStatus\"")) {
+                        // Fordpass
+                        apiError = new ApiErrorDTO(gson.fromJson(response, FPErrorResponse.class));
+                    } else if (response.contains("uri") && response.contains("status")
+                            && response.contains("message")) {
+                        // WeConnect v2
+                        apiError = new ApiErrorDTO(gson.fromJson(response, WCApiError2.class));
+                    } else if (response.contains("\"group\": ")) {
                         // WeConnect
                         apiError = new ApiErrorDTO(gson.fromJson(response, WCApiError.class));
                     } else if (response.contains("\"error_code\": ")) {

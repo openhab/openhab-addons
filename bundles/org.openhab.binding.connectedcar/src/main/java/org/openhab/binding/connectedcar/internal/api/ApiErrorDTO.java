@@ -18,7 +18,9 @@ import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiErrorDTO.CNApiError2.CNErrorMessage2;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApi;
+import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPErrorResponse;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCActionResponse.WCApiError;
+import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCActionResponse.WCApiError2;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -65,6 +67,22 @@ public class ApiErrorDTO {
             code = getInteger(wcerror.code).toString();
             error = getString(wcerror.message);
             description = getString(wcerror.info) + ", retry=" + (wcerror.retry);
+        }
+    }
+
+    public ApiErrorDTO(WCApiError2 wcerror) {
+        if (wcerror != null) {
+            code = getString(wcerror.status);
+            error = getString(wcerror.message);
+            description = getString(wcerror.uri);
+        }
+    }
+
+    public ApiErrorDTO(FPErrorResponse fperror) {
+        if (fperror != null) {
+            code = getString(fperror.response.status);
+            error = getString(fperror.response.error.message);
+            description = "";
         }
     }
 

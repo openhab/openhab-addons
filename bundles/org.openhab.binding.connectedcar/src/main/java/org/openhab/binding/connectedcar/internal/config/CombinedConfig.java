@@ -14,7 +14,7 @@ package org.openhab.binding.connectedcar.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
+import org.openhab.binding.connectedcar.internal.api.ApiBrandProperties;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNOperationList.CarNetOperationList;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNPairingInfo.CarNetPairingInfo;
@@ -51,7 +51,7 @@ public class CombinedConfig {
     }
 
     public String tokenSetId = "";
-    public BrandApiProperties api = new BrandApiProperties();
+    public ApiBrandProperties api = new ApiBrandProperties();
     public CarNetOidcConfig oidcConfig = new CarNetOidcConfig();
     public @Nullable BrandAuthenticator authenticator;
     public AccountConfiguration account = new AccountConfiguration();

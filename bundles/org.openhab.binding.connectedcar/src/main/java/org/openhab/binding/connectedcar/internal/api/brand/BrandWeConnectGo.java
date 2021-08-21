@@ -18,8 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
-import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
-import org.openhab.binding.connectedcar.internal.api.TokenManager;
+import org.openhab.binding.connectedcar.internal.api.ApiBrandProperties;
+import org.openhab.binding.connectedcar.internal.api.IdentityManager;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApi;
 
 /**
@@ -29,14 +29,14 @@ import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApi;
  */
 @NonNullByDefault
 public class BrandWeConnectGo extends WeConnectApi {
-    public BrandWeConnectGo(ApiHttpClient httpClient, TokenManager tokenManager,
+    public BrandWeConnectGo(ApiHttpClient httpClient, IdentityManager tokenManager,
             @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
 
     @Override
-    public BrandApiProperties getProperties() {
-        BrandApiProperties properties = new BrandApiProperties();
+    public ApiBrandProperties getProperties() {
+        ApiBrandProperties properties = new ApiBrandProperties();
         properties.brand = API_BRAND_VWGO;
         properties.apiDefaultUrl = "https://mobileapi.apps.emea.vwapps.io";
         properties.clientId = "ac42b0fa-3b11-48a0-a941-43a399e7ef84@apps_vw-dilab_com";

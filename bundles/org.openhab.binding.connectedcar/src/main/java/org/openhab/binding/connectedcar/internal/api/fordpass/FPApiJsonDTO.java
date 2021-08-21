@@ -32,6 +32,24 @@ public class FPApiJsonDTO {
     public final static String FPSERVICE_CLIMATISATION = "climatisation";
     public final static String FPSERVICE_CHARGER = "charger";
 
+    public class FPErrorResponse {
+        public class FPErrorMessage {
+            public class FPErrorDetails {
+                public String statusContext;
+                public String statusCode;
+                public String message;
+            }
+
+            public String httpStatus;
+            public String status;
+            public String requestStatus;
+            public FPErrorDetails error;
+        }
+
+        @SerializedName("Response")
+        public FPErrorMessage response;
+    }
+
     public static class FPVehicleListData {
         public class FPVehicleData {
             public class FPVehicle {
@@ -311,5 +329,4 @@ public class FPApiJsonDTO {
             }
         }
     }
-
 }

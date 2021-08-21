@@ -53,17 +53,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link VehicleCarNetHandler} implements the Vehicle Handler for CarNet
+ * The {@link CarNetVehicleHandler} implements the Vehicle Handler for CarNet
  *
  * @author Markus Michels - Initial contribution
  * @author Lorenzo Bernardi - Additional contribution
  *
  */
 @NonNullByDefault
-public class VehicleCarNetHandler extends VehicleBaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(VehicleCarNetHandler.class);
+public class CarNetVehicleHandler extends ThingBaseHandler {
+    private final Logger logger = LoggerFactory.getLogger(CarNetVehicleHandler.class);
 
-    public VehicleCarNetHandler(Thing thing, TextResources resources, ZoneId zoneId, ChannelDefinitions idMapper,
+    public CarNetVehicleHandler(Thing thing, TextResources resources, ZoneId zoneId, ChannelDefinitions idMapper,
             CarChannelTypeProvider channelTypeProvider) throws ApiException {
         super(thing, resources, zoneId, idMapper, channelTypeProvider);
     }

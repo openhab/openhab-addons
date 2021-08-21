@@ -38,7 +38,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiErrorDTO;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiResult;
-import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
+import org.openhab.binding.connectedcar.internal.api.ApiBrandProperties;
 import org.openhab.binding.connectedcar.internal.api.BrandNull;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.openhab.binding.connectedcar.internal.config.VehicleConfiguration;
@@ -68,7 +68,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link VehicleBaseHandler} is responsible for handling commands, which are
+ * The {@link ThingBaseHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Markus Michels - Initial contribution
@@ -76,8 +76,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public abstract class VehicleBaseHandler extends BaseThingHandler implements AccountListener, ApiEventListener {
-    private final Logger logger = LoggerFactory.getLogger(VehicleBaseHandler.class);
+public abstract class ThingBaseHandler extends BaseThingHandler implements AccountListener, ApiEventListener {
+    private final Logger logger = LoggerFactory.getLogger(ThingBaseHandler.class);
     protected final TextResources resources;
     protected final ChannelDefinitions idMapper;
     protected final CarChannelTypeProvider channelTypeProvider;
@@ -99,7 +99,7 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Acc
     protected Map<String, ApiBaseService> services = new LinkedHashMap<>();
     protected CombinedConfig config = new CombinedConfig();
 
-    public VehicleBaseHandler(Thing thing, TextResources resources, ZoneId zoneId, ChannelDefinitions idMapper,
+    public ThingBaseHandler(Thing thing, TextResources resources, ZoneId zoneId, ChannelDefinitions idMapper,
             CarChannelTypeProvider channelTypeProvider) throws ApiException {
         super(thing);
 
@@ -195,7 +195,7 @@ public abstract class VehicleBaseHandler extends BaseThingHandler implements Acc
             }
 
             // Some providers require a 2nd login (e. g. Skoda-E)
-            BrandApiProperties prop = api.getProperties2();
+            ApiBrandProperties prop = api.getProperties2();
             if (prop != null) {
                 // Vehicle endpoint uses different properties
                 config.api = prop;

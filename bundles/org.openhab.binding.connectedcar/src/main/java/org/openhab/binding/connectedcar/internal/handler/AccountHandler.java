@@ -38,13 +38,14 @@ import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
 import org.openhab.binding.connectedcar.internal.api.BrandNull;
-import org.openhab.binding.connectedcar.internal.api.TokenManager;
+import org.openhab.binding.connectedcar.internal.api.IdentityManager;
 import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetAudi;
 import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetSeat;
 import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetSkoda;
 import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetVW;
 import org.openhab.binding.connectedcar.internal.api.fordpass.BrandFordPass;
-import org.openhab.binding.connectedcar.internal.api.skodaenyak.BrandSkodaE;
+import org.openhab.binding.connectedcar.internal.api.skodae.BrandSkodaE;
+import org.openhab.binding.connectedcar.internal.api.wecharge.BrandWeCharge;
 import org.openhab.binding.connectedcar.internal.api.weconnect.BrandWeConnect;
 import org.openhab.binding.connectedcar.internal.config.AccountConfiguration;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
@@ -73,7 +74,7 @@ public class AccountHandler extends BaseBridgeHandler {
     public final String thingId;
     private final CombinedConfig config = new CombinedConfig();
     private final TextResources messages;
-    private final TokenManager tokenManager;
+    private final IdentityManager tokenManager;
 
     private ApiBase api = new BrandNull();
     private List<VehicleDetails> vehicleList = new CopyOnWriteArrayList<>();
@@ -94,11 +95,11 @@ public class AccountHandler extends BaseBridgeHandler {
         brandMap.put(THING_VOLKSWAGEN, API_BRAND_VW);
         brandMap.put(THING_VWID, API_BRAND_VWID);
         brandMap.put(THING_VWGO, API_BRAND_VWGO);
-        brandMap.put(THING_VWWC, API_BRAND_WECHARGE);
         brandMap.put(THING_SEAT, API_BRAND_SEAT);
         brandMap.put(THING_SKODA, API_BRAND_SKODA);
         brandMap.put(THING_SKODA_E, API_BRAND_SKODA_E);
         brandMap.put(THING_FORD, API_BRAND_FORD);
+        brandMap.put(THING_WECHARGE, API_BRAND_WECHARGE);
     }
 
     /**
@@ -106,7 +107,7 @@ public class AccountHandler extends BaseBridgeHandler {
      *
      * @param bridge Bridge object representing a FRITZ!Box
      */
-    public AccountHandler(Bridge bridge, TextResources messages, TokenManager tokenManager) {
+    public AccountHandler(Bridge bridge, TextResources messages, IdentityManager tokenManager) {
         super(bridge);
         this.messages = messages;
         this.tokenManager = tokenManager;
@@ -147,6 +148,7 @@ public class AccountHandler extends BaseBridgeHandler {
                 String detail = e.isSecurityException() ? messages.get("login-failed", getString(e.getMessage()))
                         : getString(e.getMessage());
                 stateChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
+                logger.debug("{}: Initialization failed: {}", detail);
             }
         });
     }
@@ -221,8 +223,8 @@ public class AccountHandler extends BaseBridgeHandler {
                 return new BrandCarNetVW(httpClient, tokenManager, apiListener);
             case API_BRAND_VWID:
                 return new BrandWeConnect(httpClient, tokenManager, apiListener);
-            case API_BRAND_VWGO:
-                return new BrandCarNetVW(httpClient, tokenManager, apiListener);
+            case API_BRAND_WECHARGE:
+                return new BrandWeCharge(httpClient, tokenManager, apiListener);
             case API_BRAND_SKODA:
                 return new BrandCarNetSkoda(httpClient, tokenManager, apiListener);
             case API_BRAND_SEAT:

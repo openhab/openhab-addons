@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.TextResources;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
-import org.openhab.binding.connectedcar.internal.api.TokenManager;
+import org.openhab.binding.connectedcar.internal.api.IdentityManager;
 import org.openhab.binding.connectedcar.internal.discovery.ConnectedCarDiscoveryService;
 import org.openhab.binding.connectedcar.internal.provider.CarChannelTypeProvider;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions;
@@ -56,14 +56,14 @@ public class HandlerFactory extends BaseThingHandlerFactory {
 
     private final TextResources resources;
     private final ChannelDefinitions channelIdMapper;
-    private final TokenManager tokenManager;
+    private final IdentityManager tokenManager;
     private final CarChannelTypeProvider channelTypeProvider;
     private final ZoneId zoneId;
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
 
     @Activate
     public HandlerFactory(@Reference TimeZoneProvider tzProvider, @Reference TextResources resources,
-            @Reference ChannelDefinitions channelIdMapper, @Reference TokenManager tokenManager,
+            @Reference ChannelDefinitions channelIdMapper, @Reference IdentityManager tokenManager,
             @Reference CarChannelTypeProvider channelTypeProvider) {
         this.resources = resources;
         this.channelIdMapper = channelIdMapper;
@@ -85,18 +85,21 @@ public class HandlerFactory extends BaseThingHandlerFactory {
             if (THING_TYPE_MYAUDI.equals(thingTypeUID) || THING_TYPE_VW.equals(thingTypeUID)
                     || THING_TYPE_VWID.equals(thingTypeUID) || THING_TYPE_VWGO.equals(thingTypeUID)
                     || THING_TYPE_SKODA.equals(thingTypeUID) || THING_TYPE_ENYAK.equals(thingTypeUID)
-                    || THING_TYPE_SEAT.equals(thingTypeUID) || THING_TYPE_FORD.equals(thingTypeUID)) {
+                    || THING_TYPE_SEAT.equals(thingTypeUID) || THING_TYPE_FORD.equals(thingTypeUID)
+                    || THING_TYPE_WECHARGE.equals(thingTypeUID)) {
                 AccountHandler handler = new AccountHandler((Bridge) thing, resources, tokenManager);
                 registerDeviceDiscoveryService(handler);
                 return handler;
             } else if (THING_TYPE_CNVEHICLE.equals(thingTypeUID)) {
-                return new VehicleCarNetHandler(thing, resources, zoneId, channelIdMapper, channelTypeProvider);
+                return new CarNetVehicleHandler(thing, resources, zoneId, channelIdMapper, channelTypeProvider);
             } else if (THING_TYPE_IDVEHICLE.equals(thingTypeUID)) {
-                return new VehicleWeConnectHandler(thing, resources, zoneId, channelIdMapper, channelTypeProvider);
-            } else if (THING_TYPE_ENYAKVEHICLE.equals(thingTypeUID)) {
-                return new VehicleSkodaEnyakHandler(thing, resources, zoneId, channelIdMapper, channelTypeProvider);
+                return new WeConnectVehicleHandler(thing, resources, zoneId, channelIdMapper, channelTypeProvider);
+            } else if (THING_TYPE_SKODAEVEHICLE.equals(thingTypeUID)) {
+                return new EnyakVehicleHandler(thing, resources, zoneId, channelIdMapper, channelTypeProvider);
             } else if (THING_TYPE_FORDVEHICLE.equals(thingTypeUID)) {
-                return new VehicleFordHandler(thing, resources, zoneId, channelIdMapper, channelTypeProvider);
+                return new FordVehicleHandler(thing, resources, zoneId, channelIdMapper, channelTypeProvider);
+            } else if (THING_TYPE_WCWALLBOX.equals(thingTypeUID)) {
+                return new WeChargeThingHandler(thing, resources, zoneId, channelIdMapper, channelTypeProvider);
             } else {
                 logger.warn("HandlerFactory: Unsuppoerted ThingType requested: {}", thingTypeUID);
             }

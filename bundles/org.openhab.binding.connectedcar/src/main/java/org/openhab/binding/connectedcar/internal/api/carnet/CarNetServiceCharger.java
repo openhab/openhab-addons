@@ -23,7 +23,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiBaseService;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNChargerInfo.CarNetChargerStatus;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNChargerInfo.CarNetChargerStatus.CNChargerStatus.CarNetChargerStatusData;
-import org.openhab.binding.connectedcar.internal.handler.VehicleCarNetHandler;
+import org.openhab.binding.connectedcar.internal.handler.CarNetVehicleHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -35,7 +35,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class CarNetServiceCharger extends ApiBaseService {
-    public CarNetServiceCharger(VehicleCarNetHandler thingHandler, CarNetApi api) {
+    public CarNetServiceCharger(CarNetVehicleHandler thingHandler, CarNetApi api) {
         super(CNAPI_SERVICE_REMOTE_BATTERY_CHARGE, thingHandler, api);
     }
 

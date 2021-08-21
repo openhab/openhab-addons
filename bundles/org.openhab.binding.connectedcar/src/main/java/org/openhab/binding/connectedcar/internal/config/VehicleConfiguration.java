@@ -30,6 +30,7 @@ public class VehicleConfiguration {
     public int numDestinations = 1; // number of entries from the destination history;
     public int numSpeedAlerts = 1;
     public int numGeoFenceAlerts = 1;
+    public int numChargingRecords = 1;
 
     public boolean enableAddressLookup = false;
     public Integer pollingInterval = 15;

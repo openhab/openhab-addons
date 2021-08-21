@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.connectedcar.internal.api.skodaenyak;
+package org.openhab.binding.connectedcar.internal.api.skodae;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.CONTENT_TYPE_FORM_URLENC;
 import static org.openhab.binding.connectedcar.internal.CarUtils.fromJson;
@@ -25,13 +25,13 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
-import org.openhab.binding.connectedcar.internal.api.ApiToken;
-import org.openhab.binding.connectedcar.internal.api.ApiToken.JwtToken;
-import org.openhab.binding.connectedcar.internal.api.ApiToken.OAuthToken;
-import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
+import org.openhab.binding.connectedcar.internal.api.ApiIdentity;
+import org.openhab.binding.connectedcar.internal.api.ApiIdentity.JwtToken;
+import org.openhab.binding.connectedcar.internal.api.ApiIdentity.OAuthToken;
+import org.openhab.binding.connectedcar.internal.api.ApiBrandProperties;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
-import org.openhab.binding.connectedcar.internal.api.TokenManager;
-import org.openhab.binding.connectedcar.internal.api.TokenOAuthFlow;
+import org.openhab.binding.connectedcar.internal.api.IdentityManager;
+import org.openhab.binding.connectedcar.internal.api.IdentityOAuthFlow;
 import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetSkoda;
 
 /**
@@ -43,15 +43,16 @@ import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetSkoda;
 public class BrandSkodaE extends SkodaEApi implements BrandAuthenticator {
     private final static String API_URL = "https://api.connect.skoda-auto.cz/api";
 
-    public BrandSkodaE(ApiHttpClient httpClient, TokenManager tokenManager, @Nullable ApiEventListener eventListener) {
+    public BrandSkodaE(ApiHttpClient httpClient, IdentityManager tokenManager,
+            @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
 
     @Override
-    public BrandApiProperties getProperties() {
+    public ApiBrandProperties getProperties() {
         // Properties for the Skoda-E native API
         // required to get the vehicle list
-        BrandApiProperties properties = new BrandApiProperties();
+        ApiBrandProperties properties = new ApiBrandProperties();
         properties.userAgent = "OneConnect/000000023 CFNetwork/978.0.7 Darwin/18.7.0";
         properties.apiDefaultUrl = API_URL;
         properties.brand = API_BRAND_SKODA_E;
@@ -70,9 +71,9 @@ public class BrandSkodaE extends SkodaEApi implements BrandAuthenticator {
     }
 
     @Override
-    public @Nullable BrandApiProperties getProperties2() {
+    public @Nullable ApiBrandProperties getProperties2() {
         // The vehicle API uses a different endpoint / client id
-        BrandApiProperties properties = BrandCarNetSkoda.getSkodaProperties();
+        ApiBrandProperties properties = BrandCarNetSkoda.getSkodaProperties();
         properties.brand = API_BRAND_SKODA_E;
         properties.apiDefaultUrl = API_URL;
         properties.authScope = "openid profile phone address cars email birthdate badge dealers driversLicense mbb";
@@ -81,12 +82,12 @@ public class BrandSkodaE extends SkodaEApi implements BrandAuthenticator {
     }
 
     @Override
-    public ApiToken grantAccess(TokenOAuthFlow oauth) throws ApiException {
+    public ApiIdentity grantAccess(IdentityOAuthFlow oauth) throws ApiException {
         String json = oauth.clearHeader().header(HttpHeader.HOST, "tokenrefreshservice.apps.emea.vwapps.io")//
                 .header(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE_FORM_URLENC).clearData().data("auth_code", oauth.code)
                 .data("id_token", oauth.idToken).data("brand", "skoda") //
                 .post("https://tokenrefreshservice.apps.emea.vwapps.io/exchangeAuthCode", false).response;
-        return new ApiToken(fromJson(gson, json, OAuthToken.class));
+        return new ApiIdentity(fromJson(gson, json, OAuthToken.class));
     }
 
     @Override

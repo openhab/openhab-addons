@@ -20,7 +20,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.connectedcar.internal.api.ApiBaseService;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
-import org.openhab.binding.connectedcar.internal.handler.VehicleCarNetHandler;
+import org.openhab.binding.connectedcar.internal.handler.CarNetVehicleHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 
 /**
@@ -30,7 +30,7 @@ import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.Cha
  */
 @NonNullByDefault
 public class CarNetServiceHonkFlash extends ApiBaseService {
-    public CarNetServiceHonkFlash(VehicleCarNetHandler thingHandler, CarNetApi api) {
+    public CarNetServiceHonkFlash(CarNetVehicleHandler thingHandler, CarNetApi api) {
         super(CNAPI_SERVICE_REMOTE_HONK_AND_FLASH, thingHandler, api);
     }
 

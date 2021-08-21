@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.connectedcar.internal.handler.VehicleBaseHandler;
+import org.openhab.binding.connectedcar.internal.handler.ThingBaseHandler;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -33,12 +33,12 @@ import org.slf4j.LoggerFactory;
 public class ChannelCache {
     private final Logger logger = LoggerFactory.getLogger(ChannelCache.class);
 
-    private final VehicleBaseHandler thingHandler;
+    private final ThingBaseHandler thingHandler;
     private final Map<String, State> channelData = new ConcurrentHashMap<>();
     private String thingId = "";
     private boolean enabled = false;
 
-    public ChannelCache(VehicleBaseHandler thingHandler, String thingId) {
+    public ChannelCache(ThingBaseHandler thingHandler, String thingId) {
         this.thingHandler = thingHandler;
         setthingId(thingId);
     }

@@ -294,6 +294,12 @@ public class WeConnectApiJsonDTO {
             public Boolean retry;
         }
 
+        public class WCApiError2 {
+            public String uri;
+            public String status;
+            public String message;
+        }
+
         /*
          * {
          * "data": {

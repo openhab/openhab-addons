@@ -29,16 +29,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.ApiActionRequest;
-import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.CarPosition;
+import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.GeoPosition;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleDetails;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleStatus;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
+import org.openhab.binding.connectedcar.internal.api.ApiIdentity.JwtToken;
 import org.openhab.binding.connectedcar.internal.api.ApiResult;
-import org.openhab.binding.connectedcar.internal.api.ApiToken.JwtToken;
 import org.openhab.binding.connectedcar.internal.api.ApiWithOAuth;
-import org.openhab.binding.connectedcar.internal.api.TokenManager;
+import org.openhab.binding.connectedcar.internal.api.IdentityManager;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNChargerInfo;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNChargerInfo.CarNetChargerStatus;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNClimater;
@@ -93,7 +93,7 @@ import org.slf4j.LoggerFactory;
 public class CarNetApi extends ApiWithOAuth {
     private final Logger logger = LoggerFactory.getLogger(CarNetApi.class);
 
-    public CarNetApi(ApiHttpClient httpClient, TokenManager tokenManager, @Nullable ApiEventListener eventListener) {
+    public CarNetApi(ApiHttpClient httpClient, IdentityManager tokenManager, @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
 
@@ -218,17 +218,17 @@ public class CarNetApi extends ApiWithOAuth {
     }
 
     @Override
-    public CarPosition getVehiclePosition() throws ApiException {
+    public GeoPosition getVehiclePosition() throws ApiException {
         // needs explicit Accept: application/json, otherwhise storedPosition is returned
         Map<String, String> headers = fillAppHeaders();
         headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
-        return new CarPosition(callApi("", "bs/cf/v1/{0}/{1}/vehicles/{2}/position", headers, "getVehiclePosition",
+        return new GeoPosition(callApi("", "bs/cf/v1/{0}/{1}/vehicles/{2}/position", headers, "getVehiclePosition",
                 CNFindCarResponse.class));
     }
 
     @Override
-    public CarPosition getStoredPosition() throws ApiException {
-        return new CarPosition(
+    public GeoPosition getStoredPosition() throws ApiException {
+        return new GeoPosition(
                 callApi("bs/cf/v1/{0}/{1}/vehicles/{2}/position", "getStoredPosition", CNStoredPosition.class));
     }
 

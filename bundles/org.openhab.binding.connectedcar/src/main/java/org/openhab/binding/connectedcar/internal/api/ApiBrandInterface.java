@@ -34,13 +34,13 @@ public interface ApiBrandInterface {
 
     abstract boolean isInitialized();
 
-    abstract String getApiUrl() throws ApiException;
+    abstract ApiBrandProperties getProperties();
 
-    abstract BrandApiProperties getProperties();
-
-    abstract @Nullable BrandApiProperties getProperties2();
+    abstract @Nullable ApiBrandProperties getProperties2();
 
     abstract void setConfig(CombinedConfig config);
+
+    abstract String getApiUrl() throws ApiException;
 
     abstract boolean refreshTokens() throws ApiException;
 

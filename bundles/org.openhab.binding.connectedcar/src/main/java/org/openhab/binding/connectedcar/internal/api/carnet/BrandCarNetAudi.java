@@ -24,9 +24,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
-import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
+import org.openhab.binding.connectedcar.internal.api.ApiBrandProperties;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
-import org.openhab.binding.connectedcar.internal.api.TokenManager;
+import org.openhab.binding.connectedcar.internal.api.IdentityManager;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +76,7 @@ public class BrandCarNetAudi extends CarNetApi implements BrandAuthenticator {
         public @Nullable ArrayList<AudiVehicle> vehicles;
     }
 
-    private static BrandApiProperties properties = new BrandApiProperties();
+    private static ApiBrandProperties properties = new ApiBrandProperties();
     static {
         properties.brand = API_BRAND_AUDI;
         properties.xcountry = "DE";
@@ -94,13 +94,13 @@ public class BrandCarNetAudi extends CarNetApi implements BrandAuthenticator {
         properties.xrequest = "de.myaudi.mobile.assistant";
     }
 
-    public BrandCarNetAudi(ApiHttpClient httpClient, TokenManager tokenManager,
+    public BrandCarNetAudi(ApiHttpClient httpClient, IdentityManager tokenManager,
             @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
 
     @Override
-    public BrandApiProperties getProperties() {
+    public ApiBrandProperties getProperties() {
         return properties;
     }
 

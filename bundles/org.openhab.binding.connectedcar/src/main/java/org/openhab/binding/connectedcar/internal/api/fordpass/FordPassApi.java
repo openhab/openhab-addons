@@ -36,7 +36,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpMap;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
-import org.openhab.binding.connectedcar.internal.api.TokenManager;
+import org.openhab.binding.connectedcar.internal.api.IdentityManager;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPActionRequest;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPActionRequest.FPActionResponse;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleListData;
@@ -56,7 +56,8 @@ public class FordPassApi extends ApiBase implements BrandAuthenticator {
     private final Map<String, FPVehicle> vehicleList = new HashMap<>();
     private final static String URL_PARM_LRDT = "?lrdt=" + urlEncode("01-01-1970 00:00:00");
 
-    public FordPassApi(ApiHttpClient httpClient, TokenManager tokenManager, @Nullable ApiEventListener eventListener) {
+    public FordPassApi(ApiHttpClient httpClient, IdentityManager tokenManager,
+            @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
 
@@ -75,13 +76,6 @@ public class FordPassApi extends ApiBase implements BrandAuthenticator {
         Map<String, String> params = createApiParameters();
         FPVehicleListData data = callApi("", "users/vehicles", params, "getVehicleList", FPVehicleListData.class);
 
-        /*
-         * String details = callApi("", "users/vehicles/{2}/detail", params.getHeaders(), "getVehicleDetails",
-         * String.class);
-         * String geo = callApi("", "geofence/v1/vehicles/{2}/geofences", params.getHeaders(), "getGeofences",
-         * String.class);
-         * String v = callApi("", "capability/v1/vehicles/{2}", params.getHeaders(), "getCapability", String.class);
-         */
         vehicleList.clear();
         ArrayList<String> list = new ArrayList<String>();
         for (FPVehicle vehicle : data.vehicles.values) {

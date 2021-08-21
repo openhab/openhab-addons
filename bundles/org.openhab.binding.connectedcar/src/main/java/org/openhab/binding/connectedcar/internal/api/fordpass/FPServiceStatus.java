@@ -31,7 +31,7 @@ import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVeh
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleStatusData.FPVehicleStatus.FPStatusStringValue;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleStatusData.FPVehicleStatus.FPTpms;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPVehicleStatusData.FPVehicleStatus.FPWindowPosition;
-import org.openhab.binding.connectedcar.internal.handler.VehicleBaseHandler;
+import org.openhab.binding.connectedcar.internal.handler.ThingBaseHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PointType;
@@ -48,7 +48,7 @@ public class FPServiceStatus extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(FPServiceStatus.class);
     private String thingId = API_BRAND_FORD;
 
-    public FPServiceStatus(VehicleBaseHandler thingHandler, ApiBase api) {
+    public FPServiceStatus(ThingBaseHandler thingHandler, ApiBase api) {
         super(CNAPI_SERVICE_VEHICLE_STATUS_REPORT, thingHandler, api);
         thingId = getConfig().vehicle.vin;
     }

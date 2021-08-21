@@ -505,13 +505,16 @@ public class ChannelDefinitions {
         add("", "", CHANNEL_CHARGER_FLOW, ITEMT_STRING, group);
         add("", "", CHANNEL_CHARGER_BAT_STATE, ITEMT_NUMBER, group);
         add("", "", CHANNEL_CHARGER_LOCK_STATE, ITEMT_SWITCH, group);
-        add("", "", CHANNEL_CHARGER_PLUG_STATE, ITEMT_STRING, group);
+        add("", "", CHANNEL_CHARGER_PLUG_STATE, ITEMT_SWITCH, group);
         add("", "", CHANNEL_CHARGER_ERROR, ITEMT_NUMBER, group);
+        add("", "", CHANNEL_CHARGER_NAME, ITEMT_STRING, group);
+        add("", "", CHANNEL_CHARGER_ADDRESS, ITEMT_STRING, group);
+        add("", "", CHANNEL_CHARGER_LAST_CONNECT, ITEMT_DATETIME, group);
 
         // Group climater
         group = CHANNEL_GROUP_CLIMATER;
         add("", "", CHANNEL_CLIMATER_GEN_STATE, ITEMT_SWITCH, group);
-        add("", "", CHANNEL_CLIMATER_HEATSOURCE, ITEMT_STRING, group, null, false, false);
+        add("", "", CHANNEL_CLIMATER_HEATSOURCE, ITEMT_STRING, group, null, true, false);
         add("", "", CHANNEL_CLIMATER_REMAINING, ITEMT_TIME, group, Units.MINUTE);
         add("", "", CHANNEL_CLIMATER_MIRROR_HEAT, ITEMT_SWITCH, group);
 
@@ -522,9 +525,9 @@ public class ChannelDefinitions {
         add("", "", CHANNEL_DEST_GEO, ITEMT_LOCATION, group);
         add("", "", CHANNEL_DEST_STREET, ITEMT_STRING, group);
         add("", "", CHANNEL_DEST_CITY, ITEMT_STRING, group);
-        add("", "", CHANNEL_DEST_ZIP, ITEMT_STRING, group, null, false, true);
-        add("", "", CHANNEL_DEST_COUNTY, ITEMT_STRING, group, null, false, true);
-        add("", "", CHANNEL_DEST_SOURCE, ITEMT_STRING, group, null, false, true);
+        add("", "", CHANNEL_DEST_ZIP, ITEMT_STRING, group, null, true, true);
+        add("", "", CHANNEL_DEST_COUNTY, ITEMT_STRING, group, null, true, true);
+        add("", "", CHANNEL_DEST_SOURCE, ITEMT_STRING, group, null, true, true);
 
         // Group rluHistory
         group = CHANNEL_GROUP_RLUHIST;
@@ -555,13 +558,41 @@ public class ChannelDefinitions {
         add("", "", CHANNEL_TRIP_MILAGE, ITEMT_DISTANCE, group, KILOMETRE, false, true);
         add("", "", CHANNEL_TRIP_OVR_MILAGE, ITEMT_DISTANCE, group, KILOMETRE, true, true);
         group = CHANNEL_GROUP_LTRIP; // tripLong
-        add("", "", CHANNEL_TRIP_TIME, ITEMT_DATETIME, group, null, false, true);
+        add("", "", CHANNEL_TRIP_TIME, ITEMT_DATETIME, group);
         add("", "", CHANNEL_TRIP_AVG_ELCON, ITEMT_ENERGY, group, Units.KILOWATT_HOUR, false, true);
         add("", "", CHANNEL_TRIP_AVG_FUELCON, ITEMT_VOLUME, group, Units.LITRE, false, true);
         add("", "", CHANNEL_TRIP_AVG_SPEED, ITEMT_SPEED, group, SIUnits.KILOMETRE_PER_HOUR, false, true);
         add("", "", CHANNEL_TRIP_START_MIL, ITEMT_DISTANCE, group, KILOMETRE, false, true);
         add("", "", CHANNEL_TRIP_MILAGE, ITEMT_DISTANCE, group, KILOMETRE, false, true);
         add("", "", CHANNEL_TRIP_OVR_MILAGE, ITEMT_DISTANCE, group, KILOMETRE, true, true);
+
+        // Subscriptions
+        group = CHANNEL_GROUP_SUBSCRIPTION;
+        add("", "", CHANNEL_SUB_ENDDATE, ITEMT_DATETIME, group);
+        add("", "", CHANNEL_SUB_STATUS, ITEMT_STRING, group);
+        add("", "", CHANNEL_SUB_TARIFF, ITEMT_STRING, group);
+        add("", "", CHANNEL_SUB_MFEE, ITEMT_NUMBER, group);
+
+        // RFID cards
+        group = CHANNEL_CHANNEL_GROUP_RFID;
+        add("", "", CHANNEL_RFID_ID, ITEMT_STRING, group);
+        add("", "", CHANNEL_RFID_PUBLIC, ITEMT_SWITCH, group, null, true, true);
+        add("", "", CHANNEL_RFID_STATUS, ITEMT_STRING, group);
+        add("", "", CHANNEL_RFID_UPDATE, ITEMT_DATETIME, group);
+
+        // Chasrging Records
+        group = CHANNEL_CHANNEL_GROUP_TRANSACTIONS;
+        add("", "", CHANNEL_TRANS_ID, ITEMT_STRING, group);
+        add("", "", CHANNEL_TRANS_LOCATION, ITEMT_LOCATION, group);
+        add("", "", CHANNEL_TRANS_ADDRESS, ITEMT_STRING, group);
+        add("", "", CHANNEL_TRANS_SUBID, ITEMT_STRING, group, null, true, true);
+        add("", "", CHANNEL_TRANS_EVSE, ITEMT_STRING, group);
+        add("", "", CHANNEL_TRANS_PTYPE, ITEMT_STRING, group, null, true, true);
+        add("", "", CHANNEL_TRANS_START, ITEMT_STRING, group);
+        add("", "", CHANNEL_TRANS_END, ITEMT_STRING, group);
+        add("", "", CHANNEL_TRANS_ENERGY, ITEMT_NUMBER, group, Units.KILOWATT_HOUR);
+        add("", "", CHANNEL_TRANS_PRICE, ITEMT_NUMBER, group);
+        add("", "", CHANNEL_TRANS_DURATION, ITEMT_NUMBER, group, QMINUTES);
     }
 
     private ChannelIdMapEntry add(String name, String id, String channel, String itemType, String group,

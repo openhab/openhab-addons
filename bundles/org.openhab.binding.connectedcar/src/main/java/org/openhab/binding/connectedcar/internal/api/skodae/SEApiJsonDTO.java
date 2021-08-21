@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.connectedcar.internal.api.skodaenyak;
+package org.openhab.binding.connectedcar.internal.api.skodae;
 
 import java.util.ArrayList;
 

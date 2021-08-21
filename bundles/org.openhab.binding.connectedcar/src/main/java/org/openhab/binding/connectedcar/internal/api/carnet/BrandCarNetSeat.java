@@ -18,9 +18,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
-import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
+import org.openhab.binding.connectedcar.internal.api.ApiBrandProperties;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
-import org.openhab.binding.connectedcar.internal.api.TokenManager;
+import org.openhab.binding.connectedcar.internal.api.IdentityManager;
 
 /**
  * {@link BrandCarNetSeat} provides the SEAT specific functions of the API
@@ -29,14 +29,14 @@ import org.openhab.binding.connectedcar.internal.api.TokenManager;
  */
 @NonNullByDefault
 public class BrandCarNetSeat extends CarNetApi implements BrandAuthenticator {
-    public BrandCarNetSeat(ApiHttpClient httpClient, TokenManager tokenManager,
+    public BrandCarNetSeat(ApiHttpClient httpClient, IdentityManager tokenManager,
             @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
 
     @Override
-    public BrandApiProperties getProperties() {
-        BrandApiProperties properties = new BrandApiProperties();
+    public ApiBrandProperties getProperties() {
+        ApiBrandProperties properties = new ApiBrandProperties();
         properties.brand = "VW"; // CNAPI_BRAND_SEAT;
         properties.xcountry = "ES";
         properties.apiDefaultUrl = "";

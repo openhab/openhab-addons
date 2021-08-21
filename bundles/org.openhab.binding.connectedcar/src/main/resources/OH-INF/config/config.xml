@@ -51,6 +51,23 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="bridge-type:connectedcar:wcaccount">
+		<parameter-group name="authentication">
+			<label>Authentication</label>
+			<description>Authentication settings.</description>
+		</parameter-group>
+
+		<parameter name="user" type="text" required="true" groupName="authentication">
+			<label>Online User</label>
+			<description>User name for the Login.</description>
+		</parameter>
+		<parameter name="password" type="text" required="true" groupName="authentication">
+			<label>Password</label>
+			<context>password</context>
+			<description>Password to access the account.</description>
+		</parameter>
+	</config-description>
+
 	<config-description uri="bridge-type:connectedcar:seaccount">
 		<parameter-group name="authentication">
 			<label>Authentication</label>
@@ -205,6 +222,25 @@
 			<description>Use OpenStreetMap to reverse lookup address from vehicle's Geo position</description>
 			<default>true</default>
 		</parameter>
+		<parameter name="pollingInterval" type="integer" required="false" min="5">
+			<label>Polling Interval</label>
+			<description>Status update interval in minutes.</description>
+			<default>15</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:connectedcar:wcwallbox">
+		<parameter name="vin" type="text" required="false">
+			<label>Identification Number</label>
+			<description>This is the unique ID to identify the wallbox</description>
+		</parameter>
+        <parameter name="numChangingRecords" type="integer" required="false" min="0" max="50">
+            <label>Entries in Charging History</label>
+            <description>Specifies the number of entries in the charging history, 0 to disable.</description>
+            <default>5</default>
+            <advanced>true</advanced>
+        </parameter>
 		<parameter name="pollingInterval" type="integer" required="false" min="5">
 			<label>Polling Interval</label>
 			<description>Status update interval in minutes.</description>

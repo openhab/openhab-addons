@@ -17,16 +17,16 @@ import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.connectedcar.internal.api.ApiBrandProperties;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpMap;
-import org.openhab.binding.connectedcar.internal.api.ApiToken;
-import org.openhab.binding.connectedcar.internal.api.ApiToken.OAuthToken;
-import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
+import org.openhab.binding.connectedcar.internal.api.ApiIdentity;
+import org.openhab.binding.connectedcar.internal.api.ApiIdentity.OAuthToken;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
-import org.openhab.binding.connectedcar.internal.api.TokenManager;
-import org.openhab.binding.connectedcar.internal.api.TokenOAuthFlow;
+import org.openhab.binding.connectedcar.internal.api.IdentityManager;
+import org.openhab.binding.connectedcar.internal.api.IdentityOAuthFlow;
 
 /**
  * {@link BrandApiFord} provides the brand specific functions of the API
@@ -35,7 +35,7 @@ import org.openhab.binding.connectedcar.internal.api.TokenOAuthFlow;
  */
 @NonNullByDefault
 public class BrandFordPass extends FordPassApi implements BrandAuthenticator {
-    static BrandApiProperties properties = new BrandApiProperties();
+    static ApiBrandProperties properties = new ApiBrandProperties();
     static {
         properties.brand = API_BRAND_FORD;
         properties.xcountry = "US";
@@ -53,23 +53,23 @@ public class BrandFordPass extends FordPassApi implements BrandAuthenticator {
         properties.tokenRefreshUrl = "https://api.mps.ford.com/api/oauth2/v1/refresh";
     }
 
-    public BrandFordPass(ApiHttpClient httpClient, TokenManager tokenManager,
+    public BrandFordPass(ApiHttpClient httpClient, IdentityManager tokenManager,
             @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
 
     @Override
-    public BrandApiProperties getProperties() {
+    public ApiBrandProperties getProperties() {
         return properties;
     }
 
     @Override
-    public String getLoginUrl(TokenOAuthFlow oauth) {
+    public String getLoginUrl(IdentityOAuthFlow oauth) {
         return properties.loginUrl;
     }
 
     @Override
-    public ApiToken login(String loginUrl, TokenOAuthFlow oauth) throws ApiException {
+    public ApiIdentity login(String loginUrl, IdentityOAuthFlow oauth) throws ApiException {
         // Step 1: get access code (returns access_token, but this is in fact the auth code
         oauth.init(createDefaultParameters()) //
                 .data("client_id", config.api.clientId).data("grant_type", "password")
@@ -77,20 +77,21 @@ public class BrandFordPass extends FordPassApi implements BrandAuthenticator {
         String json = oauth.post(loginUrl, false).response;
         OAuthToken token = fromJson(gson, json, OAuthToken.class).normalize();
         oauth.accessToken = token.accessToken;
-        return new ApiToken(token);
+        return new ApiIdentity(token);
     }
 
     @Override
-    public ApiToken grantAccess(TokenOAuthFlow oauth) throws ApiException {
+    public ApiIdentity grantAccess(IdentityOAuthFlow oauth) throws ApiException {
         // Step 2: get api+refresh token
-        oauth.header("Application-Id", config.api.xClientId) //
+        oauth.clearHeader().header("Application-Id", config.api.xClientId) // .header(HttpHeader.CONTENT_TYPE,
+                                                                           // CONTENT_TYPE_JSON) //
                 .clearData().data("code", oauth.accessToken);
         String json = oauth.put(config.api.tokenUrl, true).response;
-        return new ApiToken(fromJson(gson, json, OAuthToken.class).normalize());
+        return new ApiIdentity(fromJson(gson, json, OAuthToken.class).normalize());
     }
 
     @Override
-    public OAuthToken refreshToken(ApiToken apiToken) throws ApiException {
+    public OAuthToken refreshToken(ApiIdentity apiToken) throws ApiException {
         ApiHttpMap params = new ApiHttpMap().headers(createApiParameters(apiToken.getAccessToken())) //
                 .data("refresh_token", apiToken.getRefreshToken());
         String json = http.put(config.api.tokenRefreshUrl, params.getHeaders(), //

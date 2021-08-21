@@ -24,7 +24,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiBase;
 import org.openhab.binding.connectedcar.internal.api.ApiBaseService;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleStatusData.WCVehicleStatus;
-import org.openhab.binding.connectedcar.internal.handler.VehicleBaseHandler;
+import org.openhab.binding.connectedcar.internal.handler.ThingBaseHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.unit.SIUnits;
@@ -33,16 +33,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link WCServiceStatus} implements the Status Service for WeConnect.
+ * The {@link WeConnectServiceStatus} implements the Status Service for WeConnect.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class WCServiceStatus extends ApiBaseService {
-    private final Logger logger = LoggerFactory.getLogger(WCServiceStatus.class);
+public class WeConnectServiceStatus extends ApiBaseService {
+    private final Logger logger = LoggerFactory.getLogger(WeConnectServiceStatus.class);
     String thingId = API_BRAND_VWID;
 
-    public WCServiceStatus(VehicleBaseHandler thingHandler, ApiBase api) {
+    public WeConnectServiceStatus(ThingBaseHandler thingHandler, ApiBase api) {
         super(CNAPI_SERVICE_VEHICLE_STATUS_REPORT, thingHandler, api);
         thingId = getConfig().vehicle.vin;
     }

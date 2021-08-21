@@ -348,7 +348,8 @@ public class ApiHttpClient {
      * @return Extracted value
      */
     public static String getUrlParm(String input, String parameter) {
-        return getUrlParm(input, parameter, "&");
+        String p = getUrlParm(input, parameter, "?");
+        return !p.isEmpty() ? p : getUrlParm(input, parameter, "&");
     }
 
     public static String getUrlParm(String input, String parameter, String seperator) {

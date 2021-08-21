@@ -28,8 +28,8 @@ public class BrandNull extends ApiBase {
     }
 
     @Override
-    public BrandApiProperties getProperties() {
-        BrandApiProperties properties = new BrandApiProperties();
+    public ApiBrandProperties getProperties() {
+        ApiBrandProperties properties = new ApiBrandProperties();
         properties.brand = API_BRAND_NULL;
         return properties;
     }

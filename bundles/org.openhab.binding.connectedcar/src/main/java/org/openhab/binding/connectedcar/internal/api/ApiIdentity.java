@@ -22,13 +22,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link ApiToken} store the API token information.
+ * The {@link ApiIdentity} store the API token information.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class ApiToken {
+public class ApiIdentity {
     protected String accessToken = "";
+    protected String wcAccessToken = ""; // WeCharge / WeConnect
     protected String idToken = "";
     protected String securityToken = "";
     protected String refreshToken = "";
@@ -80,6 +81,8 @@ public class ApiToken {
         public String authType = "";
         @SerializedName("access_token")
         public String accessToken = "";
+        @SerializedName("wc_access_token")
+        public String wcAccessToken = "";
         @SerializedName("id_token")
         public String idToken = "";
         @SerializedName("refresh_token")
@@ -116,32 +119,33 @@ public class ApiToken {
     }
 
     public static class TokenSet {
-        public ApiToken apiToken = new ApiToken();
-        public ApiToken idToken = new ApiToken();
+        public ApiIdentity apiToken = new ApiIdentity();
+        public ApiIdentity idToken = new ApiIdentity();
         public ApiHttpClient http = new ApiHttpClient();
     }
 
-    public ApiToken() {
+    public ApiIdentity() {
     }
 
-    public ApiToken(String idToken, String accessToken, int validity) {
-        this.idToken = idToken;
+    public ApiIdentity(String idToken, String accessToken, int validity) {
         this.accessToken = accessToken;
+        this.idToken = idToken;
         setValidity(validity);
     }
 
-    public ApiToken(OAuthToken token) {
+    public ApiIdentity(OAuthToken token) {
         token.normalize();
         idToken = getString(token.idToken);
         accessToken = getString(token.accessToken);
         securityToken = getString(token.securityToken);
+        wcAccessToken = getString(token.wcAccessToken);
         refreshToken = getString(token.refreshToken);
         xcsrf = getString(token.xcsrf);
 
         setValidity(getInteger(token.validity));
     }
 
-    public ApiToken updateToken(OAuthToken token) {
+    public ApiIdentity updateToken(OAuthToken token) {
         if (!getString(token.idToken).isEmpty()) {
             this.idToken = getString(token.idToken);
         }
@@ -202,17 +206,7 @@ public class ApiToken {
         return (!accessToken.isEmpty() || !idToken.isEmpty() || !securityToken.isEmpty()) && (validity != -1);
     }
 
-    /**
-     * Make a token invalid by marking it expired
-     */
     public void invalidate() {
-        validity = -1;
-    }
-
-    @Override
-    public String toString() {
-        String token = !securityToken.isEmpty() ? securityToken
-                : !idToken.isEmpty() ? idToken : !accessToken.isEmpty() ? accessToken : "NULL";
-        return token + creationTime + ", V=" + validity;
+        validity = -1; // Make a token invalid by marking it expired
     }
 }

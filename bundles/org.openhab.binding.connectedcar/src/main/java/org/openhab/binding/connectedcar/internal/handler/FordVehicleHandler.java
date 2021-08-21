@@ -32,16 +32,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link VehicleFordHandler} implements the Vehicle Handler for WeConnect
+ * The {@link FordVehicleHandler} implements the Vehicle Handler for WeConnect
  *
  * @author Markus Michels - Initial contribution
  *
  */
 @NonNullByDefault
-public class VehicleFordHandler extends VehicleBaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(VehicleFordHandler.class);
+public class FordVehicleHandler extends ThingBaseHandler {
+    private final Logger logger = LoggerFactory.getLogger(FordVehicleHandler.class);
 
-    public VehicleFordHandler(Thing thing, TextResources resources, ZoneId zoneId, ChannelDefinitions idMapper,
+    public FordVehicleHandler(Thing thing, TextResources resources, ZoneId zoneId, ChannelDefinitions idMapper,
             CarChannelTypeProvider channelTypeProvider) throws ApiException {
         super(thing, resources, zoneId, idMapper, channelTypeProvider);
     }

@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.measure.IncommensurableException;
-import javax.ws.rs.core.HttpHeaders;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,7 +32,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpMap;
 import org.openhab.binding.connectedcar.internal.api.ApiWithOAuth;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
-import org.openhab.binding.connectedcar.internal.api.TokenManager;
+import org.openhab.binding.connectedcar.internal.api.IdentityManager;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleList;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleList.WCVehicle;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleStatusData;
@@ -53,7 +52,7 @@ public class WeConnectApi extends ApiWithOAuth implements BrandAuthenticator {
     private final Logger logger = LoggerFactory.getLogger(WeConnectApi.class);
     private Map<String, WCVehicle> vehicleData = new HashMap<>();
 
-    public WeConnectApi(ApiHttpClient httpClient, TokenManager tokenManager, @Nullable ApiEventListener eventListener) {
+    public WeConnectApi(ApiHttpClient httpClient, IdentityManager tokenManager, @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
 
@@ -186,9 +185,7 @@ public class WeConnectApi extends ApiWithOAuth implements BrandAuthenticator {
          * "accept-language": "de-de",
          * authorization: "Bearer " + this.config.atoken,
          */
-        return new ApiHttpMap().header(HttpHeaders.ACCEPT, "*/*").header("content-version", "1")
-                .header("x-newrelic-id", "VgAEWV9QDRAEXFlRAAYPUA==").header(HttpHeader.USER_AGENT, config.api.userAgent)
-                .header(HttpHeader.ACCEPT_LANGUAGE, "de-de")
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + createAccessToken());
+        return new ApiHttpMap().headers(config.api.stdHeaders).header(HttpHeader.AUTHORIZATION,
+                "Bearer " + createAccessToken());
     }
 }

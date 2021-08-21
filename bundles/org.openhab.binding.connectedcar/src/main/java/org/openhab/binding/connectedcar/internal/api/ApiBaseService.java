@@ -25,7 +25,7 @@ import org.openhab.binding.connectedcar.internal.CarUtils;
 import org.openhab.binding.connectedcar.internal.OpenStreetMapApiDTO;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.openhab.binding.connectedcar.internal.handler.AccountHandler;
-import org.openhab.binding.connectedcar.internal.handler.VehicleBaseHandler;
+import org.openhab.binding.connectedcar.internal.handler.ThingBaseHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.PointType;
@@ -47,14 +47,14 @@ import org.slf4j.LoggerFactory;
 public class ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(ApiBaseService.class);
     protected final ApiBase api;
-    protected final VehicleBaseHandler thingHandler;
+    protected final ThingBaseHandler thingHandler;
     protected final ChannelDefinitions idMapper;
     protected final OpenStreetMapApiDTO osmApi = new OpenStreetMapApiDTO();
     protected final String thingId;
     protected String serviceId = "";
     protected boolean enabled = true;
 
-    public ApiBaseService(String serviceId, VehicleBaseHandler thingHandler, ApiBase api) {
+    public ApiBaseService(String serviceId, ThingBaseHandler thingHandler, ApiBase api) {
         this.serviceId = serviceId;
         this.thingHandler = thingHandler;
         this.thingId = thingHandler.thingId;

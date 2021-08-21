@@ -20,9 +20,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
-import org.openhab.binding.connectedcar.internal.api.BrandApiProperties;
+import org.openhab.binding.connectedcar.internal.api.ApiBrandProperties;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
-import org.openhab.binding.connectedcar.internal.api.TokenManager;
+import org.openhab.binding.connectedcar.internal.api.IdentityManager;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetImageUrlsVW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,14 +36,14 @@ import org.slf4j.LoggerFactory;
 public class BrandCarNetVW extends CarNetApi implements BrandAuthenticator {
     private final Logger logger = LoggerFactory.getLogger(BrandCarNetVW.class);
 
-    public BrandCarNetVW(ApiHttpClient httpClient, TokenManager tokenManager,
+    public BrandCarNetVW(ApiHttpClient httpClient, IdentityManager tokenManager,
             @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
 
     @Override
-    public BrandApiProperties getProperties() {
-        BrandApiProperties properties = new BrandApiProperties();
+    public ApiBrandProperties getProperties() {
+        ApiBrandProperties properties = new ApiBrandProperties();
         properties.brand = API_BRAND_VW;
         properties.xcountry = "DE";
         properties.clientId = "9496332b-ea03-4091-a224-8c746b885068@apps_vw-dilab_com";

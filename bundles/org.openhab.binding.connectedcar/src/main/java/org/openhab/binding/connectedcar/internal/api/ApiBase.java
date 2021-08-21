@@ -25,11 +25,11 @@ import java.util.Scanner;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.CarPosition;
+import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.GeoPosition;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleDetails;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleStatus;
-import org.openhab.binding.connectedcar.internal.api.ApiToken.JwtToken;
-import org.openhab.binding.connectedcar.internal.api.ApiToken.OAuthToken;
+import org.openhab.binding.connectedcar.internal.api.ApiIdentity.JwtToken;
+import org.openhab.binding.connectedcar.internal.api.ApiIdentity.OAuthToken;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.openhab.binding.connectedcar.internal.config.VehicleConfiguration;
 import org.openhab.core.library.types.PointType;
@@ -56,7 +56,7 @@ public class ApiBase extends ApiRequestQueue implements ApiBrandInterface, Brand
     protected String thingId = "";
     protected CombinedConfig config = new CombinedConfig();
     protected ApiHttpClient http = new ApiHttpClient();
-    protected TokenManager tokenManager = new TokenManager();
+    protected IdentityManager tokenManager = new IdentityManager();
     protected @Nullable ApiEventListener eventListener;
 
     protected boolean initialzed = false;
@@ -64,7 +64,7 @@ public class ApiBase extends ApiRequestQueue implements ApiBrandInterface, Brand
     public ApiBase() {
     }
 
-    public ApiBase(ApiHttpClient httpClient, TokenManager tokenManager, @Nullable ApiEventListener eventListener) {
+    public ApiBase(ApiHttpClient httpClient, IdentityManager tokenManager, @Nullable ApiEventListener eventListener) {
         this.http = httpClient;
         this.tokenManager = tokenManager;
         this.eventListener = eventListener;
@@ -127,12 +127,12 @@ public class ApiBase extends ApiRequestQueue implements ApiBrandInterface, Brand
     }
 
     @Override
-    public BrandApiProperties getProperties() {
-        return new BrandApiProperties();
+    public ApiBrandProperties getProperties() {
+        return new ApiBrandProperties();
     }
 
     @Override
-    public @Nullable BrandApiProperties getProperties2() {
+    public @Nullable ApiBrandProperties getProperties2() {
         return null;
     }
 
@@ -224,16 +224,21 @@ public class ApiBase extends ApiRequestQueue implements ApiBrandInterface, Brand
         return url; // default: no modification
     }
 
+    @Override
+    public IdentityOAuthFlow updateSigninParameters(IdentityOAuthFlow oauth) throws ApiException {
+        return oauth; // default: no modification
+    }
+
     public String getVehicleRequets() throws ApiException {
         return "";
     }
 
-    public CarPosition getVehiclePosition() throws ApiException {
-        return new CarPosition();
+    public GeoPosition getVehiclePosition() throws ApiException {
+        return new GeoPosition();
     }
 
-    public CarPosition getStoredPosition() throws ApiException {
-        return new CarPosition();
+    public GeoPosition getStoredPosition() throws ApiException {
+        return new GeoPosition();
     }
 
     @Override
@@ -331,6 +336,10 @@ public class ApiBase extends ApiRequestQueue implements ApiBrandInterface, Brand
         return tokenManager.createSecurityToken(config, service, action);
     }
 
+    protected String getWcAccessToken() throws ApiException {
+        return tokenManager.getWcAccessToken(config);
+    }
+
     public void setConfig(VehicleConfiguration config) {
         this.config.vehicle = config;
         http.setConfig(this.config);
@@ -341,22 +350,22 @@ public class ApiBase extends ApiRequestQueue implements ApiBrandInterface, Brand
     }
 
     @Override
-    public String getLoginUrl(TokenOAuthFlow oauth) throws ApiException {
+    public String getLoginUrl(IdentityOAuthFlow oauth) throws ApiException {
         return "";
     }
 
     @Override
-    public ApiToken login(String loginUrl, TokenOAuthFlow oauth) throws ApiException {
+    public ApiIdentity login(String loginUrl, IdentityOAuthFlow oauth) throws ApiException {
         throw new ApiException("BrandAuthenticator is missing");
     }
 
     @Override
-    public ApiToken grantAccess(TokenOAuthFlow oauth) throws ApiException {
+    public ApiIdentity grantAccess(IdentityOAuthFlow oauth) throws ApiException {
         throw new ApiException("BrandAuthenticator is missing");
     }
 
     @Override
-    public OAuthToken refreshToken(ApiToken token) throws ApiException {
+    public OAuthToken refreshToken(ApiIdentity token) throws ApiException {
         if (config.authenticator != null) {
             return config.authenticator.refreshToken(token);
         }
