@@ -170,11 +170,11 @@ public class CarNetServiceStatus extends ApiBaseService {
         }
 
         // Update aggregated status
-        updated |= updateChannel(CHANNEL_GENERAL_LOCKED, vehicleLocked ? OnOffType.ON : OnOffType.OFF);
+        updated |= updateChannel(CHANNEL_STATUS_LOCKED, vehicleLocked ? OnOffType.ON : OnOffType.OFF);
         updated |= updateChannel(CHANNEL_CONTROL_LOCK, vehicleLocked ? OnOffType.ON : OnOffType.OFF);
-        updated |= updateChannel(CHANNEL_GENERAL_MAINTREQ, maintenanceRequired ? OnOffType.ON : OnOffType.OFF);
-        updated |= updateChannel(CHANNEL_GENERAL_TIRESOK, tiresOk ? OnOffType.ON : OnOffType.OFF);
-        updated |= updateChannel(CHANNEL_GENERAL_WINCLOSED, windowsClosed ? OnOffType.ON : OnOffType.OFF);
+        updated |= updateChannel(CHANNEL_STATUS_MAINTREQ, maintenanceRequired ? OnOffType.ON : OnOffType.OFF);
+        updated |= updateChannel(CHANNEL_STATUS_TIRESOK, tiresOk ? OnOffType.ON : OnOffType.OFF);
+        updated |= updateChannel(CHANNEL_STATUS_WINCLOSED, windowsClosed ? OnOffType.ON : OnOffType.OFF);
 
         return updated;
     }

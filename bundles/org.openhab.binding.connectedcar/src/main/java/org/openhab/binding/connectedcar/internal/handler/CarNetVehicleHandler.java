@@ -21,11 +21,11 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.connectedcar.internal.TextResources;
+import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.ApiActionRequest;
 import org.openhab.binding.connectedcar.internal.api.ApiErrorDTO;
 import org.openhab.binding.connectedcar.internal.api.ApiErrorDTO.CNErrorMessage2Details;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApi;
-import org.openhab.binding.connectedcar.internal.api.carnet.CarNetPendingRequest;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetServiceCarFinder;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetServiceCharger;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetServiceClimater;
@@ -70,8 +70,8 @@ public class CarNetVehicleHandler extends ThingBaseHandler {
 
     @Override
     public boolean createBrandChannels(Map<String, ChannelIdMapEntry> channels) {
-        addChannels(channels, true, CHANNEL_GENERAL_RATELIM, CHANNEL_GENERAL_LOCKED, CHANNEL_GENERAL_MAINTREQ,
-                CHANNEL_GENERAL_WINCLOSED, CHANNEL_GENERAL_TIRESOK);
+        addChannels(channels, true, CHANNEL_GENERAL_RATELIM, CHANNEL_STATUS_LOCKED, CHANNEL_STATUS_MAINTREQ,
+                CHANNEL_STATUS_WINCLOSED, CHANNEL_STATUS_TIRESOK);
         return true;
     }
 
@@ -182,9 +182,9 @@ public class CarNetVehicleHandler extends ThingBaseHandler {
         updated |= updateChannel(CHANNEL_GENERAL_ACTION, getStringType(service + "." + action));
         updated |= updateChannel(CHANNEL_GENERAL_ACTION_STATUS, getStringType(statusDetail));
         updated |= updateChannel(CHANNEL_GENERAL_ACTION_PENDING,
-                CarNetPendingRequest.isInProgress(statusDetail) ? OnOffType.ON : OnOffType.OFF);
+                ApiActionRequest.isInProgress(statusDetail) ? OnOffType.ON : OnOffType.OFF);
 
-        if (!CarNetPendingRequest.isInProgress(statusDetail)) {
+        if (!ApiActionRequest.isInProgress(statusDetail)) {
             String channel = "";
             switch (action) {
                 case CNAPI_CMD_FLASH:

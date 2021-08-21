@@ -443,20 +443,21 @@ public class ChannelDefinitions {
         add("UNKNOWN_0x02040C0002", "0x02040C0002"); // no yet decoded
 
         // Group status
+        String group = CHANNEL_GROUP_STATUS;
         add("", "", CHANNEL_STATUS_ERROR, ITEMT_STRING);
         add("", "", CHANNEL_STATUS_PBRAKE, ITEMT_SWITCH);
         add("", "", CHANNEL_STATUS_LIGHTS, ITEMT_SWITCH);
         add("", "", CHANNEL_CAR_MOVING, ITEMT_SWITCH);
+        add("", "", CHANNEL_STATUS_LOCKED, ITEMT_SWITCH);
+        add("", "", CHANNEL_STATUS_MAINTREQ, ITEMT_SWITCH);
+        add("", "", CHANNEL_STATUS_WINCLOSED, ITEMT_SWITCH);
+        add("", "", CHANNEL_STATUS_DOORSCLOSED, ITEMT_SWITCH);
+        add("", "", CHANNEL_STATUS_TIRESOK, ITEMT_SWITCH);
+        add("", "", CHANNEL_STATUS_TIMEINCAR, ITEMT_DATETIME);
 
         // Group general
-        String group = CHANNEL_GROUP_GENERAL;
+        group = CHANNEL_GROUP_GENERAL;
         add("", "", CHANNEL_GENERAL_UPDATED, ITEMT_DATETIME, group);
-        add("", "", CHANNEL_GENERAL_LOCKED, ITEMT_SWITCH, group);
-        add("", "", CHANNEL_GENERAL_MAINTREQ, ITEMT_SWITCH, group);
-        add("", "", CHANNEL_GENERAL_WINCLOSED, ITEMT_SWITCH, group);
-        add("", "", CHANNEL_GENERAL_DOORSCLOSED, ITEMT_SWITCH, group);
-        add("", "", CHANNEL_GENERAL_TIRESOK, ITEMT_SWITCH, group);
-        add("", "", CHANNEL_GENERAL_TIMEINCAR, ITEMT_DATETIME, group);
         add("", "", CHANNEL_GENERAL_ACTION, ITEMT_STRING, group);
         add("", "", CHANNEL_GENERAL_ACTION_STATUS, ITEMT_STRING, group);
         add("", "", CHANNEL_GENERAL_ACTION_PENDING, ITEMT_SWITCH, group);

@@ -78,16 +78,10 @@ public class BindingConstants {
     // List of all ChannelGroups and Channels
     public static final String CHANNEL_GROUP_GENERAL = "general";
     public static final String CHANNEL_GENERAL_UPDATED = "lastUpdate";
-    public static final String CHANNEL_GENERAL_LOCKED = "vehicleLocked";
-    public static final String CHANNEL_GENERAL_MAINTREQ = "maintenanceRequired";
-    public static final String CHANNEL_GENERAL_WINCLOSED = "windowsClosed";
-    public static final String CHANNEL_GENERAL_DOORSCLOSED = "doorsClosed";
-    public static final String CHANNEL_GENERAL_TIRESOK = "tiresOk";
     public static final String CHANNEL_GENERAL_ACTION = "lastAction";
     public static final String CHANNEL_GENERAL_ACTION_STATUS = "lastActionStatus";
     public static final String CHANNEL_GENERAL_ACTION_PENDING = "lastActionPending";
     public static final String CHANNEL_GENERAL_RATELIM = "rateLimit";
-    public static final String CHANNEL_GENERAL_TIMEINCAR = "timeInCar";
 
     // Group status
     public static final String CHANNEL_GROUP_STATUS = "status";
@@ -98,6 +92,12 @@ public class BindingConstants {
     public static final String CHANNEL_STATUS_TEMPOUT = "tempOutside";
     public static final String CHANNEL_STATUS_SPEED = "currentSpeed";
     public static final String CHANNEL_STATUS_MMILAGE = "monthlyMilage";
+    public static final String CHANNEL_STATUS_LOCKED = "vehicleLocked";
+    public static final String CHANNEL_STATUS_MAINTREQ = "maintenanceRequired";
+    public static final String CHANNEL_STATUS_WINCLOSED = "windowsClosed";
+    public static final String CHANNEL_STATUS_DOORSCLOSED = "doorsClosed";
+    public static final String CHANNEL_STATUS_TIRESOK = "tiresOk";
+    public static final String CHANNEL_STATUS_TIMEINCAR = "timeInCar";
     public static final String CHANNEL_STATUS_ERROR = "error";
     public static final String CHANNEL_STATUS_SWUPDATE = "softwareUpgrade";
     public static final String CHANNEL_STATUS_DEEPSLEEP = "deepSleep";

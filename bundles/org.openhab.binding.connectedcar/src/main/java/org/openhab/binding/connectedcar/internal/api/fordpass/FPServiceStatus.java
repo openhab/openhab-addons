@@ -64,7 +64,7 @@ public class FPServiceStatus extends ApiBaseService {
 
         FPVehicleStatus status = fpStatus.vehiclestatus;
         // Control & Status channels
-        addChannels(channels, true, CHANNEL_CONTROL_ENGINE, CHANNEL_CONTROL_LOCK, CHANNEL_GENERAL_LOCKED,
+        addChannels(channels, true, CHANNEL_CONTROL_ENGINE, CHANNEL_CONTROL_LOCK, CHANNEL_STATUS_LOCKED,
                 CHANNEL_STATUS_ODOMETER, CHANNEL_STATUS_SWUPDATE, CHANNEL_STATUS_DEEPSLEEP);
 
         // Location
@@ -95,16 +95,16 @@ public class FPServiceStatus extends ApiBaseService {
          * CHANNEL_CLIMATER_TARGET_TEMP, CHANNEL_CONTROL_WINHEAT);
          */
         // Doors
-        addChannels(channels, status.doorStatus != null, CHANNEL_GENERAL_DOORSCLOSED, CHANNEL_DOORS_FLSTATE,
+        addChannels(channels, status.doorStatus != null, CHANNEL_STATUS_DOORSCLOSED, CHANNEL_DOORS_FLSTATE,
                 CHANNEL_DOORS_FRSTATE, CHANNEL_DOORS_RLSTATE, CHANNEL_DOORS_RRSTATE, CHANNEL_DOORS_TRUNKLSTATE,
                 CHANNEL_DOORS_ITAILGSTATE);
 
         // Windows
-        addChannels(channels, status.windowPosition != null, CHANNEL_GENERAL_WINCLOSED, CHANNEL_WIN_FLSTATE,
+        addChannels(channels, status.windowPosition != null, CHANNEL_STATUS_WINCLOSED, CHANNEL_WIN_FLSTATE,
                 CHANNEL_WIN_FRSTATE, CHANNEL_WIN_RLSTATE, CHANNEL_WIN_RRSTATE);
 
         // Tire channels
-        addChannels(channels, status.tirePressure != null, CHANNEL_GENERAL_TIRESOK, CHANNEL_TIREP_FRONTLEFT,
+        addChannels(channels, status.tirePressure != null, CHANNEL_STATUS_TIRESOK, CHANNEL_TIREP_FRONTLEFT,
                 CHANNEL_TIREP_FRONTRIGHT, CHANNEL_TIREP_REARLEFT, CHANNEL_TIREP_REARRIGHT);
         addChannels(channels, status.tpms != null && status.tpms.innerLeftRearTirePressure != null,
                 CHANNEL_TIREP_INNERREARLEFT, CHANNEL_TIREP_INNERREARRIGHT); // extra tires
@@ -202,7 +202,7 @@ public class FPServiceStatus extends ApiBaseService {
             updateChannel(CHANNEL_WIN_FRSTATE, fr ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
             updateChannel(CHANNEL_WIN_RLSTATE, rl ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
             updateChannel(CHANNEL_WIN_RRSTATE, rr ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
-            updateChannel(CHANNEL_GENERAL_WINCLOSED, getOnOff(winClosed));
+            updateChannel(CHANNEL_STATUS_WINCLOSED, getOnOff(winClosed));
         }
 
         FPDoorStatus doors = status.doorStatus;
@@ -220,11 +220,11 @@ public class FPServiceStatus extends ApiBaseService {
             updated |= updateChannel(CHANNEL_DOORS_HOODSTATE, hd ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
             updated |= updateChannel(CHANNEL_DOORS_TRUNKLSTATE, tg ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
             updated |= updateChannel(CHANNEL_DOORS_ITAILGSTATE, itg ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
-            updateChannel(CHANNEL_GENERAL_DOORSCLOSED, getOnOff(winClosed));
+            updateChannel(CHANNEL_STATUS_DOORSCLOSED, getOnOff(winClosed));
         }
 
         boolean locked = "LOCKED".equalsIgnoreCase(getString(status.lockStatus.value)) && winClosed && doorsClosed;
-        updateChannel(CHANNEL_GENERAL_LOCKED, getOnOff(locked));
+        updateChannel(CHANNEL_STATUS_LOCKED, getOnOff(locked));
         return updated;
     }
 
@@ -252,7 +252,7 @@ public class FPServiceStatus extends ApiBaseService {
         updated |= updateChannel(CHANNEL_TIREP_REARRIGHT, getOnOff(isTireOk(status.outerRightRearTireStatus)));
         updated |= updateChannel(CHANNEL_TIREP_INNERREARLEFT, getOnOff(isTireOk(status.innerLeftRearTireStatus)));
         updated |= updateChannel(CHANNEL_TIREP_INNERREARRIGHT, getOnOff(isTireOk(status.innerRightRearTireStatus)));
-        updated |= updateChannel(CHANNEL_GENERAL_TIRESOK,
+        updated |= updateChannel(CHANNEL_STATUS_TIRESOK,
                 getOnOff("STATUS_GOOD".equalsIgnoreCase(data.tirePressure.value)));
         return updated;
     }

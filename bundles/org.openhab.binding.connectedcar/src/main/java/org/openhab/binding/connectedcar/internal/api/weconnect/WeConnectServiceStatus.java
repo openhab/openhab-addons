@@ -67,7 +67,7 @@ public class WeConnectServiceStatus extends ApiBaseService {
                 CHANNEL_CLIMATER_REMAINING);
         addChannels(channels, status.climatisationSettings != null, CHANNEL_CONTROL_CLIMATER,
                 CHANNEL_CONTROL_TARGET_TEMP);
-        addChannels(channels, status.climatisationTimer != null, CHANNEL_GENERAL_TIMEINCAR);
+        addChannels(channels, status.climatisationTimer != null, CHANNEL_STATUS_TIMEINCAR);
         addChannels(channels, status.windowHeatingStatus != null, CHANNEL_CONTROL_WINHEAT);
         return true;
     }
@@ -158,7 +158,7 @@ public class WeConnectServiceStatus extends ApiBaseService {
                     toQuantityType(getDouble(status.climatisationSettings.targetTemperature_C), 0, SIUnits.CELSIUS));
         }
         if (status.climatisationTimer != null) {
-            updated |= updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_GENERAL_TIMEINCAR,
+            updated |= updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_STATUS_TIMEINCAR,
                     getDateTime(status.climatisationTimer.timeInCar));
         }
         return updated;
