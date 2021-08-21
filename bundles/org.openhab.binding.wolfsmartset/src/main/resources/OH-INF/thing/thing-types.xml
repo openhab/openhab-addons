@@ -39,13 +39,13 @@
 
 	<channel-type id="number">
 		<item-type>Number</item-type>
-		<label>number</label>
+		<label>Number</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
-		<label>contact</label>
+		<label>Contact</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -54,6 +54,7 @@
 		<label>Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
+
 
 	<channel-type id="string">
 		<item-type>String</item-type>
@@ -65,6 +66,12 @@
 		<item-type>DateTime</item-type>
 		<label>Date Time</label>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="barometric-pressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -70,8 +70,9 @@ import com.google.gson.JsonSyntaxException;
 public class WolfSmartsetApi {
     private static final int MAX_QUEUE_SIZE = 1000; // maximum queue size
     private static final int REQUEST_TIMEOUT_SECONDS = 10;
-    private static final Gson GSON = new GsonBuilder().serializeNulls().create();
+
     private static final DateTimeFormatter SESSION_TIME_STAMP = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final String WOLF_API_URL = "https://www.wolf-smartset.com/portal/";
 
     private Instant blockRequestsUntil = Instant.now();
     private String username;
@@ -82,6 +83,7 @@ public class WolfSmartsetApi {
     private HttpClient httpClient;
     private int delay = 500; // in ms
     private final ScheduledExecutorService scheduler;
+    private final Gson gson = new GsonBuilder().serializeNulls().create();
     private final LinkedBlockingQueue<RequestQueueEntry> requestQueue = new LinkedBlockingQueue<>(MAX_QUEUE_SIZE);
     private @Nullable ScheduledFuture<?> processJob;
 
@@ -125,7 +127,7 @@ public class WolfSmartsetApi {
             }
 
         } catch (WolfSmartsetCloudException e) {
-            logger.info("Error logging on to Wolf Smartset ({}): {}", loginFailedCounter, e.getMessage());
+            logger.debug("Error logging on to Wolf Smartset ({}): {}", loginFailedCounter, e.getMessage());
             loginFailedCounter++;
             serviceToken = "";
             loginFailedCounterCheck();
@@ -136,13 +138,13 @@ public class WolfSmartsetApi {
     /**
      * Request the systems available for the authenticated account
      * 
-     * @return
+     * @return a list of the available systems
      */
     public List<GetSystemListDTO> getSystems() {
         final String response = getSystemString();
         List<GetSystemListDTO> devicesList = new ArrayList<>();
         try {
-            GetSystemListDTO[] cdl = GSON.fromJson(response, GetSystemListDTO[].class);
+            GetSystemListDTO[] cdl = gson.fromJson(response, GetSystemListDTO[].class);
             if (cdl != null) {
                 for (GetSystemListDTO system : cdl) {
                     devicesList.add(system);
@@ -150,7 +152,7 @@ public class WolfSmartsetApi {
             }
         } catch (JsonSyntaxException | IllegalStateException | ClassCastException e) {
             loginFailedCounter++;
-            logger.info("Error while parsing devices: {}", e.getMessage());
+            logger.warn("Error while parsing devices: {}", e.getMessage());
         }
         return devicesList;
     }
@@ -158,18 +160,18 @@ public class WolfSmartsetApi {
     /**
      * Request the description of the given system
      * 
-     * @param systemId
-     * @param gatewayId
-     * @return
+     * @param systemId the id of the system
+     * @param gatewayId the id of the gateway the system relates to
+     * @return dto describing the requested system
      */
     public @Nullable GetGuiDescriptionForGatewayDTO getSystemDescription(Integer systemId, Integer gatewayId) {
         final String response = getSystemDescriptionString(systemId, gatewayId);
         GetGuiDescriptionForGatewayDTO deviceDescription = null;
         try {
-            deviceDescription = GSON.fromJson(response, GetGuiDescriptionForGatewayDTO.class);
+            deviceDescription = gson.fromJson(response, GetGuiDescriptionForGatewayDTO.class);
         } catch (JsonSyntaxException | IllegalStateException | ClassCastException e) {
             loginFailedCounter++;
-            logger.info("Error while parsing device descriptions: {}", e.getMessage());
+            logger.warn("Error while parsing device descriptions: {}", e.getMessage());
         }
         return deviceDescription;
     }
@@ -177,17 +179,17 @@ public class WolfSmartsetApi {
     /**
      * Request the system state of the given systems
      * 
-     * @param systems
-     * @return
+     * @param systems a list of {@link GetSystemListDTO}
+     * @return the {@link GetSystemStateListDTO} descibing the state of the given {@link GetSystemListDTO} items
      */
     public @Nullable GetSystemStateListDTO @Nullable [] getSystemState(Collection<@Nullable GetSystemListDTO> systems) {
         final String response = getSystemStateString(systems);
         GetSystemStateListDTO[] systemState = null;
         try {
-            systemState = GSON.fromJson(response, GetSystemStateListDTO[].class);
+            systemState = gson.fromJson(response, GetSystemStateListDTO[].class);
         } catch (JsonSyntaxException | IllegalStateException | ClassCastException e) {
             loginFailedCounter++;
-            logger.info("Error while parsing device descriptions: {}", e.getMessage());
+            logger.warn("Error while parsing device descriptions: {}", e.getMessage());
         }
         if (systemState != null && systemState.length >= 1) {
             return systemState;
@@ -199,42 +201,42 @@ public class WolfSmartsetApi {
     /**
      * Request the fault messages of the given system
      * 
-     * @param systemId
-     * @param gatewayId
-     * @return
+     * @param systemId the id of the system
+     * @param gatewayId the id of the gateway the system relates to
+     * @return {@link ReadFaultMessagesDTO} containing the faultmessages
      */
     public @Nullable ReadFaultMessagesDTO getFaultMessages(Integer systemId, Integer gatewayId) {
         final String response = getFaultMessagesString(systemId, gatewayId);
         ReadFaultMessagesDTO faultMessages = null;
         try {
-            faultMessages = GSON.fromJson(response, ReadFaultMessagesDTO.class);
+            faultMessages = gson.fromJson(response, ReadFaultMessagesDTO.class);
         } catch (JsonSyntaxException | IllegalStateException | ClassCastException e) {
             loginFailedCounter++;
-            logger.info("Error while parsing faultmessages: {}", e.getMessage());
+            logger.warn("Error while parsing faultmessages: {}", e.getMessage());
         }
         return faultMessages;
     }
 
     /**
-     * request the current values for a unit associated with the given system.
+     * Request the current values for a unit associated with the given system.
      * if lastAccess is not null, only value changes newer than the given timestamp are returned
      * 
-     * @param systemId
-     * @param gatewayId
+     * @param systemId the id of the system
+     * @param gatewayId the id of the gateway the system relates to
      * @param bundleId the id of the Unit
      * @param valueIdList list of the values to request
      * @param lastAccess timestamp of the last valid value request
-     * @return
+     * @return {@link GetParameterValuesDTO} containing the requested values
      */
     public @Nullable GetParameterValuesDTO getGetParameterValues(Integer systemId, Integer gatewayId, Long bundleId,
             List<Long> valueIdList, @Nullable Instant lastAccess) {
         final String response = getGetParameterValuesString(systemId, gatewayId, bundleId, valueIdList, lastAccess);
         GetParameterValuesDTO parameterValues = null;
         try {
-            parameterValues = GSON.fromJson(response, GetParameterValuesDTO.class);
+            parameterValues = gson.fromJson(response, GetParameterValuesDTO.class);
         } catch (JsonSyntaxException | IllegalStateException | ClassCastException e) {
             loginFailedCounter++;
-            logger.info("Error while parsing device parameter values: {}", e.getMessage());
+            logger.warn("Error while parsing device parameter values: {}", e.getMessage());
         }
         return parameterValues;
     }
@@ -266,14 +268,10 @@ public class WolfSmartsetApi {
 
     private boolean checkCredentials() {
         if (username.trim().isEmpty() || password.trim().isEmpty()) {
-            logger.info("Wolf Smartset: username or password missing.");
+            logger.debug("Wolf Smartset: username or password missing.");
             return false;
         }
         return true;
-    }
-
-    private String getApiUrl() {
-        return "https://www.wolf-smartset.com/portal/";
     }
 
     private String getCreateSessionString() {
@@ -283,10 +281,14 @@ public class WolfSmartsetApi {
             json.addProperty("Timestamp", SESSION_TIME_STAMP.format(LocalDateTime.now()));
             resp = requestPOST("api/portal/CreateSession2", json).get();
             logger.trace("api/portal/CreateSession2 response: {}", resp);
-        } catch (InterruptedException | ExecutionException | WolfSmartsetCloudException e) {
-            logger.info("getSystemStateString failed with {}: {}", e.getCause(), e.getMessage());
+        } catch (InterruptedException | ExecutionException e) {
+            logger.warn("getSystemStateString failed with {}: {}", e.getCause(), e.getMessage());
+            loginFailedCounter++;
+        } catch (WolfSmartsetCloudException e) {
+            logger.debug("getSystemStateString failed with {}: {}", e.getCause(), e.getMessage());
             loginFailedCounter++;
         }
+
         return resp;
     }
 
@@ -294,10 +296,10 @@ public class WolfSmartsetApi {
         final String response = getCreateSessionString();
         CreateSession2DTO session = null;
         try {
-            session = GSON.fromJson(response, CreateSession2DTO.class);
+            session = gson.fromJson(response, CreateSession2DTO.class);
         } catch (JsonSyntaxException | IllegalStateException | ClassCastException e) {
             loginFailedCounter++;
-            logger.info("getCreateSession failed with {}: {}", e.getCause(), e.getMessage());
+            logger.warn("getCreateSession failed with {}: {}", e.getCause(), e.getMessage());
         }
         return session;
     }
@@ -308,7 +310,7 @@ public class WolfSmartsetApi {
             resp = requestGET("api/portal/GetSystemList").get();
             logger.trace("api/portal/GetSystemList response: {}", resp);
         } catch (InterruptedException | ExecutionException | WolfSmartsetCloudException e) {
-            logger.info("getSystemString failed with {}: {}", e.getCause(), e.getMessage());
+            logger.warn("getSystemString failed with {}: {}", e.getCause(), e.getMessage());
             loginFailedCounter++;
         }
         return resp;
@@ -323,7 +325,7 @@ public class WolfSmartsetApi {
             resp = requestGET("api/portal/GetGuiDescriptionForGateway", params).get();
             logger.trace("api/portal/GetGuiDescriptionForGateway response: {}", resp);
         } catch (InterruptedException | ExecutionException | WolfSmartsetCloudException e) {
-            logger.info("getSystemDescriptionString failed with {}: {}", e.getCause(), e.getMessage());
+            logger.warn("getSystemDescriptionString failed with {}: {}", e.getCause(), e.getMessage());
             loginFailedCounter++;
         }
         return resp;
@@ -354,7 +356,7 @@ public class WolfSmartsetApi {
             resp = requestPOST("api/portal/GetSystemStateList", json).get();
             logger.trace("api/portal/GetSystemStateList response: {}", resp);
         } catch (InterruptedException | ExecutionException | WolfSmartsetCloudException e) {
-            logger.info("getSystemStateString failed with {}: {}", e.getCause(), e.getMessage());
+            logger.warn("getSystemStateString failed with {}: {}", e.getCause(), e.getMessage());
             loginFailedCounter++;
         }
         return resp;
@@ -370,7 +372,7 @@ public class WolfSmartsetApi {
             resp = requestPOST("api/portal/ReadFaultMessages", json).get();
             logger.trace("api/portal/ReadFaultMessages response: {}", resp);
         } catch (InterruptedException | ExecutionException | WolfSmartsetCloudException e) {
-            logger.info("getFaultMessagesString failed with {}: {}", e.getCause(), e.getMessage());
+            logger.warn("getFaultMessagesString failed with {}: {}", e.getCause(), e.getMessage());
             loginFailedCounter++;
         }
         return resp;
@@ -385,7 +387,7 @@ public class WolfSmartsetApi {
             json.addProperty("GatewayId", gatewayId);
             json.addProperty("BundleId", bundleId);
             json.addProperty("IsSubBundle", false);
-            json.add("ValueIdList", GSON.toJsonTree(valueIdList));
+            json.add("ValueIdList", gson.toJsonTree(valueIdList));
             if (lastAccess != null) {
                 json.addProperty("LastAccess", DateTimeFormatter.ISO_INSTANT.format(lastAccess));
             } else {
@@ -398,7 +400,7 @@ public class WolfSmartsetApi {
             resp = requestPOST("api/portal/GetParameterValues", json).get();
             logger.trace("api/portal/GetParameterValues response: {}", resp);
         } catch (InterruptedException | ExecutionException | WolfSmartsetCloudException e) {
-            logger.info("getGetParameterValuesString failed with {}: {}", e.getCause(), e.getMessage());
+            logger.warn("getGetParameterValuesString failed with {}: {}", e.getCause(), e.getMessage());
             loginFailedCounter++;
         }
         return resp;
@@ -416,7 +418,7 @@ public class WolfSmartsetApi {
             }
             loginFailedCounterCheck();
 
-            var requestUrl = getApiUrl() + url;
+            var requestUrl = WOLF_API_URL + url;
             Request request = httpClient.newRequest(requestUrl).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             // using HTTP GET with ContentType application/x-www-form-urlencoded like the iOS App does
@@ -447,7 +449,7 @@ public class WolfSmartsetApi {
     }
 
     private Request createPOSTRequest(String url, JsonElement json) {
-        var requestUrl = getApiUrl() + url;
+        var requestUrl = WOLF_API_URL + url;
         Request request = httpClient.newRequest(requestUrl).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         request.header(HttpHeader.ACCEPT, "application/json");
@@ -513,7 +515,7 @@ public class WolfSmartsetApi {
             } else if (response.getStatus() >= HttpStatus.BAD_REQUEST_400
                     && response.getStatus() < HttpStatus.INTERNAL_SERVER_ERROR_500) {
                 this.serviceToken = "";
-                logger.info("Status {} while executing request to {} :{}", response.getStatus(), request.getURI(),
+                logger.debug("Status {} while executing request to {} :{}", response.getStatus(), request.getURI(),
                         response.getContentAsString());
             } else {
                 return response.getContentAsString();
@@ -542,7 +544,7 @@ public class WolfSmartsetApi {
             setDelay(delay);
             logger.trace("Wolf Smartset Login");
 
-            String url = getApiUrl() + "connect/token";
+            String url = WOLF_API_URL + "connect/token";
             Request request = httpClient.POST(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
 
@@ -565,9 +567,8 @@ public class WolfSmartsetApi {
                 case HttpStatus.FORBIDDEN_403:
                     throw new WolfSmartsetCloudException(
                             "Access denied. Did you set the correct password and/or username?");
-
                 case HttpStatus.OK_200:
-                    LoginResponseDTO jsonResp = GSON.fromJson(content, LoginResponseDTO.class);
+                    LoginResponseDTO jsonResp = gson.fromJson(content, LoginResponseDTO.class);
                     if (jsonResp == null) {
                         throw new WolfSmartsetCloudException("Error getting logon details: " + content);
                     }

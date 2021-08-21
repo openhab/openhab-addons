@@ -29,7 +29,7 @@ public class WolfSmartsetAccountConfiguration {
     /**
      * Time in seconds between information refresh
      */
-    public @Nullable Integer refreshIntervalConfiguration;
+    public @Nullable Integer refreshIntervalStructure;
 
     /**
      * Time in seconds to wait after successful update, command or action before refresh

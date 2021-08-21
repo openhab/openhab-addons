@@ -5,24 +5,26 @@
 
 	<config-description uri="thing-type:wolfsmartset:account">
 		<parameter name="username" type="text" required="false">
-			<label>Wolf Smartset username</label>
+			<label>Username</label>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>Wolf Smartset password</label>
+			<label>Password</label>
 			<context>password</context>
 		</parameter>
-		<parameter name="refreshIntervalConfiguration" type="integer" min="2" required="false" unit="m">
-			<label>Refresh Interval to update the configuration</label>
+		<parameter name="refreshIntervalStructure" type="integer" min="2" required="false" unit="m">
+			<label>Structure Refresh Interval</label>
 			<description>Specifies the refresh interval in minutes</description>
 			<default>10</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="refreshIntervalValues" type="integer" min="2" required="false" unit="s">
-			<label>Refresh Interval to update values and events</label>
-			<description>Specifies time in seconds to refresh values</description>
+			<label>States Refresh Interval</label>
+			<description>Specifies time in seconds to refresh states</description>
 			<default>15</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="discoveryEnabled" type="boolean" required="false">
-			<label>Discovery Enabled</label>
+			<label>Background Discovery</label>
 			<description>Enable/disable automatic discovery</description>
 			<default>true</default>
 		</parameter>

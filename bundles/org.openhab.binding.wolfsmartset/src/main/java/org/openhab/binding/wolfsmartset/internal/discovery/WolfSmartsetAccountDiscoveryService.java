@@ -84,10 +84,12 @@ public class WolfSmartsetAccountDiscoveryService extends AbstractDiscoveryServic
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("WolfSmartsetDiscovery: Starting background discovery job");
-        Future<?> localDiscoveryJob = discoveryJob;
-        if (localDiscoveryJob == null || localDiscoveryJob.isCancelled()) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(this::backgroundDiscover, DISCOVERY_INITIAL_DELAY_SECONDS,
-                    DISCOVERY_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        if (bridgeHandler.isBackgroundDiscoveryEnabled()) {
+            Future<?> localDiscoveryJob = discoveryJob;
+            if (localDiscoveryJob == null || localDiscoveryJob.isCancelled()) {
+                discoveryJob = scheduler.scheduleWithFixedDelay(this::backgroundDiscover,
+                        DISCOVERY_INITIAL_DELAY_SECONDS, DISCOVERY_INTERVAL_SECONDS, TimeUnit.SECONDS);
+            }
         }
     }
 

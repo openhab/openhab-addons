@@ -123,9 +123,10 @@ public class WolfSmartsetSystemBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * return the associated account bridge handler
+     * Return the associated account bridge handler
      * 
-     * @return
+     * @return returns the {@link WolfSmartsetAccountBridgeHandler} linked to this
+     *         {@link WolfSmartsetSystemBridgeHandler}
      */
     public @Nullable WolfSmartsetAccountBridgeHandler getAccountBridgeHandler() {
         var bridgeHandler = this.getBridge();
@@ -136,18 +137,18 @@ public class WolfSmartsetSystemBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * return the subordinated unit handler
+     * Return the subordinated unit handler
      * 
-     * @return
+     * @return a List of {@link WolfSmartsetUnitThingHandler} with the subordinated unit handler
      */
     public Collection<WolfSmartsetUnitThingHandler> getUnitHandler() {
         return unitHandlers.values();
     }
 
     /**
-     * returns the list configuration of the units available for this system
+     * Returns the list configuration of the units available for this system
      * 
-     * @return
+     * @return a list of {@link SubMenuEntryWithMenuItemTabView} representing the available units for this system
      */
     public List<SubMenuEntryWithMenuItemTabView> getUnits() {
         List<SubMenuEntryWithMenuItemTabView> localSavedUnits = savedUnits;
@@ -155,27 +156,27 @@ public class WolfSmartsetSystemBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * return the configuration of this system
+     * Return the configuration of this system
      * 
-     * @return
+     * @return {@link GetSystemListDTO} representing the this system
      */
     public @Nullable GetSystemListDTO getSystemConfig() {
         return savedSystem;
     }
 
     /**
-     * return the id of this system
+     * Return the id of this system
      * 
-     * @return
+     * @return the id of this system
      */
     public String getSystemId() {
         return systemId;
     }
 
     /**
-     * update the system state with the dto
+     * Update the system state with the dto
      * 
-     * @param systemState
+     * @param systemState {@link GetSystemStateListDTO} the dto representing the current state of this system
      */
     public void updateSystemState(@Nullable GetSystemStateListDTO systemState) {
         if (systemState != null) {
@@ -192,9 +193,9 @@ public class WolfSmartsetSystemBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * process the available fault messages
+     * Process the available fault messages
      * 
-     * @param faultMessages
+     * @param faultMessages {@link ReadFaultMessagesDTO} the dto representing the list of the current faultmessages
      */
     public void updateFaultMessages(@Nullable ReadFaultMessagesDTO faultMessages) {
         if (faultMessages != null) {
@@ -210,8 +211,8 @@ public class WolfSmartsetSystemBridgeHandler extends BaseBridgeHandler {
     /**
      * Update the configuration of the system and the subordinated units
      * 
-     * @param system
-     * @param systemDescription
+     * @param system {@link GetSystemListDTO} representing this system
+     * @param systemDescription {@link GetGuiDescriptionForGatewayDTO} repesenting the units of this system
      */
     public void updateConfiguration(@Nullable GetSystemListDTO system,
             @Nullable GetGuiDescriptionForGatewayDTO systemDescription) {

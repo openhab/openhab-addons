@@ -113,27 +113,27 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
     }
 
     /**
-     * get the SubMenuEntryDTO for this unit
+     * Get the {@link SubMenuEntryDTO} for this unit
      * 
-     * @return the SubMenuEntryDTO for this unit
+     * @return the {@link SubMenuEntryDTO} for this unit
      */
     public @Nullable SubMenuEntryDTO getSubMenu() {
         return this.submenu;
     }
 
     /**
-     * get the MenuItemTabViewDTO for this unit
+     * Get the {@link MenuItemTabViewDTO} for this unit
      * 
-     * @return the MenuItemTabViewDTO for this unit
+     * @return the {@link MenuItemTabViewDTO} for this unit
      */
     public @Nullable MenuItemTabViewDTO getTabMenu() {
         return this.tabmenu;
     }
 
     /**
-     * get the timstamp of the last valid call of updateValues
+     * Get the {@link Instant} of the last valid call of updateValues
      * 
-     * @return the timstamp of the last valid call of updateValues
+     * @return the getInstallationDate of the last valid call of updateValues
      */
     public @Nullable Instant getLastRefreshTime() {
         return this.lastRefreshTime;
@@ -142,8 +142,8 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
     /**
      * Update the configuration of this unit and create / update the related channels
      * 
-     * @param submenu the SubMenuEntryDTO for this unit
-     * @param tabmenu the MenuItemTabViewDTO for this unit
+     * @param submenu the {@link SubMenuEntryDTO} for this unit
+     * @param tabmenu the {@link MenuItemTabViewDTO} for this unit
      */
     public void updateConfiguration(SubMenuEntryDTO submenu, MenuItemTabViewDTO tabmenu) {
         this.submenu = submenu;
@@ -162,7 +162,7 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
             paramDescriptionMap.put(param.valueId, param);
             var channelId = new ChannelUID(thingId, param.parameterId.toString()); // "bindingId:type:thingId:1")
             if (thing.getChannel(channelId) == null) {
-                logger.info("UnitThing: Create channel '{}'", channelId);
+                logger.debug("UnitThing: Create channel '{}'", channelId);
                 Channel channel = ChannelBuilder.create(channelId, getItemType(param.controlType)).withLabel(param.name)
                         .withType(getChannelType(param)).build();
                 thingBuilder.withChannel(channel);
@@ -178,9 +178,9 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
     }
 
     /**
-     * update the values of the channels
+     * Update the values of the channels
      * 
-     * @param values
+     * @param values {@link GetParameterValuesDTO} representing the new values
      */
     public void updateValues(@Nullable GetParameterValuesDTO values) {
         var thingId = thing.getUID();
@@ -200,10 +200,10 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
     }
 
     /**
-     * stores the state for the channel in stateCache and calls updateState of this Thing
+     * Stores the state for the channel in stateCache and calls updateState of this Thing
      * 
-     * @param channelId
-     * @param state
+     * @param channelId {@link ChannelUID} the id of the channel to update
+     * @param state {@link State} the new state for the channel
      */
     private void setState(ChannelUID channelId, State state) {
         stateCache.put(channelId.getId(), state);
@@ -233,7 +233,7 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
         } else {
             switch (parmeter.unit) {
                 case "bar":
-                    return new ChannelTypeUID("barometric-pressure");
+                    return new ChannelTypeUID(BINDING_ID, CH_PRESSURE);
                 case "%":
                 case "Std":
                     return new ChannelTypeUID(BINDING_ID, CH_NUMBER);

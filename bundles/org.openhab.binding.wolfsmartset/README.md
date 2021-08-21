@@ -12,33 +12,44 @@ Wolf systems are connected with official gateways (Wolf Link Home or Wolf Link P
 ## Discovery
 
 The configuration via the interface is the recommended way:
-1. create an "Account-Thing (bridge)" and enter your credentials
-2. if the account bridge is successfully connected, a "System-Thing (bridge)" will appear in the inbox (a manual scan may be necessary). 
-3. After the system has been added, discovery will add the unit-things to the inbox.
 
-## Thing configuration
+- System things (bridge) are discovered when Account thing (bridge) are set up
+- Unit things are discovered when System things are set up
+
+## Thing Configuration
 
 ### Account (bridge)
+
+The account thing holds the credentials to connect to the wolf-smartset online portal.
+
 
 | Parameter       | Type    | Defaut | Description                                                         |
 |-----------------|---------|----------|---------------------------------------------------------------------|
 | username | text | | username to authenticate to www.wolf-smartset.de |
 | password | text  | | password to authenticate to www.wolf-smartset.de |
-| refreshIntervalConfiguration | integer | 10 | Specifies the refresh interval to refresh the configuration in minutes |
+| refreshIntervalStructure | integer | 10 | Specifies the refresh interval to refresh the Structure in minutes |
 | refreshIntervalValues | integer | 15 | Specifies time in seconds to refresh values |
 | discoveryEnabled | boolean | true | disable the Thing discovery |
 
 ### System (bridge)
 
+The system thing represents one wolf system connected via a WOLF Link home or a WOLF Link pro to the wolf-smartset online portal. 
+You have access to your own or to shared systems. 
+
+
 | Parameter       | Type    | Defaut | Description                                                         |
 |-----------------|---------|----------|---------------------------------------------------------------------|
-| systemId | integer | | System ID assigned to the system by WolfSmartset webiste |
+| systemId | integer | | System ID assigned to the system by WolfSmartset |
 
 ### Unit
 
+A system is divided into different units. 
+In the wolf-smartset portal, the system has an "Expert" section, each submenu item within the "Expert" section has multiple tabs.
+Each of these tabs is treated as one unit.
+
 | Parameter       | Type    | Defaut | Description                                                         |
 |-----------------|---------|----------|---------------------------------------------------------------------|
-| unitId | integer | | The BundleId assigned to the unit by WolfSmartset webiste |
+| unitId | integer | | The BundleId assigned to the unit by WolfSmartset |
 
 ## Tested WOLF-Devices
 
@@ -47,18 +58,16 @@ The configuration via the interface is the recommended way:
 | CSZ (CGB and SM1) | 3.1             | WOLF Link Pro |
 | CGB-2             | 3.1             | WOLF Link home|
 
-Note: Please update this table if you did a successfull test
-
 
 ## Channels
 
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
-| number  | number | a generic number  |
+| number  | Number | a generic number  |
 | contact  | Contact | a generic contact  |
 | temperature  | Number:Temperature | a generic temperature  |
 | string  | String | a generic String  |
-| datetime  | nuDateTimember | a generic DateTime  |
+| datetime  | DateTime | a generic DateTime  |
 
 ## Full Example
 
@@ -106,7 +115,7 @@ Number CSZHeizgerat_EingangE1 "Eingang E1" { channel="wolfsmartset:unit:account:
 
 All devices able to be connected to www.wolf-smartset.de
 
-### Regarding documentation from WOLF
+### Related Documentation from WOLF
 
 https://www.wolf.eu/fileadmin/Wolf_Daten/Dokumente/FAQ/3065655_201711.pdf
 

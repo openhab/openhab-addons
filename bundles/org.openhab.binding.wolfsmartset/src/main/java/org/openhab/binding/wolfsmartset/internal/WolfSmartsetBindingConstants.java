@@ -71,6 +71,7 @@ public class WolfSmartsetBindingConstants {
     public static final String THING_PROPERTY_ACCESSLEVEL = "AccessLevel";
 
     public static final String CH_TEMPERATURE = "temperature";
+    public static final String CH_PRESSURE = "barometric-pressure";
     public static final String CH_STRING = "string";
     public static final String CH_CONTACT = "contact";
     public static final String CH_NUMBER = "number";

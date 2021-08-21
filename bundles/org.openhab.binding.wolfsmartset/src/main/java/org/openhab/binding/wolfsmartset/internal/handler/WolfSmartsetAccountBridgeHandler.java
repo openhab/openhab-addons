@@ -65,7 +65,7 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
     private final HttpClient httpClient;
 
     private @NonNullByDefault({}) WolfSmartsetApi api;
-    private int refreshIntervalConfigurationMinutes;
+    private int refreshIntervalStructureMinutes;
     private int refreshIntervalValuesSeconds;
     private boolean discoveryEnabled;
     private @Nullable List<GetSystemListDTO> cachedSystems = null;
@@ -89,8 +89,8 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
         WolfSmartsetAccountConfiguration config = getConfigAs(WolfSmartsetAccountConfiguration.class);
 
         Integer value;
-        value = config.refreshIntervalConfiguration;
-        refreshIntervalConfigurationMinutes = value == null ? DEFAULT_REFRESH_INTERVAL_CONFIGURATION_MINUTES : value;
+        value = config.refreshIntervalStructure;
+        refreshIntervalStructureMinutes = value == null ? DEFAULT_REFRESH_INTERVAL_CONFIGURATION_MINUTES : value;
 
         value = config.refreshIntervalValues;
         refreshIntervalValuesSeconds = value == null ? DEFAULT_REFRESH_INTERVAL_VALUES_SECONDS : value;
@@ -103,14 +103,17 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
         Boolean booleanValue = config.discoveryEnabled;
         discoveryEnabled = booleanValue == null ? false : booleanValue.booleanValue();
         logger.debug("AccountBridge: System and unit discovery is {}", discoveryEnabled ? "enabled" : "disabled");
-
-        try {
-            api = new WolfSmartsetApi(username, password, httpClient, scheduler);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking authorization");
-            scheduleRefreshJob();
-        } catch (WolfSmartsetCloudException e) {
-            logger.error("unable to create wolf smartset api", e);
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        if (username.trim().isEmpty() || password.trim().isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing username or password");
+        } else {
+            try {
+                api = new WolfSmartsetApi(username, password, httpClient, scheduler);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking authorization");
+                scheduleRefreshJob();
+            } catch (WolfSmartsetCloudException e) {
+                logger.error("unable to create wolf smartset api", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
         }
     }
 
@@ -181,9 +184,9 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
      */
     private void refreshSystems() {
         if (refreshConfigurationCounter.getAndDecrement() == 0) {
-            refreshConfigurationCounter.set(refreshIntervalConfigurationMinutes * 60);
+            refreshConfigurationCounter.set(refreshIntervalStructureMinutes * 60);
             if (api.login()) {
-                logger.info("AccountBridge: refreshing configuration");
+                logger.debug("AccountBridge: refreshing configuration");
                 updateStatus(ThingStatus.ONLINE);
                 cachedSystems = api.getSystems();
                 if (cachedSystems != null) {
@@ -204,7 +207,7 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
         if (refreshValuesCounter.getAndDecrement() == 0) {
             refreshValuesCounter.set(refreshIntervalValuesSeconds);
             if (api.login()) {
-                logger.info("AccountBridge: refreshing values");
+                logger.debug("AccountBridge: refreshing values");
                 updateStatus(ThingStatus.ONLINE);
 
                 var systemConfigs = systemHandlers.values().stream().map(s -> s.getSystemConfig())
