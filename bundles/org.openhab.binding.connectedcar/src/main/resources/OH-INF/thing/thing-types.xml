@@ -94,17 +94,17 @@
 	</thing-type>
 
 
-    <thing-type id="wcwallbox">
-        <label>@text/thing-type.connectedcar.wcwallbox.label</label>
-        <description>@text/thing-type.connectedcar.wcwallbox.description</description>
+	<thing-type id="wcwallbox">
+		<label>@text/thing-type.connectedcar.wcwallbox.label</label>
+		<description>@text/thing-type.connectedcar.wcwallbox.description</description>
 
-        <channel-groups>
-            <channel-group id="general" typeId="general"/>
-        </channel-groups>
+		<channel-groups>
+			<channel-group id="general" typeId="general"/>
+		</channel-groups>
 
-        <representation-property>vin</representation-property>
-        <config-description-ref uri="thing-type:connectedcar:wcwallbox"/>
-    </thing-type>
+		<representation-property>vin</representation-property>
+		<config-description-ref uri="thing-type:connectedcar:wcwallbox"/>
+	</thing-type>
 
 	<channel-group-type id="general">
 		<label>@text/thing-type.connectedcar.vehicle.group.general.label</label>
@@ -178,17 +178,17 @@
 		<label>@text/thing-type.connectedcar.vehicle.group.pictures.label</label>
 		<description>@text/thing-type.connectedcar.vehicle.group.pictures.description</description>
 	</channel-group-type>
-    <channel-group-type id="subscription">
-        <label>@text/thing-type.connectedcar.vehicle.group.subscription.label</label>
-        <description>@text/thing-type.connectedcar.vehicle.group.subscription.description</description>
-    </channel-group-type>
-    <channel-group-type id="rfid">
-        <label>@text/thing-type.connectedcar.vehicle.group.rfid.label</label>
-        <description>@text/thing-type.connectedcar.vehicle.group.rfid.description</description>
-    </channel-group-type>
-    <channel-group-type id="transaction">
-        <label>@text/thing-type.connectedcar.vehicle.group.transaction.label</label>
-        <description>@text/thing-type.connectedcar.vehicle.group.transaction.description</description>
-    </channel-group-type>
+	<channel-group-type id="subscription">
+		<label>@text/thing-type.connectedcar.vehicle.group.subscription.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.subscription.description</description>
+	</channel-group-type>
+	<channel-group-type id="rfid">
+		<label>@text/thing-type.connectedcar.vehicle.group.rfid.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.rfid.description</description>
+	</channel-group-type>
+	<channel-group-type id="transaction">
+		<label>@text/thing-type.connectedcar.vehicle.group.transaction.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.transaction.description</description>
+	</channel-group-type>
 
 </thing:thing-descriptions>

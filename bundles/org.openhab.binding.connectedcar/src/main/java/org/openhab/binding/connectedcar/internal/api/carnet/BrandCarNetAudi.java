@@ -21,10 +21,10 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.connectedcar.internal.api.ApiBrandProperties;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
-import org.openhab.binding.connectedcar.internal.api.ApiBrandProperties;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.IdentityManager;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;

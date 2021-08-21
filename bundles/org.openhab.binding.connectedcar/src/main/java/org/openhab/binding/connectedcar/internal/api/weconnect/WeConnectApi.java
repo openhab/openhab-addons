@@ -52,7 +52,8 @@ public class WeConnectApi extends ApiWithOAuth implements BrandAuthenticator {
     private final Logger logger = LoggerFactory.getLogger(WeConnectApi.class);
     private Map<String, WCVehicle> vehicleData = new HashMap<>();
 
-    public WeConnectApi(ApiHttpClient httpClient, IdentityManager tokenManager, @Nullable ApiEventListener eventListener) {
+    public WeConnectApi(ApiHttpClient httpClient, IdentityManager tokenManager,
+            @Nullable ApiEventListener eventListener) {
         super(httpClient, tokenManager, eventListener);
     }
 

@@ -33,5 +33,4 @@ public interface BrandAuthenticator {
     public ApiIdentity grantAccess(IdentityOAuthFlow oauth) throws ApiException;
 
     public OAuthToken refreshToken(ApiIdentity token) throws ApiException;
-
 }

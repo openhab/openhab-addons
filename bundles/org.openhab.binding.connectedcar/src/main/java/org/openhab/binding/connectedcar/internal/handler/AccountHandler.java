@@ -148,7 +148,7 @@ public class AccountHandler extends BaseBridgeHandler {
                 String detail = e.isSecurityException() ? messages.get("login-failed", getString(e.getMessage()))
                         : getString(e.getMessage());
                 stateChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
-                logger.debug("{}: Initialization failed: {}", detail);
+                logger.debug("{}: Initialization failed: {}", config.getLogId(), detail);
             }
         });
     }

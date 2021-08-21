@@ -235,12 +235,12 @@
 			<label>Identification Number</label>
 			<description>This is the unique ID to identify the wallbox</description>
 		</parameter>
-        <parameter name="numChangingRecords" type="integer" required="false" min="0" max="50">
-            <label>Entries in Charging History</label>
-            <description>Specifies the number of entries in the charging history, 0 to disable.</description>
-            <default>5</default>
-            <advanced>true</advanced>
-        </parameter>
+		<parameter name="numChangingRecords" type="integer" required="false" min="0" max="50">
+			<label>Entries in Charging History</label>
+			<description>Specifies the number of entries in the charging history, 0 to disable.</description>
+			<default>5</default>
+			<advanced>true</advanced>
+		</parameter>
 		<parameter name="pollingInterval" type="integer" required="false" min="5">
 			<label>Polling Interval</label>
 			<description>Status update interval in minutes.</description>

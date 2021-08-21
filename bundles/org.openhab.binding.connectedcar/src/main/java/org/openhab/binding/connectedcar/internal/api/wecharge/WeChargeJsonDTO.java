@@ -24,7 +24,14 @@ import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WC
 
 import com.google.gson.annotations.SerializedName;
 
-public class WeChargeJsonDTO {
+/**
+ * The {@link WeChargeJsonDTO} defines data formats for the WeCharge API
+ *
+ * @author Markus Michels - Initial contribution
+ *
+ */
+@NonNullByDefaultpublic
+class WeChargeJsonDTO {
 
     public class WCLocationAddress {
         public String street, zip, city, country;
@@ -45,7 +52,6 @@ public class WeChargeJsonDTO {
                 }
 
                 public ArrayList<WCLocationsEntry> locations;
-
             }
 
             public String timestamp;
@@ -95,7 +101,6 @@ public class WeChargeJsonDTO {
         public WCLocationAddress address;
         public WCStatuionGeo geo_location;
         public String description;
-
     }
 
     public class WeChargeStationDetails {
@@ -206,7 +211,6 @@ public class WeChargeJsonDTO {
 
         public String timestamp;
         public WeChargeTariff result;
-
     }
 
     public class WCRfidCardsResponse {
@@ -274,7 +278,6 @@ public class WeChargeJsonDTO {
             public String endDateTime;
             @SerializedName("timezone")
             public String timezone;
-
         }
 
         public String timestamp;
@@ -359,7 +362,6 @@ public class WeChargeJsonDTO {
         public Map<String, WeChargeRecord> chargingRecords = new HashMap<>();;
 
         public WeChargeStatus() {
-
         }
 
         public void addStation(WeChargeStationDetails station) {

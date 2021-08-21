@@ -161,5 +161,4 @@ public class WeChargeApi extends ApiWithOAuth implements BrandAuthenticator {
         return callApi("", "https://wecharge.apps.emea.vwapps.io" + uri, crerateParameters().getHeaders(),
                 "getLocationList", classOfT);
     }
-
 }
