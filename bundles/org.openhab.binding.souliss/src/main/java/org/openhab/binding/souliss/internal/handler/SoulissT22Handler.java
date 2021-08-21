@@ -138,41 +138,6 @@ public class SoulissT22Handler extends SoulissGenericHandler {
         }
     }
 
-    @SuppressWarnings("PMD.UnusedPrivateMethod")
-    private PercentType getOhStateT22FromSoulissVal(short sVal) {
-        var iState = 0;
-        switch (sVal) {
-            case SoulissProtocolConstants.SOULISS_T2N_COIL_OPEN:
-                iState = 0;
-                break;
-            case SoulissProtocolConstants.SOULISS_T2N_COIL_CLOSE:
-                iState = 100;
-                break;
-            case SoulissProtocolConstants.SOULISS_T2N_COIL_STOP:
-                iState = 50;
-                break;
-            case SoulissProtocolConstants.SOULISS_T2N_LIMSWITCH_CLOSE:
-                iState = 100;
-                break;
-            case SoulissProtocolConstants.SOULISS_T2N_LIMSWITCH_OPEN:
-                iState = 0;
-                break;
-            case SoulissProtocolConstants.SOULISS_T2N_NOLIMSWITCH:
-                iState = 50;
-                break;
-            case SoulissProtocolConstants.SOULISS_T2N_TIMER_OFF:
-                iState = 50;
-                break;
-            case SoulissProtocolConstants.SOULISS_T2N_STATE_OPEN:
-                iState = 0;
-                break;
-            case SoulissProtocolConstants.SOULISS_T2N_STATE_CLOSE:
-                iState = 100;
-                break;
-        }
-        return PercentType.valueOf(String.valueOf(iState));
-    }
-
     @Override
     public byte getRawState() {
         return t2nRawState;
