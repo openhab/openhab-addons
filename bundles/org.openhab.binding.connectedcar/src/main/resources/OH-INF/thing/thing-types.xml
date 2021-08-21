@@ -78,7 +78,7 @@
 		</channel-groups>
 
 		<representation-property>vin</representation-property>
-		<config-description-ref uri="thing-type:connectedcar:enyakvehicle"/>
+		<config-description-ref uri="thing-type:connectedcar:sevehicle"/>
 	</thing-type>
 
 	<thing-type id="fordvehicle">

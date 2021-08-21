@@ -30,8 +30,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Markus Michels - Initial contribution
  *
  */
-@NonNullByDefaultpublic
-class WeChargeJsonDTO {
+public class WeChargeJsonDTO {
 
     public class WCLocationAddress {
         public String street, zip, city, country;

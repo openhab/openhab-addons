@@ -17,7 +17,6 @@ import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.ApiActionRequest;
@@ -98,7 +97,7 @@ public class ApiRequestQueue {
         }
     }
 
-    public String getApiRequestStatus(@NonNull ApiActionRequest req) throws ApiException {
+    public String getApiRequestStatus(ApiActionRequest req) throws ApiException {
         return API_REQUEST_SUCCESSFUL;
     }
 
