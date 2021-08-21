@@ -72,6 +72,7 @@ Each of these tabs is treated as one unit.
 ## Full Example
 
 ### Things
+
 ````
 Bridge wolfsmartset:account:account "Wolf Smartset Account" [ username="User", password="Password" ] {
     Bridge system 32122305166 "WolfSmartset System CSZ" [ systemId="32122305166" ] {
