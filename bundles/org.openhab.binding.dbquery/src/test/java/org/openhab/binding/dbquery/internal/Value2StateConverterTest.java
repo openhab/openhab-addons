@@ -49,6 +49,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault({})
 class Value2StateConverterTest {
+    public static final BigDecimal BIG_DECIMAL_NUMBER = new BigDecimal("212321213123123123123123");
     private Value2StateConverter instance;
 
     @BeforeEach
@@ -186,11 +187,11 @@ class Value2StateConverterTest {
     }
 
     private static Stream<Number> provideNumericTypes() {
-        return Stream.of(1L, 1.2, 1.2f, -1, 0, new BigDecimal("212321213123123123123123"));
+        return Stream.of(1L, 1.2, 1.2f, -1, 0, BIG_DECIMAL_NUMBER);
     }
 
     private static Stream<Object> provideValuesOfAllSupportedResultRowTypes() {
-        return Stream.of("", "String", Boolean.TRUE, 1L, 1.2, 1.2f, new BigDecimal("212321213123123123123123"),
+        return Stream.of("", "String", Boolean.TRUE, 1L, 1.2, 1.2f, BIG_DECIMAL_NUMBER,
                 "bytes".getBytes(Charset.defaultCharset()), Instant.now(), new Date(), Duration.ofDays(1));
     }
 

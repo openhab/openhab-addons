@@ -53,7 +53,7 @@ public class DBQueryHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        logger.info("createHandler for thing {}", thing.getUID());
+        logger.trace("createHandler for thing {}", thing.getUID());
 
         if (THING_TYPE_QUERY.equals(thingTypeUID)) {
             return new QueryHandler(thing);

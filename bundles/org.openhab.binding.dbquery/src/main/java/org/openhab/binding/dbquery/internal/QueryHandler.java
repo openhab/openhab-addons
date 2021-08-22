@@ -80,7 +80,6 @@ public class QueryHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.trace("initialize query handler for {}", getQueryIdentifier());
         config = getConfigAs(QueryConfiguration.class);
         queryResultExtractor = new QueryResultExtractor(config);
 
@@ -117,7 +116,6 @@ public class QueryHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.trace("dispose query handler for {}", getQueryIdentifier());
         cancelQueryExecutionIntervalIfNeeded();
         cancelCurrentQueryExecution();
         super.dispose();
@@ -132,7 +130,7 @@ public class QueryHandler extends BaseThingHandler {
                 executeQuery();
             }
         } else {
-            logger.debug("Query Thing can only handle RefreshType commands as the thing is read-only");
+            logger.warn("Query Thing can only handle RefreshType commands as the thing is read-only");
         }
     }
 
@@ -230,7 +228,6 @@ public class QueryHandler extends BaseThingHandler {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.trace("bridgeStatusChanged to {} for {}", bridgeStatusInfo.getStatus(), getQueryIdentifier());
         cancelCurrentQueryExecution();
         updateStateWithParentBridgeStatus();
     }

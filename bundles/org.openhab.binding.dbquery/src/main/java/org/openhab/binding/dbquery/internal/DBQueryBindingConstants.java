@@ -32,11 +32,6 @@ public class DBQueryBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_EXECUTE = "execute";
-    public static final String CHANNEL_RESULT_STRING = "resultString";
-    public static final String CHANNEL_RESULT_NUMBER = "resultNumber";
-    public static final String CHANNEL_RESULT_DATETIME = "resultDateTime";
-    public static final String CHANNEL_RESULT_CONTACT = "resultContact";
-    public static final String CHANNEL_RESULT_SWITCH = "resultSwitch";
 
     public static final String CHANNEL_PARAMETERS = "parameters";
     public static final String CHANNEL_CORRECT = "correct";

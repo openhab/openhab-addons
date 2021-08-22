@@ -45,16 +45,6 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
     private @Nullable DatabaseBridgeHandler databaseBridgeHandler;
 
     @Override
-    public void activate() {
-        logger.trace("activate actions");
-    }
-
-    @Override
-    public void deactivate() {
-        logger.trace("deactivate actions");
-    }
-
-    @Override
     @RuleAction(label = "Execute query", description = "Execute query synchronously (use with care)")
     public ActionQueryResult executeQuery(String query, Map<String, @Nullable Object> parameters,
             int timeoutInSeconds) {
@@ -87,7 +77,7 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
     @Override
     @RuleAction(label = "Set query parameters", description = "Set query parameters for a query")
     public void setQueryParameters(@ActionInput(name = "parameters") Map<String, @Nullable Object> parameters) {
-        logger.info("setQueryParameters {}", parameters);
+        logger.debug("setQueryParameters {}", parameters);
         var queryHandler = getThingHandler();
         if (queryHandler instanceof QueryHandler) {
             ((QueryHandler) queryHandler).setParameters(parameters);
