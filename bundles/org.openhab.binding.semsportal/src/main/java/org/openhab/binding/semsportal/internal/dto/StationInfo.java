@@ -17,7 +17,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * POJO containing details about the inverter. Only a very small subset of the available properties is mapped.
  * 
- * @author Julio Gesser
+ * @author Julio Gesser - Initial contribution
  */
 public class StationInfo {
 
