@@ -61,9 +61,6 @@ public enum MiIoQuantiyTypesConversion {
     private final String unitType;
     private final String[] aliasses;
 
-    // private static Map<String, String> stringMap = Arrays.stream(values())
-    // .collect(Collectors.toMap(Enum::toString, MiIoQuantiyTypesConversion::getunitType));
-
     private static Map<String, String> aliasMap() {
         Map<String, String> aliassesMap = new HashMap<>();
         for (MiIoQuantiyTypesConversion miIoQuantiyType : values()) {
