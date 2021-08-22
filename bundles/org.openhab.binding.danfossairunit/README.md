@@ -31,10 +31,10 @@ These are the available configuration parameters:
 | extract_fan_step | main | Dimmer | RO | Current step setting of the fan extracting air from the rooms |
 | boost | main | Switch | RW | Enables fan boost  |
 | night_cooling | main | Switch | RW | Enables night cooling  |
-| room_temp | temps | Number | RO | Temperature of the air in the room of the Air Dial  |
-| room_temp_calculated | temps | Number | RO | Calculated Room Temperature  |
-| outdoor_temp | temps | Number | RO | Temperature of the air outside  |
-| humidity | humidity | Number | RO | Humidity  |
+| room_temp | temps | Number:Temperature | RO | Temperature of the air in the room of the Air Dial  |
+| room_temp_calculated | temps | Number:Temperature | RO | Calculated Room Temperature  |
+| outdoor_temp | temps | Number:Temperature | RO | Temperature of the air outside  |
+| humidity | humidity | Number:Dimensionless | RO | Current relative humidity measured by the unit  |
 | bypass | recuperator | Switch | RW | Disables the heat exchange. Useful in summer when room temperature is above target and outside temperature is below target.  |
 | supply_temp | recuperator | Number | RO | Temperature of air which is passed to the rooms  |
 | extract_temp | recuperator | Number | RO | Temperature of the air as extracted from the rooms  |
