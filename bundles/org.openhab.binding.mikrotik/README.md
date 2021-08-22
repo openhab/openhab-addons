@@ -82,7 +82,7 @@ The WiFi client thing configuration parameters are:
 | continuous | Switch | Connection is considered long-running |  |
 | ssid | String | Wireless Network (SSID) the wireless client is connected to |  |
 | interface | String | Network interface name |  |
-| signal |  |  |  |
+| signal | system.signal-strength | Signal strength (RSSI) |  |
 | upSince | DateTime | Time when thing got up |  |
 | lastSeen | DateTime | Time of when the client was last seen connected |  |
 | txRate | Number:DataTransferRate | Rate of data transmission in megabits per second |  |
