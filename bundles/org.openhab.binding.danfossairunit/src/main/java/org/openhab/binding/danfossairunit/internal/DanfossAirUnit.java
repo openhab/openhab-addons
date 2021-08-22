@@ -23,6 +23,7 @@ import java.time.DateTimeException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,6 +34,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 
 /**
@@ -191,9 +193,9 @@ public class DanfossAirUnit {
         return getBoolean(REGISTER_1_READ, BYPASS) ? OnOffType.ON : OnOffType.OFF;
     }
 
-    public DecimalType getHumidity() throws IOException {
+    public QuantityType<Dimensionless> getHumidity() throws IOException {
         BigDecimal value = BigDecimal.valueOf(asPercentByte(getByte(REGISTER_1_READ, HUMIDITY)));
-        return new DecimalType(value.setScale(1, RoundingMode.HALF_UP));
+        return new QuantityType<>(value.setScale(1, RoundingMode.HALF_UP), Units.PERCENT);
     }
 
     public QuantityType<Temperature> getRoomTemperature() throws IOException, UnexpectedResponseValueException {

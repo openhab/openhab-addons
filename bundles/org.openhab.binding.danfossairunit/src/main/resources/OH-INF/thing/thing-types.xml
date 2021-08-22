@@ -84,7 +84,9 @@
 	<channel-group-type id="humidity">
 		<label>Humidity</label>
 		<channels>
-			<channel id="humidity" typeId="humidity"/>
+			<channel id="humidity" typeId="humidity">
+				<description>Current relative humidity measured by the unit</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="recuperator">
@@ -187,7 +189,7 @@
 		<state pattern="%.0f %%" readOnly="true" min="0" max="100"/>
 	</channel-type>
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<category>Humidity</category>
 		<tags>
