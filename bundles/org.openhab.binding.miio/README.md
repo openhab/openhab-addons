@@ -180,6 +180,9 @@ Currently the miio binding supports more than 290 different models.
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
 |------------------------------|------------------|------------------------|-----------|------------|
 | AUX Smart Air Conditioner    | miio:unsupported | aux.aircondition.v1    | No        |            |
+| Mi air frying pan            | miio:basic       | [careli.fryer.maf01](#careli-fryer-maf01) | Yes       | Identified manual actions for execution<br />`action{"did":"air-fryer-start-cook","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"air-fryer-cancel-cooking","siid":2,"aiid":2,"in":[]}`<br />`action{"did":"air-fryer-pause","siid":2,"aiid":3,"in":[]}`<br />`action{"did":"custom-start-cook","siid":3,"aiid":1,"in":[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]}`<br />`action{"did":"custom-resume-cook","siid":3,"aiid":2,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Air Fryer (3.5L)    | miio:basic       | [careli.fryer.maf02](#careli-fryer-maf02) | Yes       | Identified manual actions for execution<br />`action{"did":"air-fryer-start-cook","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"air-fryer-cancel-cooking","siid":2,"aiid":2,"in":[]}`<br />`action{"did":"air-fryer-pause","siid":2,"aiid":3,"in":[]}`<br />`action{"did":"custom-start-custom-cook","siid":3,"aiid":1,"in":[1.0, 3.0, 4.0, 5.0, 6.0, 7.0]}`<br />`action{"did":"custom-resume-cooking","siid":3,"aiid":2,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi air frying pan            | miio:basic       | [careli.fryer.maf03](#careli-fryer-maf03) | Yes       | Identified manual actions for execution<br />`action{"did":"air-fryer-start-cook","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"air-fryer-cancel-cooking","siid":2,"aiid":2,"in":[]}`<br />`action{"did":"air-fryer-pause","siid":2,"aiid":3,"in":[]}`<br />`action{"did":"custom-start-cook","siid":3,"aiid":1,"in":[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]}`<br />`action{"did":"custom-resume-cook","siid":3,"aiid":2,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Qingping Air Monitor Lite    | miio:basic       | [cgllc.airm.cgdn1](#cgllc-airm-cgdn1) | Yes       | Identified manual actions for execution<br />`action{"did":"settings-set-start-time","siid":9,"aiid":2,"in":[2.0]}`<br />`action{"did":"settings-set-end-time","siid":9,"aiid":3,"in":[3.0]}`<br />`action{"did":"settings-set-frequency","siid":9,"aiid":4,"in":[4.0]}`<br />`action{"did":"settings-set-screen-off","siid":9,"aiid":5,"in":[5.0]}`<br />`action{"did":"settings-set-device-off","siid":9,"aiid":6,"in":[6.0]}`<br />`action{"did":"settings-set-temp-unit","siid":9,"aiid":7,"in":[7.0]}`<br />Please test and feedback if they are working to they can be linked to a channel. |
 | Mi Multifunction Air Monitor | miio:basic       | [cgllc.airmonitor.b1](#cgllc-airmonitor-b1) | Yes       |            |
 | Qingping Air Monitor         | miio:basic       | [cgllc.airmonitor.s1](#cgllc-airmonitor-s1) | Yes       |            |
@@ -522,6 +525,67 @@ All devices have available the following channels (marked as advanced) besides t
 note: the ADVANCED  `actions#commands` and `actions#rpc` channels can be used to send commands that are not automated via the binding. This is available for all devices
 e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See https://github.com/marcelrv/XiaomiRobotVacuumProtocol for all known available commands.
 
+
+### Mi air frying pan (<a name="careli-fryer-maf01">careli.fryer.maf01</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Air Fryer Start Cook","air-fryer-cancel-cooking"="Air Fryer Cancel Cooking","air-fryer-pause"="Air Fryer Pause","custom-start-cook"="Custom Start Cook","custom-resume-cook"="Custom Resume Cook"]` |
+| status               | Number               | Air Fryer - Status                       | Value mapping `["0"="Shutdown","1"="Standby","2"="Pause","3"="Appointment","4"="Cooking","5"="Preheat ","6"="Cooked","7"="Preheat Finish","8"="Preheat Pause","9"="Pause2"]` |
+| fault                | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="E1","2"="E2"]` |
+| target_time          | Number:Time          | Air Fryer - Target Time                  |            |
+| target_temperature   | Number:Temperature   | Air Fryer - Target Temperature           |            |
+| left_time            | Number:Time          | Air Fryer - Left Time                    |            |
+| recipe_id            | String               | Custom - Recipe Id                       |            |
+| recipe_name          | String               | Custom - Recipe Name                     |            |
+| work_time            | Number:Time          | Custom - Work Time                       |            |
+| work_temp            | Number:Temperature   | Custom - Work Temp                       |            |
+| appoint_time         | Number:Time          | Custom - Appoint Time                    |            |
+| food_quantity        | Number               | Custom - Food Quantity                   | Value mapping `["0"="Null","1"="Single","2"="Double","3"="Half","4"="Full"]` |
+| preheat_switch       | Number               | Custom - Preheat Switch                  | Value mapping `["0"="Null","1"="Off","2"="On"]` |
+| appoint_time_left    | Number:Time          | Custom - Appoint Time Left               |            |
+| recipe_sync          | String               | Custom - Recipe Sync                     |            |
+| turn_pot             | Number               | Custom - Turn Pot                        | Value mapping `["1"="Switch Off","0"="Not Turn Pot","2"="Turn Pot"]` |
+
+### Mi Smart Air Fryer (3.5L) (<a name="careli-fryer-maf02">careli.fryer.maf02</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Air Fryer Start Cook","air-fryer-cancel-cooking"="Air Fryer Cancel Cooking","air-fryer-pause"="Air Fryer Pause","custom-start-custom-cook"="Custom Start Custom Cook","custom-resume-cooking"="Custom Resume Cooking"]` |
+| status               | Number               | Air Fryer - Status                       | Value mapping `["0"="Shutdown","1"="Standby","2"="Pause","3"="Appointment","4"="Cooking","5"="Preheat ","6"="Cooked","7"="Preheat Finish","8"="Preheat Pause","9"="Pause2"]` |
+| fault                | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="E1","2"="E2"]` |
+| target_time          | Number:Time          | Air Fryer - Target Time                  |            |
+| target_temperature   | Number:Temperature   | Air Fryer - Target Temperature           |            |
+| left_time            | Number:Time          | Air Fryer - Left Time                    |            |
+| recipe_id            | String               | Custom - Recipe Id                       |            |
+| work_time            | Number:Time          | Custom - Work Time                       |            |
+| work_temp            | Number:Temperature   | Custom - Work Temp                       |            |
+| appoint_time         | Number:Time          | Custom - Appoint Time                    |            |
+| food_quantity        | Number               | Custom - Food Quantity                   | Value mapping `["0"="Null","1"="Single","2"="Double","3"="Half","4"="Full"]` |
+| preheat_switch       | Number               | Custom - Preheat Switch                  | Value mapping `["0"="Null","1"="Off","2"="On"]` |
+| appoint_time_left    | Number:Time          | Custom - Appoint Time Left               |            |
+| turn_pot             | Number               | Custom - Turn Pot                        | Value mapping `["1"="Switch Off","0"="Not Turn Pot","2"="Turn Pot"]` |
+
+### Mi air frying pan (<a name="careli-fryer-maf03">careli.fryer.maf03</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Air Fryer Start Cook","air-fryer-cancel-cooking"="Air Fryer Cancel Cooking","air-fryer-pause"="Air Fryer Pause","custom-start-cook"="Custom Start Cook","custom-resume-cook"="Custom Resume Cook"]` |
+| status               | Number               | Air Fryer - Status                       | Value mapping `["0"="Shutdown","1"="Standby","2"="Pause","3"="Appointment","4"="Cooking","5"="Preheat ","6"="Cooked","7"="Preheat Finish","8"="Preheat Pause","9"="Pause2"]` |
+| fault                | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="E1","2"="E2"]` |
+| target_time          | Number:Time          | Air Fryer - Target Time                  |            |
+| target_temperature   | Number:Temperature   | Air Fryer - Target Temperature           |            |
+| left_time            | Number:Time          | Air Fryer - Left Time                    |            |
+| recipe_id            | String               | Custom - Recipe Id                       |            |
+| recipe_name          | String               | Custom - Recipe Name                     |            |
+| work_time            | Number:Time          | Custom - Work Time                       |            |
+| work_temp            | Number:Temperature   | Custom - Work Temp                       |            |
+| appoint_time         | Number:Time          | Custom - Appoint Time                    |            |
+| food_quantity        | Number               | Custom - Food Quantity                   | Value mapping `["0"="Null","1"="Single","2"="Double","3"="Half","4"="Full"]` |
+| preheat_switch       | Number               | Custom - Preheat Switch                  | Value mapping `["0"="Null","1"="Off","2"="On"]` |
+| appoint_time_left    | Number:Time          | Custom - Appoint Time Left               |            |
+| recipe_sync          | String               | Custom - Recipe Sync                     |            |
+| turn_pot             | Number               | Custom - Turn Pot                        | Value mapping `["1"="Switch Off","0"="Not Turn Pot","2"="Turn Pot"]` |
 
 ### Qingping Air Monitor Lite (<a name="cgllc-airm-cgdn1">cgllc.airm.cgdn1</a>) Channels
 
@@ -5130,6 +5194,76 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 | Number  | actions#segment                   | Room Clean  (enter room #) |
 
 
+
+### Mi air frying pan (careli.fryer.maf01) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_fryer "Mi air frying pan" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
+Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer) {channel="miio:basic:fryer:target_temperature"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+String recipe_id "Custom - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
+String recipe_name "Custom - Recipe Name" (G_fryer) {channel="miio:basic:fryer:recipe_name"}
+Number:Time work_time "Custom - Work Time" (G_fryer) {channel="miio:basic:fryer:work_time"}
+Number:Temperature work_temp "Custom - Work Temp" (G_fryer) {channel="miio:basic:fryer:work_temp"}
+Number:Time appoint_time "Custom - Appoint Time" (G_fryer) {channel="miio:basic:fryer:appoint_time"}
+Number food_quantity "Custom - Food Quantity" (G_fryer) {channel="miio:basic:fryer:food_quantity"}
+Number preheat_switch "Custom - Preheat Switch" (G_fryer) {channel="miio:basic:fryer:preheat_switch"}
+Number:Time appoint_time_left "Custom - Appoint Time Left" (G_fryer) {channel="miio:basic:fryer:appoint_time_left"}
+String recipe_sync "Custom - Recipe Sync" (G_fryer) {channel="miio:basic:fryer:recipe_sync"}
+Number turn_pot "Custom - Turn Pot" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+```
+
+### Mi Smart Air Fryer (3.5L) (careli.fryer.maf02) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_fryer "Mi Smart Air Fryer (3.5L)" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
+Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer) {channel="miio:basic:fryer:target_temperature"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+String recipe_id "Custom - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
+Number:Time work_time "Custom - Work Time" (G_fryer) {channel="miio:basic:fryer:work_time"}
+Number:Temperature work_temp "Custom - Work Temp" (G_fryer) {channel="miio:basic:fryer:work_temp"}
+Number:Time appoint_time "Custom - Appoint Time" (G_fryer) {channel="miio:basic:fryer:appoint_time"}
+Number food_quantity "Custom - Food Quantity" (G_fryer) {channel="miio:basic:fryer:food_quantity"}
+Number preheat_switch "Custom - Preheat Switch" (G_fryer) {channel="miio:basic:fryer:preheat_switch"}
+Number:Time appoint_time_left "Custom - Appoint Time Left" (G_fryer) {channel="miio:basic:fryer:appoint_time_left"}
+Number turn_pot "Custom - Turn Pot" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+```
+
+### Mi air frying pan (careli.fryer.maf03) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_fryer "Mi air frying pan" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
+Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer) {channel="miio:basic:fryer:target_temperature"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+String recipe_id "Custom - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
+String recipe_name "Custom - Recipe Name" (G_fryer) {channel="miio:basic:fryer:recipe_name"}
+Number:Time work_time "Custom - Work Time" (G_fryer) {channel="miio:basic:fryer:work_time"}
+Number:Temperature work_temp "Custom - Work Temp" (G_fryer) {channel="miio:basic:fryer:work_temp"}
+Number:Time appoint_time "Custom - Appoint Time" (G_fryer) {channel="miio:basic:fryer:appoint_time"}
+Number food_quantity "Custom - Food Quantity" (G_fryer) {channel="miio:basic:fryer:food_quantity"}
+Number preheat_switch "Custom - Preheat Switch" (G_fryer) {channel="miio:basic:fryer:preheat_switch"}
+Number:Time appoint_time_left "Custom - Appoint Time Left" (G_fryer) {channel="miio:basic:fryer:appoint_time_left"}
+String recipe_sync "Custom - Recipe Sync" (G_fryer) {channel="miio:basic:fryer:recipe_sync"}
+Number turn_pot "Custom - Turn Pot" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+```
 
 ### Qingping Air Monitor Lite (cgllc.airm.cgdn1) item file lines
 

@@ -25,6 +25,9 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public enum MiIoDevices {
     AUX_AIRCONDITION_V1("aux.aircondition.v1", "AUX Smart Air Conditioner", THING_TYPE_UNSUPPORTED),
+    CARELI_FRYER_MAF01("careli.fryer.maf01", "Mi air frying pan", THING_TYPE_BASIC),
+    CARELI_FRYER_MAF02("careli.fryer.maf02", "Mi Smart Air Fryer (3.5L)", THING_TYPE_BASIC),
+    CARELI_FRYER_MAF03("careli.fryer.maf03", "Mi air frying pan", THING_TYPE_BASIC),
     CGLLC_AIRM_CGDN1("cgllc.airm.cgdn1", "Qingping Air Monitor Lite", THING_TYPE_BASIC),
     CGLLC_AIRMONITOR_B1("cgllc.airmonitor.b1", "Mi Multifunction Air Monitor", THING_TYPE_BASIC),
     CGLLC_AIRMONITOR_S1("cgllc.airmonitor.s1", "Qingping Air Monitor", THING_TYPE_BASIC),
