@@ -13,7 +13,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.awattar.internal.*;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
@@ -33,8 +32,8 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(aWATTarBestpriceHandler.class);
 
     private final int thingRefreshInterval = 60;
-    private @Nullable ScheduledFuture<?> thingRefresher;
-    protected @Nullable aWATTarBestpriceConfiguration config = null;
+    private ScheduledFuture<?> thingRefresher;
+    protected aWATTarBestpriceConfiguration config = null;
     private final TimeZoneProvider timeZoneProvider;
 
     public aWATTarBestpriceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {

@@ -11,7 +11,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.*;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.awattar.internal.aWATTarBridgeConfiguration;
@@ -44,7 +43,7 @@ import com.google.gson.Gson;
 public class aWATTarBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(aWATTarBridgeHandler.class);
     private final HttpClient httpClient;
-    private @Nullable ScheduledFuture<?> dataRefresher;
+    private ScheduledFuture<?> dataRefresher;
 
     private final String URL_DE = "https://api.awattar.de/v1/marketdata";
     private final String URL_AT = "https://api.awattar.at/v1/marketdata";
@@ -53,7 +52,7 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
     // This cache stores price data for up to two days
     private SortedMap<Long, aWATTarPrice> priceMap = null;
     private final int dataRefreshInterval = 60;
-    private @Nullable aWATTarBridgeConfiguration config = null;
+    private aWATTarBridgeConfiguration config = null;
     private double vatFactor = 0;
 
     private long lastUpdated = 0;
@@ -75,6 +74,11 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
         logger.trace("Initializing aWATTar bridge {}", this);
         updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(aWATTarBridgeConfiguration.class);
+        if (config == null) {
+            logger.error("No config provided!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Config missing");
+            return;
+        }
         vatFactor = 1 + (config.vatPercent / 100);
         basePrice = config.basePrice;
         try {
