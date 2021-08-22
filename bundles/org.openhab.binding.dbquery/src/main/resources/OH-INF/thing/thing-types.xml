@@ -29,12 +29,12 @@
 
 		<config-description>
 			<parameter name="query" type="text" required="true">
-				<label>Query definition</label>
+				<label>Query Definition</label>
 				<description>Query definition using native query language</description>
 				<context>script</context>
 			</parameter>
 			<parameter name="hasParameters" type="boolean">
-				<label>Query has parameters</label>
+				<label>Query has Parameters</label>
 				<description>True if the query has parameters, otherwise false</description>
 				<default>false</default>
 			</parameter>
@@ -75,37 +75,37 @@
 
 	<channel-type id="execute-channel">
 		<item-type>Switch</item-type>
-		<label>Executed query channel</label>
+		<label>Execute Query</label>
 		<description>Send ON to execute the query, the current state tells if the query is running</description>
 	</channel-type>
 	<channel-type id="result-channel-string">
 		<item-type>String</item-type>
-		<label>Executed query result channel with String type</label>
+		<label>String Result</label>
 		<description>Execute query and binds result value to channel as a String</description>
 	</channel-type>
 	<channel-type id="result-channel-number">
 		<item-type>Number</item-type>
-		<label>Executed query result channel with Number type</label>
+		<label>Number Result</label>
 		<description>Execute query and binds result value to channel as a Number</description>
 	</channel-type>
 	<channel-type id="result-channel-datetime">
 		<item-type>DateTime</item-type>
-		<label>Executed query result channel with DateTime type</label>
+		<label>DateTime Result</label>
 		<description>Execute query and binds result value to channel as a DateTime</description>
 	</channel-type>
 	<channel-type id="result-channel-contact">
 		<item-type>DateTime</item-type>
-		<label>Executed query result channel with Contact type</label>
+		<label>Contact Result</label>
 		<description>Execute query and binds result value to channel as a Contact</description>
 	</channel-type>
 	<channel-type id="result-channel-switch">
 		<item-type>Switch</item-type>
-		<label>Executed query result channel with Switch type</label>
+		<label>Switch Result</label>
 		<description>Execute query and binds result value to channel as a Switch</description>
 	</channel-type>
 	<channel-type id="parameters-channel">
 		<item-type>String</item-type>
-		<label>Last query parameters exposed as a JSON object</label>
+		<label>JSON Result</label>
 	</channel-type>
 	<channel-type id="correct-channel">
 		<item-type>Switch</item-type>

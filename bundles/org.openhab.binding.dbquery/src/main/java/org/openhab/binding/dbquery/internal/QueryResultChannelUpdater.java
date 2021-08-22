@@ -58,7 +58,6 @@ public class QueryResultChannelUpdater {
             Class<? extends State> targetType = calculateItemType(channel);
             State state = value2StateConverter.convertValue(extractedResult, targetType);
             channelStateUpdater.updateChannelState(channel, state);
-            logger.trace("Channel {} state updated to {}", channel.getUID(), state);
         }
     }
 
