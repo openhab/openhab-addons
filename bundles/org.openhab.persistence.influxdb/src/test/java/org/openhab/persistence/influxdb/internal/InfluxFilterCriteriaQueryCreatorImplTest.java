@@ -91,7 +91,7 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
         criteria.setOrdering(null);
 
         String queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\".\"/.*/\";"));
+        assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM \"origin\"./.*/;"));
 
         String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2, equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)"));

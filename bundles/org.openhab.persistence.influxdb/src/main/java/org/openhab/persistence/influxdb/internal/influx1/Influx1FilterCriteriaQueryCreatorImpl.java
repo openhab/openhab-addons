@@ -122,7 +122,7 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
         if (escapeTableName) {
             Appender.appendName("\"" + tableName + "\"", sb);
         } else {
-            sb.append("\"" + tableName + "\"");
+            sb.append(tableName);
         }
         return sb.toString();
     }
