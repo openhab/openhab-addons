@@ -31,7 +31,7 @@ public enum MiIoQuantiyTypesConversion {
     DENSITY("Density", "mg/m3"),
     DIMENSIONLESS("Dimensionless", "percent", "percentage", "ppm"),
     ELECTRIC_POTENTIAL("ElectricPotential", "volt"),
-    POWER("Power", "watt"),
+    POWER("Power", "watt", "w"),
     CURRENT("ElectricCurrent", "ampere", "mA"),
     ILLUMINANCE("Illuminance", "lux"),
     PRESSURE("Pressure", "pascal"),
@@ -40,7 +40,7 @@ public enum MiIoQuantiyTypesConversion {
     VOLUME("Volume", "litre", "liter", "m3");
 
     /*
-     * availale options according to miot spec:
+     * available options according to miot spec:
      * percentage
      * Celsius degrees Celsius
      * seconds

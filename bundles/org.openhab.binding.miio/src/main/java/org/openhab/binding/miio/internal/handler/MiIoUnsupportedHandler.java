@@ -196,44 +196,56 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         logger.info("{}", sb.toString());
     }
 
-    // TODO: This is WORK IN PROGRESS... not functional yet
     private void executeCreateMiotTestFile() {
-        LinkedHashMap<String, MiIoBasicChannel> channelList = collectProperties(conf.model);
+        sb = new StringBuilder();
         try {
             MiotParser miotParser;
             miotParser = MiotParser.parse(model, httpClient);
-            logger.info("urn: ", miotParser.getUrn());
+            logger.info("urn: {}", miotParser.getUrn());
             logger.info("{}", miotParser.getUrnData());
-
             MiIoBasicDevice device = miotParser.getDevice();
-
+            if (device == null) {
+                logger.debug("Error while creating experimental miot db file for {}.", conf.model);
+                return;
+            }
             sendCommand(MiIoCommand.MIIO_INFO);
-            sb = new StringBuilder();
             logger.info("Start experimental creation of database file based on MIOT spec for device '{}'. ",
                     miDevice.toString());
             sb.append("Info for ");
             sb.append(conf.model);
             sb.append("\r\n");
-            sb.append("Properties: ");
+            sb.append("Database file created:");
+            sb.append(writeDevice(device, true));
+            sb.append("\r\n");
+            sb.append(MiotParser.toJson(device));
+            sb.append("\r\n");
+            sb.append("Testing Properties:\r\n");
             int lastCommand = -1;
-            for (String c : channelList.keySet()) {
-                MiIoBasicChannel ch = channelList.get(c);
-                String cmd = ch.getChannelCustomRefreshCommand().isBlank() ? ("get_prop[" + c + "]")
-                        : ch.getChannelCustomRefreshCommand();
-                sb.append(c);
-                sb.append(" -> ");
-                lastCommand = sendCommand(cmd);
-                sb.append(lastCommand);
-                sb.append(", ");
-                testChannelList.put(lastCommand, channelList.get(c));
+            for (MiIoBasicChannel ch : device.getDevice().getChannels()) {
+                if (ch.isMiOt() && ch.getRefresh()) {
+                    JsonObject json = new JsonObject();
+                    json.addProperty("did", ch.getProperty());
+                    json.addProperty("siid", ch.getSiid());
+                    json.addProperty("piid", ch.getPiid());
+                    String cmd = ch.getChannelCustomRefreshCommand().isBlank()
+                            ? ("get_properties[" + json.toString() + "]")
+                            : ch.getChannelCustomRefreshCommand();
+                    sb.append(ch.getChannel());
+                    sb.append(" -> ");
+                    sb.append(cmd);
+                    sb.append(" -> ");
+                    lastCommand = sendCommand(cmd);
+                    sb.append(lastCommand);
+                    sb.append(", \r\n");
+                    testChannelList.put(lastCommand, ch);
+                }
             }
             this.lastCommand = lastCommand;
             sb.append("\r\n");
             logger.info("{}", sb.toString());
         } catch (Exception e) {
             logger.debug("Error while creating experimental miot db file for {}", conf.model);
-        } finally {
-
+            logger.info("{}", sb.toString());
         }
     }
 
@@ -303,7 +315,14 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         sb.append("===================================\r\n");
         sb.append("Device Info: ");
         sb.append(info);
+        sb.append("\r\n");
+        sb.append(supportedChannelList.size());
+        sb.append(" channels with responses.\r\n");
+        int miotChannels = 0;
         for (MiIoBasicChannel ch : supportedChannelList.keySet()) {
+            if (ch.isMiOt()) {
+                miotChannels++;
+            }
             sb.append("Property: ");
             sb.append(Utils.minLengthString(ch.getProperty(), 15));
             sb.append(" Friendly Name: ");
@@ -312,15 +331,17 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
             sb.append(supportedChannelList.get(ch));
             sb.append("\r\n");
         }
-        if (!supportedChannelList.isEmpty()) {
+        boolean isMiot = miotChannels > supportedChannelList.size() / 2;
+        if (!supportedChannelList.isEmpty() && !isMiot) {
             MiIoBasicDevice mbd = createBasicDeviceDb(model, new ArrayList<>(supportedChannelList.keySet()));
             sb.append("Created experimental database for your device:\r\n");
             sb.append(GSONP.toJson(mbd));
             sb.append("\r\nDatabase file saved to: ");
-            sb.append(writeDevice(mbd));
+            sb.append(writeDevice(mbd, false));
             isIdentified = false;
         } else {
-            sb.append("No supported channels found.\r\n");
+            sb.append(isMiot ? "Miot file already created. Manually remove non-functional channels.\r\n"
+                    : "No supported channels found.\r\n");
         }
         sb.append("\r\nDevice testing file saved to: ");
         sb.append(writeLog());
@@ -351,14 +372,14 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         return device;
     }
 
-    private String writeDevice(MiIoBasicDevice device) {
+    private String writeDevice(MiIoBasicDevice device, boolean miot) {
         File folder = new File(BINDING_DATABASE_PATH);
         if (!folder.exists()) {
             folder.mkdirs();
         }
-        File dataFile = new File(folder, model + "-experimental.json");
+        File dataFile = new File(folder, model + (miot ? "-miot" : "") + "-experimental.json");
         try (FileWriter writer = new FileWriter(dataFile)) {
-            writer.write(GSONP.toJson(device));
+            writer.write(miot ? MiotParser.toJson(device) : GSONP.toJson(device));
             logger.debug("Experimental database file created: {}", dataFile.getAbsolutePath());
             return dataFile.getAbsolutePath().toString();
         } catch (IOException e) {

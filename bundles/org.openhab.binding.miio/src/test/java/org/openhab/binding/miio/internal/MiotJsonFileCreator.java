@@ -53,7 +53,7 @@ public class MiotJsonFileCreator {
 
     private static final String BASEDIR = "./src/main/resources/db/";
     private static final String FILENAME_EXTENSION = "-miot.json";
-    private static final boolean overwriteFile = false;
+    private static final boolean OVERWRITE_EXISTING_DATABASE_FILE = false;
 
     @Disabled
     public static void main(String[] args) {
@@ -159,7 +159,7 @@ public class MiotJsonFileCreator {
                 if (device != null) {
                     LOGGER.info("Device: {}", device);
                     String fileName = String.format("%s%s%s", BASEDIR, model, FILENAME_EXTENSION);
-                    if (!overwriteFile) {
+                    if (!OVERWRITE_EXISTING_DATABASE_FILE) {
                         int counter = 0;
                         while (new File(fileName).isFile()) {
                             fileName = String.format("%s%s-%d%s", BASEDIR, model, counter, FILENAME_EXTENSION);

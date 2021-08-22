@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -66,7 +65,6 @@ public class MiotParser {
 
     private static final String BASEURL = "http://miot-spec.org/miot-spec-v2/";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final JsonParser PARSER = new JsonParser();
     private static final boolean SKIP_SIID_1 = true;
 
     private String model;
@@ -93,13 +91,22 @@ public class MiotParser {
         }
     }
 
-    public void writeDevice(String path, MiIoBasicDevice device) {
+    /**
+     * Outputs the device json file touched up so the format matches the regular OH standard formatting
+     *
+     * @param device
+     * @return
+     */
+    static public String toJson(MiIoBasicDevice device) {
         String usersJson = GSON.toJson(device);
+        usersJson = usersJson.replace(".0,\n", ",\n");
+        usersJson = usersJson.replace("\n", "\r\n").replace("  ", "\t");
+        return usersJson;
+    }
+
+    public void writeDevice(String path, MiIoBasicDevice device) {
         try (PrintWriter out = new PrintWriter(path)) {
-            // touch up so the format matches the regular OH standard formatting
-            usersJson = usersJson.replace(".0,\n", ",\n");
-            usersJson = usersJson.replace("\n", "\r\n").replace("  ", "\t");
-            out.println(usersJson);
+            out.println(toJson(device));
             logger.info("Database file created:{}", path);
         } catch (FileNotFoundException e) {
             logger.info("Error writing file: {}", e.getMessage());
@@ -333,7 +340,7 @@ public class MiotParser {
             logger.info("No actions defined for device");
         }
         unknownUnits.remove("none");
-        if (unknownUnits.size() > 0) {
+        if (!unknownUnits.isEmpty()) {
             logger.info("New units identified (inform developer): {}", String.join(", ", unknownUnits));
         }
 
@@ -348,10 +355,10 @@ public class MiotParser {
             miIoBasicChannel.setChannel("actions");
             miIoBasicChannel.setFriendlyName("Actions");
             miIoBasicChannel.setType("String");
+            miIoBasicChannel.setRefresh(false);
             StateDescriptionDTO stateDescription = new StateDescriptionDTO();
-            List<@NonNull OptionsValueListDTO> options = new LinkedList<>();
-            List<@NonNull MiIoDeviceAction> miIoDeviceActions = new LinkedList<>();
-            // TODO
+            List<OptionsValueListDTO> options = new LinkedList<>();
+            List<MiIoDeviceAction> miIoDeviceActions = new LinkedList<>();
             deviceActions.forEach((action, service) -> {
                 String actionId = action.type.substring(action.type.indexOf("action:")).split(":")[1];
                 String serviceId = service.type.substring(service.type.indexOf("service:")).split(":")[1];
@@ -366,13 +373,13 @@ public class MiotParser {
                 miIoDeviceAction.setSiid(service.siid);
                 miIoDeviceAction.setAiid(action.iid);
                 if (!action.in.isEmpty()) {
-                    miIoDeviceAction.setParameters(new JsonParser().parse(GSON.toJson(action.in)).getAsJsonArray());
+                    miIoDeviceAction.setParameters(JsonParser.parseString(GSON.toJson(action.in)).getAsJsonArray());
                     miIoDeviceAction.setparameterType("fromparameter");
                 }
                 MiIoDeviceActionCondition miIoDeviceActionCondition = new MiIoDeviceActionCondition();
                 String json = String.format("[{ \"matchValue\"=\"%s\"}]", description);
                 miIoDeviceActionCondition.setName("matchValue");
-                miIoDeviceActionCondition.setParameters(new JsonParser().parse(json).getAsJsonArray());
+                miIoDeviceActionCondition.setParameters(JsonParser.parseString(json).getAsJsonArray());
                 miIoDeviceAction.setCondition(miIoDeviceActionCondition);
                 miIoDeviceActions.add(miIoDeviceAction);
             });
@@ -402,7 +409,7 @@ public class MiotParser {
         String urlStr = BASEURL + "instance?type=" + urn;
         logger.info("miot info: {}", urlStr);
         response = httpClient.newRequest(urlStr).timeout(15, TimeUnit.SECONDS).send();
-        JsonElement json = PARSER.parse(response.getContentAsString());
+        JsonElement json = JsonParser.parseString(response.getContentAsString());
         this.urnData = json;
         return json;
     }
@@ -412,10 +419,7 @@ public class MiotParser {
         try {
             response = httpClient.newRequest(BASEURL + "instances?status=released").timeout(15, TimeUnit.SECONDS)
                     .send();
-            // logger.info("{}", HttpUtil.executeUrl("GET", BASEURL + "instances?status=released", 15000));
-            // String resp2 = HttpUtil.executeUrl("GET", BASEURL + "instances?status=released", 15000);
-            // logger.info("COMPARISON ===>>>>> {} ", resp2.contentEquals(response.getContentAsString()));
-            JsonElement json = PARSER.parse(response.getContentAsString());
+            JsonElement json = JsonParser.parseString(response.getContentAsString());
             UrnsDTO data = GSON.fromJson(json, UrnsDTO.class);
             for (ModelUrnsDTO device : data.getInstances()) {
                 if (device.getModel().contentEquals(model)) {
