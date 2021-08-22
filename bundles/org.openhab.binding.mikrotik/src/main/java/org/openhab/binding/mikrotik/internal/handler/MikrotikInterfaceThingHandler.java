@@ -132,10 +132,10 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
                     newState = StateUtil.intOrNull(iface.getLinkDowns());
                     break;
                 case MikrotikBindingConstants.CHANNEL_TX_DATA_RATE:
-                    newState = StateUtil.floatOrNull(txByteRate.getMegabitRate());
+                    newState = StateUtil.qtyBytesPerSecOrNull(txByteRate.getMegabitRate());
                     break;
                 case MikrotikBindingConstants.CHANNEL_RX_DATA_RATE:
-                    newState = StateUtil.floatOrNull(rxByteRate.getMegabitRate());
+                    newState = StateUtil.qtyBytesPerSecOrNull(rxByteRate.getMegabitRate());
                     break;
                 case MikrotikBindingConstants.CHANNEL_TX_PACKET_RATE:
                     newState = StateUtil.floatOrNull(txPacketRate.getRate());

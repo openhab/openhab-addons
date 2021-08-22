@@ -18,10 +18,8 @@ import java.time.ZoneId;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.*;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -35,6 +33,18 @@ public class StateUtil {
 
     public static State stringOrNull(@Nullable String value) {
         return value == null ? UnDefType.NULL : new StringType(value);
+    }
+
+    public static State qtyBytesPerSecOrNull(@Nullable Float value) {
+        return value == null ? UnDefType.NULL : new QuantityType(value, Units.BYTE.divide(Units.SECOND));
+    }
+
+    public static State qtyPercentOrNull(@Nullable Integer value) {
+        return value == null ? UnDefType.NULL : new QuantityType(value, Units.PERCENT);
+    }
+
+    public static State qtyBytesOrNull(@Nullable Integer value) {
+        return value == null ? UnDefType.NULL : new QuantityType(value, Units.BYTE);
     }
 
     public static State intOrNull(@Nullable Integer value) {

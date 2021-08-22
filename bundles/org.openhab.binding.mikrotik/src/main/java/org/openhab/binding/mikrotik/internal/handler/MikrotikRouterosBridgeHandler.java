@@ -236,25 +236,25 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
                     newState = StateUtil.timeOrNull(rbRes.getUptimeStart());
                     break;
                 case MikrotikBindingConstants.CHANNEL_FREE_SPACE:
-                    newState = StateUtil.intOrNull(rbRes.getFreeSpace());
+                    newState = StateUtil.qtyBytesOrNull(rbRes.getFreeSpace());
                     break;
                 case MikrotikBindingConstants.CHANNEL_TOTAL_SPACE:
-                    newState = StateUtil.intOrNull(rbRes.getTotalSpace());
+                    newState = StateUtil.qtyBytesOrNull(rbRes.getTotalSpace());
                     break;
                 case MikrotikBindingConstants.CHANNEL_USED_SPACE:
-                    newState = StateUtil.intOrNull(rbRes.getSpaceUse());
+                    newState = StateUtil.qtyPercentOrNull(rbRes.getSpaceUse());
                     break;
                 case MikrotikBindingConstants.CHANNEL_FREE_MEM:
-                    newState = StateUtil.intOrNull(rbRes.getFreeMem());
+                    newState = StateUtil.qtyBytesOrNull(rbRes.getFreeMem());
                     break;
                 case MikrotikBindingConstants.CHANNEL_TOTAL_MEM:
-                    newState = StateUtil.intOrNull(rbRes.getTotalMem());
+                    newState = StateUtil.qtyBytesOrNull(rbRes.getTotalMem());
                     break;
                 case MikrotikBindingConstants.CHANNEL_USED_MEM:
-                    newState = StateUtil.intOrNull(rbRes.getMemUse());
+                    newState = StateUtil.qtyPercentOrNull(rbRes.getMemUse());
                     break;
                 case MikrotikBindingConstants.CHANNEL_CPU_LOAD:
-                    newState = StateUtil.intOrNull(rbRes.getCpuLoad());
+                    newState = StateUtil.qtyPercentOrNull(rbRes.getCpuLoad());
                     break;
             }
         }
