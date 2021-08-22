@@ -162,6 +162,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             case CHANNEL_EINST_BWS_AKT:
             case CHANNEL_EINST_KUCFTL_AKT:
             case CHANNEL_SOLLWERT_KUCFTL_AKT:
+            case CHANNEL_SOLL_BWS_AKT:
                 float temperature = ((DecimalType) command).floatValue();
                 value = (int) (temperature * 10);
                 break;
