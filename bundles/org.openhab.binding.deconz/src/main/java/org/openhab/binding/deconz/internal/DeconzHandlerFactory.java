@@ -65,14 +65,14 @@ public class DeconzHandlerFactory extends BaseThingHandlerFactory {
     private final Gson gson;
     private final WebSocketFactory webSocketFactory;
     private final HttpClientFactory httpClientFactory;
-    private final StateDescriptionProvider stateDescriptionProvider;
-    private final CommandDescriptionProvider commandDescriptionProvider;
+    private final DeconzDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final DeconzDynamicCommandDescriptionProvider commandDescriptionProvider;
 
     @Activate
     public DeconzHandlerFactory(final @Reference WebSocketFactory webSocketFactory,
             final @Reference HttpClientFactory httpClientFactory,
-            final @Reference StateDescriptionProvider stateDescriptionProvider,
-            final @Reference CommandDescriptionProvider commandDescriptionProvider) {
+            final @Reference DeconzDynamicStateDescriptionProvider stateDescriptionProvider,
+            final @Reference DeconzDynamicCommandDescriptionProvider commandDescriptionProvider) {
         this.webSocketFactory = webSocketFactory;
         this.httpClientFactory = httpClientFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;

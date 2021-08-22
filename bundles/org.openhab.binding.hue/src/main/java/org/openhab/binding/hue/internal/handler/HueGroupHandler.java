@@ -62,7 +62,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     public static final String PROPERTY_MEMBERS = "members";
 
     private final Logger logger = LoggerFactory.getLogger(HueGroupHandler.class);
-    private final HueStateDescriptionOptionProvider stateDescriptionOptionProvider;
+    private final HueStateDescriptionProvider stateDescriptionOptionProvider;
 
     private @NonNullByDefault({}) String groupId;
 
@@ -79,7 +79,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
 
     private List<String> consoleScenesList = List.of();
 
-    public HueGroupHandler(Thing thing, HueStateDescriptionOptionProvider stateDescriptionOptionProvider) {
+    public HueGroupHandler(Thing thing, HueStateDescriptionProvider stateDescriptionOptionProvider) {
         super(thing);
         this.stateDescriptionOptionProvider = stateDescriptionOptionProvider;
     }

@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -57,6 +58,7 @@ import org.openhab.binding.ipcamera.internal.IpCameraDynamicStateDescriptionProv
 import org.openhab.binding.ipcamera.internal.MyNettyAuthHandler;
 import org.openhab.binding.ipcamera.internal.StreamServerHandler;
 import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -188,7 +190,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private boolean isOnline = false; // Used so only 1 error is logged when a network issue occurs.
     private boolean firstAudioAlarm = false;
     private boolean firstMotionAlarm = false;
-    public Double motionThreshold = 0.0016;
+    public BigDecimal motionThreshold = BigDecimal.ZERO;
     public int audioThreshold = 35;
     @SuppressWarnings("unused")
     private @Nullable StreamServerHandler streamServerHandler;
@@ -467,7 +469,7 @@ public class IpCameraHandler extends BaseThingHandler {
         String temp = longUrl;
         URL url;
 
-        if (longUrl.isEmpty() || longUrl.equals("ffmpeg")) {
+        if (longUrl.isEmpty() || "ffmpeg".equals(longUrl)) {
             return longUrl;
         }
 
@@ -766,22 +768,21 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
+    private void openMjpegStream() {
+        sendHttpGET(mjpegUri);
+    }
+
     // If start is true the CTX is added to the list to stream video to, false stops
     // the stream.
     public void setupMjpegStreaming(boolean start, ChannelHandlerContext ctx) {
         if (start) {
             if (mjpegChannelGroup.isEmpty()) {// first stream being requested.
                 mjpegChannelGroup.add(ctx.channel());
-                if (mjpegUri.isEmpty() || mjpegUri.equals("ffmpeg")) {
+                if (mjpegUri.isEmpty() || "ffmpeg".equals(mjpegUri)) {
                     sendMjpegFirstPacket(ctx);
                     setupFfmpegFormat(FFmpegFormat.MJPEG);
-                } else {
-                    try {
-                        // fix Dahua reboots when refreshing a mjpeg stream.
-                        TimeUnit.MILLISECONDS.sleep(500);
-                    } catch (InterruptedException e) {
-                    }
-                    sendHttpGET(mjpegUri);
+                } else {// Delay fixes Dahua reboots when refreshing a mjpeg stream.
+                    threadPool.schedule(this::openMjpegStream, 500, TimeUnit.MILLISECONDS);
                 }
             } else if (ffmpegMjpeg != null) {// not first stream and we will use ffmpeg
                 sendMjpegFirstPacket(ctx);
@@ -794,7 +795,7 @@ public class IpCameraHandler extends BaseThingHandler {
             mjpegChannelGroup.remove(ctx.channel());
             if (mjpegChannelGroup.isEmpty()) {
                 logger.debug("All ipcamera.mjpeg streams have stopped.");
-                if (mjpegUri.equals("ffmpeg") || mjpegUri.isEmpty()) {
+                if ("ffmpeg".equals(mjpegUri) || mjpegUri.isEmpty()) {
                     Ffmpeg localMjpeg = ffmpegMjpeg;
                     if (localMjpeg != null) {
                         localMjpeg.stopConverting();
@@ -979,7 +980,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     localGIF.startConverting();
                     if (gifHistory.isEmpty()) {
                         gifHistory = gifFilename;
-                    } else if (!gifFilename.equals("ipcamera")) {
+                    } else if (!"ipcamera".equals(gifFilename)) {
                         gifHistory = gifFilename + "," + gifHistory;
                         if (gifHistoryLength > 49) {
                             int endIndex = gifHistory.lastIndexOf(",");
@@ -1003,7 +1004,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     localRecord.startConverting();
                     if (mp4History.isEmpty()) {
                         mp4History = mp4Filename;
-                    } else if (!mp4Filename.equals("ipcamera")) {
+                    } else if (!"ipcamera".equals(mp4Filename)) {
                         mp4History = mp4Filename + "," + mp4History;
                         if (mp4HistoryLength > 49) {
                             int endIndex = mp4History.lastIndexOf(",");
@@ -1034,15 +1035,15 @@ public class IpCameraHandler extends BaseThingHandler {
                     String usersMotionOptions = cameraConfig.getMotionOptions();
                     if (usersMotionOptions.startsWith("-")) {
                         // Need to put the users custom options first in the chain before the motion is detected
-                        filterOptions += " " + usersMotionOptions + ",select='gte(scene," + motionThreshold
-                                + ")',metadata=print";
+                        filterOptions += " " + usersMotionOptions + ",select='gte(scene,"
+                                + motionThreshold.divide(BIG_DECIMAL_SCALE_MOTION) + ")',metadata=print";
                     } else {
                         filterOptions = filterOptions + " " + usersMotionOptions + " -vf select='gte(scene,"
-                                + motionThreshold + ")',metadata=print";
+                                + motionThreshold.divide(BIG_DECIMAL_SCALE_MOTION) + ")',metadata=print";
                     }
                 } else if (motionAlarmEnabled) {
-                    filterOptions = filterOptions
-                            .concat(" -vf select='gte(scene," + motionThreshold + ")',metadata=print");
+                    filterOptions = filterOptions.concat(" -vf select='gte(scene,"
+                            + motionThreshold.divide(BIG_DECIMAL_SCALE_MOTION) + ")',metadata=print");
                 }
                 ffmpegRtspHelper = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, input,
                         filterOptions, "-f null -", cameraConfig.getUser(), cameraConfig.getPassword());
@@ -1194,6 +1195,26 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     @Override
+    public void channelLinked(ChannelUID channelUID) {
+        if (cameraConfig.getServerPort() > 0) {
+            switch (channelUID.getId()) {
+                case CHANNEL_MJPEG_URL:
+                    updateState(CHANNEL_MJPEG_URL, new StringType(
+                            "http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.mjpeg"));
+                    break;
+                case CHANNEL_HLS_URL:
+                    updateState(CHANNEL_HLS_URL,
+                            new StringType("http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.m3u8"));
+                    break;
+                case CHANNEL_IMAGE_URL:
+                    updateState(CHANNEL_IMAGE_URL,
+                            new StringType("http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.jpg"));
+                    break;
+            }
+        }
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
@@ -1241,10 +1262,9 @@ public class IpCameraHandler extends BaseThingHandler {
                     } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
                         motionAlarmEnabled = false;
                         noMotionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                    } else {
+                    } else if (command instanceof PercentType) {
                         motionAlarmEnabled = true;
-                        motionThreshold = Double.valueOf(command.toString());
-                        motionThreshold = motionThreshold / 10000;
+                        motionThreshold = ((PercentType) command).toBigDecimal();
                     }
                     setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
                     return;
@@ -1488,7 +1508,7 @@ public class IpCameraHandler extends BaseThingHandler {
             if (rtspUri.isEmpty()) {
                 logger.warn("Binding has not been supplied with a FFmpeg Input URL, so some features will not work.");
             }
-            if (snapshotUri.isEmpty() || snapshotUri.equals("ffmpeg")) {
+            if (snapshotUri.isEmpty() || "ffmpeg".equals(snapshotUri)) {
                 snapshotIsFfmpeg();
             } else {
                 sendHttpRequest("GET", snapshotUri, null);
@@ -1500,7 +1520,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     cameraConfig.getOnvifPort());
             onvifCamera.connect(thing.getThingTypeUID().getId().equals(ONVIF_THING));
         }
-        if (snapshotUri.equals("ffmpeg")) {
+        if ("ffmpeg".equals(snapshotUri)) {
             snapshotIsFfmpeg();
         } else if (!snapshotUri.isEmpty()) {
             sendHttpRequest("GET", snapshotUri, null);
@@ -1664,6 +1684,10 @@ public class IpCameraHandler extends BaseThingHandler {
         snapshotUri = getCorrectUrlFormat(cameraConfig.getSnapshotUrl());
         mjpegUri = getCorrectUrlFormat(cameraConfig.getMjpegUrl());
         rtspUri = cameraConfig.getFfmpegInput();
+        if (cameraConfig.getFfmpegOutput().isEmpty()) {
+            cameraConfig
+                    .setFfmpegOutput(OpenHAB.getUserDataFolder() + "/ipcamera/" + this.thing.getUID().getId() + "/");
+        }
 
         if (cameraConfig.getServerPort() < 1) {
             logger.warn(
@@ -1754,7 +1778,6 @@ public class IpCameraHandler extends BaseThingHandler {
     public void dispose() {
         isOnline = false;
         snapshotPolling = false;
-        onvifCamera.disconnect();
         Future<?> localFuture = pollCameraJob;
         if (localFuture != null) {
             localFuture.cancel(true);
@@ -1807,6 +1830,7 @@ public class IpCameraHandler extends BaseThingHandler {
             localFfmpeg.stopConverting();
         }
         channelTrackingMap.clear();
+        onvifCamera.disconnect();
     }
 
     public void setStreamServerHandler(StreamServerHandler streamServerHandler2) {

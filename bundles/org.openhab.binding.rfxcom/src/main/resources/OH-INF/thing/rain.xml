@@ -38,6 +38,7 @@
 					<option value="RAIN4">UPM RG700</option>
 					<option value="RAIN5">WS2300</option>
 					<option value="RAIN6">La Crosse TX5</option>
+					<option value="RAIN9">TFA 30.3233.1</option>
 				</options>
 			</parameter>
 		</config-description>

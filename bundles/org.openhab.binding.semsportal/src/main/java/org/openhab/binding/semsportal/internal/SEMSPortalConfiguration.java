@@ -32,5 +32,5 @@ public class SEMSPortalConfiguration {
      */
     public String username = "";
     public String password = "";
-    public int update = SEMSPortalBindingConstants.DEFAULT_UPDATE_INTERVAL_MINUTES;
+    public int interval = SEMSPortalBindingConstants.DEFAULT_UPDATE_INTERVAL_MINUTES;
 }

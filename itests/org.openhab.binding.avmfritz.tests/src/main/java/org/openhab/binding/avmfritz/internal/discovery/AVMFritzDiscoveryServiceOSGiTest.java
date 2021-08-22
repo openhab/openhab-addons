@@ -89,7 +89,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
 
     @Test
     public void correctSupportedTypes() {
-        assertEquals(14, discovery.getSupportedThingTypes().size());
+        assertEquals(15, discovery.getSupportedThingTypes().size());
         assertTrue(discovery.getSupportedThingTypes().contains(DECT100_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT200_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT210_THING_TYPE));
@@ -101,6 +101,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         assertTrue(discovery.getSupportedThingTypes().contains(COMETDECT_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_CONTACT_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_SWITCH_THING_TYPE));
+        assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_ON_OFF_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_BLINDS_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(GROUP_HEATING_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(GROUP_SWITCH_THING_TYPE));

@@ -30,6 +30,6 @@ public class RFXComRFXMeterMessageTest {
     @Test
     public void checkNotImplemented() {
         assertThrows(RFXComMessageNotImplementedException.class,
-                () -> RFXComMessageFactory.createMessage(PacketType.RFXMETER));
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.RFXMETER, null, null, null));
     }
 }

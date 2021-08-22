@@ -87,6 +87,7 @@ public class SonosBindingConstants {
     public static final String BATTERYCHARGING = "batterycharging";
     public static final String BATTERYLEVEL = "batterylevel";
     public static final String CLEARQUEUE = "clearqueue";
+    public static final String CODEC = "codec";
     public static final String CONTROL = "control";
     public static final String COORDINATOR = "coordinator";
     public static final String CURRENTALBUM = "currentalbum";
@@ -98,6 +99,7 @@ public class SonosBindingConstants {
     public static final String CURRENTTRACKURI = "currenttrackuri";
     public static final String CURRENTTRANSPORTURI = "currenttransporturi";
     public static final String FAVORITE = "favorite";
+    public static final String HEIGHTLEVEL = "heightlevel";
     public static final String LED = "led";
     public static final String LINEIN = "linein";
     public static final String ANALOGLINEIN = "analoglinein";

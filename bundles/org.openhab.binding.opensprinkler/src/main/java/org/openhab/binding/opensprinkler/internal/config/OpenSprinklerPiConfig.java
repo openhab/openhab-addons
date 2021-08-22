@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.opensprinkler.internal.config;
 
-import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.DEFAULT_REFRESH_RATE;
-import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.DEFAULT_STATION_COUNT;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.*;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link OpenSprinklerPiConfig} class defines the configuration options
@@ -21,6 +22,7 @@ import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiCon
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 public class OpenSprinklerPiConfig {
     /**
      * Number of stations to control.

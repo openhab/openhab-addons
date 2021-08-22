@@ -22,6 +22,8 @@ import org.openhab.binding.roku.internal.dto.ActiveApp;
 import org.openhab.binding.roku.internal.dto.Apps;
 import org.openhab.binding.roku.internal.dto.DeviceInfo;
 import org.openhab.binding.roku.internal.dto.Player;
+import org.openhab.binding.roku.internal.dto.TvChannel;
+import org.openhab.binding.roku.internal.dto.TvChannels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +41,8 @@ public class JAXBUtils {
     public static final @Nullable JAXBContext JAXBCONTEXT_APPS = initJAXBContextApps();
     public static final @Nullable JAXBContext JAXBCONTEXT_DEVICE_INFO = initJAXBContextDeviceInfo();
     public static final @Nullable JAXBContext JAXBCONTEXT_PLAYER = initJAXBContextPlayer();
+    public static final @Nullable JAXBContext JAXBCONTEXT_TVCHANNEL = initJAXBContextTvChannel();
+    public static final @Nullable JAXBContext JAXBCONTEXT_TVCHANNELS = initJAXBContextTvChannels();
     public static final XMLInputFactory XMLINPUTFACTORY = initXMLInputFactory();
 
     private static @Nullable JAXBContext initJAXBContextActiveApp() {
@@ -73,6 +77,24 @@ public class JAXBUtils {
             return JAXBContext.newInstance(Player.class);
         } catch (JAXBException e) {
             LOGGER.error("Exception creating JAXBContext for player info: {}", e.getLocalizedMessage(), e);
+            return null;
+        }
+    }
+
+    private static @Nullable JAXBContext initJAXBContextTvChannel() {
+        try {
+            return JAXBContext.newInstance(TvChannel.class);
+        } catch (JAXBException e) {
+            LOGGER.error("Exception creating JAXBContext for TvChannel info: {}", e.getLocalizedMessage(), e);
+            return null;
+        }
+    }
+
+    private static @Nullable JAXBContext initJAXBContextTvChannels() {
+        try {
+            return JAXBContext.newInstance(TvChannels.class);
+        } catch (JAXBException e) {
+            LOGGER.error("Exception creating JAXBContext for TvChannels info: {}", e.getLocalizedMessage(), e);
             return null;
         }
     }

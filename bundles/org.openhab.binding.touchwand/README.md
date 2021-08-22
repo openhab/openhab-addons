@@ -9,6 +9,11 @@ TouchWand products are compatible with most major Z-Wave products, IP controlled
 ## Supported Things
 
 This binding supports switches, shutters dimmers alarm sensors and wall controllers configured in Touchwand Wanderfull™ Hub Controller.
+The binding also supports [AcWand™](http://www.touchwand.com/products/touchwand-acwand/) - smart control for your air conditioner controller.
+
+
+![AcWand](http://www.touchwand.com/wp-content/uploads/2019/04/AcWand-300x350.png)
+
 
 ## Control and Status
 
@@ -17,10 +22,13 @@ This binding supports switches, shutters dimmers alarm sensors and wall controll
 3. **dimmer**  - control - ON/OFF/BRIGHTNESS
 4. **wallcontroller** - control - LONG/SHORT
 5. **alarmsensor** - status channels depend on alarm sensor type
+5. **bsensor** - binary status channels depend on alarm sensor type (motion, door , smoke)
+6. **thermostat** - AcWand™ smart control for your air conditioner 
 
 ## Discovery
 
-After adding TouchWand Hub the auto discovery will add all switches dimmers alarm sensors and shutters to the inbox.
+After adding TouchWand Hub the auto discovery will add all suppored devuces to inbox.
+Auto discovery scans priodically and add to the Inbox new devices added to the Touchwand Wanderfull™ Hub
 
 ## Bridge Configuration
 
@@ -32,7 +40,6 @@ After adding TouchWand Hub the auto discovery will add all switches dimmers alar
 | password          | Touchwand hub password                                                | string  | yes      |
 | ipAddress         | Touchwand hub hostname or IP address                                  | string  | yes      |
 | port              | Management port (default 80)                                          | integer | no       |
-| statusrefresh     | Unit status refresh interval in seconds                               | integer | no       |
 | addSecondaryUnits | If the controller is primary, add secondary controllers units as well | bool    | no       |
 
 
@@ -46,23 +53,37 @@ No thing configuration is needed
 note **Touchwand Wanderfull™** supports various types of alarm sensors such as water leak, door/window sensor and motion sensor.
 Alarm Sensor thing represents a generic sensor, relevant sensor channels will be displayed once a sensor is added as a Thing.
 
+## Switch Shutters Channels 
 
 | Channel Type ID   | Item Type          | Description
 |-------------------|--------------------|-----------------------------------------------------------------------|
 | switch            | Switch             | This channel supports switching the device on and off.                |
 | shutter           | Rollershutter      | This channel controls the shutter position                            |
 | brightness        | Dimmer             | This channel supports adjusting the brightness value.                 |
+| wallaction        | String             | This channel indicate SHORT or LONG wallcontroller button pressed     |
+
+## Alarm Sensors Channels 
+
+| Channel Type ID   | Item Type          | Description                                                                                                                             
+|-------------------|--------------------|-----------------------------------------------------------------------|
 | illumination      | Number:Illuminance | This channel shows the current illuminance measured by the sensor.    |
 | temperature       | Number:Temperature | This channel shows the current temperature measured by the sensor.    |
 | leak              | Switch             | This channel alert when water leak is detected by the sensor          |
 | motion            | Switch             | This channel alert when motion detected by the sensor.                |
+| smoke             | Switch             | This channel alert when smoke detected by the sensor.                |
 | isOpen            | Contact            | This channel shows the status of Door/Window sensor.                  |
 | battery_level     | Number             | This channel shows the battery level.                                 |
 | battery_low       | Switch             | This channel indicates whether the battery is low or not.             |
-| wallaction        | String             | This channel indicate SHORT or LONG wallcontroller button pressed     |
 
+## Thermostat Channels 
 
-
+| Channel Type ID   | Item Type          | Description                                                                                                                             
+|-------------------|--------------------|-----------------------------------------------------------------------|
+| State             | Switch             | Set and read the device state ON or OFF.                              |
+| targetTemperature | Number:Temperature | Shows the current set point of the thrermostat.                       |
+| roomTemperature   | Number:Temperature | Shows the current termprature measured by the thermostat.             |
+| mode              | String             | Set/Read Thermostat mode - Cool, Heat, Fan, Dry, Auto                 |
+| fanLevel          | String             | Set/Read fan leval - Low, Medium, High, Auto                          |
 
 ## Full Example
 
@@ -98,7 +119,7 @@ Rollershutter   Rollershutter_346      "Living Room South shutter"    {channel="
 
 ```
 /* Switches and Dimmers */
-Switch  Switch_408      "Strairs light"                 {channel="touchwand:switch:1921681116:408:switch"}
+Switch  Switch_408      "Stairs light"                  {channel="touchwand:switch:1921681116:408:switch"}
 Switch  Switch_411      "South Garden light"            {channel="touchwand:switch:1921681116:411:switch"}
 Dimmer  Switch_415      "Living Room Ceiling dimmer"    {channel="touchwand:switch:1921681116:415:switch"}
 Switch  Switch_418      "South Garden light"            {channel="touchwand:switch:1921681116:418:switch"}
