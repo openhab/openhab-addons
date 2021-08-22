@@ -35,8 +35,7 @@ public class Converter {
 
     private static final Pattern PERIOD_PATTERN = Pattern.compile("(\\d+)([a-z]+){1,3}");
 
-    @Nullable
-    public static LocalDateTime fromRouterosTime(@Nullable String dateTimeString) {
+    public @Nullable static LocalDateTime fromRouterosTime(@Nullable String dateTimeString) {
         if (dateTimeString == null) {
             return null;
         }
@@ -44,13 +43,12 @@ public class Converter {
         return LocalDateTime.parse(fixedTs, ROUTEROS_FORMAT);
     }
 
-    @Nullable
-    public static LocalDateTime routerosPeriodBack(@Nullable String durationString) {
+    public @Nullable static LocalDateTime routerosPeriodBack(@Nullable String durationString) {
         return routerosPeriodBack(durationString, LocalDateTime.now());
     }
 
-    @Nullable
-    public static LocalDateTime routerosPeriodBack(@Nullable String durationString, LocalDateTime fromDateTime) {
+    public @Nullable static LocalDateTime routerosPeriodBack(@Nullable String durationString,
+            LocalDateTime fromDateTime) {
         if (durationString == null) {
             return null;
         }

@@ -47,7 +47,8 @@ public class RouterosEthernetInterface extends RouterosInterfaceBase {
     @Override
     public boolean hasMonitor() {
         // PowerLine interfaces are of ehter type too
-        return !getDefaultName().startsWith("pwr");
+        String name = getDefaultName();
+        return name != null && !name.startsWith("pwr");
     }
 
     public @Nullable String getDefaultName() {

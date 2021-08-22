@@ -46,8 +46,7 @@ public class RouterosDevice {
     private final int connectionTimeout;
     private final String login;
     private final String password;
-    @Nullable
-    private ApiConnection connection;
+    private @Nullable ApiConnection connection;
 
     public static final String PROP_ID_KEY = ".id";
     public static final String PROP_TYPE_KEY = "type";
@@ -63,22 +62,16 @@ public class RouterosDevice {
     private static final String CMD_PRINT_RESOURCE = "/system/resource/print";
     private static final String CMD_PRINT_RB_INFO = "/system/routerboard/print";
 
-    @Nullable
-    private List<RouterosInterfaceBase> interfaceCache;
-    @Nullable
-    private List<RouterosCapsmanRegistration> capsmanRegistrationCache;
-    @Nullable
-    private List<RouterosWirelessRegistration> wirelessRegistrationCache;
+    private @Nullable List<RouterosInterfaceBase> interfaceCache;
+    private @Nullable List<RouterosCapsmanRegistration> capsmanRegistrationCache;
+    private @Nullable List<RouterosWirelessRegistration> wirelessRegistrationCache;
     private Set<String> monitoredInterfaces = new HashSet<>();
     private Map<String, String> wlanSsid = new HashMap<>();
 
-    @Nullable
-    private RouterosSystemResources resourcesCache;
-    @Nullable
-    private RouterosRouterboardInfo rbInfo;
+    private @Nullable RouterosSystemResources resourcesCache;
+    private @Nullable RouterosRouterboardInfo rbInfo;
 
     private static Optional<RouterosInterfaceBase> createTypedInterface(Map<String, String> interfaceProps) {
-        @Nullable
         RouterosInterfaceType ifaceType = RouterosInterfaceType.resolve(interfaceProps.get(PROP_TYPE_KEY));
         if (ifaceType == null) {
             return Optional.empty();
@@ -191,6 +184,9 @@ public class RouterosDevice {
     }
 
     private void updateInterfaceData() throws MikrotikApiException {
+        if (connection == null)
+            return;
+
         List<Map<String, String>> ifaceResponse = connection.execute(CMD_PRINT_IFACES);
 
         Set<String> interfaceTypesToPoll = new HashSet<>();
@@ -210,7 +206,6 @@ public class RouterosDevice {
                 cmd = CMD_PRINT_CAPS_IFACES;
             }
             connection.execute(cmd).forEach(propMap -> {
-                @Nullable
                 String ifaceName = propMap.get(PROP_NAME_KEY);
                 if (ifaceName != null) {
                     if (typedIfaceResponse.containsKey(ifaceName)) {
@@ -224,7 +219,7 @@ public class RouterosDevice {
 
         for (RouterosInterfaceBase ifaceModel : interfaceCache) {
             // Enrich with detailed data
-            @Nullable
+
             Map<String, String> additionalIfaceProps = typedIfaceResponse.get(ifaceModel.getName());
             if (additionalIfaceProps != null) {
                 ifaceModel.mergeProps(additionalIfaceProps);
@@ -236,9 +231,7 @@ public class RouterosDevice {
                 ifaceModel.mergeProps(monitorProps.get(0));
             }
             // Note SSIDs for non-CAPsMAN wireless clients
-            @Nullable
             String ifaceName = ifaceModel.getName();
-            @Nullable
             String ifaceSsid = ifaceModel.getProperty(PROP_SSID_KEY);
             if (ifaceName != null && ifaceSsid != null && !ifaceName.isBlank() && !ifaceSsid.isBlank()) {
                 this.wlanSsid.put(ifaceName, ifaceSsid);
@@ -252,11 +245,11 @@ public class RouterosDevice {
     }
 
     private void updateWirelessRegistrations() throws MikrotikApiException {
+        if (connection == null)
+            return;
         List<Map<String, String>> response = connection.execute(CMD_PRINT_WIRELESS_REGS);
         wirelessRegistrationCache = response.stream().map(props -> {
-            @Nullable
             String wlanIfaceName = props.get("interface");
-            @Nullable
             String wlanSsidName = wlanSsid.get(wlanIfaceName);
 
             if (wlanSsidName != null && wlanIfaceName != null && !wlanIfaceName.isBlank() && !wlanSsidName.isBlank()) {
@@ -267,6 +260,8 @@ public class RouterosDevice {
     }
 
     private void updateResources() throws MikrotikApiException {
+        if (connection == null)
+            return;
         List<Map<String, String>> response = connection.execute(CMD_PRINT_RESOURCE);
         this.resourcesCache = new RouterosSystemResources(response.get(0));
     }

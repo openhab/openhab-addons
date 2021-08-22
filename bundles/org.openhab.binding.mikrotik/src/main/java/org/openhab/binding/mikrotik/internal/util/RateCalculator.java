@@ -61,6 +61,7 @@ public class RateCalculator {
     }
 
     public void update(@Nullable BigInteger currentValue) {
-        this.update(new BigDecimal(currentValue));
+        BigInteger val = currentValue == null ? BigInteger.ZERO : currentValue;
+        this.update(new BigDecimal(val));
     }
 }

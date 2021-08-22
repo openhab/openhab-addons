@@ -38,14 +38,20 @@ public class RouterosRegistrationBase extends RouterosBaseData {
 
     protected void postProcess() {
         if (hasProp("bytes")) {
-            String[] bytes = getProp("bytes").split(",");
-            setProp("tx-byte", bytes[0]);
-            setProp("rx-byte", bytes[1]);
+            String bytesStr = getProp("bytes");
+            if (bytesStr != null) {
+                String[] bytes = bytesStr.split(",");
+                setProp("tx-byte", bytes[0]);
+                setProp("rx-byte", bytes[1]);
+            }
         }
         if (hasProp("packets")) {
-            String[] packets = getProp("packets").split(",");
-            setProp("tx-packet", packets[0]);
-            setProp("rx-packet", packets[1]);
+            String packetsStr = getProp("packets");
+            if (packetsStr != null) {
+                String[] packets = packetsStr.split(",");
+                setProp("tx-packet", packets[0]);
+                setProp("rx-packet", packets[1]);
+            }
         }
     }
 

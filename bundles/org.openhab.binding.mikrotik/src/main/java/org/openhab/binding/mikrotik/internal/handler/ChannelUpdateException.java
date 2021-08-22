@@ -26,6 +26,8 @@ import org.openhab.core.thing.ThingUID;
  */
 @NonNullByDefault
 public class ChannelUpdateException extends RuntimeException {
+    static final long serialVersionUID = 1L;
+
     private final ThingUID thingUID;
     private final ChannelUID channelID;
 

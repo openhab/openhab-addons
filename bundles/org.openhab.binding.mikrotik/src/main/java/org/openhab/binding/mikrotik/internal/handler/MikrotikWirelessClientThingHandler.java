@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mikrotik.internal.MikrotikBindingConstants;
 import org.openhab.binding.mikrotik.internal.config.WirelessClientThingConfig;
 import org.openhab.binding.mikrotik.internal.model.RouterosCapsmanRegistration;
+import org.openhab.binding.mikrotik.internal.model.RouterosDevice;
 import org.openhab.binding.mikrotik.internal.model.RouterosRegistrationBase;
 import org.openhab.binding.mikrotik.internal.model.RouterosWirelessRegistration;
 import org.openhab.binding.mikrotik.internal.util.RateCalculator;
@@ -67,18 +68,26 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
     }
 
     private boolean fetchModels() {
-        this.wifiReg = getRouterOs().findWirelessRegistration(config.mac);
-        if (this.wifiReg != null && !config.ssid.isBlank() && !config.ssid.equalsIgnoreCase(wifiReg.getSSID())) {
-            this.wifiReg = null;
-        }
+        if (config != null) {
+            RouterosDevice routeros = getRouterOs();
 
-        if (this.wifiReg == null) { // try looking in capsman when there is no wirelessRegistration
-            this.wifiReg = getRouterOs().findCapsmanRegistration(config.mac);
-            if (wifiReg != null && !config.ssid.isBlank() && !config.ssid.equalsIgnoreCase(wifiReg.getSSID())) {
+            RouterosWirelessRegistration wifiRegistration = null;
+            if (routeros != null)
+                wifiRegistration = routeros.findWirelessRegistration(config.mac);
+            this.wifiReg = wifiRegistration;
+            if (this.wifiReg != null && !config.ssid.isBlank() && !config.ssid.equalsIgnoreCase(wifiReg.getSSID())) {
                 this.wifiReg = null;
             }
-        }
 
+            if (this.wifiReg == null && routeros != null) { // try looking in capsman when there is no
+                                                            // wirelessRegistration
+                RouterosCapsmanRegistration capsmanReg = routeros.findCapsmanRegistration(config.mac);
+                this.wifiReg = capsmanReg;
+                if (wifiReg != null && !config.ssid.isBlank() && !config.ssid.equalsIgnoreCase(wifiReg.getSSID())) {
+                    this.wifiReg = null;
+                }
+            }
+        }
         return this.wifiReg != null;
     }
 
@@ -102,6 +111,9 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
 
     @Override
     protected void refreshChannel(ChannelUID channelUID) {
+        if (wifiReg == null)
+            return;
+
         String channelID = channelUID.getIdWithoutGroup();
         State oldState = currentState.getOrDefault(channelID, UnDefType.NULL);
         State newState = oldState;
@@ -175,6 +187,9 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
     }
 
     protected State getCapsmanRegistrationChannelState(String channelID) {
+        if (this.wifiReg == null)
+            return UnDefType.UNDEF;
+
         RouterosCapsmanRegistration capsmanReg = (RouterosCapsmanRegistration) this.wifiReg;
         switch (channelID) {
             case CHANNEL_SIGNAL:
@@ -185,6 +200,9 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
     }
 
     protected State getWirelessRegistrationChannelState(String channelID) {
+        if (this.wifiReg == null)
+            return UnDefType.UNDEF;
+
         RouterosWirelessRegistration wirelessReg = (RouterosWirelessRegistration) this.wifiReg;
         switch (channelID) {
             case CHANNEL_SIGNAL:

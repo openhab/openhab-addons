@@ -73,10 +73,9 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         cancelRefreshJob();
         config = getConfigAs(RouterosThingConfig.class);
-
         logger.debug("Initializing MikrotikRouterosBridgeHandler with config = {}", config);
-        if (config.isValid()) {
-            routeros = new RouterosDevice(config.host, config.port, config.login, config.password);
+        if (config != null && config.isValid()) {
+            this.routeros = new RouterosDevice(config.host, config.port, config.login, config.password);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, String.format("Connecting to %s", config.host));
             scheduleRefreshJob();
         } else {
@@ -143,7 +142,6 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Starting routeros model");
                 routeros.start();
 
-                @Nullable
                 RouterosRouterboardInfo rbInfo = routeros.getRouterboardInfo();
                 if (rbInfo != null) {
                     Map<String, String> bridgeProps = editProperties();
@@ -156,17 +154,19 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
                 }
                 updateStatus(ThingStatus.ONLINE);
             } catch (MikrotikApiException e) {
-                logger.warn("Error while logging in to RouterOS {}", getThing().getUID(), e);
-                logger.debug("RouterOS connection exception cause", e.getCause());
+                logger.warn("Error while logging in to RouterOS {} | Cause: {}", getThing().getUID(), e, e.getCause());
 
-                if (e.getMessage().contains("Command timed out") || e.getMessage().contains("Error connecting")) {
+                String errorMessage = e.getMessage();
+                if (errorMessage == null)
+                    errorMessage = "Error connecting (UNKNOWN ERROR)";
+                if (errorMessage.contains("Command timed out") || errorMessage.contains("Error connecting")) {
                     routeros.stop();
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
                 } else if (e.getMessage().contains("Connection refused")) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Remote host refused to connect, make sure port is correct");
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
                 }
             }
         } else {
@@ -195,9 +195,9 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
                 }
             });
         } catch (ChannelUpdateException e) {
-            logger.error("Error updating channel! {}", e.getMessage(), e.getCause());
+            logger.debug("Error updating channel! {}", e.getMessage(), e.getCause());
         } catch (MikrotikApiException e) {
-            logger.error("Failed to refresh RouterOS cache in {}", getThing().getUID(), e);
+            logger.error("RouterOS cache refresh failed in {} due to Mikrotik API error", getThing().getUID(), e);
             routeros.stop();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (Exception e) {
@@ -210,7 +210,6 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handling command = {} for channel = {}", command, channelUID);
         if (getThing().getStatus() == ONLINE) {
-            @Nullable
             RouterosDevice routeros = getRouteros();
             if (routeros != null) {
                 if (command == REFRESH) {

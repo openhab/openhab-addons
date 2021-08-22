@@ -48,25 +48,21 @@ public abstract class RouterosBaseData {
         propMap.put(key, value);
     }
 
-    @Nullable
-    protected String getProp(String key) {
+    protected @Nullable String getProp(String key) {
         return propMap.get(key);
     }
 
-    @Nullable
-    protected Integer getIntProp(String key) {
+    protected @Nullable Integer getIntProp(String key) {
         String val = propMap.get(key);
         return val == null ? null : Integer.valueOf(val);
     }
 
-    @Nullable
-    protected BigInteger getBigIntProp(String key) {
+    protected @Nullable BigInteger getBigIntProp(String key) {
         String val = propMap.get(key);
         return val == null ? null : new BigInteger(propMap.getOrDefault(key, "0"));
     }
 
-    @Nullable
-    protected Float getFloatProp(String key) {
+    protected @Nullable Float getFloatProp(String key) {
         String val = propMap.get(key);
         return val == null ? null : Float.valueOf(val);
     }

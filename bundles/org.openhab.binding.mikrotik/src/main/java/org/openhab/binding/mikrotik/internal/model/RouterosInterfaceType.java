@@ -46,8 +46,7 @@ public enum RouterosInterfaceType {
         return this.typeName;
     }
 
-    @Nullable
-    public static RouterosInterfaceType resolve(@Nullable String routerosType) {
+    public @Nullable static RouterosInterfaceType resolve(@Nullable String routerosType) {
         for (RouterosInterfaceType current : RouterosInterfaceType.values()) {
             if (current.typeName.equals(routerosType)) {
                 return current;

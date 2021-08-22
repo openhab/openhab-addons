@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mikrotik.internal.config.ConfigValidation;
+import org.openhab.binding.mikrotik.internal.config.RouterosThingConfig;
 import org.openhab.binding.mikrotik.internal.model.RouterosDevice;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.thing.Bridge;
@@ -115,10 +116,6 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
                 .getActualTypeArguments()[0]);
 
         C localConfig = (C) getConfigAs(klass);
-        if (localConfig == null) {
-            updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Cannot obtain thing configuration");
-            return;
-        }
         this.config = localConfig;
 
         if (!config.isValid()) {
@@ -150,17 +147,21 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
         synchronized (this) {
             if (refreshJob == null) {
                 MikrotikRouterosBridgeHandler bridgeHandler = getVerifiedBridgeHandler();
-                if (bridgeHandler != null) {
-                    int refreshPeriod = bridgeHandler.getBridgeConfig().refresh;
-                    logger.debug("Scheduling refresh job every {}s", refreshPeriod);
-
-                    this.refreshCache = new ExpiringCache<>(Duration.ofSeconds(refreshPeriod),
-                            this::verifiedRefreshModels);
-                    refreshJob = scheduler.scheduleWithFixedDelay(this::scheduledRun, refreshPeriod, refreshPeriod,
-                            TimeUnit.SECONDS);
-                } else {
-                    logger.error("Cannot schedule refresh job since getVerifiedBridgeHandler() is null");
+                if (bridgeHandler == null) {
+                    updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Cannot obtain bridge handler");
+                    return;
                 }
+                RouterosThingConfig bridgeConfig = bridgeHandler.getBridgeConfig();
+                if (bridgeHandler == null) {
+                    updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Cannot obtain bridge config");
+                    return;
+                }
+                int refreshPeriod = bridgeConfig.refresh;
+                logger.debug("Scheduling refresh job every {}s", refreshPeriod);
+
+                this.refreshCache = new ExpiringCache<>(Duration.ofSeconds(refreshPeriod), this::verifiedRefreshModels);
+                refreshJob = scheduler.scheduleWithFixedDelay(this::scheduledRun, refreshPeriod, refreshPeriod,
+                        TimeUnit.SECONDS);
             }
         }
     }

@@ -30,8 +30,7 @@ import org.openhab.binding.mikrotik.internal.util.Converter;
  */
 @NonNullByDefault
 public abstract class RouterosInterfaceBase extends RouterosBaseData {
-    @Nullable
-    protected RouterosInterfaceType type;
+    protected @Nullable RouterosInterfaceType type;
 
     public RouterosInterfaceBase(Map<String, String> props) {
         super(props);
