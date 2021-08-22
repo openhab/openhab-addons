@@ -22,7 +22,7 @@ receive the password and go ONLINE.
 After you've done this procedure you can write the password somewhere in case if you need to reconfigure your binding. It's
 not known, however, whether the password is eternal or can change during factory reset.
 If you have issues getting the password make sure there are no other devices like your smartphone communicating with the robot.
-You can also try using the python scripts from (https://github.com/NickWaterton/Roomba980-Python) to get the password. 
+You can also try using [these python scripts](https://github.com/NickWaterton/Roomba980-Python) to get the password. 
 
 ## Thing Configuration
 
