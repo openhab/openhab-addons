@@ -147,10 +147,10 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
                     newState = StateUtil.timeOrNull(wifiReg.getUptimeStart());
                     break;
                 case CHANNEL_TX_DATA_RATE:
-                    newState = StateUtil.qtyBytesPerSecOrNull(txByteRate.getMegabitRate());
+                    newState = StateUtil.qtyMegabitPerSecOrNull(txByteRate.getMegabitRate());
                     break;
                 case CHANNEL_RX_DATA_RATE:
-                    newState = StateUtil.qtyBytesPerSecOrNull(rxByteRate.getMegabitRate());
+                    newState = StateUtil.qtyMegabitPerSecOrNull(rxByteRate.getMegabitRate());
                     break;
                 case CHANNEL_TX_PACKET_RATE:
                     newState = StateUtil.floatOrNull(txPacketRate.getRate());

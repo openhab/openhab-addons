@@ -35,8 +35,8 @@ public class StateUtil {
         return value == null ? UnDefType.NULL : new StringType(value);
     }
 
-    public static State qtyBytesPerSecOrNull(@Nullable Float value) {
-        return value == null ? UnDefType.NULL : new QuantityType(value, Units.BYTE.divide(Units.SECOND));
+    public static State qtyMegabitPerSecOrNull(@Nullable Float value) {
+        return value == null ? UnDefType.NULL : new QuantityType(value, Units.MEGABIT_PER_SECOND);
     }
 
     public static State qtyPercentOrNull(@Nullable Integer value) {
