@@ -154,14 +154,14 @@
 		<item-type>Number:DataAmount</item-type>
 		<label>Free Space</label>
 		<description>Amount of free storage left on device in bytes</description>
-		<state readOnly="true" pattern="%d B"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="totalSpace" advanced="true">
 		<item-type>Number:DataAmount</item-type>
 		<label>Total Space</label>
 		<description>Amount of total storage available on device in bytes</description>
-		<state readOnly="true" pattern="%d B"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="usedSpace">
@@ -175,14 +175,14 @@
 		<item-type>Number:DataAmount</item-type>
 		<label>Free RAM</label>
 		<description>Amount of free memory left on device in bytes</description>
-		<state readOnly="true" pattern="%d B"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="totalMemory" advanced="true">
 		<item-type>Number:DataAmount</item-type>
 		<label>Total RAM</label>
 		<description>Amount of total memory available on device in bytes</description>
-		<state readOnly="true" pattern="%d B"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="usedMemory">
@@ -275,14 +275,14 @@
 		<item-type>Number:DataTransferRate</item-type>
 		<label>Transmission Rate</label>
 		<description>Rate of data transmission in megabits per second</description>
-		<state readOnly="true" pattern="%.2f Mbit/s"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rxRate">
 		<item-type>Number:DataTransferRate</item-type>
 		<label>Receiving Rate</label>
 		<description>Rate of data receiving in megabits per second</description>
-		<state readOnly="true" pattern="%.2f Mbit/s"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="txPacketRate" advanced="true">
@@ -303,14 +303,14 @@
 		<item-type>Number:DataAmount</item-type>
 		<label>Transmitted Bytes</label>
 		<description>Amount of bytes transmitted</description>
-		<state readOnly="true" pattern="%d B"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="rxBytes" advanced="true">
 		<item-type>Number:DataAmount</item-type>
 		<label>Received Bytes</label>
 		<description>Amount of bytes received</description>
-		<state readOnly="true" pattern="%d B"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="txPackets" advanced="true">
