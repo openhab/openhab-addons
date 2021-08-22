@@ -85,7 +85,7 @@ public class PortalHandler extends BaseBridgeHandler {
     public PortalHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
         httpClient = httpClientFactory.getCommonHttpClient();
-        gson = new GsonBuilder().setDateFormat(SEMSPortalBindingConstants.DATE_FORMAT).create();
+        gson = new GsonBuilder().create();
     }
 
     @Override

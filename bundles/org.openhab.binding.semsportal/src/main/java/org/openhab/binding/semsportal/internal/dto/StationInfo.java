@@ -15,15 +15,16 @@ package org.openhab.binding.semsportal.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * POJO containing details about the inverter. Only a very small subset of the available properties is mapped
- *
- * @author Iwan Bron - Initial contribution
+ * POJO containing details about the inverter. Only a very small subset of the available properties is mapped.
+ * 
+ * @author Julio Gesser - Initial contribution
  */
-public class InverterDetails {
-    @SerializedName("last_refresh_time")
-    private String lastUpdate;
+public class StationInfo {
 
-    public String getLastUpdate() {
-        return lastUpdate;
+    @SerializedName("date_format")
+    private String dateFormat;
+
+    public String getDateFormat() {
+        return dateFormat;
     }
 }
