@@ -22,7 +22,7 @@
     <dependency>
       <groupId>com.github.pengrad</groupId>
       <artifactId>java-telegram-bot-api</artifactId>
-      <version>4.9.0</version>
+      <version>5.2.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
