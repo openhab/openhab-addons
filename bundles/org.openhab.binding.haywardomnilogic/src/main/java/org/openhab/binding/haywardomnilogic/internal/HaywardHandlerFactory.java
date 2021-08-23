@@ -29,6 +29,7 @@ import org.openhab.binding.haywardomnilogic.internal.handler.HaywardChlorinatorH
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardColorLogicHandler;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardFilterHandler;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardHeaterHandler;
+import org.openhab.binding.haywardomnilogic.internal.handler.HaywardPumpHandler;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardRelayHandler;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardSensorHandler;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardVirtualHeaterHandler;
@@ -97,7 +98,7 @@ public class HaywardHandlerFactory extends BaseThingHandlerFactory {
             return new HaywardHeaterHandler(thing);
         }
         if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_PUMP)) {
-            return new HaywardHeaterHandler(thing);
+            return new HaywardPumpHandler(thing);
         }
         if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_RELAY)) {
             return new HaywardRelayHandler(thing);
