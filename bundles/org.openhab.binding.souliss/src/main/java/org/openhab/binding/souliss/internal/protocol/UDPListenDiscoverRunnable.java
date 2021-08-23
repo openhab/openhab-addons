@@ -108,7 +108,7 @@ public class UDPListenDiscoverRunnable implements Runnable {
                     socket.close();
                 } else {
                     if (this.gwHandler != null) {
-                        this.gwHandler.setBridgeStatus(false);
+                        // this.gwHandler.setBridgeStatus(false);
                     }
                 }
             }

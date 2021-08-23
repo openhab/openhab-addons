@@ -16,7 +16,6 @@ package org.openhab.binding.souliss.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -37,7 +36,6 @@ import org.openhab.core.types.RefreshType;
 @NonNullByDefault
 public class SoulissT41Handler extends SoulissGenericHandler {
 
-    private @NonNullByDefault({}) Configuration gwConfigurationMap;
     byte t4nRawState = 0xF;
 
     public SoulissT41Handler(Thing thing) {
@@ -70,11 +68,14 @@ public class SoulissT41Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
+
+        super.initialize();
+
         updateStatus(ThingStatus.UNKNOWN);
 
-        gwConfigurationMap = getThing().getConfiguration();
-        if (gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND) != null) {
-            bSecureSend = ((Boolean) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND)).booleanValue();
+        var configurationMap = getThing().getConfiguration();
+        if (configurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND) != null) {
+            bSecureSend = ((Boolean) configurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND)).booleanValue();
         }
     }
 

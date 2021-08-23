@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -40,7 +39,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SoulissT11Handler extends SoulissGenericHandler {
 
-    private @Nullable Configuration gwConfigurationMap;
     private final Logger logger = LoggerFactory.getLogger(SoulissT11Handler.class);
     private byte t1nRawState = 0xF; // dummy value for first init
     private byte xSleepTime = 0;
@@ -88,14 +86,17 @@ public class SoulissT11Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
+
+        super.initialize();
+
         updateStatus(ThingStatus.UNKNOWN);
 
-        gwConfigurationMap = getThing().getConfiguration();
-        if (gwConfigurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL) != null) {
-            xSleepTime = ((BigDecimal) gwConfigurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL)).byteValue();
+        var configurationMap = getThing().getConfiguration();
+        if (configurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL) != null) {
+            xSleepTime = ((BigDecimal) configurationMap.get(SoulissBindingConstants.SLEEP_CHANNEL)).byteValue();
         }
-        if (gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND) != null) {
-            bSecureSend = ((Boolean) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND)).booleanValue();
+        if (configurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND) != null) {
+            bSecureSend = ((Boolean) configurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND)).booleanValue();
         }
     }
 

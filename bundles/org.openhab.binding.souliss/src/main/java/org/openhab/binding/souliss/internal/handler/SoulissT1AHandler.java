@@ -29,7 +29,6 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class SoulissT1AHandler extends SoulissGenericHandler {
-    // private @NonNullByDefault({}) Configuration gwConfigurationMap; //unused for now
     byte t1nRawState = 0xF;
 
     public SoulissT1AHandler(Thing thing) {
@@ -42,6 +41,9 @@ public class SoulissT1AHandler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
+
+        super.initialize();
+
         updateStatus(ThingStatus.UNKNOWN);
     }
 

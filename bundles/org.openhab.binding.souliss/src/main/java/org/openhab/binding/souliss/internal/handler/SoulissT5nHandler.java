@@ -14,12 +14,11 @@ package org.openhab.binding.souliss.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.PrimitiveType;
 
 /**
  * The {@link SoulissT5nHandler} is responsible for handling commands, which are
@@ -38,16 +37,15 @@ public class SoulissT5nHandler extends SoulissGenericHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-    }
-
-    @Override
     public void initialize() {
+
+        super.initialize();
+
         updateStatus(ThingStatus.UNKNOWN);
     }
 
-    public void setState(PrimitiveType state) {
-        this.updateState(SoulissBindingConstants.T5N_VALUE_CHANNEL, (DecimalType) state);
+    public void setState(QuantityType<?> state) {
+        this.updateState(SoulissBindingConstants.T5N_VALUE_CHANNEL, state);
     }
 
     @Override
@@ -58,7 +56,7 @@ public class SoulissT5nHandler extends SoulissGenericHandler {
     public void setFloatValue(float valueOf) {
         super.setLastStatusStored();
         if (fVal != valueOf) {
-            this.setState(DecimalType.valueOf(Float.toString(valueOf)));
+            this.setState(QuantityType.valueOf(Float.toString(valueOf)));
             fVal = valueOf;
         }
     }
@@ -76,5 +74,10 @@ public class SoulissT5nHandler extends SoulissGenericHandler {
     public byte getExpectedRawState(byte bCommand) {
         // Secure Send is disabled
         return -1;
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        throw new UnsupportedOperationException("Unsupported operation. Read Only");
     }
 }

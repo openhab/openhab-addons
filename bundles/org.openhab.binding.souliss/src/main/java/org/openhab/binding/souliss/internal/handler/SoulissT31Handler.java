@@ -19,8 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
 import org.openhab.binding.souliss.internal.protocol.HalfFloatUtils;
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -43,19 +41,17 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SoulissT31Handler extends SoulissGenericHandler {
-    private @NonNullByDefault({}) Configuration gwConfigurationMap;
 
     private final Logger logger = LoggerFactory.getLogger(SoulissT31Handler.class);
 
-    DecimalType setPointValue = DecimalType.ZERO;
+    QuantityType<Temperature> setMeasuredValue = new QuantityType<Temperature>("0");
+    QuantityType<Temperature> setPointValue = new QuantityType<Temperature>("0");
     StringType fanStateValue = StringType.EMPTY;
     StringType powerState = StringType.EMPTY;
     StringType fireState = StringType.EMPTY;
 
     StringType lastModeState = StringType.EMPTY;
     StringType modeStateValue = StringType.EMPTY;
-
-    QuantityType<Temperature> setMeasuredValue = new QuantityType<Temperature>("0 °C");
 
     public SoulissT31Handler(Thing pThing) {
         super(pThing);
@@ -124,8 +120,8 @@ public class SoulissT31Handler extends SoulissGenericHandler {
                     }
                     break;
                 case SoulissBindingConstants.T31_SETPOINT_CHANNEL:
-                    if (command instanceof DecimalType) {
-                        int uu = HalfFloatUtils.fromFloat(((DecimalType) command).floatValue());
+                    if (command instanceof QuantityType<?>) {
+                        int uu = HalfFloatUtils.fromFloat(((QuantityType<?>) command).floatValue());
                         byte b2 = (byte) (uu >> 8);
                         byte b1 = (byte) uu;
                         // setpoint command
@@ -142,11 +138,14 @@ public class SoulissT31Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
+
+        super.initialize();
+
         updateStatus(ThingStatus.UNKNOWN);
 
-        gwConfigurationMap = getThing().getConfiguration();
-        if (gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND) != null) {
-            bSecureSend = ((Boolean) gwConfigurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND)).booleanValue();
+        var configurationMap = getThing().getConfiguration();
+        if (configurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND) != null) {
+            bSecureSend = ((Boolean) configurationMap.get(SoulissBindingConstants.CONFIG_SECURE_SEND)).booleanValue();
         }
     }
 
@@ -209,13 +208,13 @@ public class SoulissT31Handler extends SoulissGenericHandler {
 
     public void setMeasuredValue(QuantityType<Temperature> valueOf) {
         if ((valueOf instanceof QuantityType<?>) && (!setMeasuredValue.equals(valueOf))) {
-            this.updateState(SoulissBindingConstants.T31_VALUE_CHANNEL, new QuantityType<>(valueOf, SIUnits.CELSIUS));
+            this.updateState(SoulissBindingConstants.T31_VALUE_CHANNEL, valueOf);
             setMeasuredValue = valueOf;
         }
     }
 
-    public void setSetpointValue(DecimalType valueOf) {
-        if ((valueOf instanceof DecimalType) && (!setPointValue.equals(valueOf))) {
+    public void setSetpointValue(QuantityType<Temperature> valueOf) {
+        if ((valueOf instanceof QuantityType<?>) && (!setPointValue.equals(valueOf))) {
             this.updateState(SoulissBindingConstants.T31_SETPOINT_CHANNEL, valueOf);
             setPointValue = valueOf;
         }
@@ -291,7 +290,7 @@ public class SoulissT31Handler extends SoulissGenericHandler {
 
         // SLOT 3-4: Setpoint Value
         if (!Float.isNaN(valSetPoint)) {
-            this.setSetpointValue(DecimalType.valueOf(String.valueOf(valSetPoint)));
+            this.setSetpointValue(QuantityType.valueOf(valSetPoint, SIUnits.CELSIUS));
         }
     }
 

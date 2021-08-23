@@ -43,6 +43,9 @@ public class SoulissT14Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
+
+        super.initialize();
+
         updateStatus(ThingStatus.UNKNOWN);
     }
 

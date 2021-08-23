@@ -487,7 +487,7 @@
 			<channel id="fire" typeId="buttonReadOnly">
 				<label>Fire</label>
 			</channel>
-			<channel id="setPoint" typeId="float6n"/>
+			<channel id="setPoint" typeId="setpointTemperature"/>
 			<channel id="setAsMeasured" typeId="button">
 				<label>As Measured</label>
 			</channel>
@@ -1188,6 +1188,17 @@
 			<tag>sensors</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="setpointTemperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint Temperature</label>
+		<description>Setpoint temperature</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>sensors</tag>
+		</tags>
+		<state min="12" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="lux">

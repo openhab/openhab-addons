@@ -51,7 +51,9 @@ public class SoulissT6nHandler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-        // status online
+
+        super.initialize();
+
         updateStatus(ThingStatus.UNKNOWN);
     }
 
