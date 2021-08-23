@@ -40,6 +40,7 @@ Hayward OmniLogic Connection Parameters:
 ## Channels
 
 ### Backyard Channels
+
 | Channel Type ID | Item Type          | Description                      | Read Write |
 |-----------------|--------------------|----------------------------------|:----------:|
 | backyardAirTemp | Number:Temperature | Backyard air temp sensor reading |      R     |
