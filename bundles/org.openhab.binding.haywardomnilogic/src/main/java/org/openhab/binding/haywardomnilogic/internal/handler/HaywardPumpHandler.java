@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The Filter Handler
+ * The Pump Handler
  *
  * @author Matt Myers - Initial contribution
  */
@@ -103,14 +103,14 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                 String cmdString = this.cmdToString(command);
                 try {
                     switch (channelUID.getId()) {
-                        case HaywardBindingConstants.CHANNEL_FILTER_ENABLE:
+                        case HaywardBindingConstants.CHANNEL_PUMP_ENABLE:
                             if (command == OnOffType.ON) {
                                 cmdString = "100";
                             } else {
                                 cmdString = "0";
                             }
                             break;
-                        case HaywardBindingConstants.CHANNEL_FILTER_SPEED:
+                        case HaywardBindingConstants.CHANNEL_PUMP_SPEED:
                             break;
                         default:
                             logger.warn("haywardCommand Unsupported type {}", channelUID);
