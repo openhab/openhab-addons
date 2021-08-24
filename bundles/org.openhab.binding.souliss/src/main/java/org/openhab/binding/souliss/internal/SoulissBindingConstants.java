@@ -30,7 +30,7 @@ public final class SoulissBindingConstants {
     public static final String BINDING_ID = "souliss";
 
     public static final long DISCOVERY_RESEND_TIMEOUT_IN_MILLIS = 5000;
-    public static final int DISCOVERY_TIMEOUT_IN_SECONDS = 30;
+    public static final int DISCOVERY_TIMEOUT_IN_SECONDS = 120;
     public static final long SEND_DISPATCHER_MIN_DELAY_CYCLE_IN_MILLIS = 500;
 
     // List of all Thing Type UIDs

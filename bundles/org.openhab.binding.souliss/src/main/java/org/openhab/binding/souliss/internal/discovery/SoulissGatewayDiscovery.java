@@ -26,7 +26,11 @@ import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +42,9 @@ import org.slf4j.LoggerFactory;
  * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
-// @Component(service = DiscoveryService.class, configurationPid = "discovery.souliss")
-public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements DiscoverResult {
+@Component(service = DiscoveryService.class, configurationPid = "discovery.souliss")
+public class SoulissGatewayDiscovery extends AbstractDiscoveryService
+        implements DiscoverResult, DiscoveryService, ThingHandlerService {
     private @Nullable ScheduledFuture<?> discoveryJob = null;
     private final Logger logger = LoggerFactory.getLogger(SoulissGatewayDiscovery.class);
 
@@ -249,5 +254,20 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
 
             }
         }
+    }
+
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        // TODO Auto-generated method stub
+        if (handler instanceof SoulissGatewayHandler) {
+            soulissGwHandler = (SoulissGatewayHandler) handler;
+        }
+
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        // TODO Auto-generated method stub
+        return soulissGwHandler;
     }
 }

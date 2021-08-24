@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.souliss.internal.discovery.SoulissGatewayDiscovery;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
 import org.openhab.binding.souliss.internal.handler.SoulissT11Handler;
 import org.openhab.binding.souliss.internal.handler.SoulissT12Handler;
@@ -49,7 +48,6 @@ import org.openhab.binding.souliss.internal.handler.SoulissT66Handler;
 import org.openhab.binding.souliss.internal.handler.SoulissT67Handler;
 import org.openhab.binding.souliss.internal.handler.SoulissT68Handler;
 import org.openhab.binding.souliss.internal.handler.SoulissTopicsHandler;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -86,7 +84,7 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(GATEWAY_THING_TYPE)) {
             var bridgeHandler = new SoulissGatewayHandler((Bridge) thing);
-            this.registerDiscoveryService(bridgeHandler);
+            // this.registerDiscoveryService(bridgeHandler);
 
             return bridgeHandler;
 
@@ -151,16 +149,16 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    /**
-     * Register a discovery service for an IP bridge handler.
-     *
-     * @param bridgeHandler IP bridge handler for which to register the discovery service
-     */
-    private synchronized void registerDiscoveryService(SoulissGatewayHandler bridgeHandler) {
-        logger.debug("Registering XML device discovery service.");
-        var discoveryService = new SoulissGatewayDiscovery(bridgeHandler);
-        bridgeHandler.setDiscoveryService(discoveryService);
-        discoveryServiceRegMap.put(bridgeHandler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));
-    }
+    // /**
+    // * Register a discovery service for an IP bridge handler.
+    // *
+    // * @param bridgeHandler IP bridge handler for which to register the discovery service
+    // */
+    // private synchronized void registerDiscoveryService(SoulissGatewayHandler bridgeHandler) {
+    // logger.debug("Registering XML device discovery service.");
+    // var discoveryService = new SoulissGatewayDiscovery(bridgeHandler);
+    // bridgeHandler.setDiscoveryService(discoveryService);
+    // discoveryServiceRegMap.put(bridgeHandler.getThing().getUID(),
+    // bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));
+    // }
 }
