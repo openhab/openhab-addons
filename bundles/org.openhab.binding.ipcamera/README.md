@@ -115,7 +115,7 @@ Thing ipcamera:hikvision:West "West Camera"
     port=80,
     nvrChannel=4,
     serverPort=54324,
-    ffmpegOutput="/etc/openhab2/html/cameras/camera-west/",
+    ffmpegOutput="/var/lib/openhab/ipcamera/West/",
     ffmpegInput="rtsp://192.168.0.XX:554/ISAPI/Streaming/channels/401"
 ]
 ```
@@ -192,7 +192,7 @@ If you do not specify any of these, the binding will use the default which shoul
 | `ffmpegInput`| Best if this stream is in H.264 format and can be RTSP or HTTP URLs. Leave this blank to use the auto detected RTSP address for ONVIF cameras. |
 | `ffmpegInputOptions` | Allows you to specify any options before the -i on the commands for FFmpeg. If you have a ESP32 camera that only has a mjpeg stream then make this equal `-f mjpeg`. |
 | `ffmpegLocation`| The full path including the filename for where you have installed FFmpeg. The default should work for most Linux installs but if using windows use this format: `c:\ffmpeg\bin\ffmpeg.exe` |
-| `ffmpegOutput`| The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this format: `c:\openhabconf\html\ipcamera\`. If you would like to expose the GIF files to your static server, you can set it to `/etc/openhab2/html/cameras/camera-name/` |
+| `ffmpegOutput`| The full path to a unique folder (different for each camera) where FFmpeg has the ability to write files to ending with a slash. If you leave this blank, the binding will automatically use `$OPENHAB_USERDATA/ipcamera/UID`. See here for where this is located on your installation, <https://www.openhab.org/docs/installation/#getting-installation-info> |
 | `hlsOutOptions`| This gives you direct access to specify your own FFmpeg options to be used. Default: `-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2 -hls_list_size 4` |
 | `gifOutOptions`| This gives you direct access to specify your own FFmpeg options to be used for animated GIF files. Default: `-r 2 -filter_complex scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse` |
 | `mjpegOptions` | Allows you to change the settings for creating a MJPEG stream from RTSP using FFmpeg. Possible reasons to change this would be to rotate or re-scale the picture from the camera, change the JPG compression for better quality or the FPS rate. |
@@ -485,8 +485,7 @@ To use the HLS feature, you need to:
 
 + Ensure FFmpeg is installed.
 + For `generic` cameras, you will need to use the config `ffmpegInput` to provide a HTTP or RTSP URL.
-+ Supply a folder that the openhab user has write permissions for to the config `ffmpegOutput`.
-+ Set a valid `serverPort` as the default value of -1 will turn this feature off.
++ Set a valid `serverPort` as the value of -1 will turn this feature off.
 + Consider using a SSD/HDD, zram location, or a tmpfs (ram drive) can be used if you only have micro SD/flash based storage.
 
 ### Ram Drive Setup

@@ -36,7 +36,7 @@ import org.openhab.core.library.unit.Units;
 @NonNullByDefault
 public enum MiIoQuantiyTypes {
 
-    CELCIUS(SIUnits.CELSIUS, "C"),
+    CELSIUS(SIUnits.CELSIUS, "C", "celcius"),
     FAHRENHEIT(ImperialUnits.FAHRENHEIT),
     KELVIN(Units.KELVIN, "K"),
     PASCAL(SIUnits.PASCAL),
@@ -52,6 +52,7 @@ public enum MiIoQuantiyTypes {
     LITRE(Units.LITRE, "liter"),
     LUX(Units.LUX),
     RADIANS(Units.RADIAN, "radians"),
+    DEGREE(Units.DEGREE_ANGLE, "degree"),
     KILOWATT_HOUR(Units.KILOWATT_HOUR, "kwh", "kWH"),
     SQUARE_METRE(SIUnits.SQUARE_METRE, "square_meter", "squaremeter"),
     PERCENT(Units.PERCENT, "percentage"),

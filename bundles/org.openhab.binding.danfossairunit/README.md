@@ -24,17 +24,17 @@ These are the available configuration parameters:
 |---|---|---|---|---|
 | current_time | main | DateTime | RO | Current time reported by the air unit.  |
 | mode | main | String | RW | Value to control the operation mode of the air unit. One of DEMAND, PROGRAM, MANUAL and OFF  |
-| manual_fan_speed | main | Dimmer | RW | Value to control the fan speed when in MANUAL mode (10 steps) |
+| manual_fan_step | main | Dimmer | RW | Value to control the fan step when in MANUAL mode (10 steps) |
 | supply_fan_speed | main | Number | RO | Current rotation of the fan supplying air to the rooms (in rpm) |
 | extract_fan_speed | main | Number | RO | Current rotation of the fan extracting air from the rooms (in rpm) |
-| supply_fan_step | main | Dimmer | RO | Current 10-step setting of the fan supplying air to the rooms |
-| extract_fan_step | main | Dimmer | RO | Current 10-step setting of the fan extracting air from the rooms |
+| supply_fan_step | main | Dimmer | RO | Current step setting of the fan supplying air to the rooms |
+| extract_fan_step | main | Dimmer | RO | Current step setting of the fan extracting air from the rooms |
 | boost | main | Switch | RW | Enables fan boost  |
 | night_cooling | main | Switch | RW | Enables night cooling  |
-| room_temp | temps | Number | RO | Temperature of the air in the room of the Air Dial  |
-| room_temp_calculated | temps | Number | RO | Calculated Room Temperature  |
-| outdoor_temp | temps | Number | RO | Temperature of the air outside  |
-| humidity | humidity | Number | RO | Humidity  |
+| room_temp | temps | Number:Temperature | RO | Temperature of the air in the room of the Air Dial  |
+| room_temp_calculated | temps | Number:Temperature | RO | Calculated Room Temperature  |
+| outdoor_temp | temps | Number:Temperature | RO | Temperature of the air outside  |
+| humidity | humidity | Number:Dimensionless | RO | Current relative humidity measured by the air unit  |
 | bypass | recuperator | Switch | RW | Disables the heat exchange. Useful in summer when room temperature is above target and outside temperature is below target.  |
 | supply_temp | recuperator | Number | RO | Temperature of air which is passed to the rooms  |
 | extract_temp | recuperator | Number | RO | Temperature of the air as extracted from the rooms  |

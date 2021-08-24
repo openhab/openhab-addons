@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.digitalstrom.internal.lib.serverconnection.impl;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -42,7 +43,6 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.digitalstrom.internal.lib.config.Config;
 import org.openhab.binding.digitalstrom.internal.lib.manager.ConnectionManager;
@@ -459,7 +459,7 @@ public class HttpTransportImpl implements HttpTransport {
                 correctedPath = correctedPath + "/";
             }
         }
-        InputStream certInputStream = IOUtils.toInputStream(cert);
+        InputStream certInputStream = new ByteArrayInputStream(cert.getBytes(StandardCharsets.UTF_8));
         X509Certificate trustedCert;
         try {
             trustedCert = (X509Certificate) CertificateFactory.getInstance("X.509")
@@ -488,7 +488,7 @@ public class HttpTransportImpl implements HttpTransport {
     private SSLSocketFactory generateSSLContextFromPEMCertString(String pemCert) {
         if (pemCert != null && !pemCert.isBlank() && pemCert.startsWith(BEGIN_CERT)) {
             try {
-                InputStream certInputStream = IOUtils.toInputStream(pemCert);
+                InputStream certInputStream = new ByteArrayInputStream(pemCert.getBytes(StandardCharsets.UTF_8));
                 final X509Certificate trustedCert = (X509Certificate) CertificateFactory.getInstance("X.509")
                         .generateCertificate(certInputStream);
 

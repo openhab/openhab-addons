@@ -76,9 +76,6 @@ public class ShellyCoIoTProtocol {
     protected boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, CoIotSensor s,
             Map<String, State> updates, ShellyColorUtils col) {
         // Process status information and convert into channel updates
-        // Integer rIndex = Integer.parseInt(sen.links) + 1;
-        // String rGroup = getProfile().numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
-        // : CHANNEL_GROUP_RELAY_CONTROL + rIndex;
         int rIndex = getIdFromBlk(sen);
         String rGroup = getProfile().numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
                 : CHANNEL_GROUP_RELAY_CONTROL + rIndex;
@@ -130,8 +127,10 @@ public class ShellyCoIoTProtocol {
                                 s.value == 1 ? OnOffType.ON : OnOffType.OFF);
                         break;
                     case "vibration": // DW with FW1.6.5+
-                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
-                                s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                        if (s.value == 1) {
+                            thingHandler.triggerChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ALARM_STATE,
+                                    EVENT_TYPE_VIBRATION);
+                        }
                         break;
                     case "luminositylevel": // +
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ILLUM, getStringType(s.valueStr));
@@ -166,7 +165,7 @@ public class ShellyCoIoTProtocol {
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN,
                                 ShellyColorUtils.toPercent((int) s.value, SHELLY_MIN_GAIN, SHELLY_MAX_GAIN));
                         break;
-                    case "sensorerror": // +
+                    case "sensorerror":
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR, getStringType(s.valueStr));
                         break;
                     default:

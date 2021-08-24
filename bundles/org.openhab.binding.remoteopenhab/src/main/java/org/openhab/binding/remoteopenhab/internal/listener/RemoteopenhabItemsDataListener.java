@@ -43,4 +43,9 @@ public interface RemoteopenhabItemsDataListener {
      * A new ItemUpdatedEvent was published.
      */
     void onItemUpdated(RemoteopenhabItem newItem, RemoteopenhabItem oldItem);
+
+    /**
+     * A new ChannelDescriptionChangedEvent with updated state options or updated command options was published.
+     */
+    void onItemOptionsUpdatedd(RemoteopenhabItem item);
 }

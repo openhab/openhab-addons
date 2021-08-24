@@ -110,7 +110,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                     if (!warnings.isEmpty() && (status != ThingStatus.UNKNOWN)) {
                         properties.put(ATTRIBUTE_STATUS_ICON, ICON_ATTENTION);
                     }
-                    if (!deviceType.equalsIgnoreCase("unknown") && (status == ThingStatus.ONLINE)) {
+                    if (!"unknown".equalsIgnoreCase(deviceType) && (status == ThingStatus.ONLINE)) {
                         properties.put(ATTRIBUTE_FIRMWARE_SEL, fillFirmwareHtml(uid, deviceType, profile.mode));
                         properties.put(ATTRIBUTE_ACTION_LIST, fillActionHtml(th, uid));
                     } else {
@@ -148,7 +148,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                 html += "\t\t\t\t\t<option value=\"" + updateUrl + "&" + URLPARM_VERSION + "=" + FWPROD + "\">Release "
                         + pVersion + "</option>\n";
             }
-            bVersion = extractFwVersion(fw.beta_ver);
+            bVersion = extractFwVersion(fw.betaVer);
             if (!bVersion.isEmpty()) {
                 html += "\t\t\t\t\t<option value=\"" + updateUrl + "&" + URLPARM_VERSION + "=" + FWBETA + "\">Beta "
                         + bVersion + "</option>\n";

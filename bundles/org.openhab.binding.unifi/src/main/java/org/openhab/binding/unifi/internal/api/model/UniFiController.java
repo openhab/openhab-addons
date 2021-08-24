@@ -94,6 +94,10 @@ public class UniFiController {
     // Public API
 
     public void start() throws UniFiException {
+        if (unifios) {
+            obtainCsrfToken();
+        }
+
         login();
     }
 
@@ -101,9 +105,15 @@ public class UniFiController {
         logout();
     }
 
-    public void login() throws UniFiException {
+    public void obtainCsrfToken() throws UniFiException {
         csrfToken = "";
 
+        UniFiControllerRequest<Void> req = newRequest(Void.class);
+        req.setPath("/");
+        executeRequest(req);
+    }
+
+    public void login() throws UniFiException {
         UniFiControllerRequest<Void> req = newRequest(Void.class);
         req.setPath(unifios ? "/api/auth/login" : "/api/login");
         req.setBodyParameter("username", username);

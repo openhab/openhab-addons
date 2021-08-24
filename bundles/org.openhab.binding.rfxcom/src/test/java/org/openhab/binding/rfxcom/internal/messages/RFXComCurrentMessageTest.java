@@ -32,7 +32,7 @@ public class RFXComCurrentMessageTest {
     public void testSomeMessages() throws RFXComException {
         String message = "0D59010F860004001D0000000049";
 
-        final RFXComCurrentMessage msg = (RFXComCurrentMessage) RFXComMessageFactory
+        final RFXComCurrentMessage msg = (RFXComCurrentMessage) RFXComMessageFactoryImpl.INSTANCE
                 .createMessage(HexUtils.hexToBytes(message));
         assertEquals(SubType.ELEC1, msg.subType, "SubType");
         assertEquals(15, (short) (msg.seqNbr & 0xFF), "Seq Number");

@@ -216,7 +216,8 @@
 						"command": "set_lightMode",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Simple Mode\",\"1\"\u003d\"Special Mode\"]`"
 			}
 		],
 		"experimental": false

@@ -10,6 +10,7 @@ As described in the Telegram Bot API (https://core.telegram.org/bots#6-botfather
 
 - On a Telegram client open a chat with BotFather.
 - Send `/newbot` to BotFather and fill in all the needed information. The authentication token that is given will be needed in the next steps.
+- The token is a combination with double point separated parts of numbers and letters e.g.: 158642643:ABCHL_O-MUovQ1NzrDF5R_nqLbFhPPrg9Jps
 
 2. Create the destination chat
 
@@ -17,7 +18,7 @@ As described in the Telegram Bot API (https://core.telegram.org/bots#6-botfather
 
 3. Get the chatID
 
-- Open a browser and invoke `https://api.telegram.org/bot<token>/getUpdates` (where `<token>` is the authentication token previously obtained)
+- Open a browser and invoke `https://api.telegram.org/bot<token>/getUpdates` (where `<token>` is the authentication token previously obtained e.g.:  `https://api.telegram.org/bot158642643:ABCHL_O-MUovQ1NzrDF5R_nqLbFhPPrg9Jps/getUpdates`)
 - Look at the JSON result to find the value of `id`: that's the chatID.
 
 Note that if using a Telegram group chat, the group chatIDs are prefixed with a dash that must be included in the config (e.g. `-22334455`).

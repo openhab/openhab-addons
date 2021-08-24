@@ -14,6 +14,7 @@ package org.openhab.binding.epsonprojector.internal.handler;
 
 import static org.openhab.binding.epsonprojector.internal.EpsonProjectorBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
@@ -36,6 +37,7 @@ import org.openhab.binding.epsonprojector.internal.enums.Switch;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -69,6 +71,8 @@ public class EpsonProjectorHandler extends BaseThingHandler {
     private Optional<EpsonProjectorDevice> device = Optional.empty();
 
     private boolean isPowerOn = false;
+    private int maxVolume = 20;
+    private int curVolumeStep = -1;
     private int pollingInterval = DEFAULT_POLLING_INTERVAL_SEC;
 
     public EpsonProjectorHandler(Thing thing, SerialPortManager serialPortManager) {
@@ -103,6 +107,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
 
+        maxVolume = config.maxVolume;
         pollingInterval = config.pollingInterval;
         device.ifPresent(dev -> dev.setScheduler(scheduler));
         updateStatus(ThingStatus.UNKNOWN);
@@ -165,7 +170,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                 }
             }
         } catch (IllegalArgumentException e) {
-            logger.warn("Unknown channel {}", channel.getUID().getId());
+            logger.warn("Unknown channel {}, exception: {}", channel.getUID().getId(), e.getMessage());
         }
     }
 
@@ -267,8 +272,17 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     int vKeystone = remoteController.getVerticalKeystone();
                     return new DecimalType(vKeystone);
                 case VOLUME:
-                    int volume = remoteController.getVolume();
-                    return new DecimalType(volume);
+                    // Each volume step falls within several percentage values, only change the UI if the polled step is
+                    // different than the step of the current percent. Without this logic the UI would snap back to the
+                    // closest whole % value for that step. e.g., UI set to 51% would snap back to 50% on the next
+                    // polling update.
+                    int volumeStep = remoteController.getVolume(maxVolume);
+                    if (curVolumeStep != volumeStep) {
+                        curVolumeStep = volumeStep;
+                        return new PercentType(
+                                BigDecimal.valueOf(Math.round(curVolumeStep / (double) maxVolume * 100.0)));
+                    }
+                    return null;
                 case VPOSITION:
                     int vPosition = remoteController.getVerticalPosition();
                     return new DecimalType(vPosition);
@@ -387,7 +401,11 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     remoteController.setVerticalKeystone(((DecimalType) command).intValue());
                     break;
                 case VOLUME:
-                    remoteController.setVolume(((DecimalType) command).intValue());
+                    int newVolumeStep = (int) Math.round(((PercentType) command).doubleValue() / 100.0 * maxVolume);
+                    if (curVolumeStep != newVolumeStep) {
+                        curVolumeStep = newVolumeStep;
+                        remoteController.setVolume(curVolumeStep, maxVolume);
+                    }
                     break;
                 case VPOSITION:
                     remoteController.setVerticalPosition(((DecimalType) command).intValue());

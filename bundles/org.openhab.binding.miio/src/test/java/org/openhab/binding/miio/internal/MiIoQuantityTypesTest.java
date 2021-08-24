@@ -29,15 +29,13 @@ import org.openhab.core.library.unit.Units;
 public class MiIoQuantityTypesTest {
 
     @Test
-    public void UnknownUnitTest() {
-
+    public void unknownUnitTest() {
         String unitName = "some none existent unit";
         assertNull(MiIoQuantiyTypes.get(unitName));
     }
 
     @Test
     public void regularsUnitTest() {
-
         String unitName = "minute";
         assertEquals(Units.MINUTE, MiIoQuantiyTypes.get(unitName));
 
@@ -47,7 +45,6 @@ public class MiIoQuantityTypesTest {
 
     @Test
     public void aliasUnitsTest() {
-
         String unitName = "square_meter";
         assertEquals(SIUnits.SQUARE_METRE, MiIoQuantiyTypes.get(unitName));
 

@@ -6,9 +6,13 @@
 
 # Add-on maintainers:
 /bundles/org.openhab.automation.groovyscripting/ @wborn
+/bundles/org.openhab.automation.jsscripting/ @jpg0
 /bundles/org.openhab.automation.jythonscripting/ @openhab/add-ons-maintainers
 /bundles/org.openhab.automation.pidcontroller/ @fwolter
+/bundles/org.openhab.automation.pwm/ @fwolter
 /bundles/org.openhab.binding.adorne/ @theiding
+/bundles/org.openhab.binding.ahawastecollection/ @soenkekueper
+/bundles/org.openhab.binding.airq/ @aurelio1
 /bundles/org.openhab.binding.airquality/ @kubawolanin
 /bundles/org.openhab.binding.airvisualnode/ @3cky
 /bundles/org.openhab.binding.alarmdecoder/ @bobadair @billfor
@@ -16,12 +20,14 @@
 /bundles/org.openhab.binding.amazondashbutton/ @OLibutzki
 /bundles/org.openhab.binding.amazonechocontrol/ @mgeramb
 /bundles/org.openhab.binding.ambientweather/ @mhilbush
+/bundles/org.openhab.binding.amplipi/ @kaikreuzer
 /bundles/org.openhab.binding.androiddebugbridge/ @GiviMAD
 /bundles/org.openhab.binding.astro/ @gerrieg
 /bundles/org.openhab.binding.atlona/ @tmrobert8
 /bundles/org.openhab.binding.autelis/ @digitaldan
 /bundles/org.openhab.binding.automower/ @maxpg
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
+/bundles/org.openhab.binding.benqprojector/ @mlobstein
 /bundles/org.openhab.binding.bigassfan/ @mhilbush
 /bundles/org.openhab.binding.bluetooth/ @cdjackson @cpmeister
 /bundles/org.openhab.binding.bluetooth.airthings/ @paulianttila
@@ -35,6 +41,7 @@
 /bundles/org.openhab.binding.bluetooth.govee/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.roaming/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.ruuvitag/ @ssalonen
+/bundles/org.openhab.binding.bmwconnecteddrive/ @weymann @ntruchsess
 /bundles/org.openhab.binding.boschindego/ @jofleck
 /bundles/org.openhab.binding.boschshc/ @stefan-kaestle @coeing @GerdZanker
 /bundles/org.openhab.binding.bosesoundtouch/ @marvkis @tratho
@@ -66,6 +73,7 @@
 /bundles/org.openhab.binding.dwdpollenflug/ @DerOetzi
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
 /bundles/org.openhab.binding.ecobee/ @mhilbush
+/bundles/org.openhab.binding.ecotouch/ @sibbi77
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.energenie/ @hmerk
 /bundles/org.openhab.binding.enigma2/ @gdolfen
@@ -95,13 +103,16 @@
 /bundles/org.openhab.binding.gpstracker/ @gbicskei
 /bundles/org.openhab.binding.gree/ @markus7017
 /bundles/org.openhab.binding.groheondus/ @FlorianSW
+/bundles/org.openhab.binding.haassohnpelletstove/ @chingon007
 /bundles/org.openhab.binding.harmonyhub/ @digitaldan
 /bundles/org.openhab.binding.haywardomnilogic/ @matchews
+/bundles/org.openhab.binding.hccrubbishcollection/ @cossey
 /bundles/org.openhab.binding.hdanywhere/ @kgoderis
 /bundles/org.openhab.binding.hdpowerview/ @beowulfe
 /bundles/org.openhab.binding.helios/ @kgoderis
 /bundles/org.openhab.binding.heliosventilation/ @ramack
 /bundles/org.openhab.binding.heos/ @Wire82
+/bundles/org.openhab.binding.homeconnect/ @bruestel
 /bundles/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
 /bundles/org.openhab.binding.homewizard/ @Daniel-42
 /bundles/org.openhab.binding.hpprinter/ @cossey
@@ -118,6 +129,7 @@
 /bundles/org.openhab.binding.insteon/ @robnielsen
 /bundles/org.openhab.binding.intesis/ @hmerk
 /bundles/org.openhab.binding.ipcamera/ @Skinah
+/bundles/org.openhab.binding.ipobserver/ @Skinah
 /bundles/org.openhab.binding.ipp/ @peuter
 /bundles/org.openhab.binding.irobot/ @Sonic-Amiga
 /bundles/org.openhab.binding.irtrans/ @kgoderis
@@ -157,6 +169,7 @@
 /bundles/org.openhab.binding.meteoblue/ @9037568
 /bundles/org.openhab.binding.meteostick/ @cdjackson
 /bundles/org.openhab.binding.miele/ @kgoderis
+/bundles/org.openhab.binding.mielecloud/ @BjoernLange
 /bundles/org.openhab.binding.mihome/ @pboos
 /bundles/org.openhab.binding.miio/ @marcelrv
 /bundles/org.openhab.binding.milight/ @davidgraeff
@@ -210,6 +223,7 @@
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /bundles/org.openhab.binding.openwebnet/ @mvalla
 /bundles/org.openhab.binding.oppo/ @mlobstein
+/bundles/org.openhab.binding.orbitbhyve/ @octa22
 /bundles/org.openhab.binding.orvibo/ @tavalin
 /bundles/org.openhab.binding.paradoxalarm/ @theater
 /bundles/org.openhab.binding.pentair/ @jsjames
@@ -221,10 +235,12 @@
 /bundles/org.openhab.binding.playstation/ @FluBBaOfWard
 /bundles/org.openhab.binding.plclogo/ @falkena
 /bundles/org.openhab.binding.plugwise/ @wborn
+/bundles/org.openhab.binding.plugwiseha/ @lsiepel
 /bundles/org.openhab.binding.powermax/ @lolodomo
 /bundles/org.openhab.binding.pulseaudio/ @peuter
 /bundles/org.openhab.binding.pushbullet/ @hakan42
 /bundles/org.openhab.binding.pushover/ @cweitkamp
+/bundles/org.openhab.binding.pushsafer/ @appzer @cweitkamp
 /bundles/org.openhab.binding.qbus/ @QbusKoen
 /bundles/org.openhab.binding.radiothermostat/ @mlobstein
 /bundles/org.openhab.binding.regoheatpump/ @crnjan
@@ -240,7 +256,8 @@
 /bundles/org.openhab.binding.sagercaster/ @clinique
 /bundles/org.openhab.binding.samsungtv/ @paulianttila
 /bundles/org.openhab.binding.satel/ @druciak
-/bundles/org.openhab.binding.senechome/ @vctender @KorbinianP
+/bundles/org.openhab.binding.semsportal/ @itb3
+/bundles/org.openhab.binding.senechome/ @vctender @KorbinianP @eguib
 /bundles/org.openhab.binding.seneye/ @nikotanghe
 /bundles/org.openhab.binding.sensebox/ @hakan42
 /bundles/org.openhab.binding.sensibo/ @seime
@@ -258,6 +275,7 @@
 /bundles/org.openhab.binding.snmp/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.solaredge/ @alexf2015
 /bundles/org.openhab.binding.solarlog/ @johannrichard
+/bundles/org.openhab.binding.solarwatt/ @sven-carstens
 /bundles/org.openhab.binding.somfymylink/ @loungeflyz
 /bundles/org.openhab.binding.somfytahoma/ @octa22
 /bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo
@@ -296,7 +314,8 @@
 /bundles/org.openhab.binding.verisure/ @jannegpriv
 /bundles/org.openhab.binding.vigicrues/ @clinique
 /bundles/org.openhab.binding.vitotronic/ @steand
-/bundles/org.openhab.binding.volvooncall/ @clinique
+/bundles/org.openhab.binding.volvooncall/ @clinique @Jamstah
+/bundles/org.openhab.binding.warmup/ @jamesmelville
 /bundles/org.openhab.binding.weathercompany/ @mhilbush
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo
 /bundles/org.openhab.binding.webthing/ @grro

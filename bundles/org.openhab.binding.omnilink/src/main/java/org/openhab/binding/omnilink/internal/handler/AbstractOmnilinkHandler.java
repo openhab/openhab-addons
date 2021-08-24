@@ -118,6 +118,11 @@ public abstract class AbstractOmnilinkHandler extends BaseThingHandler {
      * @return Configured area number for a thing.
      */
     protected int getAreaNumber() {
-        return ((Number) getThing().getConfiguration().get(THING_PROPERTIES_AREA)).intValue();
+        String areaNumber = getThing().getProperties().get(THING_PROPERTIES_AREA);
+        if (areaNumber != null) {
+            return Integer.valueOf(areaNumber);
+        } else {
+            return -1;
+        }
     }
 }

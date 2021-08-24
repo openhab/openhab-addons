@@ -68,7 +68,7 @@ public class MiIoBasicChannel {
     private @Nullable String channelCustomRefreshCommand;
     @SerializedName("transformation")
     @Expose
-    private @Nullable String transfortmation;
+    private @Nullable String transformation;
     @SerializedName("ChannelGroup")
     @Expose
     private @Nullable String channelGroup;
@@ -121,11 +121,7 @@ public class MiIoBasicChannel {
     }
 
     public boolean isMiOt() {
-        if (piid != null && siid != null && (getPiid() != 0 || getSiid() != 0)) {
-            return true;
-        } else {
-            return false;
-        }
+        return (piid != null && siid != null && (getPiid() != 0 || getSiid() != 0));
     }
 
     public String getFriendlyName() {
@@ -187,7 +183,7 @@ public class MiIoBasicChannel {
 
     public Boolean getRefresh() {
         final @Nullable Boolean rf = refresh;
-        return rf != null && rf.booleanValue() && !getProperty().isEmpty();
+        return rf != null && rf.booleanValue();
     }
 
     public void setRefresh(@Nullable Boolean refresh) {
@@ -221,12 +217,12 @@ public class MiIoBasicChannel {
         this.miIoDeviceActions = miIoDeviceActions;
     }
 
-    public @Nullable String getTransfortmation() {
-        return transfortmation;
+    public @Nullable String getTransformation() {
+        return transformation;
     }
 
-    public void setTransfortmation(@Nullable String transfortmation) {
-        this.transfortmation = transfortmation;
+    public void setTransformation(@Nullable String transformation) {
+        this.transformation = transformation;
     }
 
     public @Nullable String getCategory() {

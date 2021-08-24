@@ -66,10 +66,18 @@ public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
         String itemName = criteria.getItemName();
         if (itemName != null) {
             String measurementName = calculateMeasurementName(itemName);
+            boolean needsToUseItemTagName = !measurementName.equals(itemName);
+
             flux = flux.filter(measurement().equal(measurementName));
-            if (!measurementName.equals(itemName)) {
-                flux = flux.filter(tag("item").equal(itemName));
+            if (needsToUseItemTagName) {
+                flux = flux.filter(tag(TAG_ITEM_NAME).equal(itemName));
             }
+
+            if (needsToUseItemTagName)
+                flux = flux.keep(new String[] { FIELD_MEASUREMENT_NAME, COLUMN_TIME_NAME_V2, COLUMN_VALUE_NAME_V2,
+                        TAG_ITEM_NAME });
+            else
+                flux = flux.keep(new String[] { FIELD_MEASUREMENT_NAME, COLUMN_TIME_NAME_V2, COLUMN_VALUE_NAME_V2 });
         }
 
         if (criteria.getState() != null && criteria.getOperator() != null) {

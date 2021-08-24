@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.opensprinkler.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link StationProgram} class corresponds to the program set in the station.
  *
  * @author Florian Schmidt - Initial contribution
  */
+@NonNullByDefault
 public class StationProgram {
     public final long remainingWaterTime;
 
