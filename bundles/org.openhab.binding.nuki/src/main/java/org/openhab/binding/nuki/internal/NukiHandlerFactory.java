@@ -21,7 +21,6 @@ import org.openhab.binding.nuki.internal.dataexchange.NukiApiServlet;
 import org.openhab.binding.nuki.internal.handler.NukiBridgeHandler;
 import org.openhab.binding.nuki.internal.handler.NukiOpenerHandler;
 import org.openhab.binding.nuki.internal.handler.NukiSmartLockHandler;
-import org.openhab.binding.nuki.internal.service.NukiThingRegistryService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.id.InstanceUUID;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -56,17 +55,14 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
     private final NetworkAddressService networkAddressService;
-    private final NukiThingRegistryService thingService;
     private NukiApiServlet nukiApiServlet;
 
     @Activate
     public NukiHandlerFactory(@Reference HttpService httpService, @Reference final HttpClientFactory httpClientFactory,
-            @Reference NetworkAddressService networkAddressService,
-            @Reference final NukiThingRegistryService thingService) {
+            @Reference NetworkAddressService networkAddressService) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.networkAddressService = networkAddressService;
         this.nukiApiServlet = new NukiApiServlet(httpService);
-        this.thingService = thingService;
     }
 
     @Override
@@ -77,7 +73,6 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        this.thingService.thingCreated(thing.getUID());
 
         if (NukiBindingConstants.THING_TYPE_BRIDGE_UIDS.contains(thingTypeUID)) {
             String callbackUrl = createCallbackUrl(InstanceUUID.get());
@@ -101,7 +96,6 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public void removeThing(ThingUID thingUID) {
         super.removeThing(thingUID);
-        this.thingService.thingDestroyed(thingUID);
     }
 
     @Override
