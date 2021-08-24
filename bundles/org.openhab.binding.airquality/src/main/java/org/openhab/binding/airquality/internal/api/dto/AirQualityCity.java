@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airquality.internal.json;
+package org.openhab.binding.airquality.internal.api.dto;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class AirQualityCity {
-
     private String name = "";
     private @Nullable String url;
     private List<Double> geo = List.of();

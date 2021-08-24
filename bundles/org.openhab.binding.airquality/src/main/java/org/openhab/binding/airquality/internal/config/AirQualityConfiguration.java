@@ -10,9 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airquality.internal;
+package org.openhab.binding.airquality.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.airquality.internal.AirQualityException;
 
 /**
  * The {@link AirQualityConfiguration} is the class used to match the
@@ -25,8 +26,16 @@ public class AirQualityConfiguration {
     public static final String LOCATION = "location";
     public static final String STATION_ID = "stationId";
 
-    public String apikey = "";
     public String location = "";
     public int stationId = 0;
     public int refresh = 60;
+
+    public void checkValid() throws AirQualityException {
+        if (location.trim().isEmpty() && stationId == 0) {
+            throw new AirQualityException("@text/noLocationProvided");
+        }
+        if (refresh < 30) {
+            throw new AirQualityException("@text/refreshRate");
+        }
+    }
 }

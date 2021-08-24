@@ -10,14 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airquality.internal.json;
+package org.openhab.binding.airquality.internal.api.dto;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.airquality.internal.aqi.Pollutant;
+import org.openhab.binding.airquality.internal.api.Pollutant;
 
 /**
  * The {@link AirQualityData} is responsible for storing
@@ -27,12 +27,6 @@ import org.openhab.binding.airquality.internal.aqi.Pollutant;
  */
 @NonNullByDefault
 public class AirQualityData {
-    public enum IaqiElements {
-        t,
-        p,
-        h
-    }
-
     private int aqi;
     private int idx;
 
@@ -92,20 +86,6 @@ public class AirQualityData {
     public String getDominentPol() {
         return dominentpol;
     }
-
-    // public Map.@Nullable Entry<?, Double> getIaqiValue(String key) {
-    // AirQualityValue result = iaqi.get(key);
-    // if (result != null) {
-    // try {
-    // Pollutant pollutant = Pollutant.valueOf(key.toUpperCase());
-    // return Map.entry(pollutant, result.getValue());
-    // } catch (IllegalArgumentException e) {
-    // IaqiElements element = IaqiElements.valueOf(key.toUpperCase());
-    // return Map.entry(element, result.getValue());
-    // }
-    // }
-    // return null;
-    // }
 
     public double getIaqiValue(String key) {
         AirQualityValue result = iaqi.get(key);

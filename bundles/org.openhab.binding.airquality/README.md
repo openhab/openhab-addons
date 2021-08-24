@@ -30,7 +30,7 @@ The thing has a few configuration parameters:
 
 | Parameter | Description                                                             |
 |-----------|-------------------------------------------------------------------------|
-| apikey    | Data-platform token to access the AQIcn.org service. Mandatory.         |
+| apiKey    | Data-platform token to access the AQIcn.org service. Mandatory.         |
 | location  | Geo coordinates to be considered by the service.                        |
 | stationId | Unique ID of the measuring station.                                     |
 | refresh   | Refresh interval in minutes. Optional, the default value is 60 minutes. |
@@ -45,7 +45,7 @@ For the location parameter, the following syntax is allowed (comma separated lat
 If you always want to receive data from specific station and you know its unique ID, you can enter it instead of the coordinates.
 
 This `stationId` can be found by using the following link:
-https://api.waqi.info/search/?token=TOKEN&keyword=NAME, replacing TOKEN by your apikey and NAME by the station you are looking for.
+https://api.waqi.info/search/?token=TOKEN&keyword=NAME, replacing TOKEN by your apiKey and NAME by the station you are looking for.
 
 ### Thing properties
 
@@ -112,9 +112,9 @@ HAZARDOUS=Hazardous
 airquality.things:
 
 ```java
-airquality:aqi:home "AirQuality" @ "Krakow" [ apikey="XXXXXXXXXXXX", location="50.06465,19.94498", refresh=60 ]
-airquality:aqi:warsaw "AirQuality in Warsaw" [ apikey="XXXXXXXXXXXX", location="52.22,21.01", refresh=60 ]
-airquality:aqi:brisbane "AirQuality in Brisbane" [ apikey="XXXXXXXXXXXX", stationId=5115 ]
+airquality:aqi:home "AirQuality" @ "Krakow" [ apiKey="XXXXXXXXXXXX", location="50.06465,19.94498", refresh=60 ]
+airquality:aqi:warsaw "AirQuality in Warsaw" [ apiKey="XXXXXXXXXXXX", location="52.22,21.01", refresh=60 ]
+airquality:aqi:brisbane "AirQuality in Brisbane" [ apiKey="XXXXXXXXXXXX", stationId=5115 ]
 ```
 
 airquality.items:

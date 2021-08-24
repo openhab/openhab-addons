@@ -1,7 +1,7 @@
-package org.openhab.binding.airquality.internal.aqi;
+package org.openhab.binding.airquality.internal.api;
 
-import static org.openhab.binding.airquality.internal.aqi.Index.*;
-import static org.openhab.binding.airquality.internal.aqi.SensitiveGroups.*;
+import static org.openhab.binding.airquality.internal.api.Index.*;
+import static org.openhab.binding.airquality.internal.api.SensitiveGroup.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -51,12 +51,12 @@ public enum Pollutant {
                     new Concentration(205, 404, TWO_HUNDRED), new Concentration(405, 504, THREE_HUNDRED),
                     new Concentration(505, 604, FOUR_HUNDRED)));
 
-    private final Set<SensitiveGroups> sensitiveGroups;
+    private final Set<SensitiveGroup> sensitiveGroups;
     private final Unit<?> unit;
     private final Set<Concentration> breakpoints;
     private final int scale;
 
-    Pollutant(Set<SensitiveGroups> groups, Unit<?> unit, int scale, Set<Concentration> concentrations) {
+    Pollutant(Set<SensitiveGroup> groups, Unit<?> unit, int scale, Set<Concentration> concentrations) {
         this.sensitiveGroups = groups;
         this.unit = unit;
         this.breakpoints = concentrations;
@@ -67,7 +67,7 @@ public enum Pollutant {
         return breakpoints;
     }
 
-    public Set<SensitiveGroups> getSensitiveGroups() {
+    public Set<SensitiveGroup> getSensitiveGroups() {
         return sensitiveGroups;
     }
 

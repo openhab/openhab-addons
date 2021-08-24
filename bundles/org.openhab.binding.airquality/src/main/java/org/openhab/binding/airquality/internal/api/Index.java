@@ -1,4 +1,4 @@
-package org.openhab.binding.airquality.internal.aqi;
+package org.openhab.binding.airquality.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,7 +31,7 @@ public enum Index {
         return max - min;
     }
 
-    public boolean contains(double idx) {
+    boolean contains(double idx) {
         return min <= idx && idx <= max;
     }
 

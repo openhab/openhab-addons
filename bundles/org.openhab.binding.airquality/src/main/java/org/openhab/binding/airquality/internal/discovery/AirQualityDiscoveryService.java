@@ -13,7 +13,7 @@
 package org.openhab.binding.airquality.internal.discovery;
 
 import static org.openhab.binding.airquality.internal.AirQualityBindingConstants.*;
-import static org.openhab.binding.airquality.internal.AirQualityConfiguration.LOCATION;
+import static org.openhab.binding.airquality.internal.config.AirQualityConfiguration.LOCATION;
 
 import java.util.Map;
 import java.util.Objects;
@@ -43,8 +43,8 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, configurationPid = "discovery.airquality")
 @NonNullByDefault
 public class AirQualityDiscoveryService extends AbstractDiscoveryService {
-    private static final int DISCOVER_TIMEOUT_SECONDS = 10;
-    private static final int LOCATION_CHANGED_CHECK_INTERVAL = 60;
+    private static final int DISCOVER_TIMEOUT_SECONDS = 3;
+    private static final int LOCATION_CHANGED_CHECK_INTERVAL_MIN = 10;
 
     private final Logger logger = LoggerFactory.getLogger(AirQualityDiscoveryService.class);
     private final LocationProvider locationProvider;
@@ -93,8 +93,9 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService {
                     createResults(currentLocation);
                     previousLocation = currentLocation;
                 }
-            }, 0, LOCATION_CHANGED_CHECK_INTERVAL, TimeUnit.SECONDS);
-            logger.debug("Scheduled Air Qualitylocation-changed job every {} seconds", LOCATION_CHANGED_CHECK_INTERVAL);
+            }, 0, LOCATION_CHANGED_CHECK_INTERVAL_MIN, TimeUnit.MINUTES);
+            logger.debug("Scheduled Air Qualitylocation-changed job every {} minutes",
+                    LOCATION_CHANGED_CHECK_INTERVAL_MIN);
         }
     }
 

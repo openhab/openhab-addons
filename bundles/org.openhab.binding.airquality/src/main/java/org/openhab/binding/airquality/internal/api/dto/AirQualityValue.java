@@ -10,11 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airquality.internal.json;
+package org.openhab.binding.airquality.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * Wrapper type around values reported by aqicn index values.
@@ -24,10 +22,9 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class AirQualityValue {
 
-    @SerializedName("v")
-    private double value;
+    private double v;
 
     public double getValue() {
-        return value;
+        return v;
     }
 }

@@ -1,9 +1,9 @@
-package org.openhab.binding.airquality.internal.aqi;
+package org.openhab.binding.airquality.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
-public enum SensitiveGroups {
+public enum SensitiveGroup {
     RESPIRATORY,
     HEART,
     ELDERLY,
