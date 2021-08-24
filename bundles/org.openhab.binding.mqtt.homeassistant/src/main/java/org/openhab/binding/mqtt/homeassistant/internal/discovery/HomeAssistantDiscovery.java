@@ -33,10 +33,10 @@ import org.openhab.binding.mqtt.discovery.AbstractMQTTDiscovery;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
-import org.openhab.binding.mqtt.homeassistant.internal.BaseChannelConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -147,7 +147,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         }
         this.future = scheduler.schedule(this::publishResults, 2, TimeUnit.SECONDS);
 
-        BaseChannelConfiguration config = BaseChannelConfiguration
+        AbstractChannelConfiguration config = AbstractChannelConfiguration
                 .fromString(new String(payload, StandardCharsets.UTF_8), gson);
 
         // We will of course find multiple of the same unique Thing IDs, for each different component another one.

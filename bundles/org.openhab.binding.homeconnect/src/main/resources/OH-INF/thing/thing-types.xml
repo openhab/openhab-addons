@@ -116,7 +116,9 @@
 			<channel id="laundry_care_washer_less_ironing" typeId="laundry_care_washer_less_ironing"/>
 			<channel id="laundry_care_washer_pre_wash" typeId="laundry_care_washer_pre_wash"/>
 			<channel id="laundry_care_washer_rinse_plus" typeId="laundry_care_washer_rinse_plus"/>
+			<channel id="laundry_care_washer_rinse_hold" typeId="laundry_care_washer_rinse_hold"/>
 			<channel id="laundry_care_washer_soak" typeId="laundry_care_washer_soak"/>
+			<channel id="laundry_care_washer_load_recommendation" typeId="laundry_care_washer_load_recommendation"/>
 			<channel id="program_energy" typeId="program_energy"/>
 			<channel id="program_water" typeId="program_water"/>
 			<channel id="basic_actions_state" typeId="basic_actions_state"/>
@@ -153,7 +155,9 @@
 			<channel id="laundry_care_washer_less_ironing" typeId="laundry_care_washer_less_ironing"/>
 			<channel id="laundry_care_washer_pre_wash" typeId="laundry_care_washer_pre_wash"/>
 			<channel id="laundry_care_washer_rinse_plus" typeId="laundry_care_washer_rinse_plus"/>
+			<channel id="laundry_care_washer_rinse_hold" typeId="laundry_care_washer_rinse_hold"/>
 			<channel id="laundry_care_washer_soak" typeId="laundry_care_washer_soak"/>
+			<channel id="laundry_care_washer_load_recommendation" typeId="laundry_care_washer_load_recommendation"/>
 			<channel id="program_energy" typeId="program_energy"/>
 			<channel id="program_water" typeId="program_water"/>
 			<channel id="dryer_drying_target" typeId="dryer_drying_target"/>
@@ -547,11 +551,24 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="laundry_care_washer_rinse_hold" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Rinse Hold</label>
+		<description>This status indicates whether the spin function is deactivated for a washer program of the home appliance
+			(washing will remain in the water after the last rinse cycle).</description>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="laundry_care_washer_soak" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Soaking</label>
 		<description>This status indicates whether the soaking is activated for a washer program of the home appliance.</description>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="laundry_care_washer_load_recommendation" advanced="true">
+		<item-type>Number:Mass</item-type>
+		<label>Load Recommendation</label>
+		<description>This channel indicates the maximum laundry load recommended for a program of the home appliance.</description>
+		<state readOnly="true" min="0" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="program_energy" advanced="true">
 		<item-type>Number:Dimensionless</item-type>

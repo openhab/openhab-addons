@@ -131,16 +131,4 @@ public class SuccessServletTest extends AbstractConfigFlowTest {
         assertTrue(website.contains("Pairing failed!"));
         assertTrue(website.contains("Missing e-mail address."));
     }
-
-    @Test
-    public void whenTheSuccessPageIsRequestedAndAMalformedEmailIsPassedThenTheFailurePageIsShown() throws Exception {
-        // when:
-        Website website = getCrawler().doGetRelative("/mielecloud/success?" + SuccessServlet.BRIDGE_UID_PARAMETER_NAME
-                + "=" + MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID.getAsString() + "&"
-                + SuccessServlet.EMAIL_PARAMETER_NAME + "=not:an!email");
-
-        // then:
-        assertTrue(website.contains("Pairing failed!"));
-        assertTrue(website.contains("Malformed e-mail address."));
-    }
 }

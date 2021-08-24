@@ -1,0 +1,173 @@
+{
+	"deviceMapping": {
+		"id": [
+			"qmi.powerstrip.v1"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "mode",
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "normal",
+							"label": "Normal"
+						},
+						{
+							"value": "green",
+							"label": "Green"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_mode",
+						"parameterType": "STRING"
+					}
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"normal\"\u003d\"Normal\",\"green\"\u003d\"Green\"]`"
+			},
+			{
+				"property": "power_consume_rate",
+				"friendlyName": "Power Consumption",
+				"channel": "powerUsage",
+				"type": "Number:Power",
+				"unit": "W",
+				"stateDescription": {
+					"pattern": "%.2f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"parameterType": "EMPTY"
+					}
+				]
+			},
+			{
+				"property": "voltage",
+				"friendlyName": "Voltage",
+				"channel": "voltage",
+				"type": "Number:ElectricPotential",
+				"unit": "V",
+				"stateDescription": {
+					"pattern": "%.2f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"transformation": "/100",
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Voltage"
+				]
+			},
+			{
+				"property": "wifi_led",
+				"friendlyName": "wifi LED",
+				"channel": "led",
+				"channelType": "led",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_wifi_led",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "power_price",
+				"friendlyName": "Power Price",
+				"channel": "power_price",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_power_price",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "power_factor",
+				"friendlyName": "Power Factor",
+				"channel": "power_factor",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "current",
+				"friendlyName": "Current",
+				"channel": "current",
+				"type": "Number:ElectricCurrent",
+				"unit": "mA",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "elec_leakage",
+				"friendlyName": "Electic Leakage",
+				"channel": "elec_leakage",
+				"type": "Number:ElectricCurrent",
+				"unit": "mA",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "temperature",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "CELSIUS",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			}
+		]
+	}
+}

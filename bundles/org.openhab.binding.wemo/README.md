@@ -254,7 +254,7 @@ sitemap demo label="Main Menu"
        Switch item=filterPresent
 
        // Humidifier
-       Switch item=humidifierMode label="Cooking Mode" mappings=[OFF="OFF", MIN="Min", LOW="Low", MED="Med", HIGH="High", MAX="Max"]
+       Switch item=humidifierMode label="Humidity Mode" mappings=[OFF="OFF", MIN="Min", LOW="Low", MED="Med", HIGH="High", MAX="Max"]
        Number item=desiredHumidity
        Number item=currentHumidity
        Number item=filterLive

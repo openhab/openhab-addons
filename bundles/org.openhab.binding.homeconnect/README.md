@@ -64,7 +64,9 @@ After the bridge has been added and authorized, devices are discovered automatic
 | laundry_care_washer_less_ironing | Switch | true | This status indicates whether less ironing is activated for a washer program of the home appliance. | washer, washerdryer | 
 | laundry_care_washer_pre_wash | Switch | true | This status indicates whether the pre-wash is activated for a washer program of the home appliance. | washer, washerdryer | 
 | laundry_care_washer_rinse_plus | String | true | This status defines the number of additional rinses of a washer program of the home appliance. | washer, washerdryer | 
+| laundry_care_washer_rinse_hold | Switch | true | This status indicates whether the spin function is deactivated for a washer program of the home appliance (washing will remain in the water after the last rinse cycle). | washer, washerdryer | 
 | laundry_care_washer_soak | Switch | true | This status indicates whether the soaking is activated for a washer program of the home appliance. | washer, washerdryer | 
+| laundry_care_washer_load_recommendation | Number:Mass | true | This channel indicates the maximum laundry load recommended for a program of the home appliance. | washer, washerdryer | 
 | program_energy | Number:Dimensionless | true | This channel provides the estimated energy required in percentage for a program of the home appliance. | washer, washerdryer | 
 | program_water | Number:Dimensionless | true | This channel provides the estimated water required in percentage for a program of the home appliance. | washer, washerdryer | 
 | dryer_drying_target | String | false | This status defines the desired dryness of a program of the home appliance. | dryer, washerdryer | 

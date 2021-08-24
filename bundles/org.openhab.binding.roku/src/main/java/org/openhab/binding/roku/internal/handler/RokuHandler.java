@@ -26,16 +26,18 @@ import org.openhab.binding.roku.internal.RokuConfiguration;
 import org.openhab.binding.roku.internal.RokuHttpException;
 import org.openhab.binding.roku.internal.RokuStateDescriptionOptionProvider;
 import org.openhab.binding.roku.internal.communication.RokuCommunicator;
-import org.openhab.binding.roku.internal.dto.ActiveApp;
 import org.openhab.binding.roku.internal.dto.Apps.App;
 import org.openhab.binding.roku.internal.dto.DeviceInfo;
 import org.openhab.binding.roku.internal.dto.Player;
+import org.openhab.binding.roku.internal.dto.TvChannel;
+import org.openhab.binding.roku.internal.dto.TvChannels.Channel;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -61,9 +63,11 @@ public class RokuHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> appListJob;
 
+    private ThingTypeUID thingTypeUID = THING_TYPE_ROKU_PLAYER;
     private RokuCommunicator communicator;
     private DeviceInfo deviceInfo = new DeviceInfo();
     private int refreshInterval = DEFAULT_REFRESH_PERIOD_SEC;
+    private boolean tvActive = false;
 
     private Object sequenceLock = new Object();
 
@@ -79,6 +83,7 @@ public class RokuHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing Roku handler");
         RokuConfiguration config = getConfigAs(RokuConfiguration.class);
+        this.thingTypeUID = this.getThing().getThingTypeUID();
 
         final @Nullable String host = config.hostName;
 
@@ -127,37 +132,76 @@ public class RokuHandler extends BaseThingHandler {
      */
     private void refreshPlayerState() {
         synchronized (sequenceLock) {
+            String activeAppId = ROKU_HOME_ID;
             try {
-                ActiveApp activeApp = communicator.getActiveApp();
-                updateState(ACTIVE_APP, new StringType(activeApp.getApp().getId()));
+                activeAppId = communicator.getActiveApp().getApp().getId();
+                updateState(ACTIVE_APP, new StringType(activeAppId));
+                if (TV_APP.equals(activeAppId)) {
+                    tvActive = true;
+                } else {
+                    if (tvActive) {
+                        updateState(SIGNAL_MODE, UnDefType.UNDEF);
+                        updateState(SIGNAL_QUALITY, UnDefType.UNDEF);
+                        updateState(CHANNEL_NAME, UnDefType.UNDEF);
+                        updateState(PROGRAM_TITLE, UnDefType.UNDEF);
+                        updateState(PROGRAM_DESCRIPTION, UnDefType.UNDEF);
+                        updateState(PROGRAM_RATING, UnDefType.UNDEF);
+                    }
+                    tvActive = false;
+                }
                 updateStatus(ThingStatus.ONLINE);
             } catch (RokuHttpException e) {
                 logger.debug("Unable to retrieve Roku active-app info. Exception: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
 
-            try {
-                Player playerInfo = communicator.getPlayerInfo();
-                // When nothing playing, 'close' is reported, replace with 'stop'
-                updateState(PLAY_MODE, new StringType(playerInfo.getState().replaceAll(CLOSE, STOP)));
+            // On the home app and when using the TV or TV inputs, do not update the play mode or time channels
+            if (!ROKU_HOME_ID.equals(activeAppId) && !activeAppId.contains(TV_INPUT)) {
+                try {
+                    Player playerInfo = communicator.getPlayerInfo();
+                    // When nothing playing, 'close' is reported, replace with 'stop'
+                    updateState(PLAY_MODE, new StringType(playerInfo.getState().replaceAll(CLOSE, STOP)));
 
-                // Remove non-numeric from string, ie: ' ms'
-                String position = playerInfo.getPosition().replaceAll(NON_DIGIT_PATTERN, EMPTY);
-                if (!EMPTY.equals(position)) {
-                    updateState(TIME_ELAPSED, new QuantityType<>(Integer.parseInt(position) / 1000, API_SECONDS_UNIT));
-                } else {
-                    updateState(TIME_ELAPSED, UnDefType.UNDEF);
-                }
+                    // Remove non-numeric from string, ie: ' ms'
+                    String position = playerInfo.getPosition().replaceAll(NON_DIGIT_PATTERN, EMPTY);
+                    if (!EMPTY.equals(position)) {
+                        updateState(TIME_ELAPSED,
+                                new QuantityType<>(Integer.parseInt(position) / 1000, API_SECONDS_UNIT));
+                    } else {
+                        updateState(TIME_ELAPSED, UnDefType.UNDEF);
+                    }
 
-                String duration = playerInfo.getDuration().replaceAll(NON_DIGIT_PATTERN, EMPTY);
-                if (!EMPTY.equals(duration)) {
-                    updateState(TIME_TOTAL, new QuantityType<>(Integer.parseInt(duration) / 1000, API_SECONDS_UNIT));
-                } else {
-                    updateState(TIME_TOTAL, UnDefType.UNDEF);
+                    String duration = playerInfo.getDuration().replaceAll(NON_DIGIT_PATTERN, EMPTY);
+                    if (!EMPTY.equals(duration)) {
+                        updateState(TIME_TOTAL,
+                                new QuantityType<>(Integer.parseInt(duration) / 1000, API_SECONDS_UNIT));
+                    } else {
+                        updateState(TIME_TOTAL, UnDefType.UNDEF);
+                    }
+                } catch (RokuHttpException e) {
+                    logger.debug("Unable to retrieve Roku media-player info. Exception: {}", e.getMessage(), e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
-            } catch (RokuHttpException e) {
-                logger.debug("Unable to retrieve Roku media-player info. Exception: {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            } else {
+                updateState(PLAY_MODE, UnDefType.UNDEF);
+                updateState(TIME_ELAPSED, UnDefType.UNDEF);
+                updateState(TIME_TOTAL, UnDefType.UNDEF);
+            }
+
+            if (thingTypeUID.equals(THING_TYPE_ROKU_TV) && tvActive) {
+                try {
+                    TvChannel tvChannel = communicator.getActiveTvChannel();
+                    updateState(ACTIVE_CHANNEL, new StringType(tvChannel.getChannel().getNumber()));
+                    updateState(SIGNAL_MODE, new StringType(tvChannel.getChannel().getSignalMode()));
+                    updateState(SIGNAL_QUALITY,
+                            new QuantityType<>(tvChannel.getChannel().getSignalQuality(), API_PERCENT_UNIT));
+                    updateState(CHANNEL_NAME, new StringType(tvChannel.getChannel().getName()));
+                    updateState(PROGRAM_TITLE, new StringType(tvChannel.getChannel().getProgramTitle()));
+                    updateState(PROGRAM_DESCRIPTION, new StringType(tvChannel.getChannel().getProgramDescription()));
+                    updateState(PROGRAM_RATING, new StringType(tvChannel.getChannel().getProgramRatings()));
+                } catch (RokuHttpException e) {
+                    logger.debug("Unable to retrieve Roku tv-active-channel info. Exception: {}", e.getMessage(), e);
+                }
             }
         }
     }
@@ -193,6 +237,26 @@ public class RokuHandler extends BaseThingHandler {
 
             } catch (RokuHttpException e) {
                 logger.debug("Unable to retrieve Roku installed app-list. Exception: {}", e.getMessage(), e);
+            }
+
+            if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
+                try {
+                    List<Channel> channelsList = communicator.getTvChannelList();
+
+                    List<StateOption> channelListOptions = new ArrayList<>();
+                    channelsList.forEach(channel -> {
+                        if (!channel.isUserHidden()) {
+                            channelListOptions.add(new StateOption(channel.getNumber(),
+                                    channel.getNumber() + " - " + channel.getName()));
+                        }
+                    });
+
+                    stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), ACTIVE_CHANNEL),
+                            channelListOptions);
+
+                } catch (RokuHttpException e) {
+                    logger.debug("Unable to retrieve Roku tv-channels. Exception: {}", e.getMessage(), e);
+                }
             }
         }
     }
@@ -237,6 +301,16 @@ public class RokuHandler extends BaseThingHandler {
                     }
                 } catch (RokuHttpException e) {
                     logger.debug("Unable to launch app on Roku, appId: {}, Exception: {}", command, e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                }
+            }
+        } else if (channelUID.getId().equals(ACTIVE_CHANNEL)) {
+            synchronized (sequenceLock) {
+                try {
+                    communicator.launchTvChannel(command.toString());
+                } catch (RokuHttpException e) {
+                    logger.debug("Unable to change channel on Roku TV, channelNumber: {}, Exception: {}", command,
+                            e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             }

@@ -48,6 +48,7 @@
 		<channels>
 			<channel id="current_time" typeId="currentTime"/>
 			<channel id="mode" typeId="mode"/>
+			<channel id="manual_fan_step" typeId="manualFanStep"/>
 			<channel id="manual_fan_speed" typeId="manualFanSpeed"/>
 			<channel id="supply_fan_speed" typeId="supplyFanSpeed"/>
 			<channel id="extract_fan_speed" typeId="extractFanSpeed"/>
@@ -84,7 +85,9 @@
 	<channel-group-type id="humidity">
 		<label>Humidity</label>
 		<channels>
-			<channel id="humidity" typeId="humidity"/>
+			<channel id="humidity" typeId="humidity">
+				<description>Current relative humidity measured by the air unit</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="recuperator">
@@ -113,7 +116,7 @@
 	<channel-group-type id="service">
 		<label>Service</label>
 		<channels>
-			<channel id="battery_life" typeId="percentage">
+			<channel id="battery_life" typeId="system.battery-level">
 				<label>Battery Life</label>
 				<description>Remaining Air Dial Battery Level</description>
 			</channel>
@@ -128,12 +131,14 @@
 	<channel-type id="currentTime">
 		<item-type>DateTime</item-type>
 		<label>Current Time</label>
+		<description>Current time reported by the air unit</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Mode</label>
-		<description>Off, Demand, Manual, Program</description>
+		<description>Operation mode of the air unit: Off, Demand, Manual, Program</description>
 		<state>
 			<options>
 				<option value="DEMAND">Demand</option>
@@ -143,29 +148,46 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="manualFanSpeed">
+	<channel-type id="manualFanStep">
+		<item-type>Dimmer</item-type>
+		<label>Manual Fan Step</label>
+		<description>Controls 10-step setting of the fan when operation mode is manual</description>
+		<category>Fan</category>
+		<state step="10" min="0" max="100"/>
+	</channel-type>
+	<channel-type id="manualFanSpeed" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Manual Fan Speed</label>
+		<description>Deprecated, please use Manual Fan Step instead. This channel will be removed in a later version.</description>
+		<category>Fan</category>
 		<state step="10" min="0" max="100"/>
 	</channel-type>
 	<channel-type id="supplyFanSpeed">
 		<item-type>Number</item-type>
 		<label>Supply Fan Speed</label>
+		<description>Current rotation of the fan supplying air to the rooms</description>
+		<category>Fan</category>
 		<state pattern="%.0f rpm" readOnly="true" min="0"/>
 	</channel-type>
 	<channel-type id="extractFanSpeed">
 		<item-type>Number</item-type>
 		<label>Extract Fan Speed</label>
+		<description>Current rotation of the fan extracting air from the rooms</description>
+		<category>Fan</category>
 		<state pattern="%.0f rpm" readOnly="true" min="0"/>
 	</channel-type>
 	<channel-type id="supplyFanStep">
 		<item-type>Dimmer</item-type>
 		<label>Supply Fan Step</label>
+		<description>Current step setting of the fan supplying air to the rooms</description>
+		<category>Fan</category>
 		<state step="10" min="0" max="100" readOnly="true"/>
 	</channel-type>
 	<channel-type id="extractFanStep">
 		<item-type>Dimmer</item-type>
 		<label>Extract Fan Step</label>
+		<description>Current step setting of the fan extracting air from the rooms</description>
+		<category>Fan</category>
 		<state step="10" min="0" max="100" readOnly="true"/>
 	</channel-type>
 	<channel-type id="percentage">
@@ -175,7 +197,7 @@
 		<state pattern="%.0f %%" readOnly="true" min="0" max="100"/>
 	</channel-type>
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<category>Humidity</category>
 		<tags>
@@ -192,6 +214,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
+		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
