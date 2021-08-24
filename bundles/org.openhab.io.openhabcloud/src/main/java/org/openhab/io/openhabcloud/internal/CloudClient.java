@@ -174,6 +174,17 @@ public class CloudClient {
                     }
                 });
             }
+        }).on(Manager.EVENT_CONNECT_ERROR, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                // Try reconnecting on connection errors
+                if (logger.isDebugEnabled()) {
+                    logger.error("Error connecting to the openHAB Cloud instance: {}. Reconnecting.", args[0]);
+                } else {
+                    logger.error("Error connecting to the openHAB Cloud instance. Reconnecting.");
+                }
+                socket.close().connect();
+            }
         });
         socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
