@@ -506,7 +506,7 @@ public class ChannelDefinitions {
         add("", "", CHANNEL_CHARGER_FLOW, ITEMT_STRING, group);
         add("", "", CHANNEL_CHARGER_BAT_STATE, ITEMT_NUMBER, group);
         add("", "", CHANNEL_CHARGER_LOCK_STATE, ITEMT_SWITCH, group);
-        add("", "", CHANNEL_CHARGER_PLUG_STATE, ITEMT_SWITCH, group);
+        add("", "", CHANNEL_CHARGER_PLUG_STATE, ITEMT_STRING, group);
         add("", "", CHANNEL_CHARGER_ERROR, ITEMT_NUMBER, group);
         add("", "", CHANNEL_CHARGER_NAME, ITEMT_STRING, group);
         add("", "", CHANNEL_CHARGER_ADDRESS, ITEMT_STRING, group);
@@ -514,7 +514,7 @@ public class ChannelDefinitions {
 
         // Group climater
         group = CHANNEL_GROUP_CLIMATER;
-        add("", "", CHANNEL_CLIMATER_GEN_STATE, ITEMT_SWITCH, group);
+        add("", "", CHANNEL_CLIMATER_GEN_STATE, ITEMT_STRING, group);
         add("", "", CHANNEL_CLIMATER_HEATSOURCE, ITEMT_STRING, group, null, true, false);
         add("", "", CHANNEL_CLIMATER_REMAINING, ITEMT_TIME, group, Units.MINUTE);
         add("", "", CHANNEL_CLIMATER_MIRROR_HEAT, ITEMT_SWITCH, group);
@@ -583,7 +583,7 @@ public class ChannelDefinitions {
 
         // Chasrging Records
         group = CHANNEL_CHANNEL_GROUP_TRANSACTIONS;
-        add("", "", CHANNEL_TRANS_ID, ITEMT_STRING, group);
+        add("", "", CHANNEL_TRANS_ID, ITEMT_STRING, group, null, true, true);
         add("", "", CHANNEL_TRANS_LOCATION, ITEMT_LOCATION, group);
         add("", "", CHANNEL_TRANS_ADDRESS, ITEMT_STRING, group);
         add("", "", CHANNEL_TRANS_SUBID, ITEMT_STRING, group, null, true, true);
@@ -591,7 +591,7 @@ public class ChannelDefinitions {
         add("", "", CHANNEL_TRANS_PTYPE, ITEMT_STRING, group, null, true, true);
         add("", "", CHANNEL_TRANS_START, ITEMT_STRING, group);
         add("", "", CHANNEL_TRANS_END, ITEMT_STRING, group);
-        add("", "", CHANNEL_TRANS_ENERGY, ITEMT_NUMBER, group, Units.KILOWATT_HOUR);
+        add("", "", CHANNEL_TRANS_ENERGY, ITEMT_ENERGY, group, Units.KILOWATT_HOUR, false, true);
         add("", "", CHANNEL_TRANS_PRICE, ITEMT_NUMBER, group);
         add("", "", CHANNEL_TRANS_DURATION, ITEMT_NUMBER, group, QMINUTES);
     }

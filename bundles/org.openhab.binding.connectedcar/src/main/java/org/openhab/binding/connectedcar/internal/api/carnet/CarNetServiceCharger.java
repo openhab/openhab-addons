@@ -83,10 +83,10 @@ public class CarNetServiceCharger extends ApiBaseService {
                 }
             }
             if (cs.status.plugStatusData != null) {
+                updated |= updateChannel(CHANNEL_CHARGER_LOCK_STATE,
+                        getOnOff("locked".equals(getString(cs.status.plugStatusData.lockState.content))));
                 updated |= updateChannel(CHANNEL_CHARGER_PLUG_STATE,
                         getStringType(cs.status.plugStatusData.plugState.content));
-                updated |= updateChannel(CHANNEL_CHARGER_LOCK_STATE,
-                        getStringType(cs.status.plugStatusData.lockState.content));
             }
         }
         return updated;

@@ -137,7 +137,7 @@ public class WeConnectServiceStatus extends ApiBaseService {
         }
         if (status.plugStatus != null) {
             updated |= updateChannel(group, CHANNEL_CHARGER_LOCK_STATE,
-                    "locked".equals(getString(status.plugStatus.plugLockState)) ? OnOffType.ON : OnOffType.OFF);
+                    getOnOff("locked".equals(getString(status.plugStatus.plugLockState))));
             updated |= updateChannel(group, CHANNEL_CHARGER_PLUG_STATE,
                     getStringType(status.plugStatus.plugConnectionState));
         }

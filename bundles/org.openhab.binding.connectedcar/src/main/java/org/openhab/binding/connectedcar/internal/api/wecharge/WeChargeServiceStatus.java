@@ -108,8 +108,7 @@ public class WeChargeServiceStatus extends ApiBaseService {
                     + station.location.address.city + "," + station.location.address.country + " ("
                     + station.location.description + ")";
             updated |= updateChannel(CHANNEL_CHARGER_ADDRESS, getStringType(value));
-            updated |= updateChannel(CHANNEL_CHARGER_PLUG_STATE,
-                    getOnOff("connected".equals(getString(station.connectionState))));
+            updated |= updateChannel(CHANNEL_CHARGER_PLUG_STATE, getStringType(station.connectionState));
             updated |= updateChannel(CHANNEL_CHARGER_LAST_CONNECT, getDateTime(getString(station.last_connect)));
         }
 

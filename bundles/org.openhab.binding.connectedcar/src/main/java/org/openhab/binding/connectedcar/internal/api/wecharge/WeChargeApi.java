@@ -69,7 +69,7 @@ public class WeChargeApi extends ApiWithOAuth implements BrandAuthenticator {
 
     @Override
     public ArrayList<String> getVehicles() throws ApiException {
-        String json = callApi("", "https://wecharge.apps.emea.vwapps.io/home-charging/v1/stations?limit=25",
+        String json = callApi("", "https://wecharge.apps.emea.vwapps.io/home-charging/v1/stations?limit=10",
                 crerateParameters().getHeaders(), "getStationList", String.class);
         WCStationList stations = fromJson(gson, json, WCStationList.class);
         ArrayList<String> list = new ArrayList<String>();
@@ -137,7 +137,8 @@ public class WeChargeApi extends ApiWithOAuth implements BrandAuthenticator {
     }
 
     private void loadChargingData() throws ApiException {
-        WCChargingRecordResponse crecords = wcRequest("/charge-and-pay/v1/charging/records?limit=10&offset=0",
+        WCChargingRecordResponse crecords = wcRequest(
+                "/charge-and-pay/v1/charging/records?limit=" + config.vehicle.numChargingRecords + "&offset=0",
                 "getChargingRecords", WCChargingRecordResponse.class);
         for (int i = 0; i < crecords.result.size(); i++) {
             baseStatus.addChargingRecord(crecords.result.get(i));

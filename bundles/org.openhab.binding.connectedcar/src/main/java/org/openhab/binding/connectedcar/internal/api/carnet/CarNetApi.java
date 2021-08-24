@@ -395,9 +395,6 @@ public class CarNetApi extends ApiWithOAuth {
         String contentType = "application/vnd.vwg.mbb.ChargerAction_v1_0_0+xml";
         String body = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><action><type>setSettings</type>"
                 + "<settings><maxChargeCurrent>" + maxCurrent + "</maxChargeCurrent></settings></action>";
-        // String contentType = "application/vnd.vwg.mbb.ChargerAction_v1_0_0+json";
-        // String body = "{\"action\": {\"settings\": {\"maxChargeCurrent\": " + maxCurrent
-        // + ", \"type\": \"setSettings\"}}}";
         return sendAction("bs/batterycharge/v1/{0}/{1}/vehicles/{2}/charger/actions",
                 CNAPI_SERVICE_REMOTE_BATTERY_CHARGE, "setMaxCharge", false, contentType, body);
     }
@@ -463,14 +460,6 @@ public class CarNetApi extends ApiWithOAuth {
      */
     @Override
     public String controlHonkFlash(boolean honk, PointType position, int duration) throws ApiException {
-        /*
-         * data = {'honkAndFlashRequest': {
-         * 'serviceOperationCode': mode,
-         * 'serviceDuration': 15,
-         * 'userPosition': {
-         * 'latitude': lat,
-         * 'longitude': long}}}
-         */
         double latd = position.getLatitude().doubleValue() * 1000000.0;
         double longd = position.getLongitude().doubleValue() * 1000000.0;
         String latitude = String.format("%08d", (int) latd);

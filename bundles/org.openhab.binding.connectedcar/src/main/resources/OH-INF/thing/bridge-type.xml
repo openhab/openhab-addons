@@ -19,7 +19,7 @@
 	</bridge-type>
 
 	<bridge-type id="vwid">
-		<label>VW ID Account (We Connect)</label>
+		<label>Volkswagen ID. Account (We Connect)</label>
 		<description>This thing represents a We Connect ID Account.</description>
 		<config-description-ref uri="bridge-type:connectedcar:idaccount"/>
 	</bridge-type>
@@ -38,7 +38,7 @@
 	</bridge-type>
 
 	<bridge-type id="skoda-e">
-		<label>Skoda Electrical Vehicle Account (Skoda-E)</label>
+		<label>Skoda Enyaq Account (Skoda-E)</label>
 		<description>This thing represents an account for Skoda electrical vehicles.</description>
 		<config-description-ref uri="bridge-type:connectedcar:seaccount"/>
 	</bridge-type>

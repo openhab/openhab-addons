@@ -182,7 +182,7 @@ public class FPServiceStatus extends ApiBaseService {
     private boolean updateChargingStatus(FPVehicleStatus status) {
         boolean updated = false;
         if (status.elVehDTE != null) {
-            updated |= updateChannel(CHANNEL_CHARGER_PLUG_STATE, getOnOff(status.plugStatus.value));
+            updated |= updateChannel(CHANNEL_CHARGER_PLUG_STATE, getStringType("" + status.plugStatus.value));
             updated |= updateChannel(CHANNEL_CHARGER_CHG_STATE, getStringType(status.chargingStatus.value));
             updated |= updateChannel(CHANNEL_CHARGER_CHGLVL, getDecimal(status.batteryFillLevel.value));
         }
