@@ -93,6 +93,7 @@
         <label>Mower Positions</label>
         <description>Waypoints of the mower's activity</description>
         <channels>
+            <channel id="last-position" typeId="positionType"><description>Last Position</description></channel>
             <channel id="position01" typeId="positionType"/>
             <channel id="position02" typeId="positionType"/>
             <channel id="position03" typeId="positionType"/>

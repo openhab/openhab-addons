@@ -83,6 +83,6 @@ public class MowerData {
     }
 
     public Position getLastPosition() {
-        return !this.positions.isEmpty() ? this.positions.get(this.positions.size() - 1) : null;
+        return !this.positions.isEmpty() ? this.positions.get(0) : null;
     }
 }

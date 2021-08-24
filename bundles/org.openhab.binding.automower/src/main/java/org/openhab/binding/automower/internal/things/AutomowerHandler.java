@@ -317,6 +317,9 @@ public class AutomowerHandler extends BaseThingHandler {
             updateState(CHANNEL_CALENDAR_TASKS,
                     new StringType(gson.toJson(mower.getAttributes().getCalendar().getTasks())));
 
+            updateState(LAST_POSITION,
+                    new PointType(new DecimalType(mower.getAttributes().getLastPosition().getLatitude()),
+                            new DecimalType(mower.getAttributes().getLastPosition().getLongitude())));
             ArrayList<Position> positions = mower.getAttributes().getPositions();
             for (int i = 0; i < positions.size(); i++) {
                 updateState(CHANNEL_POSITIONS.get(i), new PointType(new DecimalType(positions.get(i).getLatitude()),

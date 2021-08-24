@@ -50,6 +50,7 @@ public class AutomowerBindingConstants {
 
     // Position Channels ids
     public static final String GROUP_POSITIONS = "positions#";
+    public static final String LAST_POSITION = GROUP_POSITIONS + "last-position";
     public static final ArrayList<String> CHANNEL_POSITIONS = new ArrayList<String>(
             List.of(GROUP_POSITIONS + "position01", GROUP_POSITIONS + "position02", GROUP_POSITIONS + "position03",
                     GROUP_POSITIONS + "position04", GROUP_POSITIONS + "position05", GROUP_POSITIONS + "position06",
