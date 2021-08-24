@@ -129,6 +129,8 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                             logger.warn("Failed to initialize bridge, please check your credentials!");
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR,
                                     "Failed to login to Verisure, please check your credentials!");
+                            dispose();
+                            initialize();
                             return;
                         }
                         startAutomaticRefresh();

@@ -64,6 +64,9 @@ public class ForecastAggregator {
      */
     public static Optional<BigDecimal> total(TimeSeries timeSeries, int dayOffset, String parameter) {
         List<Forecast> dayForecasts = timeSeries.getDay(dayOffset);
+        if (dayForecasts.size() == 1) {
+            return dayForecasts.get(0).getParameter(parameter);
+        }
         List<BigDecimal> values = new ArrayList<>();
         for (int i = 0; i < dayForecasts.size(); i++) {
             Forecast current = dayForecasts.get(i);

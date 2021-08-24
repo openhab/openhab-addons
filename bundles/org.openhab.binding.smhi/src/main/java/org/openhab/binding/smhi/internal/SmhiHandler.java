@@ -254,6 +254,7 @@ public class SmhiHandler extends BaseThingHandler {
         } catch (RuntimeException e) {
             logger.warn("Unexpected exception occurred, please report to the developers: {}: {}", e.getClass(),
                     e.getMessage());
+            logger.debug("Details: ", e);
         }
     }
 

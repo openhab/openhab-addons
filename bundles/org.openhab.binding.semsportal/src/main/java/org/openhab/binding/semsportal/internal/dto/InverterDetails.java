@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.semsportal.internal.dto;
 
-import java.util.Date;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -23,9 +21,9 @@ import com.google.gson.annotations.SerializedName;
  */
 public class InverterDetails {
     @SerializedName("last_refresh_time")
-    private Date lastUpdate;
+    private String lastUpdate;
 
-    public Date getLastUpdate() {
+    public String getLastUpdate() {
         return lastUpdate;
     }
 }

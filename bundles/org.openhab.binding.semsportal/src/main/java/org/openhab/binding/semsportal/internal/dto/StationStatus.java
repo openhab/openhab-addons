@@ -12,9 +12,14 @@
  */
 package org.openhab.binding.semsportal.internal.dto;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
+
+import org.openhab.binding.semsportal.internal.SEMSPortalBindingConstants;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -29,6 +34,8 @@ public class StationStatus {
     private KeyPerformanceIndicators keyPerformanceIndicators;
     @SerializedName("inverter")
     private List<Station> stations;
+    @SerializedName("info")
+    private StationInfo info;
 
     public Double getCurrentOutput() {
         return keyPerformanceIndicators.getCurrentOutput();
@@ -62,7 +69,10 @@ public class StationStatus {
         if (stations.isEmpty()) {
             return null;
         }
-        return ZonedDateTime.ofInstant(stations.get(0).getDetails().getLastUpdate().toInstant(),
-                ZoneId.systemDefault());
+        DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(info.getDateFormat())
+                .appendLiteral(" ").appendPattern(SEMSPortalBindingConstants.TIME_FORMAT).toFormatter()
+                .withZone(ZoneId.systemDefault());
+        Instant instant = formatter.parse(stations.get(0).getDetails().getLastUpdate(), Instant::from);
+        return ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
     }
 }
