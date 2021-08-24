@@ -239,9 +239,11 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService implements
             }
             if (thingUID != null) {
                 label = "[" + gwHandler.getThing().getUID().getAsString() + "] " + label;
-
+                var uniqueId = "G" + Byte.toString(lastByteGatewayIP) + "N" + Byte.toString(node) + "S"
+                        + Byte.toString(slot);
                 discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label).withProperty("node", node)
-                        .withProperty("slot", slot).withBridge(gwHandler.getThing().getUID()).build();
+                        .withProperty("slot", slot).withProperty("uniqueId", uniqueId)
+                        .withRepresentationProperty("uniqueId").withBridge(gwHandler.getThing().getUID()).build();
                 thingDiscovered(discoveryResult);
                 gwHandler.setThereIsAThingDetection();
 
