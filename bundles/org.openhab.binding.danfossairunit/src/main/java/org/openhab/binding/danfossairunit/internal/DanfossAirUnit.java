@@ -161,7 +161,7 @@ public class DanfossAirUnit {
         return new StringType(Mode.values()[getByte(REGISTER_1_READ, MODE)].name());
     }
 
-    public PercentType getManualFanSpeed() throws IOException {
+    public PercentType getManualFanStep() throws IOException {
         return new PercentType(BigDecimal.valueOf(getByte(REGISTER_1_READ, MANUAL_FAN_SPEED_STEP) * 10));
     }
 
@@ -242,7 +242,7 @@ public class DanfossAirUnit {
         return new DateTimeType(timestamp);
     }
 
-    public PercentType setManualFanSpeed(Command cmd) throws IOException {
+    public PercentType setManualFanStep(Command cmd) throws IOException {
         return setPercentTypeRegister(cmd, MANUAL_FAN_SPEED_STEP);
     }
 
