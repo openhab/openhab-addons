@@ -65,7 +65,7 @@ public class AutomowerBindingConstants {
                     GROUP_POSITIONS + "position31", GROUP_POSITIONS + "position32", GROUP_POSITIONS + "position33",
                     GROUP_POSITIONS + "position34", GROUP_POSITIONS + "position35", GROUP_POSITIONS + "position36",
                     GROUP_POSITIONS + "position37", GROUP_POSITIONS + "position38", GROUP_POSITIONS + "position39",
-                    GROUP_POSITIONS + "position00", GROUP_POSITIONS + "position41", GROUP_POSITIONS + "position42",
+                    GROUP_POSITIONS + "position40", GROUP_POSITIONS + "position41", GROUP_POSITIONS + "position42",
                     GROUP_POSITIONS + "position43", GROUP_POSITIONS + "position44", GROUP_POSITIONS + "position45",
                     GROUP_POSITIONS + "position46", GROUP_POSITIONS + "position47", GROUP_POSITIONS + "position48",
                     GROUP_POSITIONS + "position49", GROUP_POSITIONS + "position50"));
