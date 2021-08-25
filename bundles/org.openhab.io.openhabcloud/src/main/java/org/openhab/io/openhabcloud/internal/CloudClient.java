@@ -231,10 +231,10 @@ public class CloudClient {
             public void call(Object... args) {
                 if (args[0] instanceof Exception) {
                     Exception e = (Exception) args[0];
-                    logger.warn("Socket.IO re-connect attempt error: {} {}", e.getClass().getSimpleName(),
+                    logger.debug("Socket.IO re-connect attempt error: {} {}", e.getClass().getSimpleName(),
                             e.getMessage());
                 } else {
-                    logger.warn("Socket.IO re-connect attempt error: {}", args[0]);
+                    logger.debug("Socket.IO re-connect attempt error: {}", args[0]);
                 }
             }
         }).on(Socket.EVENT_RECONNECT_FAILED, new Emitter.Listener() {
