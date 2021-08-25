@@ -13,8 +13,8 @@
 package org.openhab.binding.connectedcar.internal.api.carnet;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_SERVICE_GEOFENCING;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNAPI_SERVICE_GEOFENCING;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,8 +27,6 @@ import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNG
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNGeoFenceAlerts.CarNetGeoFenceAlerts.CarNetGeoFenceAlertEntry;
 import org.openhab.binding.connectedcar.internal.handler.CarNetVehicleHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link CarNetServiceGeoFenceAlerts} implements geofence service.
@@ -37,8 +35,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class CarNetServiceGeoFenceAlerts extends ApiBaseService {
-    private final Logger logger = LoggerFactory.getLogger(CarNetServiceGeoFenceAlerts.class);
-
     public CarNetServiceGeoFenceAlerts(CarNetVehicleHandler thingHandler, CarNetApi api) {
         super(CNAPI_SERVICE_GEOFENCING, thingHandler, api);
     }

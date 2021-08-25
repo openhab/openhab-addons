@@ -70,11 +70,35 @@ For example if this limit is 50 and your vehicle sits for a week you have apx. 7
 
 # Supported Things
 
+## Account, Vehicle and Unit things
+
 There are 2 types of things
 
-- Account Thingimplements the online access to the service backend
+- Account Thing implements the online access to the service backend
 - Vehicle Thing provides status data and remote control functions
 
+| Thing      | Description                        | Portal                            | API                   |
+|------------|------------------------------------|-----------------------------------|-----------------------|
+| myaudi     | myAudi Account thing (bridge)      | https://myaudi.de                 | CarNet                |
+| volkswagen | myVolkswagen Account  (bridge)     | https://myvolkswagen.de           | CarNet                |
+| skoda      | Skoda Connect Account (bridge)     | https://www.skoda-connect.com     | CarNet                |
+| seat       | myVolkswagen Account (bridge)      | https://www.googleadservices.com  | CarNet                | 
+| vwid       | VW ID. Account (bridge)            | https://myvolkswagen.de           | WeConnect.ID          |
+| skoda-e    | Skoda Enyaq Account (bridge)       | https://www.skoda-connect.com     | Skoda Native + CarNet |
+| ford       | FordPass Account (bridge)          | https://fordpass.com              | FordPass              |
+| wecharge   | VW ID.Charger Account (bridge)     | https://web-home-mobile.apps.emea.vwapps.io/ | WeCharge   |
+
+Note that the VW ID. uses a different account thing than other Volkswagen and same for the Skoda Enyaq compared to other Skoda models.        
+
+| Thing      | Description                         |
+|------------|-------------------------------------|
+| cnvehicle  | CarNet Thing (Audi, VW, Skoda, SEAT |
+| idvehicle  | VW ID. vehicle, e.g. ID.3/ID.4      |
+| sevehicle  | Skoda Enyaq vehicle                 |
+| fordvehicle| Ford vehicle                        |
+| wcbox      | VW Wallbox with WeCharge service    | 
+
+Things have specific configuration options, e.g. number of history entries.
 Depending on brand, car model, activated license and privacy settings a different set of channels and actions are supported.
 
 ## CarNet Account (myaudi, volkswagen, skoda, seat)
@@ -155,7 +179,7 @@ The result codes are not consistent across the different services:
 
 Enable openHAB's DEBUG or TRACE log for details analysis.
 
-### Thing Channels
+### CarNet Thing Channels
 
 The following channels are available depending on the vehicle type:
 
@@ -301,7 +325,6 @@ The following channels are available depending on the vehicle type:
 |              | tirePresRearRight           | Switch               | yes     | Pressure of the right rear tire, ON=OK                                                          |
 |              | tirePresSpare               | Switch               | yes     | Pressure of the spare tire, ON=OK                                                               |
 | pictures     | imageUrl1..n                | String               | no      | URL to vehicle picture(s)                                                                                              |
-| subscription | subTariff                   | String               | yes     | Tariff book for the subscription                                                                |
 
 
 ### CarNet Status Codes / Errors
@@ -433,10 +456,10 @@ You need the credentials used for the Skoda Connect portal.
 
 ### Skoda Enyaq Vehicle thing (sevehicle)
 
-| Group        | Channel                     | Item Type            |Read only| Description                    |
-|--------------|-----------------------------|----------------------|---------|--------------------------------|
-| general      | lastUpdate                  | DateTime             | yes     | Last time data has been updated                                                                 |
-| range        | totalRange                  | Number:Length        | yes     | Total remaining range.                                                                          |
+| Group        | Channel                     | Item Type            |Read only| Description                                                 |
+|--------------|-----------------------------|----------------------|---------|-------------------------------------------------------------|
+| general      | lastUpdate                  | DateTime             | yes     | Last time data has been updated                             |                                                       |
+| range        | totalRange                  | Number:Length        | yes     | Total remaining range.                                                                            |
 | control      | charge                      | Switch               | yes     | Turn charger on/off                                                                             |
 |              | maxCurrent                  | String               | yes     | Maximum current for the charging process                                                        |
 |              | climater                    | Switch               | no      | Turn climatisation on/off                                                                       |
@@ -454,6 +477,65 @@ You need the credentials used for the Skoda Connect portal.
 | climater     | climatisationState          | Switch               | yes     | ON: Climatisation is active                                                                     |
 |              | remainingClimatisation      | Number:Time          | yes     | Remaining time for climatisation                                                                |
 |              | targetTemperature           | Number:Temperature   | yes     | Target temperature for the A/C climater                                                         |
+
+
+## Ford
+
+### FordPass Account Thing (ford)
+
+You need the credentials used for the Skoda Connect portal.
+
+|Parameter            | Description                                                                               |Mandatory| Default   |
+|---------------------|-------------------------------------------------------------------------------------------|---------|-----------|
+|user                 | User ID for your CarNet account (same as login id for the manuafacturer's portal)         | yes     | none      |
+|password             | Password for the CarNet account (same as portal)                                          | yes     | none      |
+
+
+### FordPass Vehicle Thing (fordvehicle)
+
+| Group        | Channel                     | Item Type            |Read only| Description                                                     |
+|--------------|-----------------------------|----------------------|---------|-----------------------------------------------------------------|
+| general      | lastUpdate                  | DateTime             | yes     | Last time data has been updated                                 |
+| control      | lock                        | Switch               | no      | Lock/Unlock doors                                               |
+|              | engine                      | Switch               | no      | Start/stop engine                                               |
+|              | update                      | Switch               | no      | Force status update of vehicle status                           |
+| status       | odometer                    | Number:Length        | yes     | The  overall distance of the odometer when status was captured                                  |
+|              | vehicleLocked               | Switch               | yes     | ON: Vehicle is completely locked. This includes doors, windows, but also hood and trunk         |
+|              | doorsClosed                 | Switch               | yes     | ON: All Doors are closed                                                                        |
+|              | windowsClosed               | Switch               | yes     | ON: All Windows are closed                                                                      |
+|              | tiresOk                     | Switch               | yes     | ON: Pressure for all tires is ok, otherwise check single tires                                  |
+|              | vehicleLights               | Switch               | yes     | Light status                                                                                    |
+|              | deepSleep                   | Switch               | yes     | ON: On Board Unit/Modem is in deep sleep                                                        |
+|              | softwareUpgrade             | Switch               | yes     | ON: A software upgrade is in progress                                                           |
+| location     | locationLastUpdate          | DateTime             | yes     | Time of last update for the vehicle position                                                    |
+|              | locationPosition            | Location             | yes     | Last known vehicle location                                                                     |
+|              | locationAddress             | String               | yes     | Address for the last known vehicle location                                                     |
+| range        | totalRange                  | Number:Length        | yes     | Total remaining range.                                          |
+|              | primaryRange                | Number:Length        | yes     | Range or the primary engine                                                                     |
+|              | secondaryRange              | Number:Length        | yes     | Range or the secondary engine                                                                   |
+|              | fuelPercentage              | Number:Dimensionless | yes     | Percentage of fuel remaining.                                                                   |
+| maintenance  | oilPercentage               | Number:Dimensionless | yes     | Remaining oil percentage (dip stick)                                                            |
+|              | oilWarningLevel             | Switch               | yes     | Minimum oil warning level                                                                       |
+| charger      | chargingState               | String               | yes     | Current charging status                                         |
+|              | chargingLevel               | Number:Dimensionless | yes     | Current charging level in percent for an electrical car         |
+|              | plugState                   | String               | yes     | State of the charging plug, ON=connected                        |
+| doors        | doorFrontLeftState          | Contact              | yes     | State: OPEN or CLOSED                                                                           |
+|              | doorFrontRightState         | Contact              | yes     | State: OPEN or CLOSED                                                                           |
+|              | doorRearLeftState           | Contact              | yes     | State: OPEN or CLOSED                                                                           |
+|              | doorRearRightState          | Contact              | yes     | State: OPEN or CLOSED                                                                           |
+|              | doorRearLeftState           | Contact              | yes     | State: OPEN or CLOSED                                                                           |
+|              | innerTailgateState          | Contact              | yes     | Inner Tail Gate state                                                                           |
+|              | trunkLidState               | Contact              | yes     | State: OPEN or CLOSED                                                                           |
+| windows      | windowFrontLeftState        | Contact              | yes     | State: OPEN or CLOSED                                                                           |
+|              | windowFrontRightState       | Contact              | yes     | State: OPEN or CLOSED                                                                           |
+|              | windowRearLeftState         | Contact              | yes     | State: OPEN or CLOSED                                                                           |
+|              | windowRearRightState        | Contact              | yes     | State: OPEN or CLOSED                                                                           |
+| tires        | tirePresFrontLeft           | Switch               | yes     | Pressure of the left front tire, ON=OK                                                          |
+|              | tirePresFrontRight          | Switch               | yes     | Pressure of the right front tire, ON=OK                                                         |
+|              | tirePresRearLeft            | Switch               | yes     | Pressure of the left rear tire, ON=OK                                                           |
+|              | tirePresRearRight           | Switch               | yes     | Pressure of the right rear tire, ON=OK                                                          |
+|              | tirePresInnerRearLeft       | Switch               | yes     | Pressure of the inner left rear tire, ON=OK                                                     |
+|              | tirePresInnerRearRight      | Switch               | yes     | Pressure of the inner right rear tire, ON=OK                                                    |
 
 
 ## WeCharge Wallbox
@@ -474,11 +556,10 @@ You need the credentials used for the Skoda Connect portal.
 | numChangingRecords | Number of charging records to read                                          | yes       | 3      |
 | pollingInterval    | Refresh interval in minutes for data refresh (CarNet is not event driven)   | yes       | 15     |
 
-
-|     | Refresh interval in minutes for data refresh (CarNet is not event driven)   | yes       | 15     |
-
 ### WeCharge Wallbox Thing (wcbox) - Channels
 
+| Group        | Channel                     | Item Type            |Read only| Description                                                                                     |
+|--------------|-----------------------------|----------------------|---------|-------------------------------------------------------------------------------------------------|
 | general      | lastUpdate                  | DateTime             | yes     | Last time data has been updated                                                                 |
 | charger      | chargerName                 | String               | yes     |                                                                                                 |
 |              | chargerAddress              | String               | yes     | Location/address of the charging station                                                        |

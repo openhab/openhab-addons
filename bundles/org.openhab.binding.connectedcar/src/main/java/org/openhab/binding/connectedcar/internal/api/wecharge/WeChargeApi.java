@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.connectedcar.internal.api.wecharge;
 
-import static org.openhab.binding.connectedcar.internal.CarUtils.fromJson;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.fromJson;
 
 import java.util.ArrayList;
 
@@ -29,7 +29,12 @@ import org.openhab.binding.connectedcar.internal.api.ApiHttpMap;
 import org.openhab.binding.connectedcar.internal.api.ApiWithOAuth;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.IdentityManager;
-import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCChargingRecordResponse;
+import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCChargeHomeRecordResponse;
+import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCChargeHomeRecordResponse.WeChargeHomeRecord;
+import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCChargePayRecordResponse;
+import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCChargePayRecordResponse.WeChargePayRecord;
+import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCHomeSessionsResponse;
+import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCHomeSessionsResponse.WeChargeHomeSession;
 import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCRfidCardsResponse;
 import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCStationDetails;
 import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCStationList;
@@ -49,7 +54,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WeChargeApi extends ApiWithOAuth implements BrandAuthenticator {
     private final Logger logger = LoggerFactory.getLogger(WeChargeApi.class);
-
     protected final WeChargeStatus baseStatus = new WeChargeStatus();
 
     public WeChargeApi(ApiHttpClient httpClient, IdentityManager tokenManager,
@@ -69,8 +73,8 @@ public class WeChargeApi extends ApiWithOAuth implements BrandAuthenticator {
 
     @Override
     public ArrayList<String> getVehicles() throws ApiException {
-        String json = callApi("", "https://wecharge.apps.emea.vwapps.io/home-charging/v1/stations?limit=10",
-                crerateParameters().getHeaders(), "getStationList", String.class);
+        String json = callApi("", "home-charging/v1/stations?limit=10", crerateParameters().getHeaders(),
+                "getStationList", String.class);
         WCStationList stations = fromJson(gson, json, WCStationList.class);
         ArrayList<String> list = new ArrayList<String>();
         for (WeChargeStationDetails station : stations.result.stations) {
@@ -101,6 +105,14 @@ public class WeChargeApi extends ApiWithOAuth implements BrandAuthenticator {
         }
     }
 
+    @Override
+    public String controlEngine(boolean start) throws ApiException {
+        if (start) {
+            restartStation();
+        }
+        return API_REQUEST_SUCCESSFUL;
+    }
+
     protected void updateVehicleStatus() throws ApiException {
         logger.debug("{}: Updating WeCharge status", thingId);
         baseStatus.station = getStationDetails(config.vehicle.vin);
@@ -110,7 +122,9 @@ public class WeChargeApi extends ApiWithOAuth implements BrandAuthenticator {
         }
 
         // Load charing records
-        loadChargingData();
+        loadHomeSession();
+        loadHomeChargingData();
+        loadPayChargingData();
     }
 
     private void loadSubscriptions() throws ApiException {
@@ -136,20 +150,43 @@ public class WeChargeApi extends ApiWithOAuth implements BrandAuthenticator {
         }
     }
 
-    private void loadChargingData() throws ApiException {
-        WCChargingRecordResponse crecords = wcRequest(
-                "/charge-and-pay/v1/charging/records?limit=" + config.vehicle.numChargingRecords + "&offset=0",
-                "getChargingRecords", WCChargingRecordResponse.class);
-        for (int i = 0; i < crecords.result.size(); i++) {
-            baseStatus.addChargingRecord(crecords.result.get(i));
-        }
-    }
-
     private WeChargeStationDetails getStationDetails(String id) throws ApiException {
         baseStatus.station = wcRequest("/home-charging/v1/stations/" + id, "getStationDetail",
                 WCStationDetails.class).result;
         baseStatus.stationId = baseStatus.station.id;
         return baseStatus.station;
+    }
+
+    private void restartStation() throws ApiException {
+        String json = http.post("home-charging/v1/stations/" + baseStatus.stationId + "/reboot",
+                crerateParameters().getHeaders(), "{\"reboot_mode\":\"immediate\"}").response;
+    }
+
+    private void loadHomeChargingData() throws ApiException {
+        WCChargeHomeRecordResponse crecords = wcRequest(
+                "home-charging/v1/charging/records?limit=" + config.vehicle.numChargingRecords + "&offset=0",
+                "getHomeChargingRecords", WCChargeHomeRecordResponse.class);
+        for (WeChargeHomeRecord record : crecords.chargingRecords) {
+            baseStatus.addHomeChargingRecord(record);
+        }
+    }
+
+    private void loadPayChargingData() throws ApiException {
+        WCChargePayRecordResponse crecords = wcRequest(
+                "charge-and-pay/v1/charging/records?limit=" + config.vehicle.numChargingRecords + "&offset=0",
+                "getPayChargingRecords", WCChargePayRecordResponse.class);
+        for (WeChargePayRecord record : crecords.result) {
+            baseStatus.addPayChargingRecord(record);
+        }
+    }
+
+    private void loadHomeSession() throws ApiException {
+        WCHomeSessionsResponse sessions = wcRequest(
+                "/home-charging/v1/charging/sessions?station_id=" + baseStatus.stationId + "&limit=5&offset=0",
+                "getHomeChargingSessions", WCHomeSessionsResponse.class);
+        for (WeChargeHomeSession s : sessions.chargingSessions) {
+
+        }
     }
 
     protected ApiHttpMap crerateParameters() throws ApiException {
@@ -159,7 +196,6 @@ public class WeChargeApi extends ApiWithOAuth implements BrandAuthenticator {
     }
 
     private <T> T wcRequest(String uri, String function, Class<T> classOfT) throws ApiException {
-        return callApi("", "https://wecharge.apps.emea.vwapps.io" + uri, crerateParameters().getHeaders(),
-                "getLocationList", classOfT);
+        return callApi("", uri, crerateParameters().getHeaders(), "getLocationList", classOfT);
     }
 }

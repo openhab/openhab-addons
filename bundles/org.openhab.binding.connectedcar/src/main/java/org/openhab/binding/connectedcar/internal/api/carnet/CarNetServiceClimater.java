@@ -13,8 +13,8 @@
 package org.openhab.binding.connectedcar.internal.api.carnet;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNAPI_SERVICE_REMOTE_PRETRIP_CLIMATISATION;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.math.BigDecimal;
 import java.util.Map;

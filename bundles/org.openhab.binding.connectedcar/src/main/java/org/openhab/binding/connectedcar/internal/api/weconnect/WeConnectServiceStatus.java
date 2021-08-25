@@ -13,9 +13,8 @@
 package org.openhab.binding.connectedcar.internal.api.weconnect;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
-import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_VWID;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_SERVICE_VEHICLE_STATUS_REPORT;
+import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.util.Map;
 
@@ -43,7 +42,7 @@ public class WeConnectServiceStatus extends ApiBaseService {
     String thingId = API_BRAND_VWID;
 
     public WeConnectServiceStatus(ThingBaseHandler thingHandler, ApiBase api) {
-        super(CNAPI_SERVICE_VEHICLE_STATUS_REPORT, thingHandler, api);
+        super(API_SERVICE_VEHICLE_STATUS_REPORT, thingHandler, api);
         thingId = getConfig().vehicle.vin;
     }
 
@@ -56,7 +55,7 @@ public class WeConnectServiceStatus extends ApiBaseService {
             return false;
         }
 
-        addChannels(channels, true, /* CHANNEL_STATUS_PBRAKE, CHANNEL_STATUS_LIGHTS, */ CHANNEL_STATUS_ERROR);
+        addChannels(channels, true, CHANNEL_STATUS_ERROR);
         addChannels(channels, status.rangeStatus != null, CHANNEL_RANGE_TOTAL, CHANNEL_RANGE_PRANGE);
         addChannels(channels, status.batteryStatus != null, CHANNEL_CHARGER_CHGLVL);
         addChannels(channels, status.chargingStatus != null, CHANNEL_CONTROL_CHARGER, CHANNEL_CHARGER_CHG_STATE,

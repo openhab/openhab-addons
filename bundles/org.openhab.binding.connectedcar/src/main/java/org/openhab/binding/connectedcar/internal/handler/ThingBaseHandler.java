@@ -13,8 +13,8 @@
 package org.openhab.binding.connectedcar.internal.handler;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -29,7 +29,6 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.connectedcar.internal.ChannelCache;
 import org.openhab.binding.connectedcar.internal.TextResources;
 import org.openhab.binding.connectedcar.internal.api.ApiBase;
 import org.openhab.binding.connectedcar.internal.api.ApiBaseService;
@@ -45,6 +44,7 @@ import org.openhab.binding.connectedcar.internal.config.VehicleConfiguration;
 import org.openhab.binding.connectedcar.internal.provider.CarChannelTypeProvider;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
+import org.openhab.binding.connectedcar.internal.util.ChannelCache;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;

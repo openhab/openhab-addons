@@ -13,7 +13,7 @@
 package org.openhab.binding.connectedcar.internal.api;
 
 import static org.eclipse.jetty.http.HttpStatus.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.getString;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.getString;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,7 +21,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.connectedcar.internal.api.ApiErrorDTO.CNApiError2;
+import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNApiError2;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPErrorResponse;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCActionResponse.WCApiError;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCActionResponse.WCApiError2;
@@ -56,9 +56,7 @@ public class ApiResult {
     }
 
     public ApiResult(String url, String method, Integer responseCode, String response) {
-        this.method = method;
-        this.url = url;
-        this.httpCode = 0;
+        this(method, url);
         this.response = response;
     }
 
@@ -145,8 +143,9 @@ public class ApiResult {
             if (response.contains("\"error\":")) {
                 Gson gson = new Gson();
                 try {
+                    // Try our best to extract details from brand specific formats
                     if (response.contains("Response: {\"httpStatus\"")) {
-                        // Fordpass
+                        // FordPass
                         apiError = new ApiErrorDTO(gson.fromJson(response, FPErrorResponse.class));
                     } else if (response.contains("uri") && response.contains("status")
                             && response.contains("message")) {

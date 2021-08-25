@@ -13,8 +13,8 @@
 package org.openhab.binding.connectedcar.internal.api.carnet;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.getString;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_SERVICE_CAR_FINDER;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNAPI_SERVICE_CAR_FINDER;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.getString;
 
 import java.util.Map;
 

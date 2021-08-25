@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.connectedcar.internal.api.weconnect;
 
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_VWID;
 import static org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCAPI_BASE_URL;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import javax.ws.rs.core.HttpHeaders;
 

@@ -13,9 +13,9 @@
 package org.openhab.binding.connectedcar.internal.api.skodae;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.CONTENT_TYPE_JSON;
-import static org.openhab.binding.connectedcar.internal.CarUtils.fromJson;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
 import static org.openhab.binding.connectedcar.internal.api.skodae.SEApiJsonDTO.*;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.fromJson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,8 +46,6 @@ import org.openhab.binding.connectedcar.internal.api.skodae.SEApiJsonDTO.SEVehic
 import org.openhab.binding.connectedcar.internal.api.skodae.SEApiJsonDTO.SEVehicleStatusData.SEVehicleStatus.SEClimaterStatus;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link SkodaEApi} implements the Skoda-E API calls
@@ -56,7 +54,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SkodaEApi extends ApiWithOAuth implements BrandAuthenticator {
-    private final Logger logger = LoggerFactory.getLogger(SkodaEApi.class);
     private Map<String, SEVehicle> vehicleData = new HashMap<>();
 
     public SkodaEApi(ApiHttpClient httpClient, IdentityManager tokenManager, @Nullable ApiEventListener eventListener) {
@@ -159,17 +156,6 @@ public class SkodaEApi extends ApiWithOAuth implements BrandAuthenticator {
         } catch (IncommensurableException e) {
             throw new ApiException("Unable to convert temperature", e);
         }
-    }
-
-    @Override
-    public String controlWindowHeating(boolean start) throws ApiException {
-        /*
-         * SEClimaterSettings settings = getClimaterSettings();
-         * settings.windowHeatingEnabled = start;
-         * String payload = gson.toJson(settings);
-         * return sendSettings(SESERVICE_CLIMATISATION, payload);
-         */
-        return super.controlCharger(start);
     }
 
     @Override

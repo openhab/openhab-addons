@@ -43,6 +43,7 @@ public class ApiRequestQueue {
     }
 
     public boolean isRequestPending(String serviceId) {
+        // return true if a request for a specific service is pending
         for (Map.Entry<String, ApiActionRequest> r : pendingRequests.entrySet()) {
             if (r.getValue().service.equals(serviceId)) {
                 return true;
@@ -52,7 +53,7 @@ public class ApiRequestQueue {
     }
 
     public boolean areRequestsPending() {
-        // check for pending refresh
+        // return true if any request is pending
         boolean pending = false;
         for (Map.Entry<String, ApiActionRequest> e : pendingRequests.entrySet()) {
             ApiActionRequest request = e.getValue();
@@ -64,13 +65,11 @@ public class ApiRequestQueue {
     }
 
     public String queuePendingAction(ApiActionRequest req) throws ApiException {
-
         logger.debug("{}: Request {} queued for status updates", thingId, req.requestId);
         if (req.requestId.isEmpty()) {
             throw new IllegalArgumentException("queuePendingAction(): requestId must not be empty!");
         }
         pendingRequests.put(req.requestId, req);
-        int i = pendingRequests.size();
         if (eventListener != null) {
             eventListener.onActionSent(req.service, req.action, req.requestId);
         }
@@ -79,6 +78,9 @@ public class ApiRequestQueue {
         return getRequestStatus(req.requestId, req.status);
     }
 
+    /**
+     * Get status update for pending requests
+     */
     public void checkPendingRequests() {
         if (!pendingRequests.isEmpty()) {
             logger.debug("{}: Checking status for {} pending requets", thingId, pendingRequests.size());
@@ -97,9 +99,20 @@ public class ApiRequestQueue {
         }
     }
 
+    // Will be overwritten by beand implementation to support different formats
     public String getApiRequestStatus(ApiActionRequest req) throws ApiException {
         return API_REQUEST_SUCCESSFUL;
     }
+
+    /**
+     * Get request status, handle different formats, return unified request status (even CarNet has different codes for
+     * the same logical status)
+     *
+     * @param requestId The request id return from the API call
+     * @param rstatus Raw status returned from status call
+     * @return Unified request code (API_REQUEST_xxx)
+     * @throws ApiException
+     */
 
     public String getRequestStatus(String requestId, String rstatus) throws ApiException {
         if (!pendingRequests.containsKey(requestId)) {

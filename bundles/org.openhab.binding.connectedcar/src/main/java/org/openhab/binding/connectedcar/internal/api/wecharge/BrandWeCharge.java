@@ -13,8 +13,8 @@
 package org.openhab.binding.connectedcar.internal.api.wecharge;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.CONTENT_TYPE_JSON;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_WECHARGE;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -89,19 +89,6 @@ public class BrandWeCharge extends WeChargeApi {
 
     @Override
     public ApiIdentity grantAccess(IdentityOAuthFlow oauth) throws ApiException {
-        /*
-         * String json = oauth.clearHeader().header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON)
-         * .header(HttpHeader.ACCEPT_LANGUAGE, "en-US").clearData().data("code", oauth.code)
-         * .data("msp_login", "true") //
-         * .data("redirect_uri", config.api.redirect_uri).post(config.api.loginUrl, true).response;
-         */
-        /*
-         * String json = oauth.clearHeader().headers(config.api.loginHeaders)
-         * .header(HttpHeader.HOST, substringBetween(config.api.tokenRefreshUrl, "//", "/)"))
-         * .header(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE_FORM_URLENC).clearData().data("auth_code", oauth.code)
-         * .data("id_token", oauth.idToken).data("brand", "skoda") //
-         * .post(config.api.tokenRefreshUrl + "/exchangeAuthCode", false).response;
-         */
         String url = "https://wecharge.apps.emea.vwapps.io/user-identity/v1/identity/login?redirect_uri="
                 + config.api.redirect_uri + "&code=" + oauth.code;
         String json = oauth.clearHeader().headers(config.api.loginHeaders).get(url).response;

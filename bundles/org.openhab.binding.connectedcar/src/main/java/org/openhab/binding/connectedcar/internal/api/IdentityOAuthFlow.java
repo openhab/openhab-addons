@@ -13,11 +13,10 @@
 package org.openhab.binding.connectedcar.internal.api;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.substringBetween;
 import static org.openhab.binding.connectedcar.internal.api.ApiHttpClient.getUrlParm;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.substringBetween;
 
 import java.io.UnsupportedEncodingException;
-import java.net.CookieStore;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -133,10 +132,6 @@ public class IdentityOAuthFlow extends ApiHttpMap {
             throw new ApiException("Missing localtion on redirect");
         }
         return get(location);
-    }
-
-    public CookieStore getCookieStore() {
-        return http.getCookieStore();
     }
 
     private ApiResult update() throws ApiException {

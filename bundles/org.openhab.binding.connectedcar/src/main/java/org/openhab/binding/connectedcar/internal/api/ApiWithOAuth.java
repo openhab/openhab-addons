@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.connectedcar.internal.api;
 
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.*;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.*;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -45,10 +45,6 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
 
     @Override
     public String getLoginUrl(IdentityOAuthFlow oauth) throws ApiException {
-        String url;
-        String nonce = generateNonce();
-        String state = UUID.randomUUID().toString();
-
         String authUrl = config.api.issuerRegionMappingUrl + "/oidc/v1/authorize";
         oauth.headers(config.api.loginHeaders).header(HttpHeader.USER_AGENT, CNAPI_HEADER_USER_AGENT).header(
                 HttpHeader.ACCEPT,
@@ -57,11 +53,11 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
         if (!config.api.xrequest.isEmpty()) {
             oauth.header("x-requested-with", config.api.xrequest).header("upgrade-insecure-requests", "1");
         }
-        url = authUrl + "?client_id=" + urlEncode(config.api.clientId) //
+        String url = authUrl + "?client_id=" + urlEncode(config.api.clientId) //
                 + "&scope=" + urlEncode(config.api.authScope).replace("%20", "+") //
                 + "&response_type=" + urlEncode(config.api.responseType).replace("%20", "+") //
                 + "&redirect_uri=" + urlEncode(config.api.redirect_uri) //
-                + "&nonce=" + nonce + "&state=" + state;
+                + "&nonce=" + generateNonce() + "&state=" + UUID.randomUUID().toString();
         if (config.authenticator != null) {
             url = config.authenticator.updateAuthorizationUrl(url);
         }
@@ -91,8 +87,6 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
             logger.trace("{}: OAuth input: User", logId);
             // "/signin-service/v1/" + config.api.clientId + "/login/identifier";
             url = config.api.issuerRegionMappingUrl + oauth.action;
-            // oauth.clearData().data("_csrf", oauth.csrf).data("relayState", oauth.relayState).data("hmac", oauth.hmac)
-            // .data("email", URLEncoder.encode(config.account.user, UTF_8));
             oauth.clearData().data("_csrf", oauth.csrf).data("relayState", oauth.relayState).data("hmac", oauth.hmac)
                     .data(config.api.authUserAttr, URLEncoder.encode(config.account.user, UTF_8));
             if (config.authenticator != null) {
@@ -105,11 +99,11 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
             }
 
             // Authenticate: Password
-            logger.trace("{}: OAuth input: Password", logId);
+            logger.trace("{}: OAuth: Input password", logId);
             url = config.api.issuerRegionMappingUrl + oauth.location; // Signin URL
             res = oauth.get(url);
 
-            logger.trace("{}: OAuth input: Authenticate", logId);
+            logger.trace("{}: OAuth: Authenticate", logId);
             url = config.api.issuerRegionMappingUrl + oauth.action;
             res = oauth.clearData().data("_csrf", oauth.csrf).data("relayState", oauth.relayState)
                     .data("hmac", oauth.hmac).data("email", URLEncoder.encode(config.account.user, UTF_8))
@@ -131,6 +125,8 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
                 }
             }
 
+            // Check for required consent, do not respond automatically, this has to be done by the user with regards to
+            // data protection
             if (oauth.idToken.isEmpty() && oauth.code.isEmpty()) {
                 if (res.response.contains("Allow access")) // additional consent required
                 {

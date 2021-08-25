@@ -13,8 +13,8 @@
 package org.openhab.binding.connectedcar.internal.api;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.CONTENT_TYPE_JSON;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.*;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.*;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.util.HashMap;
 import java.util.Iterator;

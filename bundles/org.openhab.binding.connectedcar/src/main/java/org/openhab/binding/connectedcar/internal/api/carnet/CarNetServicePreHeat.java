@@ -13,17 +13,17 @@
 package org.openhab.binding.connectedcar.internal.api.carnet;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_SERVICE_REMOTE_HEATING;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNAPI_SERVICE_REMOTE_HEATING;
 
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.connectedcar.internal.CarUtils;
 import org.openhab.binding.connectedcar.internal.api.ApiBaseService;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNHeaterVentilation.CarNetHeaterVentilationStatus;
 import org.openhab.binding.connectedcar.internal.handler.CarNetVehicleHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
+import org.openhab.binding.connectedcar.internal.util.Helpers;
 
 /**
  * {@link CarNetServicePreHeat} implements the remote heater service
@@ -46,17 +46,16 @@ public class CarNetServicePreHeat extends ApiBaseService {
     public boolean serviceUpdate() throws ApiException {
         boolean updated = false;
         CarNetHeaterVentilationStatus hvs = ((CarNetApi) api).getHeaterVentilationStatus();
-        String group = CHANNEL_GROUP_CONTROL;
         if (hvs.climatisationStateReport != null) {
             if (hvs.climatisationStateReport.climatisationState != null) {
                 String sd = hvs.climatisationStateReport.climatisationState;
                 if ("heating".equalsIgnoreCase(sd)) {
-                    updated |= updateChannel(CHANNEL_CONTROL_PREHEAT, CarUtils.getOnOff(1));
+                    updated |= updateChannel(CHANNEL_CONTROL_PREHEAT, Helpers.getOnOff(1));
                 } else if ("ventilation".equalsIgnoreCase(sd)) {
-                    updated |= updateChannel(CHANNEL_CONTROL_VENT, CarUtils.getOnOff(1));
+                    updated |= updateChannel(CHANNEL_CONTROL_VENT, Helpers.getOnOff(1));
                 } else {
-                    updated |= updateChannel(CHANNEL_CONTROL_PREHEAT, CarUtils.getOnOff(0));
-                    updated |= updateChannel(CHANNEL_CONTROL_VENT, CarUtils.getOnOff(0));
+                    updated |= updateChannel(CHANNEL_CONTROL_PREHEAT, Helpers.getOnOff(0));
+                    updated |= updateChannel(CHANNEL_CONTROL_VENT, Helpers.getOnOff(0));
                 }
             }
         }

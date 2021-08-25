@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.connectedcar.internal.api.carnet;
 
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_VW_TOKEN_URL;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNAPI_VW_TOKEN_URL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,14 +29,8 @@ import org.openhab.binding.connectedcar.internal.api.IdentityManager;
  */
 @NonNullByDefault
 public class BrandCarNetSeat extends CarNetApi implements BrandAuthenticator {
-    public BrandCarNetSeat(ApiHttpClient httpClient, IdentityManager tokenManager,
-            @Nullable ApiEventListener eventListener) {
-        super(httpClient, tokenManager, eventListener);
-    }
-
-    @Override
-    public ApiBrandProperties getProperties() {
-        ApiBrandProperties properties = new ApiBrandProperties();
+    private static ApiBrandProperties properties = new ApiBrandProperties();
+    static {
         properties.brand = "VW"; // CNAPI_BRAND_SEAT;
         properties.xcountry = "ES";
         properties.apiDefaultUrl = "";
@@ -50,6 +44,15 @@ public class BrandCarNetSeat extends CarNetApi implements BrandAuthenticator {
         properties.responseType = "code id_token";
         properties.xappName = "SEATConnect";
         properties.xappVersion = "1.1.29";
+    }
+
+    public BrandCarNetSeat(ApiHttpClient httpClient, IdentityManager tokenManager,
+            @Nullable ApiEventListener eventListener) {
+        super(httpClient, tokenManager, eventListener);
+    }
+
+    @Override
+    public ApiBrandProperties getProperties() {
         return properties;
     }
 }

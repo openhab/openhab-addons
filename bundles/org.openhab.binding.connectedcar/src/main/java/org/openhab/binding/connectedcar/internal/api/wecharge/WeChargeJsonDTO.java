@@ -17,7 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCChargingRecordResponse.WeChargeRecord;
+import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCChargeHomeRecordResponse.WeChargeHomeRecord;
+import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCChargePayRecordResponse.WeChargePayRecord;
 import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCRfidCardsResponse.WeChargeRfidCard;
 import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCSubscriptionsResponse.WeChargeSubscription;
 import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCTariffResponse.WeChargeTariff;
@@ -212,6 +213,16 @@ public class WeChargeJsonDTO {
         public WeChargeTariff result;
     }
 
+    public class WCHomeSessionsResponse {
+        public class WeChargeHomeSession {
+
+        }
+
+        public String timestamp;
+        @SerializedName("charging_sessions")
+        public ArrayList<WeChargeHomeSession> chargingSessions;
+    }
+
     public class WCRfidCardsResponse {
         public class WeChargeRfidCard {
             public String id, number;
@@ -242,8 +253,8 @@ public class WeChargeJsonDTO {
         public ArrayList<WeChargeRfidCard> result;
     }
 
-    public class WCChargingRecordResponse {
-        public class WeChargeRecord {
+    public class WCChargePayRecordResponse {
+        public class WeChargePayRecord {
             public String id;
             @SerializedName("subscription_id")
             public String subscriptionId;
@@ -280,77 +291,59 @@ public class WeChargeJsonDTO {
         }
 
         public String timestamp;
-        public ArrayList<WeChargeRecord> result;
+        public ArrayList<WeChargePayRecord> result;
     }
 
-    /*
-     * public class WCChargingRecordResponse {
-     * public class WeChargeRecord {
-     *
-     * @SerializedName("authentication_method")
-     * public String authenticationMethod;
-     *
-     * @SerializedName("authorization_mode")
-     * public String authorizationMode;
-     *
-     * @SerializedName("charging_session_id")
-     * public String chargingSessionId;
-     *
-     * @SerializedName("connector_id")
-     * public Double connectorId;
-     *
-     * @SerializedName("rfid_card_id")
-     * public String rfidCardId;
-     *
-     * @SerializedName("rfid_card_label")
-     * public String rfidCardLabel;
-     *
-     * @SerializedName("rfid_card_serial_number")
-     * public String rfidCardSerialNumber;
-     *
-     * @SerializedName("session_faulted")
-     * public Boolean sessionFaulted;
-     *
-     * @SerializedName("start_date_time")
-     * public String startDateTime;
-     *
-     * @SerializedName("station_id")
-     * public String stationId;
-     *
-     * @SerializedName("station_name")
-     * public String stationName;
-     *
-     * @SerializedName("station_serial_number")
-     * public String stationSerialNumber;
-     *
-     * @SerializedName("stop_date_time")
-     * public String stopDateTime;
-     *
-     * @SerializedName("transaction_id")
-     * public String transactionId;
-     *
-     * @SerializedName("station_model")
-     * public String stationModel;
-     * public WCStationLocation location;
-     *
-     * @SerializedName("current_station_name")
-     * public String currentStationName;
-     *
-     * @SerializedName("created_at")
-     * public String createdAt;
-     * }
-     *
-     * public String timestamp;
-     *
-     * @SerializedName("total_count")
-     * public Integer totalCount;
-     * public Integer offset;
-     * public Integer limit;
-     *
-     * @SerializedName("charging_records")
-     * public ArrayList<WeChargeRecord> chargingRecords;
-     * }
-     */
+    public class WCChargeHomeRecordResponse {
+        public class WeChargeHomeRecord {
+            @SerializedName("authentication_method")
+            public String authenticationMethod;
+            @SerializedName("authorization_mode")
+            public String authorizationMode;
+            @SerializedName("charging_session_id")
+            public String chargingSessionId;
+            @SerializedName("connector_id")
+            public Double connectorId;
+            @SerializedName("rfid_card_id")
+            public String rfidCardId;
+            @SerializedName("rfid_card_label")
+            public String rfidCardLabel;
+            @SerializedName("rfid_card_serial_number")
+            public String rfidCardSerialNumber;
+            @SerializedName("session_faulted")
+            public Boolean sessionFaulted;
+            @SerializedName("start_date_time")
+            public String startDateTime;
+            @SerializedName("station_id")
+            public String stationId;
+            @SerializedName("station_name")
+            public String stationName;
+            @SerializedName("station_serial_number")
+            public String stationSerialNumber;
+            @SerializedName("stop_date_time")
+            public String stopDateTime;
+            @SerializedName("transaction_id")
+            public String transactionId;
+            @SerializedName("station_model")
+            public String stationModel;
+            public WCStationLocation location;
+            @SerializedName("current_station_name")
+            public String currentStationName;
+            @SerializedName("created_at")
+            public String createdAt;
+        }
+
+        public String timestamp;
+
+        @SerializedName("total_count")
+        public Integer totalCount;
+        public Integer offset;
+        public Integer limit;
+
+        @SerializedName("charging_records")
+        public ArrayList<WeChargeHomeRecord> chargingRecords;
+    }
+
     public static class WeChargeStatus {
         public String stationId = "";
 
@@ -358,7 +351,8 @@ public class WeChargeJsonDTO {
         public Map<String, WeChargeSubscription> subscriptions = new HashMap<>();
         public Map<String, WeChargeTariff> tariffs = new HashMap<>();;
         public Map<String, WeChargeRfidCard> rfidCards = new HashMap<>();;
-        public Map<String, WeChargeRecord> chargingRecords = new HashMap<>();;
+        public Map<String, WeChargeHomeRecord> homeChargingRecords = new HashMap<>();;
+        public Map<String, WeChargePayRecord> payChargingRecords = new HashMap<>();;
 
         public WeChargeStatus() {
         }
@@ -382,8 +376,12 @@ public class WeChargeJsonDTO {
             rfidCards.put(r.subscriberId, r);
         }
 
-        public void addChargingRecord(WeChargeRecord r) {
-            chargingRecords.put(r.id, r);
+        public void addHomeChargingRecord(WeChargeHomeRecord r) {
+            homeChargingRecords.put(r.transactionId, r);
+        }
+
+        public void addPayChargingRecord(WeChargePayRecord r) {
+            payChargingRecords.put(r.id, r);
         }
 
         public @Nullable WeChargeTariff getTariffs(String id) {

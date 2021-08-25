@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.connectedcar.internal.api.carnet;
 
-import static org.openhab.binding.connectedcar.internal.CarUtils.getString;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_AUDI;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_VW_TOKEN_URL;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNAPI_VW_TOKEN_URL;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.getString;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -123,10 +123,7 @@ public class BrandCarNetAudi extends CarNetApi implements BrandAuthenticator {
 
     @Override
     public ArrayList<String> getVehicles() throws ApiException {
-
-        ArrayList<String> list = super.getVehicles();
-
-        return list;
+        return super.getVehicles();
     }
 
     @Override
@@ -140,8 +137,8 @@ public class BrandCarNetAudi extends CarNetApi implements BrandAuthenticator {
             String[] imageUrls = new String[1];
             if (data.vehicles != null) {
                 for (AudiVehicles.AudiVehicle vehicle : data.vehicles) {
-                    if (config.vehicle.vin.equalsIgnoreCase(getString(vehicle.vin))) {
-                        // for whatever the imageUrl is missing http: at the beginning
+                    if (config.vehicle.vin.equalsIgnoreCase(getString(vehicle.vin)) && vehicle.imageUrl != null) {
+                        // for whatever reason the imageUrl is missing http: at the beginning
                         imageUrls[0] = vehicle.imageUrl.startsWith("//") ? "https:" + vehicle.imageUrl
                                 : vehicle.imageUrl;
                         break;
@@ -154,63 +151,4 @@ public class BrandCarNetAudi extends CarNetApi implements BrandAuthenticator {
         }
         return config.vstatus.imageUrls;
     }
-    /*
-     * try {
-     * AudiServiceUrls urls = super.callApi(
-     * "https://featureapps.audi.com/audi-env-config/0/config/myaudi/livem1/idk.json", "getServiceUrls",
-     * AudiServiceUrls.class);
-     * if (urls.consentService != null && urls.consentService.emea != null
-     * && urls.consentService.emea.baseUrl != null) {
-     * properties.customerProfileServiceUrl = urls.consentService.emea.baseUrl;
-     * }
-     * if (urls.issuerRegionMapping != null && urls.issuerRegionMapping.emea != null) {
-     * properties.issuerRegionMappingUrl = urls.issuerRegionMapping.emea;
-     * }
-     * } catch (CarNetException e) {
-     * logger.debug("{}: Unable to get Service URLs", properties.brand);
-     * }
-     *
-     */
-
-    /*
-     * App token generation - incomplete, untested
-     *
-     * // Otherwise we just got an auhorization code and need to request the token
-     * if (authCode.isEmpty()) {
-     * logger.debug("{}: Unable to obtain authCode, last url={}, last response: {}", config.vehicle.vin,
-     * url, html);
-     * throw new CarNetSecurityException("Unable to complete OAuth, check credentials");
-     * }
-     *
-     * logger.trace("{}: OAuth successful, obtain ID token (auth code={})", config.vehicle.vin, authCode);
-     * headers.clear();
-     * headers.put(HttpHeader.ACCEPT.toString(), "application/json, text/plain, *"); <- change
-     * headers.put(HttpHeader.CONTENT_TYPE.toString(), "application/json");
-     * headers.put(HttpHeader.USER_AGENT.toString(), "okhttp/3.7.0");
-     *
-     * long tsC = parseDate(config.api.oidcDate);
-     * // long n = System.currentTimeMillis();
-     * long ts1 = System.currentTimeMillis() - tsC;
-     * long ts2 = System.currentTimeMillis();
-     * long ts = ts1 + ts2;
-     * String s = ((Long) (ts / 100000)).toString();
-     * headers.put("X-QMAuth", "v1:934928ef:" + s);
-     *
-     * data.clear();
-     * data.put("client_id", config.api.clientId);
-     * data.put("grant_type", "authorization_code");
-     * data.put("code", authCode);
-     * data.put("redirect_uri", config.api.redirect_uri);
-     * data.put("response_type", "token id_token");
-     * json = http.post(CNAPI_AUDI_TOKEN_URL, headers, data, true);
-     *
-     * // process token
-     * token = fromJson(gson, json, JwtToken.class);
-     * if ((token.accessToken == null) || token.accessToken.isEmpty()) {
-     * throw new CarNetSecurityException("Authentication failed: Unable to get id token!");
-     * }
-     *
-     * tokens.idToken = new CarNetToken(token);
-     * }
-     */
 }

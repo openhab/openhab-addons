@@ -13,8 +13,8 @@
 package org.openhab.binding.connectedcar.internal.api.carnet;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_SERVICE_REMOTE_LOCK_UNLOCK;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNAPI_SERVICE_REMOTE_LOCK_UNLOCK;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,8 +27,6 @@ import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNE
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNEluActionHistory.CarNetRluHistory.CarNetRluLockActionList.CarNetRluLockAction;
 import org.openhab.binding.connectedcar.internal.handler.CarNetVehicleHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link CarNetServiceRLU} implements remote vehicle lock/unlock and history.
@@ -37,8 +35,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class CarNetServiceRLU extends ApiBaseService {
-    private final Logger logger = LoggerFactory.getLogger(CarNetServiceRLU.class);
-
     public CarNetServiceRLU(CarNetVehicleHandler thingHandler, CarNetApi api) {
         super(CNAPI_SERVICE_REMOTE_LOCK_UNLOCK, thingHandler, api);
     }

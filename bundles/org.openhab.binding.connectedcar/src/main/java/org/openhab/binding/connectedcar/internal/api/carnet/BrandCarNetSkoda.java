@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.connectedcar.internal.api.carnet;
 
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.*;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,18 +30,8 @@ import org.openhab.binding.connectedcar.internal.api.IdentityManager;
  */
 @NonNullByDefault
 public class BrandCarNetSkoda extends CarNetApi implements BrandAuthenticator {
-    public BrandCarNetSkoda(ApiHttpClient httpClient, IdentityManager tokenManager,
-            @Nullable ApiEventListener eventListener) {
-        super(httpClient, tokenManager, eventListener);
-    }
-
-    @Override
-    public ApiBrandProperties getProperties() {
-        return getSkodaProperties();
-    }
-
-    public static ApiBrandProperties getSkodaProperties() {
-        ApiBrandProperties properties = new ApiBrandProperties();
+    private static ApiBrandProperties properties = new ApiBrandProperties();
+    static {
         properties.brand = "VW"; // it's "VW", not "Skoda"
         properties.xcountry = "CZ";
         properties.apiDefaultUrl = "";
@@ -56,6 +46,19 @@ public class BrandCarNetSkoda extends CarNetApi implements BrandAuthenticator {
         properties.responseType = "token id_token";
         properties.xappVersion = "3.2.6";
         properties.xappName = "cz.skodaauto.connect";
+    }
+
+    public BrandCarNetSkoda(ApiHttpClient httpClient, IdentityManager tokenManager,
+            @Nullable ApiEventListener eventListener) {
+        super(httpClient, tokenManager, eventListener);
+    }
+
+    @Override
+    public ApiBrandProperties getProperties() {
+        return getSkodaProperties();
+    }
+
+    public static ApiBrandProperties getSkodaProperties() {
         return properties;
     }
 }

@@ -13,14 +13,11 @@
 package org.openhab.binding.connectedcar.internal.api;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.*;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.*;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
-import java.net.CookieStore;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -67,28 +64,6 @@ public class ApiHttpClient {
         this.config = config;
     }
 
-    public CookieStore getCookieStore() {
-        return httpClient.getCookieStore();
-    }
-
-    public static void fillHttpHeaders(Request request, Map<String, String> headers, String token) {
-        if (!headers.isEmpty()) {
-            for (Map.Entry<String, String> h : headers.entrySet()) {
-                String key = h.getKey();
-                String value = h.getValue();
-                if (key.equals(HttpHeader.USER_AGENT.toString())) {
-                    request.agent(value);
-                } else if (key.equals(HttpHeader.ACCEPT.toString())) {
-                    request.accept(value);
-                } else {
-                    if (!value.isEmpty()) {
-                        request.header(key, value);
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * Sends a HTTP GET request using the synchronous client
      *
@@ -112,6 +87,12 @@ public class ApiHttpClient {
         return request(HttpMethod.GET, uri, "", headers, "", vin, "");
     }
 
+    /**
+     * Sends a HTTP PUT request using the synchronous client
+     *
+     * @param path Path of the requested resource
+     * @return response
+     */
     public ApiResult put(String uri, Map<String, String> headers, String data) throws ApiException {
         return request(HttpMethod.PUT, uri, "", headers, data, "", "", false);
     }
@@ -149,20 +130,16 @@ public class ApiHttpClient {
         return request(method, uri, parms, headers, data, pvin, token, true);
     }
 
-    public void clearCookies() {
-        httpClient.getCookieStore().removeAll();
-    }
-
     /**
-     * Make http request (GET/PUT) with given set of headers. Body gets fill depending on method and content type.
+     * Make HTTP request (GET/PUT) with given set of headers. Body gets fill depending on method and content type.
      *
      * @param method HTTP method (GET/POST)
-     * @param uri URL of URI suffix. If only a suffix is given a complete URL will be created based on the brand base
+     * @param uri URL of URI. A complete URL will be created based on the brand if only a URI is given
      *            url
      * @param parms Paremeters will be added to the URL
      * @param headers HTTP headers, additional headers might be added depending on content type
      * @param data Body field, gets formatted according content type (form encoded vs. JSON format)
-     * @param pvin The account handler specifies a specific pin, if empty config.vehicle.vin will be used
+     * @param pvin The account handler specifies a specific VIN, if empty config.vehicle.vin will be used
      * @param token Bearer or security token (or empty)
      * @return Returns the HTTP response. In additional lastHttpHeaders get filled with the http response headers
      * @throws ApiException
@@ -180,16 +157,15 @@ public class ApiHttpClient {
             fillPostData(request, data);
 
             // Do request and get response
-            logger.debug("HTTP {} {}", request.getMethod(), request.getURI());
+            logger.debug("{}: HTTP {} {}", config.getLogId(), request.getMethod(), request.getURI());
             logger.trace("  Headers: \n{}", request.getHeaders().toString());
             if (!data.isEmpty()) {
                 logger.trace("  Body/Data: {}", data);
             }
-            // request.followRedirects(followRedirect);
+
             request.followRedirects(false);
             ContentResponse contentResponse = request.send();
             apiResult = new ApiResult(contentResponse);
-            String response = apiResult.response.replaceAll("[\r\n\t]", "");
             if (apiResult.rateLimit > 0) {
                 logger.debug("{}: Remaining rate limit = {}", config.vehicle.vin, apiResult.rateLimit);
                 if (eventListener != null) {
@@ -198,9 +174,10 @@ public class ApiHttpClient {
             }
 
             // validate response, API errors are reported as Json
-            logger.trace("HTTP {} Response: {}", apiResult.httpCode, response);
+            String response = apiResult.response.replaceAll("[\r\n\t]", "");
+            logger.debug("{}: HTTP {} Response: {}", config.getLogId(), apiResult.httpCode, response);
             logger.trace("  Headers: \n{}", apiResult.responseHeaders);
-            String loc = apiResult.getLocation();
+            String location = apiResult.getLocation();
             switch (apiResult.httpCode) {
                 case HttpStatus.UNAUTHORIZED_401:
                 case HttpStatus.FORBIDDEN_403:
@@ -215,8 +192,8 @@ public class ApiHttpClient {
                 case HttpStatus.MOVED_PERMANENTLY_301:
                 case HttpStatus.TEMPORARY_REDIRECT_307:
                 case HttpStatus.FOUND_302:
-                    if (!loc.isEmpty()) {
-                        logger.debug("HTTP {} -> {}", apiResult.httpCode, loc);
+                    if (!location.isEmpty()) {
+                        logger.debug("{}: HTTP {} -> {}", config.getLogId(), apiResult.httpCode, location);
                     }
                     break;
                 default:
@@ -225,7 +202,7 @@ public class ApiHttpClient {
             if (response.contains("\"error\":")) {
                 throw new ApiException("API returned error", apiResult);
             }
-            if (response.isEmpty() && loc.isEmpty()) {
+            if (response.isEmpty() && location.isEmpty()) {
                 throw new ApiException("Invalid result received from API, maybe URL problem", apiResult);
             }
             return apiResult;
@@ -234,24 +211,48 @@ public class ApiHttpClient {
         }
     }
 
+    public void clearCookies() {
+        httpClient.getCookieStore().removeAll();
+    }
+
     /**
      * Constructs an URL from the stored information, a specified path and a specified argument string
      *
      */
-    private String getBrandUrl(String uriTemplate, String args, String vin) throws ApiException {
+    private String getBrandUrl(String template, String args, String vin) throws ApiException {
         if (config.api.brand.isEmpty()) {
             throw new ApiException("Brand for API access not set");
         }
-        String path = MessageFormat.format(uriTemplate, config.api.brand, config.api.xcountry, vin, config.user.id);
-        if (!uriTemplate.contains("://")) { // not a full URL
+        String path = MessageFormat.format(template, config.api.brand, config.api.xcountry, vin, config.user.id);
+        if (!template.contains("://")) { // not a full URL
             return getUrl(path.isEmpty() ? path : path + (!args.isEmpty() ? "?" + args : ""));
         } else {
             return path + (!args.isEmpty() ? "?" + args : "");
         }
     }
 
+    public static void fillHttpHeaders(Request request, Map<String, String> headers, String token) {
+        for (Map.Entry<String, String> h : headers.entrySet()) {
+            String key = h.getKey();
+            String value = h.getValue();
+            if (key.equals(HttpHeader.USER_AGENT.toString())) {
+                request.agent(value);
+            } else if (key.equals(HttpHeader.ACCEPT.toString())) {
+                request.accept(value);
+            } else {
+                if (!value.isEmpty()) {
+                    request.header(key, value);
+                }
+            }
+        }
+    }
+
     /**
      * Fill standad http headers
+     *
+     * @param HTTP header fields to insert
+     * @param token Access token (bearer), might be empty
+     * @return Updated headers
      */
     public Map<String, String> fillAppHeaders(Map<String, String> headers, String token) throws ApiException {
         if (!config.api.xappName.isEmpty()) {
@@ -274,7 +275,7 @@ public class ApiHttpClient {
      * Fill in POST data, set http headers
      *
      * @param request HTTP request structure
-     * @param data POST data
+     * @param data POST data, might be empty
      */
     private void fillPostData(Request request, String data) {
         if (!data.isEmpty()) {
@@ -321,7 +322,8 @@ public class ApiHttpClient {
      */
     private String getUrl(String path) throws ApiException {
         String base = getBaseUrl();
-        return base.endsWith("/") && path.startsWith("/") ? base + path : base + "/" + path;
+        return base.endsWith("/") && path.startsWith("/") ? base + substringBefore(path, "/")
+                : base + (path.startsWith("/") ? path : "/" + path);
     }
 
     /**
@@ -337,7 +339,7 @@ public class ApiHttpClient {
         if (!config.api.apiDefaultUrl.isEmpty()) {
             return config.api.apiDefaultUrl;
         }
-        throw new ApiException("Unknown brand for base URL");
+        throw new ApiException("Unknown  base URL for brand URL");
     }
 
     /**
@@ -359,10 +361,5 @@ public class ApiHttpClient {
             return res.contains("&") ? substringBefore(res, "&") : res;
         }
         return "";
-    }
-
-    public static long parseDate(String timestamp) {
-        ZonedDateTime zdt = ZonedDateTime.parse(timestamp, DateTimeFormatter.RFC_1123_DATE_TIME);
-        return zdt.toInstant().toEpochMilli() * 1000; // return ms
     }
 }

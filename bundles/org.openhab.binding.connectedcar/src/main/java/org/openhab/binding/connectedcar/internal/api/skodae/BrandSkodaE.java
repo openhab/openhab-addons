@@ -13,9 +13,9 @@
 package org.openhab.binding.connectedcar.internal.api.skodae;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.CONTENT_TYPE_FORM_URLENC;
-import static org.openhab.binding.connectedcar.internal.CarUtils.fromJson;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_SKODA_E;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_VW_TOKEN_URL;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNAPI_VW_TOKEN_URL;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.fromJson;
 
 import javax.ws.rs.core.HttpHeaders;
 
@@ -42,17 +42,8 @@ import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetSkoda;
 @NonNullByDefault
 public class BrandSkodaE extends SkodaEApi implements BrandAuthenticator {
     private final static String API_URL = "https://api.connect.skoda-auto.cz/api";
-
-    public BrandSkodaE(ApiHttpClient httpClient, IdentityManager tokenManager,
-            @Nullable ApiEventListener eventListener) {
-        super(httpClient, tokenManager, eventListener);
-    }
-
-    @Override
-    public ApiBrandProperties getProperties() {
-        // Properties for the Skoda-E native API
-        // required to get the vehicle list
-        ApiBrandProperties properties = new ApiBrandProperties();
+    private static ApiBrandProperties properties = new ApiBrandProperties();
+    static {
         properties.userAgent = "OneConnect/000000023 CFNetwork/978.0.7 Darwin/18.7.0";
         properties.apiDefaultUrl = API_URL;
         properties.brand = API_BRAND_SKODA_E;
@@ -67,6 +58,17 @@ public class BrandSkodaE extends SkodaEApi implements BrandAuthenticator {
         properties.tokenRefreshUrl = "https://tokenrefreshservice.apps.emea.vwapps.io";
         properties.xappVersion = "3.2.6";
         properties.xappName = "cz.skodaauto.connect";
+    }
+
+    public BrandSkodaE(ApiHttpClient httpClient, IdentityManager tokenManager,
+            @Nullable ApiEventListener eventListener) {
+        super(httpClient, tokenManager, eventListener);
+    }
+
+    @Override
+    public ApiBrandProperties getProperties() {
+        // Properties for the Skoda-E native API
+        // required to get the vehicle list
         return properties;
     }
 
@@ -94,10 +96,9 @@ public class BrandSkodaE extends SkodaEApi implements BrandAuthenticator {
     public String[] getImageUrls() throws ApiException {
         if (config.vstatus.imageUrls.length == 0) {
             try {
-                // config.vstatus.imageUrls = super.callApi("",
                 String idToken = tokenManager.createProfileToken(config);
                 JwtToken jwt = decodeJwt(idToken);
-                String json = super.callApi("", "https://api.connect.skoda-auto.cz/api/v1/vehicles/{2}",
+                String json = super.callApi("", API_URL + "vehicles/{2}",
                         fillAppHeaders(tokenManager.createProfileToken(config)), "getImageUrls", String.class);
             } catch (ApiException e) {
 

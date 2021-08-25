@@ -13,8 +13,8 @@
 package org.openhab.binding.connectedcar.internal.api.skodae;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_SERVICE_VEHICLE_STATUS_REPORT;
+import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_SERVICE_VEHICLE_STATUS_REPORT;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.util.Map;
 
@@ -46,16 +46,16 @@ public class SEServiceStatus extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(SEServiceStatus.class);
 
     public SEServiceStatus(ThingBaseHandler thingHandler, ApiBase api) {
-        super(CNAPI_SERVICE_VEHICLE_STATUS_REPORT, thingHandler, api);
+        super(API_SERVICE_VEHICLE_STATUS_REPORT, thingHandler, api);
     }
 
     @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws ApiException {
         addChannels(channels, true, CHANNEL_CONTROL_CHARGER, CHANNEL_CHARGER_MAXCURRENT, CHANNEL_CHARGER_CHG_STATE,
                 CHANNEL_CHARGER_MODE, CHANNEL_CONTROL_TARGETCHG, CHANNEL_CHARGER_CHGLVL, CHANNEL_CHARGER_REMAINING,
-                CHANNEL_CHARGER_RATE, CHANNEL_RANGE_TOTAL, CHANNEL_CHARGER_PLUG_STATE, CHANNEL_CHARGER_LOCK_STATE,
-                CHANNEL_CLIMATER_GEN_STATE, CHANNEL_CLIMATER_REMAINING, CHANNEL_CONTROL_CLIMATER,
-                CHANNEL_CONTROL_TARGET_TEMP, CHANNEL_CONTROL_WINHEAT);
+                CHANNEL_CHARGER_RATE, CHANNEL_CHARGER_POWER, CHANNEL_RANGE_TOTAL, CHANNEL_CHARGER_PLUG_STATE,
+                CHANNEL_CHARGER_LOCK_STATE, CHANNEL_CLIMATER_GEN_STATE, CHANNEL_CLIMATER_REMAINING,
+                CHANNEL_CONTROL_CLIMATER, CHANNEL_CONTROL_TARGET_TEMP, CHANNEL_CONTROL_WINHEAT);
         return true;
     }
 

@@ -13,7 +13,7 @@
 package org.openhab.binding.connectedcar.internal.api;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.API_REQUEST_TIMEOUT_SEC;
-import static org.openhab.binding.connectedcar.internal.CarUtils.getString;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.getString;
 
 import java.util.Date;
 
@@ -68,6 +68,8 @@ public class ApiDataTypesDTO {
     public static final String API_REQUEST_TIMEOUT = "timout";
     public static final String API_REQUEST_SECURITY = "request_security";
     public static final String API_REQUEST_UNSUPPORTED = "unsupported";
+
+    public static final String API_SERVICE_VEHICLE_STATUS_REPORT = "status";
 
     public static final String API_STATUS_MSG_PREFIX = "api-status";
     public static final String API_STATUS_CLASS_SECURUTY = "VSR.security";

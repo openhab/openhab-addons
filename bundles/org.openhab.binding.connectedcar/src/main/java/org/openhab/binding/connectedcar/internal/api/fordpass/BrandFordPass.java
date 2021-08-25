@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.connectedcar.internal.api.fordpass;
 
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_FORD;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -83,9 +83,7 @@ public class BrandFordPass extends FordPassApi implements BrandAuthenticator {
     @Override
     public ApiIdentity grantAccess(IdentityOAuthFlow oauth) throws ApiException {
         // Step 2: get api+refresh token
-        oauth.clearHeader().header("Application-Id", config.api.xClientId) // .header(HttpHeader.CONTENT_TYPE,
-                                                                           // CONTENT_TYPE_JSON) //
-                .clearData().data("code", oauth.accessToken);
+        oauth.clearHeader().header("Application-Id", config.api.xClientId).clearData().data("code", oauth.accessToken);
         String json = oauth.put(config.api.tokenUrl, true).response;
         return new ApiIdentity(fromJson(gson, json, OAuthToken.class).normalize());
     }

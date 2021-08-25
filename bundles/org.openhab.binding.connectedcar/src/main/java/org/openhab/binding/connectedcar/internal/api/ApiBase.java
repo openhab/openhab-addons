@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.connectedcar.internal.api;
 
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,12 +70,6 @@ public class ApiBase extends ApiRequestQueue implements ApiBrandInterface, Brand
         this.eventListener = eventListener;
     }
 
-    /**
-     * Simple initialization, in fact used by Account Handler
-     *
-     * @param configIn
-     * @throws ApiException
-     */
     @Override
     public void initialize(CombinedConfig configIn) throws ApiException {
         setConfig(configIn); // derive from account config
@@ -101,10 +95,6 @@ public class ApiBase extends ApiRequestQueue implements ApiBrandInterface, Brand
         return serviceId;
     }
 
-    public boolean isRemoteServiceAvailable(String serviceId) {
-        return true;
-    }
-
     /**
      * VIN-based initialization. Initialized the API itself then does the VIN-related initialization
      *
@@ -124,121 +114,6 @@ public class ApiBase extends ApiRequestQueue implements ApiBrandInterface, Brand
     @Override
     public boolean isInitialized() {
         return initialzed;
-    }
-
-    @Override
-    public ApiBrandProperties getProperties() {
-        return new ApiBrandProperties();
-    }
-
-    @Override
-    public @Nullable ApiBrandProperties getProperties2() {
-        return null;
-    }
-
-    @Override
-    public ArrayList<String> getVehicles() throws ApiException {
-        return new ArrayList<>();
-    }
-
-    @Override
-    public VehicleDetails getVehicleDetails(String vin) throws ApiException {
-        return new VehicleDetails();
-    }
-
-    public VehicleStatus getVehicleStatus() throws ApiException {
-        return new VehicleStatus();
-    }
-
-    @Override
-    public String refreshVehicleStatus() throws ApiException {
-        return SUCCESSFUL;
-    }
-
-    @Override
-    public String controlLock(boolean lock) throws ApiException {
-        return UNSUPPORTED;
-    }
-
-    @Override
-    public String controlEngine(boolean start) throws ApiException {
-        return UNSUPPORTED;
-    }
-
-    @Override
-    public String controlClimater(boolean start, String heaterSource) throws ApiException {
-        return UNSUPPORTED;
-    }
-
-    @Override
-    public String controlClimaterTemp(double tempC, String heaterSource) throws ApiException {
-        return UNSUPPORTED;
-    }
-
-    @Override
-    public String controlPreHeating(boolean start, int duration) throws ApiException {
-        return UNSUPPORTED;
-    }
-
-    @Override
-    public String controlVentilation(boolean start, int duration) throws ApiException {
-        return UNSUPPORTED;
-    }
-
-    @Override
-    public String controlHonkFlash(boolean honk, PointType position, int duration) throws ApiException {
-        return UNSUPPORTED;
-    }
-
-    @Override
-    public String controlWindowHeating(boolean start) throws ApiException {
-        return UNSUPPORTED;
-    }
-
-    @Override
-    public String controlCharger(boolean start) throws ApiException {
-        return UNSUPPORTED;
-    }
-
-    @Override
-    public String controlMaxCharge(int maxCurrent) throws ApiException {
-        return UNSUPPORTED;
-    }
-
-    @Override
-    public String controlTargetChgLevel(int targetLevel) throws ApiException {
-        return UNSUPPORTED;
-    }
-
-    public String getHomeReguionUrl() {
-        return "";
-    }
-
-    public String[] getImageUrls() throws ApiException {
-        // Default: No image URLs (will be overwritten by brand specific API)
-        return config.vstatus.imageUrls;
-    }
-
-    @Override
-    public String updateAuthorizationUrl(String url) throws ApiException {
-        return url; // default: no modification
-    }
-
-    @Override
-    public IdentityOAuthFlow updateSigninParameters(IdentityOAuthFlow oauth) throws ApiException {
-        return oauth; // default: no modification
-    }
-
-    public String getVehicleRequets() throws ApiException {
-        return "";
-    }
-
-    public GeoPosition getVehiclePosition() throws ApiException {
-        return new GeoPosition();
-    }
-
-    public GeoPosition getStoredPosition() throws ApiException {
-        return new GeoPosition();
     }
 
     @Override
@@ -370,5 +245,124 @@ public class ApiBase extends ApiRequestQueue implements ApiBrandInterface, Brand
             return config.authenticator.refreshToken(token);
         }
         throw new ApiException("BrandAuthenticator.refreshToken() is missing");
+    }
+
+    @Override
+    public ApiBrandProperties getProperties() {
+        return new ApiBrandProperties();
+    }
+
+    @Override
+    public @Nullable ApiBrandProperties getProperties2() {
+        return null;
+    }
+
+    public boolean isRemoteServiceAvailable(String serviceId) {
+        return true;
+    }
+
+    @Override
+    public ArrayList<String> getVehicles() throws ApiException {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public VehicleDetails getVehicleDetails(String vin) throws ApiException {
+        return new VehicleDetails();
+    }
+
+    public VehicleStatus getVehicleStatus() throws ApiException {
+        return new VehicleStatus();
+    }
+
+    @Override
+    public String refreshVehicleStatus() throws ApiException {
+        return SUCCESSFUL;
+    }
+
+    @Override
+    public String controlLock(boolean lock) throws ApiException {
+        return UNSUPPORTED;
+    }
+
+    @Override
+    public String controlEngine(boolean start) throws ApiException {
+        return UNSUPPORTED;
+    }
+
+    @Override
+    public String controlClimater(boolean start, String heaterSource) throws ApiException {
+        return UNSUPPORTED;
+    }
+
+    @Override
+    public String controlClimaterTemp(double tempC, String heaterSource) throws ApiException {
+        return UNSUPPORTED;
+    }
+
+    @Override
+    public String controlPreHeating(boolean start, int duration) throws ApiException {
+        return UNSUPPORTED;
+    }
+
+    @Override
+    public String controlVentilation(boolean start, int duration) throws ApiException {
+        return UNSUPPORTED;
+    }
+
+    @Override
+    public String controlHonkFlash(boolean honk, PointType position, int duration) throws ApiException {
+        return UNSUPPORTED;
+    }
+
+    @Override
+    public String controlWindowHeating(boolean start) throws ApiException {
+        return UNSUPPORTED;
+    }
+
+    @Override
+    public String controlCharger(boolean start) throws ApiException {
+        return UNSUPPORTED;
+    }
+
+    @Override
+    public String controlMaxCharge(int maxCurrent) throws ApiException {
+        return UNSUPPORTED;
+    }
+
+    @Override
+    public String controlTargetChgLevel(int targetLevel) throws ApiException {
+        return UNSUPPORTED;
+    }
+
+    public String getHomeReguionUrl() {
+        return "";
+    }
+
+    public String[] getImageUrls() throws ApiException {
+        // Default: No image URLs (will be overwritten by brand specific API)
+        return config.vstatus.imageUrls;
+    }
+
+    @Override
+    public String updateAuthorizationUrl(String url) throws ApiException {
+        return url; // default: no modification
+    }
+
+    @Override
+    public IdentityOAuthFlow updateSigninParameters(IdentityOAuthFlow oauth) throws ApiException {
+        return oauth; // default: no modification
+    }
+
+    public String getVehicleRequets() throws ApiException {
+        return "";
+    }
+
+    public GeoPosition getVehiclePosition() throws ApiException {
+        return new GeoPosition();
+    }
+
+    public GeoPosition getStoredPosition() throws ApiException {
+        return new GeoPosition();
     }
 }

@@ -13,8 +13,8 @@
 package org.openhab.binding.connectedcar.internal.handler;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.getString;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.getString;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +30,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory.Client;
-import org.openhab.binding.connectedcar.internal.CarUtils;
 import org.openhab.binding.connectedcar.internal.TextResources;
 import org.openhab.binding.connectedcar.internal.api.ApiBase;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleDetails;
@@ -49,6 +48,7 @@ import org.openhab.binding.connectedcar.internal.api.wecharge.BrandWeCharge;
 import org.openhab.binding.connectedcar.internal.api.weconnect.BrandWeConnect;
 import org.openhab.binding.connectedcar.internal.config.AccountConfiguration;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
+import org.openhab.binding.connectedcar.internal.util.Helpers;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -89,17 +89,17 @@ public class AccountHandler extends BaseBridgeHandler {
         sslWeakCipher.setExcludeCipherSuites(excludedCiphersWithoutTlsRsaExclusion);
     }
 
-    private static Map<String, String> brandMap = new HashMap<>();
+    private static Map<String, String> BRAND_MAP = new HashMap<>();
     static {
-        brandMap.put(THING_MYAUDI, API_BRAND_AUDI);
-        brandMap.put(THING_VOLKSWAGEN, API_BRAND_VW);
-        brandMap.put(THING_VWID, API_BRAND_VWID);
-        brandMap.put(THING_VWGO, API_BRAND_VWGO);
-        brandMap.put(THING_SEAT, API_BRAND_SEAT);
-        brandMap.put(THING_SKODA, API_BRAND_SKODA);
-        brandMap.put(THING_SKODA_E, API_BRAND_SKODA_E);
-        brandMap.put(THING_FORD, API_BRAND_FORD);
-        brandMap.put(THING_WECHARGE, API_BRAND_WECHARGE);
+        BRAND_MAP.put(THING_MYAUDI, API_BRAND_AUDI);
+        BRAND_MAP.put(THING_VOLKSWAGEN, API_BRAND_VW);
+        BRAND_MAP.put(THING_VWID, API_BRAND_VWID);
+        BRAND_MAP.put(THING_VWGO, API_BRAND_VWGO);
+        BRAND_MAP.put(THING_SEAT, API_BRAND_SEAT);
+        BRAND_MAP.put(THING_SKODA, API_BRAND_SKODA);
+        BRAND_MAP.put(THING_SKODA_E, API_BRAND_SKODA_E);
+        BRAND_MAP.put(THING_FORD, API_BRAND_FORD);
+        BRAND_MAP.put(THING_WECHARGE, API_BRAND_WECHARGE);
     }
 
     /**
@@ -117,8 +117,8 @@ public class AccountHandler extends BaseBridgeHandler {
         // allows sharing the tokens across all things associated with the account.
         config.account = getConfigAs(AccountConfiguration.class);
         String ttype = getThing().getUID().toString();
-        ttype = CarUtils.substringBetween(ttype, ":", ":");
-        String brand = brandMap.get(ttype);
+        ttype = Helpers.substringBetween(ttype, ":", ":");
+        String brand = BRAND_MAP.get(ttype);
         if (brand == null) {
             throw new IllegalArgumentException("Unable to get brand for thing type " + ttype);
         }

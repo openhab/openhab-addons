@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.connectedcar.internal;
+package org.openhab.binding.connectedcar.internal.util;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -55,11 +55,11 @@ import com.google.gson.JsonSyntaxException;
  *
  */
 @NonNullByDefault
-public class CarUtils {
+public class Helpers {
     private static final String PRE = "Can't create object of type ";
 
     public static <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT) throws ApiException {
-        String className = CarUtils.substringAfter(classOfT.getName(), "$");
+        String className = Helpers.substringAfter(classOfT.getName(), "$");
 
         if (json == null) {
             throw new ApiException(PRE + className + ": json is null!");

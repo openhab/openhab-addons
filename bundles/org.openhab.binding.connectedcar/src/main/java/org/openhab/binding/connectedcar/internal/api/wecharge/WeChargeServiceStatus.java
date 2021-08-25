@@ -13,9 +13,8 @@
 package org.openhab.binding.connectedcar.internal.api.wecharge;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
-import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_WECHARGE;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_SERVICE_VEHICLE_STATUS_REPORT;
+import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.util.Map;
 
@@ -24,7 +23,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiBase;
 import org.openhab.binding.connectedcar.internal.api.ApiBaseService;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.GeoPosition;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
-import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCChargingRecordResponse.WeChargeRecord;
+import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCChargePayRecordResponse.WeChargePayRecord;
 import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCRfidCardsResponse.WeChargeRfidCard;
 import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCSubscriptionsResponse.WeChargeSubscription;
 import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WeChargeStationDetails;
@@ -46,7 +45,7 @@ public class WeChargeServiceStatus extends ApiBaseService {
     String thingId = API_BRAND_WECHARGE;
 
     public WeChargeServiceStatus(ThingBaseHandler thingHandler, ApiBase api) {
-        super(CNAPI_SERVICE_VEHICLE_STATUS_REPORT, thingHandler, api);
+        super(API_SERVICE_VEHICLE_STATUS_REPORT, thingHandler, api);
         thingId = getConfig().vehicle.vin;
     }
 
@@ -58,6 +57,8 @@ public class WeChargeServiceStatus extends ApiBaseService {
             logger.warn("{}: Unable to read charger status, can't create channels!", thingId);
             return false;
         }
+
+        addChannels(channels, true, CHANNEL_CONTROL_ENGINE);
 
         String group = CHANNEL_GROUP_CHARGER;
         addChannels(channels, group, true, CHANNEL_CHARGER_NAME, CHANNEL_CHARGER_ADDRESS, CHANNEL_CHARGER_LAST_CONNECT,
@@ -91,6 +92,8 @@ public class WeChargeServiceStatus extends ApiBaseService {
 
     @Override
     public boolean serviceUpdate() throws ApiException {
+        boolean updated = false;
+
         // Try to query status information from vehicle
         logger.debug("{}: Get Charger Status", thingId);
         WeChargeStatus status = api.getVehicleStatus().weChargeStatus;
@@ -99,7 +102,6 @@ public class WeChargeServiceStatus extends ApiBaseService {
             return false;
         }
 
-        boolean updated = false;
         WeChargeStationDetails station = status.station;
         if (!status.stationId.isEmpty()) {
             String value = getString(station.name) + " (" + station.model + ")";
@@ -134,8 +136,8 @@ public class WeChargeServiceStatus extends ApiBaseService {
         }
 
         i = 1;
-        for (Map.Entry<String, WeChargeRecord> c : status.chargingRecords.entrySet()) {
-            WeChargeRecord record = c.getValue();
+        for (Map.Entry<String, WeChargePayRecord> c : status.payChargingRecords.entrySet()) {
+            WeChargePayRecord record = c.getValue();
             String group = CHANNEL_CHANNEL_GROUP_TRANSACTIONS + i++;
             updated |= updateChannel(group, CHANNEL_TRANS_ID, getStringType(record.id));
             updated |= updateChannel(group, CHANNEL_TRANS_LOCATION,

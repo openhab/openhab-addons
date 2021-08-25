@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.connectedcar.internal.handler;
 
+import static org.openhab.binding.connectedcar.internal.BindingConstants.CHANNEL_CONTROL_ENGINE;
+
 import java.time.ZoneId;
 import java.util.Map;
 
@@ -68,6 +70,10 @@ public class WeChargeThingHandler extends ThingBaseHandler {
         logger.debug("{}: Channel {} received command {}", thingId, channelId, command);
         try {
             switch (channelId) {
+                case CHANNEL_CONTROL_ENGINE:
+                    action = "reboot";
+                    actionStatus = api.controlEngine(switchOn);
+                    break;
                 default:
                     processed = false;
             }

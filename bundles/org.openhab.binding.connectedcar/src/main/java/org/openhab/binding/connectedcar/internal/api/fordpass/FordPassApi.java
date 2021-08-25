@@ -13,9 +13,9 @@
 package org.openhab.binding.connectedcar.internal.api.fordpass;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.CONTENT_TYPE_JSON;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
 import static org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.*;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;

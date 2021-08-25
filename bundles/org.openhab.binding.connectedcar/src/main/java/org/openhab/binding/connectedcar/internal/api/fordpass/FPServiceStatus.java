@@ -13,9 +13,8 @@
 package org.openhab.binding.connectedcar.internal.api.fordpass;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
-import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_FORD;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.CNAPI_SERVICE_VEHICLE_STATUS_REPORT;
+import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.util.Map;
 
@@ -49,7 +48,7 @@ public class FPServiceStatus extends ApiBaseService {
     private String thingId = API_BRAND_FORD;
 
     public FPServiceStatus(ThingBaseHandler thingHandler, ApiBase api) {
-        super(CNAPI_SERVICE_VEHICLE_STATUS_REPORT, thingHandler, api);
+        super(API_SERVICE_VEHICLE_STATUS_REPORT, thingHandler, api);
         thingId = getConfig().vehicle.vin;
     }
 
@@ -80,20 +79,9 @@ public class FPServiceStatus extends ApiBaseService {
         addChannels(channels, status.fuel != null, CHANNEL_MAINT_OILPERC, CHANNEL_MAINT_OILWARNLVL);
 
         // Charger
-        /*
-         * addChannels(channels, status.elVehDTE != null, CHANNEL_CONTROL_CHARGER, CHANNEL_CONTROL_MAXCURRENT,
-         * CHANNEL_CONTROL_TARGETCHG, CHANNEL_CHARGER_CHG_STATE, CHANNEL_CHARGER_MODE,
-         * CHANNEL_CHARGER_REMAINING, CHANNEL_CHARGER_RATE,
-         * CHANNEL_CHARGER_LOCK_STATE);
-         */
         addChannels(channels, status.elVehDTE != null, CHANNEL_CHARGER_CHG_STATE, CHANNEL_CHARGER_CHGLVL,
                 CHANNEL_CHARGER_PLUG_STATE);
 
-        // Climater
-        /*
-         * addChannels(channels, true, CHANNEL_CLIMATER_GEN_STATE, CHANNEL_CLIMATER_REMAINING, CHANNEL_CONTROL_CLIMATER,
-         * CHANNEL_CLIMATER_TARGET_TEMP, CHANNEL_CONTROL_WINHEAT);
-         */
         // Doors
         addChannels(channels, status.doorStatus != null, CHANNEL_STATUS_DOORSCLOSED, CHANNEL_DOORS_FLSTATE,
                 CHANNEL_DOORS_FRSTATE, CHANNEL_DOORS_RLSTATE, CHANNEL_DOORS_RRSTATE, CHANNEL_DOORS_TRUNKLSTATE,
@@ -151,7 +139,6 @@ public class FPServiceStatus extends ApiBaseService {
 
     private boolean updateRangeStatus(FPVehicleStatus status) {
         boolean updated = false;
-
         // assume primary engine is alway non-electrical
         // electrical will be secondary, or primary if electrical-only
         double frange = 0.0, erange = 0.0;

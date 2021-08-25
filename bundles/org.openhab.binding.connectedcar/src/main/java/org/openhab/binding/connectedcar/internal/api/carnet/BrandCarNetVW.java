@@ -13,7 +13,7 @@
 package org.openhab.binding.connectedcar.internal.api.carnet;
 
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_BRAND_VW;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.*;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,15 +35,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BrandCarNetVW extends CarNetApi implements BrandAuthenticator {
     private final Logger logger = LoggerFactory.getLogger(BrandCarNetVW.class);
-
-    public BrandCarNetVW(ApiHttpClient httpClient, IdentityManager tokenManager,
-            @Nullable ApiEventListener eventListener) {
-        super(httpClient, tokenManager, eventListener);
-    }
-
-    @Override
-    public ApiBrandProperties getProperties() {
-        ApiBrandProperties properties = new ApiBrandProperties();
+    private static ApiBrandProperties properties = new ApiBrandProperties();
+    static {
         properties.brand = API_BRAND_VW;
         properties.xcountry = "DE";
         properties.clientId = "9496332b-ea03-4091-a224-8c746b885068@apps_vw-dilab_com";
@@ -58,12 +51,21 @@ public class BrandCarNetVW extends CarNetApi implements BrandAuthenticator {
         properties.xappName = "eRemote";
         properties.xappVersion = "5.1.2";
         properties.xappId = "de.volkswagen.car-net.eu.e-remote";
+    }
+
+    public BrandCarNetVW(ApiHttpClient httpClient, IdentityManager tokenManager,
+            @Nullable ApiEventListener eventListener) {
+        super(httpClient, tokenManager, eventListener);
+    }
+
+    @Override
+    public ApiBrandProperties getProperties() {
         return properties;
     }
 
     @Override
     public String updateAuthorizationUrl(String url) throws ApiException {
-        return url + "&prompt=login"; // + "&code_challenge=" + codeChallenge + "&code_challenge_method=S256";
+        return url + "&prompt=login";
     }
 
     @Override

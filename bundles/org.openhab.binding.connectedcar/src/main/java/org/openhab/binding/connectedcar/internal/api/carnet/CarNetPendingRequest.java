@@ -13,7 +13,7 @@
 package org.openhab.binding.connectedcar.internal.api.carnet;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.API_REQUEST_TIMEOUT_SEC;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.*;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.ApiActionRequest;

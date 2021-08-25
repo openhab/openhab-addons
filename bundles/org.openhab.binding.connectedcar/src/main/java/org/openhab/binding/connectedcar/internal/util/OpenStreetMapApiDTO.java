@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.connectedcar.internal;
+package org.openhab.binding.connectedcar.internal.util;
 
-import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
+import static org.openhab.binding.connectedcar.internal.BindingConstants.CONTENT_TYPE_JSON;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,7 +68,6 @@ public class OpenStreetMapApiDTO {
             String url = "https://nominatim.openstreetmap.org/reverse?lat=" + position.getLatitude() + "&lon="
                     + position.getLongitude() + "&format=json";
             Map<String, String> headers = new HashMap<>();
-            headers.put(HttpHeader.USER_AGENT.toString(), "openHAB/" + BINDING_ID);
             headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
             String json = http.get(url, headers).response;
             OSMPointResponse r = fromJson(gson, json, OSMPointResponse.class);

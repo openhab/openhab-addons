@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.connectedcar.internal;
+package org.openhab.binding.connectedcar.internal.util;
 
-import static org.openhab.binding.connectedcar.internal.CarUtils.mkChannelId;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.mkChannelId;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -93,7 +93,7 @@ public class ChannelCache {
             }
         } catch (IllegalArgumentException e) {
             logger.debug("{}: Unable to update channel {} with {} (type {}): {} ({})", thingId, channelId, newValue,
-                    newValue.getClass(), CarUtils.getMessage(e), e.getClass(), e);
+                    newValue.getClass(), Helpers.getMessage(e), e.getClass(), e);
         }
         return false;
     }

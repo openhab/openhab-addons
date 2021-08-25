@@ -13,13 +13,12 @@
 package org.openhab.binding.connectedcar.internal.api.carnet;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.*;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.*;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -35,6 +34,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleStat
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
+import org.openhab.binding.connectedcar.internal.api.ApiHttpMap;
 import org.openhab.binding.connectedcar.internal.api.ApiIdentity.JwtToken;
 import org.openhab.binding.connectedcar.internal.api.ApiResult;
 import org.openhab.binding.connectedcar.internal.api.ApiWithOAuth;
@@ -672,23 +672,22 @@ public class CarNetApi extends ApiWithOAuth {
         // application/vnd.vwg.mbb.ChargerAction_v1_0_0+xml,application/vnd.volkswagenag.com-error-v1+xml,application/vnd.vwg.mbb.genericError_v1_0_2+xml,
         // application/vnd.vwg.mbb.RemoteStandheizung_v2_0_0+xml,
         // application/vnd.vwg.mbb.genericError_v1_0_2+xml,application/vnd.vwg.mbb.RemoteLockUnlock_v1_0_0+xml,*/*","
-        Map<String, String> headers = new HashMap<>();
-        headers.put(HttpHeader.USER_AGENT.toString(), CNAPI_HEADER_USER_AGENT);
-        headers.put(CNAPI_HEADER_APP, config.api.xappName);
-        headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
+        ApiHttpMap map = new ApiHttpMap();
+        map.header(HttpHeader.USER_AGENT, CNAPI_HEADER_USER_AGENT);
+        map.header(CNAPI_HEADER_APP, config.api.xappName);
+        map.header(CNAPI_HEADER_VERS, config.api.xappVersion);
         if (!contentType.isEmpty()) {
-            headers.put(HttpHeader.CONTENT_TYPE.toString(), contentType);
+            map.header(HttpHeader.CONTENT_TYPE, contentType);
         }
-        headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON
+        map.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON
                 + ", application/vnd.vwg.mbb.ChargerAction_v1_0_0+xml,application/vnd.volkswagenag.com-error-v1+xml,application/vnd.vwg.mbb.genericError_v1_0_2+xml,application/vnd.vwg.mbb.RemoteStandheizung_v2_0_0+xml,application/vnd.vwg.mbb.genericError_v1_0_2+xml,application/vnd.vwg.mbb.RemoteLockUnlock_v1_0_0+xml,application/vnd.vwg.mbb.operationList_v3_0_2+xml,application/vnd.vwg.mbb.genericError_v1_0_2+xml,*/*");
-        headers.put(HttpHeader.ACCEPT_CHARSET.toString(), StandardCharsets.UTF_8.toString());
-
-        headers.put(HttpHeader.AUTHORIZATION.toString(), "Bearer " + accessToken);
+        map.header(HttpHeader.ACCEPT_CHARSET, StandardCharsets.UTF_8.toString());
+        map.header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
         String host = substringBetween(config.api.apiDefaultUrl, "//", "/");
-        headers.put(HttpHeader.HOST.toString(), host);
+        map.header(HttpHeader.HOST.toString(), host);
         if (!securityToken.isEmpty()) {
-            headers.put(secTokenHeader, securityToken);
+            map.header(secTokenHeader, securityToken);
         }
-        return headers;
+        return map.getHeaders();
     }
 }

@@ -12,17 +12,18 @@
  */
 package org.openhab.binding.connectedcar.internal.api;
 
-import static org.openhab.binding.connectedcar.internal.CarUtils.getInteger;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.API_STATUS_CLASS_SECURUTY;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.getInteger;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.connectedcar.internal.api.ApiErrorDTO.CNApiError2.CNErrorMessage2;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApi;
+import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNApiError1;
+import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNApiError2;
+import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNApiError2.CNErrorMessage2;
+import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNErrorMessage2Details;
 import org.openhab.binding.connectedcar.internal.api.fordpass.FPApiJsonDTO.FPErrorResponse;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCActionResponse.WCApiError;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCActionResponse.WCApiError2;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link CarNetApi} implements the http based API access to CarNet
@@ -118,45 +119,5 @@ public class ApiErrorDTO {
 
     private String getString(@Nullable String s) {
         return s != null ? s : "";
-    }
-
-    public static class CNApiError1 {
-        /*
-         * {
-         * "error":"invalid_request",
-         * "error_description": "Missing Username"
-         * }
-         */
-        public @Nullable String error;
-        @SerializedName("error_code")
-        public @Nullable String code;
-        @SerializedName("error_description")
-        public @Nullable String description;
-    }
-
-    public static class CNApiError2 {
-        /*
-         * {"error":{"errorCode":"gw.error.validation","description":"Invalid Request"}}
-         * "error": { "errorCode": "mbbc.rolesandrights.invalidSecurityPin", "description":
-         * "The Security PIN is invalid.", "details": { "challenge": "", "user": "dYeJ7CoMzqV0obHyRZJSyzkb9d11",
-         * "reason": "SECURITY_PIN_INVALID", "delay": "0" } }}
-         */
-        public class CNErrorMessage2 {
-            public String error = "";
-            @SerializedName("errorCode")
-            public String code = "";
-            @SerializedName("description")
-            public String description = "";
-            public CNErrorMessage2Details details = new CNErrorMessage2Details();;
-        }
-
-        public @Nullable CNErrorMessage2 error;
-    }
-
-    public static class CNErrorMessage2Details {
-        public @Nullable String challenge = "";
-        public @Nullable String user = "";
-        public @Nullable String reason = "";
-        public @Nullable String delay = "";
     }
 }

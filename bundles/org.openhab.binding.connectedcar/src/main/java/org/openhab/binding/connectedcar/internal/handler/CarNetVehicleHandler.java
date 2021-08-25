@@ -13,8 +13,8 @@
 package org.openhab.binding.connectedcar.internal.handler;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiConstants.*;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.*;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.time.ZoneId;
 import java.util.Map;
@@ -23,9 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.connectedcar.internal.TextResources;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.ApiActionRequest;
 import org.openhab.binding.connectedcar.internal.api.ApiErrorDTO;
-import org.openhab.binding.connectedcar.internal.api.ApiErrorDTO.CNErrorMessage2Details;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApi;
+import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNErrorMessage2Details;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetServiceCarFinder;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetServiceCharger;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetServiceClimater;

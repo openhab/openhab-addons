@@ -344,4 +344,73 @@ public class WeConnectApiJsonDTO {
             return (diff / 1000) > timeout;
         }
     }
+
+    /*
+     * public class WCChargingRecordResponse {
+     * public class WeChargeRecord {
+     *
+     * @SerializedName("authentication_method")
+     * public String authenticationMethod;
+     *
+     * @SerializedName("authorization_mode")
+     * public String authorizationMode;
+     *
+     * @SerializedName("charging_session_id")
+     * public String chargingSessionId;
+     *
+     * @SerializedName("connector_id")
+     * public Double connectorId;
+     *
+     * @SerializedName("rfid_card_id")
+     * public String rfidCardId;
+     *
+     * @SerializedName("rfid_card_label")
+     * public String rfidCardLabel;
+     *
+     * @SerializedName("rfid_card_serial_number")
+     * public String rfidCardSerialNumber;
+     *
+     * @SerializedName("session_faulted")
+     * public Boolean sessionFaulted;
+     *
+     * @SerializedName("start_date_time")
+     * public String startDateTime;
+     *
+     * @SerializedName("station_id")
+     * public String stationId;
+     *
+     * @SerializedName("station_name")
+     * public String stationName;
+     *
+     * @SerializedName("station_serial_number")
+     * public String stationSerialNumber;
+     *
+     * @SerializedName("stop_date_time")
+     * public String stopDateTime;
+     *
+     * @SerializedName("transaction_id")
+     * public String transactionId;
+     *
+     * @SerializedName("station_model")
+     * public String stationModel;
+     * public WCStationLocation location;
+     *
+     * @SerializedName("current_station_name")
+     * public String currentStationName;
+     *
+     * @SerializedName("created_at")
+     * public String createdAt;
+     * }
+     *
+     * public String timestamp;
+     *
+     * @SerializedName("total_count")
+     * public Integer totalCount;
+     * public Integer offset;
+     * public Integer limit;
+     *
+     * @SerializedName("charging_records")
+     * public ArrayList<WeChargeRecord> chargingRecords;
+     * }
+     */
 }

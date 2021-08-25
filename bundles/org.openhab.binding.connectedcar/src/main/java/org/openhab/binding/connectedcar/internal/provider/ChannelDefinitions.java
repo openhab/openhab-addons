@@ -13,7 +13,7 @@
 package org.openhab.binding.connectedcar.internal.provider;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.io.FileWriter;
 import java.io.IOException;

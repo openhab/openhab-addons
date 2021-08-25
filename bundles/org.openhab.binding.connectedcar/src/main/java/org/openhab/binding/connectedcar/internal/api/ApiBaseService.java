@@ -21,13 +21,13 @@ import javax.measure.IncommensurableException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.connectedcar.internal.CarUtils;
-import org.openhab.binding.connectedcar.internal.OpenStreetMapApiDTO;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.openhab.binding.connectedcar.internal.handler.AccountHandler;
 import org.openhab.binding.connectedcar.internal.handler.ThingBaseHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
+import org.openhab.binding.connectedcar.internal.util.Helpers;
+import org.openhab.binding.connectedcar.internal.util.OpenStreetMapApiDTO;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -137,7 +137,7 @@ public class ApiBaseService {
     }
 
     protected State getDateTime(String time) {
-        return CarUtils.getDateTime(time, thingHandler.getZoneId());
+        return Helpers.getDateTime(time, thingHandler.getZoneId());
     }
 
     protected CombinedConfig getConfig() {
@@ -146,9 +146,9 @@ public class ApiBaseService {
 
     public double milesToKM(@Nullable Double value) {
         try {
-            ImperialUnits.MILE.getConverterToAny(KILOMETRE).convert(value);
             if (value != null) {
-                return "US".equalsIgnoreCase(getConfig().api.xcountry) ? value / 1.6 : value;
+                double converted = ImperialUnits.MILE.getConverterToAny(KILOMETRE).convert(value).doubleValue();
+                return "US".equalsIgnoreCase(getConfig().api.xcountry) ? converted : value;
             }
         } catch (IncommensurableException e) {
 

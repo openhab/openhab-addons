@@ -13,7 +13,7 @@
 package org.openhab.binding.connectedcar.internal.api;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.DEFAULT_TOKEN_VALIDITY_SEC;
-import static org.openhab.binding.connectedcar.internal.CarUtils.*;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.util.Date;
 
@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link ApiIdentity} store the API token information.
+ * The {@link ApiIdentity} stores the API token information.
  *
  * @author Markus Michels - Initial contribution
  */
@@ -42,7 +42,7 @@ public class ApiIdentity {
 
     public static class JwtToken {
         /*
-         * "at_hash":"9wYmNBTSKQ8bJV7F2f4otQ",
+         * "at_hash":"9wYmNBTSKQ8bJVXXXXXXXX",
          * "sub":"c3ab56e9-XXXX-41c8-XXXX-XXXXXXXX",
          * "email_verified":true,
          * "cor":"DE",
@@ -75,13 +75,14 @@ public class ApiIdentity {
         public String nonce = "";
     }
 
+    /* Consolidated OAuth token - maps multiple formats into a unified one */
     public static class OAuthToken {
         // token API
         @SerializedName("token_type")
         public String authType = "";
         @SerializedName("access_token")
         public String accessToken = "";
-        @SerializedName("wc_access_token")
+        @SerializedName("wc_access_token") // WeCharge
         public String wcAccessToken = "";
         @SerializedName("id_token")
         public String idToken = "";
@@ -94,9 +95,9 @@ public class ApiIdentity {
         public Integer validity = -1;
 
         // Login API
-        @SerializedName("accessToken")
+        @SerializedName("accessToken") // WeConnect
         public String accessToken2 = "";
-        @SerializedName("idToken")
+        @SerializedName("idToken") // WeConnect
         public String idToken2 = "";
         @SerializedName("refreshToken")
         public String refreshToken2 = "";
@@ -184,6 +185,15 @@ public class ApiIdentity {
     }
 
     /**
+     * Check token validity
+     *
+     * @return true=token still valid, false=token has expired
+     */
+    public boolean isValid() {
+        return (!accessToken.isEmpty() || !idToken.isEmpty() || !securityToken.isEmpty()) && (validity != -1);
+    }
+
+    /**
      * Check if access token is still valid
      *
      * @return false: token invalid or expired
@@ -195,15 +205,6 @@ public class ApiIdentity {
         Date currentTime = new Date();
         long diff = currentTime.getTime() - creationTime.getTime();
         return (diff / 1000) > validity;
-    }
-
-    /**
-     * Check token validity
-     *
-     * @return true=token still valid, false=token has expired
-     */
-    public boolean isValid() {
-        return (!accessToken.isEmpty() || !idToken.isEmpty() || !securityToken.isEmpty()) && (validity != -1);
     }
 
     public void invalidate() {
