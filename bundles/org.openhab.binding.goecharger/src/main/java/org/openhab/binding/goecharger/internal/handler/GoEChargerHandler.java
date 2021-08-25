@@ -220,7 +220,8 @@ public class GoEChargerHandler extends BaseThingHandler {
                 if (goeResponse.sessionChargeConsumption == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.sessionChargeConsumption / 100d), Units.KILOWATT_HOUR);
+                return new QuantityType<>((Double) (goeResponse.sessionChargeConsumption / 360000d),
+                        Units.KILOWATT_HOUR);
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
                 if (goeResponse.sessionChargeConsumptionLimit == null) {
                     return UnDefType.UNDEF;
