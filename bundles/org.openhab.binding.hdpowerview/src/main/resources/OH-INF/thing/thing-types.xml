@@ -40,10 +40,16 @@
 		<label>PowerView Shade</label>
 		<description>Hunter Douglas (Luxaflex) PowerView Shade</description>
 
-		<channel-groups>
-			<channel-group id="shade" typeId="shade"/>
-			<channel-group id="battery" typeId="battery"/>
-		</channel-groups>
+		<channels>
+			<channel id="position" typeId="shade-position"/>
+			<channel id="secondary" typeId="shade-position">
+				<label>Secondary Position</label>
+				<description>The secondary vertical position (on top-down/bottom-up shades)</description>
+			</channel>
+			<channel id="vane" typeId="shade-vane"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
+			<channel id="batteryVoltage" typeId="battery-voltage"/>
+		</channels>
 
 		<properties>
 			<property name="vendor">Hunter Douglas (Luxaflex)</property>
@@ -58,26 +64,6 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<channel-group-type id="shade">
-		<label>Shade</label>
-		<channels>
-			<channel id="position" typeId="shade-position"/>
-			<channel id="secondary" typeId="shade-position">
-				<label>Secondary Position</label>
-				<description>The secondary vertical position (on top-down/bottom-up shades)</description>
-			</channel>
-			<channel id="vane" typeId="shade-vane"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="battery">
-		<label>Battery</label>
-		<channels>
-			<channel id="lowBattery" typeId="system.low-battery"/>
-			<channel id="batteryVoltage" typeId="battery-voltage"/>
-		</channels>
-	</channel-group-type>
 
 	<channel-type id="shade-position">
 		<item-type>Rollershutter</item-type>
