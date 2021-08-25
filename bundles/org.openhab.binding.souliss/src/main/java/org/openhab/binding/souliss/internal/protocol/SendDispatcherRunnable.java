@@ -151,7 +151,7 @@ public class SendDispatcherRunnable implements Runnable {
 
                     var localGwHandler = this.gwHandler;
                     if (localGwHandler != null) {
-                        var sa = new InetSocketAddress(localGwHandler.gwConfig.preferredLocalPortNumber);
+                        var sa = new InetSocketAddress(localGwHandler.getGwConfig().preferredLocalPortNumber);
                         sender.bind(sa);
                         sender.send(sp.getPacket());
                     }
@@ -286,8 +286,8 @@ public class SendDispatcherRunnable implements Runnable {
 
                     SoulissGatewayHandler localGwHandler = this.gwHandler;
                     if (localGwHandler != null) {
-                        if ((localGwHandler.gwConfig.timeoutToRequeue < time - packetsList.get(i).getTime())
-                                && (localGwHandler.gwConfig.timeoutToRemovePacket < time
+                        if ((localGwHandler.getGwConfig().timeoutToRequeue < time - packetsList.get(i).getTime())
+                                && (localGwHandler.getGwConfig().timeoutToRemovePacket < time
                                         - packetsList.get(i).getTime())) {
                             logger.debug("Packet Execution timeout - Removed");
                             packetsList.remove(i);
@@ -350,7 +350,8 @@ public class SendDispatcherRunnable implements Runnable {
     /**
      * Pop SocketAndPacket from ArrayList PacketList
      */
-    private @Nullable synchronized PacketStruct pop() {
+    @Nullable
+    private synchronized PacketStruct pop() {
         synchronized (this) {
             SoulissGatewayHandler localGwHandler = this.gwHandler;
 
@@ -359,16 +360,14 @@ public class SendDispatcherRunnable implements Runnable {
             if ((localGwHandler != null) && (!bPopSuspend)) {
                 t = System.currentTimeMillis();
 
-                /*
-                 * brings the interval to the minimum only if:
-                 * - the length of the tail less than or equal to 1;
-                 * - if the SEND_DELAY time has elapsed.
-                 */
+                // brings the interval to the minimum only if:
+                // the length of the tail less than or equal to 1;
+                // if the SEND_DELAY time has elapsed.
 
                 if (packetsList.size() <= 1) {
                     iDelay = sendMinDelay;
                 } else {
-                    iDelay = localGwHandler.gwConfig.sendInterval;
+                    iDelay = localGwHandler.getGwConfig().sendInterval;
 
                 }
 
@@ -383,7 +382,7 @@ public class SendDispatcherRunnable implements Runnable {
                     }
                 }
 
-                boolean tFlag = (t - tPrec) >= localGwHandler.gwConfig.sendInterval;
+                boolean tFlag = (t - tPrec) >= localGwHandler.getGwConfig().sendInterval;
 
                 // if we have reached the end of the list and then all
                 // packets have already been sent so I also place the tFlag

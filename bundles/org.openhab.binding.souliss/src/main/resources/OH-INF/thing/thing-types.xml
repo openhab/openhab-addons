@@ -122,12 +122,12 @@
 		</channels>
 
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -160,12 +160,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -199,12 +199,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -224,12 +224,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -256,12 +256,12 @@
 		</channels>
 
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -295,12 +295,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -338,12 +338,12 @@
 		</channels>
 
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -393,12 +393,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -419,12 +419,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -451,12 +451,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -496,12 +496,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -530,12 +530,12 @@
 
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -569,12 +569,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -602,12 +602,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -628,12 +628,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -653,12 +653,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -678,12 +678,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -703,12 +703,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -728,12 +728,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -753,12 +753,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -778,12 +778,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -802,12 +802,12 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -826,12 +826,12 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -850,12 +850,12 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -875,12 +875,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -900,12 +900,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -925,12 +925,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -950,12 +950,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>
@@ -975,12 +975,12 @@
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
 		<config-description>
-			<parameter name="node" type="integer" min="1" max="256">
+			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
 				<description>Node</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="slot" type="integer" min="1" max="256">
+			<parameter name="slot" type="integer" min="0" max="256">
 				<label>Slot</label>
 				<description>Slot</description>
 				<required>true</required>

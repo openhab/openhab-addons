@@ -30,7 +30,6 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +41,6 @@ import org.slf4j.LoggerFactory;
  * @author Luca Calcaterra - Refactor for OH3
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, configurationPid = "discovery.souliss")
 public class SoulissGatewayDiscovery extends AbstractDiscoveryService
         implements DiscoverResult, DiscoveryService, ThingHandlerService {
     private @Nullable ScheduledFuture<?> discoveryJob = null;
@@ -50,13 +48,11 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService
 
     private @Nullable SoulissDiscoverJob soulissDiscoverRunnableClass = null;
 
-    private SoulissGatewayHandler soulissGwHandler;
+    private @Nullable SoulissGatewayHandler soulissGwHandler;
 
-    public SoulissGatewayDiscovery(SoulissGatewayHandler bridgeHandler) {
+    public SoulissGatewayDiscovery() {
         super(SoulissBindingConstants.SUPPORTED_THING_TYPES_UIDS, SoulissBindingConstants.DISCOVERY_TIMEOUT_IN_SECONDS,
                 false);
-        this.soulissGwHandler = bridgeHandler;
-        bridgeHandler.discoverResult = this;
     }
 
     @Override
@@ -90,8 +86,9 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService
         if (soulissDiscoverRunnableClass == null) {
             soulissDiscoverRunnableClass = new SoulissDiscoverJob(this.soulissGwHandler);
 
-            discoveryJob = scheduler.scheduleWithFixedDelay(soulissDiscoverRunnableClass, 100,
-                    SoulissBindingConstants.DISCOVERY_RESEND_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS);
+            // send command for gw struct (typicals).. must be not soo much quick..
+            discoveryJob = scheduler.scheduleWithFixedDelay(soulissDiscoverRunnableClass, 2,
+                    SoulissBindingConstants.DISCOVERY_RESEND_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS);
             logger.debug("Start Discovery Job");
         }
     }
@@ -101,7 +98,6 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService
         ScheduledFuture<?> localDiscoveryJob = this.discoveryJob;
         if (localDiscoveryJob != null) {
             localDiscoveryJob.cancel(false);
-            localDiscoveryJob = null;
             soulissDiscoverRunnableClass = null;
             logger.debug("Discovery Job Stopped");
         }
@@ -115,14 +111,17 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService
         DiscoveryResult discoveryResult;
         String sNodeID = topicNumber + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + sTopicVariant;
 
-        var gatewayUID = this.soulissGwHandler.getThing().getUID();
-        thingUID = new ThingUID(SoulissBindingConstants.TOPICS_THING_TYPE, gatewayUID, sNodeID);
-        label = "Topic. Number: " + topicNumber + ", Variant: " + sTopicVariant;
+        var localGwHandler = this.soulissGwHandler;
+        if (localGwHandler != null) {
+            var gatewayUID = localGwHandler.getThing().getUID();
+            thingUID = new ThingUID(SoulissBindingConstants.TOPICS_THING_TYPE, gatewayUID, sNodeID);
+            label = "Topic. Number: " + topicNumber + ", Variant: " + sTopicVariant;
 
-        discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label).withProperty("number", topicNumber)
-                .withProperty("variant", sTopicVariant).withRepresentationProperty("number").withBridge(gatewayUID)
-                .build();
-        thingDiscovered(discoveryResult);
+            discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label)
+                    .withProperty("number", topicNumber).withProperty("variant", sTopicVariant)
+                    .withRepresentationProperty("number").withBridge(gatewayUID).build();
+            thingDiscovered(discoveryResult);
+        }
     }
 
     @Override
@@ -130,144 +129,149 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService
         ThingUID thingUID = null;
         var label = "";
         DiscoveryResult discoveryResult;
-        SoulissGatewayHandler gwHandler = this.soulissGwHandler;
-        if (lastByteGatewayIP == (byte) Integer.parseInt(gwHandler.gwConfig.gatewayLanAddress.split("\\.")[3])) {
+        var gwHandler = this.soulissGwHandler;
+        if ((gwHandler != null) && (lastByteGatewayIP == (byte) Integer
+                .parseInt(gwHandler.getGwConfig().gatewayLanAddress.split("\\.")[3]))) {
             String sNodeId = node + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + slot;
 
             ThingUID gatewayUID = gwHandler.getThing().getUID();
+            var slotLabel = "slot";
 
             switch (typical) {
                 case SoulissProtocolConstants.SOULISS_T11:
                     thingUID = new ThingUID(SoulissBindingConstants.T11_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T11: node " + node + ", slot " + slot;
+                    label = "T11: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T12:
                     thingUID = new ThingUID(SoulissBindingConstants.T12_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T12: node " + node + ", slot " + slot;
+                    label = "T12: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T13:
                     thingUID = new ThingUID(SoulissBindingConstants.T13_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T13: node " + node + ", slot " + slot;
+                    label = "T13: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T14:
                     thingUID = new ThingUID(SoulissBindingConstants.T14_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T14: node " + node + ", slot " + slot;
+                    label = "T14: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T16:
                     thingUID = new ThingUID(SoulissBindingConstants.T16_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T16: node " + node + ", slot " + slot;
+                    label = "T16: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T18:
                     thingUID = new ThingUID(SoulissBindingConstants.T18_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T18: node " + node + ", slot " + slot;
+                    label = "T18: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T19:
                     thingUID = new ThingUID(SoulissBindingConstants.T19_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T19: node " + node + ", slot " + slot;
+                    label = "T19: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T1A:
                     thingUID = new ThingUID(SoulissBindingConstants.T1A_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T1A: node " + node + ", slot " + slot;
+                    label = "T1A: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T21:
                     thingUID = new ThingUID(SoulissBindingConstants.T21_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T21: node " + node + ", slot " + slot;
+                    label = "T21: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T22:
                     thingUID = new ThingUID(SoulissBindingConstants.T22_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T22: node " + node + ", slot " + slot;
+                    label = "T22: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T41_ANTITHEFT_MAIN:
                     thingUID = new ThingUID(SoulissBindingConstants.T41_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T41: node " + node + ", slot " + slot;
+                    label = "T41: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T42_ANTITHEFT_PEER:
                     thingUID = new ThingUID(SoulissBindingConstants.T42_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T42: node " + node + ", slot " + slot;
+                    label = "T42: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T31:
                     thingUID = new ThingUID(SoulissBindingConstants.T31_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T31: node " + node + ", slot " + slot;
+                    label = "T31: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T52_TEMPERATURE_SENSOR:
                     thingUID = new ThingUID(SoulissBindingConstants.T52_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T52: node " + node + ", slot " + slot;
+                    label = "T52: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T53_HUMIDITY_SENSOR:
                     thingUID = new ThingUID(SoulissBindingConstants.T53_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T53: node " + node + ", slot " + slot;
+                    label = "T53: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T54_LUX_SENSOR:
                     thingUID = new ThingUID(SoulissBindingConstants.T54_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T54: node " + node + ", slot " + slot;
+                    label = "T54: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T55_VOLTAGE_SENSOR:
                     thingUID = new ThingUID(SoulissBindingConstants.T55_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T55: node " + node + ", slot " + slot;
+                    label = "T55: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T56_CURRENT_SENSOR:
                     thingUID = new ThingUID(SoulissBindingConstants.T56_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T56: node " + node + ", slot " + slot;
+                    label = "T56: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T57_POWER_SENSOR:
                     thingUID = new ThingUID(SoulissBindingConstants.T57_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T57: node " + node + ", slot " + slot;
+                    label = "T57: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T61:
                     thingUID = new ThingUID(SoulissBindingConstants.T61_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T61: node " + node + ", slot " + slot;
+                    label = "T61: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T62_TEMPERATURE_SENSOR:
                     thingUID = new ThingUID(SoulissBindingConstants.T62_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T62: node " + node + ", slot " + slot;
+                    label = "T62: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T63_HUMIDITY_SENSOR:
                     thingUID = new ThingUID(SoulissBindingConstants.T63_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T63: node " + node + ", slot " + slot;
+                    label = "T63: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T64_LUX_SENSOR:
                     thingUID = new ThingUID(SoulissBindingConstants.T64_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T64: node " + node + ", slot " + slot;
+                    label = "T64: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T65_VOLTAGE_SENSOR:
                     thingUID = new ThingUID(SoulissBindingConstants.T65_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T65: node " + node + ", slot " + slot;
+                    label = "T65: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T66_CURRENT_SENSOR:
                     thingUID = new ThingUID(SoulissBindingConstants.T66_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T66: node " + node + ", slot " + slot;
+                    label = "T66: node " + node + slotLabel + slot;
                     break;
                 case SoulissProtocolConstants.SOULISS_T67_POWER_SENSOR:
                     thingUID = new ThingUID(SoulissBindingConstants.T67_THING_TYPE, gatewayUID, sNodeId);
-                    label = "T67: node " + node + ", slot " + slot;
+                    label = "T67: node " + node + slotLabel + slot;
                     break;
+                default: {
+                    logger.debug("no supported things found ...");
+                }
             }
             if (thingUID != null) {
                 label = "[" + gwHandler.getThing().getUID().getAsString() + "] " + label;
-                var uniqueId = "G" + Byte.toString(lastByteGatewayIP) + "N" + Byte.toString(node) + "S"
-                        + Byte.toString(slot);
-                discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label).withProperty("node", node)
-                        .withProperty("slot", slot).withProperty("uniqueId", uniqueId)
-                        .withRepresentationProperty("uniqueId").withBridge(gwHandler.getThing().getUID()).build();
+                var uniqueId = "N" + Byte.toString(node) + "S" + Byte.toString(slot);
+                discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label)
+                        .withProperty(SoulissBindingConstants.PROPERTY_NODE, node)
+                        .withProperty(SoulissBindingConstants.PROPERTY_SLOT, slot)
+                        .withProperty(SoulissBindingConstants.PROPERTY_UNIQUEID, uniqueId)
+                        .withRepresentationProperty(SoulissBindingConstants.PROPERTY_UNIQUEID)
+                        .withBridge(gwHandler.getThing().getUID()).build();
                 thingDiscovered(discoveryResult);
                 gwHandler.setThereIsAThingDetection();
-
             }
         }
     }
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        // TODO Auto-generated method stub
         if (handler instanceof SoulissGatewayHandler) {
-            soulissGwHandler = (SoulissGatewayHandler) handler;
+            var localGwHandler = this.soulissGwHandler;
+            localGwHandler = (SoulissGatewayHandler) handler;
+            localGwHandler.discoverResult = this;
         }
-
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        // TODO Auto-generated method stub
         return soulissGwHandler;
     }
 }

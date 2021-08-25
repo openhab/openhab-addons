@@ -65,7 +65,7 @@ public class UDPListenDiscoverRunnable implements Runnable {
 
                 var localGwHandler = this.gwHandler;
                 if (localGwHandler != null) {
-                    var sa = new InetSocketAddress(localGwHandler.gwConfig.preferredLocalPortNumber);
+                    var sa = new InetSocketAddress(localGwHandler.getGwConfig().preferredLocalPortNumber);
                     socket.bind(sa);
 
                     var buf = new byte[200];
@@ -104,12 +104,11 @@ public class UDPListenDiscoverRunnable implements Runnable {
                     socket.close();
                 }
             } finally {
+                var localGwHandler = this.gwHandler;
                 if (socket != null && !socket.isClosed()) {
                     socket.close();
-                } else {
-                    if (this.gwHandler != null) {
-                        // this.gwHandler.setBridgeStatus(false);
-                    }
+                } else if ((socket == null) && (localGwHandler != null)) {
+                    localGwHandler.setBridgeStatus(false);
                 }
             }
         }

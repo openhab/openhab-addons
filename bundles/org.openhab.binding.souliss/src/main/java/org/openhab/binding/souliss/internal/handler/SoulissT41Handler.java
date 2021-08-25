@@ -54,21 +54,16 @@ public class SoulissT41Handler extends SoulissGenericHandler {
                         commandSEND(SoulissProtocolConstants.SOULISS_T4N_ARMED);
                     }
                 }
-            } else if (channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_REARMALARM_CHANNEL)) {
-                if (command instanceof OnOffType) {
-                    if (command.equals(OnOffType.OFF)) {
-                        commandSEND(SoulissProtocolConstants.SOULISS_T4N_REARM);
-                        this.setState(StringType.valueOf(SoulissBindingConstants.T4N_REARMOFF_MESSAGE_CHANNEL));
-                    }
-
-                }
+            } else if ((channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_REARMALARM_CHANNEL))
+                    && (command instanceof OnOffType) && (command.equals(OnOffType.OFF))) {
+                commandSEND(SoulissProtocolConstants.SOULISS_T4N_REARM);
+                this.setState(StringType.valueOf(SoulissBindingConstants.T4N_REARMOFF_MESSAGE_CHANNEL));
             }
         }
     }
 
     @Override
     public void initialize() {
-
         super.initialize();
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -89,6 +84,8 @@ public class SoulissT41Handler extends SoulissGenericHandler {
                     break;
                 case SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL:
                     this.updateState(SoulissBindingConstants.T4N_STATUSALARM_CHANNEL, OnOffType.OFF);
+                    break;
+                default:
                     break;
             }
         }
@@ -116,6 +113,8 @@ public class SoulissT41Handler extends SoulissGenericHandler {
                     break;
                 case SoulissProtocolConstants.SOULISS_T4N_ARMED:
                     this.setState(StringType.valueOf(SoulissBindingConstants.T4N_ARMED_MESSAGE_CHANNEL));
+                    break;
+                default:
                     break;
             }
         }

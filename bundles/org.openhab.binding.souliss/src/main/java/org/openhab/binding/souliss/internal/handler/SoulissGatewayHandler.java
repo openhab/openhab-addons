@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.souliss.internal.handler;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -34,6 +36,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +76,11 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     private int maxTypicalXnode = 24;
     private int countPingKo = 0;
 
-    public GatewayConfig gwConfig = new GatewayConfig();
+    private GatewayConfig gwConfig = new GatewayConfig();
+
+    public GatewayConfig getGwConfig() {
+        return gwConfig;
+    }
 
     public SoulissGatewayHandler(Bridge br) {
         super(br);
@@ -83,6 +90,11 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // do nothing
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(SoulissGatewayDiscovery.class);
     }
 
     @Override
@@ -96,10 +108,10 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         // and exec on thread
         var localUdpListenerJob = this.udpListenerJob;
         if (localUdpListenerJob == null || localUdpListenerJob.isCancelled()) {
-
-            this.udpExecutorService = Executors
+            var localUdpExecutorService = this.udpExecutorService;
+            localUdpExecutorService = Executors
                     .newSingleThreadExecutor(new NamedThreadFactory(getThing().getUID().getAsString()));
-            this.udpExecutorService.submit(udpServerDefaultPortRunnableClass);
+            localUdpExecutorService.submit(udpServerDefaultPortRunnableClass);
         }
 
         // JOB PING
@@ -108,7 +120,7 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
                 TimeUnit.SECONDS);
         // JOB SUBSCRIPTION
         var soulissGatewayJobSubscriptionRunnable = new SoulissGatewayJobSubscription(bridge);
-        subscriptionScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 10,
+        subscriptionScheduler = scheduler.scheduleWithFixedDelay(soulissGatewayJobSubscriptionRunnable, 5,
                 this.gwConfig.subscriptionInterval, TimeUnit.SECONDS);
 
         // JOB HEALTH OF NODES
@@ -164,7 +176,8 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
 
     public void gatewayDetected() {
         updateStatus(ThingStatus.ONLINE);
-        countPingKo = 0; // reset counter
+        // reset counter
+        countPingKo = 0;
     }
 
     public void pingSent() {
@@ -181,7 +194,6 @@ public class SoulissGatewayHandler extends BaseBridgeHandler {
         if (this.gwConfig.gatewayLanAddress.length() > 0) {
             int totNodes = getNodes();
             commonCommands.sendSUBSCRIPTIONframe(this.gwConfig, totNodes);
-
         }
         logger.debug("Sent subscription packet");
     }

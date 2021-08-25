@@ -43,7 +43,6 @@ public class SoulissT13Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-
         super.initialize();
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -77,6 +76,8 @@ public class SoulissT13Handler extends SoulissGenericHandler {
                     if (valOpenClose != null) {
                         updateState(channelUID, valOpenClose);
                     }
+                    break;
+                default:
                     break;
             }
         }

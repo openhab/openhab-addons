@@ -14,9 +14,6 @@ package org.openhab.binding.souliss.internal;
 
 import static org.openhab.binding.souliss.internal.SoulissBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
@@ -51,14 +48,10 @@ import org.openhab.binding.souliss.internal.handler.SoulissTopicsHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SoulissHandlerFactory} is responsible for creating things and thingGeneric
@@ -70,8 +63,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.souliss", service = ThingHandlerFactory.class)
 public class SoulissHandlerFactory extends BaseThingHandlerFactory {
-    private final Logger logger = LoggerFactory.getLogger(SoulissHandlerFactory.class);
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegMap = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -83,11 +74,7 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
         var thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(GATEWAY_THING_TYPE)) {
-            var bridgeHandler = new SoulissGatewayHandler((Bridge) thing);
-            // this.registerDiscoveryService(bridgeHandler);
-
-            return bridgeHandler;
-
+            return new SoulissGatewayHandler((Bridge) thing);
         } else if (thingTypeUID.equals(T11_THING_TYPE)) {
             return new SoulissT11Handler(thing);
         } else if (thingTypeUID.equals(T12_THING_TYPE)) {
@@ -148,17 +135,4 @@ public class SoulissHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
-    // /**
-    // * Register a discovery service for an IP bridge handler.
-    // *
-    // * @param bridgeHandler IP bridge handler for which to register the discovery service
-    // */
-    // private synchronized void registerDiscoveryService(SoulissGatewayHandler bridgeHandler) {
-    // logger.debug("Registering XML device discovery service.");
-    // var discoveryService = new SoulissGatewayDiscovery(bridgeHandler);
-    // bridgeHandler.setDiscoveryService(discoveryService);
-    // discoveryServiceRegMap.put(bridgeHandler.getThing().getUID(),
-    // bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));
-    // }
 }

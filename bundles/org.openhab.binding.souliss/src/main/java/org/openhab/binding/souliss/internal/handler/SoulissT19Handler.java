@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public class SoulissT19Handler extends SoulissGenericHandler {
     private final Logger logger = LoggerFactory.getLogger(SoulissT19Handler.class);
     byte t1nRawStateByte0 = 0xF;
-    byte t1nRawStateBrigthnessByte1;
+    byte t1nRawStateBrigthnessByte1 = 0x00;
 
     byte xSleepTime = 0;
 
@@ -63,6 +63,8 @@ public class SoulissT19Handler extends SoulissGenericHandler {
                 case SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL:
                     updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
                             PercentType.valueOf(String.valueOf((t1nRawStateBrigthnessByte1 / 255) * 100)));
+                    break;
+                default:
                     break;
             }
         } else {
@@ -101,13 +103,14 @@ public class SoulissT19Handler extends SoulissGenericHandler {
                         commandSEND((byte) (SoulissProtocolConstants.SOULISS_T1N_TIMED + xSleepTime));
                     }
                     break;
+                default:
+                    break;
             }
         }
     }
 
     @Override
     public void initialize() {
-
         super.initialize();
 
         updateStatus(ThingStatus.UNKNOWN);

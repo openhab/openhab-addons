@@ -38,7 +38,6 @@ public class SoulissT5nHandler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-
         super.initialize();
 
         updateStatus(ThingStatus.UNKNOWN);

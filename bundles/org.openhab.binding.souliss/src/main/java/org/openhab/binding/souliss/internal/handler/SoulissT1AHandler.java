@@ -37,11 +37,11 @@ public class SoulissT1AHandler extends SoulissGenericHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        throw new UnsupportedOperationException("Unsupported operation. Read Only");
     }
 
     @Override
     public void initialize() {
-
         super.initialize();
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -55,7 +55,7 @@ public class SoulissT1AHandler extends SoulissGenericHandler {
     }
 
     private boolean getBitState(int value, int bit) {
-        return !((value & (1L << bit)) == 0);
+        return ((value & (1L << bit)) != 0);
     }
 
     @Override

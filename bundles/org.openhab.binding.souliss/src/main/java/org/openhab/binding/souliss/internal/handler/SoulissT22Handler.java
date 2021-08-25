@@ -44,7 +44,6 @@ public class SoulissT22Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-
         super.initialize();
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -60,6 +59,8 @@ public class SoulissT22Handler extends SoulissGenericHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case SoulissBindingConstants.ROLLERSHUTTER_CHANNEL:
+                    break;
+                default:
                     break;
             }
         } else {
@@ -79,6 +80,8 @@ public class SoulissT22Handler extends SoulissGenericHandler {
                     } else if (command.equals(OnOffType.OFF)) {
                         commandSEND(SoulissProtocolConstants.SOULISS_T2N_CLOSE_CMD_LOCAL);
                     }
+                    break;
+                default:
                     break;
             }
         }
@@ -102,7 +105,8 @@ public class SoulissT22Handler extends SoulissGenericHandler {
         super.setLastStatusStored();
         // update item state only if it is different from previous
         if (t2nRawState != rawState) {
-            this.setState(this.getOhStateT22FromSoulissVal(rawState));
+            var val = getOhStateT22FromSoulissVal(rawState);
+            this.setState(val);
 
             if (rawState == SoulissProtocolConstants.SOULISS_T2N_OPEN_CMD) {
                 this.setStateMessage(SoulissBindingConstants.ROLLERSHUTTER_MESSAGE_OPENING_CHANNEL);
@@ -133,6 +137,8 @@ public class SoulissT22Handler extends SoulissGenericHandler {
                     break;
                 case SoulissProtocolConstants.SOULISS_T2N_STATE_CLOSE:
                     this.setStateMessage(SoulissBindingConstants.ROLLERSHUTTER_MESSAGE_STATE_CLOSE_CHANNEL);
+                    break;
+                default:
                     break;
             }
             t2nRawState = rawState;
@@ -168,6 +174,8 @@ public class SoulissT22Handler extends SoulissGenericHandler {
                 break;
             case SoulissProtocolConstants.SOULISS_T2N_STATE_CLOSE:
                 iState = 100;
+                break;
+            default:
                 break;
         }
         return PercentType.valueOf(String.valueOf(iState));

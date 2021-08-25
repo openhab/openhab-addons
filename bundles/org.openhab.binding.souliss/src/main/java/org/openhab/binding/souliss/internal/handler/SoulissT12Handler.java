@@ -44,7 +44,6 @@ public class SoulissT12Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-
         super.initialize();
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -72,6 +71,8 @@ public class SoulissT12Handler extends SoulissGenericHandler {
                         case SoulissProtocolConstants.SOULISS_T1N_OFF_COIL:
                             this.setState(OnOffType.OFF);
                             break;
+                        default:
+                            break;
                     }
                     break;
                 case SoulissBindingConstants.AUTOMODE_CHANNEL:
@@ -84,8 +85,11 @@ public class SoulissT12Handler extends SoulissGenericHandler {
                         case SoulissProtocolConstants.SOULISS_T1N_OFF_COIL:
                             this.setStateAutomode(OnOffType.OFF);
                             break;
+                        default:
+                            break;
                     }
-
+                    break;
+                default:
                     break;
             }
         } else
@@ -110,6 +114,8 @@ public class SoulissT12Handler extends SoulissGenericHandler {
                         // set Off
                         updateState(channelUID, OnOffType.OFF);
                     }
+                    break;
+                default:
                     break;
 
             }

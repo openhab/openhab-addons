@@ -43,7 +43,6 @@ public class SoulissT14Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-
         super.initialize();
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -59,6 +58,8 @@ public class SoulissT14Handler extends SoulissGenericHandler {
                         updateState(channelUID, valPulse);
                     }
                     break;
+                default:
+                    break;
             }
         } else {
             switch (channelUID.getId()) {
@@ -68,6 +69,8 @@ public class SoulissT14Handler extends SoulissGenericHandler {
                     } else if (command.equals(OnOffType.OFF)) {
                         commandSEND(SoulissProtocolConstants.SOULISS_T1N_OFF_CMD);
                     }
+                    break;
+                default:
                     break;
             }
         }

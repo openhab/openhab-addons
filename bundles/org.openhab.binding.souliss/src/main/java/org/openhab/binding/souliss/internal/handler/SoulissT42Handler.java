@@ -42,19 +42,15 @@ public class SoulissT42Handler extends SoulissGenericHandler {
     // called on every status change or change request
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_REARMALARM_CHANNEL)) {
-            if (command instanceof OnOffType) {
-                if (command.equals(OnOffType.ON)) {
-                    commandSEND(SoulissProtocolConstants.SOULISS_T4N_REARM);
-                    this.setState(StringType.valueOf(SoulissBindingConstants.T4N_REARMOFF_MESSAGE_CHANNEL));
-                }
-            }
+        if ((channelUID.getAsString().split(":")[3].equals(SoulissBindingConstants.T4N_REARMALARM_CHANNEL))
+                && (command instanceof OnOffType) && (command.equals(OnOffType.ON))) {
+            commandSEND(SoulissProtocolConstants.SOULISS_T4N_REARM);
+            this.setState(StringType.valueOf(SoulissBindingConstants.T4N_REARMOFF_MESSAGE_CHANNEL));
         }
     }
 
     @Override
     public void initialize() {
-
         super.initialize();
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -74,9 +70,11 @@ public class SoulissT42Handler extends SoulissGenericHandler {
                 case SoulissBindingConstants.T4N_ALARMOFF_MESSAGE_CHANNEL:
                     this.updateState(SoulissBindingConstants.T4N_STATUSALARM_CHANNEL, OnOffType.OFF);
                     break;
+                default:
+                    break;
             }
         }
-        // // Reset the rearm button. This is because if pressed, it does not turn off by itself
+        // Reset the rearm button. This is because if pressed, it does not turn off by itself
         updateState(SoulissBindingConstants.T4N_REARMALARM_CHANNEL, OnOffType.OFF);
 
         super.setLastStatusStored();
@@ -103,10 +101,8 @@ public class SoulissT42Handler extends SoulissGenericHandler {
 
     @Override
     public byte getExpectedRawState(byte bCmd) {
-        if (bSecureSend) {
-            if (bCmd == SoulissProtocolConstants.SOULISS_T4N_REARM) {
-                return SoulissProtocolConstants.SOULISS_T4N_ANTITHEFT;
-            }
+        if ((bSecureSend) && (bCmd == SoulissProtocolConstants.SOULISS_T4N_REARM)) {
+            return SoulissProtocolConstants.SOULISS_T4N_ANTITHEFT;
         }
         return -1;
     }

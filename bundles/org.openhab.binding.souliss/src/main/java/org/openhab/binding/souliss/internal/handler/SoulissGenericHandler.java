@@ -56,8 +56,10 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
 
     private final CommonCommands commonCommands = new CommonCommands();
 
-    boolean bSecureSend = false; // 0 means that Secure Send is disabled
-    boolean bExpectedValueSameAsSet = false; // true means that expected value is setpoint (only for T31, T19 and T6x)
+    // 0 means that Secure Send is disabled
+    boolean bSecureSend = false;
+    // true means that expected value is setpoint (only for T31, T19 and T6x)
+    boolean bExpectedValueSameAsSet = false;
 
     protected SoulissGenericHandler(Thing thing) {
         super(thing);
@@ -82,6 +84,10 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
             if ((pNode != null) && (pSlot != null)) {
                 iNode = Integer.parseInt(pNode.toString());
                 iSlot = Integer.parseInt(pSlot.toString());
+                updateProperty(SoulissBindingConstants.PROPERTY_NODE, Integer.toString(iNode));
+                updateProperty(SoulissBindingConstants.PROPERTY_SLOT, Integer.toString(iSlot));
+                updateProperty(SoulissBindingConstants.PROPERTY_UNIQUEID,
+                        "N" + Integer.toString(iNode) + "S" + Integer.toString(iSlot));
             }
         } catch (Exception e) {
             logger.warn("Error getting node/slot from souliss typical (thing config).");
@@ -160,8 +166,7 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
         if (bridge != null) {
             SoulissGatewayHandler bridgeHandler = (SoulissGatewayHandler) bridge.getHandler();
             if (bridgeHandler != null) {
-                GatewayConfig gwConfig = bridgeHandler.gwConfig;
-                return gwConfig;
+                return bridgeHandler.getGwConfig();
             }
         }
         return null;

@@ -78,7 +78,8 @@ public class UDPDecoder {
         this.discoverResult = pDiscoverResult;
         var localGwHandler = this.gwHandler;
         if (localGwHandler != null) {
-            this.lastByteGatewayIp = (byte) Integer.parseInt(localGwHandler.gwConfig.gatewayLanAddress.split("\\.")[3]);
+            this.lastByteGatewayIp = (byte) Integer
+                    .parseInt(localGwHandler.getGwConfig().gatewayLanAddress.split("\\.")[3]);
         }
     }
 
@@ -167,7 +168,7 @@ public class UDPDecoder {
             case (byte) SoulissUDPConstants.SOULISS_UDP_FUNCTION_ACTION_MESSAGE:
                 logger.debug("Received functional code: 0x{} - Action Message (Topic)",
                         Integer.toHexString(functionalCode));
-                decodeActionMessages(lastByteGatewayIP, macacoPck);
+                decodeActionMessages(macacoPck);
                 break;
             default:
                 logger.debug("Received functional code: 0x{} - unused by OH Binding",
@@ -223,20 +224,18 @@ public class UDPDecoder {
             // creates Souliss nodes
             for (var j = 0; j < numberOf; j++) {
                 // create only not-empty typicals
-                if (mac.get(5 + j) != 0) {
-                    if ((mac.get(5 + j) != SoulissProtocolConstants.SOULISS_T_RELATED)) {
-                        byte typical = mac.get(5 + j);
-                        byte slot = (byte) (j % typXnodo);
-                        byte node = (byte) (j / typXnodo + tgtnode);
-                        logger.debug("Thing Detected. IP (last byte): {}, Typical: 0x{}, Node: {}, Slot: {} ",
-                                lastByteGatewayIP, Integer.toHexString(typical), node, slot);
+                if ((mac.get(5 + j) != 0) && (mac.get(5 + j) != SoulissProtocolConstants.SOULISS_T_RELATED)) {
+                    byte typical = mac.get(5 + j);
+                    byte slot = (byte) (j % typXnodo);
+                    byte node = (byte) (j / typXnodo + tgtnode);
+                    logger.debug("Thing Detected. IP (last byte): {}, Typical: 0x{}, Node: {}, Slot: {} ",
+                            lastByteGatewayIP, Integer.toHexString(typical), node, slot);
 
-                        var localDiscoverResult = this.discoverResult;
-                        if (localDiscoverResult != null) {
-                            localDiscoverResult.thingDetectedTypicals(lastByteGatewayIP, typical, node, slot);
-                        } else {
-                            logger.debug("decodeTypRequest aborted. 'discoverResult' is null");
-                        }
+                    var localDiscoverResult = this.discoverResult;
+                    if (localDiscoverResult != null) {
+                        localDiscoverResult.thingDetectedTypicals(lastByteGatewayIP, typical, node, slot);
+                    } else {
+                        logger.debug("decodeTypRequest aborted. 'discoverResult' is null");
                     }
                 }
             }
@@ -251,7 +250,7 @@ public class UDPDecoder {
      *
      * @param mac
      */
-    private void decodeActionMessages(byte lastByteGatewayIP, ArrayList<Byte> mac) {
+    private void decodeActionMessages(ArrayList<Byte> mac) {
         String sTopicNumber;
         String sTopicVariant;
         float fRet = 0;
@@ -260,7 +259,7 @@ public class UDPDecoder {
             // A 16-bit Topic Number: Define the topic itself
             // A 8-bit Topic Variant : Define a variant for the topic
 
-            String sTopicNumberArray[] = { Integer.toHexString(mac.get(2)).toUpperCase(),
+            String[] sTopicNumberArray = { Integer.toHexString(mac.get(2)).toUpperCase(),
                     Integer.toHexString(mac.get(1)).toUpperCase() };
             if (sTopicNumberArray[0].length() == 1) {
                 sTopicNumberArray[0] = "0" + sTopicNumberArray[0];
@@ -269,7 +268,7 @@ public class UDPDecoder {
                 sTopicNumberArray[1] = "0" + sTopicNumberArray[1];
             }
             sTopicNumber = sTopicNumberArray[0] + sTopicNumberArray[1];
-            logger.debug("Topic Number: 0x{}", sTopicNumberArray[0] + sTopicNumberArray[1]);
+            logger.debug("Topic Number: 0x{}", sTopicNumber);
 
             sTopicVariant = Integer.toHexString(mac.get(3)).toUpperCase();
             if (sTopicVariant.length() == 1) {
@@ -280,7 +279,7 @@ public class UDPDecoder {
                 fRet = mac.get(5);
                 logger.debug("Topic Value (Payload one byte): {} ", Integer.toHexString(mac.get(5)).toUpperCase());
             } else if (mac.get(4) == 2) {
-                byte value[] = { mac.get(5), mac.get(6) };
+                byte[] value = { mac.get(5), mac.get(6) };
 
                 int shifted = value[1] << 8;
                 fRet = HalfFloatUtils.toFloat(shifted + value[0]);
@@ -403,50 +402,52 @@ public class UDPDecoder {
                         int slot = ((SoulissGenericHandler) handler).getSlot();
                         // get typical value
                         var sVal = getByteAtSlot(mac, slot);
+                        var decodingLiteralLabel = "Decoding {}{}";
+                        var packetLabel = " packet";
                         // update Txx
                         switch (sUIDArray[1]) {
                             case SoulissBindingConstants.T11:
-                                logger.debug("Decoding " + SoulissBindingConstants.T11 + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.T11, packetLabel);
                                 ((SoulissT11Handler) handler).setRawState(sVal);
                                 break;
                             case SoulissBindingConstants.T12:
-                                logger.debug("Decoding " + SoulissBindingConstants.T12 + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.T12, packetLabel);
                                 ((SoulissT12Handler) handler).setRawState(sVal);
                                 break;
                             case SoulissBindingConstants.T13:
-                                logger.debug("Decoding " + SoulissBindingConstants.T13 + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.T13, packetLabel);
                                 ((SoulissT13Handler) handler).setRawState(sVal);
                                 break;
                             case SoulissBindingConstants.T14:
-                                logger.debug("Decoding " + SoulissBindingConstants.T14 + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.T14, packetLabel);
                                 ((SoulissT14Handler) handler).setRawState(sVal);
                                 break;
                             case SoulissBindingConstants.T16:
-                                logger.debug("Decoding " + SoulissBindingConstants.T16 + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.T16, packetLabel);
                                 ((SoulissT16Handler) handler).setRawStateCommand(sVal);
                                 ((SoulissT16Handler) handler).setRawStateRgb(getByteAtSlot(mac, slot + 1),
                                         getByteAtSlot(mac, slot + 2), getByteAtSlot(mac, slot + 3));
                                 break;
 
                             case SoulissBindingConstants.T18:
-                                logger.debug("Decoding " + SoulissBindingConstants.T18 + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.T18, packetLabel);
                                 ((SoulissT18Handler) handler).setRawState(sVal);
                                 break;
 
                             case SoulissBindingConstants.T19:
-                                logger.debug("Decoding " + SoulissBindingConstants.T19 + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.T19, packetLabel);
                                 ((SoulissT19Handler) handler).setRawState(sVal);
                                 ((SoulissT19Handler) handler).setRawStateDimmerValue(getByteAtSlot(mac, slot + 1));
                                 break;
 
                             case SoulissBindingConstants.T1A:
-                                logger.debug("Decoding " + SoulissBindingConstants.T1A + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.T1A, packetLabel);
                                 ((SoulissT1AHandler) handler).setRawState(sVal);
                                 break;
                             case SoulissBindingConstants.T21:
                             case SoulissBindingConstants.T22:
-                                logger.debug("Decoding " + SoulissBindingConstants.T21 + "/"
-                                        + SoulissBindingConstants.T22 + " packet");
+                                logger.debug(decodingLiteralLabel,
+                                        SoulissBindingConstants.T21 + "/" + SoulissBindingConstants.T22, packetLabel);
                                 ((SoulissT22Handler) handler).setRawState(sVal);
                                 break;
                             case SoulissBindingConstants.T31:
@@ -480,6 +481,8 @@ public class UDPDecoder {
                                         ((SoulissT42Handler) handler).setState(StringType
                                                 .valueOf(SoulissBindingConstants.T4N_ALARMON_MESSAGE_CHANNEL));
                                         break;
+                                    default:
+                                        break;
                                 }
                                 break;
                             case SoulissBindingConstants.T51:
@@ -496,56 +499,56 @@ public class UDPDecoder {
                                 }
                                 break;
                             case SoulissBindingConstants.T61:
-                                logger.debug("Decoding " + SoulissBindingConstants.T61 + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.T61, packetLabel);
                                 if (!Float.isNaN(getFloatAtSlot(mac, slot))) {
                                     ((SoulissT61Handler) handler).setFloatValue(getFloatAtSlot(mac, slot));
                                 }
                                 break;
                             case SoulissBindingConstants.T62:
-                                logger.debug("Decoding " + SoulissBindingConstants.T62 + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.T62, packetLabel);
                                 if (!Float.isNaN(getFloatAtSlot(mac, slot))) {
                                     ((SoulissT62Handler) handler).setFloatValue(getFloatAtSlot(mac, slot));
                                 }
                                 break;
                             case SoulissBindingConstants.T63:
-                                logger.debug("Decoding " + SoulissBindingConstants.T63 + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.T63, packetLabel);
                                 if (!Float.isNaN(getFloatAtSlot(mac, slot))) {
                                     ((SoulissT63Handler) handler).setFloatValue(getFloatAtSlot(mac, slot));
                                 }
                                 break;
                             case SoulissBindingConstants.T64:
-                                logger.debug("Decoding " + SoulissBindingConstants.T64 + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.T64, packetLabel);
                                 if (!Float.isNaN(getFloatAtSlot(mac, slot))) {
                                     ((SoulissT64Handler) handler).setFloatValue(getFloatAtSlot(mac, slot));
                                 }
                                 break;
                             case SoulissBindingConstants.T65:
-                                logger.debug("Decoding " + SoulissBindingConstants.T65 + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.T65, packetLabel);
                                 if (!Float.isNaN(getFloatAtSlot(mac, slot))) {
                                     ((SoulissT65Handler) handler).setFloatValue(getFloatAtSlot(mac, slot));
                                 }
                                 break;
                             case SoulissBindingConstants.T66:
-                                logger.debug("Decoding " + SoulissBindingConstants.T66 + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.T66, packetLabel);
                                 if (!Float.isNaN(getFloatAtSlot(mac, slot))) {
                                     ((SoulissT66Handler) handler).setFloatValue(getFloatAtSlot(mac, slot));
                                 }
                                 break;
                             case SoulissBindingConstants.T67:
-                                logger.debug("Decoding " + SoulissBindingConstants.T67 + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.T67, packetLabel);
                                 if (!Float.isNaN(getFloatAtSlot(mac, slot))) {
                                     ((SoulissT67Handler) handler).setFloatValue(getFloatAtSlot(mac, slot));
                                 }
                                 break;
                             case SoulissBindingConstants.T68:
-                                logger.debug("Decoding " + SoulissBindingConstants.T68 + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.T68, packetLabel);
                                 if (!Float.isNaN(getFloatAtSlot(mac, slot))) {
                                     ((SoulissT68Handler) handler).setFloatValue(getFloatAtSlot(mac, slot));
                                 }
                                 break;
 
                             case SoulissBindingConstants.TOPICS:
-                                logger.debug("Decoding " + SoulissBindingConstants.TOPICS + " packet");
+                                logger.debug(decodingLiteralLabel, SoulissBindingConstants.TOPICS, packetLabel);
                                 if (!Float.isNaN(getFloatAtSlot(mac, slot))) {
                                     ((SoulissTopicsHandler) handler).setFloatValue(getFloatAtSlot(mac, slot));
                                 }

@@ -40,12 +40,12 @@ public class SoulissGatewayJobHealthy implements Runnable {
 
     private void sendHealthyRequest() {
         var localGwHandler = this.gwHandler;
-        if (localGwHandler != null) {
-            // sending healthy packet
-            if (localGwHandler.gwConfig.gatewayLanAddress.length() > 0) {
-                commonCommands.sendHealthyRequestFrame(localGwHandler.gwConfig, localGwHandler.getNodes());
-                // healthy packet sent
-            }
+        // sending healthy packet
+        if ((localGwHandler != null) &&
+
+                (localGwHandler.getGwConfig().gatewayLanAddress.length() > 0)) {
+            commonCommands.sendHealthyRequestFrame(localGwHandler.getGwConfig(), localGwHandler.getNodes());
+            // healthy packet sent
         }
     }
 }

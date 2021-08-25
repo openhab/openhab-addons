@@ -44,8 +44,8 @@ public class SoulissT31Handler extends SoulissGenericHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SoulissT31Handler.class);
 
-    QuantityType<Temperature> setMeasuredValue = new QuantityType<Temperature>("0");
-    QuantityType<Temperature> setPointValue = new QuantityType<Temperature>("0");
+    QuantityType<Temperature> setMeasuredValue = new QuantityType<>("0");
+    QuantityType<Temperature> setPointValue = new QuantityType<>("0");
     StringType fanStateValue = StringType.EMPTY;
     StringType powerState = StringType.EMPTY;
     StringType fireState = StringType.EMPTY;
@@ -138,7 +138,6 @@ public class SoulissT31Handler extends SoulissGenericHandler {
 
     @Override
     public void initialize() {
-
         super.initialize();
 
         updateStatus(ThingStatus.UNKNOWN);

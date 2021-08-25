@@ -29,7 +29,7 @@ public final class SoulissBindingConstants {
 
     public static final String BINDING_ID = "souliss";
 
-    public static final long DISCOVERY_RESEND_TIMEOUT_IN_MILLIS = 5000;
+    public static final long DISCOVERY_RESEND_TIMEOUT_IN_SECONDS = 45;
     public static final int DISCOVERY_TIMEOUT_IN_SECONDS = 120;
     public static final long SEND_DISPATCHER_MIN_DELAY_CYCLE_IN_MILLIS = 500;
 
@@ -115,8 +115,7 @@ public final class SoulissBindingConstants {
     public static final String STATEOPENCLOSE_CHANNEL = "stateOpenClose";
     public static final String ROLLERSHUTTER_CHANNEL = "rollerShutter";
     public static final String ROLLERSHUTTER_STATE_CHANNEL_CHANNEL = "rollerShutterState";
-    // unused for now
-    // public static final String ROLLERSHUTTER_STATE_NUMBER_CHANNEL = "rollershutter_state_number";
+
     public static final String ROLLERSHUTTER_MESSAGE_OPENING_CHANNEL = "opening";
     public static final String ROLLERSHUTTER_MESSAGE_CLOSING_CHANNEL = "closing";
     public static final String ROLLERSHUTTER_MESSAGE_LIMITSWITCH_OPEN_CHANNEL = "limSwitchOpen";
@@ -199,4 +198,13 @@ public final class SoulissBindingConstants {
     public static final String CONFIG_TIMEOUT_TO_REQUEUE = "timeoutToRequeue";
 
     public static final String CONFIG_TIMEOUT_TO_REMOVE_PACKET = "timeoutToRemovePacket";
+
+    // Properties
+    public static final String PROPERTY_NODE = "node";
+    public static final String PROPERTY_SLOT = "slot";
+    public static final String PROPERTY_UNIQUEID = "uniqueId";
+
+    // private constructor
+    private SoulissBindingConstants() {
+    }
 }

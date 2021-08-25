@@ -44,6 +44,8 @@ public class CommonCommands {
 
     private final Logger logger = LoggerFactory.getLogger(CommonCommands.class);
 
+    private static final String LITERAL_SEND_FRAME = "sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}";
+
     public final void sendFORCEFrame(GatewayConfig gwConfig, int idNode, int slot, byte shortCommand) {
         sendFORCEFrame(gwConfig, idNode, slot, shortCommand, null, null, null);
     }
@@ -102,7 +104,7 @@ public class CommonCommands {
             macacoFrame.add(byte1);
         }
 
-        logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame), gwConfig);
+        logger.debug(LITERAL_SEND_FRAME, macacoToString(macacoFrame), gwConfig);
         queueToDispatcher(macacoFrame, gwConfig);
     }
 
@@ -134,7 +136,7 @@ public class CommonCommands {
         // second byte Setpoint Value
         macacoFrame.add(byte2);
 
-        logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame), gwConfig);
+        logger.debug(LITERAL_SEND_FRAME, macacoToString(macacoFrame), gwConfig);
 
         queueToDispatcher(macacoFrame, gwConfig);
     }
@@ -175,7 +177,7 @@ public class CommonCommands {
         // Temperature Setpoint Value
         macacoFrame.add(byte2);
 
-        logger.debug("sendFORCEFrame - {}, soulissNodeIPAddressOnLAN: {}", macacoToString(macacoFrame), gwConfig);
+        logger.debug(LITERAL_SEND_FRAME, macacoToString(macacoFrame), gwConfig);
         queueToDispatcher(macacoFrame, gwConfig);
     }
 

@@ -62,4 +62,8 @@ public class SoulissUDPConstants {
     protected static final Byte[] PING_DISCOVER_BCAST_PAYLOAD = { SOULISS_UDP_FUNCTION_DISCOVER_GW_NODE_BCAST_REQ, 0, 0,
             0, 0 };
     protected static final Byte[] DBSTRUCT_PAYLOAD = { SOULISS_UDP_FUNCTION_DBSTRUCT_REQ, 0, 0, 0, 0 };
+
+    // private constructor
+    private SoulissUDPConstants() {
+    }
 }

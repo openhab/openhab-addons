@@ -49,8 +49,8 @@ public class SoulissGatewayJobPing implements Runnable {
     private void sendPing(SoulissGatewayHandler soulissGwHandler) {
         // sending ping packet
 
-        if (soulissGwHandler.gwConfig.gatewayLanAddress.length() > 0) {
-            commonCommands.sendPing(soulissGwHandler.gwConfig);
+        if (soulissGwHandler.getGwConfig().gatewayLanAddress.length() > 0) {
+            commonCommands.sendPing(soulissGwHandler.getGwConfig());
             // ping packet sent
         }
     }
