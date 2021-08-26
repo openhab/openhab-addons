@@ -338,6 +338,8 @@ public enum MiIoDevices {
     YUNMI_WATERPURIFIER_V2("yunmi.waterpurifier.v2", "Mi Water Purifier v2", THING_TYPE_BASIC),
     YUNMI_WATERPURIFIER_V3("yunmi.waterpurifier.v3", "Mi Water Purifier (Under sink) v3", THING_TYPE_BASIC),
     YUNMI_WATERPURIFIER_V4("yunmi.waterpurifier.v4", "Mi Water Purifier v4", THING_TYPE_BASIC),
+    ZHIMI_AIRFRESH_VA2("zhimi.airfresh.va2", "Smartmi Ventilation System", THING_TYPE_BASIC),
+    ZHIMI_AIRFRESH_VA4("zhimi.airfresh.va4", "Smartmi Fresh Air System (Heating)", THING_TYPE_BASIC),
     ZHIMI_AIRMONITOR_V1("zhimi.airmonitor.v1", "Mi PM2.5 Air Quality Monitor", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_M1("zhimi.airpurifier.m1", "Mi Air Purifier 2 (mini)", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_M2("zhimi.airpurifier.m2", "Mi Air Purifier 2", THING_TYPE_BASIC),

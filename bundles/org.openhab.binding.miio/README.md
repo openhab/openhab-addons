@@ -456,6 +456,8 @@ Currently the miio binding supports more than 290 different models.
 | Mi Water Purifier v2         | miio:basic       | [yunmi.waterpurifier.v2](#yunmi-waterpurifier-v2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Water Purifier (Under sink) v3 | miio:basic       | [yunmi.waterpurifier.v3](#yunmi-waterpurifier-v3) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Water Purifier v4         | miio:basic       | [yunmi.waterpurifier.v4](#yunmi-waterpurifier-v4) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Smartmi Ventilation System   | miio:basic       | [zhimi.airfresh.va2](#zhimi-airfresh-va2) | Yes       |            |
+| Smartmi Fresh Air System (Heating) | miio:basic       | [zhimi.airfresh.va4](#zhimi-airfresh-va4) | Yes       |            |
 | Mi PM2.5 Air Quality Monitor | miio:basic       | [zhimi.airmonitor.v1](#zhimi-airmonitor-v1) | Yes       |            |
 | Mi Air Purifier 2 (mini)     | miio:basic       | [zhimi.airpurifier.m1](#zhimi-airpurifier-m1) | Yes       |            |
 | Mi Air Purifier 2            | miio:basic       | [zhimi.airpurifier.m2](#zhimi-airpurifier-m2) | Yes       |            |
@@ -4112,6 +4114,44 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
 | tds_out_avg          | Number               | Average TDS out                          |            |
 | lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
+
+### Smartmi Ventilation System (<a name="zhimi-airfresh-va2">zhimi.airfresh.va2</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| heater               | Switch               | Heater                                   |            |
+| airFreshMode         | String               | Mode                                     | Value mapping `["0"="Interval","1"="Sleep","2"="Low","3"="Medium","4"="High","5"="Auto"]` |
+| humidity             | Number:Dimensionless | Humidity                                 |            |
+| co2                  | Number:Dimensionless | CO2                                      |            |
+| airFreshChildLock    | Switch               | Child Lock                               |            |
+| buzzer               | Switch               | Buzzer                                   |            |
+| aqi                  | Number               | Air Quality Index                        |            |
+| averageaqi           | Number               | Average Air Quality Index                |            |
+| filterhours          | Number:Time          | Filter Hours used                        |            |
+| usedhours            | Number:Time          | Run Time                                 |            |
+| motorspeed           | Number               | Motor Speed                              |            |
+| led_level            | Number               | Led - Brightness                         | Value mapping `["0"="High","1"="Low","2"="Idle"]` |
+| temperature          | Number:Temperature   | Temperature                              |            |
+
+### Smartmi Fresh Air System (Heating) (<a name="zhimi-airfresh-va4">zhimi.airfresh.va4</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| heater               | Switch               | Heater                                   |            |
+| airFreshMode         | String               | Mode                                     | Value mapping `["0"="Interval","1"="Sleep","2"="Low","3"="Medium","4"="High","5"="Auto"]` |
+| humidity             | Number:Dimensionless | Humidity                                 |            |
+| co2                  | Number:Dimensionless | CO2                                      |            |
+| airFreshChildLock    | Switch               | Child Lock                               |            |
+| buzzer               | Switch               | Buzzer                                   |            |
+| aqi                  | Number               | Air Quality Index                        |            |
+| averageaqi           | Number               | Average Air Quality Index                |            |
+| filterhours          | Number:Time          | Filter Hours used                        |            |
+| usedhours            | Number:Time          | Run Time                                 |            |
+| motorspeed           | Number               | Motor Speed                              |            |
+| led_level            | Number               | Led - Brightness                         | Value mapping `["0"="High","1"="Low","2"="Idle"]` |
+| temperature          | Number:Temperature   | Temperature                              |            |
 
 ### Mi PM2.5 Air Quality Monitor (<a name="zhimi-airmonitor-v1">zhimi.airmonitor.v1</a>) Channels
 
@@ -9388,6 +9428,50 @@ Number maintenance_interval "Maintenance Interval" (G_waterpurifier) {channel="m
 Number tds_warn_thd "TDS Warn Threshold" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_warn_thd"}
 Number tds_out_avg "Average TDS out" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_out_avg"}
 Number lightMode "Light Mode" (G_waterpurifier) {channel="miio:basic:waterpurifier:lightMode"}
+```
+
+### Smartmi Ventilation System (zhimi.airfresh.va2) item file lines
+
+note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_airfresh "Smartmi Ventilation System" <status>
+Switch power "Power" (G_airfresh) {channel="miio:basic:airfresh:power"}
+Switch heater "Heater" (G_airfresh) {channel="miio:basic:airfresh:heater"}
+String airFreshMode "Mode" (G_airfresh) {channel="miio:basic:airfresh:airFreshMode"}
+Number:Dimensionless humidity "Humidity" (G_airfresh) {channel="miio:basic:airfresh:humidity"}
+Number:Dimensionless co2 "CO2" (G_airfresh) {channel="miio:basic:airfresh:co2"}
+Switch airFreshChildLock "Child Lock" (G_airfresh) {channel="miio:basic:airfresh:airFreshChildLock"}
+Switch buzzer "Buzzer" (G_airfresh) {channel="miio:basic:airfresh:buzzer"}
+Number aqi "Air Quality Index" (G_airfresh) {channel="miio:basic:airfresh:aqi"}
+Number averageaqi "Average Air Quality Index" (G_airfresh) {channel="miio:basic:airfresh:averageaqi"}
+Number:Time filterhours "Filter Hours used" (G_airfresh) {channel="miio:basic:airfresh:filterhours"}
+Number:Time usedhours "Run Time" (G_airfresh) {channel="miio:basic:airfresh:usedhours"}
+Number motorspeed "Motor Speed" (G_airfresh) {channel="miio:basic:airfresh:motorspeed"}
+Number led_level "Led - Brightness" (G_airfresh) {channel="miio:basic:airfresh:led_level"}
+Number:Temperature temperature "Temperature" (G_airfresh) {channel="miio:basic:airfresh:temperature"}
+```
+
+### Smartmi Fresh Air System (Heating) (zhimi.airfresh.va4) item file lines
+
+note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_airfresh "Smartmi Fresh Air System (Heating)" <status>
+Switch power "Power" (G_airfresh) {channel="miio:basic:airfresh:power"}
+Switch heater "Heater" (G_airfresh) {channel="miio:basic:airfresh:heater"}
+String airFreshMode "Mode" (G_airfresh) {channel="miio:basic:airfresh:airFreshMode"}
+Number:Dimensionless humidity "Humidity" (G_airfresh) {channel="miio:basic:airfresh:humidity"}
+Number:Dimensionless co2 "CO2" (G_airfresh) {channel="miio:basic:airfresh:co2"}
+Switch airFreshChildLock "Child Lock" (G_airfresh) {channel="miio:basic:airfresh:airFreshChildLock"}
+Switch buzzer "Buzzer" (G_airfresh) {channel="miio:basic:airfresh:buzzer"}
+Number aqi "Air Quality Index" (G_airfresh) {channel="miio:basic:airfresh:aqi"}
+Number averageaqi "Average Air Quality Index" (G_airfresh) {channel="miio:basic:airfresh:averageaqi"}
+Number:Time filterhours "Filter Hours used" (G_airfresh) {channel="miio:basic:airfresh:filterhours"}
+Number:Time usedhours "Run Time" (G_airfresh) {channel="miio:basic:airfresh:usedhours"}
+Number motorspeed "Motor Speed" (G_airfresh) {channel="miio:basic:airfresh:motorspeed"}
+Number led_level "Led - Brightness" (G_airfresh) {channel="miio:basic:airfresh:led_level"}
+Number:Temperature temperature "Temperature" (G_airfresh) {channel="miio:basic:airfresh:temperature"}
 ```
 
 ### Mi PM2.5 Air Quality Monitor (zhimi.airmonitor.v1) item file lines
