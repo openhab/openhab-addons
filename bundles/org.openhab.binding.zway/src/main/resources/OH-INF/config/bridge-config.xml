@@ -52,7 +52,7 @@
 			<description>Password to access the Z-Way server.</description>
 		</parameter>
 
-		<parameter name="pollingInterval" groupName="binding" type="integer" required="false" min="60" max="3600"
+		<parameter name="pollingInterval" groupName="binding" type="integer" required="false" min="1" max="3600"
 			unit="s">
 			<label>Polling Interval</label>
 			<description>Refresh device states and registration from Z-Way server.</description>

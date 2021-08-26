@@ -70,10 +70,10 @@ Some notes:
 things/benq.things:
 
 ```
-//serial port connection
+// serial port connection
 benqprojector:projector-serial:hometheater "Projector" [ serialPort="COM5", pollingInterval=10 ]
 
-// serial over IP connection
+// direct IP or serial over IP connection
 benqprojector:projector-tcp:hometheater "Projector" [ host="192.168.0.10", port=8000, pollingInterval=10 ]
 
 ```
@@ -94,7 +94,7 @@ Number benqLampTime     "Lamp Time [%d h]"   <switch> { channel="benqprojector:p
 sitemaps/benq.sitemap
 
 ```
-sitemap benq label="BenQ Projector Demo" {
+sitemap benq label="BenQ Projector" {
     Frame label="Controls" {
         Switch     item=benqPower  label="Power"
         Selection  item=benqSource label="Source" mappings=["hdmi"="HDMI", "hdmi2"="HDMI2", "ypbr"="Component", "RGB"="Computer", "vid"="Video", "svid"="S-Video"]

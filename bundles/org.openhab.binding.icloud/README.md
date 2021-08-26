@@ -116,7 +116,7 @@ then
     val PointType phone_location = iPhone_Location.state as PointType
     val int distance = phone_location.distanceFrom(home_location).intValue()
     // specify your preferred radius (in meters)
-    if ( distance < 200) {
+    if (distance < 200) {
         iPhone_Home.postUpdate(ON)
         logInfo("iPhone Home", "iPhone is at home.")
     } else {
