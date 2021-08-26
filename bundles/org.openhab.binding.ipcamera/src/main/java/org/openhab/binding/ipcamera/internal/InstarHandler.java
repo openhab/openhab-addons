@@ -185,7 +185,7 @@ public class InstarHandler extends ChannelDuplexHandler {
         }
     }
 
-    void alarmTriggered(String alarm) {
+    public void alarmTriggered(String alarm) {
         ipCameraHandler.logger.debug("Alarm has been triggered:{}", alarm);
         switch (alarm) {
             case "/instar?&active=1":// The motion area boxes 1-4

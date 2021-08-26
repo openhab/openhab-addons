@@ -42,6 +42,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +67,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 @NonNullByDefault
 public class IpCameraGroupHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final HttpService httpService;
     public GroupConfig groupConfig;
     private BigDecimal pollTimeInSeconds = new BigDecimal(2);
     public ArrayList<IpCameraHandler> cameraOrder = new ArrayList<IpCameraHandler>(2);
@@ -86,7 +88,8 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     private int discontinuitySequence = 0;
     private GroupTracker groupTracker;
 
-    public IpCameraGroupHandler(Thing thing, @Nullable String openhabIpAddress, GroupTracker groupTracker) {
+    public IpCameraGroupHandler(Thing thing, @Nullable String openhabIpAddress, GroupTracker groupTracker,
+            HttpService httpService) {
         super(thing);
         groupConfig = getConfigAs(GroupConfig.class);
         if (openhabIpAddress != null) {
@@ -95,6 +98,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
             hostIp = Helper.getLocalIpAddress();
         }
         this.groupTracker = groupTracker;
+        this.httpService = httpService;
     }
 
     public String getPlayList() {

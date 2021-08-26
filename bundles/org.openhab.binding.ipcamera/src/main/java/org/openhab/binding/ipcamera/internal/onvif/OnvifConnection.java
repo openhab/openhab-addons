@@ -231,7 +231,7 @@ public class OnvifConnection {
                     return "<GetSystemDateAndTime xmlns=\"http://www.onvif.org/ver10/device/wsdl\"/>";
                 case Subscribe:
                     return "<Subscribe xmlns=\"http://docs.oasis-open.org/wsn/b-2/\"><ConsumerReference><Address>http://"
-                            + ipCameraHandler.hostIp + ":" + ipCameraHandler.cameraConfig.getServerPort()
+                            + ipCameraHandler.hostIp + ":8080/ipcamera/" + ipCameraHandler.getThing().getUID().getId()
                             + "/OnvifEvent</Address></ConsumerReference></Subscribe>";
                 case Unsubscribe:
                     return "<Unsubscribe xmlns=\"http://docs.oasis-open.org/wsn/b-2/\"></Unsubscribe>";

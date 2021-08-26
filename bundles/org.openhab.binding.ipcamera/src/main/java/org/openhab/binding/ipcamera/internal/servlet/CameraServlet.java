@@ -1,0 +1,228 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.ipcamera.internal.servlet;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ipcamera.internal.Ffmpeg;
+import org.openhab.binding.ipcamera.internal.InstarHandler;
+import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
+import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
+import org.osgi.service.http.HttpService;
+import org.osgi.service.http.NamespaceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * The {@link CameraServlet} is responsible for serving files for a single camera back to the Jetty server normally
+ * found on port 8080
+ *
+ * @author Matthew Skinner - Initial contribution
+ */
+@NonNullByDefault
+public class CameraServlet extends HttpServlet {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final long serialVersionUID = -23465822674L;
+    private final IpCameraHandler handler;
+
+    public CameraServlet(IpCameraHandler ipCameraHandler, HttpService httpService) {
+        handler = ipCameraHandler;
+        try {
+            httpService.registerServlet("/ipcamera/" + handler.getThing().getUID().getId(), this, null,
+                    httpService.createDefaultHttpContext());
+        } catch (NamespaceException | ServletException e) {
+            logger.warn("Registering servlet failed:{}", e.getMessage());
+        }
+    }
+
+    @Override
+    protected void doPost(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
+        if (req == null) {
+            return;
+        }
+        if (resp == null) {
+            return;
+        }
+        String pathInfo = req.getPathInfo();
+        if (pathInfo == null) {
+            return;
+        }
+        logger.info("Post request for {}, received from {}", pathInfo, req.getRemoteHost());
+        switch (pathInfo) {
+            case "/ipcamera.jpg":
+                // ipCameraHandler.sendMjpegFrame(incomingJpeg, ipCameraHandler.mjpegChannelGroup);
+                break;
+            case "/snapshot.jpg":
+                ServletInputStream snapshotData = req.getInputStream();
+                handler.processSnapshot(snapshotData.readAllBytes());
+                snapshotData.close();
+                break;
+            case "/OnvifEvent":
+                handler.onvifCamera.eventRecieved(req.getReader().toString());
+                break;
+            default:
+                logger.debug("Stream Server recieved unknown request \tPOST:{}", pathInfo);
+                break;
+        }
+    }
+
+    @Override
+    protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
+        if (req == null) {
+            return;
+        }
+        if (resp == null) {
+            return;
+        }
+        String pathInfo = req.getPathInfo();
+        if (pathInfo == null) {
+            return;
+        }
+        logger.trace("GET: request for {}, received from {}", pathInfo, req.getRemoteHost());
+        if (!"DISABLE".equals(handler.getWhiteList())) {
+            String requestIP = "(" + req.getRemoteHost() + ")";
+            if (!handler.getWhiteList().contains(requestIP)) {
+                logger.warn("The request made from {} was not in the whiteList and will be ignored.", requestIP);
+                return;
+            }
+        }
+        switch (pathInfo) {
+            case "/ipcamera.m3u8":
+                Ffmpeg localFfmpeg = handler.ffmpegHLS;
+                if (localFfmpeg == null) {
+                    handler.setupFfmpegFormat(FFmpegFormat.HLS);
+                } else if (!localFfmpeg.getIsAlive()) {
+                    localFfmpeg.startConverting();
+                } else {
+                    localFfmpeg.setKeepAlive(8);
+                    sendFile(resp, pathInfo, "application/x-mpegurl");
+                    return;
+                }
+                // Allow files to be created, or you get old m3u8 from the last time this ran.
+                try {
+                    TimeUnit.MILLISECONDS.sleep(4500);
+                } catch (InterruptedException e) {
+                }
+                sendFile(resp, pathInfo, "application/x-mpegurl");
+                return;
+            case "/ipcamera.mpd":
+                sendFile(resp, pathInfo, "application/dash+xml");
+                return;
+            case "/ipcamera.gif":
+                sendFile(resp, pathInfo, "image/gif");
+                return;
+            case "/ipcamera.jpg":
+                if (!handler.snapshotPolling && handler.snapshotUri != "") {
+                    handler.sendHttpGET(handler.snapshotUri);
+                }
+                if (handler.currentSnapshot.length == 1) {
+                    logger.warn("ipcamera.jpg was requested but there is no jpg in ram to send.");
+                    return;
+                }
+                sendSnapshotImage(resp, "image/jpg");
+                return;
+            case "/snapshots.mjpeg":
+                // handlingSnapshotStream = true;
+                handler.startSnapshotPolling();
+                // handler.setupSnapshotStreaming(true, ctx, false);
+                return;
+            case "/ipcamera.mjpeg":
+                // handler.setupMjpegStreaming(true, ctx);
+                // handlingMjpeg = true;
+                return;
+            case "/autofps.mjpeg":
+                // handlingSnapshotStream = true;
+                // handler.setupSnapshotStreaming(true, ctx, true);
+                return;
+            case "/instar":
+                InstarHandler instar = new InstarHandler(handler);
+                instar.alarmTriggered(pathInfo + req.getQueryString());
+                return;
+            case "/ipcamera0.ts":
+            default:
+                if (pathInfo.contains(".ts")) {
+                    sendFile(resp, pathInfo, "video/MP2T");
+                } else if (pathInfo.contains(".gif")) {
+                    sendFile(resp, pathInfo, "image/gif");
+                } else if (pathInfo.contains(".jpg")) {
+                    // Allow access to the preroll and postroll jpg files
+                    sendFile(resp, pathInfo, "image/jpg");
+                } else if (pathInfo.contains(".m4s") || pathInfo.contains(".mp4")) {
+                    sendFile(resp, pathInfo, "video/mp4");
+                }
+                return;
+        }
+    }
+
+    private void sendFile(HttpServletResponse response, @Nullable String fileUri, String contentType)
+            throws IOException {
+        File file = new File(handler.cameraConfig.getFfmpegOutput() + fileUri);
+        if (!file.exists()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        response.setBufferSize((int) file.length());
+        response.setContentType(contentType);
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Expose-Headers", "*");
+        response.setHeader("Content-Length", String.valueOf(file.length()));
+        BufferedInputStream input = null;
+        BufferedOutputStream output = null;
+        try {
+            input = new BufferedInputStream(new FileInputStream(file), (int) file.length());
+            output = new BufferedOutputStream(response.getOutputStream(), (int) file.length());
+            byte[] buffer = new byte[(int) file.length()];
+            int length;
+            while ((length = input.read(buffer)) > 0) {
+                output.write(buffer, 0, length);
+            }
+        } finally {
+            if (output != null) {
+                output.close();
+            }
+            if (input != null) {
+                input.close();
+            }
+        }
+    }
+
+    private void sendSnapshotImage(HttpServletResponse response, String contentType) {
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Expose-Headers", "*");
+        response.setContentType(contentType);
+        handler.lockCurrentSnapshot.lock();
+        try {
+            OutputStream os = response.getOutputStream();
+            response.setContentLength(handler.currentSnapshot.length);
+            os.write(handler.currentSnapshot, 0, handler.currentSnapshot.length);
+            os.close();
+        } catch (IOException e) {
+        } finally {
+            handler.lockCurrentSnapshot.unlock();
+        }
+    }
+}

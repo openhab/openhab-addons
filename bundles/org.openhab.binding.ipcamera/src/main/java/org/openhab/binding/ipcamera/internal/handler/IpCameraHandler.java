@@ -58,6 +58,7 @@ import org.openhab.binding.ipcamera.internal.IpCameraDynamicStateDescriptionProv
 import org.openhab.binding.ipcamera.internal.MyNettyAuthHandler;
 import org.openhab.binding.ipcamera.internal.StreamServerHandler;
 import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection;
+import org.openhab.binding.ipcamera.internal.servlet.CameraServlet;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -74,6 +75,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,6 +140,8 @@ public class IpCameraHandler extends BaseThingHandler {
     private final ChannelGroup snapshotMjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private final ChannelGroup autoSnapshotMjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     public final ChannelGroup openChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private final HttpService httpService;
+    private @Nullable CameraServlet servlet;
     public @Nullable Ffmpeg ffmpegHLS = null;
     public @Nullable Ffmpeg ffmpegRecord = null;
     public @Nullable Ffmpeg ffmpegGIF = null;
@@ -421,7 +425,7 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public IpCameraHandler(Thing thing, @Nullable String ipAddress, GroupTracker groupTracker,
-            IpCameraDynamicStateDescriptionProvider stateDescriptionProvider) {
+            IpCameraDynamicStateDescriptionProvider stateDescriptionProvider, HttpService httpService) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
         if (ipAddress != null) {
@@ -430,6 +434,7 @@ public class IpCameraHandler extends BaseThingHandler {
             hostIp = Helper.getLocalIpAddress();
         }
         this.groupTracker = groupTracker;
+        this.httpService = httpService;
     }
 
     private IpCameraHandler getHandle() {
@@ -688,6 +693,11 @@ public class IpCameraHandler extends BaseThingHandler {
 
     @SuppressWarnings("null")
     public void startStreamServer() {
+        servlet = new CameraServlet(this, httpService);
+        updateState(CHANNEL_HLS_URL, new StringType(
+                "http://" + hostIp + ":8080/ipcamera/" + getThing().getUID().getId() + "/ipcamera.m3u8"));
+        updateState(CHANNEL_IMAGE_URL,
+                new StringType("http://" + hostIp + ":8080/ipcamera/" + getThing().getUID().getId() + "/ipcamera.jpg"));
         if (serverBootstrap == null) {
             try {
                 serversLoopGroup = new NioEventLoopGroup();
@@ -711,10 +721,7 @@ public class IpCameraHandler extends BaseThingHandler {
                         cameraConfig.getServerPort());
                 updateState(CHANNEL_MJPEG_URL,
                         new StringType("http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.mjpeg"));
-                updateState(CHANNEL_HLS_URL,
-                        new StringType("http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.m3u8"));
-                updateState(CHANNEL_IMAGE_URL,
-                        new StringType("http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.jpg"));
+
             } catch (Exception e) {
                 cameraConfigError("Exception when starting server. Try changing the Server Port to another number.");
             }
@@ -722,8 +729,8 @@ public class IpCameraHandler extends BaseThingHandler {
                 logger.debug("Setting up the Alarm Server settings in the camera now");
                 sendHttpGET(
                         "/param.cgi?cmd=setmdalarm&-aname=server2&-switch=on&-interval=1&cmd=setalarmserverattr&-as_index=3&-as_server="
-                                + hostIp + "&-as_port=" + cameraConfig.getServerPort()
-                                + "&-as_path=/instar&-as_queryattr1=&-as_queryval1=&-as_queryattr2=&-as_queryval2=&-as_queryattr3=&-as_queryval3=&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0");
+                                + hostIp + "&-as_port=8080" + "&-as_path=/ipcamera/" + getThing().getUID().getId()
+                                + "/instar&-as_queryattr1=&-as_queryval1=&-as_queryattr2=&-as_queryval2=&-as_queryattr3=&-as_queryval3=&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0");
             }
         }
     }
