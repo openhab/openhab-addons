@@ -44,6 +44,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DanfossAirUnitHandler extends BaseThingHandler {
 
+    private static final int TCP_PORT = 30046;
+    private static final int POLLING_INTERVAL_SECONDS = 5;
     private final Logger logger = LoggerFactory.getLogger(DanfossAirUnitHandler.class);
     private @NonNullByDefault({}) DanfossAirUnitConfiguration config;
     private @Nullable ValueCache valueCache;
@@ -86,7 +88,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
         config = getConfigAs(DanfossAirUnitConfiguration.class);
         valueCache = new ValueCache(config.updateUnchangedValuesEveryMillis);
         try {
-            DanfossAirUnit danfossAirUnit = new DanfossAirUnit(InetAddress.getByName(config.host), 30046);
+            DanfossAirUnit danfossAirUnit = new DanfossAirUnit(InetAddress.getByName(config.host), TCP_PORT);
             hrv = danfossAirUnit;
             scheduler.execute(() -> {
                 try {
@@ -151,8 +153,8 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
     }
 
     private synchronized void startPolling() {
-        pollingJob = scheduler.scheduleWithFixedDelay(this::updateAllChannels, 5, config.refreshInterval,
-                TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::updateAllChannels, POLLING_INTERVAL_SECONDS,
+                config.refreshInterval, TimeUnit.SECONDS);
     }
 
     private synchronized void stopPolling() {
