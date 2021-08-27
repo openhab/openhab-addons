@@ -24,9 +24,6 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.annotation.MultipartConfig;
-import javax.servlet.annotation.WebListener;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,10 +45,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Matthew Skinner - Initial contribution
  */
-@WebServlet("/ipcamera")
-@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 8, // 8 MB
-        maxFileSize = -1L, maxRequestSize = -1L)
-@WebListener()
 @NonNullByDefault
 public class CameraServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -82,7 +75,7 @@ public class CameraServlet extends HttpServlet {
         if (pathInfo == null) {
             return;
         }
-        logger.info("Post request for {}, received from {}", pathInfo, req.getRemoteHost());
+        logger.debug("Post request for {}, received from {}", pathInfo, req.getRemoteHost());
         switch (pathInfo) {
             case "/ipcamera.jpg":
                 // TODO: refactor: handler.sendMjpegFrame(incomingJpeg, ipCameraHandler.mjpegChannelGroup);
@@ -113,7 +106,7 @@ public class CameraServlet extends HttpServlet {
         if (pathInfo == null) {
             return;
         }
-        logger.trace("GET: request for {}, received from {}", pathInfo, req.getRemoteHost());
+        logger.debug("GET: request for {}, received from {}", pathInfo, req.getRemoteHost());
         if (!"DISABLE".equals(handler.getWhiteList())) {
             String requestIP = "(" + req.getRemoteHost() + ")";
             if (!handler.getWhiteList().contains(requestIP)) {
@@ -165,7 +158,7 @@ public class CameraServlet extends HttpServlet {
                 do {
                     try {
                         output.sendFrame(handler.getSnapshot());
-                        Thread.sleep(1010);
+                        Thread.sleep(1005);
                     } catch (InterruptedException | IOException e) {
                         // Never stop streaming until IOException. Occurs when browser stops the stream.
                         snapshotStreamsOpen--;
@@ -186,14 +179,16 @@ public class CameraServlet extends HttpServlet {
                 autofpsStreamsOpen++;
                 handler.streamingAutoFps = true;
                 output = new StreamOutput(resp);
+                int counter = 0;
                 do {
                     try {
-                        output.sendFrame(handler.getSnapshot());
                         if (handler.motionDetected) {
-                            Thread.sleep(1010);
-                        } else {
-                            Thread.sleep(8000);// 8 seconds is max that tested browsers can handle.
+                            output.sendFrame(handler.getSnapshot());
+                        } else if (counter % 8 == 0) {// every 8 seconds if no motion
+                            output.sendFrame(handler.getSnapshot());
                         }
+                        counter++;
+                        Thread.sleep(1000);
                     } catch (InterruptedException | IOException e) {
                         // Never stop streaming until IOException. Occurs when browser stops the stream.
                         autofpsStreamsOpen--;
