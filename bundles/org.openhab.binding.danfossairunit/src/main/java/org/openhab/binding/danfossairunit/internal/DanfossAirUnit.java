@@ -45,7 +45,6 @@ import org.openhab.core.types.Command;
  * @author Robert Bach - heavy refactorings
  */
 
-@SuppressWarnings("SameParameterValue")
 @NonNullByDefault
 public class DanfossAirUnit {
 
