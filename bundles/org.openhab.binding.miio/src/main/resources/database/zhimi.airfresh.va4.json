@@ -238,7 +238,7 @@
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_ptc_state",
+						"command": "set_led_level",
 						"parameterType": "NUMBER"
 					}
 				],
