@@ -164,7 +164,12 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
     }
 
     private void updateState(String groupId, String channelId, State state) {
-        if (valueCache.updateValue(channelId, state)) {
+        ValueCache cache = valueCache;
+        if (cache == null) {
+            return;
+        }
+
+        if (cache.updateValue(channelId, state)) {
             updateState(new ChannelUID(thing.getUID(), groupId, channelId), state);
         }
     }
