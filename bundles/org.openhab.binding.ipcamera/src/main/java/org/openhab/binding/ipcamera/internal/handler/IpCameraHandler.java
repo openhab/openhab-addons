@@ -198,7 +198,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public int audioThreshold = 35;
     @SuppressWarnings("unused")
     private @Nullable StreamServerHandler streamServerHandler;
-    private boolean streamingSnapshotMjpeg = false;
+    public boolean streamingSnapshotMjpeg = false;
     public boolean motionAlarmEnabled = false;
     public boolean audioAlarmEnabled = false;
     public boolean ffmpegSnapshotGeneration = false;
@@ -666,14 +666,11 @@ public class IpCameraHandler extends BaseThingHandler {
             sendMjpegFrame(incommingSnapshot, snapshotMjpegChannelGroup);
         }
         if (streamingAutoFps) {
-            if (motionDetected) {
+            if (motionDetected || updateAutoFps) {
                 sendMjpegFrame(incommingSnapshot, autoSnapshotMjpegChannelGroup);
-            } else if (updateAutoFps) {
-                // only happens every 8 seconds as some browsers need a frame that often to keep stream alive.
-                sendMjpegFrame(incommingSnapshot, autoSnapshotMjpegChannelGroup);
-                updateAutoFps = false;
             }
         }
+        updateAutoFps = false;// will get set true again in approx 8 seconds time.
 
         if (updateImageChannel) {
             updateState(CHANNEL_IMAGE, new RawType(incommingSnapshot, "image/jpeg"));
@@ -693,11 +690,13 @@ public class IpCameraHandler extends BaseThingHandler {
 
     @SuppressWarnings("null")
     public void startStreamServer() {
-        servlet = new CameraServlet(this, httpService);
-        updateState(CHANNEL_HLS_URL, new StringType(
-                "http://" + hostIp + ":8080/ipcamera/" + getThing().getUID().getId() + "/ipcamera.m3u8"));
-        updateState(CHANNEL_IMAGE_URL,
-                new StringType("http://" + hostIp + ":8080/ipcamera/" + getThing().getUID().getId() + "/ipcamera.jpg"));
+        if (servlet == null) {
+            servlet = new CameraServlet(this, httpService);
+        }
+        updateState(CHANNEL_HLS_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
+                + getThing().getUID().getId() + "/ipcamera.m3u8"));
+        updateState(CHANNEL_IMAGE_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
+                + getThing().getUID().getId() + "/ipcamera.jpg"));
         if (serverBootstrap == null) {
             try {
                 serversLoopGroup = new NioEventLoopGroup();
@@ -729,7 +728,8 @@ public class IpCameraHandler extends BaseThingHandler {
                 logger.debug("Setting up the Alarm Server settings in the camera now");
                 sendHttpGET(
                         "/param.cgi?cmd=setmdalarm&-aname=server2&-switch=on&-interval=1&cmd=setalarmserverattr&-as_index=3&-as_server="
-                                + hostIp + "&-as_port=8080" + "&-as_path=/ipcamera/" + getThing().getUID().getId()
+                                + hostIp + "&-as_port=" + SERVLET_PORT + "&-as_path=/ipcamera/"
+                                + getThing().getUID().getId()
                                 + "/instar&-as_queryattr1=&-as_queryval1=&-as_queryattr2=&-as_queryval2=&-as_queryattr3=&-as_queryval3=&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0");
             }
         }
@@ -1570,6 +1570,15 @@ public class IpCameraHandler extends BaseThingHandler {
             if (--snapCount == 0) {
                 setupFfmpegFormat(FFmpegFormat.GIF);
             }
+        }
+    }
+
+    public byte[] getSnapshot() {
+        lockCurrentSnapshot.lock();
+        try {
+            return currentSnapshot;
+        } finally {
+            lockCurrentSnapshot.unlock();
         }
     }
 

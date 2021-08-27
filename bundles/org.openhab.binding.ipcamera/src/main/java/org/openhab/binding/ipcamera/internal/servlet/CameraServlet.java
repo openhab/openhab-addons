@@ -12,16 +12,21 @@
  */
 package org.openhab.binding.ipcamera.internal.servlet;
 
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.HLS_STARTUP_DELAY_MS;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebListener;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,11 +48,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Matthew Skinner - Initial contribution
  */
+@WebServlet("/ipcamera")
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 8, // 8 MB
+        maxFileSize = -1L, maxRequestSize = -1L)
+@WebListener()
 @NonNullByDefault
 public class CameraServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final long serialVersionUID = -23465822674L;
     private final IpCameraHandler handler;
+    private int autofpsStreamsOpen = 0;
+    private int snapshotStreamsOpen = 0;
 
     public CameraServlet(IpCameraHandler ipCameraHandler, HttpService httpService) {
         handler = ipCameraHandler;
@@ -74,7 +85,7 @@ public class CameraServlet extends HttpServlet {
         logger.info("Post request for {}, received from {}", pathInfo, req.getRemoteHost());
         switch (pathInfo) {
             case "/ipcamera.jpg":
-                // ipCameraHandler.sendMjpegFrame(incomingJpeg, ipCameraHandler.mjpegChannelGroup);
+                // TODO: refactor: handler.sendMjpegFrame(incomingJpeg, ipCameraHandler.mjpegChannelGroup);
                 break;
             case "/snapshot.jpg":
                 ServletInputStream snapshotData = req.getInputStream();
@@ -124,7 +135,7 @@ public class CameraServlet extends HttpServlet {
                 }
                 // Allow files to be created, or you get old m3u8 from the last time this ran.
                 try {
-                    TimeUnit.MILLISECONDS.sleep(4500);
+                    TimeUnit.MILLISECONDS.sleep(HLS_STARTUP_DELAY_MS);
                 } catch (InterruptedException e) {
                 }
                 sendFile(resp, pathInfo, "application/x-mpegurl");
@@ -146,18 +157,54 @@ public class CameraServlet extends HttpServlet {
                 sendSnapshotImage(resp, "image/jpg");
                 return;
             case "/snapshots.mjpeg":
-                // handlingSnapshotStream = true;
+                req.getSession().setMaxInactiveInterval(0);
+                snapshotStreamsOpen++;
+                handler.streamingSnapshotMjpeg = true;
                 handler.startSnapshotPolling();
-                // handler.setupSnapshotStreaming(true, ctx, false);
-                return;
+                StreamOutput output = new StreamOutput(resp);
+                do {
+                    try {
+                        output.sendFrame(handler.getSnapshot());
+                        Thread.sleep(1010);
+                    } catch (InterruptedException | IOException e) {
+                        // Never stop streaming until IOException. Occurs when browser stops the stream.
+                        snapshotStreamsOpen--;
+                        if (snapshotStreamsOpen == 0) {
+                            handler.streamingSnapshotMjpeg = false;
+                            handler.stopSnapshotPolling();
+                            logger.debug("All snapshots.mjpeg streams have stopped.");
+                        }
+                        return;
+                    }
+                } while (true);
             case "/ipcamera.mjpeg":
-                // handler.setupMjpegStreaming(true, ctx);
-                // handlingMjpeg = true;
+                req.getSession().setMaxInactiveInterval(0);
+                // TODO: refactor: handler.setupMjpegStreaming(resp);
                 return;
             case "/autofps.mjpeg":
-                // handlingSnapshotStream = true;
-                // handler.setupSnapshotStreaming(true, ctx, true);
-                return;
+                req.getSession().setMaxInactiveInterval(0);
+                autofpsStreamsOpen++;
+                handler.streamingAutoFps = true;
+                output = new StreamOutput(resp);
+                do {
+                    try {
+                        output.sendFrame(handler.getSnapshot());
+                        if (handler.motionDetected) {
+                            Thread.sleep(1010);
+                        } else {
+                            Thread.sleep(8000);// 8 seconds is max that tested browsers can handle.
+                        }
+                    } catch (InterruptedException | IOException e) {
+                        // Never stop streaming until IOException. Occurs when browser stops the stream.
+                        autofpsStreamsOpen--;
+                        if (autofpsStreamsOpen == 0) {
+                            handler.streamingAutoFps = false;
+                            handler.stopSnapshotPolling();
+                            logger.debug("All autofps.mjpeg streams have stopped.");
+                        }
+                        return;
+                    }
+                } while (true);
             case "/instar":
                 InstarHandler instar = new InstarHandler(handler);
                 instar.alarmTriggered(pathInfo + req.getQueryString());
@@ -216,10 +263,9 @@ public class CameraServlet extends HttpServlet {
         response.setContentType(contentType);
         handler.lockCurrentSnapshot.lock();
         try {
-            OutputStream os = response.getOutputStream();
             response.setContentLength(handler.currentSnapshot.length);
-            os.write(handler.currentSnapshot, 0, handler.currentSnapshot.length);
-            os.close();
+            ServletOutputStream servletOut = response.getOutputStream();
+            servletOut.write(handler.currentSnapshot);
         } catch (IOException e) {
         } finally {
             handler.lockCurrentSnapshot.unlock();

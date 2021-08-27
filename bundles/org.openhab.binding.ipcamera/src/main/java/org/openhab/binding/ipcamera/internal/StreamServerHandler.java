@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ipcamera.internal;
 
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.HLS_STARTUP_DELAY_MS;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -107,7 +109,7 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
                                 return;
                             }
                             // Allow files to be created, or you get old m3u8 from the last time this ran.
-                            TimeUnit.MILLISECONDS.sleep(4500);
+                            TimeUnit.MILLISECONDS.sleep(HLS_STARTUP_DELAY_MS);
                             sendFile(ctx, httpRequest.uri(), "application/x-mpegurl");
                             return;
                         case "/ipcamera.mpd":
