@@ -20,11 +20,19 @@
 		</channels>
 
 		<properties>
-			<property name="Vendor">Hayward</property>
-			<property name="Min Pump Percent"></property>
-			<property name="Max Pump Percent"></property>
-			<property name="Min Pump RPM"></property>
-			<property name="Max Pump RPM"></property>
+			<property name="vendor">Hayward</property>
+			<property name="filterSharedType"></property>
+			<property name="filterType"></property>
+			<property name="primingEnabled"></property>
+			<property name="minFilterPercent"></property>
+			<property name="maxFilterPercent"></property>
+			<property name="minFilterRPM"></property>
+			<property name="maxFilterRPM"></property>
+			<property name="lowFilterSpeed"></property>
+			<property name="mediumFilterSpeed"></property>
+			<property name="highFilterSpeed"></property>
+			<property name="customFilterSpeed"></property>
+			<property name="freezeProtectOverrideInterval"></property>
 		</properties>
 		<representation-property>systemID</representation-property>
 
@@ -47,7 +55,7 @@
 	<channel-type id="filterSpeed">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Filter Speed</label>
-		<description>Filter Speed in %</description>
+		<description>Filter Speed (%)</description>
 		<state min="0" max="100" step="1.0" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
@@ -76,7 +84,7 @@
 	<channel-type id="filterLastSpeed">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Last Speed</label>
-		<description>Last Speed</description>
+		<description>Last Speed (%)</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 

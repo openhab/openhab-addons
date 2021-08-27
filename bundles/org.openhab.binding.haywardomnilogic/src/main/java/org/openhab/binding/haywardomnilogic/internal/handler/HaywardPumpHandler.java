@@ -105,7 +105,10 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                     switch (channelUID.getId()) {
                         case HaywardBindingConstants.CHANNEL_PUMP_ENABLE:
                             if (command == OnOffType.ON) {
-                                cmdString = "100";
+                                // Command max speed of pump when pump is enabled
+                                String pumpMaxSpeed = getThing().getProperties()
+                                        .get(HaywardBindingConstants.PROPERTY_PUMP_MAXSPEED);
+                                cmdString = pumpMaxSpeed;
                             } else {
                                 cmdString = "0";
                             }

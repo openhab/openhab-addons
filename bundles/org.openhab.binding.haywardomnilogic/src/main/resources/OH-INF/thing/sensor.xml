@@ -16,7 +16,9 @@
 		</channels>
 
 		<properties>
-			<property name="Vendor">Hayward</property>
+			<property name="vendor">Hayward</property>
+			<property name="sensorType"></property>
+			<property name="sensorUnits"></property>
 		</properties>
 		<representation-property>systemID</representation-property>
 

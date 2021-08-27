@@ -109,7 +109,10 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                     switch (channelUID.getId()) {
                         case HaywardBindingConstants.CHANNEL_FILTER_ENABLE:
                             if (command == OnOffType.ON) {
-                                cmdString = "100";
+                                // Command max speed of filter when filter is enabled
+                                String filterMaxSpeed = getThing().getProperties()
+                                        .get(HaywardBindingConstants.PROPERTY_FILTER_MAXSPEED);
+                                cmdString = filterMaxSpeed;
                             } else {
                                 cmdString = "0";
                             }

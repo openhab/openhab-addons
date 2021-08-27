@@ -18,7 +18,11 @@
 		</channels>
 
 		<properties>
-			<property name="Vendor">Hayward</property>
+			<property name="vendor">Hayward</property>
+			<property name="sharedType"></property>
+			<property name="minSettableWaterTemp"></property>
+			<property name="maxSettableWaterTemp"></property>
+			<property name="maxWaterTemp"></property>
 		</properties>
 		<representation-property>systemID</representation-property>
 	</thing-type>

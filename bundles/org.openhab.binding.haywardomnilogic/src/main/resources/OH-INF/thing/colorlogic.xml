@@ -18,7 +18,8 @@
 		</channels>
 
 		<properties>
-			<property name="Vendor">Hayward</property>
+			<property name="vendor">Hayward</property>
+			<property name="colorlogicType"></property>
 		</properties>
 		<representation-property>systemID</representation-property>
 

@@ -17,7 +17,14 @@
 		</channels>
 
 		<properties>
-			<property name="Vendor">Hayward</property>
+			<property name="vendor">Hayward</property>
+			<property name="type">Hayward</property>
+			<property name="sharedType">Hayward</property>
+			<property name="sharedPriority">Hayward</property>
+			<property name="sharedEquipmentSystemID">Hayward</property>
+			<property name="supportsSpillover">Hayward</property>
+			<property name="sizeInGallons">Hayward</property>
+
 		</properties>
 		<representation-property>systemID</representation-property>
 

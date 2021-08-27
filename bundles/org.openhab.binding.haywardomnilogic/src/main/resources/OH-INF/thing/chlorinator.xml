@@ -24,7 +24,11 @@
 		</channels>
 
 		<properties>
-			<property name="Vendor">Hayward</property>
+			<property name="vendor">Hayward</property>
+			<property name="chlorSharedType"></property>
+			<property name="chlorMode"></property>
+			<property name="cellType"></property>
+			<property name="dispenserType"></property>
 		</properties>
 		<representation-property>systemID</representation-property>
 

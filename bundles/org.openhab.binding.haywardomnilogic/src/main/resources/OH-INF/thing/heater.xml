@@ -17,7 +17,10 @@
 		</channels>
 
 		<properties>
-			<property name="Vendor">Hayward</property>
+			<property name="vendor">Hayward</property>
+			<property name="type"></property>
+			<property name="heaterType"></property>
+			<property name="sharedEquipmentSystemID"></property>
 		</properties>
 		<representation-property>systemID</representation-property>
 	</thing-type>
