@@ -40,7 +40,7 @@
 			{
 				"property": "mode",
 				"friendlyName": "Mode",
-				"channel": "airFreshMode",
+				"channel": "mode",
 				"type": "String",
 				"stateDescription": {
 					"options": [
@@ -122,7 +122,7 @@
 			{
 				"property": "child_lock",
 				"friendlyName": "Child Lock",
-				"channel": "airFreshChildLock",
+				"channel": "childLock",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
