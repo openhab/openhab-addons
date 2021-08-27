@@ -63,10 +63,6 @@ public class DanfossAirUnit {
         return communicationController.sendRobustRequest(operation, register)[0] != 0;
     }
 
-    private void setSetting(byte[] register, boolean value) throws IOException {
-        setSetting(register, value ? (byte) 1 : (byte) 0);
-    }
-
     private short getWord(byte[] operation, byte[] register) throws IOException {
         byte[] resultBytes = communicationController.sendRobustRequest(operation, register);
         return (short) ((resultBytes[0] << 8) | (resultBytes[1] & 0xFF));
@@ -85,14 +81,6 @@ public class DanfossAirUnit {
     private void set(byte[] operation, byte[] register, byte value) throws IOException {
         byte[] valueArray = { value };
         communicationController.sendRobustRequest(operation, register, valueArray);
-    }
-
-    private void set(byte[] operation, byte[] register, short value) throws IOException {
-        communicationController.sendRobustRequest(operation, register, shortToBytes(value));
-    }
-
-    private byte[] shortToBytes(short s) {
-        return new byte[] { (byte) ((s & 0xFF00) >> 8), (byte) (s & 0x00FF) };
     }
 
     private short getShort(byte[] operation, byte[] register) throws IOException {
@@ -139,14 +127,6 @@ public class DanfossAirUnit {
     private static float asPercentByte(byte b) {
         float f = asUnsignedByte(b);
         return f * 100 / 255;
-    }
-
-    private void setSetting(byte[] register, short value) throws IOException {
-        byte[] valueArray = new byte[2];
-        valueArray[0] = (byte) (value >> 8);
-        valueArray[1] = (byte) value;
-
-        communicationController.sendRobustRequest(REGISTER_1_WRITE, register, valueArray);
     }
 
     public String getUnitName() throws IOException {
