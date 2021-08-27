@@ -77,7 +77,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected static final Gson GSON = new GsonBuilder().create();
     protected static final String TIMESTAMP = "timestamp";
 
-    protected ScheduledExecutorService miIoScheduler = scheduler;
+    protected ScheduledExecutorService miIoScheduler = new ScheduledThreadPoolExecutor(1,
+            new NamedThreadFactory("miio"));
     protected @Nullable ScheduledFuture<?> pollingJob;
     protected MiIoDevices miDevice = MiIoDevices.UNKNOWN;
     protected boolean isIdentified;
