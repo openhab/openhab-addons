@@ -92,8 +92,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
                 try {
                     thing.setProperty(PROPERTY_UNIT_NAME, danfossAirUnit.getUnitName());
                     thing.setProperty(PROPERTY_SERIAL, danfossAirUnit.getUnitSerialNumber());
-                    pollingJob = scheduler.scheduleWithFixedDelay(this::updateAllChannels, 5, config.refreshInterval,
-                            TimeUnit.SECONDS);
+                    startPolling();
                     updateStatus(ThingStatus.ONLINE);
                 } catch (IOException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -142,15 +141,26 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Disposing Danfoss HRV handler '{}'", getThing().getUID());
 
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
-            pollingJob = null;
-        }
+        stopPolling();
 
-        if (hrv != null) {
-            hrv.cleanUp();
-            hrv = null;
+        DanfossAirUnit danfossAirUnit = hrv;
+        if (danfossAirUnit != null) {
+            danfossAirUnit.cleanUp();
         }
+        hrv = null;
+    }
+
+    private synchronized void startPolling() {
+        pollingJob = scheduler.scheduleWithFixedDelay(this::updateAllChannels, 5, config.refreshInterval,
+                TimeUnit.SECONDS);
+    }
+
+    private synchronized void stopPolling() {
+        ScheduledFuture<?> runningJob = pollingJob;
+        if (runningJob != null) {
+            runningJob.cancel(true);
+        }
+        pollingJob = null;
     }
 
     private void updateState(String groupId, String channelId, State state) {
