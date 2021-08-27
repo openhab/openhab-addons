@@ -32,7 +32,7 @@
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_ptc_stat",
+						"command": "set_ptc_state",
 						"parameterType": "ONOFF"
 					}
 				]
@@ -45,27 +45,27 @@
 				"stateDescription": {
 					"options": [
 						{
-							"value": "0",
+							"value": "interval",
 							"label": "Interval"
 						},
 						{
-							"value": "1",
-							"label": "Sleep"
+							"value": "silent",
+							"label": "Night"
 						},
 						{
-							"value": "2",
-							"label": "Low"
+							"value": "low",
+							"label": "1"
 						},
 						{
-							"value": "3",
-							"label": "Medium"
+							"value": "middle",
+							"label": "2"
 						},
 						{
-							"value": "4",
-							"label": "High"
+							"value": "strong",
+							"label": "3"
 						},
 						{
-							"value": "5",
+							"value": "auto",
 							"label": "Auto"
 						}
 					]
@@ -80,7 +80,7 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Interval\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Low\",\"3\"\u003d\"Medium\",\"4\"\u003d\"High\",\"5\"\u003d\"Auto\"]`"
+				"readmeComment": "Value mapping `[\"interval\"\u003d\"Interval\",\"silent\"\u003d\"Night\",\"low\"\u003d\"1\",\"middle\"\u003d\"2\",\"strong\"\u003d\"3\",\"auto\"\u003d\"Auto\"]`"
 			},
 			{
 				"property": "humidity",
@@ -185,7 +185,6 @@
 				"type": "Number:Time",
 				"unit": "hours",
 				"refresh": true,
-				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "time"
@@ -239,7 +238,7 @@
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_properties",
+						"command": "set_ptc_state",
 						"parameterType": "NUMBER"
 					}
 				],
@@ -256,7 +255,6 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"transformation": "/10",
 				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "temperature",

@@ -4121,7 +4121,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
 | heater               | Switch               | Heater                                   |            |
-| airFreshMode         | String               | Mode                                     | Value mapping `["0"="Interval","1"="Sleep","2"="Low","3"="Medium","4"="High","5"="Auto"]` |
+| airFreshMode         | String               | Mode                                     | Value mapping `["interval"="Interval","silent"="Night","low"="1","middle"="2","strong"="3","auto"="Auto"]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | co2                  | Number:Dimensionless | CO2                                      |            |
 | airFreshChildLock    | Switch               | Child Lock                               |            |
@@ -4140,7 +4140,7 @@ e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enabl
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
 | heater               | Switch               | Heater                                   |            |
-| airFreshMode         | String               | Mode                                     | Value mapping `["0"="Interval","1"="Sleep","2"="Low","3"="Medium","4"="High","5"="Auto"]` |
+| airFreshMode         | String               | Mode                                     | Value mapping `["interval"="Interval","silent"="Night","low"="1","middle"="2","strong"="3","auto"="Auto"]` |
 | humidity             | Number:Dimensionless | Humidity                                 |            |
 | co2                  | Number:Dimensionless | CO2                                      |            |
 | airFreshChildLock    | Switch               | Child Lock                               |            |
