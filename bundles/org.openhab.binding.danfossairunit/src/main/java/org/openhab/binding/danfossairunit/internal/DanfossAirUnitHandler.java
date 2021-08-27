@@ -86,8 +86,8 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
         config = getConfigAs(DanfossAirUnitConfiguration.class);
         valueCache = new ValueCache(config.updateUnchangedValuesEveryMillis);
         try {
-            hrv = new DanfossAirUnit(InetAddress.getByName(config.host), 30046);
-            DanfossAirUnit danfossAirUnit = hrv;
+            DanfossAirUnit danfossAirUnit = new DanfossAirUnit(InetAddress.getByName(config.host), 30046);
+            hrv = danfossAirUnit;
             scheduler.execute(() -> {
                 try {
                     thing.setProperty(PROPERTY_UNIT_NAME, danfossAirUnit.getUnitName());
