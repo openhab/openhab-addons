@@ -302,4 +302,10 @@ public class CameraServlet extends HttpServlet {
             handler.lockCurrentSnapshot.unlock();
         }
     }
+
+    @Override
+    public void destroy() {
+        openStreams.closeAllStreams();
+        super.destroy();
+    }
 }

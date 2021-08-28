@@ -57,4 +57,11 @@ public class OpenStreams {
             stream.queueFrame(frame);
         }
     }
+
+    public void closeAllStreams() {
+        for (StreamOutput stream : openStreams) {
+            stream.close();
+        }
+        openStreams.clear();
+    }
 }

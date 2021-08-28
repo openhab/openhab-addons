@@ -97,4 +97,11 @@ public class StreamOutput {
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Expose-Headers", "*");
     }
+
+    public void close() {
+        try {
+            output.close();
+        } catch (IOException e) {
+        }
+    }
 }

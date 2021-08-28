@@ -922,8 +922,8 @@ public class IpCameraHandler extends BaseThingHandler {
                         inputOptions += " -threads 1 -skip_frame nokey -hide_banner -loglevel warning";
                     }
                     ffmpegSnapshot = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
-                            cameraConfig.getSnapshotOptions(),
-                            "http://127.0.0.1:" + cameraConfig.getServerPort() + "/snapshot.jpg",
+                            cameraConfig.getSnapshotOptions(), "http://127.0.0.1:" + SERVLET_PORT + "/ipcamera/"
+                                    + getThing().getUID().getId() + "/snapshot.jpg",
                             cameraConfig.getUser(), cameraConfig.getPassword());
                 }
                 Ffmpeg localSnaps = ffmpegSnapshot;
@@ -1039,21 +1039,19 @@ public class IpCameraHandler extends BaseThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        if (cameraConfig.getServerPort() > 0) {
-            switch (channelUID.getId()) {
-                case CHANNEL_MJPEG_URL:
-                    updateState(CHANNEL_MJPEG_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
-                            + getThing().getUID().getId() + "/ipcamera.mjpeg"));
-                    break;
-                case CHANNEL_HLS_URL:
-                    updateState(CHANNEL_HLS_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
-                            + getThing().getUID().getId() + "/ipcamera.m3u8"));
-                    break;
-                case CHANNEL_IMAGE_URL:
-                    updateState(CHANNEL_IMAGE_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
-                            + getThing().getUID().getId() + "/ipcamera.jpg"));
-                    break;
-            }
+        switch (channelUID.getId()) {
+            case CHANNEL_MJPEG_URL:
+                updateState(CHANNEL_MJPEG_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
+                        + getThing().getUID().getId() + "/ipcamera.mjpeg"));
+                break;
+            case CHANNEL_HLS_URL:
+                updateState(CHANNEL_HLS_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
+                        + getThing().getUID().getId() + "/ipcamera.m3u8"));
+                break;
+            case CHANNEL_IMAGE_URL:
+                updateState(CHANNEL_IMAGE_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
+                        + getThing().getUID().getId() + "/ipcamera.jpg"));
+                break;
         }
     }
 
@@ -1539,14 +1537,6 @@ public class IpCameraHandler extends BaseThingHandler {
             cameraConfig
                     .setFfmpegOutput(OpenHAB.getUserDataFolder() + "/ipcamera/" + this.thing.getUID().getId() + "/");
         }
-
-        if (cameraConfig.getServerPort() < 1) {
-            logger.warn(
-                    "The Server Port is not set to a valid number which disables a lot of binding features. See readme for more info.");
-        } else if (cameraConfig.getServerPort() < 1025) {
-            logger.warn("The Server Port is <= 1024 and may cause permission errors under Linux, try a higher number.");
-        }
-
         // Known cameras will connect quicker if we skip ONVIF questions.
         switch (thing.getThingTypeUID().getId()) {
             case AMCREST_THING:
@@ -1678,6 +1668,10 @@ public class IpCameraHandler extends BaseThingHandler {
         }
         channelTrackingMap.clear();
         onvifCamera.disconnect();
+        if (servlet != null) {
+            servlet.destroy();
+        }
+        servlet = null;
     }
 
     public String getWhiteList() {
