@@ -53,9 +53,10 @@ public class DanfossAirUnitCommunicationController {
         if (connected) {
             return;
         }
-        socket = new Socket(inetAddr, port);
-        oStream = socket.getOutputStream();
-        iStream = socket.getInputStream();
+        Socket newSocket = new Socket(inetAddr, port);
+        oStream = newSocket.getOutputStream();
+        iStream = newSocket.getInputStream();
+        socket = newSocket;
         connected = true;
     }
 
@@ -64,8 +65,9 @@ public class DanfossAirUnitCommunicationController {
             return;
         }
         try {
-            if (socket != null) {
-                socket.close();
+            Socket connectedSocket = socket;
+            if (connectedSocket != null) {
+                connectedSocket.close();
             }
         } catch (IOException ioe) {
             logger.debug("Connection to air unit could not be closed gracefully. {}", ioe.getMessage());
@@ -98,21 +100,23 @@ public class DanfossAirUnitCommunicationController {
     }
 
     private synchronized byte[] sendRequestInternal(byte[] request) throws IOException {
+        OutputStream localOutputStream = oStream;
 
-        if (oStream == null) {
+        if (localOutputStream == null) {
             throw new IOException(
                     String.format("Output stream is null while sending request: %s", Arrays.toString(request)));
         }
-        oStream.write(request);
-        oStream.flush();
+        localOutputStream.write(request);
+        localOutputStream.flush();
 
         byte[] result = new byte[63];
-        if (iStream == null) {
+        InputStream localInputStream = iStream;
+        if (localInputStream == null) {
             throw new IOException(
                     String.format("Input stream is null while sending request: %s", Arrays.toString(request)));
         }
         // noinspection ResultOfMethodCallIgnored
-        iStream.read(result, 0, 63);
+        localInputStream.read(result, 0, 63);
 
         return result;
     }
