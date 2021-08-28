@@ -52,6 +52,7 @@ public class CameraServlet extends HttpServlet {
     private final IpCameraHandler handler;
     private int autofpsStreamsOpen = 0;
     private int snapshotStreamsOpen = 0;
+    public OpenStreams openStreams = new OpenStreams();
 
     public CameraServlet(IpCameraHandler ipCameraHandler, HttpService httpService) {
         handler = ipCameraHandler;
@@ -78,10 +79,13 @@ public class CameraServlet extends HttpServlet {
         logger.debug("Post request for {}, received from {}", pathInfo, req.getRemoteHost());
         switch (pathInfo) {
             case "/ipcamera.jpg":
-                // TODO: refactor: handler.sendMjpegFrame(incomingJpeg, ipCameraHandler.mjpegChannelGroup);
+                // ffmpeg sends data here for ipcamera.mjpeg streams when camera has no native stream.
+                ServletInputStream snapshotData = req.getInputStream();
+                openStreams.queueFrame(snapshotData.readAllBytes());
+                snapshotData.close();
                 break;
             case "/snapshot.jpg":
-                ServletInputStream snapshotData = req.getInputStream();
+                snapshotData = req.getInputStream();
                 handler.processSnapshot(snapshotData.readAllBytes());
                 snapshotData.close();
                 break;
@@ -157,7 +161,7 @@ public class CameraServlet extends HttpServlet {
                 StreamOutput output = new StreamOutput(resp);
                 do {
                     try {
-                        output.sendFrame(handler.getSnapshot());
+                        output.sendSnapshotBasedFrame(handler.getSnapshot());
                         Thread.sleep(1005);
                     } catch (InterruptedException | IOException e) {
                         // Never stop streaming until IOException. Occurs when browser stops the stream.
@@ -172,8 +176,40 @@ public class CameraServlet extends HttpServlet {
                 } while (true);
             case "/ipcamera.mjpeg":
                 req.getSession().setMaxInactiveInterval(0);
-                // TODO: refactor: handler.setupMjpegStreaming(resp);
-                return;
+                if (handler.mjpegUri.isEmpty() || "ffmpeg".equals(handler.mjpegUri)) {
+                    if (openStreams.isEmpty()) {
+                        handler.setupFfmpegFormat(FFmpegFormat.MJPEG);
+                    }
+                    output = new StreamOutput(resp);
+                    openStreams.addStream(output);
+                } else if (openStreams.isEmpty()) {
+                    handler.openCamerasStream();
+                    output = new StreamOutput(resp, handler.mjpegContentType);
+                    openStreams.addStream(output);
+                } else {
+                    output = new StreamOutput(resp, handler.mjpegContentType);
+                    openStreams.addStream(output);
+                }
+                do {
+                    try {
+                        output.sendFrame();
+                    } catch (InterruptedException | IOException e) {
+                        // Never stop streaming until IOException. Occurs when browser stops the stream.
+                        openStreams.removeStream(output);
+                        if (openStreams.isEmpty()) {
+                            if (output.isSnapshotBased) {
+                                Ffmpeg localMjpeg = handler.ffmpegMjpeg;
+                                if (localMjpeg != null) {
+                                    localMjpeg.stopConverting();
+                                }
+                            } else {
+                                handler.closeChannel(handler.getTinyUrl(handler.mjpegUri));
+                            }
+                            logger.debug("All ipcamera.mjpeg streams have stopped.");
+                        }
+                        return;
+                    }
+                } while (true);
             case "/autofps.mjpeg":
                 req.getSession().setMaxInactiveInterval(0);
                 autofpsStreamsOpen++;
@@ -183,9 +219,9 @@ public class CameraServlet extends HttpServlet {
                 do {
                     try {
                         if (handler.motionDetected) {
-                            output.sendFrame(handler.getSnapshot());
+                            output.sendSnapshotBasedFrame(handler.getSnapshot());
                         } else if (counter % 8 == 0) {// every 8 seconds if no motion
-                            output.sendFrame(handler.getSnapshot());
+                            output.sendSnapshotBasedFrame(handler.getSnapshot());
                         }
                         counter++;
                         Thread.sleep(1000);

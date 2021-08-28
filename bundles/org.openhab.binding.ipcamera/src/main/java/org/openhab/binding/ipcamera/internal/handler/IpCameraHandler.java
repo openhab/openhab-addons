@@ -23,7 +23,6 @@ import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,7 +55,6 @@ import org.openhab.binding.ipcamera.internal.IpCameraActions;
 import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
 import org.openhab.binding.ipcamera.internal.IpCameraDynamicStateDescriptionProvider;
 import org.openhab.binding.ipcamera.internal.MyNettyAuthHandler;
-import org.openhab.binding.ipcamera.internal.StreamServerHandler;
 import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection;
 import org.openhab.binding.ipcamera.internal.servlet.CameraServlet;
 import org.openhab.core.OpenHAB;
@@ -80,7 +78,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -95,24 +92,18 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.base64.Base64;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
-import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMessage;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
-import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -136,12 +127,10 @@ public class IpCameraHandler extends BaseThingHandler {
     public CameraConfig cameraConfig = new CameraConfig();
 
     // ChannelGroup is thread safe
-    public final ChannelGroup mjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    private final ChannelGroup snapshotMjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    private final ChannelGroup autoSnapshotMjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     public final ChannelGroup openChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private final HttpService httpService;
     private @Nullable CameraServlet servlet;
+    public String mjpegContentType = "";
     public @Nullable Ffmpeg ffmpegHLS = null;
     public @Nullable Ffmpeg ffmpegRecord = null;
     public @Nullable Ffmpeg ffmpegGIF = null;
@@ -155,10 +144,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> pollCameraJob = null;
     private @Nullable ScheduledFuture<?> snapshotJob = null;
     private @Nullable Bootstrap mainBootstrap;
-    private @Nullable ServerBootstrap serverBootstrap;
-
     private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup();
-    private EventLoopGroup serversLoopGroup = new NioEventLoopGroup();
     private FullHttpRequest putRequestWithBody = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("PUT"),
             "");
     private String gifFilename = "ipcamera";
@@ -172,7 +158,6 @@ public class IpCameraHandler extends BaseThingHandler {
     private LinkedList<byte[]> fifoSnapshotBuffer = new LinkedList<byte[]>();
     private int snapCount;
     private boolean updateImageChannel = false;
-    private boolean updateAutoFps = false;
     private byte lowPriorityCounter = 0;
     public String hostIp;
     public Map<String, ChannelTracking> channelTrackingMap = new ConcurrentHashMap<>();
@@ -184,8 +169,6 @@ public class IpCameraHandler extends BaseThingHandler {
     public boolean useDigestAuth = false;
     public String snapshotUri = "";
     public String mjpegUri = "";
-    private @Nullable ChannelFuture serverFuture = null;
-    private Object firstStreamedMsg = new Object();
     public byte[] currentSnapshot = new byte[] { (byte) 0x00 };
     public ReentrantLock lockCurrentSnapshot = new ReentrantLock();
     public String rtspUri = "";
@@ -196,8 +179,6 @@ public class IpCameraHandler extends BaseThingHandler {
     private boolean firstMotionAlarm = false;
     public BigDecimal motionThreshold = BigDecimal.ZERO;
     public int audioThreshold = 35;
-    @SuppressWarnings("unused")
-    private @Nullable StreamServerHandler streamServerHandler;
     public boolean streamingSnapshotMjpeg = false;
     public boolean motionAlarmEnabled = false;
     public boolean audioAlarmEnabled = false;
@@ -258,9 +239,8 @@ public class IpCameraHandler extends BaseThingHandler {
                                 if (mjpegUri.equals(requestUrl)) {
                                     if (msg instanceof HttpMessage) {
                                         // very start of stream only
-                                        ReferenceCountUtil.retain(msg, 1);
-                                        firstStreamedMsg = msg;
-                                        streamToGroup(firstStreamedMsg, mjpegChannelGroup, true);
+                                        mjpegContentType = contentType;
+                                        servlet.openStreams.updateContentType(contentType);
                                     }
                                 } else {
                                     boundary = Helper.searchString(contentType, "boundary=");
@@ -278,8 +258,10 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (msg instanceof HttpContent) {
                     if (mjpegUri.equals(requestUrl)) {
                         // multiple MJPEG stream packets come back as this.
-                        ReferenceCountUtil.retain(msg, 1);
-                        streamToGroup(msg, mjpegChannelGroup, true);
+                        HttpContent content = (HttpContent) msg;
+                        byte[] chunkedFrame = new byte[content.content().readableBytes()];
+                        content.content().getBytes(content.content().readerIndex(), chunkedFrame);
+                        servlet.openStreams.queueFrame(chunkedFrame);
                     } else {
                         HttpContent content = (HttpContent) msg;
                         // Found some cameras use Content-Type: image/jpg instead of image/jpeg
@@ -662,16 +644,6 @@ public class IpCameraHandler extends BaseThingHandler {
             lockCurrentSnapshot.unlock();
         }
 
-        if (streamingSnapshotMjpeg) {
-            sendMjpegFrame(incommingSnapshot, snapshotMjpegChannelGroup);
-        }
-        if (streamingAutoFps) {
-            if (motionDetected || updateAutoFps) {
-                sendMjpegFrame(incommingSnapshot, autoSnapshotMjpegChannelGroup);
-            }
-        }
-        updateAutoFps = false;// will get set true again in approx 8 seconds time.
-
         if (updateImageChannel) {
             updateState(CHANNEL_IMAGE, new RawType(incommingSnapshot, "image/jpeg"));
         } else if (firstMotionAlarm || motionAlarmUpdateSnapshot) {
@@ -683,12 +655,6 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
-    public void stopStreamServer() {
-        serversLoopGroup.shutdownGracefully();
-        serverBootstrap = null;
-    }
-
-    @SuppressWarnings("null")
     public void startStreamServer() {
         if (servlet == null) {
             servlet = new CameraServlet(this, httpService);
@@ -697,121 +663,24 @@ public class IpCameraHandler extends BaseThingHandler {
                 + getThing().getUID().getId() + "/ipcamera.m3u8"));
         updateState(CHANNEL_IMAGE_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
                 + getThing().getUID().getId() + "/ipcamera.jpg"));
-        if (serverBootstrap == null) {
-            try {
-                serversLoopGroup = new NioEventLoopGroup();
-                serverBootstrap = new ServerBootstrap();
-                serverBootstrap.group(serversLoopGroup);
-                serverBootstrap.channel(NioServerSocketChannel.class);
-                // IP "0.0.0.0" will bind the server to all network connections//
-                serverBootstrap.localAddress(new InetSocketAddress("0.0.0.0", cameraConfig.getServerPort()));
-                serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
-                        socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(0, 60, 0));
-                        socketChannel.pipeline().addLast("HttpServerCodec", new HttpServerCodec());
-                        socketChannel.pipeline().addLast("ChunkedWriteHandler", new ChunkedWriteHandler());
-                        socketChannel.pipeline().addLast("streamServerHandler", new StreamServerHandler(getHandle()));
-                    }
-                });
-                serverFuture = serverBootstrap.bind().sync();
-                serverFuture.await(4000);
-                logger.debug("File server for camera at {} has started on port {} for all NIC's.", cameraConfig.getIp(),
-                        cameraConfig.getServerPort());
-                updateState(CHANNEL_MJPEG_URL,
-                        new StringType("http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.mjpeg"));
-
-            } catch (Exception e) {
-                cameraConfigError("Exception when starting server. Try changing the Server Port to another number.");
-            }
-            if (thing.getThingTypeUID().getId().equals(INSTAR_THING)) {
-                logger.debug("Setting up the Alarm Server settings in the camera now");
-                sendHttpGET(
-                        "/param.cgi?cmd=setmdalarm&-aname=server2&-switch=on&-interval=1&cmd=setalarmserverattr&-as_index=3&-as_server="
-                                + hostIp + "&-as_port=" + SERVLET_PORT + "&-as_path=/ipcamera/"
-                                + getThing().getUID().getId()
-                                + "/instar&-as_queryattr1=&-as_queryval1=&-as_queryattr2=&-as_queryval2=&-as_queryattr3=&-as_queryval3=&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0");
-            }
+        updateState(CHANNEL_MJPEG_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
+                + getThing().getUID().getId() + "/ipcamera.mjpeg"));
+        if (thing.getThingTypeUID().getId().equals(INSTAR_THING)) {
+            logger.debug("Setting up the Alarm Server settings in the camera now");
+            sendHttpGET(
+                    "/param.cgi?cmd=setmdalarm&-aname=server2&-switch=on&-interval=1&cmd=setalarmserverattr&-as_index=3&-as_server="
+                            + hostIp + "&-as_port=" + SERVLET_PORT + "&-as_path=/ipcamera/"
+                            + getThing().getUID().getId()
+                            + "/instar&-as_queryattr1=&-as_queryval1=&-as_queryattr2=&-as_queryval2=&-as_queryattr3=&-as_queryval3=&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0");
         }
     }
 
-    public void setupSnapshotStreaming(boolean stream, ChannelHandlerContext ctx, boolean auto) {
-        if (stream) {
-            sendMjpegFirstPacket(ctx);
-            if (auto) {
-                autoSnapshotMjpegChannelGroup.add(ctx.channel());
-                lockCurrentSnapshot.lock();
-                try {
-                    sendMjpegFrame(currentSnapshot, autoSnapshotMjpegChannelGroup);
-                    // iOS uses a FIFO? and needs two frames to display a pic
-                    sendMjpegFrame(currentSnapshot, autoSnapshotMjpegChannelGroup);
-                } finally {
-                    lockCurrentSnapshot.unlock();
-                }
-                streamingAutoFps = true;
-            } else {
-                snapshotMjpegChannelGroup.add(ctx.channel());
-                lockCurrentSnapshot.lock();
-                try {
-                    sendMjpegFrame(currentSnapshot, snapshotMjpegChannelGroup);
-                } finally {
-                    lockCurrentSnapshot.unlock();
-                }
-                streamingSnapshotMjpeg = true;
-                startSnapshotPolling();
-            }
-        } else {
-            snapshotMjpegChannelGroup.remove(ctx.channel());
-            autoSnapshotMjpegChannelGroup.remove(ctx.channel());
-            if (streamingSnapshotMjpeg && snapshotMjpegChannelGroup.isEmpty()) {
-                streamingSnapshotMjpeg = false;
-                stopSnapshotPolling();
-                logger.debug("All snapshots.mjpeg streams have stopped.");
-            } else if (streamingAutoFps && autoSnapshotMjpegChannelGroup.isEmpty()) {
-                streamingAutoFps = false;
-                stopSnapshotPolling();
-                logger.debug("All autofps.mjpeg streams have stopped.");
-            }
-        }
+    public void openCamerasStream() {
+        threadPool.schedule(this::openMjpegStream, 500, TimeUnit.MILLISECONDS);
     }
 
     private void openMjpegStream() {
         sendHttpGET(mjpegUri);
-    }
-
-    // If start is true the CTX is added to the list to stream video to, false stops
-    // the stream.
-    public void setupMjpegStreaming(boolean start, ChannelHandlerContext ctx) {
-        if (start) {
-            if (mjpegChannelGroup.isEmpty()) {// first stream being requested.
-                mjpegChannelGroup.add(ctx.channel());
-                if (mjpegUri.isEmpty() || "ffmpeg".equals(mjpegUri)) {
-                    sendMjpegFirstPacket(ctx);
-                    setupFfmpegFormat(FFmpegFormat.MJPEG);
-                } else {// Delay fixes Dahua reboots when refreshing a mjpeg stream.
-                    threadPool.schedule(this::openMjpegStream, 500, TimeUnit.MILLISECONDS);
-                }
-            } else if (ffmpegMjpeg != null) {// not first stream and we will use ffmpeg
-                sendMjpegFirstPacket(ctx);
-                mjpegChannelGroup.add(ctx.channel());
-            } else {// not first stream and camera supplies the mjpeg source.
-                ctx.channel().writeAndFlush(firstStreamedMsg);
-                mjpegChannelGroup.add(ctx.channel());
-            }
-        } else {
-            mjpegChannelGroup.remove(ctx.channel());
-            if (mjpegChannelGroup.isEmpty()) {
-                logger.debug("All ipcamera.mjpeg streams have stopped.");
-                if ("ffmpeg".equals(mjpegUri) || mjpegUri.isEmpty()) {
-                    Ffmpeg localMjpeg = ffmpegMjpeg;
-                    if (localMjpeg != null) {
-                        localMjpeg.stopConverting();
-                    }
-                } else {
-                    closeChannel(getTinyUrl(mjpegUri));
-                }
-            }
-        }
     }
 
     void openChannel(Channel channel, String httpRequestURL) {
@@ -823,7 +692,7 @@ public class IpCameraHandler extends BaseThingHandler {
         channelTrackingMap.put(httpRequestURL, new ChannelTracking(channel, httpRequestURL));
     }
 
-    void closeChannel(String url) {
+    public void closeChannel(String url) {
         ChannelTracking channelTracking = channelTrackingMap.get(url);
         if (channelTracking != null) {
             if (channelTracking.getChannel().isOpen()) {
@@ -860,39 +729,6 @@ public class IpCameraHandler extends BaseThingHandler {
         ChannelTracking channelTracking = channelTrackingMap.get(url);
         if (channelTracking != null) {
             channelTracking.setReply(content);
-        }
-    }
-
-    // sends direct to ctx so can be either snapshots.mjpeg or normal mjpeg stream
-    public void sendMjpegFirstPacket(ChannelHandlerContext ctx) {
-        final String boundary = "thisMjpegStream";
-        String contentType = "multipart/x-mixed-replace; boundary=" + boundary;
-        HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        response.headers().add(HttpHeaderNames.CONTENT_TYPE, contentType);
-        response.headers().set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
-        response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-        response.headers().add("Access-Control-Allow-Origin", "*");
-        response.headers().add("Access-Control-Expose-Headers", "*");
-        ctx.channel().writeAndFlush(response);
-    }
-
-    public void sendMjpegFrame(byte[] jpg, ChannelGroup channelGroup) {
-        final String boundary = "thisMjpegStream";
-        ByteBuf imageByteBuf = Unpooled.copiedBuffer(jpg);
-        int length = imageByteBuf.readableBytes();
-        String header = "--" + boundary + "\r\n" + "content-type: image/jpeg" + "\r\n" + "content-length: " + length
-                + "\r\n\r\n";
-        ByteBuf headerBbuf = Unpooled.copiedBuffer(header, 0, header.length(), StandardCharsets.UTF_8);
-        ByteBuf footerBbuf = Unpooled.copiedBuffer("\r\n", 0, 2, StandardCharsets.UTF_8);
-        streamToGroup(headerBbuf, channelGroup, false);
-        streamToGroup(imageByteBuf, channelGroup, false);
-        streamToGroup(footerBbuf, channelGroup, true);
-    }
-
-    public void streamToGroup(Object msg, ChannelGroup channelGroup, boolean flush) {
-        channelGroup.write(msg);
-        if (flush) {
-            channelGroup.flush();
         }
     }
 
@@ -1067,8 +903,8 @@ public class IpCameraHandler extends BaseThingHandler {
                         inputOptions += " -hide_banner -loglevel warning";
                     }
                     ffmpegMjpeg = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
-                            cameraConfig.getMjpegOptions(),
-                            "http://127.0.0.1:" + cameraConfig.getServerPort() + "/ipcamera.jpg",
+                            cameraConfig.getMjpegOptions(), "http://127.0.0.1:" + SERVLET_PORT + "/ipcamera/"
+                                    + getThing().getUID().getId() + "/ipcamera.jpg",
                             cameraConfig.getUser(), cameraConfig.getPassword());
                 }
                 Ffmpeg localMjpeg = ffmpegMjpeg;
@@ -1206,16 +1042,16 @@ public class IpCameraHandler extends BaseThingHandler {
         if (cameraConfig.getServerPort() > 0) {
             switch (channelUID.getId()) {
                 case CHANNEL_MJPEG_URL:
-                    updateState(CHANNEL_MJPEG_URL, new StringType(
-                            "http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.mjpeg"));
+                    updateState(CHANNEL_MJPEG_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
+                            + getThing().getUID().getId() + "/ipcamera.mjpeg"));
                     break;
                 case CHANNEL_HLS_URL:
-                    updateState(CHANNEL_HLS_URL,
-                            new StringType("http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.m3u8"));
+                    updateState(CHANNEL_HLS_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
+                            + getThing().getUID().getId() + "/ipcamera.m3u8"));
                     break;
                 case CHANNEL_IMAGE_URL:
-                    updateState(CHANNEL_IMAGE_URL,
-                            new StringType("http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.jpg"));
+                    updateState(CHANNEL_IMAGE_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
+                            + getThing().getUID().getId() + "/ipcamera.jpg"));
                     break;
             }
         }
@@ -1623,7 +1459,6 @@ public class IpCameraHandler extends BaseThingHandler {
     void pollCameraRunnable() {
         // Snapshot should be first to keep consistent time between shots
         if (streamingAutoFps) {
-            updateAutoFps = true;
             if (!snapshotPolling && !ffmpegSnapshotGeneration) {
                 // Dont need to poll if creating from RTSP stream with FFmpeg or we are polling at full rate already.
                 sendHttpGET(snapshotUri);
@@ -1761,11 +1596,8 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 break;
         }
-
-        // Onvif and Instar event handling needs the host IP and the server started.
-        if (cameraConfig.getServerPort() > 0) {
-            startStreamServer();
-        }
+        // Onvif and Instar event handling need the host IP and the server started.
+        startStreamServer();
 
         if (!thing.getThingTypeUID().getId().equals(GENERIC_THING)) {
             onvifCamera = new OnvifConnection(this, cameraConfig.getIp() + ":" + cameraConfig.getOnvifPort(),
@@ -1817,7 +1649,6 @@ public class IpCameraHandler extends BaseThingHandler {
         }
         basicAuth = ""; // clear out stored Password hash
         useDigestAuth = false;
-        stopStreamServer();
         openChannels.close();
 
         Ffmpeg localFfmpeg = ffmpegHLS;
@@ -1847,10 +1678,6 @@ public class IpCameraHandler extends BaseThingHandler {
         }
         channelTrackingMap.clear();
         onvifCamera.disconnect();
-    }
-
-    public void setStreamServerHandler(StreamServerHandler streamServerHandler2) {
-        streamServerHandler = streamServerHandler2;
     }
 
     public String getWhiteList() {

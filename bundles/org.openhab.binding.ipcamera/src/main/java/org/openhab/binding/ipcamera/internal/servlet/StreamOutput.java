@@ -13,6 +13,8 @@
 package org.openhab.binding.ipcamera.internal.servlet;
 
 import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -28,23 +30,37 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class StreamOutput {
     private final HttpServletResponse response;
-    private final String boundary = "thisMjpegStream";
-    private final String contentType = "multipart/x-mixed-replace; boundary=" + boundary;
+    private final String boundary;
+    private String contentType;
     private final ServletOutputStream output;
+    private BlockingQueue<byte[]> fifo = new ArrayBlockingQueue<byte[]>(6);
     private boolean connected = false;
+    public boolean isSnapshotBased = false;
 
     public StreamOutput(HttpServletResponse response) throws IOException {
+        boundary = "thisMjpegStream";
+        contentType = "multipart/x-mixed-replace; boundary=" + boundary;
         this.response = response;
         output = response.getOutputStream();
+        isSnapshotBased = true;
     }
 
-    public void sendFrame(byte[] currentSnapshot) throws IOException {
+    public StreamOutput(HttpServletResponse response, String contentType) throws IOException {
+        boundary = "";
+        this.contentType = contentType;
+        this.response = response;
+        output = response.getOutputStream();
+        if (!contentType.isEmpty()) {
+            sendInitialHeaders();
+            connected = true;
+        }
+    }
+
+    public void sendSnapshotBasedFrame(byte[] currentSnapshot) throws IOException {
         String header = "--" + boundary + "\r\n" + "Content-Type: image/jpeg" + "\r\n" + "Content-Length: "
                 + currentSnapshot.length + "\r\n\r\n";
         if (!connected) {
-            response.setContentType(contentType);
-            response.setHeader("Access-Control-Allow-Origin", "*");
-            response.setHeader("Access-Control-Expose-Headers", "*");
+            sendInitialHeaders();
             // iOS needs to have two jpgs sent for the picture to appear instantly.
             output.write(header.getBytes());
             output.write(currentSnapshot);
@@ -54,5 +70,31 @@ public class StreamOutput {
         output.write(header.getBytes());
         output.write(currentSnapshot);
         output.write("\r\n".getBytes());
+    }
+
+    public void queueFrame(byte[] frame) {
+        fifo.add(frame);
+    }
+
+    public void updateContentType(String contentType) {
+        this.contentType = contentType;
+        if (!connected) {
+            sendInitialHeaders();
+            connected = true;
+        }
+    }
+
+    public void sendFrame() throws IOException, InterruptedException {
+        if (isSnapshotBased) {
+            sendSnapshotBasedFrame(fifo.take());
+        } else if (connected) {
+            output.write(fifo.take());
+        }
+    }
+
+    private void sendInitialHeaders() {
+        response.setContentType(contentType);
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Expose-Headers", "*");
     }
 }
