@@ -245,8 +245,7 @@ public class CloudClient {
         }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-
-                if (logger.isDebugEnabled() && args.length > 0) {
+                if (args.length > 0) {
                     logger.debug("Socket.IO disconnected: {}", args[0]);
                 } else {
                     logger.debug("Socket.IO disconnected");
