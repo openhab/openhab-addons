@@ -216,7 +216,6 @@ The following channels are available depending on the vehicle type:
 |              | vehicleLights               | Switch               | yes     | Light status                                                                                    |
 |              | parkingLight                | Switch               | yes     | ON: Parking light is turned on                                                                  |
 |              | monthlyMilage               | Number:Length        | yes     | Average milage per month.                                                                       |
-|              | error                       | String               | yes     | Error status reported by vehicle                                                                |
 | location     | locationLastUpdate          | DateTime             | yes     | Time of last update for the vehicle position                                                    |
 |              | locationPosition            | Location             | yes     | Last known vehicle location                                                                     |
 |              | locationAddress             | String               | yes     | Address for the last known vehicle location                                                     |
@@ -416,29 +415,30 @@ If you don't already have one you need to create a Volkswagen ID and add the veh
 
 ### Channels for the VW ID. Vehicles
 
-| Group        | Channel                     | Item Type            |Read only| Description                    |
-|--------------|-----------------------------|----------------------|---------|--------------------------------|
-| general      | lastUpdate                  | DateTime             | yes     | Last time data has been updated                                                                 |
-|              | timeInCar                   | DateTime             | yes     | Time in car                    |
-|              | pictureUrl&lt;n&gt;         | String               | yes     | URL to picture(s) provided by manufacturer |
-| range        | totalRange                  | Number:Length        | yes     | Total remaining range.                                                                          |
-| control      | charge                      | Switch               | yes     | Turn charger on/off                                                                             |
-|              | maxCurrent                  | String               | yes     | Maximum current for the charging process                                                        |
-|              | climater                    | Switch               | no      | Turn climatisation on/off                                                                       |
-|              | windowHeat                  | Switch               | no      | Turn window heating on/off                                                                      |
-|              | update                      | Switch               | no      | Force status update of vehicle status                                                           |
-| charger      | chargingMode                | String               | yes     | Indicates the selected charging mode                                                            |
-|              | chargingState               | String               | yes     | Current charging status                                                                         |
-|              | chargingLevel               | Number:Dimensionless | yes     | Current charging level in percent for an electrical car                                         |
-|              | chargingPower               | Number:ElectricPoten | yes     | Current charging power                                                                          |
-|              | chargingRate                | Number               | yes     | Charging rate in km per hour                                                                    |
-|              | plugState                   | String               | yes     | State of the charging plug, ON=connected                                                        |
-|              | lockState                   | Switch               | yes     | ON: Plug is locked, OFF: Plug is unlocked and can be removed                                    |
-|              | targetChgLvl                | Number:Dimensionless | yes     | Charging stops automatically when the given level is reached                                    |
-|              | remainingChargingTime       | Number:Time          | yes     | Time to reach a fully charged battery                                                           |
-| climater     | climatisationState          | Switch               | yes     | ON: Climatisation is active                                                                     |
-|              | remainingClimatisation      | Number:Time          | yes     | Remaining time for climatisation                                                                |
-|              | targetTemperature           | Number:Temperature   | yes     | Target temperature for the A/C climater                                                         |
+| Group        | Channel                     | Item Type            |Read only| Description                                                   |
+|--------------|-----------------------------|----------------------|---------|---------------------------------------------------------------|
+| general      | lastUpdate                  | DateTime             | yes     | Last time data has been updated                               |
+| status       | timeInCar                   | DateTime             | yes     | Time in car                                                   |
+|              | error                       | String               | yes     | Error status reported by vehicle                              |
+| range        | totalRange                  | Number:Length        | yes     | Total remaining range.                                        |
+| control      | charge                      | Switch               | yes     | Turn charger on/off                                           |
+|              | maxCurrent                  | String               | yes     | Maximum current for the charging process                      |
+|              | climater                    | Switch               | no      | Turn climatisation on/off                                     |
+|              | windowHeat                  | Switch               | no      | Turn window heating on/off                                    |
+|              | update                      | Switch               | no      | Force status update of vehicle status                         |
+| charger      | chargingMode                | String               | yes     | Indicates the selected charging mode                          |
+|              | chargingState               | String               | yes     | Current charging status                                       |
+|              | chargingLevel               | Number:Dimensionless | yes     | Current charging level in percent for an electrical car       |
+|              | chargingPower               | Number:ElectricPoten | yes     | Current charging power                                        |
+|              | chargingRate                | Number               | yes     | Charging rate in km per hour                                  |
+|              | plugState                   | String               | yes     | State of the charging plug, ON=connected                      |
+|              | lockState                   | Switch               | yes     | ON: Plug is locked, OFF: Plug is unlocked and can be removed  |
+|              | targetChgLvl                | Number:Dimensionless | yes     | Charging stops automatically when the given level is reached  |
+|              | remainingChargingTime       | Number:Time          | yes     | Time to reach a fully charged battery                         |
+| climater     | climatisationState          | Switch               | yes     | ON: Climatisation is active                                   |
+|              | remainingClimatisation      | Number:Time          | yes     | Remaining time for climatisation                              |
+|              | targetTemperature           | Number:Temperature   | yes     | Target temperature for the A/C climater                       |
+| pictures     | imageUrl1..n                | String               | no      | URL to vehicle picture(s)                                                                                              |
 
 ## Skoda Electrical Vehicles
 

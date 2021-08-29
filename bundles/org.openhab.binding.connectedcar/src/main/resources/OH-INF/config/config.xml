@@ -235,7 +235,7 @@
 			<label>Identification Number</label>
 			<description>This is the unique ID to identify the wallbox</description>
 		</parameter>
-		<parameter name="numChangingRecords" type="integer" required="false" min="0" max="100">
+		<parameter name="numChargingRecords" type="integer" required="false" min="0" max="100">
 			<label>Entries in Charging History</label>
 			<description>Specifies the number of entries in the charging history, 0 to disable.</description>
 			<default>3</default>

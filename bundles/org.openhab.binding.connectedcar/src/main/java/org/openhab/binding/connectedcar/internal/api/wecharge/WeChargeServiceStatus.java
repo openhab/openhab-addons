@@ -82,10 +82,10 @@ public class WeChargeServiceStatus extends ApiBaseService {
         int num = getConfig().vehicle.numChargingRecords;
         for (int r = 1; r <= num; r++) {
             group = CHANNEL_CHANNEL_GROUP_TRANSACTIONS + r;
-            addChannels(channels, group, true, CHANNEL_TRANS_ID, CHANNEL_TRANS_LOCATION, CHANNEL_TRANS_SUBID,
-                    CHANNEL_TRANS_EVSE, CHANNEL_TRANS_PTYPE, CHANNEL_TRANS_START, CHANNEL_TRANS_PTYPE,
-                    CHANNEL_TRANS_START, CHANNEL_TRANS_END, CHANNEL_TRANS_ENERGY, CHANNEL_TRANS_PRICE,
-                    CHANNEL_TRANS_DURATION);
+            addChannels(channels, group, true, CHANNEL_TRANS_ID, CHANNEL_TRANS_LOCATION, CHANNEL_TRANS_ADDRESS,
+                    CHANNEL_TRANS_SUBID, CHANNEL_TRANS_EVSE, CHANNEL_TRANS_PTYPE, CHANNEL_TRANS_START,
+                    CHANNEL_TRANS_PTYPE, CHANNEL_TRANS_START, CHANNEL_TRANS_END, CHANNEL_TRANS_ENERGY,
+                    CHANNEL_TRANS_PRICE, CHANNEL_TRANS_DURATION);
         }
         return true;
     }
