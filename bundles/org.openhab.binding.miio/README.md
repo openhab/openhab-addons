@@ -180,6 +180,9 @@ Currently the miio binding supports more than 290 different models.
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
 |------------------------------|------------------|------------------------|-----------|------------|
 | AUX Smart Air Conditioner    | miio:unsupported | aux.aircondition.v1    | No        |            |
+| Mi Air Frying Pan            | miio:basic       | [careli.fryer.maf01](#careli-fryer-maf01) | Yes       | Identified manual actions for execution<br />`action{"did":"air-fryer-start-cook","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"air-fryer-cancel-cooking","siid":2,"aiid":2,"in":[]}`<br />`action{"did":"air-fryer-pause","siid":2,"aiid":3,"in":[]}`<br />`action{"did":"custom-start-cook","siid":3,"aiid":1,"in":[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]}`<br />`action{"did":"custom-resume-cook","siid":3,"aiid":2,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Air Fryer (3.5L)    | miio:basic       | [careli.fryer.maf02](#careli-fryer-maf02) | Yes       | Identified manual actions for execution<br />`action{"did":"air-fryer-start-cook","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"air-fryer-cancel-cooking","siid":2,"aiid":2,"in":[]}`<br />`action{"did":"air-fryer-pause","siid":2,"aiid":3,"in":[]}`<br />`action{"did":"custom-start-custom-cook","siid":3,"aiid":1,"in":[1.0, 3.0, 4.0, 5.0, 6.0, 7.0]}`<br />`action{"did":"custom-resume-cooking","siid":3,"aiid":2,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Air Frying Pan            | miio:basic       | [careli.fryer.maf03](#careli-fryer-maf03) | Yes       | Identified manual actions for execution<br />`action{"did":"air-fryer-start-cook","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"air-fryer-cancel-cooking","siid":2,"aiid":2,"in":[]}`<br />`action{"did":"air-fryer-pause","siid":2,"aiid":3,"in":[]}`<br />`action{"did":"custom-start-cook","siid":3,"aiid":1,"in":[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]}`<br />`action{"did":"custom-resume-cook","siid":3,"aiid":2,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Qingping Air Monitor Lite    | miio:basic       | [cgllc.airm.cgdn1](#cgllc-airm-cgdn1) | Yes       | Identified manual actions for execution<br />`action{"did":"settings-set-start-time","siid":9,"aiid":2,"in":[2.0]}`<br />`action{"did":"settings-set-end-time","siid":9,"aiid":3,"in":[3.0]}`<br />`action{"did":"settings-set-frequency","siid":9,"aiid":4,"in":[4.0]}`<br />`action{"did":"settings-set-screen-off","siid":9,"aiid":5,"in":[5.0]}`<br />`action{"did":"settings-set-device-off","siid":9,"aiid":6,"in":[6.0]}`<br />`action{"did":"settings-set-temp-unit","siid":9,"aiid":7,"in":[7.0]}`<br />Please test and feedback if they are working to they can be linked to a channel. |
 | Mi Multifunction Air Monitor | miio:basic       | [cgllc.airmonitor.b1](#cgllc-airmonitor-b1) | Yes       |            |
 | Qingping Air Monitor         | miio:basic       | [cgllc.airmonitor.s1](#cgllc-airmonitor-s1) | Yes       |            |
@@ -201,7 +204,7 @@ Currently the miio binding supports more than 290 different models.
 | Mi IH Pressure Rice Cooker   | miio:unsupported | chunmi.cooker.press2   | No        |            |
 | Gosund Smart Plug            | miio:basic       | [cuco.plug.cp1](#cuco-plug-cp1) | Yes       |            |
 | Mi Smart Antibacterial Humidifier | miio:basic       | [deerma.humidifier.jsq](#deerma-humidifier-jsq) | Yes       |            |
-| Mi S Smart humidifer         | miio:basic       | [deerma.humidifier.jsq1](#deerma-humidifier-jsq1) | Yes       |            |
+| Mi S Smart Humidifer         | miio:basic       | [deerma.humidifier.jsq1](#deerma-humidifier-jsq1) | Yes       |            |
 | Mi Smart Humidifier          | miio:basic       | [deerma.humidifier.mjjsq](#deerma-humidifier-mjjsq) | Yes       |            |
 | Mi Fresh Air Ventilator A1-150 | miio:basic       | [dmaker.airfresh.a1](#dmaker-airfresh-a1) | Yes       |            |
 | Mi Fresh Air Ventilator      | miio:basic       | [dmaker.airfresh.t2017](#dmaker-airfresh-t2017) | Yes       |            |
@@ -264,24 +267,24 @@ Currently the miio binding supports more than 290 different models.
 | Philips Zhirui Ceiling Lamp Bedroom 40W | miio:basic       | [philips.light.bceiling1](#philips-light-bceiling1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips Zhirui Ceiling Lamp Bedroom 28W | miio:basic       | [philips.light.bceiling2](#philips-light-bceiling2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips ZhiRui E27 bulb      | miio:basic       | [philips.light.bulb](#philips-light-bulb) | Yes       |            |
-| Philips ZhiRui E14 candle lamp Frosted version | miio:basic       | [philips.light.candle](#philips-light-candle) | Yes       |            |
-| Philips ZhiRui E14 candle lamp crystal version | miio:basic       | [philips.light.candle2](#philips-light-candle2) | Yes       |            |
+| Philips ZhiRui E14 Candle Lamp Frosted version | miio:basic       | [philips.light.candle](#philips-light-candle) | Yes       |            |
+| Philips ZhiRui E14 Candle Lamp Crystal version | miio:basic       | [philips.light.candle2](#philips-light-candle2) | Yes       |            |
 | Mijia Philips Color Bulb     | miio:basic       | [philips.light.cbulb](#philips-light-cbulb) | Yes       |            |
 | Philips Light                | miio:basic       | [philips.light.cbulbs](#philips-light-cbulbs) | Yes       |            |
-| Philips connected ceiling    | miio:basic       | [philips.light.ceiling](#philips-light-ceiling) | Yes       |            |
+| Philips Connected Ceiling    | miio:basic       | [philips.light.ceiling](#philips-light-ceiling) | Yes       |            |
 | Philips Light                | miio:basic       | [philips.light.dcolor](#philips-light-dcolor) | Yes       |            |
-| ZhiRui dimmable downlight    | miio:basic       | [philips.light.dlight](#philips-light-dlight) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips ZhiRui downlight     | miio:basic       | [philips.light.downlight](#philips-light-downlight) | Yes       |            |
+| ZhiRui Dimmable Downlight    | miio:basic       | [philips.light.dlight](#philips-light-dlight) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips ZhiRui Downlight     | miio:basic       | [philips.light.downlight](#philips-light-downlight) | Yes       |            |
 | Philips Wi-Fi bulb E27 White | miio:basic       | [philips.light.hbulb](#philips-light-hbulb) | Yes       |            |
-| Philips ZhiYi Ceiling lamp FL 40W | miio:basic       | [philips.light.lnblight1](#philips-light-lnblight1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips ZhiYi Ceiling lamp FL 28W | miio:basic       | [philips.light.lnblight2](#philips-light-lnblight2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips ZhiYi Ceiling lamp FL 80W | miio:basic       | [philips.light.lnlrlight](#philips-light-lnlrlight) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips ZhiYi Ceiling Lamp FL 40W | miio:basic       | [philips.light.lnblight1](#philips-light-lnblight1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips ZhiYi Ceiling Lamp FL 28W | miio:basic       | [philips.light.lnblight2](#philips-light-lnblight2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Philips ZhiYi Ceiling Lamp FL 80W | miio:basic       | [philips.light.lnlrlight](#philips-light-lnlrlight) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips Zhirui Ceiling Lamp Living room 80W | miio:basic       | [philips.light.lrceiling](#philips-light-lrceiling) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Zhirui Ceiling Lamp Nordic 80W | miio:basic       | [philips.light.mceil](#philips-light-mceil) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Zhirui Ceiling Lamp Nordic 40W | miio:basic       | [philips.light.mceilm](#philips-light-mceilm) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Zhirui Ceiling Lamp Nordic 28W | miio:basic       | [philips.light.mceils](#philips-light-mceils) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips Smart Lamp           | miio:basic       | [philips.light.mono1](#philips-light-mono1) | Yes       |            |
-| Philips ZhiRui bedside lamp  | miio:basic       | [philips.light.moonlight](#philips-light-moonlight) | Yes       |            |
+| Philips ZhiRui Bedside Lamp  | miio:basic       | [philips.light.moonlight](#philips-light-moonlight) | Yes       |            |
 | Zhirui Ceiling Lamp Black 80W | miio:basic       | [philips.light.obceil](#philips-light-obceil) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 |  Zhirui Ceiling Lamp Black 40W | miio:basic       | [philips.light.obceim](#philips-light-obceim) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Zhirui Ceiling Lamp Black 28W | miio:basic       | [philips.light.obceis](#philips-light-obceis) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -289,15 +292,15 @@ Currently the miio binding supports more than 290 different models.
 | Zhirui Ceiling Lamp Starry 80W | miio:basic       | [philips.light.sceil](#philips-light-sceil) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Zhirui Ceiling Lamp Starry 40W | miio:basic       | [philips.light.sceilm](#philips-light-sceilm) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Zhirui Ceiling Lamp Starry 28W | miio:basic       | [philips.light.sceils](#philips-light-sceils) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips EyeCare connected desk lamp gen2. | miio:basic       | [philips.light.sread1](#philips-light-sread1) | Yes       |            |
+| Philips EyeCare Connected Desk Lamp gen2. | miio:basic       | [philips.light.sread1](#philips-light-sread1) | Yes       |            |
 | Mijia Philips Desk Lamp 2S   | miio:basic       | [philips.light.sread2](#philips-light-sread2) | Yes       |            |
-| Philips connected lights     | miio:basic       | [philips.light.virtual](#philips-light-virtual) | Yes       |            |
+| Philips Connected Lights     | miio:basic       | [philips.light.virtual](#philips-light-virtual) | Yes       |            |
 | Zhirui Ceiling Lamp Gorgeous 80W | miio:basic       | [philips.light.xzceil](#philips-light-xzceil) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Zhirui Ceiling Lamp Gorgeous 40W | miio:basic       | [philips.light.xzceim](#philips-light-xzceim) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Zhirui Ceiling Lamp Gorgeous 28W | miio:basic       | [philips.light.xzceis](#philips-light-xzceis) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Philips ZhiYi ceiling lamp   | miio:basic       | [philips.light.zyceiling](#philips-light-zyceiling) | Yes       |            |
-| Philips ZhiYi desk lamp      | miio:basic       | [philips.light.zysread](#philips-light-zysread) | Yes       |            |
-| Philips ZhiYi strip          | miio:basic       | [philips.light.zystrip](#philips-light-zystrip) | Yes       |            |
+| Philips ZhiYi Ceiling lamp   | miio:basic       | [philips.light.zyceiling](#philips-light-zyceiling) | Yes       |            |
+| Philips ZhiYi Desk Lamp      | miio:basic       | [philips.light.zysread](#philips-light-zysread) | Yes       |            |
+| Philips ZhiYi Strip          | miio:basic       | [philips.light.zystrip](#philips-light-zystrip) | Yes       |            |
 | CHINGMI Smart Power Strip v1 | miio:basic       | [qmi.powerstrip.v1](#qmi-powerstrip-v1) | Yes       |            |
 | Rockrobo Xiaowa Sweeper v2   | miio:unsupported | roborock.sweeper.e2v2  | No        |            |
 | Rockrobo Xiaowa Sweeper v3   | miio:unsupported | roborock.sweeper.e2v3  | No        |            |
@@ -336,14 +339,14 @@ Currently the miio binding supports more than 290 different models.
 | PTX Twokey switch(wifi)      | miio:basic       | [090615.switch.xswitch02](#090615-switch-xswitch02) | Yes       |            |
 | PTX ThreeKey Switch (WIFI)   | miio:basic       | [090615.switch.xswitch03](#090615-switch-xswitch03) | Yes       |            |
 | SCISHARE Smart Capsule Coffee Machine | miio:basic       | [scishare.coffee.s1102](#scishare-coffee-s1102) | Yes       | This device does not allow for regular querying for the status. Hence the status is not updated for the action channels.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Xiaomi Scishare smart capsule coffee machine | miio:basic       | [scishare.coffee.s1301](#scishare-coffee-s1301) | Yes       | This device does not allow for regular querying for the status. Hence the status is not updated for the action channels.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Scishare Smart Capsule Coffee Machine | miio:basic       | [scishare.coffee.s1301](#scishare-coffee-s1301) | Yes       | This device does not allow for regular querying for the status. Hence the status is not updated for the action channels.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Soocare Electric Toothbrush  | miio:unsupported | soocare.toothbrush.x3  | No        |            |
-| Viomi Internet refrigerator iLive(French style 462L) | miio:unsupported | viomi.fridge.v3        | No        |            |
+| Viomi Internet Refrigerator iLive(French style 462L) | miio:unsupported | viomi.fridge.v3        | No        |            |
 | Viomi Cleaning Robot V-RVCLM21B | miio:basic       | [viomi.vacuum.v6](#viomi-vacuum-v6) | Yes       |            |
 | Mi Robot Vacuum-Mop P        | miio:basic       | [viomi.vacuum.v7](#viomi-vacuum-v7) | Yes       |            |
 | Mi Robot Vacuum-Mop P        | miio:basic       | [viomi.vacuum.v8](#viomi-vacuum-v8) | Yes       |            |
 | Viomi S9                     | miio:basic       | [viomi.vacuum.v18](#viomi-vacuum-v18) | Yes       | Identified manual actions for execution<br />`action{"did":"vacuum-start-sweep","siid":2,"aiid":1,"in":[]}`<br />`action{"did":"vacuum-stop-sweeping","siid":2,"aiid":2,"in":[]}`<br />`action{"did":"vacuum-pause","siid":2,"aiid":3,"in":[]}`<br />`action{"did":"vacuum-start-charge","siid":2,"aiid":4,"in":[]}`<br />`action{"did":"vacuum-stop-massage","siid":2,"aiid":5,"in":[]}`<br />`action{"did":"vacuum-start-mop","siid":2,"aiid":6,"in":[]}`<br />`action{"did":"vacuum-start-only-sweep","siid":2,"aiid":7,"in":[]}`<br />`action{"did":"vacuum-start-sweep-mop","siid":2,"aiid":8,"in":[]}`<br />`action{"did":"viomi-vacuum-reset-map","siid":4,"aiid":7,"in":[]}`<br />`action{"did":"viomi-vacuum-set-calibration","siid":4,"aiid":10,"in":[]}`<br />`action{"did":"viomi-vacuum-reset-consumable","siid":4,"aiid":11,"in":[35.0]}`<br />`action{"did":"viomi-vacuum-set-room-clean","siid":4,"aiid":13,"in":[36.0, 37.0, 38.0]}`<br />`action{"did":"order-del","siid":5,"aiid":2,"in":[1.0]}`<br />`action{"did":"order-get","siid":5,"aiid":3,"in":[]}`<br />`action{"did":"point-zone-start-point-clean","siid":6,"aiid":1,"in":[]}`<br />`action{"did":"point-zone-pause-point-clean","siid":6,"aiid":2,"in":[]}`<br />`action{"did":"point-zone-start-zone-clean","siid":6,"aiid":5,"in":[]}`<br />`action{"did":"point-zone-pause-zone-clean","siid":6,"aiid":6,"in":[]}`<br />`action{"did":"map-upload-by-maptype","siid":7,"aiid":1,"in":[]}`<br />`action{"did":"map-upload-by-mapid","siid":7,"aiid":2,"in":[]}`<br />`action{"did":"map-set-cur-map","siid":7,"aiid":3,"in":[2.0, 15.0]}`<br />`action{"did":"map-del-map","siid":7,"aiid":5,"in":[2.0]}`<br />`action{"did":"map-rename-map","siid":7,"aiid":7,"in":[2.0, 4.0]}`<br />`action{"did":"map-arrange-room","siid":7,"aiid":8,"in":[2.0, 5.0, 6.0, 14.0]}`<br />`action{"did":"map-split-room","siid":7,"aiid":9,"in":[2.0, 5.0, 7.0, 8.0, 14.0]}`<br />`action{"did":"map-rename-room","siid":7,"aiid":10,"in":[2.0, 7.0, 9.0, 14.0]}`<br />`action{"did":"map-get-map-list","siid":7,"aiid":11,"in":[]}`<br />`action{"did":"map-get-cleaning-path","siid":7,"aiid":12,"in":[12.0]}`<br />`action{"did":"map-set-new-map","siid":7,"aiid":13,"in":[]}`<br />`action{"did":"map-deal-new-map","siid":7,"aiid":14,"in":[16.0]}`<br />`action{"did":"voice-find-device","siid":8,"aiid":2,"in":[]}`<br />`action{"did":"voice-download-voice","siid":8,"aiid":3,"in":[3.0, 7.0, 8.0]}`<br />`action{"did":"voice-get-downloadstatus","siid":8,"aiid":4,"in":[]}`<br />Please test and feedback if they are working to they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| VIOMI Internet electric water heater 1A (60L) | miio:basic       | [viomi.waterheater.e1](#viomi-waterheater-e1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| VIOMI Internet Electric Water Heater 1A (60L) | miio:basic       | [viomi.waterheater.e1](#viomi-waterheater-e1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Inverter Air Conditioner (1.5HP) | miio:basic       | [xiaomi.aircondition.ma1](#xiaomi-aircondition-ma1) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Inverter Air Conditioner (1.5HP, China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.ma2](#xiaomi-aircondition-ma2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Vertical Air Conditioner (2HP) | miio:basic       | [xiaomi.aircondition.ma4](#xiaomi-aircondition-ma4) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -373,8 +376,8 @@ Currently the miio binding supports more than 290 different models.
 | Mi Wi-Fi Repeater 2          | miio:unsupported | xiaomi.repeater.v2     | No        |            |
 | Mi Network Speaker           | miio:unsupported | xiaomi.wifispeaker.v1  | No        |            |
 | Uclean Smart Toilet Seat     | miio:basic       | [xjx.toilet.pro](#xjx-toilet-pro) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Uclean smart toilet pure     | miio:basic       | [xjx.toilet.pure](#xjx-toilet-pure) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
-| Uclean smart toilet relax    | miio:basic       | [xjx.toilet.relax](#xjx-toilet-relax) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Uclean Smart Toilet pure     | miio:basic       | [xjx.toilet.pure](#xjx-toilet-pure) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Uclean Smart Toilet relax    | miio:basic       | [xjx.toilet.relax](#xjx-toilet-relax) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Whale Spout Smart Toilet Zero | miio:basic       | [xjx.toilet.zero](#xjx-toilet-zero) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Yeelight Smart Bath Heater   | miio:unsupported | yeelight.bhf_light.v2  | No        |            |
 | Yeelight Smart Bath Heater Pro | miio:basic       | [yeelink.bhf_light.v1](#yeelink-bhf_light-v1) | Yes       |            |
@@ -395,7 +398,7 @@ Currently the miio binding supports more than 290 different models.
 | Yeelight Crystal Pendant Lamp | miio:basic       | [yeelink.light.ceiling10](#yeelink-light-ceiling10) | Yes       |            |
 | Yeelight LED Ceiling Ambi Lamp | miio:basic       | [yeelink.light.ceiling10.ambi](#yeelink-light-ceiling10-ambi) | Yes       |            |
 | Yeelight Ceiling Light 320 1S | miio:basic       | [yeelink.light.ceiling11](#yeelink-light-ceiling11) | Yes       |            |
-| Yeelight stylized Ceiling Light  Pro | miio:basic       | [yeelink.light.ceiling12](#yeelink-light-ceiling12) | Yes       |            |
+| Yeelight Stylized Ceiling Light  Pro | miio:basic       | [yeelink.light.ceiling12](#yeelink-light-ceiling12) | Yes       |            |
 | Yeelight Ceiling Light       | miio:basic       | [yeelink.light.ceiling13](#yeelink-light-ceiling13) | Yes       |            |
 | Yeelight Ceiling Light Mini  | miio:basic       | [yeelink.light.ceiling14](#yeelink-light-ceiling14) | Yes       |            |
 | Yeelight Ceiling Light 480 1S | miio:basic       | [yeelink.light.ceiling15](#yeelink-light-ceiling15) | Yes       |            |
@@ -564,6 +567,67 @@ Note, cropping is disabled (hence showing like the maps in OH3.1 and earlier) fo
 Note, not all the values need to be in the json file, e.g. a subset of the parameters also works, the parameters not in the `mapConfig.json` will take the default values.
 
 
+### Mi Air Frying Pan (<a name="careli-fryer-maf01">careli.fryer.maf01</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Air Fryer Start Cook","air-fryer-cancel-cooking"="Air Fryer Cancel Cooking","air-fryer-pause"="Air Fryer Pause","custom-start-cook"="Custom Start Cook","custom-resume-cook"="Custom Resume Cook"]` |
+| status               | Number               | Air Fryer - Status                       | Value mapping `["0"="Shutdown","1"="Standby","2"="Pause","3"="Appointment","4"="Cooking","5"="Preheat ","6"="Cooked","7"="Preheat Finish","8"="Preheat Pause","9"="Pause2"]` |
+| fault                | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="E1","2"="E2"]` |
+| target_time          | Number:Time          | Air Fryer - Target Time                  |            |
+| target_temperature   | Number:Temperature   | Air Fryer - Target Temperature           |            |
+| left_time            | Number:Time          | Air Fryer - Left Time                    |            |
+| recipe_id            | String               | Custom - Recipe Id                       |            |
+| recipe_name          | String               | Custom - Recipe Name                     |            |
+| work_time            | Number:Time          | Custom - Work Time                       |            |
+| work_temp            | Number:Temperature   | Custom - Work Temp                       |            |
+| appoint_time         | Number:Time          | Custom - Appoint Time                    |            |
+| food_quantity        | Number               | Custom - Food Quantity                   | Value mapping `["0"="Null","1"="Single","2"="Double","3"="Half","4"="Full"]` |
+| preheat_switch       | Number               | Custom - Preheat Switch                  | Value mapping `["0"="Null","1"="Off","2"="On"]` |
+| appoint_time_left    | Number:Time          | Custom - Appoint Time Left               |            |
+| recipe_sync          | String               | Custom - Recipe Sync                     |            |
+| turn_pot             | Number               | Custom - Turn Pot                        | Value mapping `["1"="Switch Off","0"="Not Turn Pot","2"="Turn Pot"]` |
+
+### Mi Smart Air Fryer (3.5L) (<a name="careli-fryer-maf02">careli.fryer.maf02</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Air Fryer Start Cook","air-fryer-cancel-cooking"="Air Fryer Cancel Cooking","air-fryer-pause"="Air Fryer Pause","custom-start-custom-cook"="Custom Start Custom Cook","custom-resume-cooking"="Custom Resume Cooking"]` |
+| status               | Number               | Air Fryer - Status                       | Value mapping `["0"="Shutdown","1"="Standby","2"="Pause","3"="Appointment","4"="Cooking","5"="Preheat ","6"="Cooked","7"="Preheat Finish","8"="Preheat Pause","9"="Pause2"]` |
+| fault                | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="E1","2"="E2"]` |
+| target_time          | Number:Time          | Air Fryer - Target Time                  |            |
+| target_temperature   | Number:Temperature   | Air Fryer - Target Temperature           |            |
+| left_time            | Number:Time          | Air Fryer - Left Time                    |            |
+| recipe_id            | String               | Custom - Recipe Id                       |            |
+| work_time            | Number:Time          | Custom - Work Time                       |            |
+| work_temp            | Number:Temperature   | Custom - Work Temp                       |            |
+| appoint_time         | Number:Time          | Custom - Appoint Time                    |            |
+| food_quantity        | Number               | Custom - Food Quantity                   | Value mapping `["0"="Null","1"="Single","2"="Double","3"="Half","4"="Full"]` |
+| preheat_switch       | Number               | Custom - Preheat Switch                  | Value mapping `["0"="Null","1"="Off","2"="On"]` |
+| appoint_time_left    | Number:Time          | Custom - Appoint Time Left               |            |
+| turn_pot             | Number               | Custom - Turn Pot                        | Value mapping `["1"="Switch Off","0"="Not Turn Pot","2"="Turn Pot"]` |
+
+### Mi Air Frying Pan (<a name="careli-fryer-maf03">careli.fryer.maf03</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Air Fryer Start Cook","air-fryer-cancel-cooking"="Air Fryer Cancel Cooking","air-fryer-pause"="Air Fryer Pause","custom-start-cook"="Custom Start Cook","custom-resume-cook"="Custom Resume Cook"]` |
+| status               | Number               | Air Fryer - Status                       | Value mapping `["0"="Shutdown","1"="Standby","2"="Pause","3"="Appointment","4"="Cooking","5"="Preheat ","6"="Cooked","7"="Preheat Finish","8"="Preheat Pause","9"="Pause2"]` |
+| fault                | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="E1","2"="E2"]` |
+| target_time          | Number:Time          | Air Fryer - Target Time                  |            |
+| target_temperature   | Number:Temperature   | Air Fryer - Target Temperature           |            |
+| left_time            | Number:Time          | Air Fryer - Left Time                    |            |
+| recipe_id            | String               | Custom - Recipe Id                       |            |
+| recipe_name          | String               | Custom - Recipe Name                     |            |
+| work_time            | Number:Time          | Custom - Work Time                       |            |
+| work_temp            | Number:Temperature   | Custom - Work Temp                       |            |
+| appoint_time         | Number:Time          | Custom - Appoint Time                    |            |
+| food_quantity        | Number               | Custom - Food Quantity                   | Value mapping `["0"="Null","1"="Single","2"="Double","3"="Half","4"="Full"]` |
+| preheat_switch       | Number               | Custom - Preheat Switch                  | Value mapping `["0"="Null","1"="Off","2"="On"]` |
+| appoint_time_left    | Number:Time          | Custom - Appoint Time Left               |            |
+| recipe_sync          | String               | Custom - Recipe Sync                     |            |
+| turn_pot             | Number               | Custom - Turn Pot                        | Value mapping `["1"="Switch Off","0"="Not Turn Pot","2"="Turn Pot"]` |
+
 ### Qingping Air Monitor Lite (<a name="cgllc-airm-cgdn1">cgllc.airm.cgdn1</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
@@ -711,7 +775,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | sound                | Switch               | Notification Sounds                      |            |
 | watertankstatus      | Number               | Watertank Status                         |            |
 
-### Mi S Smart humidifer  (<a name="deerma-humidifier-jsq1">deerma.humidifier.jsq1</a>) Channels
+### Mi S Smart Humidifer  (<a name="deerma-humidifier-jsq1">deerma.humidifier.jsq1</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -1615,7 +1679,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | switchscene          | Switch               | Switch Scene                             |            |
 | delayoff             | Switch               | Delay Off                                |            |
 
-### Philips ZhiRui E14 candle lamp Frosted version (<a name="philips-light-candle">philips.light.candle</a>) Channels
+### Philips ZhiRui E14 Candle Lamp Frosted version (<a name="philips-light-candle">philips.light.candle</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -1626,7 +1690,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | delayoff             | Switch               | Delay Off                                |            |
 | toggle               | Switch               | Toggle                                   |            |
 
-### Philips ZhiRui E14 candle lamp crystal version (<a name="philips-light-candle2">philips.light.candle2</a>) Channels
+### Philips ZhiRui E14 Candle Lamp Crystal version (<a name="philips-light-candle2">philips.light.candle2</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -1663,7 +1727,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | switch_en            | Switch               | Switch Enabled                           |            |
 | delayoff             | Switch               | Delay Off                                |            |
 
-### Philips connected ceiling (<a name="philips-light-ceiling">philips.light.ceiling</a>) Channels
+### Philips Connected Ceiling (<a name="philips-light-ceiling">philips.light.ceiling</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -1687,7 +1751,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | switch_en            | Switch               | Switch Enabled                           |            |
 | delayoff             | Switch               | Delay Off                                |            |
 
-### ZhiRui dimmable downlight (<a name="philips-light-dlight">philips.light.dlight</a>) Channels
+### ZhiRui Dimmable Downlight (<a name="philips-light-dlight">philips.light.dlight</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -1702,7 +1766,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | dimmingPeriod        | Number               | Dimming Period                           |            |
 | MibandStatus         | String               | Mi Band Status                           |            |
 
-### Philips ZhiRui downlight (<a name="philips-light-downlight">philips.light.downlight</a>) Channels
+### Philips ZhiRui Downlight (<a name="philips-light-downlight">philips.light.downlight</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -1726,7 +1790,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | switchscene          | Switch               | Switch Scene                             |            |
 | delayoff             | Switch               | Delay Off                                |            |
 
-### Philips ZhiYi Ceiling lamp FL 40W (<a name="philips-light-lnblight1">philips.light.lnblight1</a>) Channels
+### Philips ZhiYi Ceiling Lamp FL 40W (<a name="philips-light-lnblight1">philips.light.lnblight1</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -1742,7 +1806,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | delayoff             | Switch               | Delay Off                                |            |
 | mb                   | Switch               | MiBand                                   |            |
 
-### Philips ZhiYi Ceiling lamp FL 28W (<a name="philips-light-lnblight2">philips.light.lnblight2</a>) Channels
+### Philips ZhiYi Ceiling Lamp FL 28W (<a name="philips-light-lnblight2">philips.light.lnblight2</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -1758,7 +1822,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | delayoff             | Switch               | Delay Off                                |            |
 | mb                   | Switch               | MiBand                                   |            |
 
-### Philips ZhiYi Ceiling lamp FL 80W (<a name="philips-light-lnlrlight">philips.light.lnlrlight</a>) Channels
+### Philips ZhiYi Ceiling Lamp FL 80W (<a name="philips-light-lnlrlight">philips.light.lnlrlight</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -1843,7 +1907,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness           | Dimmer               | Brightness                               |            |
 | scene                | Number               | Scene                                    |            |
 
-### Philips ZhiRui bedside lamp (<a name="philips-light-moonlight">philips.light.moonlight</a>) Channels
+### Philips ZhiRui Bedside Lamp (<a name="philips-light-moonlight">philips.light.moonlight</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -1956,7 +2020,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | dimmingPeriod        | Number               | Dimming Period                           |            |
 | MibandStatus         | String               | Mi Band Status                           |            |
 
-### Philips EyeCare connected desk lamp gen2. (<a name="philips-light-sread1">philips.light.sread1</a>) Channels
+### Philips EyeCare Connected Desk Lamp gen2. (<a name="philips-light-sread1">philips.light.sread1</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -1980,7 +2044,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | eyecare              | Switch               | Eyecare                                  |            |
 | bl                   | Switch               | Night Light                              |            |
 
-### Philips connected lights (<a name="philips-light-virtual">philips.light.virtual</a>) Channels
+### Philips Connected Lights (<a name="philips-light-virtual">philips.light.virtual</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -2037,7 +2101,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | dimmingPeriod        | Number               | Dimming Period                           |            |
 | MibandStatus         | String               | Mi Band Status                           |            |
 
-### Philips ZhiYi ceiling lamp (<a name="philips-light-zyceiling">philips.light.zyceiling</a>) Channels
+### Philips ZhiYi Ceiling lamp (<a name="philips-light-zyceiling">philips.light.zyceiling</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -2048,7 +2112,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | switchscene          | Switch               | Switch Scene                             |            |
 | toggle               | Switch               | Toggle                                   |            |
 
-### Philips ZhiYi desk lamp (<a name="philips-light-zysread">philips.light.zysread</a>) Channels
+### Philips ZhiYi Desk Lamp (<a name="philips-light-zysread">philips.light.zysread</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -2060,7 +2124,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | switchscene          | Switch               | Switch Scene                             |            |
 | delayoff             | Switch               | Delay Off                                |            |
 
-### Philips ZhiYi strip (<a name="philips-light-zystrip">philips.light.zystrip</a>) Channels
+### Philips ZhiYi Strip (<a name="philips-light-zystrip">philips.light.zystrip</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -2124,7 +2188,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | expresso             | Number               | Brew Americano                           | Value is the amount of coffee in ml. parameters in json are cupAmount: [set by OH], coffee: 40,water: 80, temp: 90 |
 | boil                 | Number               | Boil water                               | Value is the amount of water (ml) to heat. 2nd parameter in the json db is the water temperature |
 
-### Xiaomi Scishare smart capsule coffee machine (<a name="scishare-coffee-s1301">scishare.coffee.s1301</a>) Channels
+### Xiaomi Scishare Smart Capsule Coffee Machine (<a name="scishare-coffee-s1301">scishare.coffee.s1301</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -2259,7 +2323,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | download-status      | Number               | Voice - Download Status                  | Value mapping `["0"="Free","1"="Downloading"]` |
 | download-progress    | Number:Dimensionless | Voice - Download Progress                |            |
 
-### VIOMI Internet electric water heater 1A (60L) (<a name="viomi-waterheater-e1">viomi.waterheater.e1</a>) Channels
+### VIOMI Internet Electric Water Heater 1A (60L) (<a name="viomi-waterheater-e1">viomi.waterheater.e1</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -2866,7 +2930,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | fan_temp             | Number:Temperature   | Fan Temperature                          |            |
 | status_led           | Number               | Night Light                              |            |
 
-### Uclean smart toilet pure (<a name="xjx-toilet-pure">xjx.toilet.pure</a>) Channels
+### Uclean Smart Toilet pure (<a name="xjx-toilet-pure">xjx.toilet.pure</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -2876,7 +2940,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | fan_temp             | Number:Temperature   | Fan Temperature                          |            |
 | status_led           | Number               | Night Light                              |            |
 
-### Uclean smart toilet relax (<a name="xjx-toilet-relax">xjx.toilet.relax</a>) Channels
+### Uclean Smart Toilet relax (<a name="xjx-toilet-relax">xjx.toilet.relax</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -3136,7 +3200,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
 
-### Yeelight stylized Ceiling Light  Pro (<a name="yeelink-light-ceiling12">yeelink.light.ceiling12</a>) Channels
+### Yeelight Stylized Ceiling Light  Pro (<a name="yeelink-light-ceiling12">yeelink.light.ceiling12</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -5144,6 +5208,76 @@ Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"
 ```
 
 
+### Mi Air Frying Pan (careli.fryer.maf01) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_fryer "Mi Air Frying Pan" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
+Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer) {channel="miio:basic:fryer:target_temperature"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+String recipe_id "Custom - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
+String recipe_name "Custom - Recipe Name" (G_fryer) {channel="miio:basic:fryer:recipe_name"}
+Number:Time work_time "Custom - Work Time" (G_fryer) {channel="miio:basic:fryer:work_time"}
+Number:Temperature work_temp "Custom - Work Temp" (G_fryer) {channel="miio:basic:fryer:work_temp"}
+Number:Time appoint_time "Custom - Appoint Time" (G_fryer) {channel="miio:basic:fryer:appoint_time"}
+Number food_quantity "Custom - Food Quantity" (G_fryer) {channel="miio:basic:fryer:food_quantity"}
+Number preheat_switch "Custom - Preheat Switch" (G_fryer) {channel="miio:basic:fryer:preheat_switch"}
+Number:Time appoint_time_left "Custom - Appoint Time Left" (G_fryer) {channel="miio:basic:fryer:appoint_time_left"}
+String recipe_sync "Custom - Recipe Sync" (G_fryer) {channel="miio:basic:fryer:recipe_sync"}
+Number turn_pot "Custom - Turn Pot" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+```
+
+### Mi Smart Air Fryer (3.5L) (careli.fryer.maf02) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_fryer "Mi Smart Air Fryer (3.5L)" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
+Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer) {channel="miio:basic:fryer:target_temperature"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+String recipe_id "Custom - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
+Number:Time work_time "Custom - Work Time" (G_fryer) {channel="miio:basic:fryer:work_time"}
+Number:Temperature work_temp "Custom - Work Temp" (G_fryer) {channel="miio:basic:fryer:work_temp"}
+Number:Time appoint_time "Custom - Appoint Time" (G_fryer) {channel="miio:basic:fryer:appoint_time"}
+Number food_quantity "Custom - Food Quantity" (G_fryer) {channel="miio:basic:fryer:food_quantity"}
+Number preheat_switch "Custom - Preheat Switch" (G_fryer) {channel="miio:basic:fryer:preheat_switch"}
+Number:Time appoint_time_left "Custom - Appoint Time Left" (G_fryer) {channel="miio:basic:fryer:appoint_time_left"}
+Number turn_pot "Custom - Turn Pot" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+```
+
+### Mi Air Frying Pan (careli.fryer.maf03) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_fryer "Mi Air Frying Pan" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
+Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer) {channel="miio:basic:fryer:target_temperature"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+String recipe_id "Custom - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
+String recipe_name "Custom - Recipe Name" (G_fryer) {channel="miio:basic:fryer:recipe_name"}
+Number:Time work_time "Custom - Work Time" (G_fryer) {channel="miio:basic:fryer:work_time"}
+Number:Temperature work_temp "Custom - Work Temp" (G_fryer) {channel="miio:basic:fryer:work_temp"}
+Number:Time appoint_time "Custom - Appoint Time" (G_fryer) {channel="miio:basic:fryer:appoint_time"}
+Number food_quantity "Custom - Food Quantity" (G_fryer) {channel="miio:basic:fryer:food_quantity"}
+Number preheat_switch "Custom - Preheat Switch" (G_fryer) {channel="miio:basic:fryer:preheat_switch"}
+Number:Time appoint_time_left "Custom - Appoint Time Left" (G_fryer) {channel="miio:basic:fryer:appoint_time_left"}
+String recipe_sync "Custom - Recipe Sync" (G_fryer) {channel="miio:basic:fryer:recipe_sync"}
+Number turn_pot "Custom - Turn Pot" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+```
+
 ### Qingping Air Monitor Lite (cgllc.airm.cgdn1) item file lines
 
 note: Autogenerated example. Replace the id (airm) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -5333,12 +5467,12 @@ Switch sound "Notification Sounds" (G_humidifier) {channel="miio:basic:humidifie
 Number watertankstatus "Watertank Status" (G_humidifier) {channel="miio:basic:humidifier:watertankstatus"}
 ```
 
-### Mi S Smart humidifer  (deerma.humidifier.jsq1) item file lines
+### Mi S Smart Humidifer  (deerma.humidifier.jsq1) item file lines
 
 note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_humidifier "Mi S Smart humidifer " <status>
+Group G_humidifier "Mi S Smart Humidifer " <status>
 Switch power "Power" (G_humidifier) {channel="miio:basic:humidifier:power"}
 Number mode "Mode" (G_humidifier) {channel="miio:basic:humidifier:mode"}
 Number:Dimensionless humidity "Humidity" (G_humidifier) {channel="miio:basic:humidifier:humidity"}
@@ -6405,12 +6539,12 @@ Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchsce
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
-### Philips ZhiRui E14 candle lamp Frosted version (philips.light.candle) item file lines
+### Philips ZhiRui E14 Candle Lamp Frosted version (philips.light.candle) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_light "Philips ZhiRui E14 candle lamp Frosted version" <status>
+Group G_light "Philips ZhiRui E14 Candle Lamp Frosted version" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -6419,12 +6553,12 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
-### Philips ZhiRui E14 candle lamp crystal version (philips.light.candle2) item file lines
+### Philips ZhiRui E14 Candle Lamp Crystal version (philips.light.candle2) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_light "Philips ZhiRui E14 candle lamp crystal version" <status>
+Group G_light "Philips ZhiRui E14 Candle Lamp Crystal version" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -6465,12 +6599,12 @@ Switch switch_en "Switch Enabled" (G_light) {channel="miio:basic:light:switch_en
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
-### Philips connected ceiling (philips.light.ceiling) item file lines
+### Philips Connected Ceiling (philips.light.ceiling) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_light "Philips connected ceiling" <status>
+Group G_light "Philips Connected Ceiling" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -6495,12 +6629,12 @@ Switch switch_en "Switch Enabled" (G_light) {channel="miio:basic:light:switch_en
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
-### ZhiRui dimmable downlight (philips.light.dlight) item file lines
+### ZhiRui Dimmable Downlight (philips.light.dlight) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_light "ZhiRui dimmable downlight" <status>
+Group G_light "ZhiRui Dimmable Downlight" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
@@ -6513,12 +6647,12 @@ Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmi
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
-### Philips ZhiRui downlight (philips.light.downlight) item file lines
+### Philips ZhiRui Downlight (philips.light.downlight) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_light "Philips ZhiRui downlight" <status>
+Group G_light "Philips ZhiRui Downlight" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -6543,12 +6677,12 @@ Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchsce
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
-### Philips ZhiYi Ceiling lamp FL 40W (philips.light.lnblight1) item file lines
+### Philips ZhiYi Ceiling Lamp FL 40W (philips.light.lnblight1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_light "Philips ZhiYi Ceiling lamp FL 40W" <status>
+Group G_light "Philips ZhiYi Ceiling Lamp FL 40W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -6562,12 +6696,12 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 ```
 
-### Philips ZhiYi Ceiling lamp FL 28W (philips.light.lnblight2) item file lines
+### Philips ZhiYi Ceiling Lamp FL 28W (philips.light.lnblight2) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_light "Philips ZhiYi Ceiling lamp FL 28W" <status>
+Group G_light "Philips ZhiYi Ceiling Lamp FL 28W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -6581,12 +6715,12 @@ Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 ```
 
-### Philips ZhiYi Ceiling lamp FL 80W (philips.light.lnlrlight) item file lines
+### Philips ZhiYi Ceiling Lamp FL 80W (philips.light.lnlrlight) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_light "Philips ZhiYi Ceiling lamp FL 80W" <status>
+Group G_light "Philips ZhiYi Ceiling Lamp FL 80W" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -6684,12 +6818,12 @@ Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 ```
 
-### Philips ZhiRui bedside lamp (philips.light.moonlight) item file lines
+### Philips ZhiRui Bedside Lamp (philips.light.moonlight) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_light "Philips ZhiRui bedside lamp" <status>
+Group G_light "Philips ZhiRui Bedside Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -6821,12 +6955,12 @@ Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmi
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
-### Philips EyeCare connected desk lamp gen2. (philips.light.sread1) item file lines
+### Philips EyeCare Connected Desk Lamp gen2. (philips.light.sread1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_light "Philips EyeCare connected desk lamp gen2." <status>
+Group G_light "Philips EyeCare Connected Desk Lamp gen2." <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
@@ -6851,12 +6985,12 @@ Switch eyecare "Eyecare" (G_light) {channel="miio:basic:light:eyecare"}
 Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
 ```
 
-### Philips connected lights (philips.light.virtual) item file lines
+### Philips Connected Lights (philips.light.virtual) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_light "Philips connected lights" <status>
+Group G_light "Philips Connected Lights" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -6920,12 +7054,12 @@ Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmi
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
 ```
 
-### Philips ZhiYi ceiling lamp (philips.light.zyceiling) item file lines
+### Philips ZhiYi Ceiling lamp (philips.light.zyceiling) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_light "Philips ZhiYi ceiling lamp" <status>
+Group G_light "Philips ZhiYi Ceiling lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -6934,12 +7068,12 @@ Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchsce
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
-### Philips ZhiYi desk lamp (philips.light.zysread) item file lines
+### Philips ZhiYi Desk Lamp (philips.light.zysread) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_light "Philips ZhiYi desk lamp" <status>
+Group G_light "Philips ZhiYi Desk Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -6949,12 +7083,12 @@ Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchsce
 Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
-### Philips ZhiYi strip (philips.light.zystrip) item file lines
+### Philips ZhiYi Strip (philips.light.zystrip) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_light "Philips ZhiYi strip" <status>
+Group G_light "Philips ZhiYi Strip" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
@@ -7031,12 +7165,12 @@ Number expresso "Brew Americano" (G_coffee) {channel="miio:basic:coffee:expresso
 Number boil "Boil water" (G_coffee) {channel="miio:basic:coffee:boil"}
 ```
 
-### Xiaomi Scishare smart capsule coffee machine (scishare.coffee.s1301) item file lines
+### Xiaomi Scishare Smart Capsule Coffee Machine (scishare.coffee.s1301) item file lines
 
 note: Autogenerated example. Replace the id (coffee) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_coffee "Xiaomi Scishare smart capsule coffee machine" <status>
+Group G_coffee "Xiaomi Scishare Smart Capsule Coffee Machine" <status>
 Switch power "Power" (G_coffee) {channel="miio:basic:coffee:power"}
 String Status "status" (G_coffee) {channel="miio:basic:coffee:Status"}
 Number expresso "Brew Expresso" (G_coffee) {channel="miio:basic:coffee:expresso"}
@@ -7181,12 +7315,12 @@ Number download_status "Voice - Download Status" (G_vacuum) {channel="miio:basic
 Number:Dimensionless download_progress "Voice - Download Progress" (G_vacuum) {channel="miio:basic:vacuum:download-progress"}
 ```
 
-### VIOMI Internet electric water heater 1A (60L) (viomi.waterheater.e1) item file lines
+### VIOMI Internet Electric Water Heater 1A (60L) (viomi.waterheater.e1) item file lines
 
 note: Autogenerated example. Replace the id (waterheater) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_waterheater "VIOMI Internet electric water heater 1A (60L)" <status>
+Group G_waterheater "VIOMI Internet Electric Water Heater 1A (60L)" <status>
 Number washStatus "Wash Status" (G_waterheater) {channel="miio:basic:waterheater:washStatus"}
 Number velocity "Velocity" (G_waterheater) {channel="miio:basic:waterheater:velocity"}
 Number:Temperature waterTemp "Water Temperature" (G_waterheater) {channel="miio:basic:waterheater:waterTemp"}
@@ -7872,12 +8006,12 @@ Number:Temperature fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:to
 Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
 ```
 
-### Uclean smart toilet pure (xjx.toilet.pure) item file lines
+### Uclean Smart Toilet pure (xjx.toilet.pure) item file lines
 
 note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_toilet "Uclean smart toilet pure" <status>
+Group G_toilet "Uclean Smart Toilet pure" <status>
 Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
 Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
 Number:Temperature water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
@@ -7885,12 +8019,12 @@ Number:Temperature fan_temp "Fan Temperature" (G_toilet) {channel="miio:basic:to
 Number status_led "Night Light" (G_toilet) {channel="miio:basic:toilet:status_led"}
 ```
 
-### Uclean smart toilet relax (xjx.toilet.relax) item file lines
+### Uclean Smart Toilet relax (xjx.toilet.relax) item file lines
 
 note: Autogenerated example. Replace the id (toilet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_toilet "Uclean smart toilet relax" <status>
+Group G_toilet "Uclean Smart Toilet relax" <status>
 Number:Temperature seat_temp "Seat Temperature" (G_toilet) {channel="miio:basic:toilet:seat_temp"}
 Number status_seatheat "Seat Status" (G_toilet) {channel="miio:basic:toilet:status_seatheat"}
 Number:Temperature water_temp_t "Water Temperature" (G_toilet) {channel="miio:basic:toilet:water_temp_t"}
@@ -8205,12 +8339,12 @@ String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
-### Yeelight stylized Ceiling Light  Pro (yeelink.light.ceiling12) item file lines
+### Yeelight Stylized Ceiling Light  Pro (yeelink.light.ceiling12) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_light "Yeelight stylized Ceiling Light  Pro" <status>
+Group G_light "Yeelight Stylized Ceiling Light  Pro" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
