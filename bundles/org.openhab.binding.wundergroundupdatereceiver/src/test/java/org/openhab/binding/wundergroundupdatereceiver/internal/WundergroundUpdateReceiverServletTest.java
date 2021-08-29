@@ -356,11 +356,9 @@ class WundergroundUpdateReceiverServletTest {
                 StringType.valueOf("WH2600 V2.2.8"));
         verify(callback).stateUpdated(new ChannelUID(testThindUid, METADATA_GROUP,
                 WundergroundUpdateReceiverBindingConstants.LAST_QUERY_STATE), StringType.valueOf(queryString));
-        verify(callback)
-                .stateUpdated(
-                        eq(new ChannelUID(testThindUid, METADATA_GROUP,
-                                WundergroundUpdateReceiverBindingConstants.LAST_RECEIVED_DATETIME)),
-                        any(DateTimeType.class));
+        verify(callback).stateUpdated(eq(
+                new ChannelUID(testThindUid, METADATA_GROUP, WundergroundUpdateReceiverBindingConstants.LAST_RECEIVED)),
+                any(DateTimeType.class));
         verify(callback).channelTriggered(testThing, new ChannelUID(testThindUid, METADATA_GROUP,
                 WundergroundUpdateReceiverBindingConstants.LAST_QUERY_TRIGGER), queryString);
     }

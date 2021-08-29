@@ -47,13 +47,13 @@ public class WundergroundUpdateReceiverParameterMapping {
     }
 
     private final static WundergroundUpdateReceiverParameterMapping[] KNOWN_MAPPINGS = {
-            new WundergroundUpdateReceiverParameterMapping(LAST_RECEIVED_DATETIME,
-                    LAST_RECEIVED_DATETIME_CHANNELTYPEUID, METADATA_GROUP, null),
+            new WundergroundUpdateReceiverParameterMapping(LAST_RECEIVED, LAST_RECEIVED_DATETIME_CHANNELTYPEUID,
+                    METADATA_GROUP, null),
             new WundergroundUpdateReceiverParameterMapping(LAST_QUERY_STATE, LAST_QUERY_STATE_CHANNELTYPEUID,
                     METADATA_GROUP, null),
             new WundergroundUpdateReceiverParameterMapping(LAST_QUERY_TRIGGER, LAST_QUERY_TRIGGER_CHANNELTYPEUID,
                     METADATA_GROUP, null),
-            new WundergroundUpdateReceiverParameterMapping(DATEUTC, DATETIME_UTC_CHANNELTYPEUID, METADATA_GROUP, null),
+            new WundergroundUpdateReceiverParameterMapping(DATEUTC, DATEUTC_CHANNELTYPEUID, METADATA_GROUP, null),
             new WundergroundUpdateReceiverParameterMapping(SOFTWARE_TYPE, SOFTWARETYPE_CHANNELTYPEUID, METADATA_GROUP,
                     null),
             new WundergroundUpdateReceiverParameterMapping(LOW_BATTERY, LOW_BATTERY_CHANNELTYPEUID, METADATA_GROUP,

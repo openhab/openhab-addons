@@ -106,17 +106,18 @@ Additionally there is a receipt timestamp and a trigger channel.
 #### Metadata channel-types:
 | Request parameter |  Channel type id             | Type                 | Label                             | Description                                                                                         | Group       |
 |-------------------|------------------------------|----------------------|-----------------------------------|-----------------------------------------------------------------------------------------------------|-------------|
-| dateutc           | datetime-utc                 | String               | Last Updated                      | The date and time of the last update in UTC as submitted by the weather station. This can be 'now'. | Metadata    | 
+| dateutc           | dateutc                      | String               | Last Updated                      | The date and time of the last update in UTC as submitted by the weather station. This can be 'now'. | Metadata    | 
 | softwaretype      | softwaretype                 | String               | Software Type                     | A software type string from the weather station                                                     | Metadata    | 
 | rtfreq            | realtime-frequency           | Number               | Realtime Frequency                | How often does the weather station submit measurements                                              | Metadata    | 
 | lowbatt           |
 
-#### Programatically added channel-types:
-|  Channel type id       | Type                 | Channel type | Label          | Description                                                 | Group    |
-|------------------------|----------------------|--------------|----------------|-------------------------------------------------------------|----------|
-| last-received-datetime | DateTime             | state        | Last Received  | The date and time of the last update.                       | Metadata | 
-| last-query-state       | String               | state        | The last query | The part of the last query after the first unurlencoded '?' | Metadata |
-| last-query-trigger     | String               | trigger      | The last query | The part of the last query after the first unurlencoded '?' | Metadata |
+#### Synthetic channel-types. These are programatically added:
+|  Channel type id       | Type                 | Channel type | Label                    | Description                                                                                                                                                | Group    |
+|------------------------|----------------------|--------------|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| dateutc-datetime       | dateutc-datetime     | state        | Last Updated as DateTime | The date and time of the last update in UTC as submitted by the weather station converted to a DateTime value. In case of 'now', the current time is used. | Metadata | 
+| last-received-datetime | DateTime             | state        | Last Received            | The date and time of the last update.                                                                                                                      | Metadata | 
+| last-query-state       | String               | state        | The last query           | The part of the last query after the first unurlencoded '?'                                                                                                | Metadata |
+| last-query-trigger     | String               | trigger      | The last query           | The part of the last query after the first unurlencoded '?'                                                                                                | Metadata |
 
 The trigger channel's payload is the last querystring, so the following dsl rule script
 would send the measurements on to wunderground.com:
@@ -166,8 +167,7 @@ You can also define a transformation to fx. get a cardinal direction (N, S, W, E
   }
   else
   {
-    var dir = ["N ⬆️", "NNO ⬆️", "NO ↗️", "ONO ➡️", "O ➡️", "OSO ➡️", "SO ↘️", "SSO ⬇️", "S ⬇️", "SSW ⬇️", "SW ↙️", "WSW ⬅️", "W ⬅️", "WNW ⬅️", "NW ↖️", "NNW ⬆️"];
-    var wind          = parseInt(s.split(" ")[0]);
+    var dir = ["N ⬇️", "NNO ⬇️", "NO ↙️", "ONO ⬅️", "O ⬅️", "OSO ⬅️", "SO ↖️", "SSO ⬆️", "S ⬆️", "SSW ⬆️", "SW ↗️", "WSW ➡️", "W ➡️", "WNW ➡️", "NW ↘️", "NNW ⬇️"];   var wind          = parseInt(s.split(" ")[0]);
     var winddiroffset = (wind + (360.0/32.0)) % 360.0;
     var winddiridx    = Math.floor(winddiroffset / (360.0/16.0));
     var winddir       = dir[winddiridx];

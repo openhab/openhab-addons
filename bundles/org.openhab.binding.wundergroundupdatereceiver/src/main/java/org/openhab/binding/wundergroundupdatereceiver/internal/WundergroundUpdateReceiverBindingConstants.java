@@ -47,13 +47,17 @@ public class WundergroundUpdateReceiverBindingConstants {
             "wundergroundUpdateReceiver");
     static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_UPDATE_RECEIVER);
 
+    public static final String NOW = "now";
+
     // Excluded technical paramter names
     public static final String REALTIME_MARKER = "realtime";
     public static final String PASSWORD = "PASSWORD";
     public static final String ACTION = "action";
 
-    // List of default channeltypes added to
-    public static final String LAST_RECEIVED_DATETIME = "last-received";
+    // List of default synthetic channeltypes added to a new thing
+    public static final String DATEUTC_DATETIME = "dateutc-datetime";
+    public static final String LAST_RECEIVED_DATETIME = "last-received-datetime";
+    public static final String LAST_RECEIVED = "last-received";
     public static final String LAST_QUERY = "last-query";
     public static final String LAST_QUERY_STATE = LAST_QUERY + "-state";
     public static final String LAST_QUERY_TRIGGER = LAST_QUERY + "-trigger";
@@ -122,12 +126,14 @@ public class WundergroundUpdateReceiverBindingConstants {
     public static final String AQ_OZONE = "AqOZONE";
 
     public static final ChannelTypeUID LAST_RECEIVED_DATETIME_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
-            "last-received-datetime");
+            LAST_RECEIVED_DATETIME);
     public static final ChannelTypeUID LAST_QUERY_STATE_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
             LAST_QUERY_STATE);
     public static final ChannelTypeUID LAST_QUERY_TRIGGER_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
             LAST_QUERY_TRIGGER);
-    public static final ChannelTypeUID DATETIME_UTC_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "datetime-utc");
+    public static final ChannelTypeUID DATEUTC_DATETIME_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID,
+            DATEUTC_DATETIME);
+    public static final ChannelTypeUID DATEUTC_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, DATEUTC);
     public static final ChannelTypeUID LOW_BATTERY_CHANNELTYPEUID = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_LOW_BATTERY
             .getUID();
     public static final ChannelTypeUID SOFTWARETYPE_CHANNELTYPEUID = new ChannelTypeUID(BINDING_ID, "softwaretype");

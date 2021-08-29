@@ -12,6 +12,7 @@
 			<channel id="last-received" typeId="last-received-datetime"/>
 			<channel id="last-query-state" typeId="last-query-state"/>
 			<channel id="last-query-trigger" typeId="last-query-trigger"/>
+			<channel id="dateutc-datetime" typeId="dateutc-datetime"/>
 		</channels>
 	</channel-group-type>
 

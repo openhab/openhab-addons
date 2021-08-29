@@ -14,6 +14,7 @@ package org.openhab.binding.wundergroundupdatereceiver.internal;
 
 import static org.openhab.binding.wundergroundupdatereceiver.internal.WundergroundUpdateReceiverBindingConstants.*;
 
+import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,6 +62,7 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
     private final WundergroundUpdateReceiverUnknownChannelTypeProvider channelTypeProvider;
     private final ChannelTypeRegistry channelTypeRegistry;
 
+    private final ChannelUID dateutcDatetimeChannel;
     private final ChannelUID lastReceivedChannel;
     private final ChannelUID queryStateChannel;
     private final ChannelUID queryTriggerChannel;
@@ -76,12 +78,14 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         this.discoveryService = discoveryService;
         this.channelTypeProvider = channelTypeProvider;
         this.channelTypeRegistry = channelTypeRegistry;
-        this.lastReceivedChannel = new ChannelUID(new ChannelGroupUID(getThing().getUID(), METADATA_GROUP),
-                LAST_RECEIVED_DATETIME);
-        this.queryTriggerChannel = new ChannelUID(new ChannelGroupUID(getThing().getUID(), METADATA_GROUP),
-                LAST_QUERY_TRIGGER);
-        this.queryStateChannel = new ChannelUID(new ChannelGroupUID(getThing().getUID(), METADATA_GROUP),
-                LAST_QUERY_STATE);
+
+        final ChannelGroupUID metadatGroupUID = new ChannelGroupUID(getThing().getUID(), METADATA_GROUP);
+
+        this.dateutcDatetimeChannel = new ChannelUID(metadatGroupUID, DATEUTC_DATETIME);
+        this.lastReceivedChannel = new ChannelUID(metadatGroupUID, LAST_RECEIVED);
+        this.queryTriggerChannel = new ChannelUID(metadatGroupUID, LAST_QUERY_TRIGGER);
+        this.queryStateChannel = new ChannelUID(metadatGroupUID, LAST_QUERY_STATE);
+
         this.wundergroundUpdateReceiverServlet = Objects.requireNonNull(wunderGroundUpdateReceiverServlet);
     }
 
@@ -102,7 +106,7 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         wundergroundUpdateReceiverServlet.addHandler(this);
         @Nullable
         Map<String, String[]> requestParameters = discoveryService.getUnhandledStationRequest(config.stationId);
-        if (requestParameters != null && thing.getChannels().size() == 3) {
+        if (requestParameters != null && thing.getChannels().size() == 4) {
             ThingBuilder thingBuilder = editThing();
             requestParameters.forEach((String parameter, String[] query) -> {
                 @Nullable
@@ -141,12 +145,25 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
     public void updateChannelStates(Map<String, String> requestParameters) {
         requestParameters.forEach(this::updateChannelState);
         updateState(lastReceivedChannel, new DateTimeType());
+        updateState(dateutcDatetimeChannel, safeResolvUtcDateTime(requestParameters.getOrDefault(DATEUTC, NOW)));
         String lastQuery = requestParameters.getOrDefault(LAST_QUERY, "");
         if (lastQuery.isEmpty()) {
             return;
         }
         updateState(queryStateChannel, StringType.valueOf(lastQuery));
         triggerChannel(queryTriggerChannel, lastQuery);
+    }
+
+    private DateTimeType safeResolvUtcDateTime(String dateUtc) {
+        if (!dateUtc.isEmpty() && !NOW.equals(dateUtc)) {
+            try {
+                // Supposedly the format is "yyyy-MM-dd hh:mm:ss" from the weather station
+                return new DateTimeType(ZonedDateTime.parse(dateUtc.replace(" ", "T") + "Z"));
+            } catch (Exception ex) {
+                logger.warn("The weather station is submitting unparsable datetime values: {}", dateUtc);
+            }
+        }
+        return new DateTimeType();
     }
 
     public void updateChannelState(String channelId, String[] stateParts) {
