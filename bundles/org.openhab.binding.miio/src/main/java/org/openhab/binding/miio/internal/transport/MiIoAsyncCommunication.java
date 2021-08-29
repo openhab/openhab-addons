@@ -264,7 +264,7 @@ public class MiIoAsyncCommunication {
         private final String deviceId;
 
         public MessageSenderThread(String deviceId) {
-            super("Mi IO MessageSenderThread - " + deviceId);
+            super("OH-binding-miio-MessageSenderThread-" + deviceId);
             setDaemon(true);
             this.deviceId = deviceId;
         }
