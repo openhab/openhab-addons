@@ -238,7 +238,7 @@ public class CameraServlet extends HttpServlet {
                 } while (true);
             case "/instar":
                 InstarHandler instar = new InstarHandler(handler);
-                instar.alarmTriggered(pathInfo + req.getQueryString());
+                instar.alarmTriggered(pathInfo + "?" + req.getQueryString());
                 return;
             case "/ipcamera0.ts":
             default:

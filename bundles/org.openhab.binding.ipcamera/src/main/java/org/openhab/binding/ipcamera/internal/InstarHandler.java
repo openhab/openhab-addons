@@ -23,7 +23,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -43,8 +42,8 @@ public class InstarHandler extends ChannelDuplexHandler {
     private IpCameraHandler ipCameraHandler;
     private String requestUrl = "Empty";
 
-    public InstarHandler(ThingHandler thingHandler) {
-        ipCameraHandler = (IpCameraHandler) thingHandler;
+    public InstarHandler(IpCameraHandler thingHandler) {
+        ipCameraHandler = thingHandler;
     }
 
     public void setURL(String url) {

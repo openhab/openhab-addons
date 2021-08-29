@@ -855,9 +855,11 @@ public class OnvifConnection {
             }
         }
         threadPool.shutdown();
+        threadPool = Executors.newScheduledThreadPool(2);
     }
 
     public void disconnect() {
+        logger.debug("disconnecting ONVIF");
         if (usingEvents && isConnected && !mainEventLoopGroup.isShuttingDown()) {
             sendOnvifRequest(requestBuilder(RequestType.Unsubscribe, subscriptionXAddr));
         }
