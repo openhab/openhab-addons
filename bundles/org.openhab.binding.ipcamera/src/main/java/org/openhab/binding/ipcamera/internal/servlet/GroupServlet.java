@@ -12,9 +12,16 @@
  */
 package org.openhab.binding.ipcamera.internal.servlet;
 
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_START_STREAM;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +29,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraGroupHandler;
+import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.ChannelUID;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -37,12 +47,15 @@ import org.slf4j.LoggerFactory;
 public class GroupServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final long serialVersionUID = -234658667574L;
-    private final IpCameraGroupHandler handler;
+    private final IpCameraGroupHandler groupHandler;
+    private int snapshotStreamsOpen = 0;
+    private final String ipWhitelist;
 
     public GroupServlet(IpCameraGroupHandler ipCameraGroupHandler, HttpService httpService) {
-        handler = ipCameraGroupHandler;
+        groupHandler = ipCameraGroupHandler;
+        ipWhitelist = groupHandler.groupConfig.getIpWhitelist();
         try {
-            httpService.registerServlet("/ipcamera/" + handler.getThing().getUID().getId(), this, null,
+            httpService.registerServlet("/ipcamera/" + groupHandler.getThing().getUID().getId(), this, null,
                     httpService.createDefaultHttpContext());
         } catch (NamespaceException | ServletException e) {
             logger.warn("Registering servlet failed:{}", e.getMessage());
@@ -51,9 +64,134 @@ public class GroupServlet extends HttpServlet {
 
     @Override
     protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
-        if (req == null) {
+        if (req == null || resp == null) {
             return;
         }
-        // TODO need to refactor all functions over from StreamServerGroupHandler
+        String pathInfo = req.getPathInfo();
+        if (pathInfo == null) {
+            return;
+        }
+        logger.debug("GET: request for {}, received from {}", pathInfo, req.getRemoteHost());
+        if (!"DISABLE".equals(ipWhitelist)) {
+            String requestIP = "(" + req.getRemoteHost() + ")";
+            if (!ipWhitelist.contains(requestIP)) {
+                logger.warn("The request made from {} was not in the whiteList and will be ignored.", requestIP);
+                return;
+            }
+        }
+        switch (pathInfo) {
+            case "/ipcamera.m3u8":
+                if (groupHandler.hlsTurnedOn) {
+                    String playList = groupHandler.getPlayList();
+                    logger.debug("playlist is:{}", playList);
+                    sendString(resp, playList, "application/x-mpegurl");
+                    return;
+                } else {
+                    logger.debug(
+                            "HLS requires the groups startStream channel to be turned on first. Just starting it now.");
+                    String channelPrefix = "ipcamera:" + groupHandler.getThing().getThingTypeUID() + ":"
+                            + groupHandler.getThing().getUID().getId() + ":";
+                    groupHandler.handleCommand(new ChannelUID(channelPrefix + CHANNEL_START_STREAM), OnOffType.ON);
+                }
+                return;
+            case "/ipcamera.jpg":
+                sendSnapshotImage(resp, "image/jpg");
+                return;
+            case "/snapshots.mjpeg":
+                req.getSession().setMaxInactiveInterval(0);
+                snapshotStreamsOpen++;
+                StreamOutput output = new StreamOutput(resp);
+                IpCameraHandler cameraHandler;
+                do {
+                    try {
+                        cameraHandler = groupHandler.cameraOrder.get(groupHandler.cameraIndex);
+                        output.sendSnapshotBasedFrame(cameraHandler.getSnapshot());
+                        Thread.sleep(1005);
+                    } catch (InterruptedException | IOException e) {
+                        // Never stop streaming until IOException. Occurs when browser stops the stream.
+                        snapshotStreamsOpen--;
+                        if (snapshotStreamsOpen == 0) {
+                            logger.debug("All snapshots.mjpeg streams have stopped.");
+                        }
+                        return;
+                    }
+                } while (true);
+            default:
+                if (pathInfo.endsWith(".ts")) {
+                    sendFile(resp, resolveIndexToPath(pathInfo) + pathInfo.substring(2), "video/MP2T");
+                }
+        }
+    }
+
+    private String resolveIndexToPath(String uri) {
+        if (!"i".equals(uri.substring(1, 2))) {
+            return groupHandler.getOutputFolder(Integer.parseInt(uri.substring(1, 2)));
+        }
+        return "notFound";
+        // example is /1ipcameraxx.ts
+    }
+
+    private void sendFile(HttpServletResponse response, String fileUri, String contentType) throws IOException {
+        logger.trace("file is :{}", fileUri);
+        File file = new File(fileUri);
+        if (!file.exists()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        response.setBufferSize((int) file.length());
+        response.setContentType(contentType);
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Expose-Headers", "*");
+        response.setHeader("Content-Length", String.valueOf(file.length()));
+        BufferedInputStream input = null;
+        BufferedOutputStream output = null;
+        try {
+            input = new BufferedInputStream(new FileInputStream(file), (int) file.length());
+            output = new BufferedOutputStream(response.getOutputStream(), (int) file.length());
+            byte[] buffer = new byte[(int) file.length()];
+            int length;
+            while ((length = input.read(buffer)) > 0) {
+                output.write(buffer, 0, length);
+            }
+        } finally {
+            if (output != null) {
+                output.close();
+            }
+            if (input != null) {
+                input.close();
+            }
+        }
+    }
+
+    private void sendSnapshotImage(HttpServletResponse response, String contentType) {
+        if (groupHandler.cameraIndex >= groupHandler.cameraOrder.size()) {
+            logger.debug("All cameras in this group are OFFLINE and a snapshot was requested.");
+            return;
+        }
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Expose-Headers", "*");
+        response.setContentType(contentType);
+        IpCameraHandler cameraHandler = groupHandler.cameraOrder.get(groupHandler.cameraIndex);
+        try {
+            byte[] snapshot = cameraHandler.getSnapshot();
+            response.setContentLength(snapshot.length);
+            ServletOutputStream servletOut = response.getOutputStream();
+            servletOut.write(snapshot);
+        } catch (IOException e) {
+        }
+    }
+
+    private void sendString(HttpServletResponse response, String contents, String contentType) {
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Expose-Headers", "*");
+        response.setContentType(contentType);
+        byte[] bytes = contents.getBytes();
+        try {
+            response.setContentLength(bytes.length);
+            ServletOutputStream servletOut = response.getOutputStream();
+            servletOut.write(bytes);
+            servletOut.write("\r\n".getBytes());
+        } catch (IOException e) {
+        }
     }
 }

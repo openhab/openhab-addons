@@ -859,7 +859,6 @@ public class OnvifConnection {
     }
 
     public void disconnect() {
-        logger.debug("disconnecting ONVIF");
         if (usingEvents && isConnected && !mainEventLoopGroup.isShuttingDown()) {
             sendOnvifRequest(requestBuilder(RequestType.Unsubscribe, subscriptionXAddr));
         }

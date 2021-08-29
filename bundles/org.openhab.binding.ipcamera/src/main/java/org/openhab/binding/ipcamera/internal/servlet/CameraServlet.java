@@ -100,10 +100,7 @@ public class CameraServlet extends HttpServlet {
 
     @Override
     protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
-        if (req == null) {
-            return;
-        }
-        if (resp == null) {
+        if (req == null || resp == null) {
             return;
         }
         String pathInfo = req.getPathInfo();
@@ -146,10 +143,6 @@ public class CameraServlet extends HttpServlet {
             case "/ipcamera.jpg":
                 if (!handler.snapshotPolling && handler.snapshotUri != "") {
                     handler.sendHttpGET(handler.snapshotUri);
-                }
-                if (handler.currentSnapshot.length == 1) {
-                    logger.warn("ipcamera.jpg was requested but there is no jpg in ram to send.");
-                    return;
                 }
                 sendSnapshotImage(resp, "image/jpg");
                 return;
@@ -292,14 +285,16 @@ public class CameraServlet extends HttpServlet {
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Expose-Headers", "*");
         response.setContentType(contentType);
-        handler.lockCurrentSnapshot.lock();
+        byte[] snapshot = handler.getSnapshot();
+        if (snapshot.length == 1) {
+            logger.warn("ipcamera.jpg was requested but there is no jpg in ram to send.");
+            return;
+        }
         try {
-            response.setContentLength(handler.currentSnapshot.length);
+            response.setContentLength(snapshot.length);
             ServletOutputStream servletOut = response.getOutputStream();
-            servletOut.write(handler.currentSnapshot);
+            servletOut.write(snapshot);
         } catch (IOException e) {
-        } finally {
-            handler.lockCurrentSnapshot.unlock();
         }
     }
 

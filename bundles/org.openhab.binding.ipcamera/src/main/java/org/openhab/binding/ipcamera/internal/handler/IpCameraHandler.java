@@ -169,7 +169,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public boolean useDigestAuth = false;
     public String snapshotUri = "";
     public String mjpegUri = "";
-    public byte[] currentSnapshot = new byte[] { (byte) 0x00 };
+    private byte[] currentSnapshot = new byte[] { (byte) 0x00 };
     public ReentrantLock lockCurrentSnapshot = new ReentrantLock();
     public String rtspUri = "";
     public boolean audioAlarmUpdateSnapshot = false;

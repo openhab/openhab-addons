@@ -17,7 +17,6 @@ import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -32,30 +31,18 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ipcamera.internal.GroupConfig;
 import org.openhab.binding.ipcamera.internal.GroupTracker;
 import org.openhab.binding.ipcamera.internal.Helper;
-import org.openhab.binding.ipcamera.internal.StreamServerGroupHandler;
+import org.openhab.binding.ipcamera.internal.servlet.GroupServlet;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.stream.ChunkedWriteHandler;
-import io.netty.handler.timeout.IdleStateHandler;
 
 /**
  * The {@link IpCameraGroupHandler} is responsible for finding cameras that are part of this group and displaying a
@@ -71,11 +58,9 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     public GroupConfig groupConfig;
     private BigDecimal pollTimeInSeconds = new BigDecimal(2);
     public ArrayList<IpCameraHandler> cameraOrder = new ArrayList<IpCameraHandler>(2);
-    private EventLoopGroup serversLoopGroup = new NioEventLoopGroup();
     private final ScheduledExecutorService pollCameraGroup = Executors.newSingleThreadScheduledExecutor();
     private @Nullable ScheduledFuture<?> pollCameraGroupJob = null;
-    private @Nullable ServerBootstrap serverBootstrap;
-    private @Nullable ChannelFuture serverFuture = null;
+    private @Nullable GroupServlet servlet;
     public String hostIp;
     private boolean motionChangesOrder = true;
     public int serverPort = 0;
@@ -184,50 +169,14 @@ public class IpCameraGroupHandler extends BaseThingHandler {
                 + discontinuitySequence + "\n#EXT-X-MEDIA-SEQUENCE:" + mediaSequence + "\n" + playingNow;
     }
 
-    private IpCameraGroupHandler getHandle() {
-        return this;
-    }
-
-    @SuppressWarnings("null")
-    public void startStreamServer(boolean start) {
-        if (!start) {
-            serversLoopGroup.shutdownGracefully(8, 8, TimeUnit.SECONDS);
-            serverBootstrap = null;
-        } else {
-            if (serverBootstrap == null) {
-                try {
-                    serversLoopGroup = new NioEventLoopGroup();
-                    serverBootstrap = new ServerBootstrap();
-                    serverBootstrap.group(serversLoopGroup);
-                    serverBootstrap.channel(NioServerSocketChannel.class);
-                    // IP "0.0.0.0" will bind the server to all network connections//
-                    serverBootstrap.localAddress(new InetSocketAddress("0.0.0.0", serverPort));
-                    serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel socketChannel) throws Exception {
-                            socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(0, 25, 0));
-                            socketChannel.pipeline().addLast("HttpServerCodec", new HttpServerCodec());
-                            socketChannel.pipeline().addLast("ChunkedWriteHandler", new ChunkedWriteHandler());
-                            socketChannel.pipeline().addLast("streamServerHandler",
-                                    new StreamServerGroupHandler(getHandle()));
-                        }
-                    });
-                    serverFuture = serverBootstrap.bind().sync();
-                    serverFuture.await(4000);
-                    logger.info("IpCamera file server for a group of cameras has started on port {} for all NIC's.",
-                            serverPort);
-                    updateState(CHANNEL_MJPEG_URL,
-                            new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.mjpeg"));
-                    updateState(CHANNEL_HLS_URL,
-                            new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.m3u8"));
-                    updateState(CHANNEL_IMAGE_URL,
-                            new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.jpg"));
-                } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Exception occured when starting the streaming server. Try changing the serverPort to another number.");
-                }
-            }
+    public void startStreamServer() {
+        if (servlet == null) {
+            servlet = new GroupServlet(this, httpService);
         }
+        // TODO:
+        updateState(CHANNEL_MJPEG_URL, new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.mjpeg"));
+        updateState(CHANNEL_HLS_URL, new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.m3u8"));
+        updateState(CHANNEL_IMAGE_URL, new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.jpg"));
     }
 
     void addCamera(String UniqueID) {
@@ -343,19 +292,10 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         groupConfig = getConfigAs(GroupConfig.class);
-        serverPort = groupConfig.getServerPort();
         pollTimeInSeconds = new BigDecimal(groupConfig.getPollTime());
         pollTimeInSeconds = pollTimeInSeconds.divide(new BigDecimal(1000), 1, RoundingMode.HALF_UP);
         motionChangesOrder = groupConfig.getMotionChangesOrder();
-
-        if (serverPort == -1) {
-            logger.warn("The serverPort = -1 which disables a lot of features. See readme for more info.");
-        } else if (serverPort < 1025) {
-            logger.warn("The serverPort is <= 1024 and may cause permission errors under Linux, try a higher port.");
-        }
-        if (groupConfig.getServerPort() > 0) {
-            startStreamServer(true);
-        }
+        startStreamServer();
         updateStatus(ThingStatus.ONLINE);
         pollCameraGroupJob = pollCameraGroup.scheduleWithFixedDelay(this::pollCameraGroup, 10000,
                 groupConfig.getPollTime(), TimeUnit.MILLISECONDS);
@@ -363,12 +303,15 @@ public class IpCameraGroupHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        startStreamServer(false);
         groupTracker.listOfGroupHandlers.remove(this);
         Future<?> future = pollCameraGroupJob;
         if (future != null) {
             future.cancel(true);
         }
         cameraOrder.clear();
+        if (servlet != null) {
+            servlet.destroy();
+        }
+        servlet = null;
     }
 }
