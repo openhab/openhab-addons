@@ -17,7 +17,6 @@ import static org.openhab.binding.danfossairunit.internal.Commands.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.DateTimeException;
 import java.time.ZoneId;
@@ -48,14 +47,10 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class DanfossAirUnit {
 
-    private final DanfossAirUnitCommunicationController communicationController;
+    private final CommunicationController communicationController;
 
-    public DanfossAirUnit(InetAddress inetAddr, int port) {
-        this.communicationController = new DanfossAirUnitCommunicationController(inetAddr, port);
-    }
-
-    public void cleanUp() {
-        this.communicationController.disconnect();
+    public DanfossAirUnit(CommunicationController communicationController) {
+        this.communicationController = communicationController;
     }
 
     private boolean getBoolean(byte[] operation, byte[] register) throws IOException {

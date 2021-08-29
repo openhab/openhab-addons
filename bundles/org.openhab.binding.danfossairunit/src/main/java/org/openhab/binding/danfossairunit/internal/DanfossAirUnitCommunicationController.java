@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 
 @NonNullByDefault
-public class DanfossAirUnitCommunicationController {
+public class DanfossAirUnitCommunicationController implements CommunicationController {
 
     private final Logger logger = LoggerFactory.getLogger(DanfossAirUnitCommunicationController.class);
 

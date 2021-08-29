@@ -50,6 +50,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
     private @NonNullByDefault({}) DanfossAirUnitConfiguration config;
     private @Nullable ValueCache valueCache;
     private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable DanfossAirUnitCommunicationController communicationController;
     private @Nullable DanfossAirUnit hrv;
 
     public DanfossAirUnitHandler(Thing thing) {
@@ -88,7 +89,10 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
         config = getConfigAs(DanfossAirUnitConfiguration.class);
         valueCache = new ValueCache(config.updateUnchangedValuesEveryMillis);
         try {
-            DanfossAirUnit danfossAirUnit = new DanfossAirUnit(InetAddress.getByName(config.host), TCP_PORT);
+            var communicationController = new DanfossAirUnitCommunicationController(InetAddress.getByName(config.host),
+                    TCP_PORT);
+            this.communicationController = communicationController;
+            var danfossAirUnit = new DanfossAirUnit(communicationController);
             hrv = danfossAirUnit;
             scheduler.execute(() -> {
                 try {
@@ -145,11 +149,12 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
 
         stopPolling();
 
-        DanfossAirUnit danfossAirUnit = hrv;
-        if (danfossAirUnit != null) {
-            danfossAirUnit.cleanUp();
-        }
         hrv = null;
+
+        DanfossAirUnitCommunicationController communicationController = this.communicationController;
+        if (communicationController != null) {
+            communicationController.disconnect();
+        }
     }
 
     private synchronized void startPolling() {
