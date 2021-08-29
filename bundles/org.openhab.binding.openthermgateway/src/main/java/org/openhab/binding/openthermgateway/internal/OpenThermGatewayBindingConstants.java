@@ -49,6 +49,7 @@ public class OpenThermGatewayBindingConstants {
     public static final String CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED = "ch_enableoverride";
     public static final String CHANNEL_OVERRIDE_CENTRAL_HEATING2_ENABLED = "ch2_enableoverride";
     public static final String CHANNEL_OUTSIDE_TEMPERATURE = "outsidetemp";
+    public static final String CHANNEL_OVERRIDE_VENTILATION_SETPOINT = "vh_ventilationsetpoint";
 
     // Generic channel type for Transparent Slave Parameter and Fault History Buffer values
     public static final String CHANNEL_TSPFHB = "tspfhb";

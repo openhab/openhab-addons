@@ -93,6 +93,8 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
 
         for (DataItem dataItem : dataItems) {
             if (dataItem instanceof TspFhbSizeDataItem) {
+                logger.debug("Received TSP or FHB size message {} ({})", message.getID(), dataItem.getSubject());
+
                 VerifyTspFhbChannels(((TspFhbSizeDataItem) dataItem).getValueId(),
                         message.getUInt(dataItem.getByteType()));
             } else {
@@ -114,40 +116,53 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
         // Dynamically create TSP or FHB value channels based on TSP or FHB size message
         ThingHandlerCallback callback = getCallback();
 
+        if (callback == null) {
+            logger.debug("Unable to get thing handler callback");
+            return;
+        }
+
         DataItem[] dataItems = DataItemGroup.dataItemGroups.get(id);
 
-        if (callback != null && dataItems != null && dataItems.length == 1) {
-            // The TSP or FHB value dataitem is always 2 bytes
-            TspFhbValueDataItem dataItem = (TspFhbValueDataItem) dataItems[0];
+        if (dataItems == null) {
+            logger.debug("Unable to find dataItem for id {}", id);
+            return;
+        }
 
-            logger.debug("Received TSP or FHB size for DATA-ID {}: {}", id, size);
+        if (dataItems.length != 1) {
+            logger.debug("Found zero or multiple dataItems for id {}", id);
+            return;
+        }
 
-            // A generic Number:Dimensionless channel type for TSP and FHB values
-            ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, CHANNEL_TSPFHB);
+        TspFhbValueDataItem dataItem = (TspFhbValueDataItem) dataItems[0];
 
-            List<Channel> channels = new ArrayList<>(getThing().getChannels());
+        logger.debug("Checking number of TSP or FHB channels for DATA-ID {}: {}", id, size);
 
-            boolean changed = false;
-            for (int i = 1; i <= size; i++) {
-                String channelId = dataItem.getChannelId(i);
-                ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
+        // A generic Number:Dimensionless channel type for TSP and FHB values
+        ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, CHANNEL_TSPFHB);
 
-                if (!channels.stream().map(Channel::getUID).anyMatch(channelUID::equals)) {
-                    String label = dataItem.getLabel(i);
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
 
-                    logger.debug("Adding channel {}", channelId);
+        boolean changed = false;
+        for (int i = 1; i <= size; i++) {
+            String channelId = dataItem.getChannelId(i);
+            ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
 
-                    channels.add(callback.createChannelBuilder(channelUID, channelTypeUID).withKind(ChannelKind.STATE)
-                            .withLabel(label).build());
-                    changed = true;
-                } else {
-                    logger.debug("Channel {} already exists", channelId);
-                }
+            if (!channels.stream().map(Channel::getUID).anyMatch(channelUID::equals)) {
+                String label = dataItem.getLabel(i);
+
+                logger.debug("Adding channel {}", channelId);
+
+                channels.add(callback.createChannelBuilder(channelUID, channelTypeUID).withKind(ChannelKind.STATE)
+                        .withLabel(label).build());
+                changed = true;
+            } else {
+                logger.debug("Channel {} already exists", channelId);
             }
+        }
 
-            if (changed) {
-                updateThing(editThing().withChannels(channels).build());
-            }
+        if (changed) {
+            logger.debug("Updating Thing with new channels");
+            updateThing(editThing().withChannels(channels).build());
         }
     }
 }

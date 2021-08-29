@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnector {
     private static final int COMMAND_RESPONSE_TIME_MILLISECONDS = 100;
     private static final int COMMAND_TIMEOUT_MILLISECONDS = 5000;
+    private static final int READ_TIMEOUT_MILLISECONDS = 60000;
 
     private final Logger logger = LoggerFactory.getLogger(OpenThermGatewaySocketConnector.class);
 
@@ -68,7 +69,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             this.socket = socket;
 
             socket.connect(new InetSocketAddress(this.ipaddress, this.port), COMMAND_TIMEOUT_MILLISECONDS);
-            socket.setSoTimeout(COMMAND_TIMEOUT_MILLISECONDS);
+            socket.setSoTimeout(READ_TIMEOUT_MILLISECONDS);
 
             logger.debug("OpenThermGatewaySocketConnector connected");
             callback.connectionStateChanged(ConnectionState.CONNECTED);

@@ -1,7 +1,7 @@
 # OpenTherm Gateway Binding
 
 This binding is used to integrate the OpenTherm Gateway into openHAB.
-The OpenTherm Gateway is a module designed by Schelte Bron that is connected in between a boiler and a thermostat and communicates using the OpenTherm protocol.
+The OpenTherm Gateway is a module designed by Schelte Bron that can be connected to units that support communication using the OpenTherm protocol, such as boiler or ventilation / heat recovery unit.
 
 More information on the OpenTherm Gateway device can be found at https://otgw.tclcode.com/
 
@@ -15,11 +15,11 @@ The binding does not require any configuration.
 
 ## Supported Things
 
-The OpenTherm Gateway binding supports three things:
+The OpenTherm Gateway binding supports three Things:
 
 - `openthermgateway` which is the bridge that handles communication with the OpenTherm Gateway device
-- `bioler` which represents a boiler unit, with of without a thermostat
-- `ventilationheatrecovery` which represents a ventilation or heat recovery unit
+- `boiler` which represents a central heating boiler unit
+- `ventilationheatrecovery` which represents a ventilation / heat recovery unit
 
 ### Bridge
 
@@ -253,6 +253,8 @@ The `ventilationheatrecovery` thing does not require any configuration settings.
 
 #### Channels
 
+The `ventilationheatrecovery` thing supports the following channels:
+
 | Channel ID | Item Type | Description | Access |
 |------------|-----------|-------------|--------|
 | vh_ventilationenable | Switch | Ventilation enabled | R |
@@ -405,12 +407,12 @@ sitemap demo label="Main Menu" {
 
 ## Transparent Slave Parameters and Fault History Buffer channels
 
-The transparent slave parameters and fault history buffer use a dynamic number of values.
-The number of possible values is determined by a TSP or FHB size message.
-Channels for TSP and FHB values are automatically created when a TSP or FHB size message is received.
-An index number is added to the base channel name to create a unique channel name for each value.
+The transparent slave parameters (TSP) and fault history buffer (FHB) use a variable number of entries.
+The number of entries is determined by a TSP or FHB size message.
+Channels for TSP and FHB entries are automatically created when a TSP or FHB size message is received.
+An index number is added to the base channel name to create a unique channel name for each entry.
 
-For example, if a TSP size message is received for a boiler unit (OpenTherm DATA-ID 10) with value 60, then channels `tspentry_1` through `tspentry_60` will be automatically created and linked to the corresponding TSP value messages (OpenTherm DATA-ID 11).
+For example, if a TSP size message is received for a boiler unit (OpenTherm DATA-ID 10) with value 60, then channels `tspentry_1` through `tspentry_60` will be automatically created and linked to the corresponding TSP entry (OpenTherm DATA-ID 11).
 
 ## Using OpenTherm Gateway as a master device
 

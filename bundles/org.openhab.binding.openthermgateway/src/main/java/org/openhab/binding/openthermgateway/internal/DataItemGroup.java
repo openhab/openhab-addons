@@ -181,6 +181,8 @@ public class DataItemGroup {
         g.put(87, new DataItem[] { new UIntDataItem(Msg.READ, ByteType.HIGHBYTE, "vh_nominalventilationvalue") });
         g.put(88, new DataItem[] { new TspFhbSizeDataItem(Msg.READ, ByteType.HIGHBYTE, 89, "vh_tspnumber") });
         g.put(89, new DataItem[] { new TspFhbValueDataItem(Msg.READ, "vh_tspentry") });
+        g.put(90, new DataItem[] { new TspFhbSizeDataItem(Msg.READ, ByteType.HIGHBYTE, 91, "vh_fhbnumber") });
+        g.put(91, new DataItem[] { new TspFhbValueDataItem(Msg.READ, "vh_fhbentry") });
         g.put(100,
                 new DataItem[] { new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 0, "rof0"),
                         new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 1, "rof1"),

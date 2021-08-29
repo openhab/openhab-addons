@@ -46,7 +46,7 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
 
     private final Logger logger = LoggerFactory.getLogger(OpenThermGatewayHandler.class);
 
-    private @Nullable OpenThermGatewayConfiguration config;
+    private @Nullable OpenThermGatewayConfiguration configuration;
     private @Nullable OpenThermGatewayConnector connector;
     private @Nullable ScheduledFuture<?> reconnectTask;
 
@@ -61,20 +61,10 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
     public void initialize() {
         logger.debug("Initializing OpenThermGateway handler for uid {}", getThing().getUID());
 
-        config = getConfigAs(OpenThermGatewayConfiguration.class);
+        configuration = getConfigAs(OpenThermGatewayConfiguration.class);
+        logger.info("Using configuration: {}", configuration.toString());
 
         connect();
-    }
-
-    public void sendCommand(GatewayCommand gatewayCommand) {
-        @Nullable
-        OpenThermGatewayConnector conn = connector;
-
-        if (conn != null && conn.isConnected()) {
-            conn.sendCommand(gatewayCommand);
-        } else {
-            logger.debug("Unable to send command {}: connector not connected", gatewayCommand.toFullString());
-        }
     }
 
     @Override
@@ -120,6 +110,17 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
                 updateState(CHANNEL_OVERRIDE_CENTRAL_HEATING2_ENABLED,
                         OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
             }
+        }
+    }
+
+    public void sendCommand(GatewayCommand gatewayCommand) {
+        @Nullable
+        OpenThermGatewayConnector conn = connector;
+
+        if (conn != null && conn.isConnected()) {
+            conn.sendCommand(gatewayCommand);
+        } else {
+            logger.debug("Unable to send command {}: connector not connected", gatewayCommand.toFullString());
         }
     }
 
@@ -180,7 +181,7 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
 
     private void connect() {
         @Nullable
-        OpenThermGatewayConfiguration conf = config;
+        OpenThermGatewayConfiguration config = configuration;
 
         if (this.state == ConnectionState.CONNECTING) {
             logger.debug("OpenThermGateway connector is already connecting");
@@ -190,14 +191,14 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
         // Make sure everything is cleaned up before creating a new connection
         disconnect();
 
-        if (conf != null) {
+        if (config != null) {
             connectionStateChanged(ConnectionState.INITIALIZING);
 
             logger.debug("Starting OpenThermGateway connector");
 
             autoReconnect = true;
 
-            connector = new OpenThermGatewaySocketConnector(this, conf.ipaddress, conf.port);
+            connector = new OpenThermGatewaySocketConnector(this, config.ipaddress, config.port);
 
             Thread thread = new Thread(connector, "OpenTherm Gateway Binding - socket listener thread");
             thread.setDaemon(true);
@@ -221,13 +222,13 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
         }
     }
 
-    public void autoReconnect() {
+    private void autoReconnect() {
         @Nullable
-        OpenThermGatewayConfiguration conf = config;
+        OpenThermGatewayConfiguration config = configuration;
 
-        if (autoReconnect && conf != null && conf.connectionRetryInterval > 0) {
-            logger.debug("Scheduling to auto reconnect in {} seconds", conf.connectionRetryInterval);
-            reconnectTask = scheduler.schedule(this::connect, conf.connectionRetryInterval, TimeUnit.SECONDS);
+        if (autoReconnect && config != null && config.connectionRetryInterval > 0) {
+            logger.debug("Scheduling to auto reconnect in {} seconds", config.connectionRetryInterval);
+            reconnectTask = scheduler.schedule(this::connect, config.connectionRetryInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -262,6 +263,8 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
                 return GatewayCommandCode.ControlSetpoint2;
             case CHANNEL_OVERRIDE_CENTRAL_HEATING2_ENABLED:
                 return GatewayCommandCode.CentralHeating2;
+            case CHANNEL_OVERRIDE_VENTILATION_SETPOINT:
+                return GatewayCommandCode.VentilationSetpoint;
             case CHANNEL_SEND_COMMAND:
                 return null;
             default:
