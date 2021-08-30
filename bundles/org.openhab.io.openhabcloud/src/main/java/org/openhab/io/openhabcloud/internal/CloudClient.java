@@ -125,7 +125,7 @@ public class CloudClient {
     private Set<String> exposedItems;
 
     /**
-     * Backoff strategy for reconnecting on connect_error events
+     * Back-off strategy for reconnecting when manual reconnection is needed
      */
     private final Backoff reconnectBackoff = new Backoff();
 
@@ -263,9 +263,13 @@ public class CloudClient {
                         logger.error("Error during communication");
                     }
                 } else {
-                    // Socket.IO 1.x: 'error' event is emitted from Socket on connection errors that are not retried
+                    // We are not connected currently, manual reconnection is needed to keep trying to (re-)establish
+                    // connection.
                     //
-                    // In Socket.IO 2.x, Socket emits 'connect_error' event.
+                    // Socket.IO 1.x java client: 'error' event is emitted from Socket on connection errors that are not
+                    // retried, but also with error that are automatically retried. If we
+                    //
+                    // Note how this is different in Socket.IO 2.x java client, Socket emits 'connect_error' event.
                     // OBS: Don't get confused with Socket IO 2.x docs online, in 1.x connect_error is emitted also on
                     // errors that are retried by the library automatically!
                     long delay = reconnectBackoff.duration();
