@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.ipcamera.internal.servlet;
 
-import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_START_STREAM;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -29,7 +30,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraGroupHandler;
-import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.osgi.service.http.HttpService;
@@ -48,7 +48,7 @@ public class GroupServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final long serialVersionUID = -234658667574L;
     private final IpCameraGroupHandler groupHandler;
-    private int snapshotStreamsOpen = 0;
+    public int snapshotStreamsOpen = 0;
     private final String ipWhitelist;
 
     public GroupServlet(IpCameraGroupHandler ipCameraGroupHandler, HttpService httpService) {
@@ -71,7 +71,7 @@ public class GroupServlet extends HttpServlet {
         if (pathInfo == null) {
             return;
         }
-        logger.debug("GET: request for {}, received from {}", pathInfo, req.getRemoteHost());
+        logger.debug("GET:{}, received from {}", pathInfo, req.getRemoteHost());
         if (!"DISABLE".equals(ipWhitelist)) {
             String requestIP = "(" + req.getRemoteHost() + ")";
             if (!ipWhitelist.contains(requestIP)) {
@@ -81,31 +81,31 @@ public class GroupServlet extends HttpServlet {
         }
         switch (pathInfo) {
             case "/ipcamera.m3u8":
-                if (groupHandler.hlsTurnedOn) {
-                    String playList = groupHandler.getPlayList();
-                    logger.debug("playlist is:{}", playList);
-                    sendString(resp, playList, "application/x-mpegurl");
-                    return;
-                } else {
+                if (!groupHandler.hlsTurnedOn) {
                     logger.debug(
                             "HLS requires the groups startStream channel to be turned on first. Just starting it now.");
                     String channelPrefix = "ipcamera:" + groupHandler.getThing().getThingTypeUID() + ":"
                             + groupHandler.getThing().getUID().getId() + ":";
                     groupHandler.handleCommand(new ChannelUID(channelPrefix + CHANNEL_START_STREAM), OnOffType.ON);
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(HLS_STARTUP_DELAY_MS);
+                    } catch (InterruptedException e) {
+                    }
                 }
+                String playList = groupHandler.getPlayList();
+                sendString(resp, playList, "application/x-mpegURL");
                 return;
             case "/ipcamera.jpg":
                 sendSnapshotImage(resp, "image/jpg");
                 return;
+            case "/ipcamera.mjpeg":
             case "/snapshots.mjpeg":
                 req.getSession().setMaxInactiveInterval(0);
                 snapshotStreamsOpen++;
                 StreamOutput output = new StreamOutput(resp);
-                IpCameraHandler cameraHandler;
                 do {
                     try {
-                        cameraHandler = groupHandler.cameraOrder.get(groupHandler.cameraIndex);
-                        output.sendSnapshotBasedFrame(cameraHandler.getSnapshot());
+                        output.sendSnapshotBasedFrame(groupHandler.getSnapshot());
                         Thread.sleep(1005);
                     } catch (InterruptedException | IOException e) {
                         // Never stop streaming until IOException. Occurs when browser stops the stream.
@@ -117,6 +117,7 @@ public class GroupServlet extends HttpServlet {
                     }
                 } while (true);
             default:
+                // example is "/1ipcameraxx.ts"
                 if (pathInfo.endsWith(".ts")) {
                     sendFile(resp, resolveIndexToPath(pathInfo) + pathInfo.substring(2), "video/MP2T");
                 }
@@ -128,13 +129,14 @@ public class GroupServlet extends HttpServlet {
             return groupHandler.getOutputFolder(Integer.parseInt(uri.substring(1, 2)));
         }
         return "notFound";
-        // example is /1ipcameraxx.ts
     }
 
     private void sendFile(HttpServletResponse response, String fileUri, String contentType) throws IOException {
-        logger.trace("file is :{}", fileUri);
         File file = new File(fileUri);
         if (!file.exists()) {
+            logger.warn(
+                    "HLS File {} was not found. Try adding a larger -hls_delete_threshold to each cameras HLS out options.",
+                    fileUri);
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
@@ -171,9 +173,8 @@ public class GroupServlet extends HttpServlet {
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Expose-Headers", "*");
         response.setContentType(contentType);
-        IpCameraHandler cameraHandler = groupHandler.cameraOrder.get(groupHandler.cameraIndex);
+        byte[] snapshot = groupHandler.getSnapshot();
         try {
-            byte[] snapshot = cameraHandler.getSnapshot();
             response.setContentLength(snapshot.length);
             ServletOutputStream servletOut = response.getOutputStream();
             servletOut.write(snapshot);
@@ -185,6 +186,8 @@ public class GroupServlet extends HttpServlet {
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Expose-Headers", "*");
         response.setContentType(contentType);
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Cache-Control", "max-age=0, no-cache, no-store");
         byte[] bytes = contents.getBytes();
         try {
             response.setContentLength(bytes.length);

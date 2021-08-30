@@ -1408,6 +1408,9 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public byte[] getSnapshot() {
+        if (!snapshotPolling && !ffmpegSnapshotGeneration) {
+            sendHttpGET(snapshotUri);
+        }
         lockCurrentSnapshot.lock();
         try {
             return currentSnapshot;

@@ -90,6 +90,19 @@ public class IpCameraGroupHandler extends BaseThingHandler {
         return playList;
     }
 
+    private int getNextIndex() {
+        if (cameraIndex + 1 == cameraOrder.size()) {
+            return 0;
+        }
+        return cameraIndex + 1;
+    }
+
+    public byte[] getSnapshot() {
+        // ask camera to fetch the next jpg ahead of time
+        cameraOrder.get(getNextIndex()).getSnapshot();
+        return cameraOrder.get(cameraIndex).getSnapshot();
+    }
+
     public String getOutputFolder(int index) {
         IpCameraHandler handle = cameraOrder.get(index);
         return handle.cameraConfig.getFfmpegOutput();
@@ -154,29 +167,32 @@ public class IpCameraGroupHandler extends BaseThingHandler {
 
     public void createPlayList() {
         String m3u8File = readCamerasPlaylist(cameraIndex);
-        if (m3u8File == "") {
+        if (m3u8File.isEmpty()) {
             return;
         }
         int numberOfSegments = howManySegments(m3u8File);
-        logger.debug("Using {} segmented files to make up a poll period.", numberOfSegments);
+        logger.trace("Using {} segmented files to make up a poll period.", numberOfSegments);
         m3u8File = keepLast(m3u8File, numberOfSegments);
         m3u8File = m3u8File.replace("ipcamera", cameraIndex + "ipcamera"); // add index so we can then fetch output path
         if (entries > numberOfSegments * 3) {
             playingNow = removeFromStart(playingNow, entries - (numberOfSegments * 3));
         }
         playingNow = playingNow + "#EXT-X-DISCONTINUITY\n" + m3u8File;
-        playList = "#EXTM3U\n#EXT-X-VERSION:6\n#EXT-X-TARGETDURATION:5\n#EXT-X-ALLOW-CACHE:NO\n#EXT-X-DISCONTINUITY-SEQUENCE:"
-                + discontinuitySequence + "\n#EXT-X-MEDIA-SEQUENCE:" + mediaSequence + "\n" + playingNow;
+        playList = "#EXTM3U\n#EXT-X-VERSION:4\n#EXT-X-TARGETDURATION:6\n#EXT-X-ALLOW-CACHE:NO\n#EXT-X-DISCONTINUITY-SEQUENCE:"
+                + discontinuitySequence + "\n#EXT-X-MEDIA-SEQUENCE:" + mediaSequence + "\n"
+                + "#EXT-X-INDEPENDENT-SEGMENTS\n" + playingNow;
     }
 
     public void startStreamServer() {
         if (servlet == null) {
             servlet = new GroupServlet(this, httpService);
         }
-        // TODO:
-        updateState(CHANNEL_MJPEG_URL, new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.mjpeg"));
-        updateState(CHANNEL_HLS_URL, new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.m3u8"));
-        updateState(CHANNEL_IMAGE_URL, new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.jpg"));
+        updateState(CHANNEL_MJPEG_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
+                + getThing().getUID().getId() + "/snapshots.mjpeg"));
+        updateState(CHANNEL_HLS_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
+                + getThing().getUID().getId() + "/ipcamera.m3u8"));
+        updateState(CHANNEL_IMAGE_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
+                + getThing().getUID().getId() + "/ipcamera.jpg"));
     }
 
     void addCamera(String UniqueID) {
@@ -184,9 +200,9 @@ public class IpCameraGroupHandler extends BaseThingHandler {
             for (IpCameraHandler handler : groupTracker.listOfOnlineCameraHandlers) {
                 if (handler.getThing().getUID().getId().equals(UniqueID)) {
                     if (!cameraOrder.contains(handler)) {
-                        logger.info("Adding {} to a camera group.", UniqueID);
+                        logger.debug("Adding {} to a camera group.", UniqueID);
                         if (hlsTurnedOn) {
-                            logger.info("Starting HLS for the new camera.");
+                            logger.debug("Starting HLS for the new camera added to group.");
                             String channelPrefix = "ipcamera:" + handler.getThing().getThingTypeUID() + ":"
                                     + handler.getThing().getUID().getId() + ":";
                             handler.handleCommand(new ChannelUID(channelPrefix + CHANNEL_START_STREAM), OnOffType.ON);
@@ -215,7 +231,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     // Event based. This is called as each camera comes online after the group handler is registered.
     public void cameraOffline(IpCameraHandler handle) {
         if (cameraOrder.remove(handle)) {
-            logger.info("Camera {} went offline and was removed from a group.", handle.getThing().getUID().getId());
+            logger.debug("Camera {} went offline and was removed from a group.", handle.getThing().getUID().getId());
         }
     }
 
@@ -262,6 +278,11 @@ public class IpCameraGroupHandler extends BaseThingHandler {
         }
         if (motionChangesOrder) {
             cameraIndex = checkForMotion(cameraIndex);
+        }
+        if (servlet != null) {
+            if (servlet.snapshotStreamsOpen > 0) {
+                cameraOrder.get(cameraIndex).getSnapshot();
+            }
         }
         if (hlsTurnedOn) {
             discontinuitySequence++;

@@ -76,7 +76,7 @@ public class CameraServlet extends HttpServlet {
         if (pathInfo == null) {
             return;
         }
-        logger.debug("Post request for {}, received from {}", pathInfo, req.getRemoteHost());
+        logger.debug("POST:{}, received from {}", pathInfo, req.getRemoteHost());
         switch (pathInfo) {
             case "/ipcamera.jpg":
                 // ffmpeg sends data here for ipcamera.mjpeg streams when camera has no native stream.
@@ -107,7 +107,7 @@ public class CameraServlet extends HttpServlet {
         if (pathInfo == null) {
             return;
         }
-        logger.debug("GET: request for {}, received from {}", pathInfo, req.getRemoteHost());
+        logger.debug("GET:{}, received from {}", pathInfo, req.getRemoteHost());
         if (!"DISABLE".equals(handler.getWhiteList())) {
             String requestIP = "(" + req.getRemoteHost() + ")";
             if (!handler.getWhiteList().contains(requestIP)) {
@@ -132,7 +132,7 @@ public class CameraServlet extends HttpServlet {
                     TimeUnit.MILLISECONDS.sleep(HLS_STARTUP_DELAY_MS);
                 } catch (InterruptedException e) {
                 }
-                sendFile(resp, pathInfo, "application/x-mpegurl");
+                sendFile(resp, pathInfo, "application/x-mpegURL");
                 return;
             case "/ipcamera.mpd":
                 sendFile(resp, pathInfo, "application/dash+xml");
@@ -261,6 +261,8 @@ public class CameraServlet extends HttpServlet {
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Expose-Headers", "*");
         response.setHeader("Content-Length", String.valueOf(file.length()));
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Cache-Control", "max-age=0, no-cache, no-store");
         BufferedInputStream input = null;
         BufferedOutputStream output = null;
         try {
