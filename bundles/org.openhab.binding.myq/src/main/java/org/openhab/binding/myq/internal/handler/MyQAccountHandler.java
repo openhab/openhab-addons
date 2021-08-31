@@ -14,31 +14,56 @@ package org.openhab.binding.myq.internal.handler;
 
 import static org.openhab.binding.myq.internal.MyQBindingConstants.*;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpCookie;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpContentResponse;
 import org.eclipse.jetty.client.api.ContentProvider;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.util.Fields;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.openhab.binding.myq.internal.MyQDiscoveryService;
 import org.openhab.binding.myq.internal.config.MyQAccountConfiguration;
 import org.openhab.binding.myq.internal.dto.AccountDTO;
 import org.openhab.binding.myq.internal.dto.ActionDTO;
 import org.openhab.binding.myq.internal.dto.DevicesDTO;
-import org.openhab.binding.myq.internal.dto.LoginRequestDTO;
-import org.openhab.binding.myq.internal.dto.LoginResponseDTO;
+import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthException;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -63,7 +88,23 @@ import com.google.gson.JsonSyntaxException;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class MyQAccountHandler extends BaseBridgeHandler {
+public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
+    /*
+     * MyQ oAuth relate fields
+     */
+    private static final String CLIENT_SECRET = "VUQ0RFhuS3lQV3EyNUJTdw==";
+    private static final String CLIENT_ID = "IOS_CGI_MYQ";
+    private static final String REDIRECT_URI = "com.myqops://ios";
+    private static final String SCOPE = "MyQ_Residential offline_access";
+    /*
+     * MyQ authentication API endpoints
+     */
+    private static final String LOGIN_BASE_URL = "https://partner-identity.myq-cloud.com";
+    private static final String LOGIN_AUTHORIZE_URL = LOGIN_BASE_URL + "/connect/authorize";
+    private static final String LOGIN_TOKEN_URL = LOGIN_BASE_URL + "/connect/token";
+    /*
+     * MyQ device and account API endpoint
+     */
     private static final String BASE_URL = "https://api.myqdevice.com/api";
     private static final Integer RAPID_REFRESH_SECONDS = 5;
     private final Logger logger = LoggerFactory.getLogger(MyQAccountHandler.class);
@@ -73,7 +114,6 @@ public class MyQAccountHandler extends BaseBridgeHandler {
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
     private @Nullable Future<?> normalPollFuture;
     private @Nullable Future<?> rapidPollFuture;
-    private @Nullable String securityToken;
     private @Nullable AccountDTO account;
     private @Nullable DevicesDTO devicesCache;
     private Integer normalRefreshSeconds = 60;
@@ -82,9 +122,13 @@ public class MyQAccountHandler extends BaseBridgeHandler {
     private String password = "";
     private String userAgent = "";
 
-    public MyQAccountHandler(Bridge bridge, HttpClient httpClient) {
+    private final OAuthClientService oAuthService;
+
+    public MyQAccountHandler(Bridge bridge, HttpClient httpClient, final OAuthFactory oAuthFactory) {
         super(bridge);
         this.httpClient = httpClient;
+        this.oAuthService = oAuthFactory.createOAuthClientService(getThing().toString(), LOGIN_TOKEN_URL,
+                LOGIN_AUTHORIZE_URL, CLIENT_ID, CLIENT_SECRET, SCOPE, false);
     }
 
     @Override
@@ -98,8 +142,7 @@ public class MyQAccountHandler extends BaseBridgeHandler {
         username = config.username;
         password = config.password;
         // MyQ can get picky about blocking user agents apparently
-        userAgent = MyQAccountHandler.randomString(40);
-        securityToken = null;
+        userAgent = MyQAccountHandler.randomString(5);
         updateStatus(ThingStatus.UNKNOWN);
         restartPolls(false);
     }
@@ -125,6 +168,11 @@ public class MyQAccountHandler extends BaseBridgeHandler {
         }
     }
 
+    @Override
+    public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
+        logger.debug("Auth Token Refreshed, expires in {}", tokenResponse.getExpiresIn());
+    }
+
     /**
      * Sends an action to the MyQ API
      *
@@ -135,17 +183,19 @@ public class MyQAccountHandler extends BaseBridgeHandler {
         AccountDTO localAccount = account;
         if (localAccount != null) {
             try {
-                HttpResult result = sendRequest(
+                ContentResponse response = sendRequest(
                         String.format("%s/v5.1/Accounts/%s/Devices/%s/actions", BASE_URL, localAccount.account.id,
                                 serialNumber),
-                        HttpMethod.PUT, securityToken,
-                        new StringContentProvider(gsonLowerCase.toJson(new ActionDTO(action))), "application/json");
-                if (HttpStatus.isSuccess(result.responseCode)) {
+                        HttpMethod.PUT, new StringContentProvider(gsonLowerCase.toJson(new ActionDTO(action))),
+                        "application/json");
+                if (HttpStatus.isSuccess(response.getStatus())) {
                     restartPolls(true);
                 } else {
-                    logger.debug("Failed to send action {} : {}", action, result.content);
+                    logger.debug("Failed to send action {} : {}", action, response.getContentAsString());
                 }
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | IOException | OAuthException | ExecutionException
+                    | OAuthResponseException e) {
+                logger.debug("Could not send action", e);
             }
         }
     }
@@ -203,49 +253,90 @@ public class MyQAccountHandler extends BaseBridgeHandler {
     }
 
     private synchronized void fetchData() {
+        boolean validToken = false;
         try {
-            if (securityToken == null) {
+            validToken = oAuthService.getAccessTokenResponse() != null;
+        } catch (OAuthException | IOException | OAuthResponseException e) {
+            logger.debug("error with oAuth service, attempting login again", e);
+        }
+
+        try {
+            if (!validToken) {
                 login();
-                if (securityToken != null) {
-                    getAccount();
-                }
             }
-            if (securityToken != null) {
-                getDevices();
+            if (account == null) {
+                getAccount();
             }
+            getDevices();
+        } catch (TimeoutException | IOException | OAuthException | ExecutionException | OAuthResponseException e) {
+            logger.debug("MyQ communication error", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (MyQAuthenticationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            stopPolls();
         } catch (InterruptedException e) {
+            // we were shut down, ignore
         }
     }
 
-    private void login() throws InterruptedException {
-        HttpResult result = sendRequest(BASE_URL + "/v5/Login", HttpMethod.POST, null,
-                new StringContentProvider(gsonUpperCase.toJson(new LoginRequestDTO(username, password))),
-                "application/json");
-        LoginResponseDTO loginResponse = parseResultAndUpdateStatus(result, gsonUpperCase, LoginResponseDTO.class);
-        if (loginResponse != null) {
-            securityToken = loginResponse.securityToken;
-        } else {
-            securityToken = null;
-            if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
-                // bad credentials, stop trying to login
-                stopPolls();
-            }
+    private void login() throws InterruptedException, IOException, OAuthException, ExecutionException,
+            OAuthResponseException, TimeoutException, MyQAuthenticationException {
+
+        // make sure we have a fresh session
+        httpClient.getCookieStore().removeAll();
+
+        String codeVerifier = generateCodeVerifier();
+
+        ContentResponse loginPageResponse = getLoginPage(codeVerifier);
+
+        // load the login page to get cookies and form parameters
+        Document loginPage = Jsoup.parse(loginPageResponse.getContentAsString());
+        Element form = loginPage.select("form").first();
+        Element requestToken = loginPage.select("input[name=__RequestVerificationToken]").first();
+        Element returnURL = loginPage.select("input[name=ReturnUrl]").first();
+
+        if (form == null || requestToken == null) {
+            throw new IOException("Coul not load login page");
         }
+
+        String action = LOGIN_BASE_URL + form.attr("action");
+
+        // post our user name and password along with elements from the scraped form
+        String location = postLogin(action, requestToken.attr("value"), returnURL.attr("value"));
+        if (location == null) {
+            throw new MyQAuthenticationException("Could not login with credentials");
+        }
+
+        logger.debug("Login Response URI {}", location);
+
+        // finally complete the oAuth flow and retrieve a JSON oAuth token response
+        ContentResponse tokenResponse = getLoginToken(location, codeVerifier);
+        String loginToken = tokenResponse.getContentAsString();
+        logger.debug("Login Token response {}", loginToken);
+
+        AccessTokenResponse accessTokenResponse = gsonLowerCase.fromJson(loginToken, AccessTokenResponse.class);
+        if (accessTokenResponse == null) {
+            throw new MyQAuthenticationException("Could not parse token response");
+        }
+        oAuthService.importAccessTokenResponse(accessTokenResponse);
     }
 
-    private void getAccount() throws InterruptedException {
-        HttpResult result = sendRequest(BASE_URL + "/v5/My?expand=account", HttpMethod.GET, securityToken, null, null);
-        account = parseResultAndUpdateStatus(result, gsonUpperCase, AccountDTO.class);
+    private void getAccount()
+            throws InterruptedException, IOException, OAuthException, ExecutionException, OAuthResponseException {
+        ContentResponse response = sendRequest(BASE_URL + "/v5/My?expand=account", HttpMethod.GET, null, null);
+        account = parseResultAndUpdateStatus(response, gsonUpperCase, AccountDTO.class);
     }
 
-    private void getDevices() throws InterruptedException {
+    private void getDevices()
+            throws InterruptedException, IOException, OAuthException, ExecutionException, OAuthResponseException {
         AccountDTO localAccount = account;
         if (localAccount == null) {
             return;
         }
-        HttpResult result = sendRequest(String.format("%s/v5.1/Accounts/%s/Devices", BASE_URL, localAccount.account.id),
-                HttpMethod.GET, securityToken, null, null);
-        DevicesDTO devices = parseResultAndUpdateStatus(result, gsonLowerCase, DevicesDTO.class);
+        ContentResponse response = sendRequest(
+                String.format("%s/v5.1/Accounts/%s/Devices", BASE_URL, localAccount.account.id), HttpMethod.GET, null,
+                null);
+        DevicesDTO devices = parseResultAndUpdateStatus(response, gsonLowerCase, DevicesDTO.class);
         if (devices != null) {
             devicesCache = devices;
             devices.items.forEach(device -> {
@@ -263,44 +354,41 @@ public class MyQAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private synchronized HttpResult sendRequest(String url, HttpMethod method, @Nullable String token,
-            @Nullable ContentProvider content, @Nullable String contentType) throws InterruptedException {
-        try {
-            Request request = httpClient.newRequest(url).method(method)
-                    .header("MyQApplicationId", "JVM/G9Nwih5BwKgNCjLxiFUQxQijAebyyg8QUHr7JOrP+tuPb8iHfRHKwTmDzHOu")
-                    .header("ApiVersion", "5.1").header("BrandId", "2").header("Culture", "en").agent(userAgent)
-                    .timeout(10, TimeUnit.SECONDS);
-            if (token != null) {
-                request = request.header("SecurityToken", token);
-            }
-            if (content != null & contentType != null) {
-                request = request.content(content, contentType);
-            }
-            // use asyc jetty as the API service will response with a 401 error when credentials are wrong,
-            // but not a WWW-Authenticate header which causes Jetty to throw a generic execution exception which
-            // prevents us from knowing the response code
-            logger.trace("Sending {} to {}", request.getMethod(), request.getURI());
-            final CompletableFuture<HttpResult> futureResult = new CompletableFuture<>();
-            request.send(new BufferingResponseListener() {
-                @NonNullByDefault({})
-                @Override
-                public void onComplete(Result result) {
-                    futureResult.complete(new HttpResult(result.getResponse().getStatus(), getContentAsString()));
-                }
-            });
-            HttpResult result = futureResult.get();
-            logger.trace("Account Response - status: {} content: {}", result.responseCode, result.content);
-            return result;
-        } catch (ExecutionException e) {
-            return new HttpResult(0, e.getMessage());
+    private synchronized ContentResponse sendRequest(String url, HttpMethod method, @Nullable ContentProvider content,
+            @Nullable String contentType)
+            throws InterruptedException, IOException, OAuthException, ExecutionException, OAuthResponseException {
+        AccessTokenResponse tokenResponse = oAuthService.getAccessTokenResponse();
+        if (tokenResponse == null) {
+            throw new OAuthException("unable to get accessToken");
         }
+        Request request = httpClient.newRequest(url).method(method).agent(userAgent).timeout(10, TimeUnit.SECONDS)
+                .header("Authorization", tokenResponse.getTokenType() + " " + tokenResponse.getAccessToken());
+        if (content != null & contentType != null) {
+            request = request.content(content, contentType);
+        }
+        // use asyc jetty as the API service will response with a 401 error when credentials are wrong,
+        // but not a WWW-Authenticate header which causes Jetty to throw a generic execution exception which
+        // prevents us from knowing the response code
+        logger.trace("Sending {} to {}", request.getMethod(), request.getURI());
+        final CompletableFuture<ContentResponse> futureResult = new CompletableFuture<>();
+        request.send(new BufferingResponseListener() {
+            @NonNullByDefault({})
+            @Override
+            public void onComplete(Result result) {
+                Response response = result.getResponse();
+                futureResult.complete(new HttpContentResponse(response, getContent(), getMediaType(), getEncoding()));
+            }
+        });
+        ContentResponse result = futureResult.get();
+        logger.trace("Account Response - status: {} content: {}", result.getStatus(), result.getContentAsString());
+        return result;
     }
 
     @Nullable
-    private <T> T parseResultAndUpdateStatus(HttpResult result, Gson parser, Class<T> classOfT) {
-        if (HttpStatus.isSuccess(result.responseCode)) {
+    private <T> T parseResultAndUpdateStatus(ContentResponse response, Gson parser, Class<T> classOfT) {
+        if (HttpStatus.isSuccess(response.getStatus())) {
             try {
-                T responseObject = parser.fromJson(result.content, classOfT);
+                T responseObject = parser.fromJson(response.getContentAsString(), classOfT);
                 if (responseObject != null) {
                     if (getThing().getStatus() != ThingStatus.ONLINE) {
                         updateStatus(ThingStatus.ONLINE);
@@ -309,25 +397,116 @@ public class MyQAccountHandler extends BaseBridgeHandler {
                 }
             } catch (JsonSyntaxException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Invalid JSON Response " + result.content);
+                        "Invalid JSON Response " + response.getContentAsString());
             }
-        } else if (result.responseCode == HttpStatus.UNAUTHORIZED_401) {
+        } else if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Unauthorized - Check Credentials");
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Invalid Response Code " + result.responseCode + " : " + result.content);
+                    "Invalid Response Code " + response.getStatus() + " : " + response.getContentAsString());
         }
         return null;
     }
 
-    private class HttpResult {
-        public final int responseCode;
-        public @Nullable String content;
+    private ContentResponse getLoginPage(String codeVerifier)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        try {
+            /*
+             * this returns the login page, so we can grab cookies to log in with
+             */
+            Request request = httpClient.newRequest(LOGIN_AUTHORIZE_URL) //
+                    .param("client_id", CLIENT_ID) //
+                    .param("code_challenge", generateCodeChallange(codeVerifier)) //
+                    .param("code_challenge_method", "S256") //
+                    .param("redirect_uri", REDIRECT_URI) //
+                    .param("response_type", "code") //
+                    .param("scope", SCOPE) //
+                    .agent("null").followRedirects(true);
+            logger.debug("Sending {} to {}", request.getMethod(), request.getURI());
+            ContentResponse response = request.send();
+            logger.debug("Login Code {} Response {}", response.getStatus(), response.getContentAsString());
+            return response;
+        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+            throw new ExecutionException(e.getCause());
+        }
+    }
 
-        public HttpResult(int responseCode, @Nullable String content) {
-            this.responseCode = responseCode;
-            this.content = content;
+    @Nullable
+    private String postLogin(String url, String requestToken, String returnURL)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        /*
+         * on a successful post to this page we will get several redirects, and a final 301 to:
+         * com.myqops://ios?code=0123456789&scope=MyQ_Residential%20offline_access&iss=https%3A%2F%2Fpartner-identity.
+         * myq-cloud.com
+         *
+         * We can then take the parameters out of this location and continue the process
+         */
+        Fields fields = new Fields();
+        fields.add("Email", username);
+        fields.add("Password", password);
+        fields.add("__RequestVerificationToken", requestToken);
+        fields.add("ReturnUrl", returnURL);
+
+        Request request = httpClient.newRequest(url).method(HttpMethod.POST) //
+                .content(new FormContentProvider(fields)) //
+                .agent(userAgent) //
+                .followRedirects(false);
+        setCookies(request);
+
+        logger.debug("Posting Login to {}", url);
+        ContentResponse response = request.send();
+
+        String location = null;
+
+        // follow redirects until we match our REDIRECT_URI
+        while (HttpStatus.isRedirection(response.getStatus())) {
+            logger.debug("Redirect Login: Code {} Response {}", response.getStatus(), response.getContentAsString());
+            String loc = response.getHeaders().get("location");
+            logger.debug("location string {}", loc);
+            if (loc == null) {
+                logger.debug("No location value");
+                break;
+            }
+            if (loc.indexOf(REDIRECT_URI) == 0) {
+                location = loc;
+                break;
+            }
+            request = httpClient.newRequest(LOGIN_BASE_URL + loc).agent(userAgent).followRedirects(false);
+            setCookies(request);
+            response = request.send();
+        }
+        return location;
+    }
+
+    private ContentResponse getLoginToken(String redirectLocation, String codeVerifier)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        /*
+         * this returns the login page, so we can grab cookies to log in with
+         */
+        try {
+            Map<String, String> params = parseLocationQuery(redirectLocation);
+
+            Fields fields = new Fields();
+            fields.add("client_id", CLIENT_ID);
+            fields.add("client_secret", Base64.getEncoder().encodeToString(CLIENT_SECRET.getBytes()));
+            fields.add("code", params.get("code"));
+            fields.add("code_verifier", codeVerifier);
+            fields.add("grant_type", "authorization_code");
+            fields.add("redirect_uri", REDIRECT_URI);
+            fields.add("scope", params.get("scope"));
+
+            Request request = httpClient.newRequest(LOGIN_TOKEN_URL) //
+                    .content(new FormContentProvider(fields)) //
+                    .method(HttpMethod.POST) //
+                    .agent(userAgent).followRedirects(true);
+            setCookies(request);
+
+            ContentResponse response = request.send();
+            logger.debug("Login Code {} Response {}", response.getStatus(), response.getContentAsString());
+            return response;
+        } catch (URISyntaxException e) {
+            throw new ExecutionException(e.getCause());
         }
     }
 
@@ -340,5 +519,41 @@ public class MyQAccountHandler extends BaseBridgeHandler {
             sb.append((char) (low + (int) (random.nextFloat() * (high - low + 1))));
         }
         return sb.toString();
+    }
+
+    private String generateCodeVerifier() throws UnsupportedEncodingException {
+        SecureRandom secureRandom = new SecureRandom();
+        byte[] codeVerifier = new byte[32];
+        secureRandom.nextBytes(codeVerifier);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(codeVerifier);
+    }
+
+    private String generateCodeChallange(String codeVerifier)
+            throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        byte[] bytes = codeVerifier.getBytes("US-ASCII");
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+        messageDigest.update(bytes, 0, bytes.length);
+        byte[] digest = messageDigest.digest();
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
+    }
+
+    private Map<String, String> parseLocationQuery(String location) throws URISyntaxException {
+        URI uri = new URI(location);
+        return Arrays.stream(uri.getQuery().split("&")).map(str -> str.split("="))
+                .collect(Collectors.toMap(str -> str[0], str -> str[1]));
+    }
+
+    private void setCookies(Request request) {
+        for (HttpCookie c : httpClient.getCookieStore().getCookies()) {
+            request.cookie(c);
+        }
+    }
+
+    class MyQAuthenticationException extends Exception {
+        private static final long serialVersionUID = 1L;
+
+        public MyQAuthenticationException(String message) {
+            super(message);
+        }
     }
 }
