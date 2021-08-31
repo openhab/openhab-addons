@@ -396,6 +396,11 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="inputbuttonevent" advanced="true">
+		<item-type>String</item-type>
+		<label>Sends a button press event as Input</label>
+		<description>Sends a generic button press event to Kodi</description>
+	</channel-type>
 	<channel-type id="systemcommand" advanced="true">
 		<item-type>String</item-type>
 		<label>Send System Command</label>
