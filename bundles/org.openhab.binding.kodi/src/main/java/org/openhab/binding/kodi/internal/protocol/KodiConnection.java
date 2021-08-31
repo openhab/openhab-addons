@@ -1328,8 +1328,11 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     public void inputButtonEvent(String buttonEvent) {
+        logger.debug("inputButtonEvent {}.", buttonEvent);
+
         String button = buttonEvent;
         String keymap = "KB";
+        Integer holdtime = null;
 
         if (buttonEvent.contains(";")) {
             String[] params = buttonEvent.split(";");
@@ -1337,35 +1340,31 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 case 2:
                     button = params[0];
                     keymap = params[1];
-                    this.inputButtonEvent(button, keymap);
                     break;
                 case 3:
                     button = params[0];
                     keymap = params[1];
                     try {
-                        int holdtime = Integer.parseInt(params[2]);
-                        this.inputButtonEvent(button, keymap, holdtime);
+                        holdtime = Integer.parseInt(params[2]);
                     } catch (NumberFormatException nfe) {
-                        this.inputButtonEvent(button, keymap);
+                        holdtime = null;
                     }
                     break;
             }
         }
+
+        this.inputButtonEvent(button, keymap, holdtime);
     }
 
-    private void inputButtonEvent(String button, String keymap) {
+    private void inputButtonEvent(String button, String keymap, Integer holdtime) {
         JsonObject params = new JsonObject();
         params.addProperty("button", button);
         params.addProperty("keymap", keymap);
-        socket.callMethod("Input.ButtonEvent", params);
-    }
-
-    private void inputButtonEvent(String button, String keymap, int holdtime) {
-        JsonObject params = new JsonObject();
-        params.addProperty("button", button);
-        params.addProperty("keymap", keymap);
-        params.addProperty("holdtime", holdtime);
-        socket.callMethod("Input.ButtonEvent", params);
+        if (holdtime != null) {
+            params.addProperty("holdtime", holdtime.intValue());
+        }
+        JsonElement result = socket.callMethod("Input.ButtonEvent", params);
+        logger.debug("inputButtonEvent result {}.", result);
     }
 
     public void getSystemProperties() {

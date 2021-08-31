@@ -263,6 +263,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_INPUTBUTTONEVENT:
+                logger.debug("handleCommand CHANNEL_INPUTBUTTONEVENT {}.", command);
                 if (command instanceof StringType) {
                     connection.inputButtonEvent(command.toString());
                     updateState(CHANNEL_INPUTBUTTONEVENT, UnDefType.UNDEF);
