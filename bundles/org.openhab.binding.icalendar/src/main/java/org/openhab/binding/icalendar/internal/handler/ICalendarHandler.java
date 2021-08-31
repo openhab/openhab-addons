@@ -424,19 +424,13 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                     (lastUpdate != null ? new DateTimeType(lastUpdate.atZone(tzProvider.getTimeZone()))
                             : UnDefType.UNDEF));
 
-            logger.debug("from {} to {}", updateStatesLastCalledTime, now);
             // process all Command Tags in all Calendar Events which ENDED since updateStates was last called
             // the END Event tags must be processed before the BEGIN ones
-            List<Event> justEnded = calendar.getJustEndedEvents(updateStatesLastCalledTime, now);
-            logger.debug("Count JE: {}", justEnded.size());
-            executeEventCommands(justEnded, CommandTagType.END);
+            executeEventCommands(calendar.getJustEndedEvents(updateStatesLastCalledTime, now), CommandTagType.END);
 
             // process all Command Tags in all Calendar Events which BEGAN since updateStates was last called
             // the END Event tags must be processed before the BEGIN ones
-
-            List<Event> justStarted = calendar.getJustBegunEvents(updateStatesLastCalledTime, now);
-            logger.debug("Count JS: {}", justStarted.size());
-            executeEventCommands(justStarted, CommandTagType.BEGIN);
+            executeEventCommands(calendar.getJustBegunEvents(updateStatesLastCalledTime, now), CommandTagType.BEGIN);
 
             // save time when updateStates was previously called
             // the purpose is to prevent repeat command execution of events that have already been executed
