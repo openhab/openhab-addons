@@ -240,7 +240,10 @@ public class IpCameraHandler extends BaseThingHandler {
                                     if (msg instanceof HttpMessage) {
                                         // very start of stream only
                                         mjpegContentType = contentType;
-                                        servlet.openStreams.updateContentType(contentType);
+                                        CameraServlet localServlet = servlet;
+                                        if (localServlet != null) {
+                                            localServlet.openStreams.updateContentType(contentType);
+                                        }
                                     }
                                 } else {
                                     boundary = Helper.searchString(contentType, "boundary=");
@@ -261,7 +264,10 @@ public class IpCameraHandler extends BaseThingHandler {
                         HttpContent content = (HttpContent) msg;
                         byte[] chunkedFrame = new byte[content.content().readableBytes()];
                         content.content().getBytes(content.content().readerIndex(), chunkedFrame);
-                        servlet.openStreams.queueFrame(chunkedFrame);
+                        CameraServlet localServlet = servlet;
+                        if (localServlet != null) {
+                            localServlet.openStreams.queueFrame(chunkedFrame);
+                        }
                     } else {
                         HttpContent content = (HttpContent) msg;
                         // Found some cameras use Content-Type: image/jpg instead of image/jpeg
@@ -507,6 +513,18 @@ public class IpCameraHandler extends BaseThingHandler {
         return httpRequestURL;
     }
 
+    private void checkCameraConnection() {
+        if (mainBootstrap != null) {
+            ChannelFuture chFuture = mainBootstrap
+                    .connect(new InetSocketAddress(cameraConfig.getIp(), cameraConfig.getPort()));
+            if (chFuture.awaitUninterruptibly(500)) {
+                return;
+            }
+        }
+        cameraCommunicationError(
+                "Connection Timeout: Check your IP and PORT are correct and the camera can be reached.");
+    }
+
     // Always use this as sendHttpGET(GET/POST/PUT/DELETE, "/foo/bar",null)//
     // The authHandler will generate a digest string and re-send using this same function when needed.
     @SuppressWarnings("null")
@@ -656,9 +674,7 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void startStreamServer() {
-        if (servlet == null) {
-            servlet = new CameraServlet(this, httpService);
-        }
+        servlet = new CameraServlet(this, httpService);
         updateState(CHANNEL_HLS_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
                 + getThing().getUID().getId() + "/ipcamera.m3u8"));
         updateState(CHANNEL_IMAGE_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
@@ -1465,7 +1481,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 sendHttpGET(snapshotUri);
             }
         } else if (!snapshotUri.isEmpty() && !snapshotPolling) {// we need to check camera is still online.
-            sendHttpGET(snapshotUri);
+            checkCameraConnection();
         }
         // NOTE: Use lowPriorityRequests if get request is not needed every poll.
         if (!lowPriorityRequests.isEmpty()) {
@@ -1672,9 +1688,8 @@ public class IpCameraHandler extends BaseThingHandler {
         channelTrackingMap.clear();
         onvifCamera.disconnect();
         if (servlet != null) {
-            servlet.destroy();
+            servlet.dispose();
         }
-        servlet = null;
     }
 
     public String getWhiteList() {

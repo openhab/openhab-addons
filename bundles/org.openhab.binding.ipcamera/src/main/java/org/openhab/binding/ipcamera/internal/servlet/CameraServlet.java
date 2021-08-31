@@ -47,15 +47,17 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class CameraServlet extends HttpServlet {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final long serialVersionUID = -23465822674L;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final IpCameraHandler handler;
+    private final HttpService httpService;
     private int autofpsStreamsOpen = 0;
     private int snapshotStreamsOpen = 0;
     public OpenStreams openStreams = new OpenStreams();
 
     public CameraServlet(IpCameraHandler ipCameraHandler, HttpService httpService) {
         handler = ipCameraHandler;
+        this.httpService = httpService;
         try {
             httpService.registerServlet("/ipcamera/" + handler.getThing().getUID().getId(), this, null,
                     httpService.createDefaultHttpContext());
@@ -300,9 +302,12 @@ public class CameraServlet extends HttpServlet {
         }
     }
 
-    @Override
-    public void destroy() {
+    public void dispose() {
         openStreams.closeAllStreams();
-        super.destroy();
+        try {
+            httpService.unregister("/ipcamera/" + handler.getThing().getUID().getId());
+        } catch (IllegalArgumentException e) {
+            logger.warn("Unregistration of servlet failed:{}", e.getMessage());
+        }
     }
 }

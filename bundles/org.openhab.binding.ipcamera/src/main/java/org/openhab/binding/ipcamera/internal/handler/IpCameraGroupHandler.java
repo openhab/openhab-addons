@@ -184,9 +184,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     }
 
     public void startStreamServer() {
-        if (servlet == null) {
-            servlet = new GroupServlet(this, httpService);
-        }
+        servlet = new GroupServlet(this, httpService);
         updateState(CHANNEL_MJPEG_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
                 + getThing().getUID().getId() + "/snapshots.mjpeg"));
         updateState(CHANNEL_HLS_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
@@ -279,8 +277,9 @@ public class IpCameraGroupHandler extends BaseThingHandler {
         if (motionChangesOrder) {
             cameraIndex = checkForMotion(cameraIndex);
         }
-        if (servlet != null) {
-            if (servlet.snapshotStreamsOpen > 0) {
+        GroupServlet localServlet = servlet;
+        if (localServlet != null) {
+            if (localServlet.snapshotStreamsOpen > 0) {
                 cameraOrder.get(cameraIndex).getSnapshot();
             }
         }
@@ -331,8 +330,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
         }
         cameraOrder.clear();
         if (servlet != null) {
-            servlet.destroy();
+            servlet.dispose();
         }
-        servlet = null;
     }
 }

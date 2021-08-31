@@ -50,9 +50,11 @@ public class GroupServlet extends HttpServlet {
     private final IpCameraGroupHandler groupHandler;
     public int snapshotStreamsOpen = 0;
     private final String ipWhitelist;
+    private final HttpService httpService;
 
     public GroupServlet(IpCameraGroupHandler ipCameraGroupHandler, HttpService httpService) {
         groupHandler = ipCameraGroupHandler;
+        this.httpService = httpService;
         ipWhitelist = groupHandler.groupConfig.getIpWhitelist();
         try {
             httpService.registerServlet("/ipcamera/" + groupHandler.getThing().getUID().getId(), this, null,
@@ -195,6 +197,14 @@ public class GroupServlet extends HttpServlet {
             servletOut.write(bytes);
             servletOut.write("\r\n".getBytes());
         } catch (IOException e) {
+        }
+    }
+
+    public void dispose() {
+        try {
+            httpService.unregister("/ipcamera/" + groupHandler.getThing().getUID().getId());
+        } catch (IllegalArgumentException e) {
+            logger.warn("Unregistration of servlet failed:{}", e.getMessage());
         }
     }
 }
