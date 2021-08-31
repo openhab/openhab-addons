@@ -697,6 +697,7 @@ Some additional checks to get it working are:
 If you have 3 seconds worth of video segments in each cameras HLS stream, this is the max you can set the poll time of the group to.
 + All cameras in a group should have the same HLS segment size setting, 1 and 2 second long segments have been tested to work.
 + Mixing cameras with different aspect ratios may cause issues when cast.
++ The HLS files need to remain on disk for the number of cameras X pollTime, use the `-hls_delete_threshold` ffmpeg option to control this.
 
 ## Sitemap Example
 

@@ -19,7 +19,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -68,17 +67,13 @@ public class CameraServlet extends HttpServlet {
 
     @Override
     protected void doPost(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
-        if (req == null) {
-            return;
-        }
-        if (resp == null) {
+        if (req == null || resp == null) {
             return;
         }
         String pathInfo = req.getPathInfo();
         if (pathInfo == null) {
             return;
         }
-        logger.debug("POST:{}, received from {}", pathInfo, req.getRemoteHost());
         switch (pathInfo) {
             case "/ipcamera.jpg":
                 // ffmpeg sends data here for ipcamera.mjpeg streams when camera has no native stream.
@@ -95,7 +90,7 @@ public class CameraServlet extends HttpServlet {
                 handler.onvifCamera.eventRecieved(req.getReader().toString());
                 break;
             default:
-                logger.debug("Stream Server recieved unknown request \tPOST:{}", pathInfo);
+                logger.debug("Recieved unknown request \tPOST:{}", pathInfo);
                 break;
         }
     }
@@ -126,12 +121,12 @@ public class CameraServlet extends HttpServlet {
                     localFfmpeg.startConverting();
                 } else {
                     localFfmpeg.setKeepAlive(8);
-                    sendFile(resp, pathInfo, "application/x-mpegurl");
+                    sendFile(resp, pathInfo, "application/x-mpegURL");
                     return;
                 }
                 // Allow files to be created, or you get old m3u8 from the last time this ran.
                 try {
-                    TimeUnit.MILLISECONDS.sleep(HLS_STARTUP_DELAY_MS);
+                    Thread.sleep(HLS_STARTUP_DELAY_MS);
                 } catch (InterruptedException e) {
                 }
                 sendFile(resp, pathInfo, "application/x-mpegURL");
@@ -291,7 +286,7 @@ public class CameraServlet extends HttpServlet {
         response.setContentType(contentType);
         byte[] snapshot = handler.getSnapshot();
         if (snapshot.length == 1) {
-            logger.warn("ipcamera.jpg was requested but there is no jpg in ram to send.");
+            logger.warn("ipcamera.jpg was requested but there was no jpg in ram to send.");
             return;
         }
         try {
@@ -307,7 +302,7 @@ public class CameraServlet extends HttpServlet {
         try {
             httpService.unregister("/ipcamera/" + handler.getThing().getUID().getId());
         } catch (IllegalArgumentException e) {
-            logger.warn("Unregistration of servlet failed:{}", e.getMessage());
+            logger.debug("Unregistration of servlet failed:{}", e.getMessage());
         }
     }
 }

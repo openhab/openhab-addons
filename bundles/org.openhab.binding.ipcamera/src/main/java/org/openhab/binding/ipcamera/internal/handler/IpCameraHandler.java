@@ -518,6 +518,7 @@ public class IpCameraHandler extends BaseThingHandler {
             ChannelFuture chFuture = mainBootstrap
                     .connect(new InetSocketAddress(cameraConfig.getIp(), cameraConfig.getPort()));
             if (chFuture.awaitUninterruptibly(500)) {
+                chFuture.channel().close();
                 return;
             }
         }
