@@ -41,8 +41,8 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
     private final int port;
     private boolean connected = false;
     private @Nullable Socket socket;
-    private @Nullable OutputStream oStream;
-    private @Nullable InputStream iStream;
+    private @Nullable OutputStream outputStream;
+    private @Nullable InputStream inputStream;
 
     public DanfossAirUnitCommunicationController(InetAddress inetAddr, int port) {
         this.inetAddr = inetAddr;
@@ -53,10 +53,10 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
         if (connected) {
             return;
         }
-        Socket newSocket = new Socket(inetAddr, port);
-        oStream = newSocket.getOutputStream();
-        iStream = newSocket.getInputStream();
-        socket = newSocket;
+        Socket localSocket = new Socket(inetAddr, port);
+        this.outputStream = localSocket.getOutputStream();
+        this.inputStream = localSocket.getInputStream();
+        this.socket = localSocket;
         connected = true;
     }
 
@@ -65,16 +65,16 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
             return;
         }
         try {
-            Socket connectedSocket = socket;
-            if (connectedSocket != null) {
-                connectedSocket.close();
+            Socket localSocket = this.socket;
+            if (localSocket != null) {
+                localSocket.close();
             }
         } catch (IOException ioe) {
             logger.debug("Connection to air unit could not be closed gracefully. {}", ioe.getMessage());
         } finally {
-            socket = null;
-            iStream = null;
-            oStream = null;
+            this.socket = null;
+            this.inputStream = null;
+            this.outputStream = null;
         }
         connected = false;
     }
@@ -100,7 +100,7 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
     }
 
     private synchronized byte[] sendRequestInternal(byte[] request) throws IOException {
-        OutputStream localOutputStream = oStream;
+        OutputStream localOutputStream = this.outputStream;
 
         if (localOutputStream == null) {
             throw new IOException(
@@ -110,7 +110,7 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
         localOutputStream.flush();
 
         byte[] result = new byte[63];
-        InputStream localInputStream = iStream;
+        InputStream localInputStream = this.inputStream;
         if (localInputStream == null) {
             throw new IOException(
                     String.format("Input stream is null while sending request: %s", Arrays.toString(request)));

@@ -51,7 +51,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
     private @Nullable ValueCache valueCache;
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable DanfossAirUnitCommunicationController communicationController;
-    private @Nullable DanfossAirUnit hrv;
+    private @Nullable DanfossAirUnit airUnit;
 
     public DanfossAirUnitHandler(Thing thing) {
         super(thing);
@@ -63,12 +63,12 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
             updateAllChannels();
         } else {
             try {
-                DanfossAirUnit danfossAirUnit = hrv;
-                if (danfossAirUnit != null) {
+                DanfossAirUnit localAirUnit = this.airUnit;
+                if (localAirUnit != null) {
                     Channel channel = Channel.getByName(channelUID.getIdWithoutGroup());
                     DanfossAirUnitWriteAccessor writeAccessor = channel.getWriteAccessor();
                     if (writeAccessor != null) {
-                        updateState(channelUID, writeAccessor.access(danfossAirUnit, command));
+                        updateState(channelUID, writeAccessor.access(localAirUnit, command));
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE,
@@ -89,15 +89,15 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
         config = getConfigAs(DanfossAirUnitConfiguration.class);
         valueCache = new ValueCache(config.updateUnchangedValuesEveryMillis);
         try {
-            var communicationController = new DanfossAirUnitCommunicationController(InetAddress.getByName(config.host),
-                    TCP_PORT);
-            this.communicationController = communicationController;
-            var danfossAirUnit = new DanfossAirUnit(communicationController);
-            hrv = danfossAirUnit;
+            var localCommunicationController = new DanfossAirUnitCommunicationController(
+                    InetAddress.getByName(config.host), TCP_PORT);
+            this.communicationController = localCommunicationController;
+            var localAirUnit = new DanfossAirUnit(localCommunicationController);
+            this.airUnit = localAirUnit;
             scheduler.execute(() -> {
                 try {
-                    thing.setProperty(PROPERTY_UNIT_NAME, danfossAirUnit.getUnitName());
-                    thing.setProperty(PROPERTY_SERIAL, danfossAirUnit.getUnitSerialNumber());
+                    thing.setProperty(PROPERTY_UNIT_NAME, localAirUnit.getUnitName());
+                    thing.setProperty(PROPERTY_SERIAL, localAirUnit.getUnitSerialNumber());
                     startPolling();
                     updateStatus(ThingStatus.ONLINE);
                 } catch (IOException e) {
@@ -112,8 +112,8 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
     }
 
     private void updateAllChannels() {
-        DanfossAirUnit danfossAirUnit = hrv;
-        if (danfossAirUnit != null) {
+        DanfossAirUnit localAirUnit = this.airUnit;
+        if (localAirUnit != null) {
             logger.debug("Updating DanfossHRV data '{}'", getThing().getUID());
 
             for (Channel channel : Channel.values()) {
@@ -123,7 +123,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
                 }
                 try {
                     updateState(channel.getGroup().getGroupName(), channel.getChannelName(),
-                            channel.getReadAccessor().access(danfossAirUnit));
+                            channel.getReadAccessor().access(localAirUnit));
                 } catch (UnexpectedResponseValueException e) {
                     updateState(channel.getGroup().getGroupName(), channel.getChannelName(), UnDefType.UNDEF);
                     logger.debug(
@@ -149,25 +149,25 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
 
         stopPolling();
 
-        hrv = null;
+        this.airUnit = null;
 
-        DanfossAirUnitCommunicationController communicationController = this.communicationController;
-        if (communicationController != null) {
-            communicationController.disconnect();
+        DanfossAirUnitCommunicationController localCommunicationController = this.communicationController;
+        if (localCommunicationController != null) {
+            localCommunicationController.disconnect();
         }
     }
 
     private synchronized void startPolling() {
-        pollingJob = scheduler.scheduleWithFixedDelay(this::updateAllChannels, POLLING_INTERVAL_SECONDS,
+        this.pollingJob = scheduler.scheduleWithFixedDelay(this::updateAllChannels, POLLING_INTERVAL_SECONDS,
                 config.refreshInterval, TimeUnit.SECONDS);
     }
 
     private synchronized void stopPolling() {
-        ScheduledFuture<?> runningJob = pollingJob;
-        if (runningJob != null) {
-            runningJob.cancel(true);
+        ScheduledFuture<?> localPollingJob = this.pollingJob;
+        if (localPollingJob != null) {
+            localPollingJob.cancel(true);
         }
-        pollingJob = null;
+        this.pollingJob = null;
     }
 
     private void updateState(String groupId, String channelId, State state) {
