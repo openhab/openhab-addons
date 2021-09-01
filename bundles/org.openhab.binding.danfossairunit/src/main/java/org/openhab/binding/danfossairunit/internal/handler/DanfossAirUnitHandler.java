@@ -113,33 +113,35 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
 
     private void updateAllChannels() {
         DanfossAirUnit localAirUnit = this.airUnit;
-        if (localAirUnit != null) {
-            logger.debug("Updating DanfossHRV data '{}'", getThing().getUID());
+        if (localAirUnit == null) {
+            return;
+        }
 
-            for (Channel channel : Channel.values()) {
-                if (Thread.interrupted()) {
-                    logger.debug("Polling thread interrupted...");
-                    return;
-                }
-                try {
-                    updateState(channel.getGroup().getGroupName(), channel.getChannelName(),
-                            channel.getReadAccessor().access(localAirUnit));
-                } catch (UnexpectedResponseValueException e) {
-                    updateState(channel.getGroup().getGroupName(), channel.getChannelName(), UnDefType.UNDEF);
-                    logger.debug(
-                            "Cannot update channel {}: an unexpected or invalid response has been received from the air unit: {}",
-                            channel.getChannelName(), e.getMessage());
-                } catch (IOException e) {
-                    updateState(channel.getGroup().getGroupName(), channel.getChannelName(), UnDefType.UNDEF);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-                    logger.debug("Cannot update channel {}: an error occurred retrieving the value: {}",
-                            channel.getChannelName(), e.getMessage());
-                }
-            }
+        logger.debug("Updating DanfossHRV data '{}'", getThing().getUID());
 
-            if (getThing().getStatus() == ThingStatus.OFFLINE) {
-                updateStatus(ThingStatus.ONLINE);
+        for (Channel channel : Channel.values()) {
+            if (Thread.interrupted()) {
+                logger.debug("Polling thread interrupted...");
+                return;
             }
+            try {
+                updateState(channel.getGroup().getGroupName(), channel.getChannelName(),
+                        channel.getReadAccessor().access(localAirUnit));
+            } catch (UnexpectedResponseValueException e) {
+                updateState(channel.getGroup().getGroupName(), channel.getChannelName(), UnDefType.UNDEF);
+                logger.debug(
+                        "Cannot update channel {}: an unexpected or invalid response has been received from the air unit: {}",
+                        channel.getChannelName(), e.getMessage());
+            } catch (IOException e) {
+                updateState(channel.getGroup().getGroupName(), channel.getChannelName(), UnDefType.UNDEF);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+                logger.debug("Cannot update channel {}: an error occurred retrieving the value: {}",
+                        channel.getChannelName(), e.getMessage());
+            }
+        }
+
+        if (getThing().getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
