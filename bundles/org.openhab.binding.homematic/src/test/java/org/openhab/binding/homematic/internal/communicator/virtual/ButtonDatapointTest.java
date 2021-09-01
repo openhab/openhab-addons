@@ -66,8 +66,15 @@ public class ButtonDatapointTest extends JavaTest {
         HmDatapoint buttonVirtualDatapoint = getButtonVirtualDatapoint(longPressDp);
 
         mockEventReceiver.eventReceived(longPressDp);
-
         assertThat(buttonVirtualDatapoint.getValue(), is(CommonTriggerEvents.LONG_PRESSED));
+
+        HmDatapoint contPressDp = createPressDatapointFrom(longPressDp, "PRESS_CONT", Boolean.TRUE);
+        mockEventReceiver.eventReceived(contPressDp);
+        assertThat(buttonVirtualDatapoint.getValue(), is("LONG_REPEATED"));
+
+        HmDatapoint releaseDp = createPressDatapointFrom(longPressDp, "PRESS_LONG_RELEASE", Boolean.TRUE);
+        mockEventReceiver.eventReceived(releaseDp);
+        assertThat(buttonVirtualDatapoint.getValue(), is("LONG_RELEASED"));
     }
 
     @Test
@@ -83,13 +90,14 @@ public class ButtonDatapointTest extends JavaTest {
         mockEventReceiver.eventReceived(releaseDp);
 
         HmDatapoint crapDp = createPressDatapoint("CRAP", Boolean.TRUE);
-        HmDatapoint crapButtonVirtualDatapoint = getButtonVirtualDatapoint(releaseDp);
+        HmDatapoint crapButtonVirtualDatapoint = getButtonVirtualDatapoint(crapDp);
 
         mockEventReceiver.eventReceived(crapDp);
 
+        // CONT and LONG_RELEASE events without previous LONG event are supposed to yield no trigger
         assertThat(contButtonVirtualDatapoint.getValue(), nullValue());
         assertThat(releaseButtonVirtualDatapoint.getValue(), nullValue());
-        assertThat(crapButtonVirtualDatapoint.getValue(), nullValue());
+        assertThat(crapButtonVirtualDatapoint, nullValue());
     }
 
     @Test
@@ -123,6 +131,15 @@ public class ButtonDatapointTest extends JavaTest {
         hmChannel.addDatapoint(pressDp);
         pressDp.setChannel(hmChannel);
         bvdpHandler.initialize(device);
+
+        return pressDp;
+    }
+
+    private HmDatapoint createPressDatapointFrom(HmDatapoint originalDatapoint, String channelName, Object value) {
+        HmDatapoint pressDp = new HmDatapoint(channelName, "", HmValueType.ACTION, value, true, HmParamsetType.VALUES);
+        HmChannel hmChannel = originalDatapoint.getChannel();
+        hmChannel.addDatapoint(pressDp);
+        pressDp.setChannel(hmChannel);
 
         return pressDp;
     }
