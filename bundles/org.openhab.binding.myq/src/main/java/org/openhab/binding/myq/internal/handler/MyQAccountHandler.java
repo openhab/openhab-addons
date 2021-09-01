@@ -351,7 +351,6 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
     private synchronized ContentResponse sendRequest(String url, HttpMethod method, @Nullable ContentProvider content,
             @Nullable String contentType)
             throws InterruptedException, MyQCommunicationException, MyQAuthenticationException {
-
         AccessTokenResponse tokenResponse = null;
         try {
             tokenResponse = oAuthService.getAccessTokenResponse();
@@ -435,7 +434,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
                     .param("redirect_uri", REDIRECT_URI) //
                     .param("response_type", "code") //
                     .param("scope", SCOPE) //
-                    .agent("null").followRedirects(true);
+                    .agent(userAgent).followRedirects(true);
             logger.debug("Sending {} to {}", request.getMethod(), request.getURI());
             ContentResponse response = request.send();
             logger.debug("Login Code {} Response {}", response.getStatus(), response.getContentAsString());
