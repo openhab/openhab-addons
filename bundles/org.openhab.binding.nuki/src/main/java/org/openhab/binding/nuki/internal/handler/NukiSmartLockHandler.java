@@ -69,15 +69,20 @@ public class NukiSmartLockHandler extends AbstractNukiDeviceHandler<NukiSmartLoc
         switch (channelUID.getId()) {
             case NukiBindingConstants.CHANNEL_SMARTLOCK_LOCK:
                 if (command instanceof OnOffType) {
-                    SmartLockAction action = SmartLockAction.LOCK;
+                    final SmartLockAction action;
 
                     if (command == OnOffType.OFF) {
                         action = configuration.unlatch ? SmartLockAction.UNLATCH : SmartLockAction.UNLOCK;
+                    } else {
+                        action = SmartLockAction.LOCK;
                     }
 
-                    BridgeLockActionResponse bridgeLockActionResponse = getNukiHttpClient()
-                            .getSmartLockAction(configuration.nukiId, action);
-                    handleResponse(bridgeLockActionResponse, channelUID.getAsString(), command.toString());
+                    withHttpClient(client -> {
+                        BridgeLockActionResponse bridgeLockActionResponse = client
+                                .getSmartLockAction(configuration.nukiId, action);
+                        handleResponse(bridgeLockActionResponse, channelUID.getAsString(), command.toString());
+                    });
+
                     return true;
                 }
                 break;
@@ -86,9 +91,11 @@ public class NukiSmartLockHandler extends AbstractNukiDeviceHandler<NukiSmartLoc
                     DecimalType cmd = (DecimalType) command;
                     SmartLockAction action = SmartLockAction.fromAction(cmd.intValue());
                     if (action != null) {
-                        BridgeLockActionResponse bridgeLockActionResponse = getNukiHttpClient()
-                                .getSmartLockAction(configuration.nukiId, action);
-                        handleResponse(bridgeLockActionResponse, channelUID.getAsString(), command.toString());
+                        withHttpClient(client -> {
+                            BridgeLockActionResponse bridgeLockActionResponse = client
+                                    .getSmartLockAction(configuration.nukiId, action);
+                            handleResponse(bridgeLockActionResponse, channelUID.getAsString(), command.toString());
+                        });
                     }
                     return true;
                 }

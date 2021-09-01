@@ -13,7 +13,6 @@
 package org.openhab.binding.nuki.internal.discovery;
 
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,7 +20,6 @@ import org.openhab.binding.nuki.internal.constants.NukiBindingConstants;
 import org.openhab.binding.nuki.internal.dataexchange.BridgeListResponse;
 import org.openhab.binding.nuki.internal.dto.BridgeApiListDeviceDto;
 import org.openhab.binding.nuki.internal.handler.NukiBridgeHandler;
-import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -40,7 +38,6 @@ import org.slf4j.LoggerFactory;
 public class NukiDeviceDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(NukiDeviceDiscoveryService.class);
-    private final ScheduledExecutorService threadPool = ThreadPoolManager.getScheduledPool("discovery");
     @Nullable
     private NukiBridgeHandler bridge;
 
@@ -50,34 +47,36 @@ public class NukiDeviceDiscoveryService extends AbstractDiscoveryService impleme
 
     @Override
     protected void startScan() {
-        if (bridge == null) {
+        NukiBridgeHandler bridgeHandler = bridge;
+        if (bridgeHandler == null) {
             logger.warn("Cannot start Nuki discovery - no bridge available");
             return;
         }
 
-        threadPool.execute(() -> {
-            BridgeListResponse list = bridge.getNukiHttpClient().getList();
-
-            list.getDevices().stream()
-                    .filter(device -> NukiBindingConstants.SUPPORTED_DEVICES.contains(device.getDeviceType()))
-                    .map(this::createDiscoveryResult).forEach(this::thingDiscovered);
+        scheduler.execute(() -> {
+            bridgeHandler.withHttpClient(client -> {
+                BridgeListResponse list = client.getList();
+                list.getDevices().stream()
+                        .filter(device -> NukiBindingConstants.SUPPORTED_DEVICES.contains(device.getDeviceType()))
+                        .map(device -> createDiscoveryResult(device, bridgeHandler)).forEach(this::thingDiscovered);
+            });
         });
     }
 
-    private DiscoveryResult createDiscoveryResult(BridgeApiListDeviceDto device) {
-        return DiscoveryResultBuilder.create(getUid(device.getNukiId(), device.getDeviceType()))
-                .withBridge(bridge.getThing().getUID()).withLabel(device.getName())
+    private DiscoveryResult createDiscoveryResult(BridgeApiListDeviceDto device, NukiBridgeHandler bridgeHandler) {
+        return DiscoveryResultBuilder.create(getUid(device.getNukiId(), device.getDeviceType(), bridgeHandler))
+                .withBridge(bridgeHandler.getThing().getUID()).withLabel(device.getName())
                 .withRepresentationProperty(NukiBindingConstants.PROPERTY_NUKI_ID)
                 .withProperty(NukiBindingConstants.PROPERTY_NAME, device.getName())
                 .withProperty(NukiBindingConstants.PROPERTY_NUKI_ID, device.getNukiId())
                 .withProperty(NukiBindingConstants.PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion()).build();
     }
 
-    private ThingUID getUid(String nukiId, int deviceType) {
+    private ThingUID getUid(String nukiId, int deviceType, NukiBridgeHandler bridgeHandler) {
         if (deviceType == NukiBindingConstants.DEVICE_OPENER) {
-            return new ThingUID(NukiBindingConstants.THING_TYPE_OPENER, this.bridge.getThing().getUID(), nukiId);
+            return new ThingUID(NukiBindingConstants.THING_TYPE_OPENER, bridgeHandler.getThing().getUID(), nukiId);
         } else {
-            return new ThingUID(NukiBindingConstants.THING_TYPE_SMARTLOCK, this.bridge.getThing().getUID(), nukiId);
+            return new ThingUID(NukiBindingConstants.THING_TYPE_SMARTLOCK, bridgeHandler.getThing().getUID(), nukiId);
         }
     }
 

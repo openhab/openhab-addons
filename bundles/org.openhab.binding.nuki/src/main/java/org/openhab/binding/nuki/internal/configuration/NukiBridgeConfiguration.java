@@ -12,14 +12,21 @@
  */
 package org.openhab.binding.nuki.internal.configuration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Configuration for Nuki Bridge
  *
  * @author Jan Vybíral - Initial contribution
  */
+@NonNullByDefault
 public class NukiBridgeConfiguration {
+    @Nullable
     public String ip;
+    @Nullable
     public Integer port;
+    @Nullable
     public String apiToken;
     public boolean manageCallbacks = true;
     public boolean secureToken = true;

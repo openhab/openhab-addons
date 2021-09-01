@@ -27,8 +27,6 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.util.HexUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NukiLinkBuilder} class helps with constructing links to various Nuki APIs.
@@ -56,7 +54,6 @@ public class NukiLinkBuilder {
     private final boolean secureToken;
     private final SecureRandom random = new SecureRandom();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
-    private final Logger logger = LoggerFactory.getLogger(NukiLinkBuilder.class);
 
     /**
      * Create new instance of link builder

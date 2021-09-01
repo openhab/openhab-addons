@@ -47,7 +47,7 @@ import com.google.gson.Gson;
  *
  * @author Markus Katter - Initial contribution
  * @contributer Christian Hoefler - Door sensor integration
- * @contributer Jan Vybíral
+ * @contributer Jan Vybíral - Added Opener support, improved callback handling
  */
 @NonNullByDefault
 public class NukiApiServlet extends HttpServlet {
@@ -124,17 +124,17 @@ public class NukiApiServlet extends HttpServlet {
 
     private ResponseEntity doHandle(BridgeApiLockStateRequestDto request, @Nullable String bridgeId) {
         String nukiId = request.getNukiId().toString();
-        String nukiIdThing;
         for (NukiBridgeHandler nukiBridgeHandler : nukiBridgeHandlers) {
             logger.trace("Searching Bridge[{}] with NukiBridgeHandler[{}] for nukiId[{}].",
                     nukiBridgeHandler.getThing().getConfiguration().get(NukiBindingConstants.CONFIG_IP),
                     nukiBridgeHandler.getThing().getUID(), nukiId);
             List<Thing> allSmartLocks = nukiBridgeHandler.getThing().getThings();
             for (Thing thing : allSmartLocks) {
-                nukiIdThing = String.valueOf(thing.getConfiguration().get(NukiBindingConstants.PROPERTY_NUKI_ID));
-                if (nukiIdThing != null && nukiIdThing.equals(nukiId)) {
+                String nukiIdThing = String
+                        .valueOf(thing.getConfiguration().get(NukiBindingConstants.PROPERTY_NUKI_ID));
+                if (nukiIdThing.equals(nukiId)) {
                     logger.debug("Processing ThingUID[{}] - nukiId[{}]", thing.getUID(), nukiId);
-                    AbstractNukiDeviceHandler nsh = getDeviceHandler(thing);
+                    AbstractNukiDeviceHandler<?> nsh = getDeviceHandler(thing);
                     if (nsh != null) {
                         nsh.refreshState(request);
                         return new ResponseEntity(HttpStatus.OK_200, new NukiHttpServerStatusResponseDto("OK"));
@@ -148,8 +148,7 @@ public class NukiApiServlet extends HttpServlet {
                 new NukiHttpServerStatusResponseDto("Smart Lock not found!"));
     }
 
-    @Nullable
-    private BridgeApiLockStateRequestDto getBridgeApiLockStateRequestDto(HttpServletRequest request) {
+    private @Nullable BridgeApiLockStateRequestDto getBridgeApiLockStateRequestDto(HttpServletRequest request) {
         String requestContent = null;
         try (BufferedReader reader = request.getReader()) {
             requestContent = readAll(reader);
@@ -180,8 +179,8 @@ public class NukiApiServlet extends HttpServlet {
         return sb.toString();
     }
 
-    private @Nullable AbstractNukiDeviceHandler getDeviceHandler(Thing thing) {
-        AbstractNukiDeviceHandler nsh = (AbstractNukiDeviceHandler) thing.getHandler();
+    private @Nullable AbstractNukiDeviceHandler<?> getDeviceHandler(Thing thing) {
+        AbstractNukiDeviceHandler<?> nsh = (AbstractNukiDeviceHandler<?>) thing.getHandler();
         if (nsh == null) {
             logger.debug("Could not get AbstractNukiDeviceHandler for ThingUID[{}]!", thing.getUID());
             return null;

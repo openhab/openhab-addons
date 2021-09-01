@@ -59,25 +59,25 @@ connected to is configured and online.
 
 The following configuration options are available:
 
-| Parameter | Description                                                                                                                                                                                               | Comment       |
-|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
-| unlatch   | If set to `true` the Nuki Smart Lock will unlock the door but then also automatically pull the latch of the door lock. Usually, if the door hinges are correctly adjusted, the door will then swing open. | Default false |
+  | Parameter | Description                                                                                                                                                                                               | Comment       |
+  |-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
+  | unlatch   | If set to `true` the Nuki Smart Lock will unlock the door but then also automatically pull the latch of the door lock. Usually, if the door hinges are correctly adjusted, the door will then swing open. | Default false |
 
 #### Supported Channels
 
-| Channel          | Type   | Description                                                                                                                                                                             |
-|------------------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| lock             | Switch | Switch to lock and unlock doors. If `unlatch` configuration parameter is set, unlocking will also unlatch the door.                                                                     |
-| lockState        | Number | Channel which accepts [Supported commands](#supported-lockstate-commands) for performing actions, and produces [supported values](#supported-lockstate-values) when lock state changes. |
-| lowBattery       | Switch | Low battery warning channel                                                                                                                                                             |
-| keypadLowBattery | Switch | Indicates if keypad connected to Nuki Lock has low battery                                                                                                                              |
-| batteryLevel     | Number | Current battery level                                                                                                                                                                   |
-| batteryCharging  | Swtich | Flag indicating if the batteries of the Nuki device are charging at the moment                                                                                                          |
-| doorsensorState  | Number | Read only channel for monitoring door sensor state, see [supported values](#supported-doorsensorstate-values)                                                                           |
+  | Channel          | Type   | Description                                                                                                                                                                             |
+  |------------------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+  | lock             | Switch | Switch to lock and unlock doors. If `unlatch` configuration parameter is set, unlocking will also unlatch the door.                                                                     |
+  | lockState        | Number | Channel which accepts [Supported commands](#supported-lockstate-commands) for performing actions, and produces [supported values](#supported-lockstate-values) when lock state changes. |
+  | lowBattery       | Switch | Low battery warning channel                                                                                                                                                             |
+  | keypadLowBattery | Switch | Indicates if keypad connected to Nuki Lock has low battery                                                                                                                              |
+  | batteryLevel     | Number | Current battery level                                                                                                                                                                   |
+  | batteryCharging  | Swtich | Flag indicating if the batteries of the Nuki device are charging at the moment                                                                                                          |
+  | doorsensorState  | Number | Read only channel for monitoring door sensor state, see [supported values](#supported-doorsensorstate-values)                                                                           |
 
-  ##### Supported lockState commands
+##### Supported lockState commands
 
-  These values can be sent to _lockState_ channel as a commands:
+These values can be sent to _lockState_ channel as a commands:
 
   | Command | Name                     |
   |---------|--------------------------|
@@ -87,7 +87,7 @@ The following configuration options are available:
   | 4       | Lock 'n' Go              |
   | 5       | Lock 'n' Go with Unlatch |
 
-  ##### Supported lockState values
+##### Supported lockState values
 
   | State  | Name                     |
   |--------|--------------------------|
@@ -102,7 +102,7 @@ The following configuration options are available:
   | 254    | Motor blocked            |
   | 255    | Undefined                |
 
-  Unfortunately the Nuki Bridge is not reporting any transition states (e.g. for Lock 'n' Go).
+Unfortunately the Nuki Bridge is not reporting any transition states (e.g. for Lock 'n' Go).
 
 ##### Supported doorSensorState values
 
@@ -129,7 +129,7 @@ Nuki Opener has no configuration properties.
   | ringActionState     | Trigger  | Channel triggers 'RINGING' event when the doorbell is being rung. This can trigger at most once every 30s                                                                        |
   | ringActionTimestamp | DateTime | Timestamp of last time doorbell was rung.                                                                                                                                        |
 
-  ##### Supported openerState commands
+##### Supported openerState commands
 
   | Command | Name                       |
   |---------|----------------------------|
@@ -139,7 +139,7 @@ Nuki Opener has no configuration properties.
   | 4       | Activate continuous mode   |
   | 5       | Deactivate continuous mode |
 
-  ##### Supported openerState values
+##### Supported openerState values
 
   | State  | Name                |
   |--------|---------------------|
@@ -151,7 +151,7 @@ Nuki Opener has no configuration properties.
   | 253    | Boot run            |
   | 255    | Undefined           |
 
- ##### Supported openerMode values
+##### Supported openerMode values
   
   | Mode   | Name            |
   |--------|-----------------|

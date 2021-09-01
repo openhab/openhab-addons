@@ -67,9 +67,10 @@ public class NukiOpenerHandler extends AbstractNukiDeviceHandler<NukiDeviceConfi
                 if (command instanceof DecimalType) {
                     OpenerAction action = OpenerAction.fromAction(((DecimalType) command).intValue());
                     if (action != null) {
-                        BridgeLockActionResponse response = getNukiHttpClient().getOpenerAction(configuration.nukiId,
-                                action);
-                        return handleResponse(response, channelUID.getAsString(), command.toString());
+                        return withHttpClient(client -> {
+                            BridgeLockActionResponse response = client.getOpenerAction(configuration.nukiId, action);
+                            return handleResponse(response, channelUID.getAsString(), command.toString());
+                        }, false);
                     }
                 }
                 break;

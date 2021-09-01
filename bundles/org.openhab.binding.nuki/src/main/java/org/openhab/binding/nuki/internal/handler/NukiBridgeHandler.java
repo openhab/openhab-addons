@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -78,20 +80,41 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
         return this.nukiHttpClient;
     }
 
+    public void withHttpClient(Consumer<NukiHttpClient> consumer) {
+        withHttpClient(client -> {
+            consumer.accept(client);
+            return null;
+        }, null);
+    }
+
+    protected <@Nullable U> @Nullable U withHttpClient(Function<NukiHttpClient, U> consumer, U defaultValue) {
+        NukiHttpClient client = this.nukiHttpClient;
+        if (client == null) {
+            logger.warn("Nuki HTTP client is null. This is a bug in Nuki Binding, please report it",
+                    new IllegalStateException());
+            return defaultValue;
+        } else {
+            return consumer.apply(client);
+        }
+    }
+
     @Override
     public void initialize() {
         this.config = getConfigAs(NukiBridgeConfiguration.class);
-        if (this.config.ip == null || this.config.port == null) {
+        String ip = config.ip;
+        Integer port = config.port;
+        String apiToken = config.apiToken;
+
+        if (ip == null || port == null) {
             logger.debug("NukiBridgeHandler[{}] is not initializable, IP setting is unset in the configuration!",
                     getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IP setting is unset");
-        } else if (this.config.apiToken == null || this.config.apiToken.isBlank()) {
+        } else if (apiToken == null || apiToken.isBlank()) {
             logger.debug("NukiBridgeHandler[{}] is not initializable, apiToken setting is unset in the configuration!",
                     getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "apiToken setting is unset");
         } else {
-            NukiLinkBuilder linkBuilder = new NukiLinkBuilder(this.config.ip, this.config.port, this.config.apiToken,
-                    this.config.secureToken);
+            NukiLinkBuilder linkBuilder = new NukiLinkBuilder(ip, port, apiToken, this.config.secureToken);
             nukiHttpClient = new NukiHttpClient(httpClient, linkBuilder);
             scheduler.execute(this::initializeHandler);
             checkBridgeOnlineJob = scheduler.scheduleWithFixedDelay(this::checkBridgeOnline, JOB_INTERVAL, JOB_INTERVAL,
@@ -111,8 +134,9 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
             unregisterCallback();
         }
         nukiHttpClient = null;
-        if (checkBridgeOnlineJob != null && !checkBridgeOnlineJob.isCancelled()) {
-            checkBridgeOnlineJob.cancel(true);
+        ScheduledFuture<?> job = checkBridgeOnlineJob;
+        if (job != null) {
+            job.cancel(true);
         }
         checkBridgeOnlineJob = null;
     }
@@ -123,53 +147,52 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
     }
 
     private synchronized void initializeHandler() {
-        if (isHttpClientNull()) {
-            return;
-        }
-
-        BridgeInfoResponse bridgeInfoResponse = getNukiHttpClient().getBridgeInfo();
-        if (bridgeInfoResponse.getStatus() == HttpStatus.OK_200) {
-            updateProperty(NukiBindingConstants.PROPERTY_FIRMWARE_VERSION, bridgeInfoResponse.getFirmwareVersion());
-            updateProperty(NukiBindingConstants.PROPERTY_WIFI_FIRMWARE_VERSION,
-                    bridgeInfoResponse.getWifiFirmwareVersion());
-            updateProperty(NukiBindingConstants.PROPERTY_HARDWARE_ID,
-                    Integer.toString(bridgeInfoResponse.getHardwareId()));
-            updateProperty(NukiBindingConstants.PROPERTY_SERVER_ID, Integer.toString(bridgeInfoResponse.getServerId()));
-            if (this.config.manageCallbacks) {
-                manageNukiBridgeCallbacks();
+        withHttpClient(client -> {
+            BridgeInfoResponse bridgeInfoResponse = client.getBridgeInfo();
+            if (bridgeInfoResponse.getStatus() == HttpStatus.OK_200) {
+                updateProperty(NukiBindingConstants.PROPERTY_FIRMWARE_VERSION, bridgeInfoResponse.getFirmwareVersion());
+                updateProperty(NukiBindingConstants.PROPERTY_WIFI_FIRMWARE_VERSION,
+                        bridgeInfoResponse.getWifiFirmwareVersion());
+                updateProperty(NukiBindingConstants.PROPERTY_HARDWARE_ID,
+                        Integer.toString(bridgeInfoResponse.getHardwareId()));
+                updateProperty(NukiBindingConstants.PROPERTY_SERVER_ID,
+                        Integer.toString(bridgeInfoResponse.getServerId()));
+                if (this.config.manageCallbacks) {
+                    manageNukiBridgeCallbacks();
+                }
+                logger.debug("Bridge[{}] responded with status[{}]. Switching the bridge online.", this.config.ip,
+                        bridgeInfoResponse.getStatus());
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                logger.debug("Bridge[{}] responded with status[{}]. Switching the bridge offline!", this.config.ip,
+                        bridgeInfoResponse.getStatus());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        bridgeInfoResponse.getMessage());
             }
-            logger.debug("Bridge[{}] responded with status[{}]. Switching the bridge online.", this.config.ip,
-                    bridgeInfoResponse.getStatus());
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            logger.debug("Bridge[{}] responded with status[{}]. Switching the bridge offline!", this.config.ip,
-                    bridgeInfoResponse.getStatus());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, bridgeInfoResponse.getMessage());
-        }
+        });
     }
 
     public void checkBridgeOnline() {
         logger.debug("checkBridgeOnline():bridgeIp[{}] status[{}]", this.config.ip, getThing().getStatus());
         if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            if (isHttpClientNull()) {
-                return;
-            }
 
-            logger.debug("Requesting BridgeInfo to ensure Bridge[{}] is online.", this.config.ip);
-            BridgeInfoResponse bridgeInfoResponse = getNukiHttpClient().getBridgeInfo();
-            int status = bridgeInfoResponse.getStatus();
-            if (status == HttpStatus.OK_200) {
-                logger.debug("Bridge[{}] responded with status[{}]. Bridge is online.", this.config.ip, status);
-            } else if (status == HttpStatus.SERVICE_UNAVAILABLE_503) {
-                logger.debug(
-                        "Bridge[{}] responded with status[{}]. REST service seems to be busy but Bridge is online.",
-                        this.config.ip, status);
-            } else {
-                logger.debug("Bridge[{}] responded with status[{}]. Switching the bridge offline!", this.config.ip,
-                        status);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        bridgeInfoResponse.getMessage());
-            }
+            withHttpClient(client -> {
+                logger.debug("Requesting BridgeInfo to ensure Bridge[{}] is online.", this.config.ip);
+                BridgeInfoResponse bridgeInfoResponse = client.getBridgeInfo();
+                int status = bridgeInfoResponse.getStatus();
+                if (status == HttpStatus.OK_200) {
+                    logger.debug("Bridge[{}] responded with status[{}]. Bridge is online.", this.config.ip, status);
+                } else if (status == HttpStatus.SERVICE_UNAVAILABLE_503) {
+                    logger.debug(
+                            "Bridge[{}] responded with status[{}]. REST service seems to be busy but Bridge is online.",
+                            this.config.ip, status);
+                } else {
+                    logger.debug("Bridge[{}] responded with status[{}]. Switching the bridge offline!", this.config.ip,
+                            status);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            bridgeInfoResponse.getMessage());
+                }
+            });
         } else {
             initializeHandler();
         }
@@ -191,14 +214,16 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
             return Collections.emptyList();
         }
 
-        BridgeCallbackListResponse bridgeCallbackListResponse = getNukiHttpClient().getBridgeCallbackList();
-        if (bridgeCallbackListResponse.isSuccess()) {
-            return bridgeCallbackListResponse.getCallbacks();
-        } else {
-            logger.debug("Failed to list callbacks for Bridge[{}] - status {}, message {}", this.config.ip,
-                    bridgeCallbackListResponse.getStatus(), bridgeCallbackListResponse.getMessage());
-            return null;
-        }
+        return withHttpClient(client -> {
+            BridgeCallbackListResponse bridgeCallbackListResponse = client.getBridgeCallbackList();
+            if (bridgeCallbackListResponse.isSuccess()) {
+                return bridgeCallbackListResponse.getCallbacks();
+            } else {
+                logger.debug("Failed to list callbacks for Bridge[{}] - status {}, message {}", this.config.ip,
+                        bridgeCallbackListResponse.getStatus(), bridgeCallbackListResponse.getMessage());
+                return null;
+            }
+        }, null);
     }
 
     private void manageNukiBridgeCallbacks() {
@@ -237,18 +262,21 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
         }
 
         callbacksToRemove.forEach(callbackId -> {
-            BridgeCallbackRemoveResponse bridgeCallbackRemoveResponse = getNukiHttpClient()
-                    .getBridgeCallbackRemove(callbackId);
-            if (bridgeCallbackRemoveResponse.getStatus() == HttpStatus.OK_200) {
-                logger.debug("Successfully removed callbackUrl[{}] on Bridge[{}]!", callback, this.config.ip);
-            }
+            withHttpClient(client -> {
+                BridgeCallbackRemoveResponse bridgeCallbackRemoveResponse = client.getBridgeCallbackRemove(callbackId);
+                if (bridgeCallbackRemoveResponse.getStatus() == HttpStatus.OK_200) {
+                    logger.debug("Successfully removed callbackUrl[{}] on Bridge[{}]!", callback, this.config.ip);
+                }
+            });
         });
 
-        logger.debug("Adding callbackUrl[{}] to Bridge[{}]!", callbackUrl, this.config.ip);
-        BridgeCallbackAddResponse bridgeCallbackAddResponse = getNukiHttpClient().getBridgeCallbackAdd(callback);
-        if (bridgeCallbackAddResponse.getStatus() == HttpStatus.OK_200) {
-            logger.debug("Successfully added callbackUrl[{}] on Bridge[{}]!", callback, this.config.ip);
-        }
+        withHttpClient(client -> {
+            logger.debug("Adding callbackUrl[{}] to Bridge[{}]!", callbackUrl, this.config.ip);
+            BridgeCallbackAddResponse bridgeCallbackAddResponse = client.getBridgeCallbackAdd(callback);
+            if (bridgeCallbackAddResponse.getStatus() == HttpStatus.OK_200) {
+                logger.debug("Successfully added callbackUrl[{}] on Bridge[{}]!", callback, this.config.ip);
+            }
+        });
     }
 
     private void unregisterCallback() {
@@ -259,6 +287,6 @@ public class NukiBridgeHandler extends BaseBridgeHandler {
 
         callbacks.stream().filter(callback -> callback.getUrl().equals(callbackUrl))
                 .map(BridgeApiCallbackListCallbackDto::getId)
-                .forEach(callbackId -> getNukiHttpClient().getBridgeCallbackRemove(callbackId));
+                .forEach(callbackId -> withHttpClient(client -> client.getBridgeCallbackRemove(callbackId)));
     }
 }

@@ -72,19 +72,20 @@ public class NukiHttpClient {
 
     private NukiBaseResponse handleException(Exception e) {
         if (e instanceof ExecutionException) {
-            if (e.getCause() instanceof HttpResponseException) {
-                HttpResponseException cause = (HttpResponseException) e.getCause();
-                int status = cause.getResponse().getStatus();
-                String reason = cause.getResponse().getReason();
+            Throwable cause = e.getCause();
+            if (cause instanceof HttpResponseException) {
+                HttpResponseException causeException = (HttpResponseException) cause;
+                int status = causeException.getResponse().getStatus();
+                String reason = causeException.getResponse().getReason();
                 logger.debug("HTTP Response Exception! Status[{}] - Reason[{}]! Check your API Token!", status, reason);
                 return new NukiBaseResponse(status, reason);
-            } else if (e.getCause() instanceof InterruptedIOException) {
+            } else if (cause instanceof InterruptedIOException) {
                 logger.debug(
                         "InterruptedIOException! Exception[{}]! Check IP/Port configuration and if Nuki Bridge is powered on!",
                         e.getMessage());
                 return new NukiBaseResponse(HttpStatus.REQUEST_TIMEOUT_408,
                         "InterruptedIOException! Check IP/Port configuration and if Nuki Bridge is powered on!");
-            } else if (e.getCause() instanceof SocketException) {
+            } else if (cause instanceof SocketException) {
                 logger.debug(
                         "SocketException! Exception[{}]! Check IP/Port configuration and if Nuki Bridge is powered on!",
                         e.getMessage());

@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.nuki.internal.configuration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration for Nuki devices
  *
  * @author Jan Vybíral - Initial contribution
  */
+@NonNullByDefault
 public class NukiDeviceConfiguration {
-    public String nukiId;
+    public String nukiId = "";
 }

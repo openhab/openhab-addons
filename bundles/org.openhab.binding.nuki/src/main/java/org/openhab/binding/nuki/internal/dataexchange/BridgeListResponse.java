@@ -15,6 +15,8 @@ package org.openhab.binding.nuki.internal.dataexchange;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nuki.internal.dto.BridgeApiListDeviceDto;
 
 /**
@@ -22,11 +24,12 @@ import org.openhab.binding.nuki.internal.dto.BridgeApiListDeviceDto;
  *
  * @author Jan Vybíral - Initial contribution
  */
+@NonNullByDefault
 public class BridgeListResponse extends NukiBaseResponse {
 
     private final List<BridgeApiListDeviceDto> devices;
 
-    public BridgeListResponse(int status, String message, List<BridgeApiListDeviceDto> devices) {
+    public BridgeListResponse(int status, @Nullable String message, @Nullable List<BridgeApiListDeviceDto> devices) {
         super(status, message);
         setSuccess(devices != null);
         this.devices = devices == null ? Collections.emptyList() : Collections.unmodifiableList(devices);
@@ -40,7 +43,7 @@ public class BridgeListResponse extends NukiBaseResponse {
         return devices;
     }
 
-    public BridgeApiListDeviceDto getDevice(String nukiId) {
+    public @Nullable BridgeApiListDeviceDto getDevice(String nukiId) {
         for (BridgeApiListDeviceDto device : this.devices) {
             if (device.getNukiId().equals(nukiId)) {
                 return device;

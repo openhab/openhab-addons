@@ -16,7 +16,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -66,13 +65,31 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
     private static final Pattern NUKI_ID_HEX_PATTERN = Pattern.compile("[A-F\\d]{8}", Pattern.CASE_INSENSITIVE);
 
     @Nullable
-    private NukiHttpClient nukiHttpClient;
-    @Nullable
     protected ScheduledFuture<?> reInitJob;
     protected T configuration;
+    @Nullable
+    private NukiHttpClient nukiHttpClient;
 
     private static String hexToDecimal(String hexString) {
         return String.valueOf(Integer.parseInt(hexString, 16));
+    }
+
+    protected void withHttpClient(Consumer<NukiHttpClient> consumer) {
+        withHttpClient(client -> {
+            consumer.accept(client);
+            return null;
+        }, null);
+    }
+
+    protected <U> U withHttpClient(Function<NukiHttpClient, U> consumer, U defaultValue) {
+        NukiHttpClient client = this.nukiHttpClient;
+        if (client == null) {
+            logger.warn("Nuki HTTP client is null. This is a bug in Nuki Binding, please report it",
+                    new IllegalStateException());
+            return defaultValue;
+        } else {
+            return consumer.apply(client);
+        }
     }
 
     public AbstractNukiDeviceHandler(Thing thing) {
@@ -109,26 +126,25 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
         }
     }
 
-    protected NukiHttpClient getNukiHttpClient() {
-        return Objects.requireNonNull(this.nukiHttpClient, "HTTP client is null");
-    }
-
-    private void initializeHandler(@Nullable ThingHandler bridgeHandler, @Nullable ThingStatus bridgeStatus) {
-        if (bridgeHandler != null && bridgeStatus != null) {
+    private void initializeHandler(@Nullable ThingHandler handler, @Nullable ThingStatus bridgeStatus) {
+        if (handler instanceof NukiBridgeHandler && bridgeStatus != null) {
+            NukiBridgeHandler bridgeHandler = (NukiBridgeHandler) handler;
             if (bridgeStatus == ThingStatus.ONLINE) {
-                nukiHttpClient = ((NukiBridgeHandler) bridgeHandler).getNukiHttpClient();
-                BridgeListResponse bridgeListResponse = getNukiHttpClient().getList();
-                if (handleResponse(bridgeListResponse, null, null)) {
-                    BridgeApiListDeviceDto device = bridgeListResponse.getDevice(configuration.nukiId);
-                    if (device == null) {
-                        logger.warn("Configured Smart Lock [{}] not present in bridge device list",
-                                configuration.nukiId);
-                    } else {
-                        updateStatus(ThingStatus.ONLINE);
-                        refreshData(device);
-                        stopReInitJob();
+                this.nukiHttpClient = bridgeHandler.getNukiHttpClient();
+                withHttpClient(client -> {
+                    BridgeListResponse bridgeListResponse = client.getList();
+                    if (handleResponse(bridgeListResponse, null, null)) {
+                        BridgeApiListDeviceDto device = bridgeListResponse.getDevice(configuration.nukiId);
+                        if (device == null) {
+                            logger.warn("Configured Smart Lock [{}] not present in bridge device list",
+                                    configuration.nukiId);
+                        } else {
+                            updateStatus(ThingStatus.ONLINE);
+                            refreshData(device);
+                            stopReInitJob();
+                        }
                     }
-                }
+                });
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 stopReInitJob();
@@ -206,13 +222,15 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
             logger.debug("Thing is not ONLINE; command[{}] for channelUID[{}] is ignored", command, channelUID);
         } else if (command instanceof RefreshType) {
             scheduler.execute(() -> {
-                BridgeLockStateResponse bridgeLockStateResponse = getNukiHttpClient()
-                        .getBridgeLockState(configuration.nukiId, getDeviceType());
-                if (handleResponse(bridgeLockStateResponse, channelUID.getAsString(), command.toString())) {
-                    if (!doHandleRefreshCommand(channelUID, command, bridgeLockStateResponse)) {
-                        logger.debug("Command[{}] for channelUID[{}] not implemented!", command, channelUID);
+                withHttpClient(client -> {
+                    BridgeLockStateResponse bridgeLockStateResponse = client.getBridgeLockState(configuration.nukiId,
+                            getDeviceType());
+                    if (handleResponse(bridgeLockStateResponse, channelUID.getAsString(), command.toString())) {
+                        if (!doHandleRefreshCommand(channelUID, command, bridgeLockStateResponse)) {
+                            logger.debug("Command[{}] for channelUID[{}] not implemented!", command, channelUID);
+                        }
                     }
-                }
+                });
             });
         } else {
             scheduler.execute(() -> {
@@ -313,8 +331,9 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
 
     private void stopReInitJob() {
         logger.trace("Stopping reInitJob for Smart Lock[{}].", configuration.nukiId);
-        if (reInitJob != null) {
-            reInitJob.cancel(true);
+        ScheduledFuture<?> job = reInitJob;
+        if (job != null) {
+            job.cancel(true);
             logger.trace("Stopped reInitJob for Smart Lock[{}].", configuration.nukiId);
         }
         reInitJob = null;
