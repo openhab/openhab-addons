@@ -138,7 +138,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
         logger.debug("Adding new Freebox Server {} to inbox", thingUID);
         Map<String, Object> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.getSerial());
-        properties.put(Thing.PROPERTY_HARDWARE_VERSION, config.getBoardName());
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, config.getPrettyName());
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion());
         properties.put(Thing.PROPERTY_MAC_ADDRESS, config.getMac());
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
@@ -157,7 +157,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                     .withLabel(config.getType().name()).build();
             thingDiscovered(discoveryResult);
         } else {
-            logger.warn("Phone Manager unavailable");
+            logger.debug("Phone Manager unavailable");
         }
     }
 
@@ -188,8 +188,6 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
     }
 
     private void discoverPlayer(Map<String, @Nullable LanHost> lanHosts) throws FreeboxException {
-        // List<AirMediaReceiver> receivers = bridgeHandler.getAirMediaManager().getReceivers();
-
         PlayerManager playMgr = bridgeHandler.getApi().getPlayerManager();
         if (playMgr != null) {
             for (Player player : playMgr.getPlayers()) {
@@ -217,7 +215,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                 thingDiscovered(discoveryResult);
             }
         } else {
-            logger.warn("Player Manager unavailable");
+            logger.debug("Player Manager unavailable");
         }
     }
 
@@ -239,7 +237,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                 thingDiscovered(discoveryResult);
             });
         } else {
-            logger.warn("VM Manager unavailable");
+            logger.debug("VM Manager unavailable");
         }
     }
 

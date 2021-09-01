@@ -37,13 +37,13 @@ public class LanConfig implements ConnectivityData {
     }
 
     private @Nullable String ip;
-    private @Nullable NetworkMode type;
+    private @Nullable NetworkMode mode;
     private boolean isReachable = true;
     private long lastSeen = Instant.now().getEpochSecond();
 
-    public NetworkMode getType() {
-        NetworkMode localType = type;
-        return localType != null ? localType : NetworkMode.UNKNOWN;
+    public NetworkMode getMode() {
+        NetworkMode localMode = mode;
+        return localMode != null ? localMode : NetworkMode.UNKNOWN;
     }
 
     @Override

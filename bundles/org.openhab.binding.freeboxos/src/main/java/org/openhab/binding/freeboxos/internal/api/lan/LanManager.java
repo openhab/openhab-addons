@@ -51,7 +51,7 @@ public class LanManager extends RestManager {
 
     public NetworkMode getNetworkMode() throws FreeboxException {
         if (networkMode == null) {
-            this.networkMode = getLanConfig().getType();
+            this.networkMode = getLanConfig().getMode();
         }
         return networkMode;
     }

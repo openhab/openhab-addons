@@ -52,10 +52,8 @@ public class FreeboxOsBindingConstants {
     protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .concat(BRIDGE_TYPE_UID.stream(), THINGS_TYPES_UIDS.stream()).collect(Collectors.toSet());
 
-    // List of things properties
-    public static final String PROPERTY_SENSORS = "sensors";
-
     // List of all Group Channel ids
+    public static final String GROUP_SENSORS = "sensors";
     public static final String CONNECTION_STATUS = "connection-status";
     public static final String SYS_INFO = "sysinfo";
     public static final String ACTIONS = "actions";

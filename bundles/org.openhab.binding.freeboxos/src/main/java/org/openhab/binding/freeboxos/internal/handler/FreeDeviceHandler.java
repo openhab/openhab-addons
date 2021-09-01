@@ -81,9 +81,11 @@ public abstract class FreeDeviceHandler extends HostHandler {
             DeviceConfig systemConfig = getDeviceConfig();
             List<Sensor> sensors = systemConfig.getAllSensors();
             sensors.forEach(sensor -> {
-                ChannelUID sensorId = new ChannelUID(thing.getUID(), PROPERTY_SENSORS, sensor.getId());
+                ChannelUID sensorId = new ChannelUID(thing.getUID(), GROUP_SENSORS, sensor.getId());
                 if (channels.stream().noneMatch(c -> c.getUID().equals(sensorId))) {
-                    ChannelBuilder channelBuilder = ChannelBuilder.create(sensorId).withLabel(sensor.getName());
+                    String channelLabel = sensor.getName().startsWith(sensor.getKind().getLabel()) ? sensor.getName()
+                            : String.format("%s %s", sensor.getKind().getLabel(), sensor.getName());
+                    ChannelBuilder channelBuilder = ChannelBuilder.create(sensorId).withLabel(channelLabel);
                     if (sensor.getKind() == SensorKind.FAN) {
                         channels.add(channelBuilder.withAcceptedItemType(CoreItemFactory.NUMBER)
                                 .withType(new ChannelTypeUID(BINDING_ID + ":fanspeed")).build());
@@ -106,10 +108,10 @@ public abstract class FreeDeviceHandler extends HostHandler {
         sensors.forEach(sensor -> {
             switch (sensor.getKind()) {
                 case FAN:
-                    updateChannelDecimal(PROPERTY_SENSORS, sensor.getId(), sensor.getValue());
+                    updateChannelDecimal(GROUP_SENSORS, sensor.getId(), sensor.getValue());
                     break;
                 case TEMP:
-                    updateChannelQuantity(PROPERTY_SENSORS, sensor.getId(), sensor.getValue(), SIUnits.CELSIUS);
+                    updateChannelQuantity(GROUP_SENSORS, sensor.getId(), sensor.getValue(), SIUnits.CELSIUS);
                     break;
                 case UNKNOWN:
                     logger.warn("Unknown sensor kind : {}", sensor);

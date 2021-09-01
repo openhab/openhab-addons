@@ -237,27 +237,39 @@ public class ApiHandler {
 
     public synchronized @Nullable PhoneManager getPhoneManager() {
         PhoneManager manager = (PhoneManager) managers.get(PhoneManager.class);
-        if (manager == null && getLoginManager().hasPermission(PhoneManager.associatedPermission())) {
-            manager = new PhoneManager(this);
-            managers.put(PhoneManager.class, manager);
+        if (manager == null) {
+            if (getLoginManager().hasPermission(PhoneManager.associatedPermission())) {
+                manager = new PhoneManager(this);
+                managers.put(PhoneManager.class, manager);
+            } else {
+                logger.debug("Permissions missing to initialize PhoneManager");
+            }
         }
         return manager;
     }
 
     public synchronized @Nullable VmManager getVmManager() {
         VmManager manager = (VmManager) managers.get(VmManager.class);
-        if (manager == null && getLoginManager().hasPermission(VmManager.associatedPermission())) {
-            manager = new VmManager(this);
-            managers.put(VmManager.class, manager);
+        if (manager == null) {
+            if (getLoginManager().hasPermission(VmManager.associatedPermission())) {
+                manager = new VmManager(this);
+                managers.put(VmManager.class, manager);
+            } else {
+                logger.debug("Permissions missing to initialize VmManager");
+            }
         }
         return manager;
     }
 
     public synchronized @Nullable PlayerManager getPlayerManager() {
         PlayerManager manager = (PlayerManager) managers.get(PlayerManager.class);
-        if (manager == null && getLoginManager().hasPermission(PlayerManager.associatedPermission())) {
-            manager = new PlayerManager(this, version);
-            managers.put(PlayerManager.class, manager);
+        if (manager == null) {
+            if (getLoginManager().hasPermission(PlayerManager.associatedPermission())) {
+                manager = new PlayerManager(this, version);
+                managers.put(PlayerManager.class, manager);
+            } else {
+                logger.debug("Permissions missing to initialize PlayerManager");
+            }
         }
         return manager;
     }
@@ -298,7 +310,9 @@ public class ApiHandler {
                     request.content(contentProvider, null);
                 }
             }
-            T serialized = deserialize(classOfT, sendRequest(request));
+            String response = sendRequest(request);
+            logger.trace("executeUrl {} - {} returned {}", method, url, response);
+            T serialized = deserialize(classOfT, response);
             serialized.evaluate();
             return serialized;
         } catch (FreeboxException e) {
@@ -324,12 +338,16 @@ public class ApiHandler {
                 return deserialized;
             }
             throw new FreeboxException("Deserialization lead to null object");
-        } catch (JsonSyntaxException e) {
+        } catch (JsonSyntaxException e1) {
             if (classOfT != null) {
-                BaseResponse serialized = gson.fromJson(serviceAnswer, BaseResponse.class);
-                throw new FreeboxException("Taking care of unexpected answer from api", e, serialized);
+                try {
+                    BaseResponse serialized = gson.fromJson(serviceAnswer, BaseResponse.class);
+                    throw new FreeboxException("Received an unexpected answer from api", e1, serialized);
+                } catch (JsonSyntaxException e2) {
+                    throw new FreeboxException(String.format("Unexpected error deserializing '%s'", serviceAnswer), e2);
+                }
             }
-            throw new FreeboxException(String.format("Unexpected error desiralizing '%s'", serviceAnswer), e);
+            throw new FreeboxException(String.format("Unexpected error deserializing '%s'", serviceAnswer), e1);
         }
     }
 

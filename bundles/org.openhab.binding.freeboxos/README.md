@@ -162,7 +162,9 @@ The following channels are supported:
 
 (*) : server means *delta* or *revolution*
 
-## Actions
+## Actions for ules
+
+The following actions are available in rules/scripting:
 
 | Thing Type  | Action Name      | Description                                          | 
 |-------------|------------------|------------------------------------------------------|
