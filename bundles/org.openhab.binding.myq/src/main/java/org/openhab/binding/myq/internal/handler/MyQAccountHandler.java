@@ -142,7 +142,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         username = config.username;
         password = config.password;
         // MyQ can get picky about blocking user agents apparently
-        userAgent = MyQAccountHandler.randomString(5);
+        userAgent = MyQAccountHandler.randomString(20);
         updateStatus(ThingStatus.UNKNOWN);
         restartPolls(false);
     }
@@ -180,6 +180,11 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
      * @param action
      */
     public void sendAction(String serialNumber, String action) {
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            logger.debug("Account offline, ignoring action {}", action);
+            return;
+        }
+
         AccountDTO localAccount = account;
         if (localAccount != null) {
             try {
@@ -193,8 +198,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
                 } else {
                     logger.debug("Failed to send action {} : {}", action, response.getContentAsString());
                 }
-            } catch (InterruptedException | IOException | OAuthException | ExecutionException
-                    | OAuthResponseException e) {
+            } catch (InterruptedException | MyQCommunicationException | MyQAuthenticationException e) {
                 logger.debug("Could not send action", e);
             }
         }
@@ -253,22 +257,12 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
     }
 
     private synchronized void fetchData() {
-        boolean validToken = false;
         try {
-            validToken = oAuthService.getAccessTokenResponse() != null;
-        } catch (OAuthException | IOException | OAuthResponseException e) {
-            logger.debug("error with oAuth service, attempting login again", e);
-        }
-
-        try {
-            if (!validToken) {
-                login();
-            }
             if (account == null) {
                 getAccount();
             }
             getDevices();
-        } catch (TimeoutException | IOException | OAuthException | ExecutionException | OAuthResponseException e) {
+        } catch (MyQCommunicationException e) {
             logger.debug("MyQ communication error", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (MyQAuthenticationException e) {
@@ -279,56 +273,58 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         }
     }
 
-    private void login() throws InterruptedException, IOException, OAuthException, ExecutionException,
-            OAuthResponseException, TimeoutException, MyQAuthenticationException {
-
+    private AccessTokenResponse login()
+            throws InterruptedException, MyQCommunicationException, MyQAuthenticationException {
         // make sure we have a fresh session
         httpClient.getCookieStore().removeAll();
 
-        String codeVerifier = generateCodeVerifier();
+        try {
+            String codeVerifier = generateCodeVerifier();
 
-        ContentResponse loginPageResponse = getLoginPage(codeVerifier);
+            ContentResponse loginPageResponse = getLoginPage(codeVerifier);
 
-        // load the login page to get cookies and form parameters
-        Document loginPage = Jsoup.parse(loginPageResponse.getContentAsString());
-        Element form = loginPage.select("form").first();
-        Element requestToken = loginPage.select("input[name=__RequestVerificationToken]").first();
-        Element returnURL = loginPage.select("input[name=ReturnUrl]").first();
+            // load the login page to get cookies and form parameters
+            Document loginPage = Jsoup.parse(loginPageResponse.getContentAsString());
+            Element form = loginPage.select("form").first();
+            Element requestToken = loginPage.select("input[name=__RequestVerificationToken]").first();
+            Element returnURL = loginPage.select("input[name=ReturnUrl]").first();
 
-        if (form == null || requestToken == null) {
-            throw new IOException("Coul not load login page");
+            if (form == null || requestToken == null) {
+                throw new MyQCommunicationException("Could not load login page");
+            }
+
+            String action = LOGIN_BASE_URL + form.attr("action");
+
+            // post our user name and password along with elements from the scraped form
+            String location = postLogin(action, requestToken.attr("value"), returnURL.attr("value"));
+            if (location == null) {
+                throw new MyQAuthenticationException("Could not login with credentials");
+            }
+
+            logger.debug("Login Response URI {}", location);
+
+            // finally complete the oAuth flow and retrieve a JSON oAuth token response
+            ContentResponse tokenResponse = getLoginToken(location, codeVerifier);
+            String loginToken = tokenResponse.getContentAsString();
+            logger.debug("Login Token response {}", loginToken);
+
+            AccessTokenResponse accessTokenResponse = gsonLowerCase.fromJson(loginToken, AccessTokenResponse.class);
+            if (accessTokenResponse == null) {
+                throw new MyQAuthenticationException("Could not parse token response");
+            }
+            oAuthService.importAccessTokenResponse(accessTokenResponse);
+            return accessTokenResponse;
+        } catch (IOException | ExecutionException | TimeoutException | OAuthException e) {
+            throw new MyQCommunicationException(e.getMessage());
         }
-
-        String action = LOGIN_BASE_URL + form.attr("action");
-
-        // post our user name and password along with elements from the scraped form
-        String location = postLogin(action, requestToken.attr("value"), returnURL.attr("value"));
-        if (location == null) {
-            throw new MyQAuthenticationException("Could not login with credentials");
-        }
-
-        logger.debug("Login Response URI {}", location);
-
-        // finally complete the oAuth flow and retrieve a JSON oAuth token response
-        ContentResponse tokenResponse = getLoginToken(location, codeVerifier);
-        String loginToken = tokenResponse.getContentAsString();
-        logger.debug("Login Token response {}", loginToken);
-
-        AccessTokenResponse accessTokenResponse = gsonLowerCase.fromJson(loginToken, AccessTokenResponse.class);
-        if (accessTokenResponse == null) {
-            throw new MyQAuthenticationException("Could not parse token response");
-        }
-        oAuthService.importAccessTokenResponse(accessTokenResponse);
     }
 
-    private void getAccount()
-            throws InterruptedException, IOException, OAuthException, ExecutionException, OAuthResponseException {
+    private void getAccount() throws InterruptedException, MyQCommunicationException, MyQAuthenticationException {
         ContentResponse response = sendRequest(BASE_URL + "/v5/My?expand=account", HttpMethod.GET, null, null);
         account = parseResultAndUpdateStatus(response, gsonUpperCase, AccountDTO.class);
     }
 
-    private void getDevices()
-            throws InterruptedException, IOException, OAuthException, ExecutionException, OAuthResponseException {
+    private void getDevices() throws InterruptedException, MyQCommunicationException, MyQAuthenticationException {
         AccountDTO localAccount = account;
         if (localAccount == null) {
             return;
@@ -337,35 +333,42 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
                 String.format("%s/v5.1/Accounts/%s/Devices", BASE_URL, localAccount.account.id), HttpMethod.GET, null,
                 null);
         DevicesDTO devices = parseResultAndUpdateStatus(response, gsonLowerCase, DevicesDTO.class);
-        if (devices != null) {
-            devicesCache = devices;
-            devices.items.forEach(device -> {
-                ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, device.deviceFamily);
-                if (SUPPORTED_DISCOVERY_THING_TYPES_UIDS.contains(thingTypeUID)) {
-                    for (Thing thing : getThing().getThings()) {
-                        ThingHandler handler = thing.getHandler();
-                        if (handler != null && ((MyQDeviceHandler) handler).getSerialNumber()
-                                .equalsIgnoreCase(device.serialNumber)) {
-                            ((MyQDeviceHandler) handler).handleDeviceUpdate(device);
-                        }
+        devicesCache = devices;
+        devices.items.forEach(device -> {
+            ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, device.deviceFamily);
+            if (SUPPORTED_DISCOVERY_THING_TYPES_UIDS.contains(thingTypeUID)) {
+                for (Thing thing : getThing().getThings()) {
+                    ThingHandler handler = thing.getHandler();
+                    if (handler != null
+                            && ((MyQDeviceHandler) handler).getSerialNumber().equalsIgnoreCase(device.serialNumber)) {
+                        ((MyQDeviceHandler) handler).handleDeviceUpdate(device);
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     private synchronized ContentResponse sendRequest(String url, HttpMethod method, @Nullable ContentProvider content,
             @Nullable String contentType)
-            throws InterruptedException, IOException, OAuthException, ExecutionException, OAuthResponseException {
-        AccessTokenResponse tokenResponse = oAuthService.getAccessTokenResponse();
-        if (tokenResponse == null) {
-            throw new OAuthException("unable to get accessToken");
+            throws InterruptedException, MyQCommunicationException, MyQAuthenticationException {
+
+        AccessTokenResponse tokenResponse = null;
+        try {
+            tokenResponse = oAuthService.getAccessTokenResponse();
+        } catch (OAuthException | IOException | OAuthResponseException e) {
+            // ignore error
         }
+
+        if (tokenResponse == null) {
+            tokenResponse = login();
+        }
+
         Request request = httpClient.newRequest(url).method(method).agent(userAgent).timeout(10, TimeUnit.SECONDS)
-                .header("Authorization", tokenResponse.getTokenType() + " " + tokenResponse.getAccessToken());
+                .header("Authorization", authTokenHeader(tokenResponse));
         if (content != null & contentType != null) {
             request = request.content(content, contentType);
         }
+
         // use asyc jetty as the API service will response with a 401 error when credentials are wrong,
         // but not a WWW-Authenticate header which causes Jetty to throw a generic execution exception which
         // prevents us from knowing the response code
@@ -379,13 +382,18 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
                 futureResult.complete(new HttpContentResponse(response, getContent(), getMediaType(), getEncoding()));
             }
         });
-        ContentResponse result = futureResult.get();
-        logger.trace("Account Response - status: {} content: {}", result.getStatus(), result.getContentAsString());
-        return result;
+
+        try {
+            ContentResponse result = futureResult.get();
+            logger.trace("Account Response - status: {} content: {}", result.getStatus(), result.getContentAsString());
+            return result;
+        } catch (ExecutionException e) {
+            throw new MyQCommunicationException(e.getMessage());
+        }
     }
 
-    @Nullable
-    private <T> T parseResultAndUpdateStatus(ContentResponse response, Gson parser, Class<T> classOfT) {
+    private <T> T parseResultAndUpdateStatus(ContentResponse response, Gson parser, Class<T> classOfT)
+            throws MyQCommunicationException {
         if (HttpStatus.isSuccess(response.getStatus())) {
             try {
                 T responseObject = parser.fromJson(response.getContentAsString(), classOfT);
@@ -394,27 +402,32 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
                         updateStatus(ThingStatus.ONLINE);
                     }
                     return responseObject;
+                } else {
+                    throw new MyQCommunicationException("Bad response from server");
                 }
             } catch (JsonSyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Invalid JSON Response " + response.getContentAsString());
+                throw new MyQCommunicationException("Invalid JSON Response " + response.getContentAsString());
             }
         } else if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unauthorized - Check Credentials");
+            throw new MyQCommunicationException("Token was rejected for request");
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            throw new MyQCommunicationException(
                     "Invalid Response Code " + response.getStatus() + " : " + response.getContentAsString());
         }
-        return null;
     }
 
+    /**
+     * Returns the MyQ login page which contains form elements and cookies needed to login
+     *
+     * @param codeVerifier
+     * @return
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws TimeoutException
+     */
     private ContentResponse getLoginPage(String codeVerifier)
             throws InterruptedException, ExecutionException, TimeoutException {
         try {
-            /*
-             * this returns the login page, so we can grab cookies to log in with
-             */
             Request request = httpClient.newRequest(LOGIN_AUTHORIZE_URL) //
                     .param("client_id", CLIENT_ID) //
                     .param("code_challenge", generateCodeChallange(codeVerifier)) //
@@ -432,6 +445,17 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         }
     }
 
+    /**
+     * Sends configured credentials and elements from the login page in order to obtain a redirect location header value
+     *
+     * @param url
+     * @param requestToken
+     * @param returnURL
+     * @return The location header value
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws TimeoutException
+     */
     @Nullable
     private String postLogin(String url, String requestToken, String returnURL)
             throws InterruptedException, ExecutionException, TimeoutException {
@@ -479,11 +503,18 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         return location;
     }
 
+    /**
+     * Final step of the login process to get a oAuth access response token
+     *
+     * @param redirectLocation
+     * @param codeVerifier
+     * @return
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws TimeoutException
+     */
     private ContentResponse getLoginToken(String redirectLocation, String codeVerifier)
             throws InterruptedException, ExecutionException, TimeoutException {
-        /*
-         * this returns the login page, so we can grab cookies to log in with
-         */
         try {
             Map<String, String> params = parseLocationQuery(redirectLocation);
 
@@ -549,10 +580,28 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         }
     }
 
+    private String authTokenHeader(AccessTokenResponse tokenResponse) {
+        return tokenResponse.getTokenType() + " " + tokenResponse.getAccessToken();
+    }
+
+    /**
+     * Exception for authenticated related errors
+     */
     class MyQAuthenticationException extends Exception {
         private static final long serialVersionUID = 1L;
 
         public MyQAuthenticationException(String message) {
+            super(message);
+        }
+    }
+
+    /**
+     * Generic exception for non authentication related errors when communicating with the MyQ service.
+     */
+    class MyQCommunicationException extends IOException {
+        private static final long serialVersionUID = 1L;
+
+        public MyQCommunicationException(@Nullable String message) {
             super(message);
         }
     }
