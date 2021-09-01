@@ -81,14 +81,14 @@
 		<state readOnly="true" pattern="%d rpm"/>
 	</channel-type>
 
-	<channel-type id="fileshare-status" advanced="true">
+	<channel-type id="samba-file-status" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Windows File Sharing Enabled</label>
 		<description>Indicates whether Windows File Sharing is enabled</description>
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="printershare-status" advanced="true">
+	<channel-type id="samba-printer-status" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Windows Printer Sharing Enabled</label>
 		<description>Indicates whether Windows Printer Sharing is enabled</description>
@@ -201,14 +201,14 @@
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
-	<channel-type id="call-info">
+	<channel-type id="number">
 		<item-type>Call</item-type>
 		<label>Incoming Call</label>
 		<description>Details about call.</description>
 		<state pattern="%1$s => %2$s" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="call-duration">
+	<channel-type id="duration">
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>Call duration in seconds</description>
@@ -223,7 +223,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="call-name" advanced="true">
+	<channel-type id="name" advanced="true">
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>Called name for outgoing calls. Caller name for incoming calls</description>

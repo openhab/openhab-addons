@@ -101,14 +101,14 @@ public class LandlineHandler extends ApiConsumerHandler {
         String group = call.getType().name().toLowerCase();
         String phoneNumber = call.getNumber();
 
-        ChannelUID id = new ChannelUID(getThing().getUID(), group, CALL_INFO);
+        ChannelUID id = new ChannelUID(getThing().getUID(), group, NUMBER);
         updateState(id, new StringType(call.getNumber()));
-        updateChannelDateTimeState(group, CALL_TIMESTAMP, call.getDatetime());
+        updateChannelDateTimeState(group, TIMESTAMP, call.getDatetime());
         if (call.getType() != CallType.MISSED) { // Missed call have no duration by definition
-            updateChannelQuantity(group, CALL_DURATION, call.getDuration(), Units.SECOND);
+            updateChannelQuantity(group, DURATION, call.getDuration(), Units.SECOND);
         }
         if (phoneNumber != null && !phoneNumber.equals(call.getName())) {
-            updateChannelString(group, CALL_NAME, call.getNumber());
+            updateChannelString(group, NAME, call.getNumber());
         }
     }
 

@@ -15,7 +15,7 @@
 		<channel-groups>
 			<channel-group typeId="display" id="display"/>
 			<channel-group typeId="sensors" id="sensors"/>
-			<channel-group typeId="samba" id="samba"/>
+			<channel-group typeId="file-sharing" id="file-sharing"/>
 			<channel-group typeId="sysinfo" id="sysinfo"/>
 			<channel-group typeId="actions" id="actions"/>
 			<channel-group typeId="connection-status" id="connection-status"/>
@@ -35,7 +35,7 @@
 
 		<channel-groups>
 			<channel-group typeId="sensors" id="sensors"/>
-			<channel-group typeId="samba" id="samba"/>
+			<channel-group typeId="file-sharing" id="file-sharing"/>
 			<channel-group typeId="sysinfo" id="sysinfo"/>
 			<channel-group typeId="actions" id="actions"/>
 			<channel-group typeId="connection-status" id="connection-status"/>

@@ -26,17 +26,17 @@
 		<label>Accepted Call</label>
 		<description>The last accepted phone call</description>
 		<channels>
-			<channel id="call-info" typeId="call-info">
+			<channel id="number" typeId="number">
 				<label>Calling Number</label>
 				<description>Caller phone number</description>
 			</channel>
-			<channel id="call-duration" typeId="call-duration">
+			<channel id="duration" typeId="duration">
 				<label>Incoming Call Duration</label>
 			</channel>
-			<channel id="call-timestamp" typeId="timestamp">
+			<channel id="timestamp" typeId="timestamp">
 				<label>Incoming Call Timestamp</label>
 			</channel>
-			<channel id="call-name" typeId="call-name">
+			<channel id="name" typeId="name">
 				<label>Accepted Caller</label>
 				<description>Caller name</description>
 			</channel>
@@ -47,14 +47,14 @@
 		<label>Missed Call</label>
 		<description>The last missed phone call</description>
 		<channels>
-			<channel id="call-info" typeId="call-info">
+			<channel id="number" typeId="number">
 				<label>Missed Calling Number</label>
 				<description>Caller phone number</description>
 			</channel>
-			<channel id="call-timestamp" typeId="timestamp">
+			<channel id="timestamp" typeId="timestamp">
 				<label>Missed Call Timestamp</label>
 			</channel>
-			<channel id="call-name" typeId="call-name">
+			<channel id="name" typeId="name">
 				<label>Missed Caller</label>
 				<description>Caller name</description>
 			</channel>
@@ -65,17 +65,17 @@
 		<label>Outgoing Call</label>
 		<description>The last outgoing phone call</description>
 		<channels>
-			<channel id="call-info" typeId="call-info">
+			<channel id="number" typeId="number">
 				<label>Called Number</label>
 				<description>Called phone number</description>
 			</channel>
-			<channel id="call-duration" typeId="call-duration">
+			<channel id="duration" typeId="duration">
 				<label>Outgoing Call Duration</label>
 			</channel>
-			<channel id="call-timestamp" typeId="timestamp">
+			<channel id="timestamp" typeId="timestamp">
 				<label>Outgoing Call Timestamp</label>
 			</channel>
-			<channel id="call-name" typeId="call-name">
+			<channel id="name" typeId="name">
 				<label>Called Name</label>
 				<description>Name, if known, of the called person</description>
 			</channel>

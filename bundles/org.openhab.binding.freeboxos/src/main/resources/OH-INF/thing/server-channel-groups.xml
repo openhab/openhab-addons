@@ -20,16 +20,16 @@
 		<label>Server Settings</label>
 		<channels>
 			<channel id="wifi-status" typeId="wifi-status"/>
-			<channel id="ftp-status" typeId="ftp-status"/>
 			<channel id="upnpav-status" typeId="upnpav-status"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="samba">
-		<label>Windows File Sharing</label>
+	<channel-group-type id="file-sharing">
+		<label>File Sharing</label>
 		<channels>
-			<channel id="fileshare-status" typeId="fileshare-status"/>
-			<channel id="printershare-status" typeId="printershare-status"/>
+			<channel id="samba-file-status" typeId="samba-file-status"/>
+            <channel id="ftp-status" typeId="ftp-status"/>
+			<channel id="samba-printer-status" typeId="samba-printer-status"/>
 		</channels>
 	</channel-group-type>
 

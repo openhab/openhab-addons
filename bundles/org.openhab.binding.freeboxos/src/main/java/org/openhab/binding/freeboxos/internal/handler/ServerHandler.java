@@ -59,7 +59,7 @@ public class ServerHandler extends FreeDeviceHandler {
         fetchConnectionStatus();
         fetchUPnPAVConfig();
         fetchSambaConfig();
-        updateChannelOnOff(ACTIONS, FTP_STATUS, getApi().getFtpManager().getFtpStatus());
+        updateChannelOnOff(FILE_SHARING, FTP_STATUS, getApi().getFtpManager().getFtpStatus());
         updateChannelOnOff(ACTIONS, WIFI_STATUS, getApi().getWifiManager().getStatus());
     }
 
@@ -108,13 +108,13 @@ public class ServerHandler extends FreeDeviceHandler {
                         updateChannelOnOff(ACTIONS, WIFI_STATUS, getApi().getWifiManager().setStatus(enable));
                         break;
                     case FTP_STATUS:
-                        updateChannelOnOff(ACTIONS, FTP_STATUS, getApi().getFtpManager().changeFtpStatus(enable));
+                        updateChannelOnOff(FILE_SHARING, FTP_STATUS, getApi().getFtpManager().changeFtpStatus(enable));
                         break;
                     case SAMBA_FILE_STATUS:
-                        updateChannelOnOff(SAMBA, SAMBA_FILE_STATUS, enableSambaFileShare(enable));
+                        updateChannelOnOff(FILE_SHARING, SAMBA_FILE_STATUS, enableSambaFileShare(enable));
                         break;
                     case SAMBA_PRINTER_STATUS:
-                        updateChannelOnOff(SAMBA, SAMBA_PRINTER_STATUS, enableSambaPrintShare(enable));
+                        updateChannelOnOff(FILE_SHARING, SAMBA_PRINTER_STATUS, enableSambaPrintShare(enable));
                         break;
                     case UPNPAV_STATUS:
                         updateChannelOnOff(ACTIONS, UPNPAV_STATUS, getApi().getuPnPAVManager().changeStatus(enable));
@@ -128,8 +128,8 @@ public class ServerHandler extends FreeDeviceHandler {
 
     private void fetchSambaConfig() throws FreeboxException {
         SambaConfig response = getApi().getNetShareManager().getSambaConfig();
-        updateChannelOnOff(SAMBA, SAMBA_FILE_STATUS, response.isFileShareEnabled());
-        updateChannelOnOff(SAMBA, SAMBA_PRINTER_STATUS, response.isPrintShareEnabled());
+        updateChannelOnOff(FILE_SHARING, SAMBA_FILE_STATUS, response.isFileShareEnabled());
+        updateChannelOnOff(FILE_SHARING, SAMBA_PRINTER_STATUS, response.isPrintShareEnabled());
     }
 
     private boolean enableSambaFileShare(boolean enable) throws FreeboxException {

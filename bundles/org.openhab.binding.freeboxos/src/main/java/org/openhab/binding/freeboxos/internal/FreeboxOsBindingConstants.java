@@ -57,7 +57,7 @@ public class FreeboxOsBindingConstants {
     public static final String CONNECTION_STATUS = "connection-status";
     public static final String SYS_INFO = "sysinfo";
     public static final String ACTIONS = "actions";
-    public static final String SAMBA = "samba";
+    public static final String FILE_SHARING = "file-sharing";
     public static final String PLAYER_ACTIONS = "player-actions";
     public static final String CONNECTIVITY = "connectivity";
     public static final String STATE = "state";
@@ -90,18 +90,21 @@ public class FreeboxOsBindingConstants {
     public static final String PCT_BW_DOWN = "bandwidth-usage-down";
     public static final String ONHOOK = "onhook";
     public static final String RINGING = "ringing";
-    public static final String CALL_INFO = "call-info";
-    public static final String CALL_DURATION = "call-duration";
-    public static final String CALL_TIMESTAMP = "call-timestamp";
-    public static final String CALL_NAME = "call-name";
+
     public static final String FTP_STATUS = "ftp-status";
-    public static final String SAMBA_FILE_STATUS = "fileshare-status";
-    public static final String SAMBA_PRINTER_STATUS = "printershare-status";
+    public static final String SAMBA_FILE_STATUS = "samba-file-status";
+    public static final String SAMBA_PRINTER_STATUS = "samba-printer-status";
     public static final String REACHABLE = "reachable";
     public static final String LAST_SEEN = "last-seen";
     public static final String ALTERNATE_RING = "lcd-forced";
     public static final String DECT_ACTIVE = "dect-active";
     public static final String UPNPAV_STATUS = "upnpav-status";
+
+    // Call channels for groups Accepted, Missed and Outgoing
+    public static final String NUMBER = "number";
+    public static final String DURATION = "duration";
+    public static final String TIMESTAMP = "timestamp";
+    public static final String NAME = "name";
 
     // Freebox player channels
     public static final String AIRMEDIA_STATUS = "airmedia-status";

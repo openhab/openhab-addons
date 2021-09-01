@@ -16,8 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link SambaConfig} is the Java class used to map the "SambaConfig"
- * structure used by the Samba configuration API
+ * The {@link SambaConfig} is the Java class used to map answer
+ * returned by the Samba configuration API
  * https://dev.freebox.fr/sdk/os/network_share/#
  *
  * @author Laurent Garnier - Initial contribution

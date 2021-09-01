@@ -26,6 +26,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -111,6 +112,8 @@ public class RevolutionHandler extends ServerHandler {
             changeLcdBrightness(() -> config.getBrightness() + (command == IncreaseDecreaseType.INCREASE ? 1 : -1));
         } else if (command instanceof OnOffType) {
             changeLcdBrightness(() -> command == OnOffType.ON ? 100 : 0);
+        } else if (command instanceof QuantityType) {
+            changeLcdBrightness(() -> ((QuantityType<?>) command).intValue());
         } else if (command instanceof DecimalType || command instanceof PercentType) {
             changeLcdBrightness(() -> ((DecimalType) command).intValue());
         } else {
