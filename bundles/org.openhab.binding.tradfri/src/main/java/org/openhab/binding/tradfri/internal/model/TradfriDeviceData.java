@@ -47,7 +47,6 @@ public abstract class TradfriDeviceData {
         array.add(attributes);
         root.add(attributesNodeName, array);
         generalInfo = new JsonObject();
-        root.add(DEVICE, generalInfo);
     }
 
     public TradfriDeviceData(String attributesNodeName, JsonElement json) {
