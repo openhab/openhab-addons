@@ -62,25 +62,40 @@ Once created, at first execution, the station's properties will be filled with i
 
 ## Channels
 
-The AirQuality information that is retrieved is available as these channels:
+The AirQuality information that is retrieved for a given is available as these channels:
+
+### AQI Channels Group - Global Results
 
 | Channel ID      | Item Type            | Description                                  |
 |-----------------|----------------------|----------------------------------------------|
-| alert           | Number               | Alert level (*) associated to AQI Index.     |
-| aqiLevel        | Number               | Air Quality Index                            |
-| aqiColor        | Color                | Color associated to alert level.             |
-| aqiDescription  | String               | AQI Description                              |
-| pm25            | Number               | Fine particles pollution level (PM2.5)       |
-| pm10            | Number               | Coarse dust particles pollution level (PM10) |
-| o3              | Number               | Ozone level (O3)                             |
-| no2             | Number               | Nitrogen Dioxide level (NO2)                 |
-| co              | Number               | Carbon monoxide level (CO)                   |
-| so2             | Number               | Sulfur dioxide level (SO2)                   |
-| observationTime | DateTime             | Observation date and time                    |
+| alert-level     | Number               | Alert level (*) associated to AQI Index.     |
+| index           | Number               | Air Quality Index                            |
+| timestamp       | DateTime             | Observation date and time                    |
+| dominent        | String               | Dominent Pollutant                           |
+| icon            | Image                | Pictogram associated to alert-level          |
+| color           | Color                | Color associated to alert level.             |
+
+### Weather Channels Group
+
+| Channel ID      | Item Type            | Description                                  |
+|-----------------|----------------------|----------------------------------------------|
 | temperature     | Number:Temperature   | Temperature in Celsius degrees               |
 | pressure        | Number:Pressure      | Pressure level                               |
 | humidity        | Number:Dimensionless | Humidity level                               |
-| dominentpol     | String               | Dominent Polutor                             |
+| dew-point       | Number:Temperature   | Dew point temperature                        |
+| wind-speed      | Number:Speed         | Wind speed                                   |
+
+### Pollutants Channels Group
+
+For each pollutant (PM25, PM10, O3, NO2, CO, SO2) , depending upon availability of the station,
+you will be provided with the following informations
+
+| Channel ID      | Item Type            | Description                                  |
+|-----------------|----------------------|----------------------------------------------|
+| value           | Number:Density       | Measured density of the pollutant            |
+| index           | Number               | AQI Index of the single pollutant            |
+| alert-level     | Number               | Alert level associate to the index           |
+
 
 (*) The alert level is described by a color : 
 
@@ -93,33 +108,14 @@ The AirQuality information that is retrieved is available as these channels:
 | 4    | Purple | Very Unhealthy                 |
 | 5    | Maroon | Hazardous                      |
 
-`AQI Description` item provides a human-readable output that can be interpreted e.g. by MAP transformation.
-
-*Note that channels like* `pm25`, `pm10`, `o3`, `no2`, `co`, `so2` *can sometimes return* `UNDEF` *value due to the fact that some stations don't provide measurements for them.*
 
 ## Full Example
 
-airquality.map:
-
-```text
--=-
-UNDEF=No data
-NULL=No data
-NO_DATA=No data
-GOOD=Good
-MODERATE=Moderate
-UNHEALTHY_FSG=Unhealthy for sensitive groups
-UNHEALTHY=Unhealthy
-VERY_UNHEALTHY=Very unhealthy
-HAZARDOUS=Hazardous
-```
 
 airquality.things:
 
 ```java
-airquality:station:home "AirQuality" @ "Krakow" [ apiKey="XXXXXXXXXXXX", location="50.06465,19.94498", refresh=60 ]
-airquality:station:warsaw "AirQuality in Warsaw" [ apiKey="XXXXXXXXXXXX", location="52.22,21.01", refresh=60 ]
-airquality:station:brisbane "AirQuality in Brisbane" [ apiKey="XXXXXXXXXXXX", stationId=5115 ]
+airquality:station:local "AirQuality" @ "Krakow" [ location="50.06465,19.94498", refresh=60 ]
 ```
 
 airquality.items:
@@ -127,21 +123,19 @@ airquality.items:
 ```java
 Group AirQuality <flow>
 
-Number   Aqi_Level           "Air Quality Index" <flow> (AirQuality) { channel="airquality:station:home:aqiLevel" }
-String   Aqi_Description     "AQI Level [MAP(airquality.map):%s]" <flow> (AirQuality) { channel="airquality:station:home:aqiDescription" }
+Number   Aqi_Level           "Air Quality Index" <flow> (AirQuality) { channel="airquality:station:local:aqi#index" }
+Number   Aqi_Pm25            "PM\u2082\u2085 Level" <line> (AirQuality) { channel="airquality:station:local:pm25#value" }
+Number   Aqi_Pm10            "PM\u2081\u2080 Level" <line> (AirQuality) { channel="airquality:station:local:pm10#value" }
+Number   Aqi_O3              "O\u2083 Level" <line> (AirQuality) { channel="airquality:station:local:o3#value" }
+Number   Aqi_No2             "NO\u2082 Level" <line> (AirQuality) { channel="airquality:station:local:no2#value" }
+Number   Aqi_Co              "CO Level" <line> (AirQuality) { channel="airquality:station:local:co#value" }
+Number   Aqi_So2             "SO\u2082 Level" <line> (AirQuality) { channel="airquality:station:local:so2#value" }
 
-Number   Aqi_Pm25            "PM\u2082\u2085 Level" <line> (AirQuality) { channel="airquality:station:local:pm25" }
-Number   Aqi_Pm10            "PM\u2081\u2080 Level" <line> (AirQuality) { channel="airquality:station:local:pm10" }
-Number   Aqi_O3              "O\u2083 Level" <line> (AirQuality) { channel="airquality:station:local:o3" }
-Number   Aqi_No2             "NO\u2082 Level" <line> (AirQuality) { channel="airquality:station:local:no2" }
-Number   Aqi_Co              "CO Level" <line> (AirQuality) { channel="airquality:station:local:co" }
-Number   Aqi_So2             "SO\u2082 Level" <line> (AirQuality) { channel="airquality:station:local:so2" }
+DateTime Aqi_ObservationTime "Time of observation [%1$tH:%1$tM]" <clock> (AirQuality) { channel="airquality:station:local:aqi#timestamp" }
 
-DateTime Aqi_ObservationTime "Time of observation [%1$tH:%1$tM]" <clock> (AirQuality) { channel="airquality:station:local:observationTime" }
-
-Number:Temperature  Aqi_Temperature     "Temperature" <temperature> (AirQuality) { channel="airquality:station:local:temperature" }
-Number:Pressure     Aqi_Pressure        "Pressure" <pressure> (AirQuality) { channel="airquality:station:local:pressure" }
-Number:Dimensionless Aqi_Humidity        "Humidity" <humidity> (AirQuality) { channel="airquality:station:local:humidity" }
+Number:Temperature  Aqi_Temperature     "Temperature" <temperature> (AirQuality) { channel="airquality:station:local:weather#temperature" }
+Number:Pressure     Aqi_Pressure        "Pressure" <pressure> (AirQuality) { channel="airquality:station:local:weather#pressure" }
+Number:Dimensionless Aqi_Humidity        "Humidity" <humidity> (AirQuality) { channel="airquality:station:localweather#humidity" }
 ```
 
 airquality.sitemap:
