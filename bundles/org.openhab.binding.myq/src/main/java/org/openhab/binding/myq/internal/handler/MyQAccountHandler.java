@@ -127,8 +127,9 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
     public MyQAccountHandler(Bridge bridge, HttpClient httpClient, final OAuthFactory oAuthFactory) {
         super(bridge);
         this.httpClient = httpClient;
-        this.oAuthService = oAuthFactory.createOAuthClientService(getThing().toString(), LOGIN_TOKEN_URL,
+        oAuthService = oAuthFactory.createOAuthClientService(getThing().toString(), LOGIN_TOKEN_URL,
                 LOGIN_AUTHORIZE_URL, CLIENT_ID, CLIENT_SECRET, SCOPE, false);
+        oAuthService.addAccessTokenRefreshListener(this);
     }
 
     @Override
