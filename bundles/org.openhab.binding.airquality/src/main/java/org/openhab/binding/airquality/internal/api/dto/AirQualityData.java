@@ -75,7 +75,6 @@ public class AirQualityData {
     /**
      * Collects a list of attributions (vendors making data available)
      * and transforms it into readable string.
-     * Currently displayed in Thing Status description when ONLINE
      *
      * @return {String}
      */
@@ -93,7 +92,6 @@ public class AirQualityData {
     }
 
     public double getIaqiValue(Pollutant pollutant) {
-        AirQualityValue result = iaqi.get(pollutant.name().toLowerCase());
-        return result != null ? result.getValue() : -1;
+        return getIaqiValue(pollutant.name().toLowerCase());
     }
 }

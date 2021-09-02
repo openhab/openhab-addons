@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class Attribute {
-
     private @NonNullByDefault({}) String name;
     private @Nullable String url;
     private @Nullable String logo;

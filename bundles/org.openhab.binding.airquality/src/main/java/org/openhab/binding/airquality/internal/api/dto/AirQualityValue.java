@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AirQualityValue {
-
     private double v;
 
     public double getValue() {

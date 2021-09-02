@@ -30,7 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airquality.internal.AirQualityException;
 import org.openhab.binding.airquality.internal.api.ApiBridge;
-import org.openhab.binding.airquality.internal.api.Category;
+import org.openhab.binding.airquality.internal.api.Appreciation;
 import org.openhab.binding.airquality.internal.api.Index;
 import org.openhab.binding.airquality.internal.api.Pollutant;
 import org.openhab.binding.airquality.internal.api.SensitiveGroup;
@@ -56,6 +56,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -142,17 +143,16 @@ public class AirQualityHandler extends BaseThingHandler {
         getAirQualityData().ifPresent(data -> {
             getThing().getChannels().stream().filter(channel -> isLinked(channel.getUID().getId())).forEach(channel -> {
                 State state;
-                String channelTypeUID = channel.getChannelTypeUID().getId().toString();
-                if (SENSITIVE.equals(channelTypeUID)) {
+                ChannelUID channelUID = channel.getUID();
+                ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+                if (channelTypeUID != null && SENSITIVE.equals(channelTypeUID.getId().toString())) {
                     SensitiveGroupConfiguration configuration = channel.getConfiguration()
                             .as(SensitiveGroupConfiguration.class);
                     state = getSensitive(configuration.asSensitiveGroup(), data);
                 } else {
-                    String channelId = channel.getUID().getIdWithoutGroup();
-                    String groupId = channel.getUID().getGroupId();
-                    state = getValue(channelId, groupId, data);
+                    state = getValue(channelUID.getIdWithoutGroup(), channelUID.getGroupId(), data);
                 }
-                updateState(channel.getUID(), state);
+                updateState(channelUID, state);
             });
         });
     }
@@ -219,7 +219,7 @@ public class AirQualityHandler extends BaseThingHandler {
 
     private State getSensitive(@Nullable SensitiveGroup sensitiveGroup, AirQualityData data) {
         if (sensitiveGroup != null) {
-            int threshHold = Category.UNHEALTHY_FSG.ordinal();
+            int threshHold = Appreciation.UNHEALTHY_FSG.ordinal();
             for (Pollutant pollutant : Pollutant.values()) {
                 Index index = Index.find(data.getIaqiValue(pollutant));
                 if (index != null && pollutant.getSensitiveGroups().contains(sensitiveGroup)

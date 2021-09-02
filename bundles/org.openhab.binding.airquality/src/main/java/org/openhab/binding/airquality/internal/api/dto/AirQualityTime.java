@@ -21,8 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link AirQualityTime} is responsible for storing
  * the "time" node from the waqi.org JSON response
  *
- * @author Kuba Wolanin - Initial contribution
- * @author Gaël L'hopital - Use ZonedDateTime instead of Calendar
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class AirQualityTime {

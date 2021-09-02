@@ -12,22 +12,22 @@
 		<channel-groups>
 			<channel-group id="aqi" typeId="aqi"/>
 			<channel-group id="weather" typeId="weather"/>
-			<channel-group id="pm25" typeId="pollutor-density">
+			<channel-group id="pm25" typeId="pollutant-density">
 				<label>@text/pm25ChannelGroupLabel</label>
 			</channel-group>
-			<channel-group id="pm10" typeId="pollutor-density">
+			<channel-group id="pm10" typeId="pollutant-density">
 				<label>@text/pm10ChannelGroupLabel</label>
 			</channel-group>
-			<channel-group id="no2" typeId="pollutor-ppb">
+			<channel-group id="no2" typeId="pollutant-ppb">
 				<label>@text/no2ChannelGroupLabel</label>
 			</channel-group>
-			<channel-group id="so2" typeId="pollutor-ppb">
+			<channel-group id="so2" typeId="pollutant-ppb">
 				<label>@text/so2ChannelGroupLabel</label>
 			</channel-group>
-			<channel-group id="co" typeId="pollutor-ppb">
+			<channel-group id="co" typeId="pollutant-ppb">
 				<label>@text/coChannelGroupLabel</label>
 			</channel-group>
-			<channel-group id="o3" typeId="pollutor-ppb">
+			<channel-group id="o3" typeId="pollutant-ppb">
 				<label>@text/o3ChannelGroupLabel</label>
 			</channel-group>
 		</channel-groups>
@@ -75,8 +75,8 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="pollutor-density">
-		<label>Pollutor</label>
+	<channel-group-type id="pollutant-density">
+		<label>Pollutant</label>
 		<channels>
 			<channel id="value" typeId="density-value"/>
 			<channel id="index" typeId="index-adv"/>
@@ -84,8 +84,8 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="pollutor-ppb">
-		<label>Pollutor</label>
+	<channel-group-type id="pollutant-ppb">
+		<label>Pollutant</label>
 		<channels>
 			<channel id="value" typeId="ppb-value"/>
 			<channel id="index" typeId="index-adv"/>
@@ -164,12 +164,12 @@
 		</tags>
 		<state readOnly="true">
 			<options>
-				<option value="pm25">@text/polluantPm25</option>
-				<option value="pm10">@text/polluantPm10</option>
-				<option value="o3">@text/polluantO3</option>
-				<option value="no2">@text/polluantNO2</option>
-				<option value="co">@text/polluantCO</option>
-				<option value="so2">@text/polluantSO2</option>
+				<option value="pm25">@text/pollutantPm25</option>
+				<option value="pm10">@text/pollutantPm10</option>
+				<option value="o3">@text/pollutantO3</option>
+				<option value="no2">@text/pollutantNO2</option>
+				<option value="co">@text/pollutantCO</option>
+				<option value="so2">@text/pollutantSO2</option>
 			</options>
 		</state>
 	</channel-type>

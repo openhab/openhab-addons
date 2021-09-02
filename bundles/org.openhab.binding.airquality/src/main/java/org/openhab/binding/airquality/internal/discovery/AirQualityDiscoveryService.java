@@ -15,7 +15,6 @@ package org.openhab.binding.airquality.internal.discovery;
 import static org.openhab.binding.airquality.internal.AirQualityBindingConstants.*;
 import static org.openhab.binding.airquality.internal.config.AirQualityConfiguration.LOCATION;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +29,6 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,17 +56,6 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService {
     public AirQualityDiscoveryService(@Reference LocationProvider locationProvider) {
         super(SUPPORTED_THING_TYPES, DISCOVER_TIMEOUT_SECONDS, true);
         this.locationProvider = locationProvider;
-    }
-
-    @Override
-    protected void activate(@Nullable Map<String, Object> configProperties) {
-        super.activate(configProperties);
-    }
-
-    @Override
-    @Modified
-    protected void modified(@Nullable Map<String, Object> configProperties) {
-        super.modified(configProperties);
     }
 
     @Override
@@ -109,7 +96,7 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping Air Quality background discovery");
-        ScheduledFuture<?> job = this.discoveryJob;
+        ScheduledFuture<?> job = discoveryJob;
         if (job != null && !job.isCancelled()) {
             if (job.cancel(true)) {
                 discoveryJob = null;

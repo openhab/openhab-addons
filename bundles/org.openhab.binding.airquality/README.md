@@ -22,7 +22,12 @@ You will have complete default configuration with your apiKey.
 
 ## Binding Configuration
 
-The binding has no configuration options, all configuration is done at Thing level.
+The binding configuration only holds the api key : 
+
+| Parameter | Description                                                             |
+|-----------|-------------------------------------------------------------------------|
+| apiKey    | Data-platform token to access the AQIcn.org service. Mandatory.         |
+
 
 ## Thing Configuration
 
@@ -30,7 +35,6 @@ The thing has a few configuration parameters:
 
 | Parameter | Description                                                             |
 |-----------|-------------------------------------------------------------------------|
-| apiKey    | Data-platform token to access the AQIcn.org service. Mandatory.         |
 | location  | Geo coordinates to be considered by the service.                        |
 | stationId | Unique ID of the measuring station.                                     |
 | refresh   | Refresh interval in minutes. Optional, the default value is 60 minutes. |
@@ -50,6 +54,7 @@ https://api.waqi.info/search/?token=TOKEN&keyword=NAME, replacing TOKEN by your 
 ### Thing properties
 
 Once created, at first execution, the station's properties will be filled with informations gathered from the web service :
+
 - Nearest measuring station location
 - Measuring station ID
 - Latitude/longitude of measuring station

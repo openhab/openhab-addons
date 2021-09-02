@@ -14,12 +14,7 @@ package org.openhab.binding.airquality.internal;
 
 import static org.openhab.binding.airquality.internal.AirQualityBindingConstants.*;
 
-import java.util.Collections;
-import java.util.Dictionary;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -58,19 +53,20 @@ public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
     private final AirQualityBindingConfiguration configuration = new AirQualityBindingConfiguration();
     private final ApiBridge apiBridge = new ApiBridge(configuration);
 
+    @SuppressWarnings("unchecked")
     @Activate
     public AirQualityHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider,
-            @Reference LocationProvider locationProvider, ComponentContext componentContext) {
+            final @Reference LocationProvider locationProvider, final ComponentContext componentContext) {
         this.timeZoneProvider = timeZoneProvider;
         this.locationProvider = locationProvider;
-        modified(ComponentContextToMap(componentContext));
+        modified((Map<@Nullable String, @Nullable Object>) componentContext.getProperties());
     }
 
     @Modified
-    public void modified(@Nullable Map<String, Object> config) {
+    public void modified(@Nullable Map<@Nullable String, @Nullable Object> config) {
         try {
-            configuration.update(config == null ? configuration
-                    : new Configuration(config).as(AirQualityBindingConfiguration.class));
+            configuration.update(config != null ? new Configuration(config).as(AirQualityBindingConfiguration.class)
+                    : configuration);
             logger.debug("Updated binding configuration to {}", configuration);
         } catch (AirQualityException e) {
             logger.warn("Error in configuration : {}", e.getMessage());
@@ -89,12 +85,5 @@ public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
         return THING_TYPE_AQI.equals(thingTypeUID)
                 ? new AirQualityHandler(thing, apiBridge, timeZoneProvider, locationProvider)
                 : null;
-    }
-
-    public static Map<String, Object> ComponentContextToMap(ComponentContext componentContext) {
-        Dictionary<String, Object> properties = componentContext.getProperties();
-        List<String> keys = Collections.list(properties.keys());
-        Map<String, Object> dictCopy = keys.stream().collect(Collectors.toMap(Function.identity(), properties::get));
-        return dictCopy;
     }
 }

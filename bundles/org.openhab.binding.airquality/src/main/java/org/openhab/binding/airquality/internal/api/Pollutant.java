@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.airquality.internal.api;
 
 import static org.openhab.binding.airquality.internal.api.Index.*;
@@ -16,7 +28,10 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * List of pollutant codes and properties.
+ * The {@link Pollutant} enum lists all measures
+ * of the AQI Level associated with their standard color.
+ *
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public enum Pollutant {
@@ -74,9 +89,10 @@ public enum Pollutant {
     public State toQuantity(double idx) {
         for (Concentration concentration : breakpoints) {
             if (concentration.getIndex().contains(idx)) {
-                BigDecimal quantity = BigDecimal.valueOf(concentration.getSpan() / concentration.getIndex().getSpan()
-                        * (idx - concentration.getIndex().getMin()) + concentration.getMin());
-                quantity = quantity.setScale(scale, RoundingMode.HALF_UP);
+                BigDecimal quantity = BigDecimal
+                        .valueOf(concentration.getSpan() / concentration.getIndex().getSpan()
+                                * (idx - concentration.getIndex().getMin()) + concentration.getMin())
+                        .setScale(scale, RoundingMode.HALF_UP);
                 return new QuantityType<>(quantity, unit);
             }
         }
