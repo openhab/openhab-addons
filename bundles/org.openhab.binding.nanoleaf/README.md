@@ -13,27 +13,27 @@ The binding uses the [Nanoleaf OpenAPI](https://forum.nanoleaf.me/docs/openapi),
 
 Nanoleaf provides a bunch of devices of which some are connected to Wifi whereas other use the new Thread Technology. This binding only supports devices that are connected through Wifi.
 
-Currently Nanoleaf's "Light Panels" and "Canvas" devices are supported.
+Currently Nanoleaf's "Light Panels" and "Canvas/Shapes" devices are supported.
 
 The binding supports two thing types: controller and lightpanel.
 
-The controller thing is the bridge for the individually attached panels/canvas and can be perceived as the Nanoleaf device at the wall as a whole (either called "light panels" or "canvas" by Nanoleaf).
+The controller thing is the bridge for the individually attached panels/canvas and can be perceived as the Nanoleaf device at the wall as a whole (either called "light panels", "canvas" or "shapes" by Nanoleaf).
 With the controller thing you can control channels which affect all panels, e.g. selecting effects or setting the brightness.
 
 The lightpanel (singular) thing controls one of the individual panels/canvas that are connected to each other.
 Each individual panel has therefore its own id assigned to it.
-You can set the **color** for each panel and in the case of a Nanoleaf canvas you can even detect single and double **touch events** related to an individual panel which opens a whole new world of controlling any other device within your openHAB environment.
+You can set the **color** for each panel and in the case of a Nanoleaf Canvas or Shapes you can even detect single / double **touch events** related to an individual panel or **swipe events** on the whole device which opens a whole new world of controlling any other device within your openHAB environment.
 
 
 | Nanoleaf Name          | Type | Description                                                | supported | touch support |
 | ---------------------- | ---- | ---------------------------------------------------------- | --------- | ------------- |
-| Light Panels           | NL22 | Triangles 1st Generation                                   |     X     |      (-)      |  
+| Light Panels           | NL22 | Triangles 1st Generation                                   |     X     |       -       |  
 | Shapes Triangle        | NL42 | Triangles 2nd Generation (rounded edges)                   |     X     |       X       |
 | Shapes Hexagon         | NL42 | Hexagons                                                   |     X     |       X       |
-| Shapes Mini Triangles  |  ??  | Mini Triangles                                             |     ?     |       ?       |
+| Shapes Mini Triangles  | NL42 | Mini Triangles                                             |     x     |       X       |
 | Canvas                 | NL29 | Squares                                                    |     X     |       X       |
 
- x  = Supported  (x) = Supported but only tested by community   (-) = unknown (no device available to test)
+ x  = Supported  (-) = unknown (no device available to test)
 
 ## Discovery
 
@@ -132,7 +132,7 @@ The controller bridge has the following channels:
 | rhythmState         | Switch    | Connection state of the rhythm module                                  | Yes       |
 | rhythmActive        | Switch    | Activity state of the rhythm module                                    | Yes       |
 | rhythmMode          | Number    | Sound source for the rhythm module. 0=Microphone, 1=Aux cable          | No        |
-| swipe               | Trigger   | [Canvas Only] Detects Swipes over the panel. LEFT, RIGHT, UP, DOWN events are supported.          | YES        |
+| swipe               | Trigger   | [Canvas / Shapes Only] Detects Swipes over the panel. LEFT, RIGHT, UP, DOWN events are supported.          | YES        |
 
 
 A lightpanel thing has the following channels:
@@ -140,7 +140,7 @@ A lightpanel thing has the following channels:
 | Channel             | Type      | Description                                                            | Read Only |
 |---------------------|-----------|------------------------------------------------------------------------|-----------|
 | color               | Color     | Color of the individual light panel                                    | No        |
-| tap                 | Trigger   | [Canvas Only] Sends events of gestures. SHORT_PRESSED and DOUBLE_PRESSED events are supported.  | Yes       |
+| tap                 | Trigger   | [Canvas / Shapes Only] Sends events of gestures. SHORT_PRESSED and DOUBLE_PRESSED events are supported.  | Yes       |
 
 The color channels support full color control with hue, saturation and brightness values.
 For example, brightness of *all* panels at once can be controlled by defining a dimmer item for the color channel of the *controller thing*.
@@ -331,8 +331,8 @@ var oldEffect = null
 The idea behind that rule is to use one panel to switch on / off brightness control for a specific openhab item.
  
  - In this case the panel with the id=36604 has been created as a thing. 
- - The controller color item is named SZNanoCanvas54B2_Color
- - The controller effect item that holds the last chosen effect is SZNanoCanvas54B2_Effect
+ - The controller color item is named SZNanoCanvas_Color
+ - The controller effect item that holds the last chosen effect is SZNanoCanvas_Effect
  - Also that thing has channel to control the color of the panel
  
 We use that specific panel to toggle the brightness swipe mode on or off.
@@ -347,21 +347,21 @@ tapping different panels before.
 
 rule "Enable swipe brightness mode"
 when
-    Channel "nanoleaf:lightpanel:645E3A484A83:36604:tap" triggered SHORT_PRESSED
+    Channel "nanoleaf:lightpanel:645E3A484FFF:31104:tap" triggered SHORT_PRESSED
 then
     if (brightnessMode == OFF || brightnessMode === null) {
         brightnessMode = ON
-        oldEffect = SZNanoCanvas54B2_Effect.state.toString
-        SZNanoCanvas54B2_Color.sendCommand(new HSBType(new DecimalType(0), new PercentType(100), new PercentType(100)))
+        oldEffect = SZNanoCanvas_Effect.state.toString
+        SZNanoCanvas_Color.sendCommand(new HSBType(new DecimalType(0), new PercentType(100), new PercentType(100)))
     } else {
         brightnessMode = OFF
-        sendCommand("SZNanoCanvas54B2_Effect",oldEffect)
+        sendCommand("SZNanoCanvas_Effect",oldEffect)
     }    
 end
 
 rule "Swipe Nano to control brightness"
 when
-    Channel "nanoleaf:controller:645E3A484A83:swipe" triggered 
+    Channel "nanoleaf:controller:645E3A484FFF:swipe" triggered 
 then
     // Note: you can even control a rollershutter instead of a light dimmer
     var dimItem = MyLampDimmerItem
