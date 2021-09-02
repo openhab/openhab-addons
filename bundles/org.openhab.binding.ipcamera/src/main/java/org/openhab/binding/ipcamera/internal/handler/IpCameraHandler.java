@@ -675,21 +675,16 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void startStreamServer() {
-        servlet = new CameraServlet(this, httpService);
+        if (servlet == null) {
+            servlet = new CameraServlet(this, httpService);
+        }
+
         updateState(CHANNEL_HLS_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
                 + getThing().getUID().getId() + "/ipcamera.m3u8"));
         updateState(CHANNEL_IMAGE_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
                 + getThing().getUID().getId() + "/ipcamera.jpg"));
         updateState(CHANNEL_MJPEG_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
                 + getThing().getUID().getId() + "/ipcamera.mjpeg"));
-        if (thing.getThingTypeUID().getId().equals(INSTAR_THING)) {
-            logger.debug("Setting up the Alarm Server settings in the camera now");
-            sendHttpGET(
-                    "/param.cgi?cmd=setmdalarm&-aname=server2&-switch=on&-interval=1&cmd=setalarmserverattr&-as_index=3&-as_server="
-                            + hostIp + "&-as_port=" + SERVLET_PORT + "&-as_path=/ipcamera/"
-                            + getThing().getUID().getId()
-                            + "/instar&-as_queryattr1=&-as_queryval1=&-as_queryattr2=&-as_queryval2=&-as_queryattr3=&-as_queryval3=&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0");
-        }
     }
 
     public void openCamerasStream() {
@@ -1322,7 +1317,14 @@ public class IpCameraHandler extends BaseThingHandler {
         if (localFuture != null) {
             localFuture.cancel(false);
         }
-
+        if (thing.getThingTypeUID().getId().equals(INSTAR_THING)) {
+            logger.debug("Setting up the Alarm Server settings in the camera now");
+            sendHttpGET(
+                    "/param.cgi?cmd=setmdalarm&-aname=server2&-switch=on&-interval=1&cmd=setalarmserverattr&-as_index=3&-as_server="
+                            + hostIp + "&-as_port=" + SERVLET_PORT + "&-as_path=/ipcamera/"
+                            + getThing().getUID().getId()
+                            + "/instar&-as_queryattr1=&-as_queryval1=&-as_queryattr2=&-as_queryval2=&-as_queryattr3=&-as_queryval3=&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0");
+        }
         if (cameraConfig.getGifPreroll() > 0 || cameraConfig.getUpdateImageWhen().contains("1")) {
             snapshotPolling = true;
             snapshotJob = threadPool.scheduleWithFixedDelay(this::snapshotRunnable, 1000, cameraConfig.getPollTime(),
@@ -1688,9 +1690,6 @@ public class IpCameraHandler extends BaseThingHandler {
         }
         channelTrackingMap.clear();
         onvifCamera.disconnect();
-        if (servlet != null) {
-            servlet.dispose();
-        }
     }
 
     public String getWhiteList() {

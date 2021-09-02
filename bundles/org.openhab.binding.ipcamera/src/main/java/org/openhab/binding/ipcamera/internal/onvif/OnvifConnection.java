@@ -850,12 +850,10 @@ public class OnvifConnection {
                 logger.warn("ONVIF was not cleanly shutdown, due to being interrupted");
             } finally {
                 logger.debug("Eventloop is shutdown:{}", mainEventLoopGroup.isShutdown());
-                mainEventLoopGroup = new NioEventLoopGroup();
                 bootstrap = null;
             }
         }
         threadPool.shutdown();
-        threadPool = Executors.newScheduledThreadPool(2);
     }
 
     public void disconnect() {

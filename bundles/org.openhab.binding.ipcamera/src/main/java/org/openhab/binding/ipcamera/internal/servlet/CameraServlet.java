@@ -57,6 +57,10 @@ public class CameraServlet extends HttpServlet {
     public CameraServlet(IpCameraHandler ipCameraHandler, HttpService httpService) {
         handler = ipCameraHandler;
         this.httpService = httpService;
+        startListening();
+    }
+
+    public void startListening() {
         try {
             httpService.registerServlet("/ipcamera/" + handler.getThing().getUID().getId(), this, null,
                     httpService.createDefaultHttpContext());
@@ -138,9 +142,6 @@ public class CameraServlet extends HttpServlet {
                 sendFile(resp, pathInfo, "image/gif");
                 return;
             case "/ipcamera.jpg":
-                if (!handler.snapshotPolling && handler.snapshotUri != "") {
-                    handler.sendHttpGET(handler.snapshotUri);
-                }
                 sendSnapshotImage(resp, "image/jpg");
                 return;
             case "/snapshots.mjpeg":
@@ -220,7 +221,6 @@ public class CameraServlet extends HttpServlet {
                         autofpsStreamsOpen--;
                         if (autofpsStreamsOpen == 0) {
                             handler.streamingAutoFps = false;
-                            handler.stopSnapshotPolling();
                             logger.debug("All autofps.mjpeg streams have stopped.");
                         }
                         return;
@@ -298,9 +298,10 @@ public class CameraServlet extends HttpServlet {
     }
 
     public void dispose() {
-        openStreams.closeAllStreams();
         try {
+            openStreams.closeAllStreams();
             httpService.unregister("/ipcamera/" + handler.getThing().getUID().getId());
+            this.destroy();
         } catch (IllegalArgumentException e) {
             logger.debug("Unregistration of servlet failed:{}", e.getMessage());
         }
