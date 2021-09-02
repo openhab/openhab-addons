@@ -12,7 +12,31 @@
  */
 package org.openhab.binding.nanoleaf.internal.handler;
 
-import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.API_ADD_USER;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.API_DELETE_USER;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.API_EFFECT;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.API_EVENTS;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.API_GET_CONTROLLER_INFO;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.API_MIN_FW_VER_LIGHTPANELS;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.API_RHYTHM_MODE;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.API_SET_VALUE;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.BRIGHTNESS_STEP_SIZE;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.CHANNEL_COLOR;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.CHANNEL_COLOR_MODE;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.CHANNEL_COLOR_TEMPERATURE;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.CHANNEL_COLOR_TEMPERATURE_ABS;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.CHANNEL_EFFECT;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.CHANNEL_RHYTHM_ACTIVE;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.CHANNEL_RHYTHM_MODE;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.CHANNEL_RHYTHM_STATE;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.CHANNEL_SWIPE;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.CHANNEL_SWIPE_EVENT_DOWN;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.CHANNEL_SWIPE_EVENT_LEFT;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.CHANNEL_SWIPE_EVENT_RIGHT;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.CHANNEL_SWIPE_EVENT_UP;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.CONTROLLER_PANEL_ID;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.DEVICE_TYPE_LIGHTPANELS;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.DEVICE_TYPE_TOUCHSUPPORT;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -66,7 +90,11 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;

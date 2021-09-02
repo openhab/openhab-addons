@@ -321,7 +321,7 @@ then
     }
 end
 
-// This a complex rule controlling an item (e.g. a lamp) by swiping the nanoleaf but only if the swipe action has been triggered to become active.
+// This is a complex rule controlling an item (e.g. a lamp) by swiping the nanoleaf but only if the swipe action has been triggered to become active.
 
 var brightnessMode = null
 var oldEffect = null

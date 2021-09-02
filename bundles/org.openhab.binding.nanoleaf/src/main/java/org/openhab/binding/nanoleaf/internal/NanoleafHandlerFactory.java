@@ -44,15 +44,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = { "binding.nanoleaf" }, service = { ThingHandlerFactory.class })
 public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS;
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(NanoleafBindingConstants.THING_TYPE_LIGHT_PANEL, NanoleafBindingConstants.THING_TYPE_CONTROLLER)
+                    .collect(Collectors.toSet()));
+
     private final Logger logger = LoggerFactory.getLogger(NanoleafHandlerFactory.class);
     private final HttpClientFactory httpClientFactory;
-
-    static {
-        SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet((Set) Stream
-                .of(NanoleafBindingConstants.THING_TYPE_LIGHT_PANEL, NanoleafBindingConstants.THING_TYPE_CONTROLLER)
-                .collect(Collectors.toSet()));
-    }
 
     @Activate
     public NanoleafHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
