@@ -81,13 +81,13 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService {
                     previousLocation = currentLocation;
                 }
             }, 0, LOCATION_CHANGED_CHECK_INTERVAL_MIN, TimeUnit.MINUTES);
-            logger.debug("Scheduled Air Qualitylocation-changed job every {} minutes",
+            logger.debug("Scheduled Air Quality location-changed job every {} minutes",
                     LOCATION_CHANGED_CHECK_INTERVAL_MIN);
         }
     }
 
     public void createResults(PointType location) {
-        ThingUID localAirQualityThing = new ThingUID(THING_TYPE_AQI, LOCAL);
+        ThingUID localAirQualityThing = new ThingUID(THING_TYPE_STATION, LOCAL);
         thingDiscovered(DiscoveryResultBuilder.create(localAirQualityThing).withLabel("Local Air Quality")
                 .withProperty(LOCATION, String.format("%s,%s", location.getLatitude(), location.getLongitude()))
                 .build());

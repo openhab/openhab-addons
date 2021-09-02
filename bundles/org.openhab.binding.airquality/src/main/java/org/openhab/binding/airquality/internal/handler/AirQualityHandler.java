@@ -33,7 +33,7 @@ import org.openhab.binding.airquality.internal.api.ApiBridge;
 import org.openhab.binding.airquality.internal.api.Appreciation;
 import org.openhab.binding.airquality.internal.api.Index;
 import org.openhab.binding.airquality.internal.api.Pollutant;
-import org.openhab.binding.airquality.internal.api.SensitiveGroup;
+import org.openhab.binding.airquality.internal.api.Pollutant.SensitiveGroup;
 import org.openhab.binding.airquality.internal.api.dto.AirQualityData;
 import org.openhab.binding.airquality.internal.config.AirQualityConfiguration;
 import org.openhab.binding.airquality.internal.config.SensitiveGroupConfiguration;
@@ -208,7 +208,7 @@ public class AirQualityHandler extends BaseThingHandler {
                 case ICON:
                     byte[] bytes = getResource(String.format("picto/%s.svg", index.getCategory().name().toLowerCase()));
                     return bytes != null ? new RawType(bytes, "image/svg+xml") : UnDefType.UNDEF;
-                case AQI_COLOR:
+                case COLOR:
                     return index.getCategory().getColor();
                 case ALERT_LEVEL:
                     return new DecimalType(index.getCategory().ordinal());

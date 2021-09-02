@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Łukasz Dywicki - Initial contribution
  */
 @NonNullByDefault
-public class Attribute {
+public class Attribution {
     private @NonNullByDefault({}) String name;
     private @Nullable String url;
     private @Nullable String logo;

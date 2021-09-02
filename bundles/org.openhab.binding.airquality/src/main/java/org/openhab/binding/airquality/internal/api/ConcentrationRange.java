@@ -15,33 +15,31 @@ package org.openhab.binding.airquality.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Concentration} is responsible to store the range of
+ * The {@link ConcentrationRange} is responsible to store the range of
  * a given physical measure associated with the corresponding AQI
  * index.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class Concentration {
+public class ConcentrationRange {
     private final double min;
     private final double span;
     private final Index index;
 
-    public Concentration(double min, double max, Index index) {
+    public ConcentrationRange(double min, double max, Index index) {
         this.min = min;
         this.span = max - min;
         this.index = index;
     }
 
-    public double getMin() {
-        return min;
-    }
-
-    public double getSpan() {
-        return span;
-    }
-
-    public Index getIndex() {
-        return index;
+    /*
+     * Computes the concentration corresponding to the index
+     * if contained in the range
+     *
+     * @return : a physical concentration or -1 if not in range
+     */
+    public double getConcentration(double idx) {
+        return index.contains(idx) ? span / index.getSpan() * (idx - index.getMin()) + min : -1;
     }
 }

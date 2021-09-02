@@ -21,17 +21,13 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link AirQualityBinding} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Kuba Wolanin - Initial contribution
- * @author Łukasz Dywicki - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class AirQualityBindingConstants {
 
     private static final String BINDING_ID = "airquality";
     public static final String LOCAL = "local";
-
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_AQI = new ThingTypeUID(BINDING_ID, "aqi");
 
     // List of thing properties
     public static final String ATTRIBUTIONS = "Attributions";
@@ -53,7 +49,9 @@ public class AirQualityBindingConstants {
     public static final String TIMESTAMP = "timestamp";
     public static final String DOMINENT = "dominent";
     public static final String ICON = "icon";
-    public static final String AQI_COLOR = "color";
+    public static final String COLOR = "color";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_AQI);
+    // Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_STATION = new ThingTypeUID(BINDING_ID, "station");
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_STATION);
 }

@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Air Quality Thing -->
-	<thing-type id="aqi" extensible="sensitive-group">
+	<thing-type id="station" extensible="sensitive-group">
 		<label>@text/aqiLabel</label>
 		<description>@text/aqiDescription</description>
 
@@ -158,7 +158,6 @@
 	<channel-type id="dominent">
 		<item-type>String</item-type>
 		<label>@text/dominentChannelLabel</label>
-		<category>polutor</category>
 		<tags>
 			<tag>Status</tag>
 		</tags>

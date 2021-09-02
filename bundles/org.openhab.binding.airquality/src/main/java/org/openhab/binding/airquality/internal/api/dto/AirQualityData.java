@@ -32,7 +32,7 @@ public class AirQualityData {
 
     private @NonNullByDefault({}) AirQualityTime time;
     private @NonNullByDefault({}) AirQualityCity city;
-    private List<Attribute> attributions = List.of();
+    private List<Attribution> attributions = List.of();
     private Map<String, AirQualityValue> iaqi = Map.of();
     private String dominentpol = "";
 
@@ -79,7 +79,7 @@ public class AirQualityData {
      * @return {String}
      */
     public String getAttributions() {
-        return attributions.stream().map(Attribute::getName).collect(Collectors.joining(", "));
+        return attributions.stream().map(Attribution::getName).collect(Collectors.joining(", "));
     }
 
     public String getDominentPol() {

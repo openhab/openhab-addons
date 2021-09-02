@@ -13,15 +13,20 @@
 package org.openhab.binding.airquality.internal.api;
 
 import java.io.IOException;
+import java.util.Dictionary;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airquality.internal.AirQualityException;
 import org.openhab.binding.airquality.internal.api.dto.AirQualityData;
 import org.openhab.binding.airquality.internal.api.dto.AirQualityResponse;
 import org.openhab.binding.airquality.internal.api.dto.AirQualityResponse.ResponseStatus;
-import org.openhab.binding.airquality.internal.config.AirQualityBindingConfiguration;
 import org.openhab.core.io.net.http.HttpUtil;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,16 +40,34 @@ import com.google.gson.JsonSyntaxException;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
+@Component(service = ApiBridge.class, configurationPid = "binding.airquality")
 public class ApiBridge {
     private static final Gson GSON = new Gson();
     private static final String URL = "http://api.waqi.info/feed/%query%/?token=%apiKey%";
+    private static final String KEY_ERROR = "Null or empty API key";
     private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(30);
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridge.class);
-    private final AirQualityBindingConfiguration config;
+    private @Nullable String apiKey;
 
-    public ApiBridge(AirQualityBindingConfiguration configuration) {
-        this.config = configuration;
+    @Activate
+    protected void activate(ComponentContext componentContext) {
+        activateOrModifyService(componentContext);
+    }
+
+    @Modified
+    protected void modified(ComponentContext componentContext) {
+        activateOrModifyService(componentContext);
+    }
+
+    private void activateOrModifyService(ComponentContext componentContext) {
+        Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
+        String apiKey = (String) properties.get("apiKey");
+        if (apiKey != null && apiKey.length() != 0) {
+            this.apiKey = apiKey;
+        } else {
+            logger.warn(KEY_ERROR);
+        }
     }
 
     /**
@@ -53,13 +76,12 @@ public class ApiBridge {
      * @return a valid URL for the aqicn.org service
      * @throws AirQualityException
      */
-    private String buildRequestURL(int stationId, String location) throws AirQualityException {
-        config.checkValid();
+    private String buildRequestURL(String key, int stationId, String location) {
         String geoStr = stationId != 0 ? String.format("@%d", stationId)
                 : String.format("geo:%s",
                         location.replace(" ", "").replace(",", ";").replace("\"", "").replace("'", "").trim());
 
-        return URL.replace("%apiKey%", config.apiKey).replace("%query%", geoStr);
+        return URL.replace("%apiKey%", key).replace("%query%", geoStr);
     }
 
     /**
@@ -69,7 +91,12 @@ public class ApiBridge {
      * @throws AirQualityException
      */
     public AirQualityData getData(int stationId, String location, int retryCounter) throws AirQualityException {
-        String urlStr = buildRequestURL(stationId, location);
+        String localKey = apiKey;
+        if (localKey == null) {
+            throw new AirQualityException(KEY_ERROR);
+        }
+
+        String urlStr = buildRequestURL(localKey, stationId, location);
         logger.debug("URL = {}", urlStr);
 
         try {
@@ -78,8 +105,7 @@ public class ApiBridge {
             AirQualityResponse result = GSON.fromJson(response, AirQualityResponse.class);
             if (result != null && result.getStatus() == ResponseStatus.OK) {
                 return result.getData();
-            }
-            if (retryCounter == 0) {
+            } else if (retryCounter == 0) {
                 logger.warn("Error in aqicn.org, retrying once");
                 return getData(stationId, location, retryCounter + 1);
             }

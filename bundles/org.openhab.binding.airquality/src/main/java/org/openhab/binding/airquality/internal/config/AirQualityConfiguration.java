@@ -32,10 +32,10 @@ public class AirQualityConfiguration {
 
     public void checkValid() throws AirQualityException {
         if (location.trim().isEmpty() && stationId == 0) {
-            throw new AirQualityException("@text/noLocationProvided");
+            throw new AirQualityException("Either 'location' or 'stationId' is mandatory and must be configured");
         }
         if (refresh < 30) {
-            throw new AirQualityException("@text/refreshRate");
+            throw new AirQualityException("Parameter 'refresh' must be at least 30 minutes");
         }
     }
 }

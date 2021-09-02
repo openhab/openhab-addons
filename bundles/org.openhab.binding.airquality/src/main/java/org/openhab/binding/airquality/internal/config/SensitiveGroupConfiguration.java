@@ -14,7 +14,7 @@ package org.openhab.binding.airquality.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.airquality.internal.api.SensitiveGroup;
+import org.openhab.binding.airquality.internal.api.Pollutant.SensitiveGroup;
 
 /**
  * The {@link SensitiveGroupConfiguration} is the class used to match the

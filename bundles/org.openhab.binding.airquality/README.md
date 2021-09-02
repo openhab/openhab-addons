@@ -117,9 +117,9 @@ HAZARDOUS=Hazardous
 airquality.things:
 
 ```java
-airquality:aqi:home "AirQuality" @ "Krakow" [ apiKey="XXXXXXXXXXXX", location="50.06465,19.94498", refresh=60 ]
-airquality:aqi:warsaw "AirQuality in Warsaw" [ apiKey="XXXXXXXXXXXX", location="52.22,21.01", refresh=60 ]
-airquality:aqi:brisbane "AirQuality in Brisbane" [ apiKey="XXXXXXXXXXXX", stationId=5115 ]
+airquality:station:home "AirQuality" @ "Krakow" [ apiKey="XXXXXXXXXXXX", location="50.06465,19.94498", refresh=60 ]
+airquality:station:warsaw "AirQuality in Warsaw" [ apiKey="XXXXXXXXXXXX", location="52.22,21.01", refresh=60 ]
+airquality:station:brisbane "AirQuality in Brisbane" [ apiKey="XXXXXXXXXXXX", stationId=5115 ]
 ```
 
 airquality.items:
@@ -127,21 +127,21 @@ airquality.items:
 ```java
 Group AirQuality <flow>
 
-Number   Aqi_Level           "Air Quality Index" <flow> (AirQuality) { channel="airquality:aqi:home:aqiLevel" }
-String   Aqi_Description     "AQI Level [MAP(airquality.map):%s]" <flow> (AirQuality) { channel="airquality:aqi:home:aqiDescription" }
+Number   Aqi_Level           "Air Quality Index" <flow> (AirQuality) { channel="airquality:station:home:aqiLevel" }
+String   Aqi_Description     "AQI Level [MAP(airquality.map):%s]" <flow> (AirQuality) { channel="airquality:station:home:aqiDescription" }
 
-Number   Aqi_Pm25            "PM\u2082\u2085 Level" <line> (AirQuality) { channel="airquality:aqi:local:pm25" }
-Number   Aqi_Pm10            "PM\u2081\u2080 Level" <line> (AirQuality) { channel="airquality:aqi:local:pm10" }
-Number   Aqi_O3              "O\u2083 Level" <line> (AirQuality) { channel="airquality:aqi:local:o3" }
-Number   Aqi_No2             "NO\u2082 Level" <line> (AirQuality) { channel="airquality:aqi:local:no2" }
-Number   Aqi_Co              "CO Level" <line> (AirQuality) { channel="airquality:aqi:local:co" }
-Number   Aqi_So2             "SO\u2082 Level" <line> (AirQuality) { channel="airquality:aqi:local:so2" }
+Number   Aqi_Pm25            "PM\u2082\u2085 Level" <line> (AirQuality) { channel="airquality:station:local:pm25" }
+Number   Aqi_Pm10            "PM\u2081\u2080 Level" <line> (AirQuality) { channel="airquality:station:local:pm10" }
+Number   Aqi_O3              "O\u2083 Level" <line> (AirQuality) { channel="airquality:station:local:o3" }
+Number   Aqi_No2             "NO\u2082 Level" <line> (AirQuality) { channel="airquality:station:local:no2" }
+Number   Aqi_Co              "CO Level" <line> (AirQuality) { channel="airquality:station:local:co" }
+Number   Aqi_So2             "SO\u2082 Level" <line> (AirQuality) { channel="airquality:station:local:so2" }
 
-DateTime Aqi_ObservationTime "Time of observation [%1$tH:%1$tM]" <clock> (AirQuality) { channel="airquality:aqi:local:observationTime" }
+DateTime Aqi_ObservationTime "Time of observation [%1$tH:%1$tM]" <clock> (AirQuality) { channel="airquality:station:local:observationTime" }
 
-Number:Temperature  Aqi_Temperature     "Temperature" <temperature> (AirQuality) { channel="airquality:aqi:local:temperature" }
-Number:Pressure     Aqi_Pressure        "Pressure" <pressure> (AirQuality) { channel="airquality:aqi:local:pressure" }
-Number:Dimensionless Aqi_Humidity        "Humidity" <humidity> (AirQuality) { channel="airquality:aqi:local:humidity" }
+Number:Temperature  Aqi_Temperature     "Temperature" <temperature> (AirQuality) { channel="airquality:station:local:temperature" }
+Number:Pressure     Aqi_Pressure        "Pressure" <pressure> (AirQuality) { channel="airquality:station:local:pressure" }
+Number:Dimensionless Aqi_Humidity        "Humidity" <humidity> (AirQuality) { channel="airquality:station:local:humidity" }
 ```
 
 airquality.sitemap:

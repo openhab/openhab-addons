@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.airquality.internal.api;
 
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -54,12 +56,7 @@ public enum Index {
     }
 
     public static @Nullable Index find(double idx) {
-        for (Index item : Index.values()) {
-            if (item.contains(idx)) {
-                return item;
-            }
-        }
-        return null;
+        return Stream.of(Index.values()).filter(i -> i.contains(idx)).findFirst().orElse(null);
     }
 
     public Appreciation getCategory() {
