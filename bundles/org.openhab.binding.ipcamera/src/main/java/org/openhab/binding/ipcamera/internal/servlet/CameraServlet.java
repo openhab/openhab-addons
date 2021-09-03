@@ -174,10 +174,12 @@ public class CameraServlet extends HttpServlet {
                     output = new StreamOutput(resp);
                     openStreams.addStream(output);
                 } else if (openStreams.isEmpty()) {
+                    logger.debug("First stream requested, opening up stream from camera");
                     handler.openCamerasStream();
                     output = new StreamOutput(resp, handler.mjpegContentType);
                     openStreams.addStream(output);
                 } else {
+                    logger.debug("Not the first stream requested. Stream from camera already open");
                     output = new StreamOutput(resp, handler.mjpegContentType);
                     openStreams.addStream(output);
                 }
