@@ -25,10 +25,6 @@ import java.util.Collections;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.UnhandledException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.twitter.internal.action.TwitterActions;
@@ -66,8 +62,8 @@ public class TwitterHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TwitterHandler.class);
 
-    private @Nullable TwitterConfig config;
-    @SuppressWarnings("unused")
+    private TwitterConfig config = new TwitterConfig();
+
     private @Nullable ScheduledFuture<?> refreshTask;
 
     private static final int CHARACTER_LIMIT = 280;
@@ -107,7 +103,7 @@ public class TwitterHandler extends BaseThingHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
-        } catch (UnhandledException e) {
+        } catch (TwitterException e) {
             updateStatus(ThingStatus.OFFLINE);
         }
     }
@@ -159,7 +155,7 @@ public class TwitterHandler extends BaseThingHandler {
             return false;
         }
         // abbreviate the Tweet to meet the 280 character limit ...
-        String abbreviatedTweetTxt = StringUtils.abbreviate(tweetTxt, CHARACTER_LIMIT);
+        String abbreviatedTweetTxt = abbreviateString(tweetTxt, CHARACTER_LIMIT);
         try {
             // send the Tweet
             StatusUpdate status = new StatusUpdate(abbreviatedTweetTxt);
@@ -212,12 +208,12 @@ public class TwitterHandler extends BaseThingHandler {
         // prepare the image attachment
         File fileToAttach = null;
         boolean deleteTemporaryFile = false;
-        if (StringUtils.startsWith(tweetPicture, "http://") || StringUtils.startsWith(tweetPicture, "https://")) {
+        if (tweetPicture.startsWith("http://") || tweetPicture.startsWith("https://")) {
             try {
                 // we have a remote url and need to download the remote file to a temporary location
                 Path tDir = Files.createTempDirectory("TempDirectory");
                 String path = tDir + File.separator + "openhab-twitter-remote_attached_file" + "."
-                        + FilenameUtils.getExtension(tweetPicture);
+                        + getExtension(tweetPicture);
 
                 // URL url = new URL(tweetPicture);
                 fileToAttach = new File(path);
@@ -253,7 +249,13 @@ public class TwitterHandler extends BaseThingHandler {
         boolean result = sendTweet(tweetTxt, fileToAttach);
         // delete temp file (if needed)
         if (deleteTemporaryFile) {
-            FileUtils.deleteQuietly(fileToAttach);
+            if (fileToAttach != null) {
+                try {
+                    fileToAttach.delete();
+                } catch (final Exception ignored) {
+                    return false;
+                }
+            }
         }
         return result;
     }
@@ -277,7 +279,7 @@ public class TwitterHandler extends BaseThingHandler {
 
         try {
             // abbreviate the Tweet to meet the allowed character limit ...
-            String abbreviatedMessageTxt = StringUtils.abbreviate(messageTxt, CHARACTER_LIMIT);
+            String abbreviatedMessageTxt = abbreviateString(messageTxt, CHARACTER_LIMIT);
             // send the direct message
             DirectMessage message = client.sendDirectMessage(recipientId, abbreviatedMessageTxt);
             logger.debug("Successfully sent direct message '{}' to @'{}'", message.getText(), message.getRecipientId());
@@ -318,5 +320,20 @@ public class TwitterHandler extends BaseThingHandler {
         client.setOAuthConsumer(config.consumerKey, config.consumerSecret);
         client.setOAuthAccessToken(new AccessToken(config.accessToken, config.accessTokenSecret));
         return client;
+    }
+
+    public static String abbreviateString(String input, int maxLength) {
+        if (input.length() <= maxLength) {
+            return input;
+        } else {
+            return input.substring(0, maxLength);
+        }
+    }
+
+    public static String getExtension(String filename) {
+        if(filename.contains(".")) {
+            return filename.substring(filename.lastIndexOf(".") + 1));
+        }
+        return new String();
     }
 }
