@@ -51,6 +51,10 @@ class CosemQuantity<Q extends @Nullable Quantity<Q>> extends CosemValueDescripto
     public static final CosemQuantity<Power> KILO_VAR = new CosemQuantity<>(Units.KILOVAR);
     public static final CosemQuantity<Energy> KILO_VAR_HOUR = new CosemQuantity<>(Units.KILOVAR_HOUR);
 
+    public static final CosemQuantity<Power> VAR = new CosemQuantity<>(Units.VAR);
+    public static final CosemQuantity<Energy> VAR_HOUR = new CosemQuantity<>(Units.VAR_HOUR);
+    public static final CosemQuantity<Energy> WATT_HOUR = new CosemQuantity<>(Units.WATT_HOUR);
+
     /**
      * Pattern to convert a cosem value to a value that can be parsed by {@link QuantityType}.
      * The specification states that the delimiter between the value and the unit is a '*'-character.

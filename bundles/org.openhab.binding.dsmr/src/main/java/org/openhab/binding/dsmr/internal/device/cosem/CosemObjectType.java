@@ -151,7 +151,28 @@ public enum CosemObjectType {
     EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L3(new OBISIdentifier(1, 0, 63, 7, 0, null), CosemQuantity.KILO_VAR),
     EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L1(new OBISIdentifier(1, 0, 24, 7, 0, null), CosemQuantity.KILO_VAR),
     EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L2(new OBISIdentifier(1, 0, 44, 7, 0, null), CosemQuantity.KILO_VAR),
-    EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L3(new OBISIdentifier(1, 0, 64, 7, 0, null), CosemQuantity.KILO_VAR);
+    EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L3(new OBISIdentifier(1, 0, 64, 7, 0, null), CosemQuantity.KILO_VAR),
+
+    /** aditional austrian non-kilo values */
+
+    EMETER_DELIVERY_TARIFF0_NON_KILO(new OBISIdentifier(1, 0, 1, 8, 0, null), CosemQuantity.WATT_HOUR),
+    EMETER_DELIVERY_TARIFF1_NON_KILO(new OBISIdentifier(1, 0, 1, 8, 1, null), CosemQuantity.WATT_HOUR),
+    EMETER_DELIVERY_TARIFF2_NON_KILO(new OBISIdentifier(1, 0, 1, 8, 2, null), CosemQuantity.WATT_HOUR),
+    EMETER_ACTUAL_DELIVERY_NON_KILO(new OBISIdentifier(1, 0, 1, 7, 0, null), CosemQuantity.WATT),
+    EMETER_PRODUCTION_TARIFF0_NON_KILO(new OBISIdentifier(1, 0, 2, 8, 0, null), CosemQuantity.WATT_HOUR),
+    EMETER_PRODUCTION_TARIFF1_NON_KILO(new OBISIdentifier(1, 0, 2, 8, 1, null), CosemQuantity.WATT_HOUR),
+    EMETER_PRODUCTION_TARIFF2_NON_KILO(new OBISIdentifier(1, 0, 2, 8, 2, null), CosemQuantity.WATT_HOUR),
+    EMETER_ACTUAL_PRODUCTION_NON_KILO(new OBISIdentifier(1, 0, 2, 7, 0, null), CosemQuantity.WATT),
+    EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_Q_NON_KILO(new OBISIdentifier(1, 0, 3, 8, 0, null), CosemQuantity.VAR_HOUR),
+    EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_R_RATE1_NON_KILO(new OBISIdentifier(1, 0, 3, 8, 1, null),
+            CosemQuantity.VAR_HOUR),
+    EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_R_RATE2_NON_KILO(new OBISIdentifier(1, 0, 3, 8, 2, null),
+            CosemQuantity.VAR_HOUR),
+    EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_Q_NON_KILO(new OBISIdentifier(1, 0, 4, 8, 0, null), CosemQuantity.VAR_HOUR),
+    EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_R_RATE1_NON_KILO(new OBISIdentifier(1, 0, 4, 8, 1, null),
+            CosemQuantity.VAR_HOUR),
+    EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_R_RATE2_NON_KILO(new OBISIdentifier(1, 0, 4, 8, 2, null),
+            CosemQuantity.VAR_HOUR);
 
     /** OBIS reduced identifier */
     public final OBISIdentifier obisId;

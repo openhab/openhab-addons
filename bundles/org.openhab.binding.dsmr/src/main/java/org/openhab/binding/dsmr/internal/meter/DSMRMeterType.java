@@ -257,6 +257,8 @@ public enum DSMRMeterType {
                     CosemObjectType.EMETER_INSTANT_POWER_DELIVERY_L3, CosemObjectType.EMETER_INSTANT_POWER_PRODUCTION_L2,
                     CosemObjectType.EMETER_INSTANT_POWER_PRODUCTION_L3, CosemObjectType.EMETER_INSTANT_VOLTAGE_L2,
                     CosemObjectType.EMETER_INSTANT_VOLTAGE_L3 }),
+                    
+
 
     /** DSMR V5.0 m3 meter (gas, water) */
     M3_V5_0(DSMRMeterKind.M3, CosemObjectType.METER_EQUIPMENT_IDENTIFIER,
@@ -295,6 +297,28 @@ public enum DSMRMeterType {
                     CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L3, CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L1,
                     CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L2, CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L3,
                     }),
+
+
+                    ELECTRICITY_SMARTY_V1_0_AUSTRIA(DSMRMeterKind.MAIN_ELECTRICITY, CosemObjectType.UNKNOWN,
+                        CosemObjectType.EMETER_ACTUAL_REACTIVE_DELIVERY,
+                        CosemObjectType.EMETER_PRODUCTION_TARIFF1_NON_KILO,
+                        CosemObjectType.EMETER_PRODUCTION_TARIFF0_NON_KILO,
+                        CosemObjectType.EMETER_ACTUAL_PRODUCTION_NON_KILO,
+                        CosemObjectType.EMETER_PRODUCTION_TARIFF2_NON_KILO,
+                        CosemObjectType.EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_R_RATE2_NON_KILO,
+                        CosemObjectType.EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_R_RATE2_NON_KILO,
+                        CosemObjectType.EMETER_DELIVERY_TARIFF2_NON_KILO, 
+                        CosemObjectType.EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_R_RATE1_NON_KILO,
+                        CosemObjectType.P1_TIMESTAMP,
+                        CosemObjectType.EMETER_DELIVERY_TARIFF1_NON_KILO, 
+                        CosemObjectType.P1_VERSION_OUTPUT,
+                        CosemObjectType.EMETER_ACTUAL_REACTIVE_PRODUCTION,
+                        CosemObjectType.EMETER_ACTUAL_DELIVERY_NON_KILO, 
+                        CosemObjectType.EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_Q_NON_KILO,
+                        CosemObjectType.EMETER_DELIVERY_TARIFF0_NON_KILO, 
+                        CosemObjectType.EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_Q_NON_KILO,
+                        CosemObjectType.EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_R_RATE1_NON_KILO
+                    ),
     /** Belgium Smart Meter for the e-MUCS specification */
     DEVICE_EMUCS_V1_0(DSMRMeterKind.DEVICE, CosemObjectType.UNKNOWN,
             CosemObjectType.P1_TEXT_STRING, CosemObjectType.P1_TEXT_STRING, CosemObjectType.P1_EMUCS_VERSION_OUTPUT,

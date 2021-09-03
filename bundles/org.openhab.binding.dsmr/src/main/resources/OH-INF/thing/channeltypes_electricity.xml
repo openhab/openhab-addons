@@ -355,4 +355,88 @@
 		<description>The instant voltage L3.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="productionTariff1NonKiloType">
+		<item-type>Number:Energy</item-type>
+		<label>Production Tariff 1</label>
+		<description>Production Tariff 1.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="productionTariff0NonKiloType">
+		<item-type>Number:Energy</item-type>
+		<label>Production Tariff 0</label>
+		<description>Production Tariff 0.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="actualProductionNonKiloType">
+		<item-type>Number:Power</item-type>
+		<label>Actual Power Production</label>
+		<description>Actual Power Production.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="productionTariff2NonKiloType">
+		<item-type>Number:Energy</item-type>
+		<label>Production Tariff 2</label>
+		<description>Production Tariff 2.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="totalImportedRnergyRegisterRRate2NonKiloType">
+		<item-type>Number:Energy</item-type>
+		<label>Total Imported Energy Rate2 (R+)</label>
+		<description>The Total imported energy register Rate2 (R+).</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="totalExportedEnergyRegisterRRate2NonKiloType">
+		<item-type>Number:Energy</item-type>
+		<label>Total Imported Energy Rate2 (R+)</label>
+		<description>The Total imported energy register Rate2 (R+).</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="deliveryTariff2NonKiloType">
+		<item-type>Number:Energy</item-type>
+		<label>Delivery Tariff 2</label>
+		<description>Production Tariff 2.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="totalExportedEnergyRegisterRRate1NonKiloType">
+		<item-type>Number:Energy</item-type>
+		<label>Total Imported Energy Rate1 (R+)</label>
+		<description>The Total imported energy register Rate1 (R+).</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="emeterDeliveryTariff1NonKiloType">
+		<item-type>Number:Energy</item-type>
+		<label>Delivery Tariff 1</label>
+		<description>Production Tariff 1.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="actualDeliveryNonKiloType">
+		<item-type>Number:Power</item-type>
+		<label>Actual Power Delivery</label>
+		<description>Actual Power Delivery.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="deliveryTariff0NonKiloType">
+		<item-type>Number:Energy</item-type>
+		<label>Delivery Tariff 0</label>
+		<description>Production Tariff 0.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="totalImportedEnergyRegisterQNonKiloType">
+		<item-type>Number:Energy</item-type>
+		<label>Total Imported Energy Register Q</label>
+		<description>The Total imported energy register Q.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="totalExportedEnergyRegisterQNonKiloType">
+		<item-type>Number:Energy</item-type>
+		<label>Total Exported Energy Register Q</label>
+		<description>The Total exported energy register Q.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="totalImportedEnergyRegisterRRate1NonKiloType">
+		<item-type>Number:Energy</item-type>
+		<label>Total Imported Energy Register R Rate1</label>
+		<description>The Total imported energy register R Rate1.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>
