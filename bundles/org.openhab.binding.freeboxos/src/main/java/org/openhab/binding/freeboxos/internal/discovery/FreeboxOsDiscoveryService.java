@@ -136,14 +136,14 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                 config.getBoardName().contains(FBX_DELTA_GW) ? THING_TYPE_DELTA : THING_TYPE_REVOLUTION, bridgeUID,
                 config.getSerial());
         logger.debug("Adding new Freebox Server {} to inbox", thingUID);
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.getSerial());
-        properties.put(Thing.PROPERTY_HARDWARE_VERSION, config.getPrettyName());
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion());
-        properties.put(Thing.PROPERTY_MAC_ADDRESS, config.getMac());
+
+        Map<String, Object> properties = Map.of(Thing.PROPERTY_SERIAL_NUMBER, config.getSerial(),
+                Thing.PROPERTY_HARDWARE_VERSION, config.getPrettyName(), Thing.PROPERTY_FIRMWARE_VERSION,
+                config.getFirmwareVersion(), Thing.PROPERTY_MAC_ADDRESS, config.getMac());
+
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                 .withProperties(properties).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
-                .withLabel(config.getPrettyName()).build();
+                .withLabel(config.getPrettyName().orElse("Freebox Server")).build();
         thingDiscovered(discoveryResult);
     }
 
@@ -192,25 +192,29 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
         if (playMgr != null) {
             for (Player player : playMgr.getPlayers()) {
                 Map<String, Object> properties = new HashMap<>();
-                DeviceConfig config = playMgr.getConfig(player.getId());
+                properties.put(ClientConfiguration.ID, player.getId());
+                properties.put(Thing.PROPERTY_MAC_ADDRESS, player.getMac());
+                properties.put(Thing.PROPERTY_MODEL_ID, player.getModel());
+                properties.put("Api available", player.isApiAvailable());
+
                 LanHost lanhost = lanHosts.remove(player.getMac());
                 if (lanhost != null) {
                     String vendor = lanhost.getVendorName();
                     if (vendor != null) {
                         properties.put(Thing.PROPERTY_VENDOR, vendor);
                     }
-                    properties.put(NameSource.UPNP.name(), lanhost.getPrimaryNameOrElse("Freebox Player"));
+                    properties.put(NameSource.UPNP.name(), lanhost.getPrimaryName().orElse("Freebox Player"));
                 }
 
-                properties.put(Thing.PROPERTY_MAC_ADDRESS, player.getMac());
-                properties.put(ClientConfiguration.ID, player.getId());
-                properties.put(Thing.PROPERTY_MODEL_ID, player.getModel());
-                properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.getSerial());
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion());
+                if (player.isApiAvailable() && player.isReachable()) {
+                    DeviceConfig config = playMgr.getConfig(player.getId());
+                    properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.getSerial());
+                    properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion());
+                }
 
                 ThingUID thingUID = new ThingUID(THING_TYPE_PLAYER, bridgeUID, Integer.toString(player.getId()));
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                        .withLabel(config.getPrettyName()).withProperties(properties)
+                        .withLabel(player.getName()).withProperties(properties)
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
                 thingDiscovered(discoveryResult);
             }
@@ -265,7 +269,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                 logger.debug("Adding new Freebox Network Host {} to inbox", thingUID);
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                         .withProperties(properties).withTTL(300).withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS)
-                        .withLabel(lanHost.getPrimaryNameOrElse(String.format("Freebox Network Device %s", mac)));
+                        .withLabel(lanHost.getPrimaryName().orElse(String.format("Freebox Network Device %s", mac)));
                 thingDiscovered(builder.build());
             }
         });

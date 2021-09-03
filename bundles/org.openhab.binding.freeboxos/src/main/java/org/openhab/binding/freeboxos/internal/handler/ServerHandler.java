@@ -117,7 +117,7 @@ public class ServerHandler extends FreeDeviceHandler {
                         updateChannelOnOff(FILE_SHARING, SAMBA_PRINTER_STATUS, enableSambaPrintShare(enable));
                         break;
                     case UPNPAV_STATUS:
-                        updateChannelOnOff(ACTIONS, UPNPAV_STATUS, getApi().getuPnPAVManager().changeStatus(enable));
+                        updateChannelOnOff(ACTIONS, UPNPAV_STATUS, getApi().getUPnPAVManager().changeStatus(enable));
                         break;
                 }
             } catch (FreeboxException e) {
@@ -148,7 +148,7 @@ public class ServerHandler extends FreeDeviceHandler {
 
     private void fetchUPnPAVConfig() throws FreeboxException {
         if (getApi().getLanManager().getNetworkMode() == NetworkMode.ROUTER) {
-            updateChannelOnOff(PLAYER_ACTIONS, UPNPAV_STATUS, getApi().getuPnPAVManager().getStatus());
+            updateChannelOnOff(PLAYER_ACTIONS, UPNPAV_STATUS, getApi().getUPnPAVManager().getStatus());
         }
     }
 

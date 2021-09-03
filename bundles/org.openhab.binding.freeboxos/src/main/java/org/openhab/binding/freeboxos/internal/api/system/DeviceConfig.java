@@ -14,6 +14,7 @@ package org.openhab.binding.freeboxos.internal.api.system;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,7 +32,7 @@ public class DeviceConfig {
         private @NonNullByDefault({}) String prettyName;
     }
 
-    private @NonNullByDefault({}) ModelInfo modelInfo;
+    private @Nullable ModelInfo modelInfo;
     private long uptimeVal;
     private @NonNullByDefault({}) String boardName;
     private @NonNullByDefault({}) String serial;
@@ -53,8 +54,9 @@ public class DeviceConfig {
         return boardName;
     }
 
-    public String getPrettyName() {
-        return modelInfo.prettyName;
+    public Optional<String> getPrettyName() {
+        ModelInfo info = this.modelInfo;
+        return info != null ? Optional.of(info.prettyName) : Optional.empty();
     }
 
     protected @Nullable List<Sensor> getSensors() {

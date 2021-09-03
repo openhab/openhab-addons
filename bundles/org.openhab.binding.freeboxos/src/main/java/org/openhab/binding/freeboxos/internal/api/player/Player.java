@@ -22,6 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class Player {
     private @NonNullByDefault({}) String mac;
     private int id;
+    private boolean apiAvailable;
+    private boolean reachable;
     private @NonNullByDefault({}) String deviceName;
     private @NonNullByDefault({}) String deviceModel;
 
@@ -40,4 +42,13 @@ public class Player {
     public String getName() {
         return deviceName;
     }
+
+    public boolean isApiAvailable() {
+        return apiAvailable;
+    }
+
+    public boolean isReachable() {
+        return reachable;
+    }
+
 }

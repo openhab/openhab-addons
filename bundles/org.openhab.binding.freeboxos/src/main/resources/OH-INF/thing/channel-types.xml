@@ -9,7 +9,7 @@
 		<label>Screen Brightness</label>
 		<description>Brightness level of the screen in percent</description>
 		<category>DimmableLight</category>
-		<state pattern="%d %unit%"/>
+		<state pattern="%d %unit%" min="0" max="100" />
 	</channel-type>
 
 	<channel-type id="lcd-orientation">
@@ -49,7 +49,7 @@
 	<channel-type id="lcd-forced" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Forced Orientation</label>
-		<description>Indicates whether the screen orientation forced</description>
+		<description>Indicates whether the screen orientation is forced</description>
 		<category>Switch</category>
 	</channel-type>
 

@@ -148,6 +148,14 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
     }
 
     private void fetchPlayerStatus() throws FreeboxException {
+        // TODO : if player is unreachable it should be set offline and some function should not be reachable if no api
+        // is available
+        // cf player discovery on this topic.
+        // for (Player player : playMgr.getPlayers()) {
+        // if (player.isApiAvailable() && player.isReachable()) {
+        //
+        // Question : should we set the thing offline or should we use its status ???
+        //
         PlayerConfiguration config = getConfigAs(PlayerConfiguration.class);
         PlayerManager playerManager = getApi().getPlayerManager();
         if (playerManager != null) {

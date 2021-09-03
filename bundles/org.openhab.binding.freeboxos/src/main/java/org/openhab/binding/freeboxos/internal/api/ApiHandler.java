@@ -199,7 +199,7 @@ public class ApiHandler {
         return manager;
     }
 
-    public synchronized UPnPAVManager getuPnPAVManager() {
+    public synchronized UPnPAVManager getUPnPAVManager() {
         UPnPAVManager manager = (UPnPAVManager) managers.get(UPnPAVManager.class);
         if (manager == null) {
             manager = new UPnPAVManager(this);
