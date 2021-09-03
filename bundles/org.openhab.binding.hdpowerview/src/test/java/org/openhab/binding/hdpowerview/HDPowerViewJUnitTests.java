@@ -355,6 +355,8 @@ public class HDPowerViewJUnitTests {
 
             pos = shadePos.getState(PRIMARY_ACTUATOR, VANE_COORDS);
             assertEquals(UnDefType.class, pos.getClass());
+
+            assertEquals(4, shadeData.signalStrength);
         } catch (JsonParseException e) {
             fail(e.getMessage());
         }
