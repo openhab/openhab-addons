@@ -102,6 +102,8 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
     private static final String LOGIN_BASE_URL = "https://partner-identity.myq-cloud.com";
     private static final String LOGIN_AUTHORIZE_URL = LOGIN_BASE_URL + "/connect/authorize";
     private static final String LOGIN_TOKEN_URL = LOGIN_BASE_URL + "/connect/token";
+    // this should never happen, but lets be safe and give up after so many redirects
+    private static final int LOGIN_MAX_REDIRECTS = 30;
     /*
      * MyQ device and account API endpoint
      */
@@ -483,8 +485,8 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
 
         String location = null;
 
-        // follow redirects until we match our REDIRECT_URI
-        while (HttpStatus.isRedirection(response.getStatus())) {
+        // follow redirects until we match our REDIRECT_URI or hit a redirect safety limit
+        for (int i = 0; i < LOGIN_MAX_REDIRECTS && HttpStatus.isRedirection(response.getStatus()); i++) {
             logger.debug("Redirect Login: Code {} Response {}", response.getStatus(), response.getContentAsString());
             String loc = response.getHeaders().get("location");
             logger.debug("location string {}", loc);
