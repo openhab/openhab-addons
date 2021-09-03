@@ -75,7 +75,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 |---------------------------------|-------------|---------------|------------------------------|--------------------------------|-----------|
 | bridge                          | -           | -             | repeaterMode, setBaseId      | USB300, EnOceanPi              | -         |
 | pushButton                      | F6-01/D2-03 | 0x01/0x0A     | pushButton, doublePress,<br/>longPress, batteryLevel | NodOn soft button | Manually/Discovery  |
-| rockerSwitch                    | F6-02       | 0x01-02       | rockerswitchA, rockerswitchB | Eltako FT55                    | Discovery |
+| rockerSwitch                    | F6-02       | 0x01-02       | rockerswitchA, rockerswitchB,<br/>secondActionPressed, rockerSwitchAction | Eltako FT55                    | Discovery |
 | mechanicalHandle                | F6-10       | 0x00-01       | windowHandleState, contact   | Hoppe SecuSignal handles, Eltako TF-FGB | Discovery |
 | contact                         | D5-00       | 0x01          | contact                      | Eltako FTK(E) & TF-FKB            | Discovery |
 | temperatureSensor               | A5-02       | 0x01-30       | temperature                  | Thermokon SR65                 | Discovery |
@@ -254,6 +254,8 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | doublePress         | Trigger            | Channel type system:rawbutton, emits PRESSED |
 | longPress           | Trigger            | Channel type system:rawbutton, emits PRESSED and RELEASED events |
 | rockerswitchA/B     | Trigger            | Channel type system:rawrocker, emits DIR1_PRESSED, DIR1_RELEASED, DIR2_PRESSED, DIR2_RELEASED events |
+| secondActionPressed | Switch             | Indicates if second action of rocker switch is pressed too |
+| rockerSwitchAction  | Trigger            | Emits combined rocker switch actions for channel A and B and RELEASED events |
 | windowHandleState   | String             | Textual representation of handle position (OPEN, CLOSED, TILTED) |
 | contact             | Contact            | State OPEN/CLOSED (tilted handle => OPEN) |
 | temperature         | Number:Temperature | Temperature in degree Celsius |
@@ -336,6 +338,8 @@ Some channels can be configured with parameters.
 |  totalusage   | validateValue  | Filter out increases more than 10.0 kWh and decreases less than 1.0 kWh | true / false                                                                                                                     |
 |               | tariff         | Tariff info or measurement channel to listen to | 0-15 |
 |  contact      | inverted       | Swap OPEN / CLOSED. Set True for Eltako FPE-2.                    | true / false. Defaults to false.                                                                                                    |
+| rockerSwitchAction | channelAFilter | Defines for which channel A events this trigger should fire | *: Any Direction, DIR1, DIR2, -:No Direction. Defaults to * |
+| rockerSwitchAction | channelBFilter | Defines for which channel B events this trigger should fire | *: Any Direction, DIR1, DIR2, -:No Direction. Defaults to * |
 
 Possible declaration in Thing DSL:
 

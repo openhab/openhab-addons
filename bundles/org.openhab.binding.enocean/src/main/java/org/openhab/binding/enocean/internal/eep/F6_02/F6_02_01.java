@@ -33,17 +33,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
-public class F6_02_01 extends _RPSMessage {
-
-    final byte AI = 0;
-    final byte A0 = 1;
-    final byte BI = 2;
-    final byte B0 = 3;
-    final byte PRESSED = 16;
-    final byte PRESSED_SEC = 1;
-
-    int secondByte = -1;
-    int secondStatus = -1;
+public class F6_02_01 extends F6_02 {
 
     public F6_02_01() {
         super();
@@ -58,27 +48,23 @@ public class F6_02_01 extends _RPSMessage {
             Configuration config) {
 
         if (t21 && nu) {
-            byte dir1 = channelId.equals(CHANNEL_ROCKERSWITCH_CHANNELA) ? A0 : B0;
-            byte dir2 = channelId.equals(CHANNEL_ROCKERSWITCH_CHANNELA) ? AI : BI;
+            if (CHANNEL_ROCKERSWITCH_ACTION.equals(channelTypeId)) {
+                return getRockerSwitchAction(config);
+            } else {
+                byte dir1 = channelId.equals(CHANNEL_ROCKERSWITCH_CHANNELA) ? A0 : B0;
+                byte dir2 = channelId.equals(CHANNEL_ROCKERSWITCH_CHANNELA) ? AI : BI;
 
-            if ((bytes[0] >>> 5) == dir1) {
-                return ((bytes[0] & PRESSED) != 0) ? CommonTriggerEvents.DIR1_PRESSED
-                        : CommonTriggerEvents.DIR1_RELEASED;
-            } else if ((bytes[0] >>> 5) == dir2) {
-                return ((bytes[0] & PRESSED) != 0) ? CommonTriggerEvents.DIR2_PRESSED
-                        : CommonTriggerEvents.DIR2_RELEASED;
-            } else if (((bytes[0] & 0xf) >>> 1) == dir1) {
-                return ((bytes[0] & PRESSED_SEC) != 0) ? CommonTriggerEvents.DIR1_PRESSED
-                        : CommonTriggerEvents.DIR1_RELEASED;
-            } else if (((bytes[0] & 0xf) >>> 1) == dir2) {
-                return ((bytes[0] & PRESSED_SEC) != 0) ? CommonTriggerEvents.DIR2_PRESSED
-                        : CommonTriggerEvents.DIR2_RELEASED;
+                return getChannelEvent(dir1, dir2);
             }
         } else if (t21 && !nu) {
-            if (lastEvent != null && lastEvent.equals(CommonTriggerEvents.DIR1_PRESSED)) {
-                return CommonTriggerEvents.DIR1_RELEASED;
-            } else if (lastEvent != null && lastEvent.equals(CommonTriggerEvents.DIR2_PRESSED)) {
-                return CommonTriggerEvents.DIR2_RELEASED;
+            if (CHANNEL_ROCKERSWITCH_ACTION.equals(channelTypeId)) {
+                return CommonTriggerEvents.RELEASED;
+            } else {
+                if (lastEvent != null && lastEvent.equals(CommonTriggerEvents.DIR1_PRESSED)) {
+                    return CommonTriggerEvents.DIR1_RELEASED;
+                } else if (lastEvent != null && lastEvent.equals(CommonTriggerEvents.DIR2_PRESSED)) {
+                    return CommonTriggerEvents.DIR2_RELEASED;
+                }
             }
         }
 
@@ -117,92 +103,88 @@ public class F6_02_01 extends _RPSMessage {
         // appropriate item update
         State currentState = getCurrentStateFunc.apply(channelId);
         if (t21 && nu) {
-            EnOceanChannelVirtualRockerSwitchConfig c = config.as(EnOceanChannelVirtualRockerSwitchConfig.class);
-            byte dir1 = c.getChannel() == Channel.ChannelA ? A0 : B0;
-            byte dir2 = c.getChannel() == Channel.ChannelA ? AI : BI;
+            if (CHANNEL_ROCKERSWITCH_SECONDACTIONPRESSED.equals(channelTypeId)) {
+                return ((bytes[0] & PRESSED_SEC) != 0) ? OnOffType.ON : OnOffType.OFF;
+            } else {
+                EnOceanChannelVirtualRockerSwitchConfig c = config.as(EnOceanChannelVirtualRockerSwitchConfig.class);
+                byte dir1 = c.getChannel() == Channel.ChannelA ? A0 : B0;
+                byte dir2 = c.getChannel() == Channel.ChannelA ? AI : BI;
 
-            // We are just listening on the pressed event here
-            switch (c.getSwitchMode()) {
-                case RockerSwitch:
-                    if ((bytes[0] >>> 5) == dir1) {
-                        if (((bytes[0] & PRESSED) != 0)) {
-                            return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.ON
-                                    : UpDownType.UP;
+                // We are just listening on the pressed event here
+                switch (c.getSwitchMode()) {
+                    case RockerSwitch:
+                        if ((bytes[0] >>> 5) == dir1) {
+                            if (((bytes[0] & PRESSED) != 0)) {
+                                return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.ON
+                                        : UpDownType.UP;
+                            }
+                        } else if ((bytes[0] >>> 5) == dir2) {
+                            if (((bytes[0] & PRESSED) != 0)) {
+                                return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.OFF
+                                        : UpDownType.DOWN;
+                            }
+                        } else if (((bytes[0] & 0xf) >>> 1) == dir1) {
+                            if (((bytes[0] & PRESSED_SEC) != 0)) {
+                                return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.ON
+                                        : UpDownType.UP;
+                            }
+                        } else if (((bytes[0] & 0xf) >>> 1) == dir2) {
+                            if (((bytes[0] & PRESSED_SEC) != 0)) {
+                                return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.OFF
+                                        : UpDownType.DOWN;
+                            }
                         }
-                    } else if ((bytes[0] >>> 5) == dir2) {
-                        if (((bytes[0] & PRESSED) != 0)) {
-                            return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.OFF
-                                    : UpDownType.DOWN;
+                        break;
+                    case ToggleDir1:
+                        if ((bytes[0] >>> 5) == dir1) {
+                            if (((bytes[0] & PRESSED) != 0)) {
+                                return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
+                                        ? (currentState == UnDefType.UNDEF ? OnOffType.ON
+                                                : inverse((OnOffType) currentState))
+                                        : (currentState == UnDefType.UNDEF ? UpDownType.UP
+                                                : inverse((UpDownType) currentState));
+                            }
+                        } else if (((bytes[0] & 0xf) >>> 1) == dir1) {
+                            if (((bytes[0] & PRESSED_SEC) != 0)) {
+                                return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
+                                        ? (currentState == UnDefType.UNDEF ? OnOffType.ON
+                                                : inverse((OnOffType) currentState))
+                                        : (currentState == UnDefType.UNDEF ? UpDownType.UP
+                                                : inverse((UpDownType) currentState));
+                            }
                         }
-                    } else if (((bytes[0] & 0xf) >>> 1) == dir1) {
-                        if (((bytes[0] & PRESSED_SEC) != 0)) {
-                            return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.ON
-                                    : UpDownType.UP;
+                        break;
+                    case ToggleDir2:
+                        if ((bytes[0] >>> 5) == dir2) {
+                            if (((bytes[0] & PRESSED) != 0)) {
+                                return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
+                                        ? (currentState == UnDefType.UNDEF ? OnOffType.ON
+                                                : inverse((OnOffType) currentState))
+                                        : (currentState == UnDefType.UNDEF ? UpDownType.UP
+                                                : inverse((UpDownType) currentState));
+                            }
+                        } else if (((bytes[0] & 0xf) >>> 1) == dir2) {
+                            if (((bytes[0] & PRESSED_SEC) != 0)) {
+                                return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
+                                        ? (currentState == UnDefType.UNDEF ? OnOffType.ON
+                                                : inverse((OnOffType) currentState))
+                                        : (currentState == UnDefType.UNDEF ? UpDownType.UP
+                                                : inverse((UpDownType) currentState));
+                            }
                         }
-                    } else if (((bytes[0] & 0xf) >>> 1) == dir2) {
-                        if (((bytes[0] & PRESSED_SEC) != 0)) {
-                            return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.OFF
-                                    : UpDownType.DOWN;
-                        }
-                    }
-                    break;
-                case ToggleDir1:
-                    if ((bytes[0] >>> 5) == dir1) {
-                        if (((bytes[0] & PRESSED) != 0)) {
-                            return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
-                                    ? (currentState == UnDefType.UNDEF ? OnOffType.ON
-                                            : inverse((OnOffType) currentState))
-                                    : (currentState == UnDefType.UNDEF ? UpDownType.UP
-                                            : inverse((UpDownType) currentState));
-                        }
-                    } else if (((bytes[0] & 0xf) >>> 1) == dir1) {
-                        if (((bytes[0] & PRESSED_SEC) != 0)) {
-                            return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
-                                    ? (currentState == UnDefType.UNDEF ? OnOffType.ON
-                                            : inverse((OnOffType) currentState))
-                                    : (currentState == UnDefType.UNDEF ? UpDownType.UP
-                                            : inverse((UpDownType) currentState));
-                        }
-                    }
-                    break;
-                case ToggleDir2:
-                    if ((bytes[0] >>> 5) == dir2) {
-                        if (((bytes[0] & PRESSED) != 0)) {
-                            return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
-                                    ? (currentState == UnDefType.UNDEF ? OnOffType.ON
-                                            : inverse((OnOffType) currentState))
-                                    : (currentState == UnDefType.UNDEF ? UpDownType.UP
-                                            : inverse((UpDownType) currentState));
-                        }
-                    } else if (((bytes[0] & 0xf) >>> 1) == dir2) {
-                        if (((bytes[0] & PRESSED_SEC) != 0)) {
-                            return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
-                                    ? (currentState == UnDefType.UNDEF ? OnOffType.ON
-                                            : inverse((OnOffType) currentState))
-                                    : (currentState == UnDefType.UNDEF ? UpDownType.UP
-                                            : inverse((UpDownType) currentState));
-                        }
-                    }
-                    break;
-                default:
-                    break;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } else if (t21 && !nu) {
+            // always unset SecondActionPressed if any rocker switch action is released
+            if (CHANNEL_ROCKERSWITCH_SECONDACTIONPRESSED.equals(channelTypeId)) {
+                return OnOffType.OFF;
             }
         }
 
         return UnDefType.UNDEF;
-    }
-
-    private State inverse(OnOffType currentState) {
-        return currentState == OnOffType.ON ? OnOffType.OFF : OnOffType.ON;
-    }
-
-    private State inverse(UpDownType currentState) {
-        return currentState == UpDownType.UP ? UpDownType.DOWN : UpDownType.UP;
-    }
-
-    @Override
-    protected boolean validateData(byte[] bytes) {
-        return super.validateData(bytes) && !getBit(bytes[0], 7);
     }
 
     @Override

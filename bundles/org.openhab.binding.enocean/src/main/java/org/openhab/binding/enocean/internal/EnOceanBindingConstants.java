@@ -129,6 +129,10 @@ public class EnOceanBindingConstants {
 
     public static final String CHANNEL_ROCKERSWITCH_CHANNELA = "rockerswitchA";
     public static final String CHANNEL_ROCKERSWITCH_CHANNELB = "rockerswitchB";
+    public static final String CHANNEL_ROCKERSWITCH_SECONDACTIONPRESSED = "secondActionPressed";
+    public static final String CHANNEL_ROCKERSWITCH_ACTION = "rockerSwitchAction";
+    public static final ChannelTypeUID CHANNELTYPE_ROCKERSWITCH_ACTION_UID = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ROCKERSWITCH_ACTION);
 
     public static final String CHANNEL_VIRTUALSWITCHA = "virtualSwitchA";
     public static final String CHANNEL_VIRTUALROLLERSHUTTERA = "virtualRollershutterA";
@@ -202,6 +206,7 @@ public class EnOceanBindingConstants {
     public static final String CHANNEL_EXHAUSTAIRFANAIRFLOWRATE = "exhaustAirFanAirFlowRate";
     public static final String CHANNEL_SUPPLYFANSPEED = "supplyFanSpeed";
     public static final String CHANNEL_EXHAUSTFANSPEED = "exhaustFanSpeed";
+
 
     public static final Map<String, EnOceanChannelDescription> CHANNELID2CHANNELDESCRIPTION = Map.ofEntries(
             Map.entry(CHANNEL_GENERAL_SWITCHING,
@@ -338,6 +343,13 @@ public class EnOceanBindingConstants {
             Map.entry(CHANNEL_ROCKERSWITCH_CHANNELB,
                     new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID(), null,
                             "Rocker Switch - Channel B", false, false)),
+            Map.entry(CHANNEL_ROCKERSWITCH_SECONDACTIONPRESSED,
+                    new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_ROCKERSWITCH_SECONDACTIONPRESSED),
+                            CoreItemFactory.SWITCH, "Second Action Pressed", false, false)),
+            Map.entry(CHANNEL_ROCKERSWITCH_ACTION,
+                    new EnOceanChannelDescription(CHANNELTYPE_ROCKERSWITCH_ACTION_UID, null, "Rocker Switch Action",
+                            false, false)),
 
             Map.entry(CHANNEL_VIRTUALSWITCHA,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VIRTUALSWITCHA),
