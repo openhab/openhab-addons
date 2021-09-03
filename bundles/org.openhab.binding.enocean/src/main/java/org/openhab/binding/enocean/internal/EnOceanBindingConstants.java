@@ -207,7 +207,6 @@ public class EnOceanBindingConstants {
     public static final String CHANNEL_SUPPLYFANSPEED = "supplyFanSpeed";
     public static final String CHANNEL_EXHAUSTFANSPEED = "exhaustFanSpeed";
 
-
     public static final Map<String, EnOceanChannelDescription> CHANNELID2CHANNELDESCRIPTION = Map.ofEntries(
             Map.entry(CHANNEL_GENERAL_SWITCHING,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_GENERAL_SWITCHING),
@@ -298,8 +297,7 @@ public class EnOceanBindingConstants {
             Map.entry(CHANNEL_INDOORAIRANALYSIS,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_INDOORAIRANALYSIS),
                             CoreItemFactory.STRING)),
-            Map.entry(
-                    CHANNEL_SETPOINT,
+            Map.entry(CHANNEL_SETPOINT,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_SETPOINT),
                             CoreItemFactory.NUMBER)),
             Map.entry(CHANNEL_CONTACT,
