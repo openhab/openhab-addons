@@ -114,24 +114,24 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             .create();
     private final Gson gsonLowerCase = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+    private final OAuthFactory oAuthFactory;
     private @Nullable Future<?> normalPollFuture;
     private @Nullable Future<?> rapidPollFuture;
     private @Nullable AccountDTO account;
     private @Nullable DevicesDTO devicesCache;
+    private @Nullable OAuthClientService oAuthService;
     private Integer normalRefreshSeconds = 60;
     private HttpClient httpClient;
     private String username = "";
     private String password = "";
     private String userAgent = "";
-
-    private final OAuthClientService oAuthService;
+    // force login, even if we have a token
+    private boolean needsLogin = false;
 
     public MyQAccountHandler(Bridge bridge, HttpClient httpClient, final OAuthFactory oAuthFactory) {
         super(bridge);
         this.httpClient = httpClient;
-        oAuthService = oAuthFactory.createOAuthClientService(getThing().toString(), LOGIN_TOKEN_URL,
-                LOGIN_AUTHORIZE_URL, CLIENT_ID, CLIENT_SECRET, SCOPE, false);
-        oAuthService.addAccessTokenRefreshListener(this);
+        this.oAuthFactory = oAuthFactory;
     }
 
     @Override
@@ -146,6 +146,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         password = config.password;
         // MyQ can get picky about blocking user agents apparently
         userAgent = MyQAccountHandler.randomString(20);
+        needsLogin = true;
         updateStatus(ThingStatus.UNKNOWN);
         restartPolls(false);
     }
@@ -153,6 +154,9 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
     @Override
     public void dispose() {
         stopPolls();
+        if (oAuthService != null) {
+            oAuthService.close();
+        }
     }
 
     @Override
@@ -276,6 +280,14 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         }
     }
 
+    /**
+     * This attempts to navigate the MyQ oAuth login flow in order to obtain a @AccessTokenResponse
+     *
+     * @return AccessTokenResponse token
+     * @throws InterruptedException
+     * @throws MyQCommunicationException
+     * @throws MyQAuthenticationException
+     */
     private AccessTokenResponse login()
             throws InterruptedException, MyQCommunicationException, MyQAuthenticationException {
         // make sure we have a fresh session
@@ -296,6 +308,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
                 throw new MyQCommunicationException("Could not load login page");
             }
 
+            // url that the form will submit to
             String action = LOGIN_BASE_URL + form.attr("action");
 
             // post our user name and password along with elements from the scraped form
@@ -304,18 +317,15 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
                 throw new MyQAuthenticationException("Could not login with credentials");
             }
 
-            logger.debug("Login Response URI {}", location);
-
             // finally complete the oAuth flow and retrieve a JSON oAuth token response
             ContentResponse tokenResponse = getLoginToken(location, codeVerifier);
             String loginToken = tokenResponse.getContentAsString();
-            logger.debug("Login Token response {}", loginToken);
 
             AccessTokenResponse accessTokenResponse = gsonLowerCase.fromJson(loginToken, AccessTokenResponse.class);
             if (accessTokenResponse == null) {
                 throw new MyQAuthenticationException("Could not parse token response");
             }
-            oAuthService.importAccessTokenResponse(accessTokenResponse);
+            getOAuthService().importAccessTokenResponse(accessTokenResponse);
             return accessTokenResponse;
         } catch (IOException | ExecutionException | TimeoutException | OAuthException e) {
             throw new MyQCommunicationException(e.getMessage());
@@ -355,14 +365,20 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             @Nullable String contentType)
             throws InterruptedException, MyQCommunicationException, MyQAuthenticationException {
         AccessTokenResponse tokenResponse = null;
-        try {
-            tokenResponse = oAuthService.getAccessTokenResponse();
-        } catch (OAuthException | IOException | OAuthResponseException e) {
-            // ignore error
+        // if we don't need to force a login, attempt to use the token we have
+        if (!needsLogin) {
+            try {
+                tokenResponse = getOAuthService().getAccessTokenResponse();
+            } catch (OAuthException | IOException | OAuthResponseException e) {
+                // ignore error, will try to login below
+                logger.debug("Error accessing token, will attempt to login again", e);
+            }
         }
 
+        // if no token, or we need to login, do so now
         if (tokenResponse == null) {
             tokenResponse = login();
+            needsLogin = false;
         }
 
         Request request = httpClient.newRequest(url).method(method).agent(userAgent).timeout(10, TimeUnit.SECONDS)
@@ -487,9 +503,12 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
 
         // follow redirects until we match our REDIRECT_URI or hit a redirect safety limit
         for (int i = 0; i < LOGIN_MAX_REDIRECTS && HttpStatus.isRedirection(response.getStatus()); i++) {
-            logger.debug("Redirect Login: Code {} Response {}", response.getStatus(), response.getContentAsString());
+
             String loc = response.getHeaders().get("location");
-            logger.debug("location string {}", loc);
+            if (logger.isTraceEnabled()) {
+                logger.trace("Redirect Login: Code {} Location Header: {} Response {}", response.getStatus(), loc,
+                        response.getContentAsString());
+            }
             if (loc == null) {
                 logger.debug("No location value");
                 break;
@@ -536,11 +555,24 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             setCookies(request);
 
             ContentResponse response = request.send();
-            logger.debug("Login Code {} Response {}", response.getStatus(), response.getContentAsString());
+            if (logger.isTraceEnabled()) {
+                logger.trace("Login Code {} Response {}", response.getStatus(), response.getContentAsString());
+            }
             return response;
         } catch (URISyntaxException e) {
             throw new ExecutionException(e.getCause());
         }
+    }
+
+    private OAuthClientService getOAuthService() {
+        OAuthClientService oAuthService = this.oAuthService;
+        if (oAuthService == null || oAuthService.isClosed()) {
+            oAuthService = oAuthFactory.createOAuthClientService(getThing().toString(), LOGIN_TOKEN_URL,
+                    LOGIN_AUTHORIZE_URL, CLIENT_ID, CLIENT_SECRET, SCOPE, false);
+            oAuthService.addAccessTokenRefreshListener(this);
+            this.oAuthService = oAuthService;
+        }
+        return oAuthService;
     }
 
     private static String randomString(int length) {
