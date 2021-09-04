@@ -85,27 +85,17 @@ public class TwitterHandler extends BaseThingHandler {
         return Collections.singletonList(TwitterActions.class);
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @Override
     public void initialize() {
         config = getConfigAs(TwitterConfig.class);
 
-        try {
-            // create a New Twitter Client
-            Twitter localClient = createClient();
-            // verify client is valid
-            if (localClient != null) {
-                client = localClient;
-                refresh();// Get latest status
-                isProperlyConfigured = true;
-                refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refresh, TimeUnit.MINUTES);
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        } catch (TwitterException e) {
-            updateStatus(ThingStatus.OFFLINE);
-        }
+        // create a New Twitter Client
+        Twitter localClient = createClient();
+        client = localClient;
+        refresh();// Get latest status
+        isProperlyConfigured = true;
+        refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refresh, TimeUnit.MINUTES);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -120,18 +110,19 @@ public class TwitterHandler extends BaseThingHandler {
      * Internal method for Getting Twitter Status
      *
      */
-    @SuppressWarnings("null")
     private void refresh() {
         try {
             if (!checkPrerequisites()) {
                 return;
             }
-
-            ResponseList<Status> statuses = client.getUserTimeline();
-            if (statuses.size() > 0) {
-                updateState(CHANNEL_LASTTWEET, StringType.valueOf(statuses.get(0).getText()));
-            } else {
-                logger.debug("No Statuses Found");
+            if (client != null) {
+                Twitter localClient = client;
+                ResponseList<Status> statuses = localClient.getUserTimeline();
+                if (statuses.size() > 0) {
+                    updateState(CHANNEL_LASTTWEET, StringType.valueOf(statuses.get(0).getText()));
+                } else {
+                    logger.debug("No Statuses Found");
+                }
             }
         } catch (TwitterException e) {
             logger.debug("Error when trying to refresh Twitter Account: {}", e.getMessage());
@@ -149,7 +140,6 @@ public class TwitterHandler extends BaseThingHandler {
      * @return <code>true</code>, if sending the tweet has been successful and
      *         <code>false</code> in all other cases.
      */
-    @SuppressWarnings("null")
     private boolean sendTweet(final String tweetTxt, final @Nullable File fileToAttach) {
         if (!checkPrerequisites()) {
             return false;
@@ -157,19 +147,22 @@ public class TwitterHandler extends BaseThingHandler {
         // abbreviate the Tweet to meet the 280 character limit ...
         String abbreviatedTweetTxt = abbreviateString(tweetTxt, CHARACTER_LIMIT);
         try {
-            // send the Tweet
-            StatusUpdate status = new StatusUpdate(abbreviatedTweetTxt);
-            if (fileToAttach != null && fileToAttach.isFile()) {
-                status.setMedia(fileToAttach);
+            if (client != null) {
+                Twitter localClient = client;
+                // send the Tweet
+                StatusUpdate status = new StatusUpdate(abbreviatedTweetTxt);
+                if (fileToAttach != null && fileToAttach.isFile()) {
+                    status.setMedia(fileToAttach);
+                }
+                Status updatedStatus = localClient.updateStatus(status);
+                logger.debug("Successfully sent Tweet '{}'", updatedStatus.getText());
+                updateState(CHANNEL_LASTTWEET, StringType.valueOf(updatedStatus.getText()));
+                return true;
             }
-            Status updatedStatus = client.updateStatus(status);
-            logger.debug("Successfully sent Tweet '{}'", updatedStatus.getText());
-            updateState(CHANNEL_LASTTWEET, StringType.valueOf(updatedStatus.getText()));
-            return true;
         } catch (TwitterException e) {
             logger.warn("Failed to send Tweet '{}' because of : {}", abbreviatedTweetTxt, e.getLocalizedMessage());
-            return false;
         }
+        return false;
     }
 
     /**
@@ -271,23 +264,26 @@ public class TwitterHandler extends BaseThingHandler {
      * @return <code>true</code>, if sending the direct message has been successful and
      *         <code>false</code> in all other cases.
      */
-    @SuppressWarnings("null")
     public boolean sendDirectMessage(String recipientId, String messageTxt) {
         if (!checkPrerequisites()) {
             return false;
         }
 
         try {
-            // abbreviate the Tweet to meet the allowed character limit ...
-            String abbreviatedMessageTxt = abbreviateString(messageTxt, CHARACTER_LIMIT);
-            // send the direct message
-            DirectMessage message = client.sendDirectMessage(recipientId, abbreviatedMessageTxt);
-            logger.debug("Successfully sent direct message '{}' to @'{}'", message.getText(), message.getRecipientId());
-            return true;
+            if (client != null) {
+                Twitter localClient = client;
+                // abbreviate the Tweet to meet the allowed character limit ...
+                String abbreviatedMessageTxt = abbreviateString(messageTxt, CHARACTER_LIMIT);
+                // send the direct message
+                DirectMessage message = localClient.sendDirectMessage(recipientId, abbreviatedMessageTxt);
+                logger.debug("Successfully sent direct message '{}' to @'{}'", message.getText(),
+                        message.getRecipientId());
+                return true;
+            }
         } catch (TwitterException e) {
             logger.warn("Failed to send Direct Message '{}' because of :'{}'", messageTxt, e.getLocalizedMessage());
-            return false;
         }
+        return false;
     }
 
     /**
@@ -296,7 +292,6 @@ public class TwitterHandler extends BaseThingHandler {
      * @return <code>true</code>, if twitter account was initialized
      *         <code>false</code> in all other cases.
      */
-    @SuppressWarnings("null")
     private boolean checkPrerequisites() {
         if (client == null) {
             logger.debug("Twitter client is not yet configured > execution aborted!");
@@ -314,7 +309,6 @@ public class TwitterHandler extends BaseThingHandler {
      *
      * @return a new instance of a Twitter4J Twitter client.
      */
-    @SuppressWarnings("null")
     private twitter4j.Twitter createClient() {
         twitter4j.Twitter client = TwitterFactory.getSingleton();
         client.setOAuthConsumer(config.consumerKey, config.consumerSecret);
@@ -331,8 +325,8 @@ public class TwitterHandler extends BaseThingHandler {
     }
 
     public static String getExtension(String filename) {
-        if(filename.contains(".")) {
-            return filename.substring(filename.lastIndexOf(".") + 1));
+        if (filename.contains(".")) {
+            return filename.substring(filename.lastIndexOf(".") + 1);
         }
         return new String();
     }
