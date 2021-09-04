@@ -143,7 +143,7 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
         List<Channel> channels = new ArrayList<>(getThing().getChannels());
 
         boolean changed = false;
-        for (int i = 1; i <= size; i++) {
+        for (int i = 0; i < size; i++) {
             String channelId = dataItem.getChannelId(i);
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
 
