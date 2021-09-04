@@ -412,7 +412,7 @@ The number of entries is determined by a TSP or FHB size message.
 Channels for TSP and FHB entries are automatically created when a TSP or FHB size message is received.
 An index number is added to the base channel name to create a unique channel name for each entry.
 
-For example, if a TSP size message is received for a boiler unit (OpenTherm DATA-ID 10) with value 60, then channels `tspentry_1` through `tspentry_60` will be automatically created and linked to the corresponding TSP entry (OpenTherm DATA-ID 11).
+For example, if a TSP size message is received for a boiler unit (OpenTherm DATA-ID 10) with value 60, then channels `tspentry_0` through `tspentry_59` will be automatically created and linked to the corresponding TSP entry (OpenTherm DATA-ID 11).
 
 ## Using OpenTherm Gateway as a master device
 
