@@ -252,7 +252,7 @@ public class NanoleafPanelHandler extends BaseThingHandler {
                 String content = gson.toJson(effects);
                 logger.debug("sending effect command from panel {}: {}", getThing().getUID(), content);
                 setNewRenderedEffectRequest.content(new StringContentProvider(content), "application/json");
-                OpenAPIUtils.sendOpenAPIRequest(httpClient, setNewRenderedEffectRequest);
+                OpenAPIUtils.sendOpenAPIRequest(setNewRenderedEffectRequest);
             } else {
                 logger.warn("Couldn't set rendering effect as Bridge-Handler {} is null", bridge.getUID());
             }
@@ -308,7 +308,7 @@ public class NanoleafPanelHandler extends BaseThingHandler {
                     Request setPanelUpdateRequest = OpenAPIUtils.requestBuilder(httpClient, config, API_EFFECT,
                             HttpMethod.PUT);
                     setPanelUpdateRequest.content(new StringContentProvider(gson.toJson(effects)), "application/json");
-                    ContentResponse panelData = OpenAPIUtils.sendOpenAPIRequest(httpClient, setPanelUpdateRequest);
+                    ContentResponse panelData = OpenAPIUtils.sendOpenAPIRequest(setPanelUpdateRequest);
                     // parse panel data
 
                     parsePanelData(panelID, config, panelData);

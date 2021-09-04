@@ -75,13 +75,17 @@ Unfortunately it is not easy to find out which panel gets which id, and this bec
 For canvas that use square panels, you can request the layout through a console command:
 
 To be able to access that command you need to logon to your openhab server and issue the following command within the shell - for more information on that look up the [page about the openhab console](https://www.openhab.org/docs/administration/console.html]).
+
 ```
 openhab-cli console
 ```
+
 then issue the following command:
+
 ```
 openhab:nanoleaf layout [<thingUID>]
 ```
+
 The `thingUID` is an optional parameter. If it is not provided, the command loops through all Nanoleaf controller things it can find and prints the layout for each of them.
 
 Compare the following output with the right picture at the beginning of the article

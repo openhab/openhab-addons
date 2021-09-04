@@ -81,27 +81,25 @@ public class Layout {
             for (int index = 0; index < noofDefinedPanels; index++) {
                 if (positionData != null) {
 
-                    @SuppressWarnings("null")
                     PositionDatum panel = positionData.get(index);
                     logger.debug("Layout: Panel position data x={} y={}", panel.getPosX(), panel.getPosY());
 
-                    if (panel != null) {
-                        if (panel.getPosX() < minx) {
-                            minx = panel.getPosX();
-                        }
-                        if (panel.getPosX() > maxx) {
-                            maxx = panel.getPosX();
-                        }
-                        if (panel.getPosY() < miny) {
-                            miny = panel.getPosY();
-                        }
-                        if (panel.getPosY() > maxy) {
-                            maxy = panel.getPosY();
-                        }
-                        if (panel.getPanelSize() > sideLength) {
-                            sideLength = panel.getPanelSize();
-                        }
+                    if (panel.getPosX() < minx) {
+                        minx = panel.getPosX();
                     }
+                    if (panel.getPosX() > maxx) {
+                        maxx = panel.getPosX();
+                    }
+                    if (panel.getPosY() < miny) {
+                        miny = panel.getPosY();
+                    }
+                    if (panel.getPosY() > maxy) {
+                        maxy = panel.getPosY();
+                    }
+                    if (panel.getPanelSize() > sideLength) {
+                        sideLength = panel.getPanelSize();
+                    }
+
                 }
             }
 
@@ -123,7 +121,7 @@ public class Layout {
                         @SuppressWarnings("null")
                         PositionDatum panel = positionData.get(index);
 
-                        if (panel != null && panel.getPosY() == lineY) {
+                        if (panel.getPosY() == lineY) {
                             map.put(panel.getPosX(), panel);
                         }
                     }

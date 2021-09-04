@@ -87,7 +87,7 @@ public class OpenAPIUtils {
         }
     }
 
-    public static ContentResponse sendOpenAPIRequest(HttpClient httpClient, Request request) throws NanoleafException {
+    public static ContentResponse sendOpenAPIRequest(Request request) throws NanoleafException {
         try {
             traceSendRequest(request);
             ContentResponse openAPIResponse = request.send();
@@ -113,8 +113,9 @@ public class OpenAPIUtils {
                 return openAPIResponse;
             }
         } catch (ExecutionException ee) {
-            if (ee.getCause() instanceof HttpResponseException && ((HttpResponseException) ee.getCause()).getResponse()
-                    .getStatus() == HttpStatus.UNAUTHORIZED_401) {
+            Throwable cause = ee.getCause();
+            if (cause != null && cause instanceof HttpResponseException
+                    && ((HttpResponseException) cause).getResponse().getStatus() == HttpStatus.UNAUTHORIZED_401) {
                 LOGGER.warn("OpenAPI request unauthorized. Invalid authorization token.");
                 throw new NanoleafUnauthorizedException("Invalid authorization token");
             } else {
@@ -136,11 +137,9 @@ public class OpenAPIUtils {
                     request.getParams());
             if (request.getContent() != null) {
                 Iterator<ByteBuffer> iter = request.getContent().iterator();
-                if (iter != null) {
-                    while (iter.hasNext()) {
-                        ByteBuffer buffer = iter.next();
-                        LOGGER.trace("Content {}", StandardCharsets.UTF_8.decode(buffer).toString());
-                    }
+                while (iter.hasNext()) {
+                    ByteBuffer buffer = iter.next();
+                    LOGGER.trace("Content {}", StandardCharsets.UTF_8.decode(buffer).toString());
                 }
             }
 

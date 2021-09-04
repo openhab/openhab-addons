@@ -33,6 +33,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
@@ -91,8 +92,9 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService
 
     private void createResultsFromControllerInfo() {
         ThingUID bridgeUID;
-        if (bridgeHandler != null) {
-            bridgeUID = bridgeHandler.getThing().getUID();
+        BridgeHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            bridgeUID = localBridgeHandler.getThing().getUID();
         } else {
             return;
         }
@@ -136,7 +138,9 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService
     @Override
     public void setThingHandler(ThingHandler handler) {
         this.bridgeHandler = (NanoleafControllerHandler) handler;
-        this.bridgeHandler.registerControllerListener(this);
+        NanoleafControllerHandler localBridgeHandler = (NanoleafControllerHandler) handler;
+
+        localBridgeHandler.registerControllerListener(this);
     }
 
     @Override
