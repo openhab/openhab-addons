@@ -7,7 +7,7 @@ This binding integrates the [Nanoleaf Light Panels](https://nanoleaf.me/en/consu
 It enables you to authenticate, control, and obtain information of a Light Panel's device.
 The binding uses the [Nanoleaf OpenAPI](https://forum.nanoleaf.me/docs/openapi), which requires firmware version [1.5.0](https://helpdesk.nanoleaf.me/hc/en-us/articles/214006129-Light-Panels-Firmware-Release-Notes) or higher.
 
-![Image](doc/LightPanels2_small.jpg) ![Image](doc/NanoCanvas_small.jpg)
+![Image](doc/LightPanels2_small.jpg) ![Image](doc/the-worm-small.png) ![Image](doc/NanoCanvas_small.jpg) 
 
 ## Supported Things
 

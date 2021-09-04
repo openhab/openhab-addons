@@ -75,6 +75,9 @@ public class LayoutTest {
     public void testTheRightLayoutView() {
         @Nullable
         Layout layout = gson.fromJson(layout1Json, Layout.class);
+        if (layout == null) {
+            layout = new Layout();
+        }
         String layoutView = layout.getLayoutView();
         assertThat(layoutView, is(equalTo(
                 "  186       42064       61141                   45187       33626       10523                   39163 \n"
@@ -86,6 +89,9 @@ public class LayoutTest {
     public void testTheInconsistentLayoutView() {
         @Nullable
         Layout layout = gson.fromJson(layoutInconsistentPanelNoJson, Layout.class);
+        if (layout == null) {
+            layout = new Layout();
+        }
         String layoutView = layout.getLayoutView();
         assertThat(layoutView,
                 is(equalTo("            31413                    9162       13276                         \n"
