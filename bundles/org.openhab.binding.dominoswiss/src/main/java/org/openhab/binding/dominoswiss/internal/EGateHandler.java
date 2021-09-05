@@ -94,12 +94,22 @@ public class EGateHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         try {
-            egateSocket.close();
-            refreshJob.cancel(true);
-            reader.close();
-            if (pollingJob != null) {
-                pollingJob.cancel(true);
-                pollingJob = null;
+            Socket localEgateSocket = egateSocket;
+            if (localEgateSocket != null) {
+                localEgateSocket.close();
+            }
+            Future<?> localRefreshJob = refreshJob;
+            if (localRefreshJob != null) {
+                localRefreshJob.cancel(true);
+            }
+            BufferedReader localReader = reader;
+            if (localReader != null) {
+                localReader.close();
+            }
+            ScheduledFuture<?> localPollingJob = pollingJob;
+            if (localPollingJob != null) {
+                localPollingJob.cancel(true);
+                localPollingJob = null;
             }
             logger.debug("EGate Handler connection closed, disposing");
         } catch (IOException e) {
@@ -107,6 +117,7 @@ public class EGateHandler extends BaseBridgeHandler {
         }
     }
 
+    @SuppressWarnings("null")
     public synchronized boolean isConnected() {
         if (egateSocket == null) {
             return false;
@@ -162,7 +173,7 @@ public class EGateHandler extends BaseBridgeHandler {
         sendCommand("Instruction=1;ID=" + id + ";Command=5;Priority=1;CheckNr=5408219;" + CR);
     }
 
-    // @SuppressWarnings("null")
+    @SuppressWarnings("null")
     public void registerBlind(String id, ThingUID uid) {
         logger.debug("Registring Blind id {} with thingUID {}", id, uid);
         registeredBlinds.put(id, uid);
@@ -191,20 +202,18 @@ public class EGateHandler extends BaseBridgeHandler {
             writer.write(command);
             writer.flush();
         } catch (IOException e) {
-            logger.error("Error while sending command {} to Dominoswiss eGate Server {} ", command, e.toString());
+            logger.debug("Error while sending command {} to Dominoswiss eGate Server {} ", command, e.toString());
         }
     }
 
+    @SuppressWarnings("null")
     private void pollingConfig() {
         if (!isConnected()) {
             synchronized (lock) {
                 try {
                     egateSocket = new Socket();
-                    logger.debug("before connect");
                     egateSocket.connect(new InetSocketAddress(host, port));
-                    logger.debug("after connect");
                     egateSocket.setSoTimeout(SOCKET_TIMEOUT_SEC);
-                    logger.debug("before writer");
                     writer = new BufferedWriter(new OutputStreamWriter(egateSocket.getOutputStream()));
                     writer.write("SilenceModeSet;Value=0;" + CR);
                     writer.flush();
@@ -227,13 +236,13 @@ public class EGateHandler extends BaseBridgeHandler {
                             getThing().getStatus().toString());
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                    logger.debug("Something went wrong: Host {} Port {}", host, port);
                 }
             }
         }
     }
 
     private void startAutomaticRefresh() {
+        @SuppressWarnings("null")
         Runnable runnable = () -> {
             try {
                 if (reader == null) {
@@ -246,8 +255,8 @@ public class EGateHandler extends BaseBridgeHandler {
                     onData(input);
                 }
             } catch (IOException e) {
-                logger.debug("Error while reading command from Dominoswiss eGate Server {} ", e.toString());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.toString());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "Error while reading command from Dominoswiss eGate Server " + e.toString());
             }
         };
         refreshJob = scheduler.submit(runnable);
@@ -273,7 +282,6 @@ public class EGateHandler extends BaseBridgeHandler {
         return null;
     }
 
-    @SuppressWarnings("null")
     protected void onData(String input) {
         // Instruction=2;ID=19;Command=1;Value=0;Priority=0;
         Map<String, String> map = new HashMap<String, String>();
@@ -284,38 +292,5 @@ public class EGateHandler extends BaseBridgeHandler {
                 map.put(parts[i], parts[i + 1]);
             }
         }
-        // only use FSSReceive Commands
-        /*
-         * Will be used in a Future Release
-         * if (map.get("Instruction").toString() == "2") {
-         * String id = map.get("ID");
-         * ThingUID uid = registeredBlinds.get(map.get(id));
-         * if (uid != null) {
-         * blind = getThingByUID(uid);
-         *
-         * List<Channel> channels = blind.getChannels();
-         * logger.debug("Channels: {} of Blind {}", channels.toString(), blind.getConfiguration());
-         *
-         * switch (map.get("Command")) {
-         * case "1":
-         * break;
-         *
-         * case "2":
-         * break;
-         *
-         * case "3":
-         * break;
-         *
-         * case "4":
-         * break;
-         * default:
-         * break;
-         * }
-         *
-         * } else {
-         * logger.error("Error no blind registered in eGate Bridge. Please add some blinds");
-         * }
-         * }
-         */
     }
 }

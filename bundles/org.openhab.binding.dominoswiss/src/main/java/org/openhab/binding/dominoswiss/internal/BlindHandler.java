@@ -48,6 +48,7 @@ public class BlindHandler extends BaseThingHandler {
     }
 
     @Override
+    @SuppressWarnings("null")
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Blind got command: {} and ChannelUID: {} ", command.toFullString(),
                 channelUID.getIdWithoutGroup());
@@ -150,6 +151,7 @@ public class BlindHandler extends BaseThingHandler {
         }
     }
 
+    @SuppressWarnings("null")
     @Override
     public void initialize() {
         this.id = getConfig().as(BlindConfig.class).id;

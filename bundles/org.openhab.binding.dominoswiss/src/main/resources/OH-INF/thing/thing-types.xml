@@ -24,7 +24,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="egate"/>
 		</supported-bridge-type-refs>
-		<label>Blinds controlled by Dominoswiss</label>
+		<label>Blind</label>
 		<description>Provides various control commands for Dominoswiss receivers</description>
 		<channels>
 			<channel id="pulseUp" typeId="pulseUp"/>
@@ -92,7 +92,7 @@
 
 	<channel-type id="shutterTilt">
 		<item-type>Rollershutter</item-type>
-		<label>Shutter tilt up down</label>
+		<label>Shutter Tilt Up Down</label>
 		<description>Handle the commands tiltUp/tiltDown/stop </description>
 		<state readOnly="true"/>
 	</channel-type>
