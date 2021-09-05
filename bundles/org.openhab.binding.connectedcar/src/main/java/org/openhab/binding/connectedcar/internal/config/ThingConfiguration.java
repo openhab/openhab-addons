@@ -15,14 +15,13 @@ package org.openhab.binding.connectedcar.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link VehicleConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link ThingConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class VehicleConfiguration {
-    public String vin = "";
-    public String pin = "";
+public class ThingConfiguration {
+    public String vin = "", pin = "";
 
     public int numShortTrip = 1; // number of entries from short trip data history
     public int numLongTrip = 1; // number of entries from long trip data history

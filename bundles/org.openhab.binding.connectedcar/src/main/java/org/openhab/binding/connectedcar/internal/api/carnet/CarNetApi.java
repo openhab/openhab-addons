@@ -186,7 +186,8 @@ public class CarNetApi extends ApiWithOAuth {
 
     @Override
     public ArrayList<String> getVehicles() throws ApiException {
-        return callApi("https://msg.volkswagen.de/fs-car/usermanagement/users/v1/{0}/{1}/vehicles", "getVehicles",
+        // return callApi("https://msg.volkswagen.de/fs-car/usermanagement/users/v1/{0}/{1}/vehicles", "getVehicles",
+        return callApi("usermanagement/users/v1/{0}/{1}/vehicles", "getVehicles",
                 CarNetVehicleList.class).userVehicles.vehicle;
     }
 

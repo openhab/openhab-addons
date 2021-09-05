@@ -35,6 +35,11 @@ public class WeChargeJsonDTO {
 
     public class WCLocationAddress {
         public String street, zip, city, country;
+
+        @Override
+        public String toString() {
+            return street + ", " + zip + " " + city + ", " + country;
+        }
     }
 
     public class WCLocationList {
@@ -61,45 +66,16 @@ public class WeChargeJsonDTO {
         public WeChargeLocationList data;
     }
 
-    public class WCStationList1 {
-        public class WeChargeStation2 {
-            @SerializedName("created_at")
-            public String createdAt;
-            @SerializedName("automatic_renewal")
-            public Boolean automaticRenewal;
-            @SerializedName("end_date")
-            public String endDate;
-            public String id;
-            @SerializedName("startdate")
-            public String startDate;
-            public String status;
-            @SerializedName("subscriber_id")
-            public String subscriberId;
-            @SerializedName("tariff_id")
-            public String tariffId;
-            @SerializedName("tariff_name")
-            public String tariffName;
-            @SerializedName("updated_at")
-            public String updatedAt;
-            public String currency;
-            @SerializedName("sign_up_fee")
-            public String signUpFee;
-            @SerializedName("monthly_fee")
-            public String monthlyFee;
-        }
-
-        public String timestamp;
-        public ArrayList<WeChargeStation2> result;
-    }
-
     public class WCStationLocation {
         public class WCStatuionGeo {
-
+            public String longitude;
+            public String latitude;
         }
 
         public String id;
         public WCLocationAddress address;
-        public WCStatuionGeo geo_location;
+        @SerializedName("geo_location")
+        public WCStatuionGeo geoLocation;
         public String description;
     }
 
@@ -253,8 +229,8 @@ public class WeChargeJsonDTO {
         public ArrayList<WeChargeRfidCard> result;
     }
 
-    public class WCChargePayRecordResponse {
-        public class WeChargePayRecord {
+    public static class WCChargePayRecordResponse {
+        public static class WeChargePayRecord {
             public String id;
             @SerializedName("subscription_id")
             public String subscriptionId;
@@ -344,6 +320,62 @@ public class WeChargeJsonDTO {
         public ArrayList<WeChargeHomeRecord> chargingRecords;
     }
 
+    public static class WeChargeRecord extends WeChargePayRecord {
+        public String rfidCard, tariff;
+        public Boolean sessionFaulted = false;
+
+        public WeChargeRecord(WeChargeHomeRecord r, WeChargeStatus status) {
+            this.id = r.transactionId;
+            this.created_At = r.createdAt;
+            this.updatedAt = r.createdAt;
+            this.rfidCard = r.rfidCardLabel;
+            this.locationEvseId = r.stationId;
+            this.locationName = r.currentStationName;
+            this.locationAddress = r.location.address.toString();
+            this.sessionFaulted = r.sessionFaulted;
+            this.startDateTime = r.startDateTime;
+            this.endDateTime = r.stopDateTime;
+
+            if (r.location.geoLocation != null) {
+                this.locationCoordinatesLatitude = r.location.geoLocation.latitude;
+                this.locationCoordinatesLongitude = r.location.geoLocation.longitude;
+            } else {
+                this.locationCoordinatesLatitude = "";
+                this.locationCoordinatesLongitude = "";
+            }
+            WeChargeRfidCard rfid = status.getRfidCard(r.rfidCardId);
+            this.subscriptionId = rfid != null ? rfid.subscriptionId : "";
+            WeChargeSubscription sub = status.getSubscription(this.subscriptionId);
+            this.currency = sub != null ? sub.currency : "";
+            this.tariff = sub != null ? sub.tariffName : "";
+            /*
+             * public String locationConnectorPowerType;
+             * public Double totalEnergy;UNDEF
+             * public Double totalPrice;UNDEF
+             * public Double totalTime;stopDateTime-startDateTime
+             */
+        }
+
+        public WeChargeRecord(WeChargePayRecord r, WeChargeStatus status) {
+            this.id = r.id;
+            this.created_At = r.created_At;
+            this.updatedAt = r.updatedAt;
+            this.locationName = r.locationName;
+            this.locationEvseId = r.locationEvseId;
+            this.locationAddress = r.locationAddress;
+            this.locationCoordinatesLatitude = r.locationCoordinatesLatitude;
+            this.locationCoordinatesLongitude = r.locationCoordinatesLongitude;
+            this.locationConnectorPowerType = r.locationConnectorPowerType;
+            this.startDateTime = r.startDateTime;
+            this.endDateTime = r.endDateTime;
+            this.totalEnergy = r.totalEnergy;
+            this.totalPrice = r.totalPrice;
+            this.totalTime = r.totalTime;
+            this.rfidCard = ""; // no info included!
+            this.sessionFaulted = false;
+        }
+    }
+
     public static class WeChargeStatus {
         public String stationId = "";
 
@@ -351,8 +383,7 @@ public class WeChargeJsonDTO {
         public Map<String, WeChargeSubscription> subscriptions = new HashMap<>();
         public Map<String, WeChargeTariff> tariffs = new HashMap<>();;
         public Map<String, WeChargeRfidCard> rfidCards = new HashMap<>();;
-        public Map<String, WeChargeHomeRecord> homeChargingRecords = new HashMap<>();;
-        public Map<String, WeChargePayRecord> payChargingRecords = new HashMap<>();;
+        public Map<String, WeChargeRecord> chargingRecords = new HashMap<>();;
 
         public WeChargeStatus() {
         }
@@ -373,19 +404,29 @@ public class WeChargeJsonDTO {
         }
 
         public void addRfidCard(WeChargeRfidCard r) {
-            rfidCards.put(r.subscriberId, r);
+            rfidCards.put(r.id, r);
         }
 
         public void addHomeChargingRecord(WeChargeHomeRecord r) {
-            homeChargingRecords.put(r.transactionId, r);
+            WeChargeRecord record = new WeChargeRecord(r, this);
+            chargingRecords.put(record.id, record);
         }
 
         public void addPayChargingRecord(WeChargePayRecord r) {
-            payChargingRecords.put(r.id, r);
+            WeChargeRecord record = new WeChargeRecord(r, this);
+            chargingRecords.put(record.id, record);
         }
 
         public @Nullable WeChargeTariff getTariffs(String id) {
             return tariffs.get(id);
+        }
+
+        public @Nullable WeChargeRfidCard getRfidCard(String id) {
+            return rfidCards.get(id);
+        }
+
+        public @Nullable WeChargeSubscription getSubscription(String id) {
+            return subscriptions.get(id);
         }
 
         public void clearCache() {

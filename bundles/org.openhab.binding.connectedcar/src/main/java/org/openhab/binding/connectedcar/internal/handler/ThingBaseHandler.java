@@ -40,7 +40,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiResult;
 import org.openhab.binding.connectedcar.internal.api.BrandNull;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
-import org.openhab.binding.connectedcar.internal.config.VehicleConfiguration;
+import org.openhab.binding.connectedcar.internal.config.ThingConfiguration;
 import org.openhab.binding.connectedcar.internal.provider.CarChannelTypeProvider;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
@@ -113,7 +113,7 @@ public abstract class ThingBaseHandler extends BaseThingHandler implements Accou
 
     @Override
     public void initialize() {
-        logger.debug("{}: Initializing!", getConfigAs(VehicleConfiguration.class).vin);
+        logger.debug("{}: Initializing!", getConfigAs(ThingConfiguration.class).vin);
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing");
         scheduler.schedule(() -> {
             // Register listener and wait for account being ONLINE
@@ -150,7 +150,7 @@ public abstract class ThingBaseHandler extends BaseThingHandler implements Accou
     private void initializeConfig() {
         if (accountHandler != null) {
             config = accountHandler.getCombinedConfig();
-            config.vehicle = getConfigAs(VehicleConfiguration.class);
+            config.vehicle = getConfigAs(ThingConfiguration.class);
             skipCount = Math.max(config.vehicle.pollingInterval * 60 / POLL_INTERVAL_SEC, 2);
             cache.clear();
 
@@ -304,7 +304,7 @@ public abstract class ThingBaseHandler extends BaseThingHandler implements Accou
                     break;
                 default:
                     if (!handleBrandCommand(channelUID, command)) {
-                        logger.info("{}: Channel {} is unknown, command {} ignored", thingId, channelId, command);
+                        logger.info("{}: Channel {} is unknown, command {} ignored", thingId, channelId, command);
                     }
                     break;
             }

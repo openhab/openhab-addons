@@ -31,7 +31,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleStat
 import org.openhab.binding.connectedcar.internal.api.ApiIdentity.JwtToken;
 import org.openhab.binding.connectedcar.internal.api.ApiIdentity.OAuthToken;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
-import org.openhab.binding.connectedcar.internal.config.VehicleConfiguration;
+import org.openhab.binding.connectedcar.internal.config.ThingConfiguration;
 import org.openhab.core.library.types.PointType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -215,7 +215,7 @@ public class ApiBase extends ApiRequestQueue implements ApiBrandInterface, Brand
         return tokenManager.getWcAccessToken(config);
     }
 
-    public void setConfig(VehicleConfiguration config) {
+    public void setConfig(ThingConfiguration config) {
         this.config.vehicle = config;
         http.setConfig(this.config);
     }

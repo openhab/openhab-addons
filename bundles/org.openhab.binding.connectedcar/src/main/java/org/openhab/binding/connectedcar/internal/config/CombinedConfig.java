@@ -55,21 +55,25 @@ public class CombinedConfig {
     public CarNetOidcConfig oidcConfig = new CarNetOidcConfig();
     public @Nullable BrandAuthenticator authenticator;
     public AccountConfiguration account = new AccountConfiguration();
-    public VehicleConfiguration vehicle = new VehicleConfiguration();
+    public ThingConfiguration vehicle = new ThingConfiguration();
     public VehicleConfig vstatus = new VehicleConfig();
     public UserConfig user = new UserConfig();
 
     public CombinedConfig() {
     }
 
-    public CombinedConfig(CombinedConfig aconfig, VehicleConfiguration vconfig) {
+    public CombinedConfig(CombinedConfig aconfig, ThingConfiguration vconfig) {
+        this(vconfig);
         this.api = aconfig.api;
         this.account = aconfig.account;
         this.tokenSetId = aconfig.tokenSetId;
         this.authenticator = aconfig.authenticator;
-        this.vehicle = vconfig;
         this.oidcConfig = new CarNetOidcConfig();
         this.user = new UserConfig();
+    }
+
+    public CombinedConfig(ThingConfiguration vconfig) {
+        this.vehicle = vconfig;
     }
 
     public String getLogId() {

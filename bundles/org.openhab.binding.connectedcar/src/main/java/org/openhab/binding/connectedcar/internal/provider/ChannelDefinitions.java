@@ -594,6 +594,8 @@ public class ChannelDefinitions {
         add("", "", CHANNEL_TRANS_ENERGY, ITEMT_ENERGY, group, Units.KILOWATT_HOUR, false, true);
         add("", "", CHANNEL_TRANS_PRICE, ITEMT_NUMBER, group);
         add("", "", CHANNEL_TRANS_DURATION, ITEMT_NUMBER, group, QMINUTES);
+        add("", "", CHANNEL_TRANS_RFID, ITEMT_STRING, group);
+        add("", "", CHANNEL_TRANS_TARIFF, ITEMT_STRING, group);
     }
 
     private ChannelIdMapEntry add(String name, String id, String channel, String itemType, String group,

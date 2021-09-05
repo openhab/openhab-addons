@@ -267,7 +267,7 @@ public class IdentityManager {
             logger.debug("{}: Unable to refresh token: {}", config.getLogId(), e.toString()); // "normal, no stack
                                                                                               // trace"
         } catch (IllegalArgumentException e) {
-            logger.debug("Invalid tokenSet!");
+            logger.debug("{}: Invalid tokenSet!", config.getLogId());
         }
         return false;
     }

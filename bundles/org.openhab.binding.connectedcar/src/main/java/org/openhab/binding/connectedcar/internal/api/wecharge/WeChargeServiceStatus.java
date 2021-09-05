@@ -23,9 +23,9 @@ import org.openhab.binding.connectedcar.internal.api.ApiBase;
 import org.openhab.binding.connectedcar.internal.api.ApiBaseService;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.GeoPosition;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
-import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCChargePayRecordResponse.WeChargePayRecord;
 import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCRfidCardsResponse.WeChargeRfidCard;
 import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WCSubscriptionsResponse.WeChargeSubscription;
+import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WeChargeRecord;
 import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WeChargeStationDetails;
 import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WeChargeStatus;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectServiceStatus;
@@ -85,7 +85,7 @@ public class WeChargeServiceStatus extends ApiBaseService {
             addChannels(channels, group, true, CHANNEL_TRANS_ID, CHANNEL_TRANS_LOCATION, CHANNEL_TRANS_ADDRESS,
                     CHANNEL_TRANS_SUBID, CHANNEL_TRANS_EVSE, CHANNEL_TRANS_PTYPE, CHANNEL_TRANS_START,
                     CHANNEL_TRANS_PTYPE, CHANNEL_TRANS_START, CHANNEL_TRANS_END, CHANNEL_TRANS_ENERGY,
-                    CHANNEL_TRANS_PRICE, CHANNEL_TRANS_DURATION);
+                    CHANNEL_TRANS_RFID, CHANNEL_TRANS_TARIFF, CHANNEL_TRANS_PRICE, CHANNEL_TRANS_DURATION);
         }
         return true;
     }
@@ -136,8 +136,8 @@ public class WeChargeServiceStatus extends ApiBaseService {
         }
 
         i = 1;
-        for (Map.Entry<String, WeChargePayRecord> c : status.payChargingRecords.entrySet()) {
-            WeChargePayRecord record = c.getValue();
+        for (Map.Entry<String, WeChargeRecord> c : status.chargingRecords.entrySet()) {
+            WeChargeRecord record = c.getValue();
             String group = CHANNEL_CHANNEL_GROUP_TRANSACTIONS + i++;
             updated |= updateChannel(group, CHANNEL_TRANS_ID, getStringType(record.id));
             updated |= updateChannel(group, CHANNEL_TRANS_LOCATION,
@@ -146,13 +146,16 @@ public class WeChargeServiceStatus extends ApiBaseService {
             updated |= updateChannel(group, CHANNEL_TRANS_ADDRESS, getStringType(record.locationAddress));
             updated |= updateChannel(group, CHANNEL_TRANS_EVSE, getStringType(record.locationEvseId));
             updated |= updateChannel(group, CHANNEL_TRANS_SUBID, getStringType(record.subscriptionId));
-            updated |= updateChannel(group, CHANNEL_TRANS_PTYPE, getStringType(record.locationConnectorPowerType));
+            updated |= updateChannel(group, CHANNEL_TRANS_PTYPE,
+                    getStringTypeNonEmpty(record.locationConnectorPowerType));
+            updated |= updateChannel(group, CHANNEL_TRANS_RFID, getStringTypeNonEmpty(record.rfidCard));
+            updated |= updateChannel(group, CHANNEL_TRANS_TARIFF, getStringTypeNonEmpty(record.tariff));
             updated |= updateChannel(group, CHANNEL_TRANS_START, getDateTime(record.startDateTime));
             updated |= updateChannel(group, CHANNEL_TRANS_END, getDateTime(record.endDateTime));
             updated |= updateChannel(group, CHANNEL_TRANS_ENERGY, getDecimal(record.totalEnergy));
             updated |= updateChannel(group, CHANNEL_TRANS_DURATION, getDecimal(record.totalTime));
             updated |= updateChannel(group, CHANNEL_TRANS_PRICE, getDecimal(record.totalPrice));
-            if (i > getConfig().vehicle.numChargingRecords) {
+            if (i >= getConfig().vehicle.numChargingRecords) {
                 break;
             }
         }

@@ -288,6 +288,8 @@ public class BindingConstants {
     public static final String CHANNEL_TRANS_END = "transEnd";
     public static final String CHANNEL_TRANS_ENERGY = "transEnergy";
     public static final String CHANNEL_TRANS_PRICE = "transPrice";
+    public static final String CHANNEL_TRANS_RFID = "transRfidCard";
+    public static final String CHANNEL_TRANS_TARIFF = "transTariff";
     public static final String CHANNEL_TRANS_DURATION = "transDuration";
 
     // Thing Properties

@@ -239,7 +239,6 @@
 			<label>Entries in Charging History</label>
 			<description>Specifies the number of entries in the charging history, 0 to disable.</description>
 			<default>3</default>
-			<advanced>true</advanced>
 		</parameter>
 		<parameter name="pollingInterval" type="integer" required="false" min="5">
 			<label>Polling Interval</label>

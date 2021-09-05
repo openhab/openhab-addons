@@ -169,6 +169,10 @@ public class Helpers {
         return value != null ? new StringType(value) : UnDefType.UNDEF;
     }
 
+    public static State getStringTypeNonEmpty(@Nullable String value) {
+        return value != null && !value.isEmpty() ? new StringType(value) : UnDefType.UNDEF;
+    }
+
     public static DecimalType getDecimal(@Nullable Double value) {
         return new DecimalType((value != null ? value : 0));
     }
