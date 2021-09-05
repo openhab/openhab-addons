@@ -115,8 +115,8 @@ public class TwitterHandler extends BaseThingHandler {
             if (!checkPrerequisites()) {
                 return;
             }
-            if (client != null) {
-                Twitter localClient = client;
+            Twitter localClient = client;
+            if (localClient != null) {
                 ResponseList<Status> statuses = localClient.getUserTimeline();
                 if (statuses.size() > 0) {
                     updateState(CHANNEL_LASTTWEET, StringType.valueOf(statuses.get(0).getText()));
@@ -147,8 +147,8 @@ public class TwitterHandler extends BaseThingHandler {
         // abbreviate the Tweet to meet the 280 character limit ...
         String abbreviatedTweetTxt = abbreviateString(tweetTxt, CHARACTER_LIMIT);
         try {
-            if (client != null) {
-                Twitter localClient = client;
+            Twitter localClient = client;
+            if (localClient != null) {
                 // send the Tweet
                 StatusUpdate status = new StatusUpdate(abbreviatedTweetTxt);
                 if (fileToAttach != null && fileToAttach.isFile()) {
@@ -270,8 +270,8 @@ public class TwitterHandler extends BaseThingHandler {
         }
 
         try {
-            if (client != null) {
-                Twitter localClient = client;
+            Twitter localClient = client;
+            if (localClient != null) {
                 // abbreviate the Tweet to meet the allowed character limit ...
                 String abbreviatedMessageTxt = abbreviateString(messageTxt, CHARACTER_LIMIT);
                 // send the direct message
