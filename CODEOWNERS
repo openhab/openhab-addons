@@ -65,7 +65,6 @@
 /bundles/org.openhab.binding.digitalstrom/ @MichaelOchel @msiegele
 /bundles/org.openhab.binding.dlinksmarthome/ @MikeJMajor
 <<<<<<< HEAD
-/bundles/org.openhab.binding.dmx/ @J-N-K
 /bundles/org.openhab.binding.dominoswiss/ @Friesoch
 =======
 /bundles/org.openhab.binding.dmx/ @openhab/add-ons-maintainers
