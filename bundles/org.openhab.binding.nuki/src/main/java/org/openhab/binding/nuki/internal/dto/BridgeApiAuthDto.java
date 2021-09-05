@@ -13,14 +13,22 @@
 package org.openhab.binding.nuki.internal.dto;
 
 /**
- * The {@link BridgeApiLockStateDto} class defines the Data Transfer Object (POJO) for the Nuki Bridge API /lockState
- * endpoint.
+ * The {@link BridgeApiAuthDto} class defines the Data Transfer Object (POJO)
+ * for the Nuki Bridge API /auth endpoint.
  *
- * @author Markus Katter - Initial contribution
- * @contributer Christian Hoefler - Door sensor integration
+ * @author Jan Vybíral - Initial contribution
  */
-public class BridgeApiLockStateDto extends BridgeApiDeviceStateDto {
+public class BridgeApiAuthDto {
+    private String token;
     private boolean success;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public boolean isSuccess() {
         return success;
