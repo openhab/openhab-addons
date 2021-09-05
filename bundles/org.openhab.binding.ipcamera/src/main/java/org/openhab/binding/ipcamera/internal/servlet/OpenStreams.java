@@ -30,35 +30,35 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class OpenStreams {
     private List<StreamOutput> openStreams = Collections.synchronizedList(new ArrayList<StreamOutput>());
 
-    public void addStream(StreamOutput stream) {
+    public synchronized void addStream(StreamOutput stream) {
         openStreams.add(stream);
     }
 
-    public void removeStream(StreamOutput stream) {
+    public synchronized void removeStream(StreamOutput stream) {
         openStreams.remove(stream);
     }
 
-    public int getNumberOfStreams() {
+    public synchronized int getNumberOfStreams() {
         return openStreams.size();
     }
 
-    public boolean isEmpty() {
+    public synchronized boolean isEmpty() {
         return openStreams.isEmpty();
     }
 
-    public void updateContentType(String contentType) {
+    public synchronized void updateContentType(String contentType) {
         for (StreamOutput stream : openStreams) {
             stream.updateContentType(contentType);
         }
     }
 
-    public void queueFrame(byte[] frame) {
+    public synchronized void queueFrame(byte[] frame) {
         for (StreamOutput stream : openStreams) {
             stream.queueFrame(frame);
         }
     }
 
-    public void closeAllStreams() {
+    public synchronized void closeAllStreams() {
         for (StreamOutput stream : openStreams) {
             stream.close();
         }
