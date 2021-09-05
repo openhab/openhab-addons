@@ -161,10 +161,10 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         int mappedValue;
         switch (batteryStatus) {
             case 1: // Low
-                mappedValue = 33;
+                mappedValue = 10;
                 break;
             case 2: // Medium
-                mappedValue = 67;
+                mappedValue = 50;
                 break;
             case 3: // High
             case 4: // Plugged in
