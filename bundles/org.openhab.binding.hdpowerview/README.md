@@ -74,7 +74,7 @@ If it is a dual action (top-down plus bottom-up) shade, there is also a roller s
 All of these channels appear in the binding, but only those which have a physical implementation in the shade, will have any physical effect.
 
 | Channel        | Item Type                | Description |
-|----------------|--------------------------|------------|
+|----------------|--------------------------|-------------|
 | position       | Rollershutter            | The vertical position of the shade's rail -- see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Stop commands will halt any current movement of the rail. |
 | secondary      | Rollershutter            | The vertical position of the secondary rail (if any). Its function is basically identical to the `position` channel above -- but see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). |
 | vane           | Dimmer                   | The degree of opening of the slats or vanes. Setting this to a non-zero value will first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position -- see [Interdependency between Channel positions](#Interdependency-between-Channel-positions). |
