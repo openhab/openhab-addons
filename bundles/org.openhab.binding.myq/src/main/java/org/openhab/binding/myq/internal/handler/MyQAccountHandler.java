@@ -273,6 +273,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             logger.debug("MyQ communication error", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (MyQAuthenticationException e) {
+            logger.debug("MyQ authentication error", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             stopPolls();
         } catch (InterruptedException e) {
@@ -427,6 +428,8 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
                 throw new MyQCommunicationException("Invalid JSON Response " + response.getContentAsString());
             }
         } else if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
+            // our tokens no longer work, will need to login again
+            needsLogin = true;
             throw new MyQCommunicationException("Token was rejected for request");
         } else {
             throw new MyQCommunicationException(
