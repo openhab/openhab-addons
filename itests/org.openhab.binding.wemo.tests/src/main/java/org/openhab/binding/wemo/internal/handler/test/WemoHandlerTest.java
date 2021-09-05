@@ -124,7 +124,7 @@ public class WemoHandlerTest {
     @Test
     public void assertThatChannelAVERAGEPOWERIsUpdatedOnReceivedValue() {
         insightParams.avgPower = POWER_PARAM;
-        State expectedStateType = new QuantityType<>(PARAM, Units.WATT);
+        State expectedStateType = new QuantityType<>(POWER_PARAM, Units.WATT);
         String expectedChannel = CHANNEL_AVERAGEPOWER;
 
         testOnValueReceived(expectedChannel, expectedStateType, insightParams.toString());
