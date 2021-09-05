@@ -300,6 +300,12 @@ public class BridgeHandler extends BaseBridgeHandler {
     private void handleLongPollResult(LongPollResult result) {
         for (DeviceStatusUpdate update : result.result) {
             if (update != null && update.state != null) {
+                logger.debug("Got update of type {}: {}", update.type, update.state);
+
+                if (update.deviceId == null) {
+                    continue;
+                }
+
                 logger.debug("Got update for {}", update.deviceId);
 
                 boolean handled = false;
