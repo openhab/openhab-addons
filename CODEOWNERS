@@ -206,7 +206,7 @@
 /bundles/org.openhab.binding.nikohomecontrol/ @mherwege
 /bundles/org.openhab.binding.novafinedust/ @t2000
 /bundles/org.openhab.binding.ntp/ @marcelrv
-/bundles/org.openhab.binding.nuki/ @mkatter
+/bundles/org.openhab.binding.nuki/ @janvyb
 /bundles/org.openhab.binding.nuvo/ @mlobstein
 /bundles/org.openhab.binding.nzwateralerts/ @cossey
 /bundles/org.openhab.binding.oceanic/ @kgoderis
