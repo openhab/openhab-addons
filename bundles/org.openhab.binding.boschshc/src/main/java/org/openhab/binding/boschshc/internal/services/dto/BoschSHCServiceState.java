@@ -57,8 +57,8 @@ public class BoschSHCServiceState {
     protected boolean isValid() {
         String expectedType = stateType;
         if (expectedType == null || !expectedType.equals(this.type)) {
-            logger.debug(String.format("Expected state type %s for state class %s, received %s", expectedType,
-                    this.getClass().getName(), this.type));
+            var className = this.getClass().getName();
+            logger.debug("Expected state type {} for state class {}, received {}", expectedType, className, this.type);
             return false;
         }
 
