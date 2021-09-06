@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
@@ -136,7 +135,7 @@ public class DeviceInformationXML implements DeviceInformation {
             // Retrieve Main_Zone basic status, from which we will know this AVR supports Zone_B feature.
             Node basicStatusNode = getZoneResponse(con, Main_Zone, ZONE_BASIC_STATUS_CMD, ZONE_BASIC_STATUS_PATH);
             String power = getNodeContentOrEmpty(basicStatusNode, "Power_Control/Zone_B_Power_Info");
-            if (StringUtils.isNotEmpty(power)) {
+            if (!power.isEmpty()) {
                 logger.debug("Zone_2 emulation enabled via Zone_B");
                 state.zones.add(Zone_2);
                 state.features.add(Feature.ZONE_B);

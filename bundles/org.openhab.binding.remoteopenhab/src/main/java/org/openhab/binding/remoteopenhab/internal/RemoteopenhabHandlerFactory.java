@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,6 +75,7 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
     private final SseEventSourceFactory eventSourceFactory;
     private final RemoteopenhabChannelTypeProvider channelTypeProvider;
     private final RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider;
+    private final RemoteopenhabCommandDescriptionOptionProvider commandDescriptionProvider;
     private final Gson jsonParser;
 
     private HttpClient httpClientTrustingCert;
@@ -83,13 +84,15 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
     public RemoteopenhabHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference ClientBuilder clientBuilder, final @Reference SseEventSourceFactory eventSourceFactory,
             final @Reference RemoteopenhabChannelTypeProvider channelTypeProvider,
-            final @Reference RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider) {
+            final @Reference RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider,
+            final @Reference RemoteopenhabCommandDescriptionOptionProvider commandDescriptionProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.httpClientTrustingCert = httpClientFactory.createHttpClient(RemoteopenhabBindingConstants.BINDING_ID);
         this.clientBuilder = clientBuilder;
         this.eventSourceFactory = eventSourceFactory;
         this.channelTypeProvider = channelTypeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = commandDescriptionProvider;
         this.jsonParser = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
 
         try {
@@ -196,7 +199,8 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(RemoteopenhabBindingConstants.BRIDGE_TYPE_SERVER)) {
             return new RemoteopenhabBridgeHandler((Bridge) thing, httpClient, httpClientTrustingCert, clientBuilder,
-                    eventSourceFactory, channelTypeProvider, stateDescriptionProvider, jsonParser);
+                    eventSourceFactory, channelTypeProvider, stateDescriptionProvider, commandDescriptionProvider,
+                    jsonParser);
         } else if (RemoteopenhabBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new RemoteopenhabThingHandler(thing);
         }

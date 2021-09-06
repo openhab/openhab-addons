@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,7 @@ public interface PowermaxConnectorInterface {
     /**
      * Method for opening a connection to the Visonic alarm panel.
      */
-    public void open();
+    public void open() throws Exception;
 
     /**
      * Method for closing a connection to the Visonic alarm panel.

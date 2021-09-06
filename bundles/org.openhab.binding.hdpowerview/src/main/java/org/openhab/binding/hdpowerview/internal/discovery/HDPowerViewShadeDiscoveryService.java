@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,13 +17,12 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.ProcessingException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
+import org.openhab.binding.hdpowerview.internal.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
@@ -85,7 +84,7 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
             try {
                 HDPowerViewWebTargets webTargets = hub.getWebTargets();
                 if (webTargets == null) {
-                    throw new ProcessingException("Web targets not initialized");
+                    throw new HubProcessingException("Web targets not initialized");
                 }
                 Shades shades = webTargets.getShades();
                 if (shades != null && shades.shadeData != null) {
@@ -107,7 +106,7 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
                         }
                     }
                 }
-            } catch (ProcessingException | JsonParseException e) {
+            } catch (HubProcessingException | JsonParseException e) {
                 logger.warn("Unexpected error: {}", e.getMessage());
             } catch (HubMaintenanceException e) {
                 // exceptions are logged in HDPowerViewWebTargets

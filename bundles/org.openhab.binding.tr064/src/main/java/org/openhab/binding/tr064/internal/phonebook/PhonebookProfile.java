@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -131,6 +131,7 @@ public class PhonebookProfile implements StateProfile {
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void onStateUpdateFromHandler(State state) {
         if (state instanceof UnDefType) {
             // we cannot adjust UNDEF or NULL values, thus we simply apply them without reporting an error or warning
@@ -139,6 +140,7 @@ public class PhonebookProfile implements StateProfile {
         if (state instanceof StringType) {
             Optional<String> match = resolveNumber(state.toString());
             State newState = match.map(name -> (State) new StringType(name)).orElse(state);
+            // Compare by reference to check if the name is mapped to the same state
             if (newState == state) {
                 logger.debug("Number '{}' not found in phonebook '{}' from provider '{}'", state, phonebookName,
                         thingUID);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,7 +88,7 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
         logger.debug("Initializing the UniFi Controller Handler with config = {}", config);
         try {
             controller = new UniFiController(httpClient, config.getHost(), config.getPort(), config.getUsername(),
-                    config.getPassword());
+                    config.getPassword(), config.isUniFiOS());
             controller.start();
             updateStatus(ONLINE);
         } catch (UniFiInvalidHostException e) {

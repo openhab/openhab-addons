@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.meteoblue.internal.Forecast;
 import org.openhab.binding.meteoblue.internal.MeteoBlueConfiguration;
 import org.openhab.binding.meteoblue.internal.json.JsonData;
@@ -39,7 +38,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -97,13 +96,13 @@ public class MeteoBlueHandler extends BaseThingHandler {
 
         MeteoBlueConfiguration config = getConfigAs(MeteoBlueConfiguration.class);
 
-        if (StringUtils.isBlank(config.serviceType)) {
+        if (config.serviceType == null || config.serviceType.isBlank()) {
             config.serviceType = MeteoBlueConfiguration.SERVICETYPE_NONCOMM;
             logger.debug("Using default service type ({}).", config.serviceType);
             return;
         }
 
-        if (StringUtils.isBlank(config.location)) {
+        if (config.location == null || config.location.isBlank()) {
             flagBadConfig("The location was not configured.");
             return;
         }
@@ -271,7 +270,7 @@ public class MeteoBlueHandler extends BaseThingHandler {
         } else if (type.equals("Number:Pressure")) {
             state = new QuantityType<>(value, HECTO(SIUnits.PASCAL));
         } else if (type.equals("Number:Speed")) {
-            state = new QuantityType<>(value, SmartHomeUnits.METRE_PER_SECOND);
+            state = new QuantityType<>(value, Units.METRE_PER_SECOND);
         }
 
         return state;
@@ -315,7 +314,7 @@ public class MeteoBlueHandler extends BaseThingHandler {
         if (config.altitude != null) {
             builder.append("&asl=" + config.altitude);
         }
-        if (StringUtils.isNotBlank(config.timeZone)) {
+        if (config.timeZone != null && !config.timeZone.isBlank()) {
             builder.append("&tz=" + config.timeZone);
         }
         url = url.replace("#FORMAT_PARAMS#", builder.toString());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.persistence.jdbc.db;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.knowm.yank.Yank;
 import org.openhab.persistence.jdbc.utils.DbMetaData;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
+@NonNullByDefault
 public class JdbcMariadbDAO extends JdbcBaseDAO {
     private final Logger logger = LoggerFactory.getLogger(JdbcMariadbDAO.class);
 
@@ -46,6 +48,8 @@ public class JdbcMariadbDAO extends JdbcBaseDAO {
      */
     private void initSqlTypes() {
         logger.debug("JDBC::initSqlTypes: Initialize the type array");
+        sqlTypes.put("IMAGEITEM", "VARCHAR(16255)");
+        sqlTypes.put("STRINGITEM", "VARCHAR(16255)"); // MariaDB using utf-8 max = 16383, using 16383-128 = 16255
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,7 @@ public class InvalidFrameException extends Exception {
 
     private static final long serialVersionUID = 4729529258857792922L;
 
-    private Date timestamp;
+    private final Date timestamp;
 
     public InvalidFrameException() {
         timestamp = new Date();

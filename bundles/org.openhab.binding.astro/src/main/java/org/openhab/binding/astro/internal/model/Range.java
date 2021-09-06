@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,7 @@ import javax.measure.quantity.Time;
 
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * Range class which holds a start and a end calendar object.
@@ -63,10 +63,10 @@ public class Range {
             return null;
         }
         if (start.after(end)) {
-            return new QuantityType<>(0, SmartHomeUnits.MINUTE);
+            return new QuantityType<>(0, Units.MINUTE);
         }
-        return new QuantityType<>(end.getTimeInMillis() - start.getTimeInMillis(), MILLI(SmartHomeUnits.SECOND))
-                .toUnit(SmartHomeUnits.MINUTE);
+        return new QuantityType<>(end.getTimeInMillis() - start.getTimeInMillis(), MILLI(Units.SECOND))
+                .toUnit(Units.MINUTE);
     }
 
     /**

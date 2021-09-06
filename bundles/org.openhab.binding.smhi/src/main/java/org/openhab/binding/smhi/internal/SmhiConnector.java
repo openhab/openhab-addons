@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.smhi.internal;
 
 import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -26,6 +26,8 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonParseException;
 
 /**
  * Class for handling http requests to Smhi's API and return values.
@@ -89,7 +91,11 @@ public class SmhiConnector {
         logger.debug("Received response with status {} - {}", resp.getStatus(), resp.getReason());
         switch (resp.getStatus()) {
             case 200:
-                return Parser.parseTimeSeries(resp.getContentAsString());
+                try {
+                    return Parser.parseTimeSeries(resp.getContentAsString());
+                } catch (JsonParseException | DateTimeParseException e) {
+                    throw new SmhiException(e);
+                }
             case 400:
             case 404:
                 throw new PointOutOfBoundsException();

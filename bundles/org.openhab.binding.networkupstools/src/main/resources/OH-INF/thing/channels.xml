@@ -38,6 +38,10 @@
 				<option value="OL">Online</option>
 				<option value="OB">On battery</option>
 				<option value="LB">Low battery</option>
+				<option value="CHRG">Charging</option>
+				<option value="OL CHRG">Online, charging</option>
+				<option value="OL LB">Online, low battery</option>
+				<option value="OL CHRG LB">Online, charging, low battery</option>
 				<option value="RB">Replace battery</option>
 				<option value="OVER">Overload</option>
 				<option value="TRIM">Voltage trim</option>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -218,7 +218,7 @@ public class InsteonCommandExtension extends AbstractConsoleCommandExtension imp
     }
 
     private void startMonitoring(Console console, String addr) {
-        if (addr.equalsIgnoreCase("all")) {
+        if ("all".equalsIgnoreCase(addr)) {
             if (!monitorAllDevices) {
                 monitorAllDevices = true;
                 monitoredAddresses.clear();
@@ -255,7 +255,7 @@ public class InsteonCommandExtension extends AbstractConsoleCommandExtension imp
             return;
         }
 
-        if (addr.equalsIgnoreCase("all")) {
+        if ("all".equalsIgnoreCase(addr)) {
             if (monitorAllDevices) {
                 monitorAllDevices = false;
                 console.println("Stopped monitoring all devices.");

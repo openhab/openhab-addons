@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,18 +12,22 @@
  */
 package org.openhab.binding.bluetooth.daikinmadoka.handler;
 
-import java.util.Arrays;
+import java.util.Random;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
-import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.ConnectedBluetoothHandler;
 import org.openhab.binding.bluetooth.daikinmadoka.DaikinMadokaBindingConstants;
@@ -35,13 +39,20 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaPropertie
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.OperationMode;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaSettings;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.BRC1HCommand;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.DisableCleanFilterIndicatorCommand;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.EnterPrivilegedModeCommand;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetCleanFilterIndicatorCommand;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetEyeBrightnessCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetFanspeedCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetIndoorOutoorTemperatures;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetOperationHoursCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetOperationmodeCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetPowerstateCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetSetpointCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.GetVersionCommand;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.ResetCleanFilterTimerCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.ResponseListener;
+import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.SetEyeBrightnessCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.SetFanspeedCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.SetOperationmodeCommand;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.SetPowerstateCommand;
@@ -49,6 +60,7 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.SetSet
 import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -121,7 +133,31 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             submitCommand(new GetPowerstateCommand()); // always keep the "GetPowerState" aftern the "GetOperationMode"
             submitCommand(new GetSetpointCommand());
             submitCommand(new GetFanspeedCommand());
-        }, 10, c.refreshInterval, TimeUnit.SECONDS);
+            submitCommand(new GetCleanFilterIndicatorCommand());
+
+            try {
+                // As it is a complex operation - it has been extracted to a method.
+                retrieveOperationHours();
+            } catch (InterruptedException e) {
+                // The thread wants to exit!
+                return;
+            }
+
+            submitCommand(new GetEyeBrightnessCommand());
+        }, new Random().nextInt(30), c.refreshInterval, TimeUnit.SECONDS); // We introduce a random start time, it
+                                                                           // avoids when having multiple devices to
+                                                                           // have the commands sent simultaneously.
+    }
+
+    private void retrieveOperationHours() throws InterruptedException {
+        // This one is special - and MUST be ran twice, after being in priv mode
+        // run it once an hour is sufficient... TODO
+        submitCommand(new EnterPrivilegedModeCommand());
+        submitCommand(new GetOperationHoursCommand());
+        // a 1second+ delay is necessary
+        Thread.sleep(1500);
+
+        submitCommand(new GetOperationHoursCommand());
     }
 
     @Override
@@ -179,13 +215,27 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         }
 
         switch (channelUID.getId()) {
+            case DaikinMadokaBindingConstants.CHANNEL_ID_CLEAN_FILTER_INDICATOR:
+                OnOffType cleanFilterOrder = (OnOffType) command;
+                if (cleanFilterOrder == OnOffType.OFF) {
+                    resetCleanFilterIndicator();
+                }
+                break;
             case DaikinMadokaBindingConstants.CHANNEL_ID_SETPOINT:
                 try {
-                    QuantityType<?> setpoint = (QuantityType<?>) command;
-                    DecimalType dt = new DecimalType(setpoint.intValue());
-                    submitCommand(new SetSetpointCommand(dt, dt));
+                    QuantityType<Temperature> setpoint = (QuantityType<Temperature>) command;
+                    submitCommand(new SetSetpointCommand(setpoint, setpoint));
                 } catch (Exception e) {
                     logger.warn("Data received is not a valid temperature.", e);
+                }
+                break;
+            case DaikinMadokaBindingConstants.CHANNEL_ID_EYE_BRIGHTNESS:
+                try {
+                    logger.debug("Set eye brightness with value {}, {}", command.getClass().getName(), command);
+                    PercentType p = (PercentType) command;
+                    submitCommand(new SetEyeBrightnessCommand(p));
+                } catch (Exception e) {
+                    logger.warn("Data received is not a valid Eye Brightness status", e);
                 }
                 break;
             case DaikinMadokaBindingConstants.CHANNEL_ID_ONOFF_STATUS:
@@ -290,9 +340,22 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
         }
     }
 
+    /**
+     * 2 actions need to be done: disable the notification AND reset the filter timer
+     */
+    private void resetCleanFilterIndicator() {
+        logger.debug("[{}] resetCleanFilterIndicator()", super.thing.getUID().getId());
+        submitCommand(new DisableCleanFilterIndicatorCommand());
+        submitCommand(new ResetCleanFilterTimerCommand());
+    }
+
     @Override
-    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
-        super.onCharacteristicUpdate(characteristic);
+    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] msgBytes) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("[{}] onCharacteristicUpdate({})", super.thing.getUID().getId(),
+                    HexUtils.bytesToHex(msgBytes));
+        }
+        super.onCharacteristicUpdate(characteristic, msgBytes);
 
         // Check that arguments are valid.
         if (characteristic.getUuid() == null) {
@@ -304,9 +367,8 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             return;
         }
 
-        // A message cannot be null or have a 0-byte length
-        byte[] msgBytes = characteristic.getByteValue();
-        if (msgBytes == null || msgBytes.length == 0) {
+        // A message cannot have a 0-byte length
+        if (msgBytes.length == 0) {
             return;
         }
 
@@ -335,7 +397,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 return;
             }
 
-            if (!resolved) {
+            if (!device.isServicesDiscovered()) {
                 logger.debug("Unable to send command {} to device {}: services not resolved",
                         command.getClass().getSimpleName(), device.getAddress());
                 command.setState(BRC1HCommand.State.FAILED);
@@ -359,14 +421,33 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 device.enableNotifications(charNotif);
             }
 
-            charWrite.setValue(command.getRequest());
-            command.setState(BRC1HCommand.State.ENQUEUED);
-            device.writeCharacteristic(charWrite);
+            // Commands can be composed of multiple chunks
+            for (byte[] chunk : command.getRequest()) {
+                command.setState(BRC1HCommand.State.ENQUEUED);
+                for (int i = 0; i < DaikinMadokaBindingConstants.WRITE_CHARACTERISTIC_MAX_RETRIES; i++) {
+                    try {
+                        device.writeCharacteristic(charWrite, chunk).get(100, TimeUnit.MILLISECONDS);
+                    } catch (InterruptedException ex) {
+                        return;
+                    } catch (ExecutionException ex) {
+                        logger.debug("Error while writing message {}: {}", command.getClass().getSimpleName(),
+                                ex.getMessage());
+                        Thread.sleep(100);
+                        continue;
+                    } catch (TimeoutException ex) {
+                        Thread.sleep(100);
+                        continue;
+                    }
+                    command.setState(BRC1HCommand.State.SENT);
+                    break;
+                }
+            }
 
-            if (this.config != null) {
+            if (command.getState() == BRC1HCommand.State.SENT && this.config != null) {
                 if (!command.awaitStateChange(this.config.commandTimeout, TimeUnit.MILLISECONDS,
                         BRC1HCommand.State.SUCCEEDED, BRC1HCommand.State.FAILED)) {
-                    logger.debug("Command {} to device {} timed out", command, device.getAddress());
+                    logger.debug("[{}] Command {} to device {} timed out", super.thing.getUID().getId(), command,
+                            device.getAddress());
                     command.setState(BRC1HCommand.State.FAILED);
                 }
             }
@@ -380,34 +461,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             Thread.sleep(200);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        }
-    }
-
-    @Override
-    public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
-            BluetoothCompletionStatus status) {
-        super.onCharacteristicWriteComplete(characteristic, status);
-
-        byte[] request = characteristic.getByteValue();
-        BRC1HCommand command = currentCommand;
-
-        if (command != null) {
-            if (!Arrays.equals(request, command.getRequest())) {
-                logger.debug("Write completed for unknown command");
-                return;
-            }
-            switch (status) {
-                case SUCCESS:
-                    command.setState(BRC1HCommand.State.SENT);
-                    break;
-                case ERROR:
-                    command.setState(BRC1HCommand.State.FAILED);
-                    break;
-            }
-        } else {
-            if (logger.isDebugEnabled()) {
-                logger.debug("No command found that matches request {}", HexUtils.bytesToHex(request));
-            }
         }
     }
 
@@ -506,7 +559,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             return;
         }
 
-        DecimalType sp;
+        QuantityType<Temperature> sp;
 
         switch (operationMode) {
             case AUTO:
@@ -535,7 +588,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
         this.madokaSettings.setSetpoint(sp);
 
-        DecimalType dt = this.madokaSettings.getSetpoint();
+        QuantityType<Temperature> dt = this.madokaSettings.getSetpoint();
         if (dt != null) {
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_SETPOINT, dt);
         }
@@ -635,19 +688,36 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
     @Override
     public void receivedResponse(GetIndoorOutoorTemperatures command) {
-        DecimalType newIndoorTemp = command.getIndoorTemperature();
+        QuantityType<Temperature> newIndoorTemp = command.getIndoorTemperature();
         if (newIndoorTemp != null) {
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_INDOOR_TEMPERATURE, newIndoorTemp);
             this.madokaSettings.setIndoorTemperature(newIndoorTemp);
         }
 
-        DecimalType newOutdoorTemp = command.getOutdoorTemperature();
+        QuantityType<Temperature> newOutdoorTemp = command.getOutdoorTemperature();
         if (newOutdoorTemp == null) {
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_OUTDOOR_TEMPERATURE, UnDefType.UNDEF);
         } else {
             this.madokaSettings.setOutdoorTemperature(newOutdoorTemp);
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_OUTDOOR_TEMPERATURE, newOutdoorTemp);
         }
+    }
+
+    @Override
+    public void receivedResponse(GetEyeBrightnessCommand command) {
+        PercentType eyeBrightnessTemp = command.getEyeBrightness();
+        if (eyeBrightnessTemp != null) {
+            this.madokaSettings.setEyeBrightness(eyeBrightnessTemp);
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_EYE_BRIGHTNESS, eyeBrightnessTemp);
+            logger.debug("Notified {} channel with value {}", DaikinMadokaBindingConstants.CHANNEL_ID_EYE_BRIGHTNESS,
+                    eyeBrightnessTemp);
+        }
+    }
+
+    @Override
+    public void receivedResponse(SetEyeBrightnessCommand command) {
+        updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_EYE_BRIGHTNESS, command.getEyeBrightness());
+        madokaSettings.setEyeBrightness(command.getEyeBrightness());
     }
 
     @Override
@@ -691,6 +761,36 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
     }
 
     @Override
+    public void receivedResponse(GetOperationHoursCommand command) {
+        logger.debug("receivedResponse(GetOperationHoursCommand command)");
+
+        QuantityType<Time> indoorPowerHours = command.getIndoorPowerHours();
+        QuantityType<Time> indoorOperationHours = command.getIndoorOperationHours();
+        QuantityType<Time> indoorFanHours = command.getIndoorFanHours();
+
+        if (indoorPowerHours != null) {
+            this.madokaSettings.setIndoorPowerHours(indoorPowerHours);
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_INDOOR_POWER_HOURS, indoorPowerHours);
+            logger.debug("Notified {} channel with value {}",
+                    DaikinMadokaBindingConstants.CHANNEL_ID_INDOOR_POWER_HOURS, indoorPowerHours);
+        }
+
+        if (indoorOperationHours != null) {
+            this.madokaSettings.setIndoorOperationHours(indoorOperationHours);
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_INDOOR_OPERATION_HOURS, indoorOperationHours);
+            logger.debug("Notified {} channel with value {}",
+                    DaikinMadokaBindingConstants.CHANNEL_ID_INDOOR_OPERATION_HOURS, indoorOperationHours);
+        }
+
+        if (indoorFanHours != null) {
+            this.madokaSettings.setIndoorFanHours(indoorFanHours);
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_INDOOR_FAN_HOURS, indoorFanHours);
+            logger.debug("Notified {} channel with value {}", DaikinMadokaBindingConstants.CHANNEL_ID_INDOOR_FAN_HOURS,
+                    indoorFanHours);
+        }
+    }
+
+    @Override
     public void receivedResponse(SetSetpointCommand command) {
         // The update depends on the mode - so if not set - skip
         OperationMode operationMode = this.madokaSettings.getOperationMode();
@@ -713,9 +813,19 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 return;
         }
 
-        DecimalType dt = madokaSettings.getSetpoint();
+        QuantityType<Temperature> dt = madokaSettings.getSetpoint();
         if (dt != null) {
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_SETPOINT, dt);
+        }
+    }
+
+    @Override
+    public void receivedResponse(GetCleanFilterIndicatorCommand command) {
+        Boolean indicatorStatus = command.getCleanFilterIndicator();
+        if (indicatorStatus != null) {
+            this.madokaSettings.setCleanFilterIndicator(indicatorStatus);
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_CLEAN_FILTER_INDICATOR,
+                    indicatorStatus == true ? OnOffType.ON : OnOffType.OFF);
         }
     }
 

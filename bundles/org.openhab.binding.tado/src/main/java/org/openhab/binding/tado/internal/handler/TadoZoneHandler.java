@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dennis Frommknecht - Initial contribution
  * @author Andrew Fiddian-Green - Added Low Battery Alarm, A/C Power and Open Window channels
- * 
+ *
  */
 public class TadoZoneHandler extends BaseHomeThingHandler {
     private Logger logger = LoggerFactory.getLogger(TadoZoneHandler.class);
@@ -183,6 +183,11 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         if (bridge != null) {
             bridgeStatusChanged(bridge.getStatusInfo());
         }
+    }
+
+    @Override
+    public void dispose() {
+        cancelScheduledZoneStateUpdate();
     }
 
     @Override

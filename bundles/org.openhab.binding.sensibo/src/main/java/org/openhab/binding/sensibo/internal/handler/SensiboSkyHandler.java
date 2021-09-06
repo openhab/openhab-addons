@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,7 @@
  */
 package org.openhab.binding.sensibo.internal.handler;
 
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_CURRENT_HUMIDITY;
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_CURRENT_TEMPERATURE;
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_FAN_LEVEL;
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_MASTER_SWITCH;
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_MODE;
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_SWING_MODE;
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_TARGET_TEMPERATURE;
-import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.CHANNEL_TIMER;
+import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,10 +31,10 @@ import javax.measure.Unit;
 import javax.measure.UnitConverter;
 import javax.measure.quantity.Temperature;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.commons.lang3.text.WordUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sensibo.internal.CallbackChannelsTypeProvider;
@@ -55,6 +48,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -74,8 +68,6 @@ import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tec.uom.se.unit.Units;
 
 /**
  * The {@link SensiboSkyHandler} is responsible for handling commands, which are
@@ -397,7 +389,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             stateDescription = stateDescription.withPattern(pattern);
         }
         final StateChannelTypeBuilder builder = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
-                .withStateDescription(stateDescription.build().toStateDescription());
+                .withStateDescriptionFragment(stateDescription.build());
         if (tag != null) {
             builder.withTag(tag);
         }

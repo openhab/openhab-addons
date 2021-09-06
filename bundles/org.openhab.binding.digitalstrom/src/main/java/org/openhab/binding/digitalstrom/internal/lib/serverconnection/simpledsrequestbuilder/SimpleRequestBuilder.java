@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.digitalstrom.internal.lib.serverconnection.simpledsr
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.lang.NullArgumentException;
 import org.openhab.binding.digitalstrom.internal.lib.serverconnection.simpledsrequestbuilder.constants.ExeptionConstants;
 import org.openhab.binding.digitalstrom.internal.lib.serverconnection.simpledsrequestbuilder.constants.InterfaceKeys;
 import org.openhab.binding.digitalstrom.internal.lib.serverconnection.simpledsrequestbuilder.constants.ParameterKeys;
@@ -61,7 +60,7 @@ public class SimpleRequestBuilder {
      * @return simpleRequestBuilder with chosen interface
      * @throws NullArgumentException if the interfaceKey is null
      */
-    public static SimpleRequestBuilder buildNewRequest(String interfaceKey) throws NullArgumentException {
+    public static SimpleRequestBuilder buildNewRequest(String interfaceKey) throws IllegalArgumentException {
         if (builder == null) {
             builder = new SimpleRequestBuilder();
         }
@@ -78,14 +77,13 @@ public class SimpleRequestBuilder {
      * @throws IllegalArgumentException if a requestClass is already chosen
      * @throws NullArgumentException if the requestClassKey is null
      */
-    public static SimpleRequestBuilder buildNewJsonRequest(String requestClassKey)
-            throws NullArgumentException, IllegalArgumentException {
+    public static SimpleRequestBuilder buildNewJsonRequest(String requestClassKey) throws IllegalArgumentException {
         return buildNewRequest(InterfaceKeys.JSON).addRequestClass(requestClassKey);
     }
 
     private SimpleRequestBuilder buildNewRequestInt(String interfaceKey) {
         if (interfaceKey == null) {
-            throw new NullArgumentException("interfaceKey");
+            throw new IllegalArgumentException("interfaceKey is null");
         }
         request = "/" + interfaceKey + "/";
         classIsChosen = false;
@@ -102,8 +100,7 @@ public class SimpleRequestBuilder {
      * @throws IllegalArgumentException if a requestClass is already chosen
      * @throws NullArgumentException if the requestClassKey is null
      */
-    public SimpleRequestBuilder addRequestClass(String requestClassKey)
-            throws IllegalArgumentException, NullArgumentException {
+    public SimpleRequestBuilder addRequestClass(String requestClassKey) throws IllegalArgumentException {
         return builder.addRequestClassInt(requestClassKey);
     }
 
@@ -115,7 +112,7 @@ public class SimpleRequestBuilder {
             if (!classIsChosen) {
                 throw new IllegalArgumentException(ExeptionConstants.CLASS_ALREADY_ADDED);
             } else {
-                throw new NullArgumentException("requestClassKey");
+                throw new IllegalArgumentException("requestClassKey is null");
             }
         }
         return this;
@@ -129,7 +126,7 @@ public class SimpleRequestBuilder {
      * @throws IllegalArgumentException if a function is already chosen
      * @throws NullArgumentException if the functionKey is null
      */
-    public SimpleRequestBuilder addFunction(String functionKey) throws IllegalArgumentException, NullArgumentException {
+    public SimpleRequestBuilder addFunction(String functionKey) throws IllegalArgumentException {
         return builder.addFunctionInt(functionKey);
     }
 
@@ -142,7 +139,7 @@ public class SimpleRequestBuilder {
                 functionIsChosen = true;
                 request = request + functionKey;
             } else {
-                throw new NullArgumentException("functionKey");
+                throw new IllegalArgumentException("functionKey is null");
             }
         } else {
             throw new IllegalArgumentException(ExeptionConstants.FUNCTION_ALLREADY_ADDED);
@@ -160,7 +157,7 @@ public class SimpleRequestBuilder {
      * @throws NullArgumentException if the parameterKey is null
      */
     public SimpleRequestBuilder addParameter(String parameterKey, String parameterValue)
-            throws IllegalArgumentException, NullArgumentException {
+            throws IllegalArgumentException {
         return builder.addParameterInt(parameterKey, parameterValue);
     }
 
@@ -175,7 +172,7 @@ public class SimpleRequestBuilder {
      * @throws NullArgumentException if the parameterKey is null
      */
     public SimpleRequestBuilder addDefaultZoneParameter(String sessionToken, Integer zoneID, String zoneName)
-            throws IllegalArgumentException, NullArgumentException {
+            throws IllegalArgumentException {
         return addParameter(ParameterKeys.TOKEN, sessionToken).addParameter(ParameterKeys.ID, objectToString(zoneID))
                 .addParameter(ParameterKeys.NAME, zoneName);
     }
@@ -191,7 +188,7 @@ public class SimpleRequestBuilder {
      * @throws NullArgumentException if the parameterKey is null
      */
     public SimpleRequestBuilder addDefaultGroupParameter(String sessionToken, Short groupID, String groupName)
-            throws IllegalArgumentException, NullArgumentException {
+            throws IllegalArgumentException {
         return addParameter(ParameterKeys.TOKEN, sessionToken)
                 .addParameter(ParameterKeys.GROUP_ID, objectToString(groupID))
                 .addParameter(ParameterKeys.GROUP_NAME, groupName);
@@ -210,7 +207,7 @@ public class SimpleRequestBuilder {
      * @throws NullArgumentException if the parameterKey is null
      */
     public SimpleRequestBuilder addDefaultZoneGroupParameter(String sessionToken, Integer zoneID, String zoneName,
-            Short groupID, String groupName) throws IllegalArgumentException, NullArgumentException {
+            Short groupID, String groupName) throws IllegalArgumentException {
         return addDefaultZoneParameter(sessionToken, zoneID, zoneName)
                 .addParameter(ParameterKeys.GROUP_ID, objectToString(groupID))
                 .addParameter(ParameterKeys.GROUP_NAME, groupName);
@@ -228,7 +225,7 @@ public class SimpleRequestBuilder {
      * @throws NullArgumentException if the parameterKey is null
      */
     public SimpleRequestBuilder addDefaultDeviceParameter(String sessionToken, DSID dsid, String dSUID, String name)
-            throws IllegalArgumentException, NullArgumentException {
+            throws IllegalArgumentException {
         return addParameter(ParameterKeys.TOKEN, sessionToken).addParameter(ParameterKeys.DSID, objectToString(dsid))
                 .addParameter(ParameterKeys.DSUID, dSUID).addParameter(ParameterKeys.NAME, name);
     }
@@ -236,7 +233,7 @@ public class SimpleRequestBuilder {
     private SimpleRequestBuilder addParameterInt(String parameterKey, String parameterValue) {
         if (allRight()) {
             if (parameterKey == null) {
-                throw new NullArgumentException("parameterKey");
+                throw new IllegalArgumentException("parameterKey is null");
             }
             if (parameterValue != null) {
                 if (!parameterIsAdded) {

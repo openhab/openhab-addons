@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,14 +22,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDeviceAlias;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.DriverIdentity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
@@ -171,25 +170,33 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
                     continue;
                 }
 
-                JsonSmartHomeCapabilities.SmartHomeCapability[] capabilities = shd.capabilities;
-                if (capabilities == null || Stream.of(capabilities).noneMatch(capability -> capability != null
-                        && Constants.SUPPORTED_INTERFACES.contains(capability.interfaceName))) {
+                if (shd.getCapabilities().stream()
+                        .noneMatch(capability -> Constants.SUPPORTED_INTERFACES.contains(capability.interfaceName))) {
                     // No supported interface found
                     continue;
                 }
 
                 thingUID = new ThingUID(THING_TYPE_SMART_HOME_DEVICE, bridgeThingUID, entityId.replace(".", "-"));
 
-                JsonSmartHomeDeviceAlias[] aliases = shd.aliases;
+                List<JsonSmartHomeDeviceAlias> aliases = shd.aliases;
                 if ("Amazon".equals(shd.manufacturerName) && driverIdentity != null
                         && "SonarCloudService".equals(driverIdentity.identifier)) {
-                    deviceName = "Alexa Guard on " + shd.friendlyName;
+                    List<@Nullable String> interfaces = shd.getCapabilities().stream().map(c -> c.interfaceName)
+                            .collect(Collectors.toList());
+                    if (interfaces.contains("Alexa.AcousticEventSensor")) {
+                        deviceName = "Alexa Guard on " + shd.friendlyName;
+                    } else if (interfaces.contains("Alexa.ColorController")) {
+                        deviceName = "Alexa Color Controller on " + shd.friendlyName;
+                    } else if (interfaces.contains("Alexa.PowerController")) {
+                        deviceName = "Alexa Plug on " + shd.friendlyName;
+                    } else {
+                        deviceName = "Unknown Device on " + shd.friendlyName;
+                    }
                 } else if ("Amazon".equals(shd.manufacturerName) && driverIdentity != null
                         && "OnGuardSmartHomeBridgeService".equals(driverIdentity.identifier)) {
                     deviceName = "Alexa Guard";
-                } else if (aliases != null && aliases.length > 0 && aliases[0] != null
-                        && aliases[0].friendlyName != null) {
-                    deviceName = aliases[0].friendlyName;
+                } else if (aliases != null && !aliases.isEmpty() && aliases.get(0).friendlyName != null) {
+                    deviceName = aliases.get(0).friendlyName;
                 } else {
                     deviceName = shd.friendlyName;
                 }
@@ -205,7 +212,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
                 }
                 Set<SmartHomeDevice> supportedChildren = SmartHomeDeviceHandler.getSupportedSmartHomeDevices(shg,
                         deviceList);
-                if (supportedChildren.size() == 0) {
+                if (supportedChildren.isEmpty()) {
                     // No children with an supported interface
                     continue;
                 }

@@ -26,6 +26,10 @@ Squeeze players may be official Logitech products or other players like [Squeeze
 
 A Squeeze Server is discovered through UPnP in the local network.
 Once it is added as a Thing the Squeeze Server bridge will discover Squeeze Players automatically.
+If your Squeeze Server is not discovered automatically, you can add it manually by creating a .thing file containing something like this (more example [below](https://www.openhab.org/addons/bindings/squeezebox/#thing-configuration)):
+```
+Bridge squeezebox:squeezeboxserver:myServer [ ipAddress="192.168.1.10", webport=9000, cliport=9090 ]
+````
 
 ## Binding Configuration
 
@@ -115,10 +119,11 @@ All devices support some of the following channels:
 | numberPlaylistTracks    | Number    | Number of playlist tracks                                                              |
 | playFavorite            | String    | ID of Favorite to play (channel's state options contains available favorites)          |
 | rate                    | Switch    | "Like" or "unlike" the currently playing song (if supported by the streaming service)  |
+| sleep                   | Number    | Power off the player in the specified number of minutes. Sending 0 cancels the timer   |
 
 ## Example .Items File
 
-Add the items you want to the .items file. A few examples are shown below, the power, volume and album art channels are connected here to the items by copying across the channel discriptions from the Paper UI. Make suure each channel is linked for your needs See [openHAB New User Configuration documentation](https://www.openhab.org/docs/tutorial/configuration.html) for further details on linking and channels.
+Add the items you want to use to an .items file, for example:
 
 ```
 Switch YourPlayer_Power    "Squeezebox Power"  {channel="squeezebox:squeezeboxplayer:736549a3:00042016e7a0:power"}

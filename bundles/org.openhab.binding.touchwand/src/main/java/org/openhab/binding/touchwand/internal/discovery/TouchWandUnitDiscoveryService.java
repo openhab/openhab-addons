@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.touchwand.internal.discovery;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
@@ -32,7 +31,6 @@ import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
 import org.openhab.binding.touchwand.internal.dto.TouchWandUnitFromJson;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -52,13 +50,13 @@ import com.google.gson.JsonSyntaxException;
  * @author Roie Geron - Initial contribution
  */
 @NonNullByDefault
-public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     private static final int SEARCH_TIME_SEC = 10;
     private static final int SCAN_INTERVAL_SEC = 60;
     private static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY_SEC = 5;
-    private static final String[] CONNECTIVITY_OPTIONS = { CONNECTIVITY_KNX, CONNECTIVITY_ZWAVE };
+    private static final String[] CONNECTIVITY_OPTIONS = { CONNECTIVITY_KNX, CONNECTIVITY_ZWAVE, CONNECTIVITY_RISCO,
+            CONNECTIVITY_PIMA, CONNECTIVITY_ACWAND };
     private @NonNullByDefault({}) TouchWandBridgeHandler touchWandBridgeHandler;
     private final Logger logger = LoggerFactory.getLogger(TouchWandUnitDiscoveryService.class);
 
@@ -72,7 +70,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
     @Override
     protected void startScan() {
         if (touchWandBridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
-            logger.warn("Could not scan units while bridge offline");
+            logger.debug("Could not scan units while bridge offline");
             return;
         }
 
@@ -82,9 +80,8 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
             return;
         }
 
-        JsonParser jsonParser = new JsonParser();
         try {
-            JsonArray jsonArray = jsonParser.parse(response).getAsJsonArray();
+            JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
             if (jsonArray.isJsonArray()) {
                 try {
                     for (JsonElement unit : jsonArray) {
@@ -107,11 +104,9 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
                                 break;
                             case TYPE_SWITCH:
                                 addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SWITCH);
-                                notifyListeners(touchWandUnit);
                                 break;
                             case TYPE_DIMMER:
                                 addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_DIMMER);
-                                notifyListeners(touchWandUnit);
                                 break;
                             case TYPE_SHUTTER:
                                 addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SHUTTER);
@@ -119,16 +114,23 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService
                             case TYPE_ALARMSENSOR:
                                 addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_ALARMSENSOR);
                                 break;
+                            case TYPE_BSENSOR:
+                                addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_BSENSOR);
+                                break;
+                            case TYPE_THERMOSTAT:
+                                addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_THERMOSTAT);
+                                break;
                             default:
                                 continue;
                         }
+                        notifyListeners(touchWandUnit);
                     }
                 } catch (JsonSyntaxException e) {
                     logger.warn("Could not parse unit {}", e.getMessage());
                 }
             }
         } catch (JsonSyntaxException msg) {
-            logger.warn("Could not parse list units response {}", msg.getMessage());
+            logger.warn("Could not parse list units response error:{} ", msg.getMessage());
         }
     }
 

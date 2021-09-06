@@ -6,7 +6,7 @@
 
 	<thing-type id="intesisHome">
 		<label>IntesisHome WiFi Adapter</label>
-		<description>IntesisHome WiFi Adapter</description>
+		<description>Represents a single IntesisHome WiFi adapter on the network, connected to an A/C unit.</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 		</channels>
@@ -26,7 +26,7 @@
 
 	<thing-type id="intesisBox">
 		<label>IntesisBox Adapter</label>
-		<description>Represents a single IntesisBox adapter on the network, connected to an A/C unit.</description>
+		<description>Represents a single IntesisBox WiFi adapter on the network, connected to an A/C unit.</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="wifiSignal" typeId="system.signal-strength"/>

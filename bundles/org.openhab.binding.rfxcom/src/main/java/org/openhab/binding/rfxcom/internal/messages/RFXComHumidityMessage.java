@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,9 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
@@ -129,7 +131,8 @@ public class RFXComHumidityMessage extends RFXComBatteryDeviceMessage<RFXComHumi
     }
 
     @Override
-    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
+            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
         switch (channelId) {
             case CHANNEL_HUMIDITY:
                 return new DecimalType(humidity);
@@ -138,7 +141,7 @@ public class RFXComHumidityMessage extends RFXComBatteryDeviceMessage<RFXComHumi
                 return new StringType(humidityStatus.toString());
 
             default:
-                return super.convertToState(channelId, deviceState);
+                return super.convertToState(channelId, config, deviceState);
         }
     }
 

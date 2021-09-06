@@ -18,6 +18,8 @@
 			<channel-group id="ir-m5" typeId="ir-m5"/>
 		</channel-groups>
 
+		<representation-property>macAddress</representation-property>
+
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>Network Address</label>

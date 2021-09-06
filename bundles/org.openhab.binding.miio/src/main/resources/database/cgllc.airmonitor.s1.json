@@ -34,7 +34,12 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "co2",
+				"tags": [
+					"Measurement",
+					"CO2"
+				]
 			},
 			{
 				"property": "tvoc",
@@ -44,25 +49,36 @@
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"tags": [
+					"Measurement"
+				]
 			},
 			{
 				"property": "humidity",
 				"friendlyName": "Humidity",
 				"channel": "humidity",
-				"channelType": "humidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"channelType": "temperatureC",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": [],

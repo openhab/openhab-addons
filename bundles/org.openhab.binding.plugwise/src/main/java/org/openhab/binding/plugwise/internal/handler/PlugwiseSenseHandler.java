@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,7 +130,7 @@ public class PlugwiseSenseHandler extends AbstractSleepingEndDeviceHandler {
 
     private void handleSenseReportRequestMessage(SenseReportRequestMessage message) {
         updateLastSeen();
-        updateState(CHANNEL_HUMIDITY, new QuantityType<>(message.getHumidity().getValue(), SmartHomeUnits.PERCENT));
+        updateState(CHANNEL_HUMIDITY, new QuantityType<>(message.getHumidity().getValue(), Units.PERCENT));
         updateState(CHANNEL_TEMPERATURE, new QuantityType<>(message.getTemperature().getValue(), SIUnits.CELSIUS));
     }
 

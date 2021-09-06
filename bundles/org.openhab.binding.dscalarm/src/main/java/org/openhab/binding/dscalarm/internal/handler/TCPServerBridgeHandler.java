@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,7 +105,8 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             tcpOutput = new OutputStreamWriter(tcpSocket.getOutputStream(), "US-ASCII");
             tcpInput = new BufferedReader(new InputStreamReader(tcpSocket.getInputStream()));
 
-            Thread tcpListener = new Thread(new TCPListener());
+            Thread tcpListener = new Thread(new TCPListener(), "OH-binding-" + getThing().getUID() + "-tcplistener");
+            tcpListener.setDaemon(true);
             tcpListener.start();
 
             setConnected(true);

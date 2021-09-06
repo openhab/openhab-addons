@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ public class RFXComRFXSensorMessageTest {
             @Nullable Double temperature, @Nullable Double voltage, @Nullable Double referenceVoltage,
             @Nullable Double expectedPressure, @Nullable Double expectedHumidity, int signalLevel,
             DeviceState deviceState) throws RFXComException {
-        final RFXComRFXSensorMessage msg = (RFXComRFXSensorMessage) RFXComMessageFactory
+        final RFXComRFXSensorMessage msg = (RFXComRFXSensorMessage) RFXComMessageFactoryImpl.INSTANCE
                 .createMessage(DatatypeConverter.parseHexBinary(hexMsg));
         assertEquals(subType, msg.subType, "SubType");
         assertEquals(seqNbr, (short) (msg.seqNbr & 0xFF), "Seq Number");
@@ -89,7 +89,7 @@ public class RFXComRFXSensorMessageTest {
 
     private @Nullable Double getChannelAsDouble(String channelId, RFXComRFXSensorMessage msg, DeviceState deviceState)
             throws RFXComException {
-        return getStateAsDouble(msg.convertToState(channelId, deviceState));
+        return getStateAsDouble(msg.convertToState(channelId, null, deviceState));
     }
 
     private @Nullable Double getStateAsDouble(State state) {

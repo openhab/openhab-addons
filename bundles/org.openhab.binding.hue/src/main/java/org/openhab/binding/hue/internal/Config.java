@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -132,7 +132,7 @@ public class Config {
      * @return ip address of proxy or null
      */
     public String getProxyAddress() {
-        return proxyaddress.equals("none") ? null : proxyaddress;
+        return "none".equals(proxyaddress) ? null : proxyaddress;
     }
 
     /**
@@ -141,7 +141,7 @@ public class Config {
      * @return port of proxy or null
      */
     public Integer getProxyPort() {
-        return proxyaddress.equals("none") ? null : proxyport;
+        return "none".equals(proxyaddress) ? null : proxyport;
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,8 @@ import com.google.gson.annotations.SerializedName;
  */
 public class List {
     private Integer dt;
+    private @Nullable Integer sunrise;
+    private @Nullable Integer sunset;
     private Temp temp;
     @SerializedName("feels_like")
     private @Nullable FeelsLikeTemp feelsLikeTemp;
@@ -36,6 +38,7 @@ public class List {
     private Integer clouds;
     private @Nullable Double rain;
     private @Nullable Double snow;
+    private @Nullable Double pop;
 
     public Integer getDt() {
         return dt;
@@ -43,6 +46,22 @@ public class List {
 
     public void setDt(Integer dt) {
         this.dt = dt;
+    }
+
+    public @Nullable Integer getSunrise() {
+        return sunrise;
+    }
+
+    public void setSunrise(Integer sunrise) {
+        this.sunrise = sunrise;
+    }
+
+    public @Nullable Integer getSunset() {
+        return sunset;
+    }
+
+    public void setSunset(Integer sunset) {
+        this.sunset = sunset;
     }
 
     public Temp getTemp() {
@@ -131,5 +150,13 @@ public class List {
 
     public void setSnow(Double snow) {
         this.snow = snow;
+    }
+
+    public @Nullable Double getPop() {
+        return pop;
+    }
+
+    public void setPop(Double pop) {
+        this.pop = pop;
     }
 }

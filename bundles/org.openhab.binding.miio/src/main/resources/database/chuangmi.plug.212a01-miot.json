@@ -1,0 +1,281 @@
+{
+	"deviceMapping": {
+		"id": [
+			"chuangmi.plug.212a01"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "temperature",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 255,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "working-time",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Working Time",
+				"channel": "working-time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 300,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "on1",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Indicator Light - Switch Status",
+				"channel": "on1",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "power-consumption",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Daily Power Consumption",
+				"channel": "power-consumption",
+				"type": "Number:Energy",
+				"unit": "kWH",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 6.5535E+7,
+					"step": 1,
+					"pattern": "%.2f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"transformation": "/100",
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Energy"
+				]
+			},
+			{
+				"property": "electric-current",
+				"siid": 5,
+				"piid": 2,
+				"friendlyName": "Power Consumption - Electric Current",
+				"channel": "electric-current",
+				"type": "Number:Current",
+				"unit": "mA",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Current"
+				]
+			},
+			{
+				"property": "voltage",
+				"siid": 5,
+				"piid": 3,
+				"friendlyName": "Power Consumption - Voltage",
+				"channel": "voltage",
+				"type": "Number:ElectricPotential",
+				"unit": "volt",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Voltage"
+				]
+			},
+			{
+				"property": "electric-power",
+				"siid": 5,
+				"piid": 6,
+				"friendlyName": "Current Power Consumption - Electric Power",
+				"channel": "electric-power",
+				"type": "Number:Power",
+				"unit": "watt",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 6553500,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Power"
+				]
+			},
+			{
+				"property": "on-duration",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Imilab Timer - On Duration",
+				"channel": "on-duration",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 86500,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "time"
+			},
+			{
+				"property": "off-duration",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Imilab Timer - Off Duration",
+				"channel": "off-duration",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 86500,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "time"
+			},
+			{
+				"property": "countdown",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Imilab Timer - Countdown",
+				"channel": "countdown",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 86500,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "time"
+			},
+			{
+				"property": "task-switch",
+				"siid": 4,
+				"piid": 4,
+				"friendlyName": "Imilab Timer - Task Switch",
+				"channel": "task-switch",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "countdown-info",
+				"siid": 4,
+				"piid": 5,
+				"friendlyName": "Imilab Timer - Countdown Info",
+				"channel": "countdown-info",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			}
+		],
+		"experimental": true
+	}
+}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,10 +16,9 @@ import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
@@ -36,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
     private final Logger logger = LoggerFactory.getLogger(DisplayOptionsParser.class);
     private static final String[] onOff = new String[] { "ON", "OFF" };
-
+    private static final int IDX_NOT_FOUND = -1;
     private HmChannel channel;
     private String text;
     private int beep = 0;
@@ -50,7 +49,8 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
 
     @Override
     public Void parse(Object value) throws IOException {
-        String optionsString = StringUtils.remove(toString(value), ' ');
+        String valueString = toString(value);
+        String optionsString = valueString == null ? null : valueString.replace(" ", "");
         if (optionsString != null) {
             int idxFirstSep = optionsString.indexOf(",");
             if (idxFirstSep == -1) {
@@ -61,7 +61,7 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
                 optionsString = optionsString.substring(idxFirstSep + 1);
             }
 
-            String[] options = StringUtils.split(optionsString, ",");
+            String[] options = optionsString.split(",");
 
             String[] availableSymbols = getAvailableSymbols(channel);
             String[] availableBeepOptions = getAvailableOptions(channel, DATAPOINT_NAME_BEEP);
@@ -87,7 +87,7 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
                             DATAPOINT_NAME_BACKLIGHT, deviceAddress);
                     unit = getIntParameter(availableUnitOptions, unit, parameter, DATAPOINT_NAME_UNIT, deviceAddress);
 
-                    if (ArrayUtils.contains(availableSymbols, parameter)) {
+                    if (findInArray(availableSymbols, parameter) != IDX_NOT_FOUND) {
                         logger.debug("Symbol '{}' found for remote control '{}'", parameter, deviceAddress);
                         symbols.add(parameter);
                     }
@@ -102,8 +102,8 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
      */
     private int getIntParameter(String[] options, int currentValue, String parameter, String parameterName,
             String deviceAddress) {
-        int idx = ArrayUtils.indexOf(options, parameter);
-        if (idx != -1) {
+        int idx = findInArray(options, parameter);
+        if (idx != IDX_NOT_FOUND) {
             if (currentValue == 0) {
                 logger.debug("{} option '{}' found at index {} for remote control '{}'", parameterName, parameter,
                         idx + 1, deviceAddress);
@@ -125,16 +125,30 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
         HmDatapointInfo dpInfo = HmDatapointInfo.createValuesInfo(channel, datapointName);
         HmDatapoint dp = channel.getDatapoint(dpInfo);
         if (dp != null) {
-            String[] options = (String[]) ArrayUtils.remove(dp.getOptions(), 0);
+            String[] dpOpts = dp.getOptions();
+            String[] options = new String[dpOpts.length - 1];
+            options = Arrays.copyOfRange(dpOpts, 1, dpOpts.length);
             for (String onOffString : onOff) {
-                int onIdx = ArrayUtils.indexOf(options, onOffString);
-                if (onIdx != -1) {
+                int onIdx = findInArray(options, onOffString);
+                if (onIdx != IDX_NOT_FOUND) {
                     options[onIdx] = datapointName + "_" + onOffString;
                 }
             }
             return options;
         }
         return new String[0];
+    }
+
+    private int findInArray(String[] arr, String searchString) {
+        if (arr.length == 0) {
+            return IDX_NOT_FOUND;
+        }
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i].equals(searchString)) {
+                return i;
+            }
+        }
+        return IDX_NOT_FOUND;
     }
 
     /**

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wlanthermo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- System Group Mini V1 -->
+	<channel-group-type id="cg_system_mini">
+		<label>System Channel</label>
+		<description>This group contains all system channels</description>
+		<channels>
+			<channel id="cpu_load" typeId="cpu_load"/>
+			<channel id="cpu_temp" typeId="temperature"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel Group Temperature Mini V1 -->
+	<channel-group-type id="cg_temperature_mini">
+		<label>Sensor Mini</label>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name_ro"/>
+			<channel id="temp" typeId="temperature"/>
+			<channel id="min" typeId="temperature_min_ro"/>
+			<channel id="max" typeId="temperature_max_ro"/>
+			<channel id="alarm_device" typeId="alarm_device_ro"/>
+			<channel id="alarm_openhab" typeId="alarm_openhab"/>
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low"/>
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high"/>
+			<channel id="color" typeId="color_ro"/>
+			<channel id="color_name" typeId="color_name_mini_ro"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Pitmaster Mini V1 -->
+	<channel-group-type id="cg_pitmaster_mini">
+		<label>Pitmaster Mini</label>
+		<category>Sensor</category>
+		<channels>
+			<channel id="enabled" typeId="enabled"/>
+			<channel id="current" typeId="temperature"/>
+			<channel id="setpoint" typeId="temperature_setpoint_ro"/>
+			<channel id="duty_cycle" typeId="duty_cycle_ro"/>
+			<channel id="lid_open" typeId="lid_open"/>
+			<channel id="channel_id" typeId="channel_id_ro"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

@@ -34,7 +34,7 @@ There are two different ways of obtaining the token:
 Run the following command on the console and provide your Tesla account credentials (the same that you use in the official Tesla app):
 
 ```
-openhab> smarthome:tesla login
+openhab> openhab:tesla login
 Username (email): mail@example.com
 Password: topsecret
 Attempting login...Attempting login...

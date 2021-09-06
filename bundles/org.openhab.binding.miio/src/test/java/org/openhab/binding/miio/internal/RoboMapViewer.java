@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -149,7 +149,7 @@ public class RoboMapViewer extends JFrame {
             @Override
             public void mouseMoved(@Nullable MouseEvent e) {
                 if (e != null) {
-                    MapPoint roboMouseLocation = MapCoordstoRoboCoords(localCoordtoMapCoords(e.getPoint()));
+                    MapPoint roboMouseLocation = mapCoordstoRoboCoords(localCoordtoMapCoords(e.getPoint()));
                     updateStatusLine(roboMouseLocation);
                 }
             }
@@ -164,16 +164,16 @@ public class RoboMapViewer extends JFrame {
                     repaint();
 
                     if (rrDrawPanel.hasDrawZone()) {
-                        final MapPoint endLocation = MapCoordstoRoboCoords(localCoordtoMapCoords(e.getPoint()));
+                        final MapPoint endLocation = mapCoordstoRoboCoords(localCoordtoMapCoords(e.getPoint()));
                         double minX = Math.min(fromLocation.getX(), endLocation.getX());
                         double maxX = Math.max(fromLocation.getX(), endLocation.getX());
                         double minY = Math.min(fromLocation.getY(), endLocation.getY());
                         double maxY = Math.max(fromLocation.getY(), endLocation.getY());
                         textArea.append(String.format(
-                                "Zone coordinates:\t%s, %s\t\tZone clean command:  app_zone_clean[[ %.0f,%.0f,%.0f,%.0f,1 ]]\r\n",
+                                "Zone coordinates:\t%s, %s\t\tZone clean command:  app_zoned_clean[[ %.0f,%.0f,%.0f,%.0f,1 ]]\r\n",
                                 endLocation, fromLocation, minX, minY, maxX, maxY));
                     } else {
-                        final MapPoint pointLocation = MapCoordstoRoboCoords(localCoordtoMapCoords(e.getPoint()));
+                        final MapPoint pointLocation = mapCoordstoRoboCoords(localCoordtoMapCoords(e.getPoint()));
                         textArea.append(String.format(
                                 "GoTo coordinates:\t[X=%.0f, Y=%.0f]\t\tGoto command:  app_goto_target[ %.0f,%.0f ]\r\n",
                                 pointLocation.getX(), pointLocation.getY(), pointLocation.getX(),
@@ -186,7 +186,7 @@ public class RoboMapViewer extends JFrame {
             public void mousePressed(@Nullable MouseEvent e) {
                 if (e != null) {
                     rrDrawPanel.setStartPoint(e.getX(), e.getY());
-                    fromLocation = MapCoordstoRoboCoords(localCoordtoMapCoords(e.getPoint()));
+                    fromLocation = mapCoordstoRoboCoords(localCoordtoMapCoords(e.getPoint()));
                 }
             }
 
@@ -296,7 +296,7 @@ public class RoboMapViewer extends JFrame {
         }
     }
 
-    private MapPoint MapCoordstoRoboCoords(MapPoint imagePoint) {
+    private MapPoint mapCoordstoRoboCoords(MapPoint imagePoint) {
         final RRMapDraw rrMap = this.rrMap;
         if (rrMap != null) {
             final RRMapFileParser mapDetails = rrMap.getMapParseDetails();
@@ -484,10 +484,7 @@ class RRDrawPanel extends JPanel {
     public boolean hasDrawZone() {
         int pw = Math.abs(x - x2);
         int ph = Math.abs(y - y2);
-        if (pw != 0 && ph != 0) {
-            return true;
-        }
-        return false;
+        return pw != 0 && ph != 0;
     }
 
     public void drawZoneRect(Graphics g, int x, int y, int x2, int y2) {

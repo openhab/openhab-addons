@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.DeviceType;
@@ -278,7 +278,7 @@ public final class CMessage extends Message {
         logger.debug("RoomID:                   {}", roomId);
         for (String key : properties.keySet()) {
             if (!key.startsWith("Unknown")) {
-                String propertyName = StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), ' ');
+                String propertyName = String.join(" ", StringUtils.splitByCharacterTypeCamelCase(key));
                 logger.debug("{}: {}", propertyName, properties.get(key));
             } else {
                 logger.debug("{}: {}", key, properties.get(key));

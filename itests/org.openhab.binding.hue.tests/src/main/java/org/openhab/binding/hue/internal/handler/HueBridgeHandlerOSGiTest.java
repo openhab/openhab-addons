@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -182,7 +182,8 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
 
         assertNull(bridge.getConfiguration().get(USER_NAME));
         waitForAssert(() -> assertEquals(ThingStatus.OFFLINE, bridge.getStatus()));
-        assertEquals(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, bridge.getStatusInfo().getStatusDetail());
+        waitForAssert(() -> assertEquals(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                bridge.getStatusInfo().getStatusDetail()));
     }
 
     @Test

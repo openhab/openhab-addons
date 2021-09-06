@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.io.neeo.internal.models;
 
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -58,11 +57,11 @@ public enum ItemSubType {
      * @return the ItemSubType type
      */
     public static ItemSubType parse(final String text) {
-        if (StringUtils.isEmpty(text)) {
+        if (text.isEmpty()) {
             return NONE;
         }
         for (ItemSubType enm : ItemSubType.values()) {
-            if (StringUtils.equalsIgnoreCase(text, enm.text)) {
+            if (text.equalsIgnoreCase(enm.text)) {
                 return enm;
             }
         }
@@ -77,11 +76,11 @@ public enum ItemSubType {
      * @return true if valid, false otherwise
      */
     public static boolean isValid(final String text) {
-        if (StringUtils.isEmpty(text)) {
+        if (text.isEmpty()) {
             return true;
         }
         for (ItemSubType enm : ItemSubType.values()) {
-            if (StringUtils.equalsIgnoreCase(text, enm.text)) {
+            if (text.equalsIgnoreCase(enm.text)) {
                 return true;
             }
         }

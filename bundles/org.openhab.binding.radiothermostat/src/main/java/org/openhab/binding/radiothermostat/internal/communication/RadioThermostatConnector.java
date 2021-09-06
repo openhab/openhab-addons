@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,10 +105,11 @@ public class RadioThermostatConnector {
      *
      * @param the JSON attribute key for the value to be updated
      * @param the value to be updated in the thermostat
+     * @param the end point URI to use for the command
      * @return the JSON response string from the thermostat
      */
-    public String sendCommand(String cmdKey, @Nullable String cmdVal) {
-        return sendCommand(cmdKey, cmdVal, null);
+    public String sendCommand(String cmdKey, @Nullable String cmdVal, String resource) {
+        return sendCommand(cmdKey, cmdVal, null, resource);
     }
 
     /**
@@ -117,12 +118,14 @@ public class RadioThermostatConnector {
      * @param the JSON attribute key for the value to be updated
      * @param the value to be updated in the thermostat
      * @param JSON string to send directly to the thermostat instead of a key/value pair
+     * @param the end point URI to use for the command
      * @return the JSON response string from the thermostat
      */
-    public String sendCommand(@Nullable String cmdKey, @Nullable String cmdVal, @Nullable String cmdJson) {
+    public String sendCommand(@Nullable String cmdKey, @Nullable String cmdVal, @Nullable String cmdJson,
+            String resource) {
         // if we got a cmdJson string send that, otherwise build the json from the key and val params
         String postJson = cmdJson != null ? cmdJson : "{\"" + cmdKey + "\":" + cmdVal + "}";
-        String urlStr = buildRequestURL(DEFAULT_RESOURCE);
+        String urlStr = buildRequestURL(resource);
 
         String output = "";
 

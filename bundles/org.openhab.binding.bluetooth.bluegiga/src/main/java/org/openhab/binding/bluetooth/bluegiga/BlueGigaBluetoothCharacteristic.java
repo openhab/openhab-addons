@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ import org.openhab.binding.bluetooth.BluetoothCharacteristic;
  */
 public class BlueGigaBluetoothCharacteristic extends BluetoothCharacteristic {
 
-    private boolean notificationEnabled;
+    private boolean notifying;
 
     public BlueGigaBluetoothCharacteristic(int handle) {
         super(null, handle);
@@ -45,11 +45,11 @@ public class BlueGigaBluetoothCharacteristic extends BluetoothCharacteristic {
         this.uuid = uuid;
     }
 
-    public boolean isNotificationEnabled() {
-        return notificationEnabled;
+    public boolean isNotifying() {
+        return notifying;
     }
 
-    public void setNotificationEnabled(boolean enable) {
-        this.notificationEnabled = enable;
+    public void setNotifying(boolean enable) {
+        this.notifying = enable;
     }
 }

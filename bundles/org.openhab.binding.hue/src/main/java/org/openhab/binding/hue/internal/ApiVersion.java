@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -121,10 +121,7 @@ public class ApiVersion {
         if (micro != other.micro) {
             return false;
         }
-        if (minor != other.minor) {
-            return false;
-        }
-        return true;
+        return minor == other.minor;
     }
 
     @Override

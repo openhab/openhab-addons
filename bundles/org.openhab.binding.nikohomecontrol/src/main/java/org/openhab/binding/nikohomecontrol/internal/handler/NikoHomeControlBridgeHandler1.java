@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,20 +41,20 @@ public class NikoHomeControlBridgeHandler1 extends NikoHomeControlBridgeHandler 
 
     @Override
     public void initialize() {
-        logger.debug("Niko Home Control: initializing bridge handler");
+        logger.debug("initializing bridge handler");
 
         setConfig();
         InetAddress addr = getAddr();
         int port = getPort();
 
-        logger.debug("Niko Home Control: bridge handler host {}, port {}", addr, port);
+        logger.debug("bridge handler host {}, port {}", addr, port);
 
         if (addr != null) {
             nhcComm = new NikoHomeControlCommunication1(this, scheduler);
             startCommunication();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Niko Home Control: cannot resolve bridge IP with hostname " + config.addr);
+                    "Cannot resolve bridge IP with hostname " + config.addr);
         }
     }
 

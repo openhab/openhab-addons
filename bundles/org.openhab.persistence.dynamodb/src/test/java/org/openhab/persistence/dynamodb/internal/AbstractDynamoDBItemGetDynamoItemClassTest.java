@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.openhab.core.library.items.CallItem;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.ContactItem;
@@ -38,58 +39,71 @@ import org.openhab.core.library.items.SwitchItem;
 @NonNullByDefault
 public class AbstractDynamoDBItemGetDynamoItemClassTest {
 
-    @Test
-    public void testCallItem() throws IOException {
-        assertEquals(DynamoDBStringItem.class, AbstractDynamoDBItem.getDynamoItemClass(CallItem.class));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testCallItem(boolean legacy) throws IOException {
+        assertEquals(DynamoDBStringItem.class, AbstractDynamoDBItem.getDynamoItemClass(CallItem.class, legacy));
     }
 
-    @Test
-    public void testContactItem() throws IOException {
-        assertEquals(DynamoDBBigDecimalItem.class, AbstractDynamoDBItem.getDynamoItemClass(ContactItem.class));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testContactItem(boolean legacy) throws IOException {
+        assertEquals(DynamoDBBigDecimalItem.class, AbstractDynamoDBItem.getDynamoItemClass(ContactItem.class, legacy));
     }
 
-    @Test
-    public void testDateTimeItem() throws IOException {
-        assertEquals(DynamoDBStringItem.class, AbstractDynamoDBItem.getDynamoItemClass(DateTimeItem.class));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testDateTimeItem(boolean legacy) throws IOException {
+        assertEquals(DynamoDBStringItem.class, AbstractDynamoDBItem.getDynamoItemClass(DateTimeItem.class, legacy));
     }
 
-    @Test
-    public void testStringItem() throws IOException {
-        assertEquals(DynamoDBStringItem.class, AbstractDynamoDBItem.getDynamoItemClass(StringItem.class));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testStringItem(boolean legacy) throws IOException {
+        assertEquals(DynamoDBStringItem.class, AbstractDynamoDBItem.getDynamoItemClass(StringItem.class, legacy));
     }
 
-    @Test
-    public void testLocationItem() throws IOException {
-        assertEquals(DynamoDBStringItem.class, AbstractDynamoDBItem.getDynamoItemClass(LocationItem.class));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testLocationItem(boolean legacy) throws IOException {
+        assertEquals(DynamoDBStringItem.class, AbstractDynamoDBItem.getDynamoItemClass(LocationItem.class, legacy));
     }
 
-    @Test
-    public void testNumberItem() throws IOException {
-        assertEquals(DynamoDBBigDecimalItem.class, AbstractDynamoDBItem.getDynamoItemClass(NumberItem.class));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testNumberItem(boolean legacy) throws IOException {
+        assertEquals(DynamoDBBigDecimalItem.class, AbstractDynamoDBItem.getDynamoItemClass(NumberItem.class, legacy));
     }
 
-    @Test
-    public void testColorItem() throws IOException {
-        assertEquals(DynamoDBStringItem.class, AbstractDynamoDBItem.getDynamoItemClass(ColorItem.class));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testColorItem(boolean legacy) throws IOException {
+        assertEquals(DynamoDBStringItem.class, AbstractDynamoDBItem.getDynamoItemClass(ColorItem.class, legacy));
     }
 
-    @Test
-    public void testDimmerItem() throws IOException {
-        assertEquals(DynamoDBBigDecimalItem.class, AbstractDynamoDBItem.getDynamoItemClass(DimmerItem.class));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testDimmerItem(boolean legacy) throws IOException {
+        assertEquals(DynamoDBBigDecimalItem.class, AbstractDynamoDBItem.getDynamoItemClass(DimmerItem.class, legacy));
     }
 
-    @Test
-    public void testPlayerItem() throws IOException {
-        assertEquals(DynamoDBStringItem.class, AbstractDynamoDBItem.getDynamoItemClass(PlayerItem.class));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testPlayerItem(boolean legacy) throws IOException {
+        assertEquals(legacy ? DynamoDBStringItem.class : DynamoDBBigDecimalItem.class,
+                AbstractDynamoDBItem.getDynamoItemClass(PlayerItem.class, legacy));
     }
 
-    @Test
-    public void testRollershutterItem() throws IOException {
-        assertEquals(DynamoDBBigDecimalItem.class, AbstractDynamoDBItem.getDynamoItemClass(RollershutterItem.class));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testRollershutterItem(boolean legacy) throws IOException {
+        assertEquals(DynamoDBBigDecimalItem.class,
+                AbstractDynamoDBItem.getDynamoItemClass(RollershutterItem.class, legacy));
     }
 
-    @Test
-    public void testOnOffTypeWithSwitchItem() throws IOException {
-        assertEquals(DynamoDBBigDecimalItem.class, AbstractDynamoDBItem.getDynamoItemClass(SwitchItem.class));
+    @ParameterizedTest
+    @CsvSource({ "true", "false" })
+    public void testOnOffTypeWithSwitchItem(boolean legacy) throws IOException {
+        assertEquals(DynamoDBBigDecimalItem.class, AbstractDynamoDBItem.getDynamoItemClass(SwitchItem.class, legacy));
     }
 }

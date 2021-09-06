@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,13 +19,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 import com.google.gson.annotations.SerializedName;
-
-import tec.uom.se.AbstractUnit;
-import tec.uom.se.unit.Units;
 
 /**
  * private class: a generic data point
@@ -149,7 +147,7 @@ public abstract class BasePoint {
                 }
             }
         }
-        return AbstractUnit.ONE;
+        return Units.ONE;
     }
 
     /*

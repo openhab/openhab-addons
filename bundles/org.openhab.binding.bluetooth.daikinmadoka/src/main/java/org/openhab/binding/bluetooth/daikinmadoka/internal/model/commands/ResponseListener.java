@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,4 +44,12 @@ public interface ResponseListener {
     public void receivedResponse(SetOperationmodeCommand command);
 
     public void receivedResponse(SetFanspeedCommand command);
+
+    public void receivedResponse(GetOperationHoursCommand command);
+
+    public void receivedResponse(GetEyeBrightnessCommand command);
+
+    public void receivedResponse(SetEyeBrightnessCommand command);
+
+    public void receivedResponse(GetCleanFilterIndicatorCommand command);
 }

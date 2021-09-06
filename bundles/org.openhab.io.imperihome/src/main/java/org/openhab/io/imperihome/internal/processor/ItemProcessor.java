@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,8 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.ItemRegistryChangeListener;
@@ -144,11 +143,12 @@ public class ItemProcessor implements ItemRegistryChangeListener {
 
         String icon = issTags.get(TagType.ICON).get(0);
         if (!icon.toLowerCase().startsWith("http")) {
-            if (StringUtils.isEmpty(config.getRootUrl())) {
+            String rootUrl = config.getRootUrl();
+            if (rootUrl == null || rootUrl.isEmpty()) {
                 logger.error("Can't set icon; 'openhab.rootUrl' not set in configuration");
                 return;
             }
-            icon = config.getRootUrl() + "icon/" + icon;
+            icon = rootUrl + "icon/" + icon;
         }
 
         device.addParam(new DeviceParam(ParamType.DEFAULT_ICON, icon));
@@ -214,8 +214,9 @@ public class ItemProcessor implements ItemRegistryChangeListener {
             return issTags.get(TagType.LABEL).get(0);
         }
 
-        if (StringUtils.isNotBlank(item.getLabel())) {
-            String label = item.getLabel().trim();
+        String label = item.getLabel();
+        if (label != null && !label.isBlank()) {
+            label = label.trim();
             if (label.matches("\\[.*\\]$")) {
                 label = label.substring(0, label.indexOf('['));
             }

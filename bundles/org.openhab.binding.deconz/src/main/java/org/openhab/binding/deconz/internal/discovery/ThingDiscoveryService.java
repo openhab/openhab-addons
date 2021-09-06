@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deconz.internal.Util;
-import org.openhab.binding.deconz.internal.dto.BridgeFullState;
 import org.openhab.binding.deconz.internal.dto.GroupMessage;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
@@ -70,10 +69,19 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
     }
 
     @Override
-    protected void startScan() {
+    public void startScan() {
         final DeconzBridgeHandler handler = this.handler;
         if (handler != null) {
-            handler.requestFullState(false);
+            handler.getBridgeFullState().thenAccept(fullState -> {
+                stopScan();
+                removeOlderResults(getTimestampOfLastScan());
+                fullState.ifPresent(state -> {
+                    state.sensors.forEach(this::addSensor);
+                    state.lights.forEach(this::addLight);
+                    state.groups.forEach(this::addGroup);
+                });
+
+            });
         }
     }
 
@@ -229,6 +237,14 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             return;
         }
         ThingTypeUID thingTypeUID;
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(CONFIG_ID, sensorID);
+        properties.put(UNIQUE_ID, sensor.uniqueid);
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, sensor.swversion);
+        properties.put(Thing.PROPERTY_VENDOR, sensor.manufacturername);
+        properties.put(Thing.PROPERTY_MODEL_ID, sensor.modelid);
+
         if (sensor.type.contains("Daylight")) { // deCONZ specific: Software simulated daylight sensor
             thingTypeUID = THING_TYPE_DAYLIGHT_SENSOR;
         } else if (sensor.type.contains("Power")) { // ZHAPower, CLIPPower
@@ -273,8 +289,8 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, sensor.uniqueid.replaceAll("[^a-z0-9\\[\\]]", ""));
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                .withLabel(sensor.name + " (" + sensor.manufacturername + ")").withProperty(CONFIG_ID, sensorID)
-                .withProperty(UNIQUE_ID, sensor.uniqueid).withRepresentationProperty(UNIQUE_ID).build();
+                .withLabel(sensor.name + " (" + sensor.manufacturername + ")").withProperties(properties)
+                .withRepresentationProperty(UNIQUE_ID).build();
         thingDiscovered(discoveryResult);
     }
 
@@ -282,7 +298,6 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof DeconzBridgeHandler) {
             this.handler = (DeconzBridgeHandler) handler;
-            ((DeconzBridgeHandler) handler).setDiscoveryService(this);
             this.bridgeUID = handler.getThing().getUID();
         }
     }
@@ -300,21 +315,5 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
     @Override
     public void deactivate() {
         super.deactivate();
-    }
-
-    /**
-     * Call this method when a full bridge state request has been performed and either the fullState
-     * are known or a failure happened.
-     *
-     * @param fullState The fullState or null.
-     */
-    public void stateRequestFinished(final @Nullable BridgeFullState fullState) {
-        stopScan();
-        removeOlderResults(getTimestampOfLastScan());
-        if (fullState != null) {
-            fullState.sensors.forEach(this::addSensor);
-            fullState.lights.forEach(this::addLight);
-            fullState.groups.forEach(this::addGroup);
-        }
     }
 }

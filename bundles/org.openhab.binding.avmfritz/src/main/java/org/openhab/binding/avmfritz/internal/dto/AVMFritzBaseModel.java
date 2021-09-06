@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import java.math.BigDecimal;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * See {@link DeviceListModel}.
@@ -34,11 +36,14 @@ import javax.xml.bind.annotation.XmlElement;
  * <li>Bit 10: AVM DECT Repeater</li>
  * <li>Bit 11: Mikrofon</li>
  * <li>Bit 13: HAN-FUN Unit</li>
+ * <li>Bit 15: an-/ausschaltbares Gerät / Steckdose / Lampe / Aktor</li>
+ * <li>Bit 18: Rollladen - hoch, runter, stop und level 0% bis 100 %</li>
  * </ol>
  *
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
+ * @author Ulrich Mertin - Added support for HAN-FUN blinds
  */
 public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int HAN_FUN_DEVICE_BIT = 1; // Bit 0
@@ -47,11 +52,14 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int BUTTON_BIT = 1 << 5; // Bit 5
     protected static final int HEATING_THERMOSTAT_BIT = 1 << 6; // Bit 6
     protected static final int POWERMETER_BIT = 1 << 7; // Bit 7
-    protected static final int TEMPSENSOR_BIT = 1 << 8; // Bit 8
+    protected static final int TEMPERATURE_SENSOR_BIT = 1 << 8; // Bit 8
     protected static final int OUTLET_BIT = 1 << 9; // Bit 9
     protected static final int DECT_REPEATER_BIT = 1 << 10; // Bit 10
     protected static final int MICROPHONE_BIT = 1 << 11; // Bit 11
     protected static final int HAN_FUN_UNIT_BIT = 1 << 13; // Bit 13
+    protected static final int HAN_FUN_ON_OFF_BIT = 1 << 15; // Bit 15
+    protected static final int HAN_FUN_BLINDS_BIT = 1 << 18; // Bit 18
+    protected static final int HUMIDITY_SENSOR_BIT = 1 << 20; // Bit 20 - undocumented
 
     @XmlAttribute(name = "identifier")
     private String ident;
@@ -86,11 +94,18 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     @XmlElement(name = "switch")
     private SwitchModel switchModel;
 
+    @XmlElement(name = "simpleonoff")
+    private @Nullable SimpleOnOffModel simpleOnOffUnit;
+
     @XmlElement(name = "powermeter")
     private PowerMeterModel powermeterModel;
 
     @XmlElement(name = "hkr")
     private HeatingModel heatingModel;
+
+    public @Nullable SimpleOnOffModel getSimpleOnOffUnit() {
+        return simpleOnOffUnit;
+    }
 
     public PowerMeterModel getPowermeter() {
         return powermeterModel;
@@ -148,8 +163,12 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
         return (bitmask & OUTLET_BIT) > 0;
     }
 
-    public boolean isTempSensor() {
-        return (bitmask & TEMPSENSOR_BIT) > 0;
+    public boolean isTemperatureSensor() {
+        return (bitmask & TEMPERATURE_SENSOR_BIT) > 0;
+    }
+
+    public boolean isHumiditySensor() {
+        return (bitmask & HUMIDITY_SENSOR_BIT) > 0;
     }
 
     public boolean isPowermeter() {
@@ -164,12 +183,20 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
         return (bitmask & HEATING_THERMOSTAT_BIT) > 0;
     }
 
-    public boolean isMicrophone() {
+    public boolean hasMicrophone() {
         return (bitmask & MICROPHONE_BIT) > 0;
     }
 
     public boolean isHANFUNUnit() {
         return (bitmask & HAN_FUN_UNIT_BIT) > 0;
+    }
+
+    public boolean isHANFUNOnOff() {
+        return (bitmask / HAN_FUN_ON_OFF_BIT) > 0;
+    }
+
+    public boolean isHANFUNBlinds() {
+        return (bitmask & HAN_FUN_BLINDS_BIT) > 0;
     }
 
     public String getFirmwareVersion() {
@@ -204,17 +231,19 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
 
     @Override
     public String toString() {
-        return new StringBuilder().append("[ain=").append(ident).append(",bitmask=").append(bitmask)
-                .append(",isHANFUNDevice=").append(isHANFUNDevice()).append(",isHANFUNButton=").append(isHANFUNButton())
+        return new StringBuilder("[ain=").append(ident).append(",bitmask=").append(bitmask).append(",isHANFUNDevice=")
+                .append(isHANFUNDevice()).append(",isHANFUNButton=").append(isHANFUNButton())
                 .append(",isHANFUNAlarmSensor=").append(isHANFUNAlarmSensor()).append(",isButton=").append(isButton())
-                .append(",isSwitchableOutlet=").append(isSwitchableOutlet()).append(",isTempSensor=")
-                .append(isTempSensor()).append(",isPowermeter=").append(isPowermeter()).append(",isDectRepeater=")
-                .append(isDectRepeater()).append(",isHeatingThermostat=").append(isHeatingThermostat())
-                .append(",isMicrophone=").append(isMicrophone()).append(",isHANFUNUnit=").append(isHANFUNUnit())
-                .append(",id=").append(deviceId).append(",manufacturer=").append(deviceManufacturer)
-                .append(",productname=").append(productName).append(",fwversion=").append(firmwareVersion)
-                .append(",present=").append(present).append(",name=").append(name).append(",battery=")
-                .append(getBattery()).append(",batterylow=").append(getBatterylow()).append(",").append(getSwitch())
+                .append(",isSwitchableOutlet=").append(isSwitchableOutlet()).append(",isTemperatureSensor=")
+                .append(isTemperatureSensor()).append(",isHumiditySensor=").append(isHumiditySensor())
+                .append(",isPowermeter=").append(isPowermeter()).append(",isDectRepeater=").append(isDectRepeater())
+                .append(",isHeatingThermostat=").append(isHeatingThermostat()).append(",hasMicrophone=")
+                .append(hasMicrophone()).append(",isHANFUNUnit=").append(isHANFUNUnit()).append(",isHANFUNOnOff=")
+                .append(isHANFUNOnOff()).append(",isHANFUNBlind=").append(isHANFUNBlinds()).append(",id=")
+                .append(deviceId).append(",manufacturer=").append(deviceManufacturer).append(",productname=")
+                .append(productName).append(",fwversion=").append(firmwareVersion).append(",present=").append(present)
+                .append(",name=").append(name).append(",battery=").append(getBattery()).append(",batterylow=")
+                .append(getBatterylow()).append(",").append(getSwitch()).append(",").append(getSimpleOnOffUnit())
                 .append(",").append(getPowermeter()).append(",").append(getHkr()).append(",").toString();
     }
 }

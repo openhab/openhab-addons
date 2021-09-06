@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,9 +39,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NeoBaseHandler} is the openHAB Handler for NeoPlug devices
- * 
+ *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 @NonNullByDefault
 public class NeoBaseHandler extends BaseThingHandler {
@@ -211,17 +211,17 @@ public class NeoBaseHandler extends BaseThingHandler {
                         break;
 
                     case ERR_COMMUNICATION:
-                        logger.debug(MSG_HUB_COMM);
+                        logger.debug(MSG_HUB_COMM, hub.getThing().getUID());
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                         break;
 
                     case ERR_INITIALIZATION:
-                        logger.warn(MSG_HUB_CONFIG);
+                        logger.warn(MSG_HUB_CONFIG, hub.getThing().getUID());
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                         break;
                 }
             } else {
-                logger.debug(MSG_HUB_CONFIG);
+                logger.debug(MSG_HUB_CONFIG, "unknown");
             }
         } else {
             logger.debug(MSG_FMT_COMMAND_BAD, command.toString());
@@ -230,7 +230,7 @@ public class NeoBaseHandler extends BaseThingHandler {
 
     /**
      * internal getter returns the NeoHub handler
-     * 
+     *
      * @return the neohub handler or null
      */
     protected @Nullable NeoHubHandler getNeoHub() {

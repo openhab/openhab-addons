@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.luftdateninfo.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.luftdateninfo.internal.utils.Constants;
 
 /**
  * The {@link LuftdatenInfoConfiguration} class contains fields mapping thing configuration parameters.
@@ -22,5 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class LuftdatenInfoConfiguration {
 
-    public int sensorid = -1;
+    public int sensorid = Constants.UNDEF;
+
+    public String ipAddress = Constants.EMPTY;
 }

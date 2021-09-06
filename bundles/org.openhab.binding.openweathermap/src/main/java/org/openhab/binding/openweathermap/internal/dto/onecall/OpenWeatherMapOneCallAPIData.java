@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,8 @@ package org.openhab.binding.openweathermap.internal.dto.onecall;
 
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -26,33 +27,21 @@ import com.google.gson.annotations.SerializedName;
  * allow additional properties
  *
  * @author Wolfgang Klimt - Initial contribution
+ * @author Christoph Weitkamp - Added weather alerts
  */
 public class OpenWeatherMapOneCallAPIData {
 
-    @SerializedName("lat")
-    @Expose
     private double lat;
-    @SerializedName("lon")
-    @Expose
     private double lon;
-    @SerializedName("timezone")
-    @Expose
     private String timezone;
     @SerializedName("timezone_offset")
-    @Expose
     private int timezoneOffset;
-    @SerializedName("current")
-    @Expose
     private Current current;
-    @SerializedName("minutely")
-    @Expose
-    private List<Minutely> minutely = null;
-    @SerializedName("hourly")
-    @Expose
-    private List<Hourly> hourly = null;
-    @SerializedName("daily")
-    @Expose
-    private List<Daily> daily = null;
+    private List<Minutely> minutely;
+    private List<Hourly> hourly;
+    private List<Daily> daily;
+
+    public @Nullable List<Alert> alerts;
 
     public double getLat() {
         return lat;

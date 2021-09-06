@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.ClientBuilder;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -142,13 +141,12 @@ public class NeeoBrainService extends DefaultServletService {
             return false;
         }
 
-        if (StringUtils.equalsIgnoreCase(paths[0], "device")) {
+        if (paths[0].equalsIgnoreCase("device")) {
             return true;
         }
 
         final String lastPath = paths.length >= 2 ? paths[1] : null;
-        return StringUtils.equalsIgnoreCase(lastPath, "subscribe")
-                || StringUtils.equalsIgnoreCase(lastPath, "unsubscribe");
+        return "subscribe".equalsIgnoreCase(lastPath) || "unsubscribe".equalsIgnoreCase(lastPath);
     }
 
     @Override
@@ -160,19 +158,19 @@ public class NeeoBrainService extends DefaultServletService {
             throw new IllegalArgumentException("paths cannot be empty");
         }
 
-        final boolean hasDeviceStart = StringUtils.equalsIgnoreCase(paths[0], "device");
+        final boolean hasDeviceStart = paths[0].equalsIgnoreCase("device");
 
         if (hasDeviceStart) {
             final PathInfo pathInfo = new PathInfo(paths);
 
-            if (StringUtils.equalsIgnoreCase("directory", pathInfo.getComponentType())) {
+            if ("directory".equalsIgnoreCase(pathInfo.getComponentType())) {
                 handleDirectory(req, resp, pathInfo);
             } else {
-                logger.debug("Unknown/unhandled brain service device route (POST): {}", StringUtils.join(paths, '/'));
+                logger.debug("Unknown/unhandled brain service device route (POST): {}", String.join("/", paths));
 
             }
         } else {
-            logger.debug("Unknown/unhandled brain service route (POST): {}", StringUtils.join(paths, '/'));
+            logger.debug("Unknown/unhandled brain service route (POST): {}", String.join("/", paths));
         }
     }
 
@@ -192,26 +190,27 @@ public class NeeoBrainService extends DefaultServletService {
         // 4. Old subscribe path: /{thingUID}/subscribe or unsubscribe/{deviceid}/{devicekey}
         // 4. Old unsubscribe path: /{thingUID}/subscribe or unsubscribe/{deviceid}
 
-        final boolean hasDeviceStart = StringUtils.equalsIgnoreCase(paths[0], "device");
-        if (hasDeviceStart && (paths.length >= 3 && !StringUtils.equalsIgnoreCase(paths[2], "subscribe")
-                && !StringUtils.equalsIgnoreCase(paths[2], "unsubscribe"))) {
+        final boolean hasDeviceStart = paths[0].equalsIgnoreCase("device");
+        if (hasDeviceStart && (paths.length >= 3 && !paths[2].equalsIgnoreCase("subscribe")
+                && !paths[2].equalsIgnoreCase("unsubscribe"))) {
             try {
                 final PathInfo pathInfo = new PathInfo(paths);
 
-                if (StringUtils.isEmpty(pathInfo.getActionValue())) {
+                String actionValue = pathInfo.getActionValue();
+                if (actionValue == null || actionValue.isEmpty()) {
                     handleGetValue(resp, pathInfo);
                 } else {
                     handleSetValue(resp, pathInfo);
                 }
             } catch (IllegalArgumentException e) {
-                logger.debug("Bad path: {} - {}", StringUtils.join(paths), e.getMessage(), e);
+                logger.debug("Bad path: {} - {}", String.join("", paths), e.getMessage(), e);
             }
         } else {
             int idx = hasDeviceStart ? 1 : 0;
 
             if (idx + 2 < paths.length) {
                 final String adapterName = paths[idx++];
-                final String action = StringUtils.lowerCase(paths[idx++]);
+                final String action = paths[idx++].toLowerCase();
                 idx++; // deviceId/default - not used
 
                 switch (action) {
@@ -220,7 +219,7 @@ public class NeeoBrainService extends DefaultServletService {
                             final String deviceKey = paths[idx++];
                             handleSubscribe(resp, adapterName, deviceKey);
                         } else {
-                            logger.debug("No device key set for a subscribe action: {}", StringUtils.join(paths, '/'));
+                            logger.debug("No device key set for a subscribe action: {}", String.join("/", paths));
                         }
                         break;
                     case "unsubscribe":
@@ -231,7 +230,7 @@ public class NeeoBrainService extends DefaultServletService {
                 }
 
             } else {
-                logger.debug("Unknown/unhandled brain service route (GET): {}", StringUtils.join(paths, '/'));
+                logger.debug("Unknown/unhandled brain service route (GET): {}", String.join("/", paths));
             }
         }
     }
@@ -252,7 +251,8 @@ public class NeeoBrainService extends DefaultServletService {
             final NeeoDeviceChannel channel = device.getChannel(pathInfo.getItemName(), pathInfo.getSubType(),
                     pathInfo.getChannelNbr());
             if (channel != null && channel.getKind() == NeeoDeviceChannelKind.TRIGGER) {
-                final ChannelTriggeredEvent event = ThingEventFactory.createTriggerEvent(channel.getValue(),
+                String value = channel.getValue();
+                final ChannelTriggeredEvent event = ThingEventFactory.createTriggerEvent(value == null ? "" : value,
                         new ChannelUID(device.getUid(), channel.getItemName()));
                 logger.debug("Posting triggered event: {}", event);
                 context.getEventPublisher().post(event);
@@ -384,7 +384,7 @@ public class NeeoBrainService extends DefaultServletService {
         if (device != null) {
             final NeeoDeviceChannel channel = device.getChannel(pathInfo.getItemName(), pathInfo.getSubType(),
                     pathInfo.getChannelNbr());
-            if (StringUtils.equalsIgnoreCase("action", pathInfo.getActionValue())) {
+            if ("action".equalsIgnoreCase(pathInfo.getActionValue())) {
                 final NeeoDirectoryRequestAction discoveryAction = gson.fromJson(req.getReader(),
                         NeeoDirectoryRequestAction.class);
 
@@ -515,13 +515,11 @@ public class NeeoBrainService extends DefaultServletService {
                 if (state instanceof OnOffType) {
                     Boolean recipeState = null;
                     final String label = channel.getLabel();
-                    if (StringUtils.equalsIgnoreCase(NeeoButtonGroup.POWERONOFF.getText(), label)) {
+                    if (NeeoButtonGroup.POWERONOFF.getText().equalsIgnoreCase(label)) {
                         recipeState = state == OnOffType.ON;
-                    } else if (state == OnOffType.ON
-                            && StringUtils.equalsIgnoreCase(ButtonInfo.POWERON.getLabel(), label)) {
+                    } else if (state == OnOffType.ON && ButtonInfo.POWERON.getLabel().equalsIgnoreCase(label)) {
                         recipeState = true;
-                    } else if (state == OnOffType.OFF
-                            && StringUtils.equalsIgnoreCase(ButtonInfo.POWEROFF.getLabel(), label)) {
+                    } else if (state == OnOffType.OFF && ButtonInfo.POWEROFF.getLabel().equalsIgnoreCase(label)) {
                         recipeState = false;
                     }
 

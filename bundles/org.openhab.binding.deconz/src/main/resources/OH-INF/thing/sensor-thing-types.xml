@@ -11,21 +11,15 @@
 		<label>Presence Sensor</label>
 		<description>A Presence sensor</description>
 		<channels>
-			<channel typeId="presence" id="presence"/>
+			<channel typeId="system.motion" id="presence"/>
 			<channel typeId="last_updated" id="last_updated"/>
+			<channel typeId="system.power" id="enabled"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
 
 		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
-
-	<channel-type id="presence">
-		<item-type>Switch</item-type>
-		<label>Presence</label>
-		<description>Presence detected</description>
-		<state readOnly="true"></state>
-	</channel-type>
 
 	<channel-type id="last_updated">
 		<item-type>DateTime</item-type>
@@ -103,6 +97,7 @@
 		<item-type>Number:Energy</item-type>
 		<label>Consumption</label>
 		<description>Current consumption</description>
+		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
@@ -112,7 +107,7 @@
 		</supported-bridge-type-refs>
 		<label>Color Controller</label>
 		<channels>
-			<channel typeId="color" id="color"/>
+			<channel typeId="system.color" id="color"/>
 			<channel typeId="buttonevent" id="buttonevent"/>
 			<channel typeId="button" id="button"/>
 			<channel typeId="last_updated" id="last_updated"/>
@@ -122,13 +117,6 @@
 
 		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
-
-	<channel-type id="color">
-		<item-type>Color</item-type>
-		<label>Color</label>
-		<description>Allows to control a color</description>
-		<state readOnly="true"></state>
-	</channel-type>
 
 	<thing-type id="switch">
 		<supported-bridge-type-refs>
@@ -255,6 +243,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
+		<category>Temperature</category>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
@@ -278,6 +267,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current humidity</description>
+		<category>Humidity</category>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
@@ -301,6 +291,7 @@
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
 		<description>Current pressure</description>
+		<category>Pressure</category>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
@@ -469,7 +460,7 @@
 		<label>Battery Sensor</label>
 		<description>A battery sensor</description>
 		<channels>
-			<channel typeId="battery" id="battery_level"/>
+			<channel typeId="system.battery-level" id="battery_level"/>
 			<channel typeId="last_updated" id="last_updated"/>
 		</channels>
 
@@ -477,13 +468,6 @@
 
 		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
-
-	<channel-type id="battery">
-		<item-type>Number</item-type>
-		<label>Battery</label>
-		<description>The battery state.</description>
-		<state pattern="%d %%" readOnly="true"/>
-	</channel-type>
 
 	<thing-type id="carbonmonoxidesensor">
 		<supported-bridge-type-refs>
@@ -527,14 +511,16 @@
 
 	<channel-type id="heatsetpoint">
 		<item-type>Number:Temperature</item-type>
-		<label>Target temperature</label>
+		<label>Target Temperature</label>
 		<description>Target temperature</description>
+		<category>Heating</category>
 		<state pattern="%.1f %unit%" step="0.5" max="28" min="6"></state>
 	</channel-type>
 	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Current mode</description>
+		<category>Heating</category>
 		<state>
 			<options>
 				<option value="AUTO">auto</option>
@@ -553,7 +539,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Valve position</label>
 		<description>Current valve position</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

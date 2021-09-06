@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public class XSLTTransformationProfileFactory implements ProfileFactory, Profile
         return Arrays.asList(XSLTTransformationProfile.PROFILE_TYPE_UID);
     }
 
-    @Reference(target = "(smarthome.transform=XSLT)")
+    @Reference(target = "(openhab.transform=XSLT)")
     public void addTransformationService(TransformationService service) {
         this.service = service;
     }

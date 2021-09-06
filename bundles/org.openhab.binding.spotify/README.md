@@ -20,7 +20,7 @@ Follow instructions under:
 When registering your new Spotify Application for openHAB Spotify Bridge you have to specify the allowed "Redirect URIs" aka white-listed addresses.
 Here you have to specify the URL to the Bridge Authorization Servlet on your server.
 
-For example if you run your openHAB server on `http://openhabianpi:8080` you should add [http://openhabianpi:8080/connectspotify](http://openhabianpi:8080/connectspotify) as the redirect URIs.
+For example if you run your openHAB server on `http://openhab:8080` you should add [http://openhab:8080/connectspotify](http://openhab:8080/connectspotify) as the redirect URIs.
 
 This is important since the authorize process with Spotify takes place using your client web browser and Spotify will have to know the right URLs to your openHAB server for the authorization to be completed.
 When you have authorized with Spotify, this Redirect URI is where authorization tokens for your openHAB Spotify Brigde will be sent and they have to be received by the servlet on `/connectspotify`.
@@ -30,13 +30,13 @@ When you have authorized with Spotify, this Redirect URI is where authorization 
 1. Install the binding and make sure the _Spotify Binding_ is listed on your server
 1. Complete the Spotify Application Registation if you have not already done so, see above.
 1. Make sure you have your Spotify Application _Client ID_ and _Client Secret_ identities available.
-1. Go to to your preferred openHAB admin UI and add a new Thing. Select the **"Spotify Player Bridge"**. Choose new Id for the player, unless you like the generated one, put in the _Client ID_ and _Client Secret_ from the Spotify Application registration in their respective fields of the bridge configuration. You can leave the _refreshPeriod_ as is. Save the bridge.
+1. Add a new **"Spotify Player Bridge"** thing. Choose new Id for the player, unless you like the generated one, put in the _Client ID_ and _Client Secret_ from the Spotify Application registration in their respective fields of the bridge configuration. You can leave the _refreshPeriod_ as is. Save the bridge.
 1. The bridge thing will stay in state _INITIALIZING_ and eventually go _OFFLINE_ - this is fine. You have to authorize this bridge with Spotify.
 1. Go to the authorization page of your server. `http://<your openHAB address>:8080/connectspotify`. Your newly added bridge should be listed there.
 1. Press the _"Authorize Player"_ button. This will take you either to the login page of Spotify or directly to the authorization screen. Login and/or authorize the application. If the Redirect URIs are correct you will be returned and the entry should show you are authorized with you Spotify user name/id. If not, go back to your Spotify Application and ensure you have the right Redirect URIs.
 1. The binding will be updated with a refresh token and go _ONLINE_. The refresh token is used to re-authorize the bridge with Spotify Connect Web API whenever required.
 
-Now that you have got your bridge _ONLINE_ it is time to discover your devices! Go to Paper UI Inbox and search for Spotify Connect Devices. Any device currently available on your account should show up immediately.
+Now that you have got your bridge _ONLINE_ you can now start a scan with the binding to auto discover your devices.
 
 If no devices show up you can start Spotify App on your PC/Mac/iOS/Android and start playing on your devices as you run discovery.
 This should make any Spotify Connect devices and Spotify Apps discoverable.

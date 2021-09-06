@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,6 +39,10 @@ import org.slf4j.LoggerFactory;
 public class SocketSession {
     private final Logger logger = LoggerFactory.getLogger(SocketSession.class);
 
+    /**
+     * The uid of the calling thing
+     */
+    private final String uid;
     /**
      * The host/ip address to connect to
      */
@@ -87,10 +91,11 @@ public class SocketSession {
     /**
      * Creates the socket session from the given host and port
      *
+     * @param uid the thing uid of the calling thing
      * @param host a non-null, non-empty host/ip address
      * @param port the port number between 1 and 65535
      */
-    public SocketSession(String host, int port) {
+    public SocketSession(String uid, String host, int port) {
         if (host == null || host.trim().length() == 0) {
             throw new IllegalArgumentException("Host cannot be null or empty");
         }
@@ -98,6 +103,7 @@ public class SocketSession {
         if (port < 1 || port > 65535) {
             throw new IllegalArgumentException("Port must be between 1 and 65535");
         }
+        this.uid = uid;
         this.host = host;
         this.port = port;
     }
@@ -133,8 +139,8 @@ public class SocketSession {
         writer = new PrintStream(client.getOutputStream());
         reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
 
-        new Thread(responseReader).start();
-        new Thread(dispatcher).start();
+        new Thread(responseReader, "OH-binding-" + uid + "-responseReader").start();
+        new Thread(dispatcher, "OH-binding-" + uid + "-dispatcher").start();
     }
 
     /**

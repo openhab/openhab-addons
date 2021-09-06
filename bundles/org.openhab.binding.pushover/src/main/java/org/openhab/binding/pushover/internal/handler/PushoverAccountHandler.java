@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,7 @@ public class PushoverAccountHandler extends BaseThingHandler {
 
     private final HttpClient httpClient;
 
-    private @NonNullByDefault({}) PushoverAccountConfiguration config;
+    private PushoverAccountConfiguration config = new PushoverAccountConfiguration();
     private @Nullable PushoverAPIConnection connection;
 
     public PushoverAccountHandler(Thing thing, HttpClient httpClient) {
@@ -100,7 +100,14 @@ public class PushoverAccountHandler extends BaseThingHandler {
      * @return a list of {@link Sound}s
      */
     public List<Sound> getSounds() {
-        return connection != null ? connection.getSounds() : List.of();
+        try {
+            return connection != null ? connection.getSounds() : PushoverAccountConfiguration.DEFAULT_SOUNDS;
+        } catch (PushoverCommunicationException e) {
+            // do nothing, causing exception is already logged
+        } catch (PushoverConfigurationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        }
+        return PushoverAccountConfiguration.DEFAULT_SOUNDS;
     }
 
     /**
@@ -125,7 +132,7 @@ public class PushoverAccountHandler extends BaseThingHandler {
             default:
                 break;
         }
-        // add sound if defined
+        // add sound, if defined
         if (!DEFAULT_SOUND.equals(config.sound)) {
             builder.withSound(config.sound);
         }
@@ -134,7 +141,14 @@ public class PushoverAccountHandler extends BaseThingHandler {
 
     public boolean sendMessage(PushoverMessageBuilder messageBuilder) {
         if (connection != null) {
-            return connection.sendMessage(messageBuilder);
+            try {
+                return connection.sendMessage(messageBuilder);
+            } catch (PushoverCommunicationException e) {
+                // do nothing, causing exception is already logged
+            } catch (PushoverConfigurationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
+            return false;
         } else {
             throw new IllegalArgumentException("PushoverAPIConnection is null!");
         }
@@ -142,7 +156,14 @@ public class PushoverAccountHandler extends BaseThingHandler {
 
     public String sendPriorityMessage(PushoverMessageBuilder messageBuilder) {
         if (connection != null) {
-            return connection.sendPriorityMessage(messageBuilder);
+            try {
+                return connection.sendPriorityMessage(messageBuilder);
+            } catch (PushoverCommunicationException e) {
+                // do nothing, causing exception is already logged
+            } catch (PushoverConfigurationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
+            return "";
         } else {
             throw new IllegalArgumentException("PushoverAPIConnection is null!");
         }
@@ -150,12 +171,20 @@ public class PushoverAccountHandler extends BaseThingHandler {
 
     public boolean cancelPriorityMessage(String receipt) {
         if (connection != null) {
-            return connection.cancelPriorityMessage(receipt);
+            try {
+                return connection.cancelPriorityMessage(receipt);
+            } catch (PushoverCommunicationException e) {
+                // do nothing, causing exception is already logged
+            } catch (PushoverConfigurationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
+            return false;
         } else {
             throw new IllegalArgumentException("PushoverAPIConnection is null!");
         }
     }
 
+    @SuppressWarnings("null")
     private void asyncValidateUser() {
         try {
             connection.validateUser();

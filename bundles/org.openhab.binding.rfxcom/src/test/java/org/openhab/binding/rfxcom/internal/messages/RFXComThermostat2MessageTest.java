@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,6 @@ public class RFXComThermostat2MessageTest {
     public void checkNotImplemented() {
         // TODO Note that this message is supported in the 1.9 binding
         assertThrows(RFXComMessageNotImplementedException.class,
-                () -> RFXComMessageFactory.createMessage(PacketType.THERMOSTAT2));
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.THERMOSTAT2, null, null, null));
     }
 }

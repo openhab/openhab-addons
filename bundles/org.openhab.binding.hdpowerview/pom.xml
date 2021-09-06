@@ -7,16 +7,22 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.hdpowerview</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Hunter Douglas PowerView Binding</name>
 
+  <properties>
+    <bnd.importpackage>
+      !jcifs.*
+    </bnd.importpackage>
+  </properties>
+
   <dependencies>
     <dependency>
-      <groupId>org.samba.jcifs</groupId>
+      <groupId>jcifs</groupId>
       <artifactId>jcifs</artifactId>
       <version>1.3.17</version>
       <scope>compile</scope>

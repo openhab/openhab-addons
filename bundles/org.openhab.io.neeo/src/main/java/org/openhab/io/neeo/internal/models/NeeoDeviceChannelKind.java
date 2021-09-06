@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.io.neeo.internal.models;
 
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.type.ChannelKind;
 
@@ -50,11 +49,11 @@ public enum NeeoDeviceChannelKind {
      * @return the NeeoDeviceChannelKind type
      */
     public static NeeoDeviceChannelKind parse(final String text) {
-        if (StringUtils.isEmpty(text)) {
+        if (text.isEmpty()) {
             return ITEM;
         }
         for (NeeoDeviceChannelKind enm : NeeoDeviceChannelKind.values()) {
-            if (StringUtils.equalsIgnoreCase(text, enm.text)) {
+            if (text.equalsIgnoreCase(enm.text)) {
                 return enm;
             }
         }

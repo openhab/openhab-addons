@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
@@ -41,16 +43,18 @@ import org.openhab.core.types.UnDefType;
 public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.SubType> {
 
     public enum SubType implements ByteEnumWrapper {
-        SF01(0),
-        CVE_RFT(1),
-        LUCCI_AIR_FAN(2),
-        SEAV_TXS4(3),
-        WESTINGHOUSE_7226640(4),
-        LUCCI_AIR_DC(5),
-        CASAFAN(6),
-        FT1211R(7),
-        FALMEC(8),
-        LUCCI_AIR_DC_II(9);
+        SF01(0x00),
+        CVE_RFT(0x01),
+        LUCCI_AIR_FAN(0x02),
+        SEAV_TXS4(0x03),
+        WESTINGHOUSE_7226640(0x04),
+        LUCCI_AIR_DC(0x05),
+        CASAFAN(0x06),
+        FT1211R(0x07),
+        FALMEC(0x08),
+        LUCCI_AIR_DC_II(0x09),
+        ITHO_CVE_ECO_RFT(0x0A),
+        NOVY(0x0B);
 
         private final int subType;
 
@@ -111,7 +115,14 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
         LUCCI_AIR_DC_II_SPEED_5(6, 5, LUCCI_AIR_DC_II),
         LUCCI_AIR_DC_II_SPEED_6(7, 6, LUCCI_AIR_DC_II),
         LUCCI_AIR_DC_II_LIGHT(8, LUCCI_AIR_DC_II),
-        LUCCI_AIR_DC_II_REVERSE(9, LUCCI_AIR_DC_II);
+        LUCCI_AIR_DC_II_REVERSE(9, LUCCI_AIR_DC_II),
+
+        NOVY_POWER(1, NOVY),
+        NOVY_UP(2, NOVY),
+        NOVY_DOWN(3, NOVY),
+        NOVY_LIGHT(4, NOVY),
+        NOVY_LEARN(5, NOVY),
+        NOVY_RESET_FILTER(6, NOVY);
 
         private final int command;
         private final Integer speed;
@@ -155,10 +166,10 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
     private static final List<SubType> GENERIC_SUB_TYPES = Arrays.asList(WESTINGHOUSE_7226640, CASAFAN, LUCCI_AIR_FAN);
 
     private static final List<Commands> LIGHT_ON_COMMANDS = Arrays.asList(LIGHT, LUCCI_AIR_DC_LIGHT,
-            LUCCI_AIR_DC_II_LIGHT, FALMEC_LIGHT_ON);
-    private static final List<Commands> ON_COMMANDS = Arrays.asList(Commands.HI, MED, LOW, FALMEC_SPEED_1,
-            FALMEC_SPEED_2, FALMEC_SPEED_3, FALMEC_SPEED_4, LUCCI_AIR_DC_II_SPEED_1, LUCCI_AIR_DC_II_SPEED_2,
-            LUCCI_AIR_DC_II_SPEED_3, LUCCI_AIR_DC_II_SPEED_4, LUCCI_AIR_DC_II_SPEED_5, LUCCI_AIR_DC_II_SPEED_6);
+            LUCCI_AIR_DC_II_LIGHT, FALMEC_LIGHT_ON, NOVY_LIGHT);
+    private static final List<Commands> ON_COMMANDS = Arrays.asList(HI, MED, LOW, FALMEC_SPEED_1, FALMEC_SPEED_2,
+            FALMEC_SPEED_3, FALMEC_SPEED_4, LUCCI_AIR_DC_II_SPEED_1, LUCCI_AIR_DC_II_SPEED_2, LUCCI_AIR_DC_II_SPEED_3,
+            LUCCI_AIR_DC_II_SPEED_4, LUCCI_AIR_DC_II_SPEED_5, LUCCI_AIR_DC_II_SPEED_6);
     private static final List<Commands> OFF_COMMANDS = Arrays.asList(OFF, FALMEC_POWER_OFF, LUCCI_AIR_DC_II_POWER_OFF);
 
     private SubType subType;
@@ -194,6 +205,10 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
                 return PacketType.FAN_FALMEC;
             case LUCCI_AIR_DC_II:
                 return PacketType.FAN_LUCCI_DC_II;
+            case ITHO_CVE_ECO_RFT:
+                return PacketType.FAN_ITHO_CVE_ECO_RFT;
+            case NOVY:
+                return PacketType.FAN_NOVY;
         }
         return super.getPacketType();
     }
@@ -250,7 +265,8 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
     }
 
     @Override
-    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
+            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
         switch (channelId) {
             case CHANNEL_FAN_LIGHT:
                 return handleLightChannel();
@@ -265,7 +281,7 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
                 return handleCommandStringChannel();
 
             default:
-                return super.convertToState(channelId, deviceState);
+                return super.convertToState(channelId, config, deviceState);
         }
     }
 
@@ -315,9 +331,11 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
                 return new DecimalType(command.getSpeed());
 
             case LUCCI_AIR_DC_DOWN:
+            case NOVY_DOWN:
                 return UpDownType.DOWN;
 
             case LUCCI_AIR_DC_UP:
+            case NOVY_UP:
                 return UpDownType.UP;
 
             default:
@@ -367,10 +385,12 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
                 case "POWER_OFF":
                 case "UP":
                 case "DOWN":
+                case "LEARN":
                 case "LIGHT":
                 case "REVERSE":
                 case "NATURAL_FLOW":
                 case "PAIR":
+                case "RESET_FILTER":
                 case "SPEED_1":
                 case "SPEED_2":
                 case "SPEED_3":
@@ -417,6 +437,12 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
             } else {
                 return Commands.LUCCI_AIR_DC_DOWN;
             }
+        } else if (type instanceof UpDownType && subType == NOVY) {
+            if (UpDownType.UP == type) {
+                return Commands.NOVY_UP;
+            } else {
+                return Commands.NOVY_DOWN;
+            }
         }
         throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
     }
@@ -427,7 +453,6 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
                 case LUCCI_AIR_FAN:
                 case CASAFAN:
                 case WESTINGHOUSE_7226640:
-                case LUCCI_AIR_DC:
                     return LIGHT;
 
                 case FALMEC:

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -197,10 +197,9 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
     }
 
     /**
-     * Try to auto configure the connection type (Telnet or HTTP)
-     * for Things not added through Paper UI.
+     * Try to auto configure the connection type (Telnet or HTTP) for unmanaged Things.
      */
-    private void autoConfigure() {
+    private void autoConfigure() throws InterruptedException {
         /*
          * The isTelnet parameter has no default.
          * When not set we will try to auto-detect the correct values
@@ -223,7 +222,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                     telnetEnable = false;
                     httpApiUsable = true;
                 }
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            } catch (TimeoutException | ExecutionException e) {
                 logger.debug("Error when trying to access AVR using HTTP on port 80, reverting to Telnet mode.", e);
             }
 
@@ -239,7 +238,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                         httpPort = 8080;
                         httpApiUsable = true;
                     }
-                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                } catch (TimeoutException | ExecutionException e) {
                     logger.debug("Additionally tried to connect to port 8080, this also failed", e);
                 }
             }
@@ -255,14 +254,21 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                     response = httpClient.newRequest("http://" + host + ":" + httpPort + "/goform/Deviceinfo.xml")
                             .timeout(3, TimeUnit.SECONDS).send();
                     status = response.getStatus();
-                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                } catch (TimeoutException | ExecutionException e) {
                     logger.debug("Failed in fetching the Deviceinfo.xml to determine zone count", e);
                 }
 
                 if (status == HttpURLConnection.HTTP_OK && response != null) {
                     DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder builder;
                     try {
+                        // see
+                        // https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+                        domFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                        domFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                        domFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                        domFactory.setXIncludeAware(false);
+                        domFactory.setExpandEntityReferences(false);
+                        DocumentBuilder builder;
                         builder = domFactory.newDocumentBuilder();
                         Document dDoc = builder.parse(new InputSource(new StringReader(response.getContentAsString())));
                         XPath xPath = XPathFactory.newInstance().newXPath();
@@ -296,7 +302,12 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
 
         // Configure Connection type (Telnet/HTTP) and number of zones
         // Note: this only happens for discovered Things
-        autoConfigure();
+        try {
+            autoConfigure();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return;
+        }
 
         if (!checkConfiguration()) {
             return;
@@ -314,7 +325,8 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
         if (connector != null) {
             connector.dispose();
         }
-        connector = connectorFactory.getConnector(config, denonMarantzState, scheduler, httpClient);
+        connector = connectorFactory.getConnector(config, denonMarantzState, scheduler, httpClient,
+                this.getThing().getUID().getAsString());
         connector.connect();
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,8 @@ public class DaikinMadokaBindingConstants {
     private DaikinMadokaBindingConstants() {
     }
 
+    public static final int WRITE_CHARACTERISTIC_MAX_RETRIES = 3;
+
     public static final ThingTypeUID THING_TYPE_BRC1H = new ThingTypeUID(BluetoothBindingConstants.BINDING_ID, "brc1h");
 
     public static final String CHANNEL_ID_ONOFF_STATUS = "onOffStatus";
@@ -44,6 +46,13 @@ public class DaikinMadokaBindingConstants {
     public static final String CHANNEL_ID_HOMEKIT_CURRENT_HEATING_COOLING_MODE = "homekitCurrentHeatingCoolingMode";
     public static final String CHANNEL_ID_HOMEKIT_TARGET_HEATING_COOLING_MODE = "homekitTargetHeatingCoolingMode";
     public static final String CHANNEL_ID_HOMEBRIDGE_MODE = "homebridgeMode";
+
+    public static final String CHANNEL_ID_EYE_BRIGHTNESS = "eyeBrightness";
+    public static final String CHANNEL_ID_INDOOR_OPERATION_HOURS = "indoorOperationHours";
+    public static final String CHANNEL_ID_INDOOR_POWER_HOURS = "indoorPowerHours";
+    public static final String CHANNEL_ID_INDOOR_FAN_HOURS = "indoorFanHours";
+
+    public static final String CHANNEL_ID_CLEAN_FILTER_INDICATOR = "cleanFilterIndicator";
 
     /**
      * BLUETOOTH UUID (service + chars)

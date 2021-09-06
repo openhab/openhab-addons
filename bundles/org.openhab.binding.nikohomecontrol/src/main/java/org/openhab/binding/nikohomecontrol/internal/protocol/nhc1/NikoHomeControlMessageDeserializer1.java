@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -33,16 +36,17 @@ import com.google.gson.JsonParseException;
  * @author Mark Herwege - Initial Contribution
  *
  */
+@NonNullByDefault
 class NikoHomeControlMessageDeserializer1 implements JsonDeserializer<NhcMessageBase1> {
 
     @Override
-    public NhcMessageBase1 deserialize(final JsonElement json, final Type typeOfT,
+    public @Nullable NhcMessageBase1 deserialize(final JsonElement json, final Type typeOfT,
             final JsonDeserializationContext context) throws JsonParseException {
         final JsonObject jsonObject = json.getAsJsonObject();
 
         try {
-            String cmd = null;
-            String event = null;
+            String cmd = "";
+            String event = "";
             if (jsonObject.has("cmd")) {
                 cmd = jsonObject.get("cmd").getAsString();
             }

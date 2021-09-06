@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -152,14 +152,10 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
 
     private void addThing(ThingTypeUID thingTypeUID, @Nullable String deviceId, String label,
             Map<String, Object> properties) {
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        ThingUID thingUID;
-        if (deviceId == null) {
-            thingUID = new ThingUID(thingTypeUID, bridgeUID.getId());
-        } else {
-            thingUID = new ThingUID(thingTypeUID, bridgeUID, deviceId);
-        }
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
+        final ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        final ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID,
+                deviceId == null ? toCamelCase(thingTypeUID.getId()) : deviceId);
+        final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                 .withBridge(bridgeUID).withLabel(label).withProperties(properties).build();
         thingDiscovered(discoveryResult);
     }
@@ -192,5 +188,20 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
             default:
                 return false;
         }
+    }
+
+    private static String toCamelCase(String s) {
+        StringBuilder result = new StringBuilder();
+        boolean makeUpper = true;
+        for (int i = 0; i < s.length(); ++i) {
+            char c = s.charAt(i);
+            if (c == '-') {
+                makeUpper = true;
+            } else {
+                result.append(makeUpper ? Character.toUpperCase(c) : c);
+                makeUpper = false;
+            }
+        }
+        return result.toString();
     }
 }

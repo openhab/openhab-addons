@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,9 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
@@ -36,20 +38,26 @@ public class RFXComBlinds1Message extends RFXComBatteryDeviceMessage<RFXComBlind
 
     public enum SubType implements ByteEnumWrapper {
         T0(0), // Hasta new/RollerTrol
-        T1(1),
-        T2(2),
-        T3(3),
-        T4(4), // Additional commands.
+        T1(1), // Hasta Old
+        T2(2), // A-OK RF01
+        T3(3), // A-OK AC114/AC123/Motorlux
+        T4(4), // Raex YR1326
         T5(5), // MEDIA MOUNT have different direction commands than the rest!! Needs to be fixed.
-        T6(6),
-        T7(7),
+        T6(6), // DC106/Rohrmotor24-RMF/Yooda/Dooya/ESMO/Brel/Quitidom
+        T7(7), // Forest
         T8(8), // Chamberlain CS4330
         T9(9), // Sunpery/BTX
         T10(10), // Dolat DLM-1, Topstar
         T11(11), // ASP
         T12(12), // Confexx CNF24-2435
         T13(13), // Screenline
-        T18(18); // Cherubini
+        T14(14), // Hualite
+        T15(15), // Motostar
+        T16(16), // Zemismart
+        T17(17), // Gaposa
+        T18(18), // Cherubini
+        T19(19), // Louvolite One Touch Vogue motor
+        T20(20); // OZRoll
 
         private final int subType;
 
@@ -118,7 +126,7 @@ public class RFXComBlinds1Message extends RFXComBatteryDeviceMessage<RFXComBlind
 
         subType = fromByte(SubType.class, super.subType);
 
-        if (subType == SubType.T6) {
+        if (subType == SubType.T6 || subType == SubType.T7 || subType == SubType.T9) {
             sensorId = (data[4] & 0xFF) << 20 | (data[5] & 0xFF) << 12 | (data[6] & 0xFF) << 4 | (data[7] & 0xF0) >> 4;
             unitCode = (byte) (data[7] & 0x0F);
         } else {
@@ -168,11 +176,12 @@ public class RFXComBlinds1Message extends RFXComBatteryDeviceMessage<RFXComBlind
     }
 
     @Override
-    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
+            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
         if (CHANNEL_COMMAND.equals(channelId)) {
             return (command == Commands.CLOSE ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
         } else {
-            return super.convertToState(channelId, deviceState);
+            return super.convertToState(channelId, config, deviceState);
         }
     }
 

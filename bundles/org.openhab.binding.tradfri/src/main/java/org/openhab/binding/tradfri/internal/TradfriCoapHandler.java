@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,6 @@ import com.google.gson.JsonParser;
 public class TradfriCoapHandler implements CoapHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TradfriCoapHandler.class);
-    private final JsonParser parser = new JsonParser();
 
     private @Nullable CoapCallback callback;
     private @Nullable CompletableFuture<String> future;
@@ -70,7 +69,7 @@ public class TradfriCoapHandler implements CoapHandler {
             final CoapCallback callback = this.callback;
             if (callback != null) {
                 try {
-                    callback.onUpdate(parser.parse(response.getResponseText()));
+                    callback.onUpdate(JsonParser.parseString(response.getResponseText()));
                     callback.setStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 } catch (JsonParseException e) {
                     logger.warn("Observed value is no valid json: {}, {}", response.getResponseText(), e.getMessage());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,7 @@ public class ControllerVariables {
     public static ControllerVariables parse(String response) {
         LOGGER.debug("Parsing string: \"{}\"", response);
         /* parse json string */
-        JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
+        JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         ControllerVariables info = new ControllerVariables();
         info.dist = jsonObject.get("dist").getAsInt();
         info.door = jsonObject.get("door").getAsInt();

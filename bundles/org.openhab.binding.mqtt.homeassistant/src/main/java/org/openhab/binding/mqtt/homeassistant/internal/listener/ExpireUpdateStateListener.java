@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,7 @@ public class ExpireUpdateStateListener extends ChannelStateUpdateListenerProxy {
     private final AvailabilityTracker tracker;
     private final ScheduledExecutorService scheduler;
 
-    private AtomicReference<@Nullable ScheduledFuture<?>> expire = new AtomicReference<>();
+    private final AtomicReference<@Nullable ScheduledFuture<?>> expire = new AtomicReference<>();
 
     public ExpireUpdateStateListener(ChannelStateUpdateListener original, int expireAfter, Value value,
             AvailabilityTracker tracker, ScheduledExecutorService scheduler) {

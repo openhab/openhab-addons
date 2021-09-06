@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,7 +67,6 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
     private static final String NO = "no";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
-    private static final JsonParser PARSER = new JsonParser();
     private static final EncryptionHelper CRYPTER = new EncryptionHelper();
     private static Map<String, JsonObject> retentionInbox = new ConcurrentHashMap<>();
 
@@ -131,7 +130,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
             return;
         }
         logger.debug("Init socket on Port: {}", port);
-        socket = new XiaomiBridgeSocket(port, getThing().getUID().getId());
+        socket = new XiaomiBridgeSocket(port, (String) config.get(INTERFACE), getThing().getUID().getId());
         socket.initialize();
         socket.registerListener(this);
 
@@ -175,7 +174,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
                 }
                 break;
             case "get_id_list_ack":
-                JsonArray devices = PARSER.parse(message.get("data").getAsString()).getAsJsonArray();
+                JsonArray devices = JsonParser.parseString(message.get("data").getAsString()).getAsJsonArray();
                 for (JsonElement deviceId : devices) {
                     String device = deviceId.getAsString();
                     sendCommandToBridge("read", device);

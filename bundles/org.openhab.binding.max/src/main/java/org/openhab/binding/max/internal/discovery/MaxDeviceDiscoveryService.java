@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -89,7 +89,7 @@ public class MaxDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void onDeviceAdded(Bridge bridge, Device device) {
-        logger.trace("Adding new MAX! {} with id '{}' to smarthome inbox", device.getType(), device.getSerialNumber());
+        logger.trace("Adding new MAX! {} with id '{}' to inbox", device.getType(), device.getSerialNumber());
         ThingUID thingUID = null;
         switch (device.getType()) {
             case WallMountedThermostat:

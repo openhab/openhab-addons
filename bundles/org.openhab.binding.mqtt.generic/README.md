@@ -42,7 +42,7 @@ binding can unfortunately not provide any auto-discovery means.
 If you use an open source IoT device, the chances are high,
 that it has the MQTT convention Homie or HomeAssistant implemented. Those conventions specify the topic
 topology and allow auto discovery. Please have a look at the specific openHAB bindings.
- 
+
 ## Supported Things
 
 Because of the very generic structure of MQTT, this binding allows you to add an arbitrary number
@@ -71,15 +71,15 @@ You can add the following channels:
 
 ## Channel Configuration
 
-* __stateTopic__: The MQTT topic that represents the state of the thing. This can be empty, the thing channel will be a state-less trigger then. You can use a wildcard topic like "sensors/+/event" to retrieve state from multiple MQTT topics. 
-* __transformationPattern__: An optional transformation pattern like [JSONPath](http://goessner.net/articles/JsonPath/index.html#e2) that is applied to all incoming MQTT values.
-* __transformationPatternOut__: An optional transformation pattern like [JSONPath](http://goessner.net/articles/JsonPath/index.html#e2) that is applied before publishing a value to MQTT.
+* __stateTopic__: The MQTT topic that represents the state of the thing. This can be empty, the thing channel will be a state-less trigger then. You can use a wildcard topic like "sensors/+/event" to retrieve state from multiple MQTT topics.
+* __transformationPattern__: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied to all incoming MQTT values.
+* __transformationPatternOut__: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied before publishing a value to MQTT.
 * __commandTopic__: The MQTT topic that commands are send to. This can be empty, the thing channel will be read-only then. Transformations are not applied for sending data.
 * __formatBeforePublish__: Format a value before it is published to the MQTT broker. The default is to just pass the channel/item state. If you want to apply a prefix, say "MYCOLOR,", you would use "MYCOLOR,%s". Currently only "%s" is supported.
 * __postCommand__: If `true`, the received MQTT value will not only update the state of linked items, but command it.
   The default is `false`.
-  You usually need this to be `true` if your item is also linked to another channel, say a KNX actor, and you want a received MQTT payload to command that KNX actor. 
-* __retained__: The value will be published to the command topic as retained message. A retained value stays on the broker and can even be seen by MQTT clients that are subscribing at a later point in time. 
+  You usually need this to be `true` if your item is also linked to another channel, say a KNX actor, and you want a received MQTT payload to command that KNX actor.
+* __retained__: The value will be published to the command topic as retained message. A retained value stays on the broker and can even be seen by MQTT clients that are subscribing at a later point in time.
 * __qos__: QoS of this channel. Overrides the connection  QoS (defined in broker connection).
 * __trigger__: If `true`, the state topic will not update a state, but trigger a channel instead.
 
@@ -102,7 +102,7 @@ If you always require an integer, please use the formatter.
 You can connect this channel to a Number item.
 
 ### Channel Type "dimmer"
- 
+
 * __on__: An optional string (like "ON"/"Open") that is recognized as minimum.
 * __off__: An optional string (like "OFF"/"Close") that is recognized as maximum.
 * __min__: A required minimum value.
@@ -166,16 +166,16 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 You can connect this channel to a Location item.
 
 The channel will publish the location as comma separated list to the MQTT broker,
-e.g. "112,54,123" for latitude, longitude, altitude. The altitude is optional. 
+e.g. "112,54,123" for latitude, longitude, altitude. The altitude is optional.
 
-The channel expects values on the corresponding MQTT topic to be in this format as well. 
+The channel expects values on the corresponding MQTT topic to be in this format as well.
 
 ### Channel Type "image"
 
 You can connect this channel to an Image item. This is a read-only channel.
 
 The channel expects values on the corresponding MQTT topic to contain the binary
-data of a bmp, jpg, png or any other format that the installed java runtime supports. 
+data of a bmp, jpg, png or any other format that the installed java runtime supports.
 
 ### Channel Type "datetime"
 
@@ -184,7 +184,7 @@ You can connect this channel to a DateTime item.
 The channel will publish the date/time in the format "yyyy-MM-dd'T'HH:mm"
 for example 2018-01-01T12:14:00. If you require another format, please use the formatter.
 
-The channel expects values on the corresponding MQTT topic to be in this format as well. 
+The channel expects values on the corresponding MQTT topic to be in this format as well.
 
 ### Channel Type "rollershutter"
 
@@ -216,6 +216,41 @@ mqttActions.publishMQTT("mytopic","myvalue", true)
 
 The retained argument is optional and if not supplied defaults to `false`.
 
+## Configuration via Text Files
+
+*broker.things* file:
+
+```
+mqtt:broker:mySecureBroker [ host="192.168.0.41", secure=true, certificatepin=true, publickeypin=true ]
+mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
+mqtt:broker:myAuthentificatedBroker [ host="192.168.0.43",secure=true, username="user", password="password" ]
+mqtt:broker:pinToPublicKey [ host="192.168.0.44", secure=true , publickeypin=true, publickey="SHA-256:9a6f30e67ae9723579da2575c35daf7da3b370b04ac0bde031f5e1f5e4617eb8" ]
+```
+
+In the first example a secure connection to a broker is defined. It pins the returned certificate and public key. If someone tries a man in the middle attack later on, this broker connection will recognize it and refuse a connection. Be aware that if your brokers certificate changes, you need to remove the connection entry and add it again.
+The second connection is a plain, unsecured one. Use this only for local MQTT Brokers.
+A third connection uses a username and password for authentication. The credentials are plain values on the wire, therefore you should only use this on a secure connection.
+In a fourth connection, the public key pinning is enabled again. This time, a public key hash is provided to pin the connection to a specific server. It follows the form "hashname:hashvalue". Valid hashnames are SHA-1, SHA-224, SHA-256, SHA-384, SHA-512 and all others listed in Java MessageDigest Algorithms.
+
+### Example
+
+Files can also be used to create topic things and channels and to combine them with a broker connection:
+
+*mqtt.things* file:
+
+```
+Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
+
+Thing mqtt:topic:mything "mything" (mqtt:broker:myUnsecureBroker) {
+    Channels:
+    Type switch : lamp "Kitchen Lamp" [ stateTopic="lamp/enabled", commandTopic="lamp/enabled/set" ]
+    Type switch : fancylamp "Fancy Lamp" [ stateTopic="fancy/lamp/state", commandTopic="fancy/lamp/command", on="i-am-on", off="i-am-off" ]
+    Type string : alarmpanel "Alarm system" [ stateTopic="alarm/panel/state", commandTopic="alarm/panel/set", allowedStates="ARMED_HOME,ARMED_AWAY,UNARMED" ]
+    Type color : lampcolor "Kitchen Lamp color" [ stateTopic="lamp/color", commandTopic="lamp/color/set", rgb=true ]
+    Type dimmer : blind "Blind" [ stateTopic="blind/state", commandTopic="blind/set", min=0, max=5, step=1 ]
+}
+```
+    
 ## Limitations
 
 * The HomeAssistant Fan Components only support ON/OFF.
@@ -265,19 +300,19 @@ Here are a few examples:
   - For an output of *May 23, 1995* use "%1$**tb** %1$**te**,%1$**tY**".
   - For an output of *23.05.1995* use "%1$**td**.%1$**tm**.%1$**tY**".
   - For an output of *23:15* use "%1$**tH**:%1$**tM**".
-  
+
 Default pattern applied for each type:
 | Type             | Parameter                         | Pattern             | Comment |
 | ---------------- | --------------------------------- | ------------------- | ------- |
-| __string__       | String                            | "%s"                | 
-| __number__       | BigDecimal                        | "%f"                | The default will remove trailing zeros after the decimal point. 
-| __dimmer__       | BigDecimal                        | "%f"                | The default will remove trailing zeros after the decimal point. 
-| __contact__      | String                            | --                  | No pattern supported. Always **on** and **off** strings. 
-| __switch__       | String                            | --                  | No pattern supported. Always **on** and **off** strings. 
+| __string__       | String                            | "%s"                |
+| __number__       | BigDecimal                        | "%f"                | The default will remove trailing zeros after the decimal point.
+| __dimmer__       | BigDecimal                        | "%f"                | The default will remove trailing zeros after the decimal point.
+| __contact__      | String                            | --                  | No pattern supported. Always **on** and **off** strings.
+| __switch__       | String                            | --                  | No pattern supported. Always **on** and **off** strings.
 | __colorRGB__     | BigDecimal, BigDecimal, BigDecimal| "%1$d,%2$d,%3$d"    | Parameters are **red**, **green** and **blue** components.
 | __colorHSB__     | BigDecimal, BigDecimal, BigDecimal| "%1$d,%2$d,%3$d"    | Parameters are **hue**, **saturation** and **brightness** components.
 | __location__     | BigDecimal, BigDecimal            | "%2$f,%3$f,%1$f"    | Parameters are **altitude**, **latitude** and **longitude**, altitude is only in default pattern, if value is not '0'.
-| __image__        | --                                | --                  | No publishing supported. 
+| __image__        | --                                | --                  | No publishing supported.
 | __datetime__     | ZonedDateTime                     | "%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS.%1$tN" | Trailing zeros of the nanoseconds are removed.
 | __rollershutter__| String                            | "%s"                | No pattern supported. Always **up**, **down**, **stop** string or integer percent value.
 
@@ -286,4 +321,4 @@ Any outgoing value transformation will **always** result in a __string__ value.
 ## Troubleshooting
 
 * If you get the error "No MQTT client": Please update your installation.
-* If you use the Mosquitto broker: Please be aware that there is a relatively low setting for retained messages. At some point messages will just not being delivered anymore: Change the setting. 
+* If you use the Mosquitto broker: Please be aware that there is a relatively low setting for retained messages. If at some point messages stop being delivered change the setting.

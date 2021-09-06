@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ambientweather.internal.config.BridgeConfig;
@@ -128,7 +127,7 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
      */
     private boolean hasApplicationKey() {
         String configApplicationKey = getConfigAs(BridgeConfig.class).applicationKey;
-        if (StringUtils.isEmpty(configApplicationKey)) {
+        if (configApplicationKey == null || configApplicationKey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing application key");
             return false;
         }
@@ -141,7 +140,7 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
      */
     private boolean hasApiKey() {
         String configApiKey = getConfigAs(BridgeConfig.class).apiKey;
-        if (StringUtils.isEmpty(configApiKey)) {
+        if (configApiKey == null || configApiKey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing API key");
             return false;
         }

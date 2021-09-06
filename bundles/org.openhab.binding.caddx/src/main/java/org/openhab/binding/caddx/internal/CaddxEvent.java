@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,11 +30,6 @@ public class CaddxEvent extends EventObject {
     private final @Nullable Integer zone;
     private final @Nullable Integer keypad;
 
-    /**
-     * Constructor.
-     *
-     * @param source
-     */
     public CaddxEvent(CaddxMessage caddxMessage, @Nullable Integer partition, @Nullable Integer zone,
             @Nullable Integer keypad) {
         super(caddxMessage);
@@ -64,5 +59,19 @@ public class CaddxEvent extends EventObject {
 
     public @Nullable Integer getKeypad() {
         return keypad;
+    }
+
+    /**
+     * Returns a string representation of a CaddxEvent.
+     *
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format("partition: %d, zone: %d, keypad: %d\r\n", partition, zone, keypad));
+        sb.append(caddxMessage.toString());
+
+        return sb.toString();
     }
 }

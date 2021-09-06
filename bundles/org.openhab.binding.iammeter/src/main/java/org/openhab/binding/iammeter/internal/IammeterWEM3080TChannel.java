@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.iammeter.internal;
 
 import javax.measure.Unit;
 
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * The {@link IammeterWEM3080TChannel} Enum defines common constants, which are
@@ -24,13 +24,13 @@ import org.openhab.core.library.unit.SmartHomeUnits;
  */
 public enum IammeterWEM3080TChannel {
 
-    CHANNEL_VOLTAGE("voltage", SmartHomeUnits.VOLT),
-    CHANNEL_CURRENT("current", SmartHomeUnits.AMPERE),
-    CHANNEL_POWER("power", SmartHomeUnits.WATT),
-    CHANNEL_IMPORTENERGY("importenergy", SmartHomeUnits.KILOWATT_HOUR),
-    CHANNEL_EXPORTGRID("exportgrid", SmartHomeUnits.KILOWATT_HOUR),
-    CHANNEL_FREQUENCY("frequency", SmartHomeUnits.HERTZ),
-    CHANNEL_PF("pf", SmartHomeUnits.HERTZ);
+    CHANNEL_VOLTAGE("voltage", Units.VOLT),
+    CHANNEL_CURRENT("current", Units.AMPERE),
+    CHANNEL_POWER("power", Units.WATT),
+    CHANNEL_IMPORTENERGY("importenergy", Units.KILOWATT_HOUR),
+    CHANNEL_EXPORTGRID("exportgrid", Units.KILOWATT_HOUR),
+    CHANNEL_FREQUENCY("frequency", Units.HERTZ),
+    CHANNEL_PF("pf", Units.HERTZ);
 
     private final String id;
     private final Unit<?> unit;

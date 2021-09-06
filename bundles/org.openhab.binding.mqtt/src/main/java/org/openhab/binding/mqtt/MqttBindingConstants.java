@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class MqttBindingConstants {
-    private static final String BINDING_ID = "mqtt";
+    public static final String BINDING_ID = "mqtt";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_TYPE_SYSTEMBROKER = new ThingTypeUID(BINDING_ID, "systemBroker");

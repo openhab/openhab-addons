@@ -98,15 +98,15 @@ The following configuration parameters are available on the Monitor thing:
 | totalEvents       | Number      | Total number of events  |
 | imageUrl          | String      | URL for image snapshot  |
 | videoUrl          | String      | URL for JPEG video stream  |
-| eventId           | String      | Event ID  |
-| eventName         | String      | Event name  |
-| eventCause        | String      | Event cause  |
-| eventNotes        | String      | Event notes  |
-| eventStart        | DateTime    | Event start date/time |
-| eventEnd          | DateTime    | Event end date/time  |
-| eventFrames       | Number      | Event frames  |
-| eventAlarmFrames  | Number      | Event alarm frames |
-| eventLength       | Number:Time | Event length in seconds  |
+| eventId           | String      | ID of most recently completed event  |
+| eventName         | String      | Name of most recently completed event |
+| eventCause        | String      | Cause of most recently completed event |
+| eventNotes        | String      | Notes of most recently completed event |
+| eventStart        | DateTime    | Start date/time of most recently completed event |
+| eventEnd          | DateTime    | End date/time of most recently completed event |
+| eventFrames       | Number      | Number of frames of most recently completed event |
+| eventAlarmFrames  | Number      | Number of alarm frames of most recently completed event |
+| eventLength       | Number:Time | Length in seconds of most recently completed event |
 
 ## Thing Actions
 
@@ -136,14 +136,14 @@ in the Monitor thing configuration.
 void triggerAlarm()
 ```
 
-### triggerAlarmOff
+### cancelAlarm
 
-The `triggerAlarmOff` action cancels a running alarm.
+The `cancelAlarm` action cancels a running alarm.
 
-##### triggerAlarmOff - cancel an alarm
+##### cancelAlarm - cancel an alarm
 
 ```java
-void triggerAlarmOff()
+void cancelAlarm()
 ```
 
 ### Requirements
@@ -158,9 +158,9 @@ The API must be enabled in the ZoneMinder configuration using the **OPT_USE_API*
 ```
 Bridge zoneminder:server:server [ host="192.168.1.100", refreshInterval=5, defaultAlarmDuration=120, discoveryEnabled=true, useDefaultUrlPath=true ]
 
-Thing zoneminder:monitor:1 "Monitor 1" (zm:server:server) [ monitorId="1", imageRefreshInterval=10, alarmDuration=180 ]
+Thing zoneminder:monitor:1 "Monitor 1" (zoneminder:server:server) [ monitorId="1", imageRefreshInterval=10, alarmDuration=180 ]
 
-Thing zoneminder:monitor:2 "Monitor 2" (zm:server:server) [ monitorId="2", imageRefreshInterval=10, alarmDuration=180 ]
+Thing zoneminder:monitor:2 "Monitor 2" (zoneminder:server:server) [ monitorId="2", imageRefreshInterval=10, alarmDuration=180 ]
 ```
 
 ### Items
@@ -231,7 +231,7 @@ when
     Item MotionSensorAlarm changed to ON
 then
     val zmActions = getActions("zoneminder", "zoneminder:monitor:1")
-    zmActions.triggerAlarmOn(120)
+    zmActions.triggerAlarm(120)
 end
 ```
 
@@ -241,7 +241,7 @@ when
     Item MotionSensorAlarm changed to ON
 then
     val zmActions = getActions("zoneminder", "zoneminder:monitor:1")
-    zmActions.triggerAlarmOn()
+    zmActions.triggerAlarm()
 end
 ```
 
@@ -251,23 +251,22 @@ when
     Item MotionSensorAlarm changed to OFF
 then
     val zmActions = getActions("zoneminder", "zoneminder:monitor:1")
-    zmActions.triggerAlarmOff()
+    zmActions.cancelAlarm()
 end
 ```
 
 ```
-val int NUM_MONITORS = 6
-var int monitorId = 1
+val monitors = newArrayList("1", "3", "4", "6")
+var int index = 0
 
-rule "Rotate Through All Monitor Images Every 10 Seconds"
+rule "Rotate Through a List of Monitor Images Every 10 Seconds"
 when
     Time cron "0/10 * * ? * * *"
 then
-    var String id = String::format("%d", monitorId)
-    ZmServer_ImageMonitorId.sendCommand(id)
-    monitorId = monitorId + 1
-    if (monitorId > NUM_MONITORS) {
-        monitorId = 1
+    ZmServer_ImageMonitorId.sendCommand(monitors.get(index))
+    index = index + 1
+    if (index >= monitors.size) {
+        index = 0
     }
 end
 ```

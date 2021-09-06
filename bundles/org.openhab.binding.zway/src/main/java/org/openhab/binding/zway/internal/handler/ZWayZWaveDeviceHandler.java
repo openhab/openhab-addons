@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -211,7 +211,8 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
         }
 
         Calendar lastUpdateOfDevice = Calendar.getInstance();
-        lastUpdateOfDevice.setTimeInMillis(new Long(zwaveDevice.getData().getLastReceived().getUpdateTime()) * 1000);
+        lastUpdateOfDevice
+                .setTimeInMillis(Long.valueOf(zwaveDevice.getData().getLastReceived().getUpdateTime()) * 1000);
 
         if (lastUpdate == null || lastUpdateOfDevice.after(lastUpdate)) {
             lastUpdate = lastUpdateOfDevice;

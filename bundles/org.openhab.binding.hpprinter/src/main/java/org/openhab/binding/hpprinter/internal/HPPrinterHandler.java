@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.hpprinter.internal;
 
-import static org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants.*;
+import static org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants.CGROUP_STATUS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +65,13 @@ public class HPPrinterHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        scheduler.submit(() -> initializeScheduled());
+    }
+
+    /**
+     * Scheduled initialization task which will be executed on a separate thread
+     */
+    private void initializeScheduled() {
         final HPPrinterConfiguration config = getConfigAs(HPPrinterConfiguration.class);
 
         if (!"".equals(config.ipAddress)) {
@@ -96,6 +103,7 @@ public class HPPrinterHandler extends BaseThingHandler {
         return false;
     }
 
+    @Override
     protected void updateStatus(final ThingStatus status) {
         super.updateStatus(status);
     }
@@ -116,6 +124,7 @@ public class HPPrinterHandler extends BaseThingHandler {
         }
     }
 
+    @Override
     protected void updateStatus(final ThingStatus status, final ThingStatusDetail thingStatusDetail,
             @Nullable final String message) {
         super.updateStatus(status, thingStatusDetail, message);
@@ -135,14 +144,17 @@ public class HPPrinterHandler extends BaseThingHandler {
         updateThing(editThing().withChannels(thingChannels).build());
     }
 
+    @Override
     protected ThingBuilder editThing() {
         return super.editThing();
     }
 
+    @Override
     protected @Nullable ThingHandlerCallback getCallback() {
         return super.getCallback();
     }
 
+    @Override
     protected void updateProperties(final Map<String, String> properties) {
         super.updateProperties(properties);
     }

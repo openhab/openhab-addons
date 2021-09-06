@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,6 +70,7 @@ import com.mongodb.MongoClientURI;
  * This is the implementation of the MongoDB {@link PersistenceService}.
  *
  * @author Thorsten Hoeger - Initial contribution
+ * @author Stephan Brunner - Query fixes, Cleanup
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
@@ -84,16 +85,16 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
     private final Logger logger = LoggerFactory.getLogger(MongoDBPersistenceService.class);
 
-    private @NonNullByDefault({}) String url;
-    private @NonNullByDefault({}) String db;
-    private @NonNullByDefault({}) String collection;
+    private String url = "";
+    private String db = "";
+    private String collection = "";
+    private boolean collectionPerItem;
 
     private boolean initialized = false;
 
     protected final ItemRegistry itemRegistry;
 
-    private @NonNullByDefault({}) MongoClient cl;
-    private @NonNullByDefault({}) DBCollection mongoCollection;
+    private @Nullable MongoClient cl;
 
     @Activate
     public MongoDBPersistenceService(final @Reference ItemRegistry itemRegistry) {
@@ -102,30 +103,34 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
     @Activate
     public void activate(final BundleContext bundleContext, final Map<String, Object> config) {
-        url = (String) config.get("url");
-        logger.debug("MongoDB URL {}", url);
-        if (url == null || url.isBlank()) {
+        @Nullable
+        String configUrl = (String) config.get("url");
+        logger.debug("MongoDB URL {}", configUrl);
+        if (configUrl == null || configUrl.isBlank()) {
             logger.warn("The MongoDB database URL is missing - please configure the mongodb:url parameter.");
             return;
         }
-        db = (String) config.get("database");
-        logger.debug("MongoDB database {}", db);
-        if (db == null || db.isBlank()) {
+        url = configUrl;
+
+        @Nullable
+        String configDb = (String) config.get("database");
+        logger.debug("MongoDB database {}", configDb);
+        if (configDb == null || configDb.isBlank()) {
             logger.warn("The MongoDB database name is missing - please configure the mongodb:database parameter.");
             return;
         }
-        collection = (String) config.get("collection");
-        logger.debug("MongoDB collection {}", collection);
-        if (collection == null || collection.isBlank()) {
-            logger.warn(
-                    "The MongoDB database collection is missing - please configure the mongodb:collection parameter.");
-            return;
+        db = configDb;
+
+        @Nullable
+        String dbCollection = (String) config.get("collection");
+        logger.debug("MongoDB collection {}", dbCollection);
+        collection = dbCollection == null ? "" : dbCollection;
+        collectionPerItem = dbCollection == null || dbCollection.isBlank();
+
+        if (!tryConnectToDatabase()) {
+            logger.warn("Failed to connect to MongoDB server. Trying to reconnect later.");
         }
 
-        disconnectFromDatabase();
-        connectToDatabase();
-
-        // connection has been established... initialization completed!
         initialized = true;
     }
 
@@ -142,7 +147,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
     @Override
     public String getLabel(@Nullable Locale locale) {
-        return "Mongo DB";
+        return "MongoDB";
     }
 
     @Override
@@ -159,29 +164,35 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         }
 
         // Connect to mongodb server if we're not already connected
-        if (!isConnected()) {
-            connectToDatabase();
-        }
-
-        // If we still didn't manage to connect, then return!
-        if (!isConnected()) {
+        // If we can't connect, log.
+        if (!tryConnectToDatabase()) {
             logger.warn(
                     "mongodb: No connection to database. Cannot persist item '{}'! Will retry connecting to database next time.",
                     item);
             return;
         }
 
-        String realName = item.getName();
-        String name = (alias != null) ? alias : realName;
+        String realItemName = item.getName();
+        String collectionName = collectionPerItem ? realItemName : this.collection;
+
+        @Nullable
+        DBCollection collection = connectToCollection(collectionName);
+
+        if (collection == null) {
+            // Logging is done in connectToCollection()
+            return;
+        }
+
+        String name = (alias != null) ? alias : realItemName;
         Object value = this.convertValue(item.getState());
 
         DBObject obj = new BasicDBObject();
         obj.put(FIELD_ID, new ObjectId());
         obj.put(FIELD_ITEM, name);
-        obj.put(FIELD_REALNAME, realName);
+        obj.put(FIELD_REALNAME, realItemName);
         obj.put(FIELD_TIMESTAMP, new Date());
         obj.put(FIELD_VALUE, value);
-        this.mongoCollection.save(obj);
+        collection.save(obj);
 
         logger.debug("MongoDB save {}={}", name, value);
     }
@@ -200,9 +211,6 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         return value;
     }
 
-    /**
-     * @{inheritDoc
-     */
     @Override
     public void store(Item item) {
         store(item, null);
@@ -214,41 +222,101 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
     }
 
     /**
-     * Checks if we have a database connection
+     * Checks if we have a database connection.
+     * Also tests if communication with the MongoDB-Server is available.
      *
      * @return true if connection has been established, false otherwise
      */
-    private boolean isConnected() {
-        return cl != null;
+    private synchronized boolean isConnected() {
+        if (cl == null) {
+            return false;
+        }
+
+        // Also check if the connection is valid.
+        // Network problems may cause failure sometimes,
+        // even if the connection object was successfully created before.
+        try {
+            cl.getAddress();
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     /**
-     * Connects to the database
+     * (Re)connects to the database
+     *
+     * @return True, if the connection was successfully established.
      */
-    private void connectToDatabase() {
+    private synchronized boolean tryConnectToDatabase() {
+        if (isConnected()) {
+            return true;
+        }
+
         try {
             logger.debug("Connect MongoDB");
+            disconnectFromDatabase();
+
             this.cl = new MongoClient(new MongoClientURI(this.url));
-            mongoCollection = cl.getDB(this.db).getCollection(this.collection);
+
+            // The mongo always succeeds in creating the connection.
+            // We have to actually force it to test the connection to try to connect to the server.
+            cl.getAddress();
+
+            logger.debug("Connect MongoDB ... done");
+            return true;
+        } catch (Exception e) {
+            logger.error("Failed to connect to database {}: {}", this.url, e.getMessage(), e);
+            disconnectFromDatabase();
+            return false;
+        }
+    }
+
+    /**
+     * Fetches the currently valid database.
+     *
+     * @return The database object
+     */
+    private synchronized @Nullable MongoClient getDatabase() {
+        return cl;
+    }
+
+    /**
+     * Connects to the Collection
+     *
+     * @return The collection object when collection creation was successful. Null otherwise.
+     */
+    private @Nullable DBCollection connectToCollection(String collectionName) {
+        try {
+            @Nullable
+            MongoClient db = getDatabase();
+
+            if (db == null) {
+                logger.error("Failed to connect to collection {}: Connection not ready", collectionName);
+                return null;
+            }
+
+            DBCollection mongoCollection = db.getDB(this.db).getCollection(collectionName);
 
             BasicDBObject idx = new BasicDBObject();
-            idx.append(FIELD_TIMESTAMP, 1).append(FIELD_ITEM, 1);
-            this.mongoCollection.createIndex(idx);
-            logger.debug("Connect MongoDB ... done");
+            idx.append(FIELD_ITEM, 1).append(FIELD_TIMESTAMP, 1);
+            mongoCollection.createIndex(idx);
+
+            return mongoCollection;
         } catch (Exception e) {
-            logger.error("Failed to connect to database {}", this.url);
-            throw new RuntimeException("Cannot connect to database", e);
+            logger.error("Failed to connect to collection {}: {}", collectionName, e.getMessage(), e);
+            return null;
         }
     }
 
     /**
      * Disconnects from the database
      */
-    private void disconnectFromDatabase() {
-        this.mongoCollection = null;
+    private synchronized void disconnectFromDatabase() {
         if (this.cl != null) {
             this.cl.close();
         }
+
         cl = null;
     }
 
@@ -258,36 +326,62 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             return Collections.emptyList();
         }
 
-        if (!isConnected()) {
-            connectToDatabase();
-        }
-
-        if (!isConnected()) {
+        if (!tryConnectToDatabase()) {
             return Collections.emptyList();
         }
 
-        String name = filter.getItemName();
-        Item item = getItem(name);
+        String realItemName = filter.getItemName();
+        String collectionName = collectionPerItem ? realItemName : this.collection;
+        @Nullable
+        DBCollection collection = connectToCollection(collectionName);
+
+        // If collection creation failed, return nothing.
+        if (collection == null) {
+            // Logging is done in connectToCollection()
+            return Collections.emptyList();
+        }
+
+        @Nullable
+        Item item = getItem(realItemName);
+
+        if (item == null) {
+            logger.warn("Item {} not found", realItemName);
+            return Collections.emptyList();
+        }
 
         List<HistoricItem> items = new ArrayList<>();
-        DBObject query = new BasicDBObject();
+        BasicDBObject query = new BasicDBObject();
         if (filter.getItemName() != null) {
             query.put(FIELD_ITEM, filter.getItemName());
         }
         if (filter.getState() != null && filter.getOperator() != null) {
+            @Nullable
             String op = convertOperator(filter.getOperator());
+
+            if (op == null) {
+                logger.error("Failed to convert operator {} to MongoDB operator", filter.getOperator());
+                return Collections.emptyList();
+            }
+
             Object value = convertValue(filter.getState());
             query.put(FIELD_VALUE, new BasicDBObject(op, value));
         }
+
+        BasicDBObject dateQueries = new BasicDBObject();
         if (filter.getBeginDate() != null) {
-            query.put(FIELD_TIMESTAMP, new BasicDBObject("$gte", filter.getBeginDate()));
+            dateQueries.put("$gte", Date.from(filter.getBeginDate().toInstant()));
         }
-        if (filter.getBeginDate() != null) {
-            query.put(FIELD_TIMESTAMP, new BasicDBObject("$lte", filter.getBeginDate()));
+        if (filter.getEndDate() != null) {
+            dateQueries.put("$lte", Date.from(filter.getEndDate().toInstant()));
+        }
+        if (!dateQueries.isEmpty()) {
+            query.put(FIELD_TIMESTAMP, dateQueries);
         }
 
+        logger.debug("Query: {}", query);
+
         Integer sortDir = (filter.getOrdering() == Ordering.ASCENDING) ? 1 : -1;
-        DBCursor cursor = this.mongoCollection.find(query).sort(new BasicDBObject(FIELD_TIMESTAMP, sortDir))
+        DBCursor cursor = collection.find(query).sort(new BasicDBObject(FIELD_TIMESTAMP, sortDir))
                 .skip(filter.getPageNumber() * filter.getPageSize()).limit(filter.getPageSize());
 
         while (cursor.hasNext()) {
@@ -311,7 +405,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
                 state = new StringType(obj.getString(FIELD_VALUE));
             }
 
-            items.add(new MongoDBItem(name, state,
+            items.add(new MongoDBItem(realItemName, state,
                     ZonedDateTime.ofInstant(obj.getDate(FIELD_TIMESTAMP).toInstant(), ZoneId.systemDefault())));
         }
 

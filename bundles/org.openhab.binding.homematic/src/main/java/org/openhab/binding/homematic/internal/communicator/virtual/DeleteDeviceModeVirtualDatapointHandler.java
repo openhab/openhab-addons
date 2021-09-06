@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.binding.homematic.internal.misc.HomematicConstants.VIR
 
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
@@ -61,7 +60,7 @@ public class DeleteDeviceModeVirtualDatapointHandler extends AbstractVirtualData
     public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {
         dp.setValue(value);
-        if (!StringUtils.equals(dp.getOptionValue(), MODE_LOCKED)) {
+        if (!MODE_LOCKED.equals(dp.getOptionValue())) {
             gateway.disableDatapoint(dp, DELETE_MODE_DURATION);
         }
     }

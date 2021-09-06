@@ -16,6 +16,8 @@
 			<channel-group id="cc-m1" typeId="cc-m1"/>
 		</channel-groups>
 
+		<representation-property>macAddress</representation-property>
+
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>Network Address</label>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ public class RFXComWindMessageTest {
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "105601122F000087000000140000000079";
         byte[] message = HexUtils.hexToBytes(hexMessage);
-        RFXComWindMessage msg = (RFXComWindMessage) RFXComMessageFactory.createMessage(message);
+        RFXComWindMessage msg = (RFXComWindMessage) RFXComMessageFactoryImpl.INSTANCE.createMessage(message);
         assertEquals(WIND1, msg.subType, "SubType");
         assertEquals(18, msg.seqNbr, "Seq Number");
         assertEquals("12032", msg.getDeviceId(), "Sensor Id");

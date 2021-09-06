@@ -1,0 +1,229 @@
+{
+  "device": {
+    "device": "nano",
+    "serial": "98f4ab7570c0",
+    "cpu": "esp32",
+    "flash_size": 16777216,
+    "item": "n3j04oA200B",
+    "hw_version": "v3",
+    "sw_version": "v1.1.0",
+    "api_version": "1",
+    "language": "de"
+  },
+  "system": {
+    "time": "1610894186",
+    "unit": "C",
+    "ap": "WLANTHERMO-AP",
+    "host": "NANO-98f4ab7570c0",
+    "language": "de",
+    "version": "v1.1.0",
+    "getupdate": "false",
+    "autoupd": true,
+    "prerelease": true,
+    "hwversion": "V3"
+  },
+  "hardware": [
+    "V3"
+  ],
+  "api": {
+    "version": "1"
+  },
+  "sensors": [
+    {
+      "type": 0,
+      "name": "1000K/Maverick",
+      "fixed": false
+    },
+    {
+      "type": 1,
+      "name": "Fantast-Neu",
+      "fixed": false
+    },
+    {
+      "type": 2,
+      "name": "Fantast",
+      "fixed": false
+    },
+    {
+      "type": 3,
+      "name": "100K/iGrill2",
+      "fixed": false
+    },
+    {
+      "type": 4,
+      "name": "ET-73",
+      "fixed": false
+    },
+    {
+      "type": 5,
+      "name": "Perfektion",
+      "fixed": false
+    },
+    {
+      "type": 6,
+      "name": "50K",
+      "fixed": false
+    },
+    {
+      "type": 7,
+      "name": "Inkbird",
+      "fixed": false
+    },
+    {
+      "type": 8,
+      "name": "100K6A1B",
+      "fixed": false
+    },
+    {
+      "type": 9,
+      "name": "Weber_6743",
+      "fixed": false
+    },
+    {
+      "type": 10,
+      "name": "Santos",
+      "fixed": false
+    },
+    {
+      "type": 11,
+      "name": "5K3A1B",
+      "fixed": false
+    },
+    {
+      "type": 12,
+      "name": "PT100",
+      "fixed": false
+    },
+    {
+      "type": 13,
+      "name": "PT1000",
+      "fixed": false
+    },
+    {
+      "type": 14,
+      "name": "ThermoWorks",
+      "fixed": false
+    },
+    {
+      "type": 15,
+      "name": "Typ K",
+      "fixed": true
+    },
+    {
+      "type": 16,
+      "name": "Bluetooth",
+      "fixed": true
+    },
+    {
+      "type": 17,
+      "name": "Maverick",
+      "fixed": true
+    }
+  ],
+  "features": {
+    "bluetooth": true,
+    "pitmaster": true
+  },
+  "pid": [
+    {
+      "name": "SSR SousVide",
+      "id": 0,
+      "aktor": 0,
+      "Kp": 104,
+      "Ki": 0.2,
+      "Kd": 0,
+      "DCmmin": 0,
+      "DCmmax": 100,
+      "opl": 0,
+      "SPmin": 0,
+      "SPmax": 0,
+      "link": 0,
+      "tune": 0,
+      "jp": 100
+    },
+    {
+      "name": "TITAN 50x50",
+      "id": 1,
+      "aktor": 1,
+      "Kp": 7,
+      "Ki": 0.01,
+      "Kd": 128,
+      "DCmmin": 25,
+      "DCmmax": 100,
+      "opl": 0,
+      "SPmin": 0,
+      "SPmax": 0,
+      "link": 0,
+      "tune": 0,
+      "jp": 70
+    },
+    {
+      "name": "Servo MG995",
+      "id": 2,
+      "aktor": 2,
+      "Kp": 104,
+      "Ki": 0.2,
+      "Kd": 0,
+      "DCmmin": 0,
+      "DCmmax": 100,
+      "opl": 0,
+      "SPmin": 25,
+      "SPmax": 75,
+      "link": 0,
+      "tune": 0,
+      "jp": 100
+    },
+    {
+      "name": "Custom",
+      "id": 3,
+      "aktor": 1,
+      "Kp": 7,
+      "Ki": 0.2,
+      "Kd": 0,
+      "DCmmin": 0,
+      "DCmmax": 100,
+      "opl": 0,
+      "SPmin": 0,
+      "SPmax": 100,
+      "link": 0,
+      "tune": 0,
+      "jp": 100
+    }
+  ],
+  "aktor": [
+    "SSR",
+    "FAN",
+    "SERVO"
+  ],
+  "display": {
+    "updname": "",
+    "orientation": 0
+  },
+  "iot": {
+    "PMQhost": "192.168.2.1",
+    "PMQport": 1883,
+    "PMQuser": "",
+    "PMQpass": "",
+    "PMQqos": 0,
+    "PMQon": false,
+    "PMQint": 30,
+    "CLon": false,
+    "CLtoken": "thisisnotatoken",
+    "CLint": 30,
+    "CLurl": "cloud.wlanthermo.de/index.html"
+  },
+  "notes": {
+    "fcm": [],
+    "ext": {
+      "on": 0,
+      "token": "",
+      "id": "",
+      "repeat": 1,
+      "service": 0,
+      "services": [
+        "telegram",
+        "pushover"
+      ]
+    }
+  }
+}

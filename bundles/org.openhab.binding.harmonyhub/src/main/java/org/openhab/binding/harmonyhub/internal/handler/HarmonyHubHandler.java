@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.harmonyhub.internal.HarmonyHubHandlerFactory;
@@ -50,7 +49,7 @@ import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -263,9 +262,9 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
         // earlier versions required a name and used network discovery to find the hub and retrieve the host,
         // this section is to not break that and also update older configurations to use the host configuration
         // option instead of name
-        if (StringUtils.isBlank(host)) {
+        if (host == null || host.isBlank()) {
             host = getThing().getProperties().get(HUB_PROPERTY_HOST);
-            if (StringUtils.isNotBlank(host)) {
+            if (host != null && !host.isBlank()) {
                 Configuration genericConfig = getConfig();
                 genericConfig.put(HUB_PROPERTY_HOST, host);
                 updateConfiguration(genericConfig);
@@ -382,7 +381,9 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
 
         ChannelType channelType = ChannelTypeBuilder.state(channelTypeUID, "Current Activity", "String")
                 .withDescription("Current activity for " + getThing().getLabel())
-                .withStateDescription(new StateDescription(null, null, null, "%s", false, states)).build();
+                .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withPattern("%s")
+                        .withReadOnly(false).withOptions(states).build())
+                .build();
 
         factory.addChannelType(channelType);
 

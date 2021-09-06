@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,6 +51,12 @@ public class FeatureTemplateLoader {
         List<FeatureTemplate> features = new ArrayList<>();
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+            dbFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            dbFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            dbFactory.setXIncludeAware(false);
+            dbFactory.setExpandEntityReferences(false);
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             // Parse it!
             Document doc = dBuilder.parse(input);
@@ -64,7 +70,7 @@ public class FeatureTemplateLoader {
                 Node node = nodes.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element e = (Element) node;
-                    if (e.getTagName().equals("feature")) {
+                    if ("feature".equals(e.getTagName())) {
                         features.add(parseFeature(e));
                     }
                 }
@@ -120,7 +126,7 @@ public class FeatureTemplateLoader {
 
     private static void parseMessageHandler(Element e, FeatureTemplate f) throws DOMException, ParsingException {
         HandlerEntry he = makeHandlerEntry(e);
-        if (e.getAttribute("default").equals("true")) {
+        if ("true".equals(e.getAttribute("default"))) {
             f.setDefaultMessageHandler(he);
         } else {
             String attr = e.getAttribute("cmd");
@@ -131,7 +137,7 @@ public class FeatureTemplateLoader {
 
     private static void parseCommandHandler(Element e, FeatureTemplate f) throws ParsingException {
         HandlerEntry he = makeHandlerEntry(e);
-        if (e.getAttribute("default").equals("true")) {
+        if ("true".equals(e.getAttribute("default"))) {
             f.setDefaultCommandHandler(he);
         } else {
             Class<? extends Command> command = parseCommandClass(e.getAttribute("command"));
@@ -150,13 +156,13 @@ public class FeatureTemplateLoader {
     }
 
     private static Class<? extends Command> parseCommandClass(String c) throws ParsingException {
-        if (c.equals("OnOffType")) {
+        if ("OnOffType".equals(c)) {
             return OnOffType.class;
-        } else if (c.equals("PercentType")) {
+        } else if ("PercentType".equals(c)) {
             return PercentType.class;
-        } else if (c.equals("DecimalType")) {
+        } else if ("DecimalType".equals(c)) {
             return DecimalType.class;
-        } else if (c.equals("IncreaseDecreaseType")) {
+        } else if ("IncreaseDecreaseType".equals(c)) {
             return IncreaseDecreaseType.class;
         } else {
             throw new ParsingException("Unknown Command Type");

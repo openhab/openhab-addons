@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,9 +24,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * The CcuMetadataExtractor loads some JavaScript files from the CCU and generates the device and datapoint
@@ -85,7 +82,7 @@ public class CcuMetadataExtractor {
                 file.delete();
             }
             file.createNewFile();
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "ISO-8859-1"));
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
 
             // write device descriptions
             bw.write("# -------------- generated descriptions " + new Date() + " --------------\n");
@@ -122,7 +119,7 @@ public class CcuMetadataExtractor {
      */
     private Map<String, String> loadJsonLangDescriptionFile(String url, String lang) throws IOException {
         final Map<String, String> descriptions = new TreeMap<>();
-        String descriptionUrl = StringUtils.replace(url, "{LANGUAGE}", lang);
+        String descriptionUrl = url.replace("{LANGUAGE}", lang);
 
         String startLine = "  \"" + lang + "\" : {";
         String endLine = "  },";
@@ -132,7 +129,7 @@ public class CcuMetadataExtractor {
             public void line(String line) {
                 String[] entry = handleStringTable(line);
                 if (entry != null) {
-                    descriptions.put(StringUtils.trim(entry[0]), unescape(StringUtils.trim(entry[1])));
+                    descriptions.put(entry[0].trim(), unescape(entry[1].trim()));
                 }
             }
         };
@@ -150,20 +147,24 @@ public class CcuMetadataExtractor {
             @Override
             public void line(String line) {
                 if (line.startsWith("elvST['")) {
-                    line = StringUtils.remove(line, "elvST['");
-                    line = StringUtils.replace(line, "'] = '", "=");
-                    line = StringUtils.remove(line, "';");
-                    line = StringUtils.remove(line, "$");
-                    line = StringUtils.remove(line, "{");
-                    line = StringUtils.remove(line, "}");
+                    line = line.replace("elvST['", "");
+                    line = line.replace("'] = '", "=");
+                    line = line.replace("';", "");
+                    line = line.replace("$", "");
+                    line = line.replace("{", "");
+                    line = line.replace("}", "");
 
-                    int count = StringUtils.countMatches(line, "=");
-                    if (count > 1) {
-                        line = StringUtils.replace(line, "=", "|", 1);
+                    int count = 0;
+                    for (int i = 0; i < line.length(); i++) {
+                        if (line.charAt(i) == '=') {
+                            count++;
+                        }
                     }
-
-                    String[] split = StringUtils.split(line, "=", 2);
-                    deviceKeys.put(StringUtils.trim(split[0]), StringUtils.trim(split[1]));
+                    if (count > 1) {
+                        line = line.replaceFirst("=", "|");
+                    }
+                    String[] split = line.split("=", 2);
+                    deviceKeys.put(split[0].trim(), split[1].trim());
                 }
             }
         };
@@ -174,11 +175,11 @@ public class CcuMetadataExtractor {
      * Splits a JSON JavaScript entry.
      */
     private String[] handleStringTable(String line) {
-        line = StringUtils.remove(line, "    \"");
-        line = StringUtils.remove(line, "\",");
-        line = StringUtils.remove(line, "\"");
+        line = line.replace("    \"", "");
+        line = line.replace("\",", "");
+        line = line.replace("\"", "");
 
-        String[] splitted = StringUtils.split(line, ":", 2);
+        String[] splitted = line.split(":", 2);
         return splitted.length != 2 ? null : splitted;
     }
 
@@ -186,16 +187,21 @@ public class CcuMetadataExtractor {
      * Transforms a string for a Java property file.
      */
     private String unescape(String str) {
-        str = StringUtils.replace(str, "%FC", "ü");
-        str = StringUtils.replace(str, "%DC", "Ü");
-        str = StringUtils.replace(str, "%E4", "ä");
-        str = StringUtils.replace(str, "%C4", "Ä");
-        str = StringUtils.replace(str, "%F6", "ö");
-        str = StringUtils.replace(str, "%D6", "Ö");
-        str = StringUtils.replace(str, "%DF", "ß");
-        str = StringUtils.remove(str, "&nbsp;");
-        str = StringUtils.replace(str, "<br/>", " ");
-        str = StringEscapeUtils.unescapeHtml(str);
+        str = str.replace("%FC", "ü");
+        str = str.replace("%DC", "Ü");
+        str = str.replace("%E4", "ä");
+        str = str.replace("%C4", "Ä");
+        str = str.replace("%F6", "ö");
+        str = str.replace("%D6", "Ö");
+        str = str.replace("%DF", "ß");
+        str = str.replace("&nbsp;", "");
+        str = str.replace("<br/>", " ");
+        str = str.replace("&uuml;", "ü");
+        str = str.replace("&auml;", "ä");
+        str = str.replace("&ouml;", "ö");
+        str = str.replace("&Uuml;", "Ü");
+        str = str.replace("&Auml;", "Ä");
+        str = str.replace("&Ouml;", "Ö");
         return str;
     }
 
@@ -210,7 +216,7 @@ public class CcuMetadataExtractor {
         public UrlLoader(String url, String startLine, String endLine) throws IOException {
             System.out.println("Loading file " + url);
             Boolean includeLine = null;
-            BufferedReader br = new BufferedReader(new InputStreamReader(new URL(url).openStream(), "ISO-8859-1"));
+            BufferedReader br = new BufferedReader(new InputStreamReader(new URL(url).openStream(), "UTF-8"));
 
             String line;
             while ((line = br.readLine()) != null) {
@@ -222,7 +228,7 @@ public class CcuMetadataExtractor {
                         includeLine = false;
                     }
                 }
-                if ((includeLine == null || includeLine) && StringUtils.isNotBlank(line)) {
+                if ((includeLine == null || includeLine) && !line.isBlank()) {
                     line(line);
                 }
             }

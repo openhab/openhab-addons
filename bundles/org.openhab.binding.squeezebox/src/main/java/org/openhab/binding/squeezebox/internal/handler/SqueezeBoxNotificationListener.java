@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -219,5 +219,9 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
 
     @Override
     public void buttonsChangeEvent(String mac, String likeCommand, String unlikeCommand) {
+    }
+
+    @Override
+    public void connectedStateChangeEvent(String mac, boolean connected) {
     }
 }

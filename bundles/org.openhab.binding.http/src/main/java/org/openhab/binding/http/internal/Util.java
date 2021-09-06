@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.http.internal;
 
+import java.net.IDN;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -23,13 +28,18 @@ import org.eclipse.jetty.http.HttpField;
 
 /**
  * The {@link Util} is a utility class
- * channels
  *
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
 public class Util {
 
+    /**
+     * create a log string from a {@link org.eclipse.jetty.client.api.Request}
+     *
+     * @param request the request to log
+     * @return the string representing the request
+     */
     public static String requestToLogString(Request request) {
         ContentProvider contentProvider = request.getContent();
         String contentString = contentProvider == null ? "null"
@@ -40,5 +50,19 @@ public class Util {
                 + "}, Content = {" + contentString + "}";
 
         return logString;
+    }
+
+    /**
+     * create an URI from a string, escaping all necessary characters
+     *
+     * @param s the URI as unescaped string
+     * @return URI correspondign to the input string
+     * @throws MalformedURLException
+     * @throws URISyntaxException
+     */
+    public static URI uriFromString(String s) throws MalformedURLException, URISyntaxException {
+        URL url = new URL(s);
+        return new URI(url.getProtocol(), url.getUserInfo(), IDN.toASCII(url.getHost()), url.getPort(), url.getPath(),
+                url.getQuery(), url.getRef());
     }
 }

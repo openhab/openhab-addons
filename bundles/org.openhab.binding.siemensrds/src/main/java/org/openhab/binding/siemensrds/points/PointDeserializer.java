@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,8 +76,9 @@ public class PointDeserializer implements JsonDeserializer<BasePoint> {
             if (valueIsPrimitive) {
                 JsonPrimitive primitiveType = value.getAsJsonPrimitive();
                 pointType = primitiveType.isString() ? PointType.STRING : PointType.NUMBER;
-            } else
+            } else {
                 pointType = PointType.NESTED_NUMBER;
+            }
         }
 
         BasePoint point;

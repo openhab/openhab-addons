@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,8 +25,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gardena.internal.GardenaSmart;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.handler.GardenaAccountHandler;
-import org.openhab.binding.gardena.internal.model.Device;
-import org.openhab.binding.gardena.internal.model.Location;
+import org.openhab.binding.gardena.internal.model.dto.Device;
+import org.openhab.binding.gardena.internal.util.PropertyUtils;
 import org.openhab.binding.gardena.internal.util.UidUtils;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -41,18 +41,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link GardenaDeviceDiscoveryService} is used to discover devices that are connected to Gardena Smart Home.
+ * The {@link GardenaDeviceDiscoveryService} is used to discover devices that are connected to Gardena smart system.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(GardenaDeviceDiscoveryService.class);
-    private static final int DISCOVER_TIMEOUT_SECONDS = 30;
+    private static final int DISCOVER_TIMEOUT_SECONDS = 5;
 
     private @NonNullByDefault({}) GardenaAccountHandler accountHandler;
-    private Future<?> scanFuture;
+    private @Nullable Future<?> scanFuture;
 
     public GardenaDeviceDiscoveryService() {
         super(Collections.unmodifiableSet(Stream.of(new ThingTypeUID(BINDING_ID, "-")).collect(Collectors.toSet())),
@@ -94,6 +95,7 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
     @Override
     public void stopScan() {
         logger.debug("Stopping Gardena discovery scan");
+        final Future<?> scanFuture = this.scanFuture;
         if (scanFuture != null) {
             scanFuture.cancel(true);
         }
@@ -101,18 +103,15 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     /**
-     * Starts a thread which loads all Gardena devices registered in the account
+     * Starts a thread which loads all Gardena devices registered in the account.
      */
-    public void loadDevices() {
+    private void loadDevices() {
         if (scanFuture == null) {
             scanFuture = scheduler.submit(() -> {
-                try {
-                    GardenaSmart gardena = accountHandler.getGardenaSmart();
-                    gardena.loadAllDevices();
-                    for (Location location : gardena.getLocations()) {
-                        for (String deviceId : location.getDeviceIds()) {
-                            deviceDiscovered(gardena.getDevice(deviceId));
-                        }
+                GardenaSmart gardena = accountHandler.getGardenaSmart();
+                if (gardena != null) {
+                    for (Device device : gardena.getAllDevices()) {
+                        deviceDiscovered(device);
                     }
 
                     for (Thing thing : accountHandler.getThing().getThings()) {
@@ -123,11 +122,7 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
                         }
                     }
 
-                    logger.debug("Finished Gardena device discovery scan on gateway '{}'",
-                            accountHandler.getGardenaSmart().getId());
-                } catch (GardenaException ex) {
-                    logger.error("{}", ex.getMessage(), ex);
-                } finally {
+                    logger.debug("Finished Gardena device discovery scan on gateway '{}'", gardena.getId());
                     scanFuture = null;
                     removeOlderResults(getTimestampOfLastScan());
                 }
@@ -141,6 +136,7 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
      * Waits for the discovery scan to finish and then returns.
      */
     public void waitForScanFinishing() {
+        final Future<?> scanFuture = this.scanFuture;
         if (scanFuture != null) {
             logger.debug("Waiting for finishing Gardena device discovery scan");
             try {
@@ -158,19 +154,19 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
      * Generates the DiscoveryResult from a Gardena device.
      */
     public void deviceDiscovered(Device device) {
-        ThingUID accountUID = accountHandler.getThing().getUID();
-        ThingUID thingUID = UidUtils.generateThingUID(device, accountHandler.getThing());
+        if (device.active) {
+            ThingUID accountUID = accountHandler.getThing().getUID();
+            ThingUID thingUID = UidUtils.generateThingUID(device, accountHandler.getThing());
 
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(accountUID)
-                .withLabel(device.getName()).build();
-        thingDiscovered(discoveryResult);
-    }
-
-    /**
-     * Removes the Gardena device.
-     */
-    public void deviceRemoved(Device device) {
-        ThingUID thingUID = UidUtils.generateThingUID(device, accountHandler.getThing());
-        thingRemoved(thingUID);
+            try {
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(accountUID)
+                        .withLabel(PropertyUtils.getPropertyValue(device, "common.attributes.name.value", String.class))
+                        .withProperty("id", device.id).withProperty("type", device.deviceType)
+                        .withRepresentationProperty("id").build();
+                thingDiscovered(discoveryResult);
+            } catch (GardenaException ex) {
+                logger.warn("{}", ex.getMessage());
+            }
+        }
     }
 }

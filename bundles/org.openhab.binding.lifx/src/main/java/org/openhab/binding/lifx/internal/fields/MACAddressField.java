@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,8 +17,8 @@ import java.nio.ByteBuffer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * @author Tim Buckley
- * @author Karel Goderis
+ * @author Tim Buckley - Initial contribution
+ * @author Karel Goderis - Initial contribution
  */
 @NonNullByDefault
 public class MACAddressField extends Field<MACAddress> {

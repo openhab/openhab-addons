@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,12 +33,11 @@ import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
-import org.openhab.binding.shelly.internal.util.ShellyTranslationProvider;
+import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -66,20 +65,13 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private final HttpClient httpClient;
     private final ConfigurationAdmin configurationAdmin;
 
-    /**
-     * OSGI Service Activation
-     *
-     * @param componentContext
-     * @param localeProvider
-     */
     @Activate
     public ShellyDiscoveryParticipant(@Reference ConfigurationAdmin configurationAdmin,
             @Reference HttpClientFactory httpClientFactory, @Reference LocaleProvider localeProvider,
-            @Reference TranslationProvider i18nProvider, ComponentContext componentContext) {
+            @Reference ShellyTranslationProvider translationProvider, ComponentContext componentContext) {
         logger.debug("Activating ShellyDiscovery service");
         this.configurationAdmin = configurationAdmin;
-        this.messages = new ShellyTranslationProvider(componentContext.getBundleContext().getBundle(), i18nProvider,
-                localeProvider);
+        this.messages = translationProvider;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         bindingConfig.updateFromProperties(componentContext.getProperties());
     }
@@ -123,8 +115,11 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             Map<String, Object> properties = new TreeMap<>();
 
             name = service.getName().toLowerCase();
-            address = service.getHostAddress();
-            if ((address == null) || address.isEmpty()) {
+            String[] hostAddresses = service.getHostAddresses();
+            if ((hostAddresses != null) && (hostAddresses.length > 0)) {
+                address = hostAddresses[0];
+            }
+            if (address.isEmpty()) {
                 logger.trace("{}: Shelly device discovered with empty IP address (service-name={})", name, service);
                 return null;
             }
@@ -167,8 +162,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                     // create shellyunknown thing - will be changed during thing initialization with valid credentials
                     thingUID = ShellyThingCreator.getThingUID(name, model, mode, true);
                 } else {
-                    logger.info("{}: {}", name, messages.get("discovery.failed", address, e.toString()));
-                    logger.debug("{}: Discovery failed", name, e);
+                    logger.debug("{}: {}", name, messages.get("discovery.failed", address, e.toString()));
                 }
             } catch (IllegalArgumentException e) { // maybe some format description was buggy
                 logger.debug("{}: Discovery failed!", name, e);

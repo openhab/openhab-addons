@@ -32,6 +32,10 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -48,6 +52,9 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"tags": [
+					"Control"
 				]
 			},
 			{
@@ -56,14 +63,18 @@
 				"piid": 3,
 				"friendlyName": "Brightness",
 				"channel": "brightness",
-				"channelType": "miot_uint8",
-				"type": "Number",
+				"type": "Dimmer",
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
 				]
 			},
 			{

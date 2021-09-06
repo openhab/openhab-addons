@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,15 +17,23 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.EMPTY
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.util.HexUtils;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class EnOceanBaseConfig {
+    /**
+     * EnOceanId of the physical device
+     */
     public String enoceanId;
 
+    /**
+     * EEP used/send by physical device
+     */
     public List<String> receivingEEPId = new ArrayList<>();
     public boolean receivingSIGEEP = false;
 

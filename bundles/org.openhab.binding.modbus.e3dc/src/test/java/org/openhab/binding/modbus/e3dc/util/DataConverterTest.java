@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import java.util.BitSet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.modbus.e3dc.internal.dto.DataConverter;
-import org.openhab.io.transport.modbus.ValueBuffer;
+import org.openhab.core.io.transport.modbus.ValueBuffer;
 
 /**
  * The {@link DataConverterTest} Test data conversions

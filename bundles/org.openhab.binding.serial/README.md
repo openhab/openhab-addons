@@ -66,7 +66,7 @@ The channels supported by the `serialBridge` are:
 | Channel  | Type             | Description                                                                                              |
 |----------|------------------|----------------------------------------------------------------------------------------------------------|
 | `string`   | String           | Channel for sending/receiving data as a string to/from the serial port. The channel will update its state to a StringType that is the data received from the serial port. A command sent to this channel will be sent out as data through the serial port. |
-| `binary`   | String           | Channel for sending/receiving data in Base64 format to/from the serial port. The channel will update its state to a StringType which is the string representation of a RawType that contains the data received from the serial port. A command sent to this channel must be encoded as the string representation of a RawType, e.g. `"data:application/octet-stream;base64 MjA7MDU7Q3Jlc3RhO0lEPTI4MDE7VEVNUD0yNTtIVU09NTU7QkFUPU9LOwo="` |
+| `binary`   | String           | Channel for sending/receiving data in Base64 format to/from the serial port. The channel will update its state to a StringType which is the string representation of a RawType that contains the data received from the serial port. A command sent to this channel must be encoded as the string representation of a RawType, e.g. `"data:application/octet-stream;base64,MjA7MDU7Q3Jlc3RhO0lEPTI4MDE7VEVNUD0yNTtIVU09NTU7QkFUPU9LOwo="` |
 | `data`     | system.rawbutton | Trigger which emits `PRESSED` events (no `RELEASED` events) whenever data is available on the serial port                                                                                                                                     |
 
 
@@ -108,21 +108,21 @@ demo.things:
 Bridge serial:serialBridge:sensors [serialPort="/dev/ttyUSB01", baudRate=57600] {
     Thing serialDevice temperatureSensor [patternMatch="20;05;Cresta;ID=2801;.*"] {
         Channels:
-            Type number : temperature [transform="REGEX:.*?TEMP=(.*?);.*"]
-            Type number : humidity [transform="REGEX:.*?HUM=(.*?);.*"]
+            Type number : temperature [stateTransformation="REGEX:.*?TEMP=(.*?);.*"]
+            Type number : humidity [stateTransformation="REGEX:.*?HUM=(.*?);.*"]
     }
     Thing serialDevice rollershutter [patternMatch=".*"] {
         Channels:
-            Type rollershutter : serialRollo [transform="REGEX:Position:([0-9.]*)", up="Rollo_UP\n", down="Rollo_DOWN\n", stop="Rollo_STOP\n"]
-            Type switch : roloAt100 [transform="REGEX:s/Position:100/ON/"]
+            Type rollershutter : serialRollo [stateTransformation="REGEX:Position:([0-9.]*)", upValue="Rollo_UP\n", downValue="Rollo_DOWN\n", stopValue="Rollo_STOP\n"]
+            Type switch : roloAt100 [stateTransformation="REGEX:s/Position:100/ON/"]
     }
     Thing serialDevice relay [patternMatch=".*"] {
         Channels:
-            Type switch : serialRelay [on="Q1_ON\n", off="Q1_OFF\n"]
+            Type switch : serialRelay [onValue="Q1_ON\n", offValue="Q1_OFF\n"]
     }
     Thing serialDevice myDevice [patternMatch="ID=2341;.*"] {
         Channels:
-            Type string : control [commandTransform="JS:addCheckSum.js", commandFormat="ID=2341;COMMAND=%s;"]
+            Type string : control [commandTransformation="JS:addCheckSum.js", commandFormat="ID=2341;COMMAND=%s;"]
     }
 }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ import com.google.gson.JsonParseException;
  * also known as the Climatix IC server account )
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
+ *
  */
 @NonNullByDefault
 public class RdsCloudHandler extends BaseBridgeHandler {
@@ -68,8 +68,9 @@ public class RdsCloudHandler extends BaseBridgeHandler {
             return;
         }
 
-        if (logger.isDebugEnabled())
+        if (logger.isDebugEnabled()) {
             logger.debug("polling interval={}", config.pollingInterval);
+        }
 
         if (config.pollingInterval < FAST_POLL_INTERVAL || config.pollingInterval > LAZY_POLL_INTERVAL) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

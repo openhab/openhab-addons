@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,42 +12,30 @@
  */
 package org.openhab.binding.tesla.internal.command;
 
-import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tesla.internal.TeslaBindingConstants;
 import org.openhab.binding.tesla.internal.discovery.TeslaAccountDiscoveryService;
-import org.openhab.binding.tesla.internal.protocol.TokenRequest;
-import org.openhab.binding.tesla.internal.protocol.TokenRequestPassword;
-import org.openhab.binding.tesla.internal.protocol.TokenResponse;
+import org.openhab.binding.tesla.internal.handler.TeslaSSOHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.util.UIDUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * Console commands for interacting with the Tesla integration
@@ -61,19 +49,18 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
 
     private static final String CMD_LOGIN = "login";
 
-    private final Logger logger = LoggerFactory.getLogger(TeslaCommandExtension.class);
-
     @Reference(cardinality = ReferenceCardinality.OPTIONAL)
     private @Nullable ClientBuilder injectedClientBuilder;
 
-    private @Nullable WebTarget tokenTarget;
-
     private final TeslaAccountDiscoveryService teslaAccountDiscoveryService;
+    private final HttpClientFactory httpClientFactory;
 
     @Activate
-    public TeslaCommandExtension(@Reference TeslaAccountDiscoveryService teslaAccountDiscoveryService) {
+    public TeslaCommandExtension(@Reference TeslaAccountDiscoveryService teslaAccountDiscoveryService,
+            @Reference HttpClientFactory httpClientFactory) {
         super("tesla", "Interact with the Tesla integration.");
         this.teslaAccountDiscoveryService = teslaAccountDiscoveryService;
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
@@ -120,59 +107,20 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
     }
 
     private void login(Console console, String username, String password) {
-        try {
-            Gson gson = new Gson();
+        TeslaSSOHandler ssoHandler = new TeslaSSOHandler(httpClientFactory.getCommonHttpClient());
 
-            TokenRequest token = new TokenRequestPassword(username, password);
-            String payLoad = gson.toJson(token);
+        String refreshToken = ssoHandler.authenticate(username, password);
+        if (refreshToken != null) {
+            console.println("Refresh token: " + refreshToken);
 
-            Response response = getTokenTarget().request()
-                    .post(Entity.entity(payLoad, MediaType.APPLICATION_JSON_TYPE));
-
-            if (response != null) {
-                if (response.getStatus() == 200 && response.hasEntity()) {
-                    String responsePayLoad = response.readEntity(String.class);
-                    TokenResponse tokenResponse = gson.fromJson(responsePayLoad.trim(), TokenResponse.class);
-                    console.println("Refresh token: " + tokenResponse.refresh_token);
-
-                    ThingUID thingUID = new ThingUID(TeslaBindingConstants.THING_TYPE_ACCOUNT,
-                            UIDUtils.encode(username));
-                    DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel("Tesla Account")
-                            .withProperty(TeslaBindingConstants.CONFIG_REFRESHTOKEN, tokenResponse.refresh_token)
-                            .withProperty(TeslaBindingConstants.CONFIG_USERNAME, username)
-                            .withRepresentationProperty(TeslaBindingConstants.CONFIG_USERNAME).build();
-                    teslaAccountDiscoveryService.thingDiscovered(result);
-                } else {
-                    console.println(
-                            "Failure: " + response.getStatus() + " " + response.getStatusInfo().getReasonPhrase());
-                }
-            }
-        } catch (Exception e) {
-            console.println("Failed to retrieve token: " + e.getMessage());
-            logger.error("Could not get refresh token.", e);
-        }
-    }
-
-    private synchronized WebTarget getTokenTarget() {
-        WebTarget target = this.tokenTarget;
-        if (target != null) {
-            return target;
+            ThingUID thingUID = new ThingUID(TeslaBindingConstants.THING_TYPE_ACCOUNT, UIDUtils.encode(username));
+            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel("Tesla Account")
+                    .withProperty(TeslaBindingConstants.CONFIG_REFRESHTOKEN, refreshToken)
+                    .withProperty(TeslaBindingConstants.CONFIG_USERNAME, username)
+                    .withRepresentationProperty(TeslaBindingConstants.CONFIG_USERNAME).build();
+            teslaAccountDiscoveryService.thingDiscovered(result);
         } else {
-            Client client;
-            try {
-                client = ClientBuilder.newBuilder().build();
-            } catch (Exception e) {
-                // we seem to have no Jersey, so let's hope for an injected builder by CXF
-                if (this.injectedClientBuilder != null) {
-                    client = injectedClientBuilder.build();
-                } else {
-                    throw new IllegalStateException("No JAX RS Client Builder available.");
-                }
-            }
-            WebTarget teslaTarget = client.target(URI_OWNERS);
-            target = teslaTarget.path(URI_ACCESS_TOKEN);
-            this.tokenTarget = target;
-            return target;
+            console.println("Failed to retrieve refresh token");
         }
     }
 }

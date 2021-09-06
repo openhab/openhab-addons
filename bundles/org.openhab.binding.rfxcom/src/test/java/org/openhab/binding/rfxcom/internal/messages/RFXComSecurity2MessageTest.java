@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ public class RFXComSecurity2MessageTest {
         String hexMessage = "1C21020000000000131211C30000000000000000000000000000000045";
         byte[] message = HexUtils.hexToBytes(hexMessage);
 
-        RFXComSecurity2Message msg = (RFXComSecurity2Message) RFXComMessageFactory.createMessage(message);
+        RFXComSecurity2Message msg = (RFXComSecurity2Message) RFXComMessageFactoryImpl.INSTANCE.createMessage(message);
         assertEquals(SubType.RAW_AES_KEELOQ, msg.subType, "SubType");
         assertEquals(0, msg.seqNbr, "Seq Number");
         assertEquals("51450387", msg.getDeviceId(), "Sensor Id");

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.luftdateninfo.internal.handler;
 
 import static org.openhab.binding.luftdateninfo.internal.LuftdatenInfoBindingConstants.*;
-import static org.openhab.binding.luftdateninfo.internal.handler.HTTPHandler.*;
+import static org.openhab.binding.luftdateninfo.internal.utils.Constants.*;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
 import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
 import org.openhab.core.library.dimension.Density;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -35,8 +35,8 @@ import org.openhab.core.thing.Thing;
 @NonNullByDefault
 public class PMHandler extends BaseSensorHandler {
 
-    protected QuantityType<Density> pm25Cache = QuantityType.valueOf(-1, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
-    protected QuantityType<Density> pm100Cache = QuantityType.valueOf(-1, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
+    protected QuantityType<Density> pm25Cache = QuantityType.valueOf(-1, Units.MICROGRAM_PER_CUBICMETRE);
+    protected QuantityType<Density> pm100Cache = QuantityType.valueOf(-1, Units.MICROGRAM_PER_CUBICMETRE);
 
     public PMHandler(Thing thing) {
         super(thing);
@@ -49,13 +49,13 @@ public class PMHandler extends BaseSensorHandler {
             if (valueList != null) {
                 if (HTTPHandler.getHandler().isParticulate(valueList)) {
                     valueList.forEach(v -> {
-                        if (v.getValueType().equals(P1)) {
+                        if (v.getValueType().endsWith(P1)) {
                             pm100Cache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
-                                    SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
+                                    Units.MICROGRAM_PER_CUBICMETRE);
                             updateState(PM100_CHANNEL, pm100Cache);
-                        } else if (v.getValueType().equals(P2)) {
+                        } else if (v.getValueType().endsWith(P2)) {
                             pm25Cache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
-                                    SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
+                                    Units.MICROGRAM_PER_CUBICMETRE);
                             updateState(PM25_CHANNEL, pm25Cache);
                         }
                     });

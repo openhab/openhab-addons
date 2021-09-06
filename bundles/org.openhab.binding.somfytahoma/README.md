@@ -5,13 +5,14 @@ This binding integrates the
 and
 [Somfy Connexoon](https://www.somfy.fr/produits/1811429/)
 home automation systems.
+Any home automation system based on the OverKiz API is potentially supported.
 
 ## Supported Things
 
  Currently these things are supported:
 
-- bridge (Somfy Tahoma bridge, which can discover gateways, roller shutters, awnings, switches and action groups)
-- gateways (Somfy Tahoma gateway - gateway status)
+- bridge (cloud bridge, which can discover gateways, roller shutters, awnings, switches and action groups)
+- gateways (gateway status)
 - gates (control gate, get state)
 - roller shutters (UP, DOWN, STOP control of a roller shutter). IO Homecontrol devices are allowed to set exact position of a shutter (0-100%)
 - blinds (UP, DOWN, STOP control of a blind). IO Homecontrol devices are allowed to set exact position of a blinds (0-100%) as well as orientation of slats (0-100%)
@@ -46,18 +47,13 @@ Both Somfy Tahoma and Somfy Connexoon gateways have been confirmed working.
 
 To start a discovery, just
  
-- install this binding
-- open Paper UI
-- add a new thing in menu Configuration/Things
-- choose SomfyTahoma Binding and select Somfy Tahoma Bridge
-- enter your email (login) and password to the TahomaLink cloud portal
+- Add a new bridge thing.
+- Configure the bridge selecting your cloud portal (www.tahomalink.com by default) and setting your email (login) and password to the cloud portal.
  
-If the supplied TahomaLink credentials are correct, the automatic discovery starts immediately and detected roller shutters, awnings, switches and action groups appear in Paper UI inbox. 
+If the supplied credentials are correct, the automatic discovery can be used to scan and detect roller shutters, awnings, switches and action groups that will appear in your Inbox. 
 
 ## Thing Configuration
 
-To manually configure the thing you have to specify bridge and things in *.things file in conf/addons directory of your openHAB 2.x installation.
-To manually link the thing channels to items just use the *.items file in conf/items directory of your openHAB 2.x installation. 
 To retrieve thing configuration and url parameter, just add the automatically discovered device from your inbox and copy its values from thing edit page. (the url parameter is visible on edit page only)
 Please see the example below.
 
@@ -66,16 +62,19 @@ Please see the example below.
 | Thing                                                                         | Channel                      | Note                                                                                                                        |
 |-------------------------------------------------------------------------------|------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
 | bridge                                                                        | N.A                          | bridge does not expose any channel                                                                                          |
-| gateway                                                                       | status                       | status of your Tahoma gateway                                                                                               |
+| gateway                                                                       | status                       | status of your gateway                                                                                                      |
+| gateway                                                                       | scenarios                    | used to run the scenarios defined in the cloud portal                                                                       |
 | gate                                                                          | gate_command                 | used for controlling your gate (open, close, stop, pedestrian)                                                              |
 | gate                                                                          | gate_state                   | get state of your gate (open, closed, pedestrian)                                                                           |
 | gate                                                                          | gate_position                | get position (0-100%) of your gate (where supported)                                                                        |
 | roller shutter, screen, venetian blind, garage door, awning, pergola, curtain | control                      | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/MY/STOP + closure 0-100                                |
 | window                                                                        | control                      | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/STOP + closure 0-100                                   |
 | silent roller shutter                                                         | silent_control               | similar to control channel but in silent mode                                                                               |
-| venetian blind, adjustable slats roller shutter                               | orientation                  | percentual orientation of the blind's slats, it can have value 0-100. For IO Homecontrol devices only (non RTS)             |
+| venetian blind, adjustable slats roller shutter, bioclimatic pergola           | orientation                  | percentual orientation of the blind's slats, it can have value 0-100. For IO Homecontrol devices only (non RTS)             |
 | venetian blind, adjustable slats roller shutter                               | closure_orientation          | percentual closure and orientation of the blind's slats, it can have value 0-100. For IO Homecontrol devices only (non RTS) |
 | adjustable slats roller shutter                                               | rocker                       | used for setting the rocker position of the roller shutter, the only position allowing the slats control                    |
+| bioclimatic pergola                                                           | slats                        | slats state (open/closed)                                                                                                   |
+| bioclimatic pergola                                                           | pergola_command              | used for controlling biclimatic pergola (closeSlats, openSlats, stop)                                                       |
 | action group                                                                  | execute_action               | switch which reacts to ON command and triggers the predefined Tahoma action                                                 |
 | onoff, light                                                                  | switch                       | reacts to standard ON/OFF commands                                                                                          |
 | dimmer light                                                                  | light_intensity              | sets/gets intensity of the dimmer light or ON/OFF                                                                           |
@@ -124,6 +123,9 @@ Please see the example below.
 | myfox camera, myfox alarm                                                     | cloud_status                 | cloud connection status                                                                                                     |
 | myfox camera                                                                  | shutter                      | controlling of the camera shutter                                                                                           |
 | myfox alarm                                                                   | myfox_alarm_command          | used for sending commands to Somfy Myfox alarm device                                                                       |
+
+To run a scenario inside a rule for example, the ID of the scenario will be required.
+You can list all the scenarios IDs with the following console command: `somfytahoma <bridgeUID> scenarios`.
 
 ### Remarks
 

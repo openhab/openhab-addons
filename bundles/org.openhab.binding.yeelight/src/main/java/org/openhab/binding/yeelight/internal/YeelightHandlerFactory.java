@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,12 @@ import static org.openhab.binding.yeelight.internal.YeelightBindingConstants.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openhab.binding.yeelight.internal.handler.*;
+import org.openhab.binding.yeelight.internal.handler.YeelightCeilingHandler;
+import org.openhab.binding.yeelight.internal.handler.YeelightCeilingWithAmbientHandler;
+import org.openhab.binding.yeelight.internal.handler.YeelightCeilingWithNightHandler;
+import org.openhab.binding.yeelight.internal.handler.YeelightColorHandler;
+import org.openhab.binding.yeelight.internal.handler.YeelightStripeHandler;
+import org.openhab.binding.yeelight.internal.handler.YeelightWhiteHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;

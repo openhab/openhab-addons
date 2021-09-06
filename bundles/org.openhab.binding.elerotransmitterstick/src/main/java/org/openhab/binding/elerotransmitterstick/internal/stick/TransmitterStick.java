@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -274,7 +274,7 @@ public class TransmitterStick {
                 try {
                     // in case we have no commands that are currently due, wait for a new one
                     if (dueCommands.isEmpty()) {
-                        logger.debug("No due commands, invoking take on queue...");
+                        logger.trace("No due commands, invoking take on queue...");
                         dueCommands.add(cmdQueue.take());
                         logger.trace("take returned {}", dueCommands.first());
                     }

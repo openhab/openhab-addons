@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -111,7 +111,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             // Query the device state
             DeviceStateInformation state = controller.getState();
             DeviceStatus statusWithMessage = DeviceStatus.decodeStatusCode(state.getState());
-            int eshStatus = getEshStatusFromCommand(statusWithMessage.getAssociatedCommand());
+            int status = getStatusFromCommand(statusWithMessage.getAssociatedCommand());
             int mowed = state.getMowed();
             int error = state.getError();
             int statecode = state.getState();
@@ -136,7 +136,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
                         if (state.getState() != stateTmp.getState()) {
                             state = stateTmp;
                             statusWithMessage = DeviceStatus.decodeStatusCode(state.getState());
-                            eshStatus = getEshStatusFromCommand(statusWithMessage.getAssociatedCommand());
+                            status = getStatusFromCommand(statusWithMessage.getAssociatedCommand());
                             mowed = state.getMowed();
                             error = state.getError();
                             statecode = state.getState();
@@ -156,7 +156,7 @@ public class BoschIndegoHandler extends BaseThingHandler {
             updateState(READY, new DecimalType(ready ? 1 : 0));
             updateState(ERRORCODE, new DecimalType(error));
             updateState(MOWED, new PercentType(mowed));
-            updateState(STATE, new DecimalType(eshStatus));
+            updateState(STATE, new DecimalType(status));
             updateState(TEXTUAL_STATE, new StringType(statusWithMessage.getMessage()));
 
         } catch (IndegoAuthenticationException e) {
@@ -200,22 +200,22 @@ public class BoschIndegoHandler extends BaseThingHandler {
         return true;
     }
 
-    private int getEshStatusFromCommand(DeviceCommand command) {
-        int eshStatus;
+    private int getStatusFromCommand(DeviceCommand command) {
+        int status;
         switch (command) {
             case MOW:
-                eshStatus = 1;
+                status = 1;
                 break;
             case RETURN:
-                eshStatus = 2;
+                status = 2;
                 break;
             case PAUSE:
-                eshStatus = 3;
+                status = 3;
                 break;
             default:
-                eshStatus = 0;
+                status = 0;
         }
-        return eshStatus;
+        return status;
     }
 
     @Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,6 +63,9 @@ public class ItemToStorePointCreator {
 
     private String calculateMeasurementName(Item item, @Nullable String storeAlias) {
         String name = storeAlias != null && !storeAlias.isBlank() ? storeAlias : item.getName();
+
+        name = InfluxDBMetadataUtils.calculateMeasurementNameFromMetadataIfPresent(metadataRegistry, name,
+                item.getName());
 
         if (configuration.isReplaceUnderscore()) {
             name = name.replace('_', '.');

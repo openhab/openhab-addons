@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -194,6 +194,9 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
     private Stream<InfluxRow> mapRawResultToHistoric(FluxTable rawRow) {
         return rawRow.getRecords().stream().map(r -> {
             String itemName = (String) r.getValueByKey(InfluxDBConstants.TAG_ITEM_NAME);
+            if (itemName == null) { // use measurement name if item is not tagged
+                itemName = r.getMeasurement();
+            }
             Object value = r.getValueByKey(COLUMN_VALUE_NAME_V2);
             Instant time = (Instant) r.getValueByKey(COLUMN_TIME_NAME_V2);
             return new InfluxRow(time, itemName, value);

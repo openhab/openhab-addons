@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wlanthermo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="cpu_load" advanced="true">
+		<item-type>Number</item-type>
+		<label>CPU Load</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="name" advanced="false">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<category>Text</category>
+	</channel-type>
+
+	<channel-type id="name_ro" advanced="false">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="typ" advanced="true">
+		<item-type>String</item-type>
+		<label>Type</label>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature" advanced="false">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Temperature</label>
+		<category>Temperature</category>
+		<state min="0" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature_min" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Low Temperature Alarm</label>
+		<category>Temperature</category>
+		<state min="0" step="0.1" pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="temperature_max" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>High Temperature Alarm</label>
+		<category>Temperature</category>
+		<state min="0" step="0.1" pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="temperature_min_ro" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Low Temperature Alarm</label>
+		<category>Temperature</category>
+		<state min="0" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature_max_ro" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>High Temperature Alarm</label>
+		<category>Temperature</category>
+		<state min="0" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarm_device" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Alarm Buzzer</label>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="alarm_device_ro" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Alarm Buzzer</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarm_push" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Push-Alarm</label>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="alarm_openhab" advanced="true">
+		<kind>trigger</kind>
+		<label>OpenHAB Alarm Trigger</label>
+		<event>
+			<options>
+				<option value="MIN">Low Temperature Alarm</option>
+				<option value="MAX">High Temperature Alarm</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="alarm_openhab_low" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Low Temperature Alarm</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarm_openhab_high" advanced="false">
+		<item-type>Switch</item-type>
+		<label>High Temperature Alarm</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="color" advanced="true">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<category>Colorpicker</category>
+	</channel-type>
+
+	<channel-type id="color_name_nano" advanced="true">
+		<item-type>String</item-type>
+		<label>Color</label>
+		<category>Colorpicker</category>
+		<state>
+			<options>
+				<option value="niagara">Niagara</option>
+				<option value="rosa">Rosa</option>
+				<option value="lapis blue">Lapis Blue</option>
+				<option value="orange">Orange</option>
+				<option value="lila">Lila</option>
+				<option value="red">Red</option>
+				<option value="green">Green</option>
+				<option value="gold">Gold</option>
+				<option value="kale">Kale</option>
+				<option value="brown">Brown</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="color_name_esp32" advanced="true">
+		<item-type>String</item-type>
+		<label>Color</label>
+		<category>Colorpicker</category>
+		<state>
+			<options>
+				<option value="#FFFF00">yellow</option>
+				<option value="#FFC002">dark yellow</option>
+				<option value="#00FF00">green</option>
+				<option value="#FFFFFF">white</option>
+				<option value="#FF1DC4">pink</option>
+				<option value="#E46C0A">orange</option>
+				<option value="#C3D69B">olive</option>
+				<option value="#0FE6F1">light blue</option>
+				<option value="#0000FF">blue</option>
+				<option value="#03A923">dark green</option>
+				<option value="#C84B32">brown</option>
+				<option value="#FF9B69">light brown</option>
+				<option value="#5082BE">dark blue</option>
+				<option value="#FFB1D0">light pink</option>
+				<option value="#A6EF03">light green</option>
+				<option value="#D42A6B">dark pink</option>
+				<option value="#FFDA8F">beige</option>
+				<option value="#00B0F0">azure</option>
+				<option value="#948A54">dark olive</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="color_ro" advanced="true">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<category>Colorpicker</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="color_name_mini_ro" advanced="true">
+		<item-type>String</item-type>
+		<label>Color Name</label>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="enabled" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Enabled</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature_setpoint_ro" advanced="false">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint Temperature</label>
+		<category>Temperature</category>
+		<state min="0" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="duty_cycle_ro" advanced="false">
+		<item-type>Number</item-type>
+		<label>Duty Cycle / Control Out</label>
+		<state min="0" max="100" pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lid_open" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Lid Open</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="channel_id_ro" advanced="false">
+		<item-type>Number</item-type>
+		<label>Channel ID</label>
+		<state min="0" max="9" pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pitmaster_type" advanced="false">
+		<item-type>String</item-type>
+		<label>State</label>
+		<state>
+			<options>
+				<option value="off">Off</option>
+				<option value="manual">Manual</option>
+				<option value="auto">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="duty_cycle" advanced="false">
+		<item-type>Number</item-type>
+		<label>Duty Cycle / Control Out</label>
+		<state min="0" max="100" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="pid_id" advanced="false">
+		<item-type>Number</item-type>
+		<label>PID Profile ID</label>
+		<state pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="temperature_setpoint" advanced="false">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint Temperature</label>
+		<category>Temperature</category>
+		<state min="0" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="channel_id" advanced="false">
+		<item-type>Number</item-type>
+		<label>Temperature Channel ID</label>
+		<state min="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="charging" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Charging</label>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rssi" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>RSSI in dBm</label>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

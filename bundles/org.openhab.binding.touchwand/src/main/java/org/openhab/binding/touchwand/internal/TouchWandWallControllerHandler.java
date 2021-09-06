@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,6 +58,8 @@ public class TouchWandWallControllerHandler extends TouchWandBaseUnitHandler {
                 triggerChannel(CHANNEL_WALLCONTROLLER_ACTION, action);
             }
             timeLastEventMs = status.getTs();
+        } else {
+            logger.debug("updateTouchWandUnitState incompatible TouchWandUnitData instance");
         }
     }
 }

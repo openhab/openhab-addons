@@ -5,45 +5,69 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:somfytahoma:device">
-		<parameter name="url" type="text">
+		<parameter name="url" type="text" required="true">
 			<label>Somfy Tahoma Device URL</label>
 			<description>The identifier of this Somfy device</description>
-			<required>true</required>
 		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:somfytahoma:gateway">
-		<parameter name="id" type="text">
+		<parameter name="id" type="text" required="true">
 			<label>Somfy Tahoma Gateway ID</label>
 			<description>The identifier of this Somfy gateway</description>
-			<required>true</required>
 		</parameter>
 	</config-description>
 
 	<config-description uri="bridge-type:somfytahoma:bridge">
-		<parameter name="email" type="text">
-			<label>Email Address</label>
-			<description>Email address for TahomaLink portal</description>
-			<required>true</required>
+		<parameter name="cloudPortal" type="text" required="false">
+			<label>Cloud Portal</label>
+			<description>Cloud portal to connect to</description>
+			<options>
+				<option value="www.tahomalink.com">Somfy TaHoma / Somfy Connexoon IO / Somfy (Europe)</option>
+				<option value="ha201-1.overkiz.com">Somfy Connexoon RTS / Somfy (Australia)</option>
+				<option value="ha401-1.overkiz.com">Somfy (North America)</option>
+				<option value="ha110-1.overkiz.com">Cozytouch</option>
+				<option value="ha101-1.overkiz.com">eedomus</option>
+				<option value="ha117-1.overkiz.com">Hi Kumo</option>
+				<option value="ha112-1.overkiz.com">Rexel Energeasy Connect</option>
+			</options>
+			<default>www.tahomalink.com</default>
+			<limitToOptions>false</limitToOptions>
 		</parameter>
 
-		<parameter name="password" type="text">
+		<parameter name="email" type="text" required="true">
+			<label>Email Address</label>
+			<description>Email address for the portal</description>
+		</parameter>
+
+		<parameter name="password" type="text" required="true">
 			<context>password</context>
 			<label>Password</label>
-			<description>Password for TahomaLink portal</description>
-			<required>true</required>
+			<description>Password for the portal</description>
 		</parameter>
 
 		<parameter name="refresh" type="integer" required="false" min="10">
 			<label>Refresh</label>
-			<description>Specifies the refresh time in seconds for polling events from Tahoma cloud</description>
+			<description>Specifies the refresh time in seconds for polling events from the cloud</description>
 			<default>30</default>
 		</parameter>
 
 		<parameter name="statusTimeout" type="integer" required="false" min="60">
 			<label>Status Timeout</label>
-			<description>Specifies the timeout in seconds after which the status is got from Tahoma cloud</description>
+			<description>Specifies the timeout in seconds after which the status is got from the cloud</description>
 			<default>300</default>
+		</parameter>
+
+		<parameter name="retries" type="integer" required="false">
+			<label>Retries</label>
+			<description>Specifies the number of retries when command execution</description>
+			<default>10</default>
+		</parameter>
+
+		<parameter name="retryDelay" type="integer" required="false" min="100">
+			<label>Retry delay</label>
+			<description>Specifies the delay in milliseconds between subsequent retries after a command failure</description>
+			<default>1000</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

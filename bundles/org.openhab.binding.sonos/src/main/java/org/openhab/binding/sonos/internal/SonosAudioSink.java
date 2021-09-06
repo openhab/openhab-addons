@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sonos.internal.handler.ZonePlayerHandler;
@@ -118,7 +117,10 @@ public class SonosAudioSink implements AudioSink {
                 logger.warn("We do not have any callback url, so Sonos cannot play the audio stream!");
             }
         } else {
-            IOUtils.closeQuietly(audioStream);
+            try {
+                audioStream.close();
+            } catch (IOException e) {
+            }
             throw new UnsupportedAudioStreamException(
                     "Sonos can only handle FixedLengthAudioStreams and URLAudioStreams.", audioStream.getClass());
             // Instead of throwing an exception, we could ourselves try to wrap it into a

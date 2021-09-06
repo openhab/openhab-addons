@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.io.neeo.internal;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -22,8 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.events.Event;
@@ -55,8 +55,7 @@ public abstract class AbstractServlet extends HttpServlet implements AutoCloseab
     private final String servletUrl;
 
     /** Any event filters */
-    @Nullable
-    private final List<EventFilter> eventFilters;
+    private final @Nullable List<EventFilter> eventFilters;
 
     /**
      * Creates a servlet to serve the status/definitions web pages
@@ -112,7 +111,7 @@ public abstract class AbstractServlet extends HttpServlet implements AutoCloseab
         final String pathInfo = NeeoUtil.decodeURIComponent(req.getPathInfo());
 
         // invalid path - probably someone typed the path in manually
-        if (StringUtils.isEmpty(pathInfo)) {
+        if (pathInfo.isEmpty()) {
             return;
         }
 
@@ -137,7 +136,8 @@ public abstract class AbstractServlet extends HttpServlet implements AutoCloseab
 
         if (logger.isDebugEnabled()) {
             req.getReader().mark(150000);
-            logger.debug("doPost: {} with {}", getFullURL(req), IOUtils.toString(req.getReader()));
+            logger.debug("doPost: {} with {}", getFullURL(req),
+                    new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
             req.getReader().reset();
         }
 
@@ -158,8 +158,7 @@ public abstract class AbstractServlet extends HttpServlet implements AutoCloseab
      * @param paths the non-null, non-empty paths
      * @return the service that can handle the path or null if none can
      */
-    @Nullable
-    protected ServletService getService(String[] paths) {
+    protected @Nullable ServletService getService(String[] paths) {
         Objects.requireNonNull(paths, "paths cannot be null");
         if (paths.length == 0) {
             throw new IllegalArgumentException("paths cannot be of 0 length");
@@ -213,8 +212,7 @@ public abstract class AbstractServlet extends HttpServlet implements AutoCloseab
      *
      * @return the possibly null event filters;
      */
-    @Nullable
-    public List<EventFilter> getEventFilters() {
+    public @Nullable List<EventFilter> getEventFilters() {
         return eventFilters;
     }
 

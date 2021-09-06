@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wemo.internal.discovery;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.UpnpService;
 import org.jupnp.model.message.header.RootDeviceHeader;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author Hans-Jörg Merk - Initial contribution
  *
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.wemo")
 public class WemoDiscoveryService extends AbstractDiscoveryService {
 
@@ -37,7 +40,7 @@ public class WemoDiscoveryService extends AbstractDiscoveryService {
         super(5);
     }
 
-    private UpnpService upnpService;
+    private @Nullable UpnpService upnpService;
 
     @Reference
     protected void setUpnpService(UpnpService upnpService) {

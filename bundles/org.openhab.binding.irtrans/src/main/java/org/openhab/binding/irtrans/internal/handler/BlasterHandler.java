@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.irtrans.internal.handler;
 
 import static org.openhab.binding.irtrans.internal.IRtransBindingConstants.CHANNEL_IO;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants.Led;
 import org.openhab.binding.irtrans.internal.IrCommand;
 import org.openhab.core.library.types.StringType;

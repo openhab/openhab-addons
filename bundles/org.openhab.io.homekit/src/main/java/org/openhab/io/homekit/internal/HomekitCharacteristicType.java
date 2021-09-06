@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,20 +107,7 @@ public enum HomekitCharacteristicType {
     SULPHUR_DIOXIDE_DENSITY("SulphurDioxideDensity"),
     PM25_DENSITY("PM25Density"),
     PM10_DENSITY("PM10Density"),
-    VOC_DENSITY("VOCDensity"),
-
-    @Deprecated()
-    OLD_BATTERY_LEVEL("homekit:BatteryLevel"),
-    @Deprecated()
-    OLD_BATTERY_LOW_STATUS("homekit:BatteryLowStatus"),
-    @Deprecated()
-    VERY_OLD_TARGET_HEATING_COOLING_MODE("homekit:HeatingCoolingMode"),
-    @Deprecated()
-    OLD_TARGET_HEATING_COOLING_MODE("homekit:TargetHeatingCoolingMode"),
-    @Deprecated()
-    OLD_CURRENT_HEATING_COOLING_STATE("homekit:CurrentHeatingCoolingMode"),
-    @Deprecated()
-    OLD_TARGET_TEMPERATURE("homekit:TargetTemperature");
+    VOC_DENSITY("VOCDensity");
 
     private static final Map<String, HomekitCharacteristicType> TAG_MAP = new HashMap<>();
 

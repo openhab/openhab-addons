@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.InsteonBindingConstants;
 import org.openhab.binding.insteon.internal.driver.IOStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +103,7 @@ public class HubIOStream extends IOStream implements Runnable {
 
     private void setParamsAndStart(@Nullable Thread thread) {
         if (thread != null) {
-            thread.setName("Insteon Hub Poller");
+            thread.setName("OH-binding-" + InsteonBindingConstants.BINDING_ID + "-hubPoller");
             thread.setDaemon(true);
             thread.start();
         }
@@ -269,6 +270,7 @@ public class HubIOStream extends IOStream implements Runnable {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         try {
             connection.setConnectTimeout(30000);
+            connection.setReadTimeout(10000);
             connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(false);

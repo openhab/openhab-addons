@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -199,7 +199,7 @@ class BlueGigaResponsePackets {
             return bleFrame;
         } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
                 | IllegalArgumentException | InvocationTargetException e) {
-            logger.error("Error instantiating BLE class", e);
+            logger.debug("Error instantiating BLE class", e);
         }
 
         return null;

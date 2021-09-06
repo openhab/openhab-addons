@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,7 +115,7 @@ public abstract class NhcThermostat {
      * Method called when thermostat is removed from the Niko Home Control Controller.
      */
     public void thermostatRemoved() {
-        logger.warn("Niko Home Control: action removed {}, {}", id, name);
+        logger.debug("action removed {}, {}", id, name);
         NhcThermostatEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
             eventHandler.thermostatRemoved();
@@ -125,7 +125,7 @@ public abstract class NhcThermostat {
     private void updateChannels() {
         NhcThermostatEvent handler = eventHandler;
         if (handler != null) {
-            logger.debug("Niko Home Control: update channels for {}", id);
+            logger.debug("update channels for {}", id);
             handler.thermostatEvent(measured, setpoint, mode, overrule, demand);
         }
     }

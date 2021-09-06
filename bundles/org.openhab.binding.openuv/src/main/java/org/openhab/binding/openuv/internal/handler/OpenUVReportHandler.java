@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -56,11 +56,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OpenUVReportHandler extends BaseThingHandler {
-    private static final DecimalType ALERT_GREEN = DecimalType.ZERO;
-    private static final DecimalType ALERT_YELLOW = new DecimalType(1);
-    private static final DecimalType ALERT_ORANGE = new DecimalType(2);
-    private static final DecimalType ALERT_RED = new DecimalType(3);
-    private static final DecimalType ALERT_PURPLE = new DecimalType(4);
+    private static final State ALERT_GREEN = DecimalType.ZERO;
+    private static final State ALERT_YELLOW = new DecimalType(1);
+    private static final State ALERT_ORANGE = new DecimalType(2);
+    private static final State ALERT_RED = new DecimalType(3);
+    private static final State ALERT_PURPLE = new DecimalType(4);
     private static final State ALERT_UNDEF = HSBType.fromRGB(179, 179, 179);
 
     private static final Map<State, State> ALERT_COLORS = Map.of(ALERT_GREEN, HSBType.fromRGB(85, 139, 47),
@@ -181,7 +181,7 @@ public class OpenUVReportHandler extends BaseThingHandler {
             });
         } else if (ELEVATION.equals(channelUID.getId()) && command instanceof QuantityType) {
             QuantityType<?> qtty = (QuantityType<?>) command;
-            if (qtty.getUnit() == SmartHomeUnits.DEGREE_ANGLE) {
+            if (qtty.getUnit() == Units.DEGREE_ANGLE) {
                 suspendUpdates = qtty.doubleValue() < 0;
             } else {
                 logger.info("The OpenUV Report handles Sun Elevation of Number:Angle type, {} does not fit.", command);
@@ -218,7 +218,7 @@ public class OpenUVReportHandler extends BaseThingHandler {
                         updateState(channelUID, new DecimalType(openUVData.getUvMax()));
                         break;
                     case OZONE:
-                        updateState(channelUID, new QuantityType<>(openUVData.getOzone(), SmartHomeUnits.DOBSON_UNIT));
+                        updateState(channelUID, new QuantityType<>(openUVData.getOzone(), Units.DOBSON_UNIT));
                         break;
                     case OZONE_TIME:
                         updateState(channelUID, openUVData.getOzoneTime());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,11 +52,6 @@ public class DigitalSTROMBindingConstants {
     public static final String OPTION_COMBINED_BOTH_ON = "200";
     public static final String OPTION_COMBINED_FIRST_ON = "90";
     public static final String OPTION_COMBINED_SECOND_ON = "130";
-
-    /* config URIs */
-    public static final String DEVICE_CONFIG = "binding:digitalstrom:device";
-    public static final String GRAY_DEVICE_CONFIG = "binding:digitalstrom:grayDevice";
-    public static final String DSS_BRIDE_CONFIG = "binding:digitalstrom:dssBridge";
 
     /* Bridge config properties */
 

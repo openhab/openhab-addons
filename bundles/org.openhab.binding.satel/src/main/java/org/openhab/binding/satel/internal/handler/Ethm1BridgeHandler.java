@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.config.Ethm1Config;
 import org.openhab.binding.satel.internal.protocol.Ethm1Module;
@@ -54,7 +53,7 @@ public class Ethm1BridgeHandler extends SatelBridgeHandler {
         logger.debug("Initializing handler");
 
         Ethm1Config config = getConfigAs(Ethm1Config.class);
-        if (StringUtils.isNotBlank(config.getHost())) {
+        if (!config.getHost().isBlank()) {
             SatelModule satelModule = new Ethm1Module(config.getHost(), config.getPort(), config.getTimeout(),
                     config.getEncryptionKey(), config.hasExtCommandsSupport());
             super.initialize(satelModule);
@@ -71,7 +70,7 @@ public class Ethm1BridgeHandler extends SatelBridgeHandler {
         Collection<ConfigStatusMessage> configStatusMessages;
 
         // Check whether an IP address is provided
-        if (StringUtils.isBlank(host)) {
+        if (host.isBlank()) {
             configStatusMessages = Collections.singletonList(ConfigStatusMessage.Builder.error(HOST)
                     .withMessageKeySuffix("hostEmpty").withArguments(HOST).build());
         } else {

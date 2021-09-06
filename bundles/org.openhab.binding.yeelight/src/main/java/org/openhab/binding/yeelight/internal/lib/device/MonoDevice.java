@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ public class MonoDevice extends DeviceBase {
 
     @Override
     public void onNotify(String msg) {
-        JsonObject result = new JsonParser().parse(msg).getAsJsonObject();
+        JsonObject result = JsonParser.parseString(msg).getAsJsonObject();
         try {
             if (result.has("id")) {
                 String id = result.get("id").getAsString();

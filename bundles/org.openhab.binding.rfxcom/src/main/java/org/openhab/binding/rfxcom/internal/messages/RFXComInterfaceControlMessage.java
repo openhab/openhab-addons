@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,17 @@ public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
         data[4] = RFXComInterfaceMessage.Commands.SET_MODE.toByte();
         data[5] = transceiverType.toByte();
         data[6] = (byte) (configuration.transmitPower + 18);
+
+        /*
+         * These are actually dependent on the type of device and
+         * firmware, this list is mainly for RFXtrx443 at 433.92MHz,
+         * which most of our users use.
+         *
+         * TODO: At some point, we should reconcile this with the SDK
+         * and accommodate for other devices and protocols. This is
+         * probably not worth doing until someone needs it and has
+         * suitable devices to test with!
+         */
 
         //@formatter:off
         data[7] = (byte) (

@@ -16,6 +16,10 @@
 						"command": "set_*",
 						"parameterType": "ONOFFPARA"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -37,11 +41,9 @@
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"channelType": "temperatureC",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": [],
 				"category": "temperature",
 				"tags": [

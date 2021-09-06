@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="resol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="vbuslan"/>
+		</supported-bridge-type-refs>
+
+		<label>Resol Device</label>
+		<description>Solar or system controller (or any other real device on the VBus) from Resol.</description>
+	</thing-type>
+
+	<thing-type id="emulatedEM">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="vbuslan"/>
+		</supported-bridge-type-refs>
+
+		<label>Emulated EM Device</label>
+		<description>Emulation of an Extension Module (EM) device which can be connected through the VBUS to Resol controllers
+			which support the EM devices. Replaces a physically available EM by openHAB.</description>
+		<channels>
+			<channel id="relay_1" typeId="relay">
+				<label>Relay 1</label>
+			</channel>
+			<channel id="relay_2" typeId="relay">
+				<label>Relay 2</label>
+			</channel>
+			<channel id="relay_3" typeId="relay">
+				<label>Relay 3</label>
+			</channel>
+			<channel id="relay_4" typeId="relay">
+				<label>Relay 4</label>
+			</channel>
+			<channel id="relay_5" typeId="relay">
+				<label>Relay 5</label>
+			</channel>
+
+			<channel id="switch_1" typeId="switch">
+				<label>Switch 1</label>
+			</channel>
+			<channel id="switch_2" typeId="switch">
+				<label>Switch 2</label>
+			</channel>
+			<channel id="switch_3" typeId="switch">
+				<label>Switch 3</label>
+			</channel>
+			<channel id="switch_4" typeId="switch">
+				<label>Switch 4</label>
+			</channel>
+			<channel id="switch_5" typeId="switch">
+				<label>Switch 5</label>
+			</channel>
+			<channel id="switch_6" typeId="switch">
+				<label>Switch 6</label>
+			</channel>
+
+			<channel id="temperature_1" typeId="temperature">
+				<label>Temperature 1</label>
+			</channel>
+			<channel id="temperature_2" typeId="temperature">
+				<label>Temperature 2</label>
+			</channel>
+			<channel id="temperature_3" typeId="temperature">
+				<label>Temperature 3</label>
+			</channel>
+			<channel id="temperature_4" typeId="temperature">
+				<label>Temperature 4</label>
+			</channel>
+			<channel id="temperature_5" typeId="temperature">
+				<label>Temperature 5</label>
+			</channel>
+			<channel id="temperature_6" typeId="temperature">
+				<label>Temperature 6</label>
+			</channel>
+
+			<channel id="resistor_1" typeId="resistance">
+				<label>Resistor 1</label>
+			</channel>
+			<channel id="resistor_2" typeId="resistance">
+				<label>Resistor 2</label>
+			</channel>
+			<channel id="resistor_3" typeId="resistance">
+				<label>Resistor 3</label>
+			</channel>
+			<channel id="resistor_4" typeId="resistance">
+				<label>Resistor 4</label>
+			</channel>
+			<channel id="resistor_5" typeId="resistance">
+				<label>Resistor 5</label>
+			</channel>
+			<channel id="resistor_6" typeId="resistance">
+				<label>Resistor 6</label>
+			</channel>
+
+			<channel id="bas_temp_adjust_1" typeId="temperatureAdjust">
+				<label>Temperature Adjustment 1</label>
+			</channel>
+			<channel id="bas_temp_adjust_2" typeId="temperatureAdjust">
+				<label>Temperature Adjustment 2</label>
+			</channel>
+			<channel id="bas_temp_adjust_3" typeId="temperatureAdjust">
+				<label>Temperature Adjustment 3</label>
+			</channel>
+			<channel id="bas_temp_adjust_4" typeId="temperatureAdjust">
+				<label>Temperature Adjustment 4</label>
+			</channel>
+			<channel id="bas_temp_adjust_5" typeId="temperatureAdjust">
+				<label>Temperature Adjustment 5</label>
+			</channel>
+			<channel id="bas_temp_adjust_6" typeId="temperatureAdjust">
+				<label>Temperature Adjustment 6</label>
+			</channel>
+
+			<channel id="bas_mode_1" typeId="operationmode">
+				<label>Operating Mode 1</label>
+			</channel>
+			<channel id="bas_mode_2" typeId="operationmode">
+				<label>Operating Mode 2</label>
+			</channel>
+			<channel id="bas_mode_3" typeId="operationmode">
+				<label>Operating Mode 3</label>
+			</channel>
+			<channel id="bas_mode_4" typeId="operationmode">
+				<label>Operating Mode 4</label>
+			</channel>
+			<channel id="bas_mode_5" typeId="operationmode">
+				<label>Operating Mode 5</label>
+			</channel>
+			<channel id="bas_mode_6" typeId="operationmode">
+				<label>Operating Mode 6</label>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="integer" required="true" min="1" max="15">
+				<label>Module ID</label>
+				<description>The (sub-)address of the emulated EM device, usable range depends on the used controller.</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="weektime">
+		<item-type>DateTime</item-type>
+		<label>Time</label>
+		<description>Time and day of week.</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="time">
+		<item-type>String</item-type>
+		<label>Time</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>Time</label>
+		<description>Time and date.</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="None">
+		<item-type>Number</item-type>
+		<label>Any</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="NoneHidden" advanced="true">
+		<item-type>Number</item-type>
+		<label>Any</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="relay" advanced="false">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Relay State</label>
+		<description>Virtual relay output, will be set by the controller and can be used to communicate data from the Resol
+			controller to openHAB.</description>
+		<category>Switch</category>
+		<state pattern="%d %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature" advanced="false">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Virtual temperature sensor input.</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="resistance" advanced="false">
+		<item-type>Number:ElectricResistance</item-type>
+		<label>Resistance</label>
+		<description>Virtual resistance input.</description>
+		<state pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="switch" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Virtual switch input.</description>
+	</channel-type>
+
+	<channel-type id="temperatureAdjust" advanced="false">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Adjustment</label>
+		<description>Virtual temperature offset on heating circuit of an emulated BAS (RCP12 room control unit).</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="false" min="-15" max="15"/>
+	</channel-type>
+
+	<channel-type id="operationmode" advanced="false">
+		<item-type>Number</item-type>
+		<label>Operating Mode</label>
+		<description>Virtual operating mode of the heating circuit controlled by the emulated BAS (RCP12 room control unit).</description>
+		<state pattern="%d" readOnly="false" min="0" max="4" step="1">
+			<options>
+				<option value="0">OFF</option>
+				<option value="1">Summer</option>
+				<option value="2">Night</option>
+				<option value="3">Party</option>
+				<option value="4">Automatic</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>

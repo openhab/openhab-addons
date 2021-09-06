@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Thing;
@@ -122,7 +121,7 @@ public class NeeoDeviceDefinitions {
             // filter for only things that are still valid
             final ThingRegistry thingRegistry = context.getThingRegistry();
             for (NeeoDevice device : uidToDevice.values()) {
-                if (StringUtils.equalsIgnoreCase(NeeoConstants.NEEOIO_BINDING_ID, device.getUid().getBindingId())) {
+                if (NeeoConstants.NEEOIO_BINDING_ID.equalsIgnoreCase(device.getUid().getBindingId())) {
                     devices.add(device);
                 } else {
                     if (thingRegistry.get(device.getUid().asThingUID()) != null) {
@@ -176,7 +175,7 @@ public class NeeoDeviceDefinitions {
         final List<NeeoDevice> devices = new ArrayList<>();
         for (NeeoDevice device : exposeAll || exposeNeeoBinding ? getAllDevices() : uidToDevice.values()) {
             if (device.getExposedChannels().length > 0 && !NeeoDeviceType.EXCLUDE.equals(device.getType())
-                    && StringUtils.isNotEmpty(device.getType().toString())) {
+                    && !device.getType().toString().isEmpty()) {
                 devices.add(device);
             }
         }
@@ -242,7 +241,7 @@ public class NeeoDeviceDefinitions {
         for (NeeoDevice device : uidToDevice.values()) {
             if (keys.isBound(device.getUid())) {
                 for (NeeoDeviceChannel channel : device.getExposedChannels()) {
-                    if (itemName == null || StringUtils.equalsIgnoreCase(itemName, channel.getItemName())) {
+                    if (itemName == null || itemName.equalsIgnoreCase(channel.getItemName())) {
                         channels.add(new AbstractMap.SimpleImmutableEntry<>(device, channel));
                     }
                 }
@@ -287,7 +286,7 @@ public class NeeoDeviceDefinitions {
     public List<NeeoDevice> getAllDevices() {
         final List<NeeoDevice> devices = new ArrayList<>();
         for (Entry<NeeoThingUID, NeeoDevice> entry : uidToDevice.entrySet()) {
-            if (StringUtils.equalsIgnoreCase(NeeoConstants.NEEOIO_BINDING_ID, entry.getKey().getBindingId())) {
+            if (NeeoConstants.NEEOIO_BINDING_ID.equalsIgnoreCase(entry.getKey().getBindingId())) {
                 devices.add(entry.getValue());
             } else {
                 final Thing thing = context.getThingRegistry().get(entry.getKey().asThingUID());

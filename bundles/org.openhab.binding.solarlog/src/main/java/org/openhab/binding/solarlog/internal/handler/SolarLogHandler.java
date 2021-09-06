@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,7 +101,7 @@ public class SolarLogHandler extends BaseThingHandler {
 
         logger.debug("Attempting to load data from {} with parameter {}", url, content);
         String response = HttpUtil.executeUrl(httpMethod, url, stream, null, timeout);
-        JsonElement solarLogDataElement = new JsonParser().parse(response);
+        JsonElement solarLogDataElement = JsonParser.parseString(response);
         JsonObject solarLogData = solarLogDataElement.getAsJsonObject();
 
         // Check whether the data is well-formed

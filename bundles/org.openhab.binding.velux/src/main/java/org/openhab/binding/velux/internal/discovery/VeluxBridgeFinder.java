@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,7 +105,6 @@ public class VeluxBridgeFinder implements Closeable {
 
             // create a multicast listener socket
             try (MulticastSocket rcvSocket = new MulticastSocket(MDNS_PORT)) {
-
                 final byte[] rcvBytes = new byte[BUFFER_SIZE];
                 final long finishTime = System.currentTimeMillis() + SEARCH_DURATION_MSECS;
 

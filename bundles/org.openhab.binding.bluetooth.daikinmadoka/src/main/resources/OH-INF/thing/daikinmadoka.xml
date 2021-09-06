@@ -24,6 +24,11 @@
 			<channel id="homekitCurrentHeatingCoolingMode" typeId="brc1h_homekitCurrentHeatingCoolingMode"/>
 			<channel id="homekitTargetHeatingCoolingMode" typeId="brc1h_homekitTargetHeatingCoolingMode"/>
 			<channel id="homebridgeMode" typeId="brc1h_homebridgeMode"/>
+			<channel id="eyeBrightness" typeId="brc1h_eyeBrightness"/>
+			<channel id="indoorPowerHours" typeId="brc1h_indoorPowerHours"/>
+			<channel id="indoorOperationHours" typeId="brc1h_indoorOperationHours"/>
+			<channel id="indoorFanHours" typeId="brc1h_indoorFanHours"/>
+			<channel id="cleanFilterIndicator" typeId="brc1h_cleanFilter"/>
 		</channels>
 
 		<config-description>
@@ -50,6 +55,11 @@
 	<channel-type id="brc1h_onOffStatus">
 		<item-type>Switch</item-type>
 		<label>Unit Power Status</label>
+	</channel-type>
+
+	<channel-type id="brc1h_cleanFilter">
+		<item-type>Switch</item-type>
+		<label>Clean Filter Indicator</label>
 	</channel-type>
 
 	<channel-type id="brc1h_indoorTemperature">
@@ -127,6 +137,30 @@
 				<option value="3">Auto</option>
 			</options>
 		</command>
+	</channel-type>
+
+	<channel-type id="brc1h_eyeBrightness">
+		<item-type>Dimmer</item-type>
+		<label>Eye Illumination Brightness</label>
+		<state min="0" max="100" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="brc1h_indoorPowerHours">
+		<item-type>Number:Time</item-type>
+		<label>Number of hours system has been powered up</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="brc1h_indoorOperationHours">
+		<item-type>Number:Time</item-type>
+		<label>Number of hours system has been operating</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="brc1h_indoorFanHours">
+		<item-type>Number:Time</item-type>
+		<label>Number of hours fan has been operating</label>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

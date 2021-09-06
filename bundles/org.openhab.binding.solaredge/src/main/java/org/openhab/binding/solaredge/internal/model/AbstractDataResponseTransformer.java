@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -65,11 +65,11 @@ abstract class AbstractDataResponseTransformer {
     private final @Nullable Unit<Energy> determineEnergyUnit(@Nullable String unit) {
         if (unit != null) {
             if (unit.equals(UNIT_WH)) {
-                return SmartHomeUnits.WATT_HOUR;
+                return Units.WATT_HOUR;
             } else if (unit.toLowerCase().equals(UNIT_KWH.toLowerCase())) {
-                return MetricPrefix.KILO(SmartHomeUnits.WATT_HOUR);
+                return MetricPrefix.KILO(Units.WATT_HOUR);
             } else if (unit.equals(UNIT_MWH)) {
-                return MetricPrefix.MEGA(SmartHomeUnits.WATT_HOUR);
+                return MetricPrefix.MEGA(Units.WATT_HOUR);
             }
         }
         logger.debug("Could not determine energy unit: '{}'", unit);
@@ -85,11 +85,11 @@ abstract class AbstractDataResponseTransformer {
     private final @Nullable Unit<Power> determinePowerUnit(@Nullable String unit) {
         if (unit != null) {
             if (unit.equals(UNIT_W)) {
-                return SmartHomeUnits.WATT;
+                return Units.WATT;
             } else if (unit.toLowerCase().equals(UNIT_KW.toLowerCase())) {
-                return MetricPrefix.KILO(SmartHomeUnits.WATT);
+                return MetricPrefix.KILO(Units.WATT);
             } else if (unit.equals(UNIT_MW)) {
-                return MetricPrefix.MEGA(SmartHomeUnits.WATT);
+                return MetricPrefix.MEGA(Units.WATT);
             }
         }
         logger.debug("Could not determine power unit: '{}'", unit);
@@ -223,7 +223,7 @@ abstract class AbstractDataResponseTransformer {
             State result = UnDefType.UNDEF;
 
             if (value != null) {
-                result = new QuantityType<>(value * factor, SmartHomeUnits.PERCENT);
+                result = new QuantityType<>(value * factor, Units.PERCENT);
             } else {
                 logger.debug("Channel {}: no value provided.", channel.getUID().getAsString());
             }

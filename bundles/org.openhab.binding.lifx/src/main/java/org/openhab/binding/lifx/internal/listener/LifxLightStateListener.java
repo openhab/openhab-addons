@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,10 +15,10 @@ package org.openhab.binding.lifx.internal.listener;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lifx.internal.LifxLightState;
+import org.openhab.binding.lifx.internal.dto.Effect;
+import org.openhab.binding.lifx.internal.dto.PowerState;
+import org.openhab.binding.lifx.internal.dto.SignalStrength;
 import org.openhab.binding.lifx.internal.fields.HSBK;
-import org.openhab.binding.lifx.internal.protocol.Effect;
-import org.openhab.binding.lifx.internal.protocol.PowerState;
-import org.openhab.binding.lifx.internal.protocol.SignalStrength;
 import org.openhab.core.library.types.PercentType;
 
 /**

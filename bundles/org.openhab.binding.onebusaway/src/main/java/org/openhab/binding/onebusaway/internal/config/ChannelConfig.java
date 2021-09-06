@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.onebusaway.internal.config;
 
 import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants.CHANNEL_CONFIG_OFFSET;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * The {@link ChannelConfig} defines the model for a channel configuration.

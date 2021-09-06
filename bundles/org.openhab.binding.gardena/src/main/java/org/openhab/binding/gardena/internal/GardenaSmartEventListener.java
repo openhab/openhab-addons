@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.gardena.internal;
 
-import org.openhab.binding.gardena.internal.model.Device;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.gardena.internal.model.dto.Device;
 
 /**
  * Listener with methods called from events within the {@link GardenaSmart} class.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface GardenaSmartEventListener {
 
     /**
@@ -32,17 +34,7 @@ public interface GardenaSmartEventListener {
     public void onNewDevice(Device device);
 
     /**
-     * Called when a device has been deleted.
+     * Called when an unrecoverable error occurs.
      */
-    public void onDeviceDeleted(Device device);
-
-    /**
-     * Called when the connection is lost to Gardena Smart Home.
-     */
-    public void onConnectionLost();
-
-    /**
-     * Called when the connection is resumed to Gardena Smart Home.
-     */
-    public void onConnectionResumed();
+    public void onError();
 }

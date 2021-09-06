@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,16 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class VerisureClimatesDTO extends VerisureBaseThingDTO {
+
+    private @Nullable VerisureBatteryStatusDTO batteryStatus;
+
+    public @Nullable VerisureBatteryStatusDTO getBatteryStatus() {
+        return batteryStatus;
+    }
+
+    public void setBatteryStatus(@Nullable VerisureBatteryStatusDTO batteryStatus) {
+        this.batteryStatus = batteryStatus;
+    }
 
     @Override
     public ThingTypeUID getThingTypeUID() {
@@ -62,6 +72,15 @@ public class VerisureClimatesDTO extends VerisureBaseThingDTO {
             return false;
         }
         if (getClass() != obj.getClass()) {
+            return false;
+        }
+        VerisureClimatesDTO other = (VerisureClimatesDTO) obj;
+        VerisureBatteryStatusDTO localBatteryStatusJSON = batteryStatus;
+        if (localBatteryStatusJSON == null) {
+            if (other.batteryStatus != null) {
+                return false;
+            }
+        } else if (!localBatteryStatusJSON.equals(other.batteryStatus)) {
             return false;
         }
         return true;

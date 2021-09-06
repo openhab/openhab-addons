@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.State;
@@ -104,6 +105,9 @@ public class DraytonWiserBindingConstants {
     public static final String CHANNEL_DEVICE_LOCKED = "deviceLocked";
     public static final String CHANNEL_SMARTPLUG_OUTPUT_STATE = "plugOutputState";
     public static final String CHANNEL_SMARTPLUG_AWAY_ACTION = "plugAwayAction";
+    public static final String CHANNEL_COMFORT_MODE_STATE = "comfortModeState";
+    public static final String CHANNEL_SMARTPLUG_INSTANTANEOUS_POWER = "plugInstantaneousPower";
+    public static final String CHANNEL_SMARTPLUG_ENERGY_DELIVERED = "plugEnergyDelivered";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_CONTROLLER, THING_TYPE_ROOM, THING_TYPE_ROOMSTAT,
@@ -148,11 +152,15 @@ public class DraytonWiserBindingConstants {
             this.batteryLevel = batteryLevel;
         }
 
-        public static State toBatteryLevel(final String level) {
-            try {
-                return new DecimalType(BatteryLevel.valueOf(level.toUpperCase()).batteryLevel);
-            } catch (final IllegalArgumentException e) {
-                // Catch unrecognized values.
+        public static State toBatteryLevel(final @Nullable String level) {
+            if (level != null) {
+                try {
+                    return new DecimalType(BatteryLevel.valueOf(level.toUpperCase()).batteryLevel);
+                } catch (final IllegalArgumentException e) {
+                    // Catch unrecognized values.
+                    return UnDefType.UNDEF;
+                }
+            } else {
                 return UnDefType.UNDEF;
             }
         }

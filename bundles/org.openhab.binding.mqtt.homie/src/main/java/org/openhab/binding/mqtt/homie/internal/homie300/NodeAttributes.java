@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ import org.openhab.binding.mqtt.generic.mapping.TopicPrefix;
 public class NodeAttributes extends AbstractMqttAttributeClass {
     public @MandatoryField String name;
     public @MandatoryField @MQTTvalueTransform(splitCharacter = ",") String[] properties;
-    // Type has no meaning for ESH yet and is currently purely of textual, descriptive nature
+    // Type has no meaning yet and is currently purely of textual, descriptive nature
     public String type;
 
     @Override

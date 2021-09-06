@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,22 +19,24 @@ import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.ProcessingException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
+import org.openhab.binding.hdpowerview.internal.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.api.ActuatorClass;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -128,14 +130,16 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     /**
      * Update the state of the channels based on the ShadeData provided
-     * 
+     *
      * @param shadeData the ShadeData to be used; may be null
      */
     protected void onReceiveUpdate(@Nullable ShadeData shadeData) {
         if (shadeData != null) {
             updateStatus(ThingStatus.ONLINE);
             updateBindingStates(shadeData.positions);
-            updateState(CHANNEL_SHADE_LOW_BATTERY, shadeData.batteryStatus < 2 ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_SHADE_LOW_BATTERY, shadeData.batteryStatus == 1 ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_SHADE_BATTERY_VOLTAGE, new QuantityType<>(shadeData.batteryStrength / 10, Units.VOLT));
+            updateState(CHANNEL_SHADE_SIGNAL_STRENGTH, new DecimalType(shadeData.signalStrength));
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
@@ -157,11 +161,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         try {
             HDPowerViewHubHandler bridge;
             if ((bridge = getBridgeHandler()) == null) {
-                throw new ProcessingException("Missing bridge handler");
+                throw new HubProcessingException("Missing bridge handler");
             }
             HDPowerViewWebTargets webTargets = bridge.getWebTargets();
             if (webTargets == null) {
-                throw new ProcessingException("Web targets not initialized");
+                throw new HubProcessingException("Web targets not initialized");
             }
             int shadeId = getShadeId();
 
@@ -190,7 +194,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     webTargets.moveShade(shadeId,
                             ShadePosition.create(ZERO_IS_CLOSED, primaryPercent, ZERO_IS_OPEN, newPercent));
             }
-        } catch (ProcessingException | NumberFormatException e) {
+        } catch (HubProcessingException | NumberFormatException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
             return;
         } catch (HubMaintenanceException e) {
@@ -211,16 +215,16 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         try {
             HDPowerViewHubHandler bridge;
             if ((bridge = getBridgeHandler()) == null) {
-                throw new ProcessingException("Missing bridge handler");
+                throw new HubProcessingException("Missing bridge handler");
             }
             HDPowerViewWebTargets webTargets = bridge.getWebTargets();
             if (webTargets == null) {
-                throw new ProcessingException("Web targets not initialized");
+                throw new HubProcessingException("Web targets not initialized");
             }
             int shadeId = getShadeId();
             webTargets.stopShade(shadeId);
             requestRefreshShade();
-        } catch (ProcessingException | NumberFormatException e) {
+        } catch (HubProcessingException | NumberFormatException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
             return;
         } catch (HubMaintenanceException e) {
@@ -242,11 +246,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         try {
             HDPowerViewHubHandler bridge;
             if ((bridge = getBridgeHandler()) == null) {
-                throw new ProcessingException("Missing bridge handler");
+                throw new HubProcessingException("Missing bridge handler");
             }
             HDPowerViewWebTargets webTargets = bridge.getWebTargets();
             if (webTargets == null) {
-                throw new ProcessingException("Web targets not initialized");
+                throw new HubProcessingException("Web targets not initialized");
             }
             int shadeId = getShadeId();
             Shade shade = webTargets.refreshShade(shadeId);
@@ -258,7 +262,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     }
                 }
             }
-        } catch (ProcessingException | NumberFormatException e) {
+        } catch (HubProcessingException | NumberFormatException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets

@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="luxtronikheatpump"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="heatpump">
+		<label>Heatpump with Luxtronik Control</label>
+		<description>Integrates a heatpump with a Luxtronik control.</description>
+		<channels>
+			<channel id="temperatureHeatingCircuitFlow" typeId="temperatureHeatingCircuitFlow"/>
+			<channel id="temperatureHeatingCircuitReturn" typeId="temperatureHeatingCircuitReturn"/>
+			<channel id="temperatureHeatingCircuitReturnTarget" typeId="temperatureHeatingCircuitReturnTarget"/>
+			<channel id="temperatureBufferTankReturn" typeId="temperatureBufferTankReturn"/>
+			<channel id="temperatureHotGas" typeId="temperatureHotGas"/>
+			<channel id="temperatureOutside" typeId="temperatureOutside"/>
+			<channel id="temperatureOutsideMean" typeId="temperatureOutsideMean"/>
+			<channel id="temperatureHotWater" typeId="temperatureHotWater"/>
+			<channel id="temperatureHotWaterTarget" typeId="temperatureHotWaterTarget"/>
+			<channel id="temperatureHotWaterCoverage" typeId="temperatureHotWaterCoverage"/>
+			<channel id="temperatureHeatSourceInlet" typeId="temperatureHeatSourceInlet"/>
+			<channel id="temperatureHeatSourceOutlet" typeId="temperatureHeatSourceOutlet"/>
+			<channel id="temperatureMixingCircuit1Flow" typeId="temperatureMixingCircuit1Flow"/>
+			<channel id="temperatureMixingCircuit1FlowTarget" typeId="temperatureMixingCircuit1FlowTarget"/>
+			<channel id="temperatureRoomStation" typeId="temperatureRoomStation"/>
+			<channel id="temperatureMixingCircuit2Flow" typeId="temperatureMixingCircuit2Flow"/>
+			<channel id="temperatureMixingCircuit2FlowTarget" typeId="temperatureMixingCircuit2FlowTarget"/>
+			<channel id="temperatureSolarCollector" typeId="temperatureSolarCollector"/>
+			<channel id="temperatureSolarTank" typeId="temperatureSolarTank"/>
+			<channel id="temperatureExternalEnergySource" typeId="temperatureExternalEnergySource"/>
+			<channel id="inputASD" typeId="inputASD"/>
+			<channel id="inputHotWaterThermostat" typeId="inputHotWaterThermostat"/>
+			<channel id="inputUtilityLock" typeId="inputUtilityLock"/>
+			<channel id="inputHighPressureCoolingCircuit" typeId="inputHighPressureCoolingCircuit"/>
+			<channel id="inputMotorProtectionOK" typeId="inputMotorProtectionOK"/>
+			<channel id="inputLowPressure" typeId="inputLowPressure"/>
+			<channel id="inputPEX" typeId="inputPEX"/>
+			<channel id="inputSwimmingPoolThermostat" typeId="inputSwimmingPoolThermostat"/>
+			<channel id="outputDefrostValve" typeId="outputDefrostValve"/>
+			<channel id="outputBUP" typeId="outputBUP"/>
+			<channel id="outputHeatingCirculationPump" typeId="outputHeatingCirculationPump"/>
+			<channel id="outputMixingCircuit1Open" typeId="outputMixingCircuit1Open"/>
+			<channel id="outputMixingCircuit1Closed" typeId="outputMixingCircuit1Closed"/>
+			<channel id="outputVentilation" typeId="outputVentilation"/>
+			<channel id="outputVBO" typeId="outputVBO"/>
+			<channel id="outputCompressor1" typeId="outputCompressor1"/>
+			<channel id="outputCompressor2" typeId="outputCompressor2"/>
+			<channel id="outputCirculationPump" typeId="outputCirculationPump"/>
+			<channel id="outputZUP" typeId="outputZUP"/>
+			<channel id="outputControlSignalAdditionalHeating" typeId="outputControlSignalAdditionalHeating"/>
+			<channel id="outputFaultSignalAdditionalHeating" typeId="outputFaultSignalAdditionalHeating"/>
+			<channel id="outputAuxiliaryHeater3" typeId="outputAuxiliaryHeater3"/>
+			<channel id="outputMixingCircuitPump2" typeId="outputMixingCircuitPump2"/>
+			<channel id="outputSolarChargePump" typeId="outputSolarChargePump"/>
+			<channel id="outputSwimmingPoolPump" typeId="outputSwimmingPoolPump"/>
+			<channel id="outputMixingCircuit2Closed" typeId="outputMixingCircuit2Closed"/>
+			<channel id="outputMixingCircuit2Open" typeId="outputMixingCircuit2Open"/>
+			<channel id="runtimeTotalCompressor1" typeId="runtimeTotalCompressor1"/>
+			<channel id="pulsesCompressor1" typeId="pulsesCompressor1"/>
+			<channel id="runtimeTotalCompressor2" typeId="runtimeTotalCompressor2"/>
+			<channel id="pulsesCompressor2" typeId="pulsesCompressor2"/>
+			<channel id="runtimeTotalSecondHeatGenerator1" typeId="runtimeTotalSecondHeatGenerator1"/>
+			<channel id="runtimeTotalSecondHeatGenerator2" typeId="runtimeTotalSecondHeatGenerator2"/>
+			<channel id="runtimeTotalSecondHeatGenerator3" typeId="runtimeTotalSecondHeatGenerator3"/>
+			<channel id="runtimeTotalHeatPump" typeId="runtimeTotalHeatPump"/>
+			<channel id="runtimeTotalHeating" typeId="runtimeTotalHeating"/>
+			<channel id="runtimeTotalHotWater" typeId="runtimeTotalHotWater"/>
+			<channel id="runtimeTotalCooling" typeId="runtimeTotalCooling"/>
+			<channel id="runtimeCurrentHeatPump" typeId="runtimeCurrentHeatPump"/>
+			<channel id="runtimeCurrentSecondHeatGenerator1" typeId="runtimeCurrentSecondHeatGenerator1"/>
+			<channel id="runtimeCurrentSecondHeatGenerator2" typeId="runtimeCurrentSecondHeatGenerator2"/>
+			<channel id="mainsOnDelay" typeId="mainsOnDelay"/>
+			<channel id="switchingCycleLockOff" typeId="switchingCycleLockOff"/>
+			<channel id="switchingCycleLockOn" typeId="switchingCycleLockOn"/>
+			<channel id="compressorIdleTime" typeId="compressorIdleTime"/>
+			<channel id="heatingControllerMoreTime" typeId="heatingControllerMoreTime"/>
+			<channel id="heatingControllerLessTime" typeId="heatingControllerLessTime"/>
+			<channel id="runtimeCurrentThermalDisinfection" typeId="runtimeCurrentThermalDisinfection"/>
+			<channel id="timeHotWaterLock" typeId="timeHotWaterLock"/>
+			<channel id="bivalenceStage" typeId="bivalenceStage"/>
+			<channel id="operatingStatus" typeId="operatingStatus"/>
+			<channel id="errorTime0" typeId="errorTime0"/>
+			<channel id="errorTime1" typeId="errorTime1"/>
+			<channel id="errorTime2" typeId="errorTime2"/>
+			<channel id="errorTime3" typeId="errorTime3"/>
+			<channel id="errorTime4" typeId="errorTime4"/>
+			<channel id="errorCode0" typeId="errorCode0"/>
+			<channel id="errorCode1" typeId="errorCode1"/>
+			<channel id="errorCode2" typeId="errorCode2"/>
+			<channel id="errorCode3" typeId="errorCode3"/>
+			<channel id="errorCode4" typeId="errorCode4"/>
+			<channel id="errorCountInMemory" typeId="errorCountInMemory"/>
+			<channel id="shutdownReason0" typeId="shutdownReason0"/>
+			<channel id="shutdownReason1" typeId="shutdownReason1"/>
+			<channel id="shutdownReason2" typeId="shutdownReason2"/>
+			<channel id="shutdownReason3" typeId="shutdownReason3"/>
+			<channel id="shutdownReason4" typeId="shutdownReason4"/>
+			<channel id="shutdownTime0" typeId="shutdownTime0"/>
+			<channel id="shutdownTime1" typeId="shutdownTime1"/>
+			<channel id="shutdownTime2" typeId="shutdownTime2"/>
+			<channel id="shutdownTime3" typeId="shutdownTime3"/>
+			<channel id="shutdownTime4" typeId="shutdownTime4"/>
+			<channel id="comfortBoardInstalled" typeId="comfortBoardInstalled"/>
+			<channel id="menuStateLine1" typeId="menuStateLine1"/>
+			<channel id="menuStateLine2" typeId="menuStateLine2"/>
+			<channel id="menuStateLine3" typeId="menuStateLine3"/>
+			<channel id="menuStateTime" typeId="menuStateTime"/>
+			<channel id="menuStateFull" typeId="menuStateFull"/>
+			<channel id="bakeoutProgramStage" typeId="bakeoutProgramStage"/>
+			<channel id="bakeoutProgramTemperature" typeId="bakeoutProgramTemperature"/>
+			<channel id="bakeoutProgramTime" typeId="bakeoutProgramTime"/>
+			<channel id="iconHotWater" typeId="iconHotWater"/>
+			<channel id="iconHeater" typeId="iconHeater"/>
+			<channel id="iconMixingCircuit1" typeId="iconMixingCircuit1"/>
+			<channel id="iconMixingCircuit2" typeId="iconMixingCircuit2"/>
+			<channel id="shortProgramSetting" typeId="shortProgramSetting"/>
+			<channel id="statusSlave1" typeId="statusSlave1"/>
+			<channel id="statusSlave2" typeId="statusSlave2"/>
+			<channel id="statusSlave3" typeId="statusSlave3"/>
+			<channel id="statusSlave4" typeId="statusSlave4"/>
+			<channel id="statusSlave5" typeId="statusSlave5"/>
+			<channel id="currentTimestamp" typeId="currentTimestamp"/>
+			<channel id="iconMixingCircuit3" typeId="iconMixingCircuit3"/>
+			<channel id="temperatureMixingCircuit3FlowTarget" typeId="temperatureMixingCircuit3FlowTarget"/>
+			<channel id="temperatureMixingCircuit3Flow" typeId="temperatureMixingCircuit3Flow"/>
+			<channel id="outputMixingCircuit3Close" typeId="outputMixingCircuit3Close"/>
+			<channel id="outputMixingCircuit3Open" typeId="outputMixingCircuit3Open"/>
+			<channel id="outputMixingCircuitPump3" typeId="outputMixingCircuitPump3"/>
+			<channel id="timeUntilDefrost" typeId="timeUntilDefrost"/>
+			<channel id="temperatureRoomStation2" typeId="temperatureRoomStation2"/>
+			<channel id="temperatureRoomStation3" typeId="temperatureRoomStation3"/>
+			<channel id="iconTimeSwitchSwimmingPool" typeId="iconTimeSwitchSwimmingPool"/>
+			<channel id="runtimeTotalSwimmingPool" typeId="runtimeTotalSwimmingPool"/>
+			<channel id="coolingRelease" typeId="coolingRelease"/>
+			<channel id="inputAnalog" typeId="inputAnalog"/>
+			<channel id="iconCirculationPump" typeId="iconCirculationPump"/>
+			<channel id="heatMeterHeating" typeId="heatMeterHeating"/>
+			<channel id="heatMeterHotWater" typeId="heatMeterHotWater"/>
+			<channel id="heatMeterSwimmingPool" typeId="heatMeterSwimmingPool"/>
+			<channel id="heatMeterTotalSinceReset" typeId="heatMeterTotalSinceReset"/>
+			<channel id="heatMeterFlowRate" typeId="heatMeterFlowRate"/>
+			<channel id="outputAnalog1" typeId="outputAnalog1"/>
+			<channel id="outputAnalog2" typeId="outputAnalog2"/>
+			<channel id="timeLockSecondHotGasCompressor" typeId="timeLockSecondHotGasCompressor"/>
+			<channel id="temperatureSupplyAir" typeId="temperatureSupplyAir"/>
+			<channel id="temperatureExhaustAir" typeId="temperatureExhaustAir"/>
+			<channel id="runtimeTotalSolar" typeId="runtimeTotalSolar"/>
+			<channel id="outputAnalog3" typeId="outputAnalog3"/>
+			<channel id="outputAnalog4" typeId="outputAnalog4"/>
+			<channel id="outputSupplyAirFan" typeId="outputSupplyAirFan"/>
+			<channel id="outputExhaustFan" typeId="outputExhaustFan"/>
+			<channel id="outputVSK" typeId="outputVSK"/>
+			<channel id="outputFRH" typeId="outputFRH"/>
+			<channel id="inputAnalog2" typeId="inputAnalog2"/>
+			<channel id="inputAnalog3" typeId="inputAnalog3"/>
+			<channel id="inputSAX" typeId="inputSAX"/>
+			<channel id="inputSPL" typeId="inputSPL"/>
+			<channel id="ventilationBoardInstalled" typeId="ventilationBoardInstalled"/>
+			<channel id="flowRateHeatSource" typeId="flowRateHeatSource"/>
+			<channel id="linBusInstalled" typeId="linBusInstalled"/>
+			<channel id="temperatureSuctionEvaporator" typeId="temperatureSuctionEvaporator"/>
+			<channel id="temperatureSuctionCompressor" typeId="temperatureSuctionCompressor"/>
+			<channel id="temperatureCompressorHeating" typeId="temperatureCompressorHeating"/>
+			<channel id="temperatureOverheating" typeId="temperatureOverheating"/>
+			<channel id="temperatureOverheatingTarget" typeId="temperatureOverheatingTarget"/>
+			<channel id="highPressure" typeId="highPressure"/>
+			<channel id="lowPressure" typeId="lowPressure"/>
+			<channel id="outputCompressorHeating" typeId="outputCompressorHeating"/>
+			<channel id="controlSignalCirculatingPump" typeId="controlSignalCirculatingPump"/>
+			<channel id="fanSpeed" typeId="fanSpeed"/>
+			<channel id="temperatureSafetyLimitFloorHeating" typeId="temperatureSafetyLimitFloorHeating"/>
+			<channel id="powerTargetValue" typeId="powerTargetValue"/>
+			<channel id="powerActualValue" typeId="powerActualValue"/>
+			<channel id="temperatureFlowTarget" typeId="temperatureFlowTarget"/>
+			<channel id="operatingStatusSECBoard" typeId="operatingStatusSECBoard"/>
+			<channel id="fourWayValve" typeId="fourWayValve"/>
+			<channel id="compressorSpeed" typeId="compressorSpeed"/>
+			<channel id="temperatureCompressorEVI" typeId="temperatureCompressorEVI"/>
+			<channel id="temperatureIntakeEVI" typeId="temperatureIntakeEVI"/>
+			<channel id="temperatureOverheatingEVI" typeId="temperatureOverheatingEVI"/>
+			<channel id="temperatureOverheatingTargetEVI" typeId="temperatureOverheatingTargetEVI"/>
+			<channel id="temperatureCondensation" typeId="temperatureCondensation"/>
+			<channel id="temperatureLiquidEEV" typeId="temperatureLiquidEEV"/>
+			<channel id="temperatureHypothermiaEEV" typeId="temperatureHypothermiaEEV"/>
+			<channel id="pressureEVI" typeId="pressureEVI"/>
+			<channel id="voltageInverter" typeId="voltageInverter"/>
+			<channel id="temperatureHotGas2" typeId="temperatureHotGas2"/>
+			<channel id="temperatureHeatSourceInlet2" typeId="temperatureHeatSourceInlet2"/>
+			<channel id="temperatureIntakeEvaporator2" typeId="temperatureIntakeEvaporator2"/>
+			<channel id="temperatureIntakeCompressor2" typeId="temperatureIntakeCompressor2"/>
+			<channel id="temperatureCompressor2Heating" typeId="temperatureCompressor2Heating"/>
+			<channel id="temperatureOverheating2" typeId="temperatureOverheating2"/>
+			<channel id="temperatureOverheatingTarget2" typeId="temperatureOverheatingTarget2"/>
+			<channel id="highPressure2" typeId="highPressure2"/>
+			<channel id="lowPressure2" typeId="lowPressure2"/>
+			<channel id="inputSwitchHighPressure2" typeId="inputSwitchHighPressure2"/>
+			<channel id="outputDefrostValve2" typeId="outputDefrostValve2"/>
+			<channel id="outputVBO2" typeId="outputVBO2"/>
+			<channel id="outputCompressor1_2" typeId="outputCompressor1_2"/>
+			<channel id="outputCompressorHeating2" typeId="outputCompressorHeating2"/>
+			<channel id="secondShutdownReason0" typeId="secondShutdownReason0"/>
+			<channel id="secondShutdownReason1" typeId="secondShutdownReason1"/>
+			<channel id="secondShutdownReason2" typeId="secondShutdownReason2"/>
+			<channel id="secondShutdownReason3" typeId="secondShutdownReason3"/>
+			<channel id="secondShutdownReason4" typeId="secondShutdownReason4"/>
+			<channel id="secondShutdownTime0" typeId="secondShutdownTime0"/>
+			<channel id="secondShutdownTime1" typeId="secondShutdownTime1"/>
+			<channel id="secondShutdownTime2" typeId="secondShutdownTime2"/>
+			<channel id="secondShutdownTime3" typeId="secondShutdownTime3"/>
+			<channel id="secondShutdownTime4" typeId="secondShutdownTime4"/>
+			<channel id="temperatureRoom" typeId="temperatureRoom"/>
+			<channel id="temperatureRoomTarget" typeId="temperatureRoomTarget"/>
+			<channel id="temperatureHotWaterTop" typeId="temperatureHotWaterTop"/>
+			<channel id="frequencyCompressor" typeId="frequencyCompressor"/>
+
+			<channel id="temperatureHeatingParallelShift" typeId="temperatureHeatingParallelShift"/>
+			<channel id="heatingMode" typeId="heatingMode"/>
+			<channel id="hotWaterMode" typeId="hotWaterMode"/>
+			<channel id="comfortCoolingMode" typeId="comfortCoolingMode"/>
+			<channel id="thermalDisinfectionMonday" typeId="thermalDisinfectionMonday"/>
+			<channel id="thermalDisinfectionTuesday" typeId="thermalDisinfectionTuesday"/>
+			<channel id="thermalDisinfectionWednesday" typeId="thermalDisinfectionWednesday"/>
+			<channel id="thermalDisinfectionThursday" typeId="thermalDisinfectionThursday"/>
+			<channel id="thermalDisinfectionFriday" typeId="thermalDisinfectionFriday"/>
+			<channel id="thermalDisinfectionSaturday" typeId="thermalDisinfectionSaturday"/>
+			<channel id="thermalDisinfectionSunday" typeId="thermalDisinfectionSunday"/>
+			<channel id="thermalDisinfectionPermanent" typeId="thermalDisinfectionPermanent"/>
+			<channel id="temperatureComfortCoolingATRelease" typeId="temperatureComfortCoolingATRelease"/>
+			<channel id="temperatureComfortCoolingATReleaseTarget" typeId="temperatureComfortCoolingATReleaseTarget"/>
+			<channel id="comfortCoolingATExcess" typeId="comfortCoolingATExcess"/>
+			<channel id="comfortCoolingATUndercut" typeId="comfortCoolingATUndercut"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>IP address of the heat pump to connect to</description>
+			</parameter>
+			<parameter name="port" type="integer" required="false">
+				<label>Port</label>
+				<default>8889</default>
+				<description>Port number of the heat pump to connect to. Defaults to 8889. For heatpumps running firmware version
+					before V1.73, port 8888 needs to be used.</description>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false" unit="s" min="1">
+				<label>Refresh inverval</label>
+				<default>300</default>
+				<unitLabel>s</unitLabel>
+				<description>Refresh inverval in seconds. Defaults to 300</description>
+			</parameter>
+			<parameter name="showAllChannels" type="boolean" required="false">
+				<label>Show all channels</label>
+				<default>false</default>
+				<description>By default channels that aren't supported are hidden.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>

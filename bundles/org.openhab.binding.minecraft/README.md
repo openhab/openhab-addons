@@ -68,7 +68,9 @@ Depending on the thing type, different channels are provided:
 
 ### Example Thing Definition
 
-The easiest method to add Minecraft servers, players, and signs is use the automatic discovery through Paper UI. However, you can manualy define the objects using thing configuration files. Players and signs are connected through Minecraft server [bridges](https://www.openhab.org/docs/configuration/things.html#defining-bridges-using-files).
+The easiest method to add Minecraft servers, players, and signs is use the automatic discovery.
+You can also manually define the objects using thing configuration files. 
+Players and signs are connected through Minecraft server [bridges](https://www.openhab.org/docs/configuration/things.html#defining-bridges-using-files).
 
 ```xtend
 Bridge minecraft:server:myminecraftserver "Minecraft server for Friends" @ "Minecraft" [ hostname="192.168.1.100", port=10692 ] {

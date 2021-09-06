@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -211,8 +211,12 @@ public class DarkSkyConnection {
             } else {
                 throw new DarkSkyCommunicationException(errorMessage, e.getCause());
             }
-        } catch (InterruptedException | TimeoutException e) {
+        } catch (TimeoutException e) {
             logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
+            throw new DarkSkyCommunicationException(e.getLocalizedMessage(), e.getCause());
+        } catch (InterruptedException e) {
+            logger.debug("Execution interrupted: {}", e.getLocalizedMessage(), e);
+            Thread.currentThread().interrupt();
             throw new DarkSkyCommunicationException(e.getLocalizedMessage(), e.getCause());
         }
     }

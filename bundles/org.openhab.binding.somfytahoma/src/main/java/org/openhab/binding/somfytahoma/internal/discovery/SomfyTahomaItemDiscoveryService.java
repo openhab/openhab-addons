@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,13 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaBridgeHandler;
-import org.openhab.binding.somfytahoma.internal.model.*;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaActionGroup;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaDevice;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaGateway;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaRootPlace;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaSetup;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaSubPlace;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -41,19 +47,20 @@ import org.slf4j.LoggerFactory;
  * action groups associated with your TahomaLink cloud account.
  *
  * @author Ondrej Pecta - Initial contribution
+ * @author Laurent Garnier - Include the place into the inbox label (when defined for the device)
  */
 @NonNullByDefault
 public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
         implements DiscoveryService, ThingHandlerService {
+
+    private static final int DISCOVERY_TIMEOUT_SEC = 10;
+    private static final int DISCOVERY_REFRESH_SEC = 3600;
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaItemDiscoveryService.class);
 
     private @Nullable SomfyTahomaBridgeHandler bridgeHandler;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
-
-    private static final int DISCOVERY_TIMEOUT_SEC = 10;
-    private static final int DISCOVERY_REFRESH_SEC = 3600;
 
     public SomfyTahomaItemDiscoveryService() {
         super(DISCOVERY_TIMEOUT_SEC);
@@ -124,7 +131,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
             }
 
             for (SomfyTahomaDevice device : setup.getDevices()) {
-                discoverDevice(device);
+                discoverDevice(device, setup);
             }
             for (SomfyTahomaGateway gw : setup.getGateways()) {
                 gatewayDiscovered(gw);
@@ -144,105 +151,106 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private void discoverDevice(SomfyTahomaDevice device) {
+    private void discoverDevice(SomfyTahomaDevice device, SomfyTahomaSetup setup) {
         logger.debug("url: {}", device.getDeviceURL());
+        String place = getPlaceLabel(setup, device.getPlaceOID());
         switch (device.getUiClass()) {
             case CLASS_AWNING:
                 // widget: PositionableHorizontalAwning
-                deviceDiscovered(device, THING_TYPE_AWNING);
+                deviceDiscovered(device, THING_TYPE_AWNING, place);
                 break;
             case CLASS_CONTACT_SENSOR:
                 // widget: ContactSensor
-                deviceDiscovered(device, THING_TYPE_CONTACTSENSOR);
+                deviceDiscovered(device, THING_TYPE_CONTACTSENSOR, place);
                 break;
             case CLASS_CURTAIN:
-                deviceDiscovered(device, THING_TYPE_CURTAIN);
+                deviceDiscovered(device, THING_TYPE_CURTAIN, place);
                 break;
             case CLASS_EXTERIOR_SCREEN:
                 // widget: PositionableScreen
-                deviceDiscovered(device, THING_TYPE_EXTERIORSCREEN);
+                deviceDiscovered(device, THING_TYPE_EXTERIORSCREEN, place);
                 break;
             case CLASS_EXTERIOR_VENETIAN_BLIND:
                 // widget: PositionableExteriorVenetianBlind
-                deviceDiscovered(device, THING_TYPE_EXTERIORVENETIANBLIND);
+                deviceDiscovered(device, THING_TYPE_EXTERIORVENETIANBLIND, place);
                 break;
             case CLASS_GARAGE_DOOR:
-                deviceDiscovered(device, THING_TYPE_GARAGEDOOR);
+                deviceDiscovered(device, THING_TYPE_GARAGEDOOR, place);
                 break;
             case CLASS_LIGHT:
                 if ("DimmerLight".equals(device.getWidget())) {
                     // widget: DimmerLight
-                    deviceDiscovered(device, THING_TYPE_DIMMER_LIGHT);
+                    deviceDiscovered(device, THING_TYPE_DIMMER_LIGHT, place);
                 } else {
                     // widget: TimedOnOffLight
                     // widget: StatefulOnOffLight
-                    deviceDiscovered(device, THING_TYPE_LIGHT);
+                    deviceDiscovered(device, THING_TYPE_LIGHT, place);
                 }
                 break;
             case CLASS_LIGHT_SENSOR:
-                deviceDiscovered(device, THING_TYPE_LIGHTSENSOR);
+                deviceDiscovered(device, THING_TYPE_LIGHTSENSOR, place);
                 break;
             case CLASS_OCCUPANCY_SENSOR:
                 // widget: OccupancySensor
-                deviceDiscovered(device, THING_TYPE_OCCUPANCYSENSOR);
+                deviceDiscovered(device, THING_TYPE_OCCUPANCYSENSOR, place);
                 break;
             case CLASS_ON_OFF:
                 // widget: StatefulOnOff
-                deviceDiscovered(device, THING_TYPE_ONOFF);
+                deviceDiscovered(device, THING_TYPE_ONOFF, place);
                 break;
             case CLASS_ROLLER_SHUTTER:
                 if (isSilentRollerShutter(device)) {
                     // widget: PositionableRollerShutterWithLowSpeedManagement
-                    deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER_SILENT);
+                    deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER_SILENT, place);
                 } else if (isUnoRollerShutter(device)) {
                     // widget: PositionableRollerShutterUno
-                    deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER_UNO);
+                    deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER_UNO, place);
                 } else {
                     // widget: PositionableRollerShutter
                     // widget: PositionableTiltedRollerShutter
-                    deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER);
+                    deviceDiscovered(device, THING_TYPE_ROLLERSHUTTER, place);
                 }
                 break;
             case CLASS_SCREEN:
                 // widget: PositionableTiltedScreen
-                deviceDiscovered(device, THING_TYPE_SCREEN);
+                deviceDiscovered(device, THING_TYPE_SCREEN, place);
                 break;
             case CLASS_SMOKE_SENSOR:
                 // widget: SmokeSensor
-                deviceDiscovered(device, THING_TYPE_SMOKESENSOR);
+                deviceDiscovered(device, THING_TYPE_SMOKESENSOR, place);
                 break;
             case CLASS_VENETIAN_BLIND:
-                deviceDiscovered(device, THING_TYPE_VENETIANBLIND);
+                deviceDiscovered(device, THING_TYPE_VENETIANBLIND, place);
                 break;
             case CLASS_WINDOW:
                 // widget: PositionableTiltedWindow
-                deviceDiscovered(device, THING_TYPE_WINDOW);
+                deviceDiscovered(device, THING_TYPE_WINDOW, place);
                 break;
             case CLASS_ALARM:
                 if (device.getDeviceURL().startsWith("internal:")) {
                     // widget: TSKAlarmController
-                    deviceDiscovered(device, THING_TYPE_INTERNAL_ALARM);
+                    deviceDiscovered(device, THING_TYPE_INTERNAL_ALARM, place);
                 } else if ("MyFoxAlarmController".equals(device.getWidget())) {
                     // widget: MyFoxAlarmController
-                    deviceDiscovered(device, THING_TYPE_MYFOX_ALARM);
+                    deviceDiscovered(device, THING_TYPE_MYFOX_ALARM, place);
                 } else {
-                    deviceDiscovered(device, THING_TYPE_EXTERNAL_ALARM);
+                    deviceDiscovered(device, THING_TYPE_EXTERNAL_ALARM, place);
                 }
                 break;
             case CLASS_POD:
                 if (hasState(device, CYCLIC_BUTTON_STATE)) {
-                    deviceDiscovered(device, THING_TYPE_POD);
+                    deviceDiscovered(device, THING_TYPE_POD, place);
                 }
                 break;
             case CLASS_HEATING_SYSTEM:
                 if ("SomfyThermostat".equals(device.getWidget())) {
-                    deviceDiscovered(device, THING_TYPE_THERMOSTAT);
+                    deviceDiscovered(device, THING_TYPE_THERMOSTAT, place);
                 } else if ("ValveHeatingTemperatureInterface".equals(device.getWidget())) {
-                    deviceDiscovered(device, THING_TYPE_VALVE_HEATING_SYSTEM);
+                    deviceDiscovered(device, THING_TYPE_VALVE_HEATING_SYSTEM, place);
                 } else if (isOnOffHeatingSystem(device)) {
-                    deviceDiscovered(device, THING_TYPE_ONOFF_HEATING_SYSTEM);
+                    deviceDiscovered(device, THING_TYPE_ONOFF_HEATING_SYSTEM, place);
                 } else if (isZwaveHeatingSystem(device)) {
-                    deviceDiscovered(device, THING_TYPE_ZWAVE_HEATING_SYSTEM);
+                    deviceDiscovered(device, THING_TYPE_ZWAVE_HEATING_SYSTEM, place);
                 } else {
                     logUnsupportedDevice(device);
                 }
@@ -250,57 +258,62 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
             case CLASS_EXTERIOR_HEATING_SYSTEM:
                 if ("DimmerExteriorHeating".equals(device.getWidget())) {
                     // widget: DimmerExteriorHeating
-                    deviceDiscovered(device, THING_TYPE_EXTERIOR_HEATING_SYSTEM);
+                    deviceDiscovered(device, THING_TYPE_EXTERIOR_HEATING_SYSTEM, place);
                 } else {
                     logUnsupportedDevice(device);
                 }
                 break;
             case CLASS_HUMIDITY_SENSOR:
                 if (hasState(device, WATER_DETECTION_STATE)) {
-                    deviceDiscovered(device, THING_TYPE_WATERSENSOR);
+                    deviceDiscovered(device, THING_TYPE_WATERSENSOR, place);
                 } else {
                     // widget: RelativeHumiditySensor
-                    deviceDiscovered(device, THING_TYPE_HUMIDITYSENSOR);
+                    deviceDiscovered(device, THING_TYPE_HUMIDITYSENSOR, place);
                 }
             case CLASS_DOOR_LOCK:
                 // widget: UnlockDoorLockWithUnknownPosition
-                deviceDiscovered(device, THING_TYPE_DOOR_LOCK);
+                deviceDiscovered(device, THING_TYPE_DOOR_LOCK, place);
                 break;
             case CLASS_PERGOLA:
-                deviceDiscovered(device, THING_TYPE_PERGOLA);
+                if ("BioclimaticPergola".equals(device.getWidget())) {
+                    // widget: BioclimaticPergola
+                    deviceDiscovered(device, THING_TYPE_BIOCLIMATIC_PERGOLA, place);
+                } else {
+                    deviceDiscovered(device, THING_TYPE_PERGOLA, place);
+                }
                 break;
             case CLASS_WINDOW_HANDLE:
                 // widget: ThreeWayWindowHandle
-                deviceDiscovered(device, THING_TYPE_WINDOW_HANDLE);
+                deviceDiscovered(device, THING_TYPE_WINDOW_HANDLE, place);
                 break;
             case CLASS_TEMPERATURE_SENSOR:
                 // widget: TemperatureSensor
-                deviceDiscovered(device, THING_TYPE_TEMPERATURESENSOR);
+                deviceDiscovered(device, THING_TYPE_TEMPERATURESENSOR, place);
                 break;
             case CLASS_GATE:
-                deviceDiscovered(device, THING_TYPE_GATE);
+                deviceDiscovered(device, THING_TYPE_GATE, place);
                 break;
             case CLASS_ELECTRICITY_SENSOR:
                 if (hasEnergyConsumption(device)) {
-                    deviceDiscovered(device, THING_TYPE_ELECTRICITYSENSOR);
+                    deviceDiscovered(device, THING_TYPE_ELECTRICITYSENSOR, place);
                 } else {
                     logUnsupportedDevice(device);
                 }
                 break;
             case CLASS_DOCK:
                 // widget: Dock
-                deviceDiscovered(device, THING_TYPE_DOCK);
+                deviceDiscovered(device, THING_TYPE_DOCK, place);
                 break;
             case CLASS_SIREN:
-                deviceDiscovered(device, THING_TYPE_SIREN);
+                deviceDiscovered(device, THING_TYPE_SIREN, place);
                 break;
             case CLASS_ADJUSTABLE_SLATS_ROLLER_SHUTTER:
-                deviceDiscovered(device, THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER);
+                deviceDiscovered(device, THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER, place);
                 break;
             case CLASS_CAMERA:
                 if (hasMyfoxShutter(device)) {
                     // widget: MyFoxSecurityCamera
-                    deviceDiscovered(device, THING_TYPE_MYFOX_CAMERA);
+                    deviceDiscovered(device, THING_TYPE_MYFOX_CAMERA, place);
                 } else {
                     logUnsupportedDevice(device);
                 }
@@ -313,6 +326,18 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
             default:
                 logUnsupportedDevice(device);
         }
+    }
+
+    private @Nullable String getPlaceLabel(SomfyTahomaSetup setup, String oid) {
+        SomfyTahomaRootPlace root = setup.getRootPlace();
+        if (!oid.isEmpty() && root != null) {
+            for (SomfyTahomaSubPlace place : root.getSubPlaces()) {
+                if (oid.equals(place.getOid())) {
+                    return place.getLabel();
+                }
+            }
+        }
+        return null;
     }
 
     private boolean isStateLess(SomfyTahomaDevice device) {
@@ -366,8 +391,12 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
         return device.getDefinition().getCommands().stream().anyMatch(cmd -> command.equals(cmd.getCommandName()));
     }
 
-    private void deviceDiscovered(SomfyTahomaDevice device, ThingTypeUID thingTypeUID) {
-        deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), thingTypeUID,
+    private void deviceDiscovered(SomfyTahomaDevice device, ThingTypeUID thingTypeUID, @Nullable String place) {
+        String label = device.getLabel();
+        if (place != null && !place.isBlank()) {
+            label += " (" + place + ")";
+        }
+        deviceDiscovered(label, device.getDeviceURL(), device.getOid(), thingTypeUID,
                 hasState(device, RSSI_LEVEL_STATE));
     }
 

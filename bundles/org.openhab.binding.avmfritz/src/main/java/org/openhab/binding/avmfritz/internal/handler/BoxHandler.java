@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.avmfritz.internal.handler;
 
-import java.util.HashSet;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
+
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants;
 import org.openhab.binding.avmfritz.internal.AVMFritzDynamicCommandDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.callmonitor.CallMonitor;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
@@ -38,14 +38,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class BoxHandler extends AVMFritzBaseBridgeHandler {
 
-    protected static final Set<String> CALL_CHANNELS = new HashSet<>();
-    static {
-        // TODO: We are still on Java 8 and cannot use Set.of
-        CALL_CHANNELS.add(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE);
-        CALL_CHANNELS.add(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING);
-        CALL_CHANNELS.add(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING);
-        CALL_CHANNELS.add(AVMFritzBindingConstants.CHANNEL_CALL_STATE);
-    }
+    private static final Set<String> CALL_CHANNELS = Set.of(CHANNEL_CALL_ACTIVE, CHANNEL_CALL_INCOMING,
+            CHANNEL_CALL_OUTGOING, CHANNEL_CALL_STATE);
 
     private @Nullable CallMonitor callMonitor;
 
@@ -62,10 +56,10 @@ public class BoxHandler extends AVMFritzBaseBridgeHandler {
     @Override
     protected void manageConnections() {
         AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
-        if (this.callMonitor == null && callChannelsLinked()) {
+        CallMonitor cm = this.callMonitor;
+        if (cm == null && callChannelsLinked()) {
             this.callMonitor = new CallMonitor(config.ipAddress, this, scheduler);
-        } else if (this.callMonitor != null && !callChannelsLinked()) {
-            CallMonitor cm = this.callMonitor;
+        } else if (cm != null && !callChannelsLinked()) {
             cm.dispose();
             this.callMonitor = null;
         }
@@ -100,5 +94,19 @@ public class BoxHandler extends AVMFritzBaseBridgeHandler {
     @Override
     public void updateState(String channelID, State state) {
         super.updateState(channelID, state);
+    }
+
+    @Override
+    public void handleRefreshCommand() {
+        refreshCallMonitorChannels();
+        super.handleRefreshCommand();
+    }
+
+    private void refreshCallMonitorChannels() {
+        CallMonitor cm = this.callMonitor;
+        if (cm != null) {
+            // initialize states of call monitor channels
+            cm.resetChannels();
+        }
     }
 }

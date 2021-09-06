@@ -11,27 +11,12 @@
 			"yunmi.waterpuri.lx5",
 			"yunmi.waterpuri.lx6",
 			"yunmi.waterpuri.lx7",
-			"yunmi.waterpuri.lx8",
 			"yunmi.waterpuri.lx9",
 			"yunmi.waterpuri.lx10",
 			"yunmi.waterpuri.lx11",
 			"yunmi.waterpuri.lx12"
 		],
 		"channels": [
-			{
-				"property": "power",
-				"friendlyName": "Power",
-				"channel": "power",
-				"channelType": "power",
-				"type": "Switch",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_power",
-						"parameterType": "ONOFF"
-					}
-				]
-			},
 			{
 				"property": "run_status",
 				"friendlyName": "Run Status",
@@ -44,9 +29,12 @@
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"channelType": "temperatureC",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": [],
 				"category": "temperature",
@@ -174,6 +162,101 @@
 				"type": "Number",
 				"refresh": true,
 				"actions": []
+			},
+			{
+				"property": "f4_totalflow",
+				"friendlyName": "Filter 4 Total Flow",
+				"channel": "f4_totalflow",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f4_totaltime",
+				"friendlyName": "Filter 4 Total Time",
+				"channel": "f4_totaltime",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f4_usedflow",
+				"friendlyName": "Filter 4 Used Flow",
+				"channel": "f4_usedflow",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "f4_usedtime",
+				"friendlyName": "Filter 4 Used Time",
+				"channel": "f4_usedtime",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "maintenance_state",
+				"friendlyName": "Maintenance State",
+				"channel": "maintenance_state",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "maintenance_interval",
+				"friendlyName": "Maintenance Interval",
+				"channel": "maintenance_interval",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "tds_warn_thd",
+				"friendlyName": "TDS Warn Threshold",
+				"channel": "tds_warn_thd",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_tds_warn_thd",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "tds_out_avg",
+				"friendlyName": "Average TDS out",
+				"channel": "tds_out_avg",
+				"type": "Number",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "lightMode",
+				"friendlyName": "Light Mode",
+				"channel": "lightMode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Simple Mode"
+						},
+						{
+							"value": "1",
+							"label": "Special Mode"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_lightMode",
+						"parameterType": "STRING"
+					}
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Simple Mode\",\"1\"\u003d\"Special Mode\"]`"
 			}
 		],
 		"experimental": true

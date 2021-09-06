@@ -32,6 +32,7 @@ Go to the binding config page and enter your cloud username and password.
 The server(s) to which your devices are connected need to be entered as well. 
 Use the one of the regional servers: cn,de,i2,tw,ru,sg,us.
 Multiple servers can be separated with comma, or leave blank to test all known servers.
+See [binding configuration](#binding-configuration) for more details about the binding config.
 
 ## Tokens without cloud access
 
@@ -51,12 +52,18 @@ Note. The Xiaomi devices change the token when inclusion is done. Hence if you g
 ## Binding Configuration
 
 No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s).
-The list of the known countries and related severs is [here](#Country-Servers).
+The list of the known countries and related severs is [here](#country-servers).
 
 After successful Xiaomi cloud login, the binding will use the connection to retrieve the required device tokens from the cloud. 
 For Xiaomi vacuums the map can be visualized in openHAB using the cloud connection.
 
+To enter your cloud details go to the bindings page, click the Xiaomi Mi IO binding and than configure.
 ![Binding Config](doc/miioBindingConfig.jpg)
+
+In the configuration page, enter your userID /passwd and county(s) or leave the countries servers blank.
+![Binding Config](doc/miioBindingConfig2.jpg)
+
+The binding also supports the discovery of devices via the cloud. This may be useful if the device is on a separate subnet. (note, after accepting such a device on a different subnet, the communication needs to be set to cloud in order to have it working.)
 
 ## Thing Configuration
 
@@ -69,25 +76,23 @@ However, for devices that are unsupported, you may override the value and try to
 |-----------------|---------|----------|---------------------------------------------------------------------|
 | host            | text    | true     | Device IP address                                                   |
 | token           | text    | true     | Token for communication (in Hex)                                    |
-| deviceId        | text    | true     | Device ID number for communication (in Hex)                         |
+| deviceId        | text    | true     | Device Id (typically a number for normal devices) for communication |
 | model           | text    | false    | Device model string, used to determine the subtype                  |
 | refreshInterval | integer | false    | Refresh interval for refreshing the data in seconds. (0=disabled)   |
 | timeout         | integer | false    | Timeout time in milliseconds                                        |
-| communication   | test    | false    | Communicate direct or via cloud (options values: 'direct', 'cloud') |
+| communication   | text    | false    | Communicate direct or via cloud (options values: 'direct', 'cloud') |
+| cloudServer     | text    | false    | Identifies the country server to use in case of cloud communication |
 
-Note: Suggest to use the cloud communication only for devices that require it. It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
+Note: Suggest to use the cloud communication only for devices that require it. 
+It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
 
 ### Example Thing file
 
-`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="0326xxxx", model="philips.light.bulb", communication="direct"  ]` 
+`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="326xxxx", model="philips.light.bulb", communication="direct" ]` 
 
 or in case of unknown models include the model information of a similar device that is supported:
 
-`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId=“0470DDAA”, model="roborock.vacuum.s4", communication="cloud"]`
-
-# Mi IO Devices
-
-!!!devices
+`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId="326xxxx", model="roborock.vacuum.s4", communication="direct", cloudServer="de" ]`
 
 # Advanced: Unsupported devices
 
@@ -118,9 +123,9 @@ After validation, please share the logfile and json files on the openHAB forum o
 
 Things using the basic handler (miio:basic things) are driven by json 'database' files.
 This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
-The conf/misc/miio (e.g. in Linux `/opt/openhab2/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
-During the start of the binding the exact path used in your system will be printed in the debug log. 
-Watch for a line containing `Started miio basic devices local databases watch service. Watching for database files at path: …`
+The conf/misc/miio (e.g. in Linux `/opt/openhab/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
+During the start of the binding the exact path used in your system will be printed in the _debug_ log. 
+Watch for a line containing `Started miio basic devices local databases watch service. Watching for database files at path: …` (
 If this folder is created after the start of the binding, you may need to restart the binding (or openHAB) to be able to use the local files. 
 Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
 For format, please check the current database files in openHAB GitHub.
@@ -159,7 +164,7 @@ Set the communication in the thing configuration to 'cloud'.
 
 _Cloud connectivity is not working_
 The most common problem is a wrong userId/password. Try to fix your userId/password.
-If it still fails, you're bit out of luck. You may try to restart OpenHAB (not just the binding) to clean the cookies. 
+If it still fails, you're bit out of luck. You may try to restart openHAB (not just the binding) to clean the cookies. 
 As the cloud logon process is still little understood, your only luck might be to enable trace logging and see if you can translate the Chinese error code that it returns.
 
 _My Roborock vacuum is not found or not reacting_
@@ -168,6 +173,9 @@ This won't work, the Roborock app is using a different communication method.
 Reset your vacuum and connect it to the Xiaomi MiHome app. 
 This will change the communication method and the Mi IO binding can communicate with the vacuum.
 
+# Mi IO Devices
+
+!!!devices
 
 # Channels
 
@@ -185,7 +193,48 @@ All devices have available the following channels (marked as advanced) besides t
 | actions#rpc      | String  | send commands via cloud. see below  |
 
 note: the ADVANCED  `actions#commands` and `actions#rpc` channels can be used to send commands that are not automated via the binding. This is available for all devices
-e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See https://github.com/marcelrv/XiaomiRobotVacuumProtocol for all known available commands.
+e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See https://github.com/marcelrv/XiaomiRobotVacuumProtocol for all known available commands.
+
+
+### Robo Rock vacuum Channels
+
+| Type    | Channel                           | Description                |
+|---------|-----------------------------------|----------------------------|
+| Number  | status#segment_status             | Segment Status             |
+| Number  | status#map_status                 | Map Box Status             |
+| Number  | status#led_status                 | Led Box Status             |
+| String  | info#carpet_mode                  | Carpet Mode details        |
+| String  | info#fw_features                  | Firmware Features          |
+| String  | info#room_mapping                 | Room Mapping details       |
+| String  | info#multi_maps_list              | Maps Listing details       |
+
+Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
+
+| Type    | Channel                           | Description                |
+|---------|-----------------------------------|----------------------------|
+| Switch  | status#water_box_status           | Water Box Status           |
+| Switch  | status#lock_status                | Lock Status                |
+| Number  | status#water_box_mode             | Water Box Mode             |
+| Switch  | status#water_box_carriage_status  | Water Box Carriage Status  |
+| Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
+| Switch  | status#is_locating                | Robot is locating          |
+| Number  | actions#segment                   | Room Clean  (enter room #) |
+
+Note: cleaning map is only available with cloud access.
+
+There are several advanced channels, which may be useful in rules (e.g. for individual room cleaning etc)
+In case your vacuum does not support one of these commands, it will show "unsupported_method" for string channels or no value for numeric channels.
+
+### Advanced: Vacuum Map Customization
+
+In case the default rendering of the vacuum map is not meeting your integration needs, the rendering can be tailored.
+The way to customize this is to create a file with the name `mapConfig.json` in the `userdata/miio` folder.
+If the binding finds this file it will read the map rendering preferences from there.
+If the file is available but invalid json, it will create a new file with all the default values for you to customize.
+This allows you to control the colors, if logo is displayed, if and what text is rendered etc.
+To (re-)read the file either restart openHAB, restart the binding or alternatively edit the thing and make (any) minor change.
+Note, cropping is disabled (hence showing like the maps in OH3.1 and earlier) for any `cropBorder` value < 0.
+Note, not all the values need to be in the json file, e.g. a subset of the parameters also works, the parameters not in the `mapConfig.json` will take the default values.
 
 
 !!!channelList
@@ -212,6 +261,7 @@ Number statusFanPow    "Fan Power [%1.0f%%]"  <signal>   (gVacStat) {channel="mi
 Number statusClean    "In Cleaning Status [%1.0f]"   <switch>  (gVacStat) {channel="miio:vacuum:034F0E45:status#in_cleaning" }
 Switch statusDND    "DND Activated"    (gVacStat) {channel="miio:vacuum:034F0E45:status#dnd_enabled" }
 Number statusStatus    "Status [%1.0f]"  <status>  (gVacStat) {channel="miio:vacuum:034F0E45:status#state"} 
+Switch isLocating    "Locating"    (gVacStat) {channel="miio:vacuum:034F0E45:status#is_locating" }
 
 Number consumableMain    "Main Brush [%1.0f]"    (gVacCons) {channel="miio:vacuum:034F0E45:consumables#main_brush_time"}
 Number consumableSide    "Side Brush [%1.0f]"    (gVacCons) {channel="miio:vacuum:034F0E45:consumables#side_brush_time"}
@@ -236,25 +286,10 @@ Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="miio:vac
 Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"}
 ```
 
-Note: cleaning map is only available with cloud access.
-
-Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
-
-
-| Type    | Channel                           | Description                |
-|---------|-----------------------------------|----------------------------|
-| Switch  | status#water_box_status           | Water Box Status           |
-| Switch  | status#lock_status                | Lock Status                |
-| Number  | status#water_box_mode             | Water Box Mode             |
-| Switch  | status#water_box_carriage_status  | Water Box Carriage Status  |
-| Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
-| Number  | actions#segment                   | Room Clean  (enter room #) |
-
-
 
 !!!itemFileExamples
 
-### <a name="Country-Servers">Country Servers</a>
+### Country Servers
 
 Known country Servers: cn, de, i2, ru, sg, us
 

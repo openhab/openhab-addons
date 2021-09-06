@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,8 +54,7 @@ public class NeeoDeviceChannel {
     private final String label;
 
     /** The action/text value */
-    @Nullable
-    private final String value; // could be either a format (text label) or a value to send (button)
+    private final @Nullable String value; // could be either a format (text label) or a value to send (button)
 
     /** The device channel range */
     private final NeeoDeviceChannelRange range;
@@ -236,8 +235,7 @@ public class NeeoDeviceChannel {
      *
      * @return the value
      */
-    @Nullable
-    public String getValue() {
+    public @Nullable String getValue() {
         return value;
     }
 

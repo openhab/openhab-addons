@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,8 +26,17 @@ import org.openhab.binding.yeelight.internal.lib.enums.DeviceType;
 import org.openhab.binding.yeelight.internal.lib.listeners.DeviceConnectionStateListener;
 import org.openhab.binding.yeelight.internal.lib.listeners.DeviceStatusChangeListener;
 import org.openhab.binding.yeelight.internal.lib.services.DeviceManager;
-import org.openhab.core.library.types.*;
-import org.openhab.core.thing.*;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;

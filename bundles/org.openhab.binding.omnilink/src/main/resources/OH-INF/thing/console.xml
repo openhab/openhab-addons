@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Console Thing -->
+	<thing-type id="console">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>Console</label>
+		<description>A console configured in the controller.</description>
+		<channels>
+			<channel id="enable_disable_beeper" typeId="console_enable_disable_beeper"/>
+			<channel id="beep" typeId="console_beep"/>
+		</channels>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Console Number</label>
+				<description>The console number.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Console Channels -->
+	<channel-type id="console_enable_disable_beeper">
+		<item-type>String</item-type>
+		<label>Enable/Disable Console Beeper</label>
+		<description>Enable/Disable the beeper for this/all console(s).</description>
+		<category>Switch</category>
+		<command>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="ON">On</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="console_beep">
+		<item-type>Number</item-type>
+		<label>Beep Console</label>
+		<description>Send a beep command to this/all console(s).</description>
+		<category>SoundVolume</category>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Indefinitely</option>
+				<option value="2">1 time</option>
+				<option value="3">2 times</option>
+				<option value="4">3 times</option>
+				<option value="5">4 times</option>
+				<option value="6">5 times</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>

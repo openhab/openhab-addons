@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,17 +30,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Jackson - Initial contribution
  * @author Kai Kreuzer - Cleaned up code
+ * @author Peter Rosenberg - Improve properties support
  */
 public class BluetoothCharacteristic {
-    public static final int FORMAT_UINT8 = 0x11;
-    public static final int FORMAT_UINT16 = 0x12;
-    public static final int FORMAT_UINT32 = 0x14;
-    public static final int FORMAT_SINT8 = 0x21;
-    public static final int FORMAT_SINT16 = 0x22;
-    public static final int FORMAT_SINT32 = 0x24;
-    public static final int FORMAT_SFLOAT = 0x32;
-    public static final int FORMAT_FLOAT = 0x34;
-
     public static final int PROPERTY_BROADCAST = 0x01;
     public static final int PROPERTY_READ = 0x02;
     public static final int PROPERTY_WRITE_NO_RESPONSE = 0x04;
@@ -84,11 +75,6 @@ public class BluetoothCharacteristic {
     protected int properties;
     protected int permissions;
     protected int writeType;
-
-    /**
-     * The raw data value for this characteristic
-     */
-    protected int[] value = new int[0];
 
     /**
      * The {@link BluetoothService} to which this characteristic belongs
@@ -143,6 +129,16 @@ public class BluetoothCharacteristic {
     }
 
     /**
+     * Set the raw properties. The individual properties are represented as bits inside
+     * of this int value.
+     *
+     * @param properties of this Characteristic
+     */
+    public void setProperties(int properties) {
+        this.properties = properties;
+    }
+
+    /**
      * Returns the properties of this characteristic.
      *
      * The properties contain a bit mask of property flags indicating the features of this characteristic.
@@ -150,6 +146,46 @@ public class BluetoothCharacteristic {
      */
     public int getProperties() {
         return properties;
+    }
+
+    /**
+     * Returns if the given characteristics property is enabled or not.
+     *
+     * @param property one of the Constants BluetoothCharacteristic.PROPERTY_XX
+     * @return true if this characteristic has the given property enabled, false if properties not set or
+     *         the given property is not enabled.
+     */
+    public boolean hasPropertyEnabled(int property) {
+        return (properties & property) != 0;
+    }
+
+    /**
+     * Returns if notifications can be enabled on this characteristic.
+     *
+     * @return true if notifications can be enabled, false if notifications are not supported, characteristic is missing
+     *         on device or notifications are not supported.
+     */
+    public boolean canNotify() {
+        return hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_NOTIFY);
+    }
+
+    /**
+     * Returns if the value can be read on this characteristic.
+     *
+     * @return true if the value can be read, false otherwise.
+     */
+    public boolean canRead() {
+        return hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_READ);
+    }
+
+    /**
+     * Returns if the value can be written on this characteristic.
+     *
+     * @return true if the value can be written with of without a response, false otherwise.
+     */
+    public boolean canWrite() {
+        return hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_WRITE)
+                || hasPropertyEnabled(BluetoothCharacteristic.PROPERTY_WRITE_NO_RESPONSE);
     }
 
     /**
@@ -261,299 +297,6 @@ public class BluetoothCharacteristic {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Get the stored value for this characteristic.
-     *
-     */
-    public int[] getValue() {
-        return value;
-    }
-
-    /**
-     * Get the stored value for this characteristic.
-     *
-     */
-    public byte[] getByteValue() {
-        byte[] byteValue = new byte[value.length];
-        for (int cnt = 0; cnt < value.length; cnt++) {
-            byteValue[cnt] = (byte) (value[cnt] & 0xFF);
-        }
-        return byteValue;
-    }
-
-    /**
-     * Return the stored value of this characteristic.
-     *
-     */
-    public Integer getIntValue(int formatType, int offset) {
-        if ((offset + getTypeLen(formatType)) > value.length) {
-            return null;
-        }
-
-        switch (formatType) {
-            case FORMAT_UINT8:
-                return unsignedByteToInt(value[offset]);
-
-            case FORMAT_UINT16:
-                return unsignedBytesToInt(value[offset], value[offset + 1]);
-
-            case FORMAT_UINT32:
-                return unsignedBytesToInt(value[offset], value[offset + 1], value[offset + 2], value[offset + 3]);
-
-            case FORMAT_SINT8:
-                return unsignedToSigned(unsignedByteToInt(value[offset]), 8);
-
-            case FORMAT_SINT16:
-                return unsignedToSigned(unsignedBytesToInt(value[offset], value[offset + 1]), 16);
-
-            case FORMAT_SINT32:
-                return unsignedToSigned(
-                        unsignedBytesToInt(value[offset], value[offset + 1], value[offset + 2], value[offset + 3]), 32);
-            default:
-                logger.error("Unknown format type {} - no int value can be provided for it.", formatType);
-        }
-
-        return null;
-    }
-
-    /**
-     * Return the stored value of this characteristic. This doesn't read the remote data.
-     *
-     */
-    public Float getFloatValue(int formatType, int offset) {
-        if ((offset + getTypeLen(formatType)) > value.length) {
-            return null;
-        }
-
-        switch (formatType) {
-            case FORMAT_SFLOAT:
-                return bytesToFloat(value[offset], value[offset + 1]);
-            case FORMAT_FLOAT:
-                return bytesToFloat(value[offset], value[offset + 1], value[offset + 2], value[offset + 3]);
-            default:
-                logger.error("Unknown format type {} - no float value can be provided for it.", formatType);
-        }
-
-        return null;
-    }
-
-    /**
-     * Return the stored value of this characteristic. This doesn't read the remote data.
-     *
-     */
-    public String getStringValue(int offset) {
-        if (value == null || offset > value.length) {
-            return null;
-        }
-        byte[] strBytes = new byte[value.length - offset];
-        for (int i = 0; i < (value.length - offset); ++i) {
-            strBytes[i] = (byte) value[offset + i];
-        }
-        return new String(strBytes, StandardCharsets.UTF_8);
-    }
-
-    /**
-     * Updates the locally stored value of this characteristic.
-     *
-     * @param value the value to set
-     * @return true, if it has been set successfully
-     */
-    public boolean setValue(int[] value) {
-        this.value = value;
-        return true;
-    }
-
-    /**
-     * Set the local value of this characteristic.
-     *
-     * @param value the value to set
-     * @param formatType the format of the value (as one of the FORMAT_* constants in this class)
-     * @param offset the offset to use when interpreting the value
-     * @return true, if it has been set successfully
-     */
-    public boolean setValue(int value, int formatType, int offset) {
-        int len = offset + getTypeLen(formatType);
-        if (this.value == null) {
-            this.value = new int[len];
-        }
-        if (len > this.value.length) {
-            return false;
-        }
-        int val = value;
-        switch (formatType) {
-            case FORMAT_SINT8:
-                val = intToSignedBits(value, 8);
-                // Fall-through intended
-            case FORMAT_UINT8:
-                this.value[offset] = (byte) (val & 0xFF);
-                break;
-
-            case FORMAT_SINT16:
-                val = intToSignedBits(value, 16);
-                // Fall-through intended
-            case FORMAT_UINT16:
-                this.value[offset] = (byte) (val & 0xFF);
-                this.value[offset + 1] = (byte) ((val >> 8) & 0xFF);
-                break;
-
-            case FORMAT_SINT32:
-                val = intToSignedBits(value, 32);
-                // Fall-through intended
-            case FORMAT_UINT32:
-                this.value[offset] = (byte) (val & 0xFF);
-                this.value[offset + 1] = (byte) ((val >> 8) & 0xFF);
-                this.value[offset + 2] = (byte) ((val >> 16) & 0xFF);
-                this.value[offset + 2] = (byte) ((val >> 24) & 0xFF);
-                break;
-
-            default:
-                return false;
-        }
-        return true;
-    }
-
-    /**
-     * Set the local value of this characteristic.
-     *
-     * @param mantissa the mantissa of the value
-     * @param exponent the exponent of the value
-     * @param formatType the format of the value (as one of the FORMAT_* constants in this class)
-     * @param offset the offset to use when interpreting the value
-     * @return true, if it has been set successfully
-     *
-     */
-    public boolean setValue(int mantissa, int exponent, int formatType, int offset) {
-        int len = offset + getTypeLen(formatType);
-        if (value == null) {
-            value = new int[len];
-        }
-        if (len > value.length) {
-            return false;
-        }
-
-        switch (formatType) {
-            case FORMAT_SFLOAT:
-                int m = intToSignedBits(mantissa, 12);
-                int exp = intToSignedBits(exponent, 4);
-                value[offset] = (byte) (m & 0xFF);
-                value[offset + 1] = (byte) ((m >> 8) & 0x0F);
-                value[offset + 1] += (byte) ((exp & 0x0F) << 4);
-                break;
-
-            case FORMAT_FLOAT:
-                m = intToSignedBits(mantissa, 24);
-                exp = intToSignedBits(exponent, 8);
-                value[offset] = (byte) (m & 0xFF);
-                value[offset + 1] = (byte) ((m >> 8) & 0xFF);
-                value[offset + 2] = (byte) ((m >> 16) & 0xFF);
-                value[offset + 2] += (byte) (exp & 0xFF);
-                break;
-
-            default:
-                return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Set the local value of this characteristic.
-     *
-     * @param value the value to set
-     * @return true, if it has been set successfully
-     */
-    public boolean setValue(byte[] value) {
-        this.value = new int[value.length];
-        int cnt = 0;
-        for (byte val : value) {
-            this.value[cnt++] = val;
-        }
-        return true;
-    }
-
-    /**
-     * Set the local value of this characteristic.
-     *
-     * @param value the value to set
-     * @return true, if it has been set successfully
-     */
-    public boolean setValue(String value) {
-        this.value = new int[value.getBytes().length];
-        int cnt = 0;
-        for (byte val : value.getBytes()) {
-            this.value[cnt++] = val;
-        }
-        return true;
-    }
-
-    /**
-     * Returns the size of the requested value type.
-     */
-    private int getTypeLen(int formatType) {
-        return formatType & 0xF;
-    }
-
-    /**
-     * Convert a signed byte to an unsigned int.
-     */
-    private int unsignedByteToInt(int value) {
-        return value & 0xFF;
-    }
-
-    /**
-     * Convert signed bytes to a 16-bit unsigned int.
-     */
-    private int unsignedBytesToInt(int value1, int value2) {
-        return value1 + (value2 << 8);
-    }
-
-    /**
-     * Convert signed bytes to a 32-bit unsigned int.
-     */
-    private int unsignedBytesToInt(int value1, int value2, int value3, int value4) {
-        return value1 + (value2 << 8) + (value3 << 16) + (value4 << 24);
-    }
-
-    /**
-     * Convert signed bytes to a 16-bit short float value.
-     */
-    private float bytesToFloat(int value1, int value2) {
-        int mantissa = unsignedToSigned(unsignedByteToInt(value1) + ((unsignedByteToInt(value2) & 0x0F) << 8), 12);
-        int exponent = unsignedToSigned(unsignedByteToInt(value2) >> 4, 4);
-        return (float) (mantissa * Math.pow(10, exponent));
-    }
-
-    /**
-     * Convert signed bytes to a 32-bit short float value.
-     */
-    private float bytesToFloat(int value1, int value2, int value3, int value4) {
-        int mantissa = unsignedToSigned(
-                unsignedByteToInt(value1) + (unsignedByteToInt(value2) << 8) + (unsignedByteToInt(value3) << 16), 24);
-        return (float) (mantissa * Math.pow(10, value4));
-    }
-
-    /**
-     * Convert an unsigned integer to a two's-complement signed value.
-     */
-    private int unsignedToSigned(int unsigned, int size) {
-        if ((unsigned & (1 << size - 1)) != 0) {
-            return -1 * ((1 << size - 1) - (unsigned & ((1 << size - 1) - 1)));
-        } else {
-            return unsigned;
-        }
-    }
-
-    /**
-     * Convert an integer into the signed bits of the specified length.
-     */
-    private int intToSignedBits(int i, int size) {
-        if (i < 0) {
-            return (1 << size - 1) + (i & ((1 << size - 1) - 1));
-        } else {
-            return i;
-        }
     }
 
     public GattCharacteristic getGattCharacteristic() {

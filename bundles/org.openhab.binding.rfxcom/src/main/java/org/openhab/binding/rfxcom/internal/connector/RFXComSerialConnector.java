@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.rfxcom.internal.connector;
+
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.MAX_RFXCOM_MESSAGE_LEN;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -63,7 +65,7 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
 
         serialPort = commPort;
         serialPort.setSerialPortParams(38400, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-        serialPort.enableReceiveThreshold(1);
+        serialPort.enableReceiveThreshold(MAX_RFXCOM_MESSAGE_LEN);
         serialPort.enableReceiveTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
 
         in = serialPort.getInputStream();

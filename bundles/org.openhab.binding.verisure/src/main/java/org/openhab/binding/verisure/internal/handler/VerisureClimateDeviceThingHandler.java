@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,12 +21,13 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -88,7 +89,7 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
             case CHANNEL_HUMIDITY:
                 if (climateJSON.getData().getInstallation().getClimates().get(0).isHumidityEnabled()) {
                     double humidity = climateJSON.getData().getInstallation().getClimates().get(0).getHumidityValue();
-                    return new QuantityType<Dimensionless>(humidity, SmartHomeUnits.PERCENT);
+                    return new QuantityType<Dimensionless>(humidity, Units.PERCENT);
                 }
             case CHANNEL_HUMIDITY_ENABLED:
                 boolean humidityEnabled = climateJSON.getData().getInstallation().getClimates().get(0)
@@ -97,6 +98,15 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
             case CHANNEL_LOCATION:
                 String location = climateJSON.getLocation();
                 return location != null ? new StringType(location) : UnDefType.NULL;
+            case CHANNEL_BATTERY_STATUS:
+                VerisureBatteryStatusDTO batteryStatus = climateJSON.getBatteryStatus();
+                if (batteryStatus != null) {
+                    String status = batteryStatus.getStatus();
+                    if (status != null && status.equals("CRITICAL")) {
+                        return OnOffType.from(true);
+                    }
+                }
+                return OnOffType.from(false);
         }
         return UnDefType.UNDEF;
     }

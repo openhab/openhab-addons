@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal;
 
 import java.io.File;
@@ -82,7 +81,7 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
         try {
             if (msg instanceof HttpRequest) {
                 HttpRequest httpRequest = (HttpRequest) msg;
-                if (!whiteList.equals("DISABLE")) {
+                if (!"DISABLE".equals(whiteList)) {
                     String requestIP = "("
                             + ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress() + ")";
                     if (!whiteList.contains(requestIP)) {

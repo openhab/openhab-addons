@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,6 +85,7 @@ public class Server extends Thread {
      * Starts the server
      *
      */
+    @Override
     public void run() {
         this.startRetries = 0;
         while (!this.isInterrupted()) {
@@ -132,7 +133,7 @@ public class Server extends Thread {
 
         IDataPoint dp = DataPointFactory.createDataPoint(id, knxType, description);
         if (dp != null) {
-            this.dataPoints.put(new Integer(id), dp);
+            this.dataPoints.put(Integer.valueOf(id), dp);
         }
     }
 

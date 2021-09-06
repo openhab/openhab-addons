@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.miio.internal;
 
+import static org.openhab.core.library.unit.MetricPrefix.MILLI;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,9 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
-
-import tec.uom.se.unit.Units;
+import org.openhab.core.library.unit.Units;
 
 /**
  * Enum of the units used in the miio protocol
@@ -36,15 +36,31 @@ import tec.uom.se.unit.Units;
 @NonNullByDefault
 public enum MiIoQuantiyTypes {
 
-    CELCIUS(SIUnits.CELSIUS, "C"),
+    CELSIUS(SIUnits.CELSIUS, "C", "celcius"),
     FAHRENHEIT(ImperialUnits.FAHRENHEIT),
-    SECOND(SmartHomeUnits.SECOND, "seconds"),
-    MINUTE(SmartHomeUnits.MINUTE, "minutes"),
-    HOUR(SmartHomeUnits.HOUR, "hours"),
-    AMPERE(SmartHomeUnits.AMPERE),
-    WATT(SmartHomeUnits.WATT),
-    SQUARE_METRE(Units.SQUARE_METRE, "square_meter", "squaremeter"),
-    PERCENT(SmartHomeUnits.PERCENT);
+    KELVIN(Units.KELVIN, "K"),
+    PASCAL(SIUnits.PASCAL),
+    SECOND(Units.SECOND, "seconds"),
+    MINUTE(Units.MINUTE, "minutes"),
+    HOUR(Units.HOUR, "hours"),
+    DAY(Units.DAY, "days"),
+    AMPERE(Units.AMPERE),
+    MILLI_AMPERE(MILLI(Units.AMPERE), "mA"),
+    VOLT(Units.VOLT),
+    MILLI_VOLT(MILLI(Units.VOLT), "mV"),
+    WATT(Units.WATT),
+    LITRE(Units.LITRE, "liter"),
+    LUX(Units.LUX),
+    RADIANS(Units.RADIAN, "radians"),
+    DEGREE(Units.DEGREE_ANGLE, "degree"),
+    KILOWATT_HOUR(Units.KILOWATT_HOUR, "kwh", "kWH"),
+    SQUARE_METRE(SIUnits.SQUARE_METRE, "square_meter", "squaremeter"),
+    PERCENT(Units.PERCENT, "percentage"),
+    KGM3(Units.KILOGRAM_PER_CUBICMETRE, "kilogram_per_cubicmeter"),
+    UGM3(Units.MICROGRAM_PER_CUBICMETRE, "microgram_per_cubicmeter", "μg/m3"),
+    M3(SIUnits.CUBIC_METRE, "cubic_meter", "cubic_metre"),
+    LITER(Units.LITRE, "L", "litre"),
+    PPM(Units.PARTS_PER_MILLION, "parts_per_million");
 
     private final Unit<?> unit;
     private final String[] aliasses;

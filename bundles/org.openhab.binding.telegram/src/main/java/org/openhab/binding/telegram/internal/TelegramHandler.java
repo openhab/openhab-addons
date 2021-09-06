@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -513,7 +513,7 @@ public class TelegramHandler extends BaseThingHandler {
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    public <T extends BaseRequest, R extends BaseResponse> R execute(BaseRequest<T, R> request) {
+    public <T extends BaseRequest, R extends BaseResponse> R execute(BaseRequest<?, R> request) {
         TelegramBot localBot = bot;
         return localBot != null ? localBot.execute(request) : null;
     }

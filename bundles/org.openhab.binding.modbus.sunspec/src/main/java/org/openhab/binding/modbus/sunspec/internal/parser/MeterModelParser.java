@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.modbus.sunspec.internal.parser;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.sunspec.internal.SunSpecConstants;
 import org.openhab.binding.modbus.sunspec.internal.dto.MeterModelBlock;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
  * Parser for sunspec compatible meters

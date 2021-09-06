@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,10 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.powermax.internal.message;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openhab.binding.powermax.internal.state.PowermaxArmMode;
 import org.openhab.binding.powermax.internal.state.PowermaxPanelSettings;
@@ -24,10 +28,34 @@ import org.openhab.binding.powermax.internal.state.PowermaxZoneSettings;
  */
 public class PowermaxStatusMessage extends PowermaxBaseMessage {
 
-    private static final String[] EVENT_TYPE_TABLE = new String[] { "None", "Tamper Alarm", "Tamper Restore", "Open",
-            "Closed", "Violated (Motion)", "Panic Alarm", "RF Jamming", "Tamper Open", "Communication Failure",
-            "Line Failure", "Fuse", "Not Active", "Low Battery", "AC Failure", "Fire Alarm", "Emergency",
-            "Siren Tamper", "Siren Tamper Restore", "Siren Low Battery", "Siren AC Fail" };
+    private static byte[] zoneBytes(byte zones1, byte zones9, byte zones17, byte zones25) {
+        return new byte[] { zones25, zones17, zones9, zones1 };
+    }
+
+    private static boolean[] zoneBits(byte[] zoneBytes) {
+        boolean[] zones = new boolean[32];
+        char[] binary = new BigInteger(zoneBytes).toString(2).toCharArray();
+        int len = binary.length - 1;
+
+        for (int i = len; i >= 0; i--) {
+            zones[len - i + 1] = (binary[i] == '1');
+        }
+
+        return zones;
+    }
+
+    private static String zoneList(byte[] zoneBytes) {
+        boolean[] zones = zoneBits(zoneBytes);
+        List<String> names = new ArrayList<>();
+
+        for (int i = 1; i < zones.length; i++) {
+            if (zones[i]) {
+                names.add(String.format("Zone %d", i));
+            }
+        }
+
+        return String.join(", ", names);
+    }
 
     /**
      * Constructor
@@ -40,9 +68,7 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage(PowermaxCommManager commManager) {
-        super.handleMessage(commManager);
-
+    protected PowermaxState handleMessageInternal(PowermaxCommManager commManager) {
         if (commManager == null) {
             return null;
         }
@@ -52,17 +78,27 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
 
         byte[] message = getRawData();
         byte eventType = message[3];
+        String eventTypeStr = PowermaxMessageConstants.getMessageTypeString(eventType & 0x000000FF);
+
+        debug("Event type", eventType, eventTypeStr);
 
         if (eventType == 0x02) {
-            int zoneStatus = (message[4] & 0x000000FF) | ((message[5] << 8) & 0x0000FF00)
-                    | ((message[6] << 16) & 0x00FF0000) | ((message[7] << 24) & 0xFF000000);
-            int batteryStatus = (message[8] & 0x000000FF) | ((message[9] << 8) & 0x0000FF00)
-                    | ((message[10] << 16) & 0x00FF0000) | ((message[11] << 24) & 0xFF000000);
+            byte[] zoneStatusBytes = zoneBytes(message[4], message[5], message[6], message[7]);
+            byte[] batteryStatusBytes = zoneBytes(message[8], message[9], message[10], message[11]);
+
+            boolean[] zoneStatus = zoneBits(zoneStatusBytes);
+            boolean[] batteryStatus = zoneBits(batteryStatusBytes);
+
+            String zoneStatusStr = zoneList(zoneStatusBytes);
+            String batteryStatusStr = zoneList(batteryStatusBytes);
 
             for (int i = 1; i <= panelSettings.getNbZones(); i++) {
-                updatedState.setSensorTripped(i, ((zoneStatus >> (i - 1)) & 0x1) > 0);
-                updatedState.setSensorLowBattery(i, ((batteryStatus >> (i - 1)) & 0x1) > 0);
+                updatedState.getZone(i).tripped.setValue(zoneStatus[i]);
+                updatedState.getZone(i).lowBattery.setValue(batteryStatus[i]);
             }
+
+            debug("Zone status", zoneStatusBytes, zoneStatusStr);
+            debug("Battery status", batteryStatusBytes, batteryStatusStr);
         } else if (eventType == 0x04) {
             byte sysStatus = message[4];
             byte sysFlags = message[5];
@@ -70,22 +106,21 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             byte zoneEType = message[7];
             int x10Status = (message[10] & 0x000000FF) | ((message[11] << 8) & 0x0000FF00);
 
-            String zoneETypeStr = ((zoneEType & 0x000000FF) < EVENT_TYPE_TABLE.length)
-                    ? EVENT_TYPE_TABLE[zoneEType & 0x000000FF]
-                    : "UNKNOWN";
+            String eventZoneStr = PowermaxMessageConstants.getZoneOrUserString(eventZone & 0x000000FF);
+            String zoneETypeStr = PowermaxMessageConstants.getZoneEventString(zoneEType & 0x000000FF);
 
             if (zoneEType == 0x03) {
-                updatedState.setSensorTripped(eventZone, Boolean.TRUE);
-                updatedState.setSensorLastTripped(eventZone, System.currentTimeMillis());
+                updatedState.getZone(eventZone).tripped.setValue(true);
+                updatedState.getZone(eventZone).lastTripped.setValue(System.currentTimeMillis());
             } else if (zoneEType == 0x04) {
-                updatedState.setSensorTripped(eventZone, Boolean.FALSE);
+                updatedState.getZone(eventZone).tripped.setValue(false);
             } else if (zoneEType == 0x05) {
                 PowermaxZoneSettings zone = panelSettings.getZoneSettings(eventZone);
                 if ((zone != null) && zone.getSensorType().equalsIgnoreCase("unknown")) {
                     zone.setSensorType("Motion");
                 }
-                updatedState.setSensorTripped(eventZone, Boolean.TRUE);
-                updatedState.setSensorLastTripped(eventZone, System.currentTimeMillis());
+                updatedState.getZone(eventZone).tripped.setValue(true);
+                updatedState.getZone(eventZone).lastTripped.setValue(System.currentTimeMillis());
             }
 
             // PGM & X10 devices
@@ -96,30 +131,30 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             String sysStatusStr = "";
             if ((sysFlags & 0x1) == 1) {
                 sysStatusStr = sysStatusStr + "Ready, ";
-                updatedState.setReady(true);
+                updatedState.ready.setValue(true);
             } else {
                 sysStatusStr = sysStatusStr + "Not ready, ";
-                updatedState.setReady(false);
+                updatedState.ready.setValue(false);
             }
             if (((sysFlags >> 1) & 0x1) == 1) {
                 sysStatusStr = sysStatusStr + "Alert in memory, ";
-                updatedState.setAlertInMemory(true);
+                updatedState.alertInMemory.setValue(true);
             } else {
-                updatedState.setAlertInMemory(false);
+                updatedState.alertInMemory.setValue(false);
             }
             if (((sysFlags >> 2) & 0x1) == 1) {
                 sysStatusStr = sysStatusStr + "Trouble, ";
-                updatedState.setTrouble(true);
+                updatedState.trouble.setValue(true);
             } else {
-                updatedState.setTrouble(false);
+                updatedState.trouble.setValue(false);
             }
             if (((sysFlags >> 3) & 0x1) == 1) {
                 sysStatusStr = sysStatusStr + "Bypass on, ";
-                updatedState.setBypass(true);
+                updatedState.bypass.setValue(true);
             } else {
-                updatedState.setBypass(false);
+                updatedState.bypass.setValue(false);
                 for (int i = 1; i <= panelSettings.getNbZones(); i++) {
-                    updatedState.setSensorBypassed(i, false);
+                    updatedState.getZone(i).bypassed.setValue(false);
                 }
             }
             if (((sysFlags >> 4) & 0x1) == 1) {
@@ -140,9 +175,9 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             }
             if (((sysFlags >> 7) & 0x1) == 1) {
                 sysStatusStr = sysStatusStr + "Alarm event, ";
-                updatedState.setAlarmActive(true);
+                updatedState.alarmActive.setValue(true);
             } else {
-                updatedState.setAlarmActive(false);
+                updatedState.alarmActive.setValue(false);
             }
             sysStatusStr = sysStatusStr.substring(0, sysStatusStr.length() - 2);
             String statusStr;
@@ -152,8 +187,14 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             } catch (IllegalArgumentException e) {
                 statusStr = "UNKNOWN";
             }
-            updatedState.setArmMode(statusStr);
-            updatedState.setStatusStr(statusStr + ", " + sysStatusStr);
+            updatedState.armMode.setValue(statusStr);
+            updatedState.statusStr.setValue(statusStr + ", " + sysStatusStr);
+
+            debug("System status", sysStatus, statusStr);
+            debug("System flags", sysFlags, sysStatusStr);
+            debug("Event zone", eventZone, eventZoneStr);
+            debug("Zone event type", zoneEType, zoneETypeStr);
+            debug("X10 status", x10Status);
 
             for (int i = 1; i <= panelSettings.getNbZones(); i++) {
                 PowermaxZoneSettings zone = panelSettings.getZoneSettings(i);
@@ -167,60 +208,21 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
                     boolean armed = (!zone.getType().equalsIgnoreCase("Non-Alarm") && (zone.isAlwaysInAlarm()
                             || (mode == 0x5) || ((mode == 0x4) && !zone.getType().equalsIgnoreCase("Interior-Follow")
                                     && !zone.getType().equalsIgnoreCase("Interior"))));
-                    updatedState.setSensorArmed(i, armed);
+                    updatedState.getZone(i).armed.setValue(armed);
                 }
             }
         } else if (eventType == 0x06) {
-            int zoneBypass = (message[8] & 0x000000FF) | ((message[9] << 8) & 0x0000FF00)
-                    | ((message[10] << 16) & 0x00FF0000) | ((message[11] << 24) & 0xFF000000);
+            byte[] zoneBypassBytes = zoneBytes(message[8], message[9], message[10], message[11]);
+            boolean[] zoneBypass = zoneBits(zoneBypassBytes);
+            String zoneBypassStr = zoneList(zoneBypassBytes);
 
             for (int i = 1; i <= panelSettings.getNbZones(); i++) {
-                updatedState.setSensorBypassed(i, ((zoneBypass >> (i - 1)) & 0x1) > 0);
+                updatedState.getZone(i).bypassed.setValue(zoneBypass[i]);
             }
+
+            debug("Zone bypass", zoneBypassBytes, zoneBypassStr);
         }
 
         return updatedState;
-    }
-
-    @Override
-    public String toString() {
-        String str = super.toString();
-
-        byte[] message = getRawData();
-        byte eventType = message[3];
-
-        str += "\n - event type = " + String.format("%02X", eventType);
-        if (eventType == 0x02) {
-            int zoneStatus = (message[4] & 0x000000FF) | ((message[5] << 8) & 0x0000FF00)
-                    | ((message[6] << 16) & 0x00FF0000) | ((message[7] << 24) & 0xFF000000);
-            int batteryStatus = (message[8] & 0x000000FF) | ((message[9] << 8) & 0x0000FF00)
-                    | ((message[10] << 16) & 0x00FF0000) | ((message[11] << 24) & 0xFF000000);
-
-            str += "\n - zone status = " + String.format("%08X", zoneStatus);
-            str += "\n - battery status = " + String.format("%08X", batteryStatus);
-        } else if (eventType == 0x04) {
-            byte sysStatus = message[4];
-            byte sysFlags = message[5];
-            byte eventZone = message[6];
-            byte zoneEType = message[7];
-            int x10Status = (message[10] & 0x000000FF) | ((message[11] << 8) & 0x0000FF00);
-
-            String zoneETypeStr = ((zoneEType & 0x000000FF) < EVENT_TYPE_TABLE.length)
-                    ? EVENT_TYPE_TABLE[zoneEType & 0x000000FF]
-                    : "UNKNOWN";
-
-            str += "\n - system status = " + String.format("%02X", sysStatus);
-            str += "\n - system flags = " + String.format("%02X", sysFlags);
-            str += "\n - event zone = " + eventZone;
-            str += String.format("\n - zone event type = %02X (%s)", zoneEType, zoneETypeStr);
-            str += "\n - X10 status = " + String.format("%04X", x10Status);
-        } else if (eventType == 0x06) {
-            int zoneBypass = (message[8] & 0x000000FF) | ((message[9] << 8) & 0x0000FF00)
-                    | ((message[10] << 16) & 0x00FF0000) | ((message[11] << 24) & 0xFF000000);
-
-            str += "\n - zone bypass = " + String.format("%08X", zoneBypass);
-        }
-
-        return str;
     }
 }

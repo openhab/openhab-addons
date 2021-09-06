@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
@@ -30,6 +32,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Florian Schmidt - Initial Contribution
  */
 @Component
+@NonNullByDefault
 public class PicoTTSService implements TTSService {
     private final Set<Voice> voices = Stream
             .of(new PicoTTSVoice("de-DE"), new PicoTTSVoice("en-US"), new PicoTTSVoice("en-GB"),
@@ -51,8 +54,8 @@ public class PicoTTSService implements TTSService {
 
     @Override
     public AudioStream synthesize(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
-        if (text == null || text.isEmpty()) {
-            throw new TTSException("The passed text can not be null or empty");
+        if (text.isEmpty()) {
+            throw new TTSException("The passed text can not be empty");
         }
 
         if (!this.voices.contains(voice)) {
@@ -80,7 +83,7 @@ public class PicoTTSService implements TTSService {
     }
 
     @Override
-    public String getLabel(Locale locale) {
+    public String getLabel(@Nullable Locale locale) {
         return "PicoTTS";
     }
 }

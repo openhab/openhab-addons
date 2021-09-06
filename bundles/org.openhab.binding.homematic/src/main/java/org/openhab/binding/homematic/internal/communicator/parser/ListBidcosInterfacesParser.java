@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,7 @@ public class ListBidcosInterfacesParser extends CommonRpcParser<Object[], ListBi
      * Returns the parsed type.
      */
     public String getType() {
-        return type;
+        return type == null ? "" : type;
     }
 
     /**
@@ -64,7 +64,7 @@ public class ListBidcosInterfacesParser extends CommonRpcParser<Object[], ListBi
      * Returns the firmware version.
      */
     public String getFirmware() {
-        return firmware;
+        return firmware == null ? "" : firmware;
     }
 
     /**

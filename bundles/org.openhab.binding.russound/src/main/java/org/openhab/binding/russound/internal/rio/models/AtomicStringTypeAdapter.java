@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,8 +38,7 @@ public class AtomicStringTypeAdapter extends TypeAdapter<AtomicReference<String>
     public AtomicReference<String> read(JsonReader in) throws IOException {
         AtomicReference<String> value = null;
 
-        JsonParser jsonParser = new JsonParser();
-        JsonElement je = jsonParser.parse(in);
+        JsonElement je = JsonParser.parseReader(in);
 
         if (je instanceof JsonPrimitive) {
             value = new AtomicReference<>();

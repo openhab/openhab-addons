@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,9 +36,7 @@ public class PowermaxPowerlinkMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    public PowermaxState handleMessage(PowermaxCommManager commManager) {
-        super.handleMessage(commManager);
-
+    protected PowermaxState handleMessageInternal(PowermaxCommManager commManager) {
         if (commManager == null) {
             return null;
         }
@@ -50,37 +48,31 @@ public class PowermaxPowerlinkMessage extends PowermaxBaseMessage {
 
         if (subType == 0x03) {
             // keep alive message
+
+            debug("Subtype", subType, "Keep Alive");
+
             commManager.sendAck(this, (byte) 0x02);
             updatedState = commManager.createNewState();
-            updatedState.setLastKeepAlive(System.currentTimeMillis());
-        } else if (subType == 0x0A && message[4] == 0x01) {
-            logger.debug("Powermax alarm binding: Enrolling Powerlink");
-            commManager.enrollPowerlink();
-            updatedState = commManager.createNewState();
-            updatedState.setDownloadSetupRequired(true);
+            updatedState.lastKeepAlive.setValue(System.currentTimeMillis());
+        } else if (subType == 0x0A) {
+            byte enroll = message[4];
+
+            debug("Subtype", subType, "Enroll");
+            debug("Enroll", enroll);
+
+            if (enroll == 0x01) {
+                logger.debug("Powermax alarm binding: Enrolling Powerlink");
+                commManager.enrollPowerlink();
+                updatedState = commManager.createNewState();
+                updatedState.downloadSetupRequired.setValue(true);
+            } else {
+                commManager.sendAck(this, (byte) 0x02);
+            }
         } else {
+            debug("Subtype", subType, "UNKNOWN");
             commManager.sendAck(this, (byte) 0x02);
         }
 
         return updatedState;
-    }
-
-    @Override
-    public String toString() {
-        String str = super.toString();
-
-        byte[] message = getRawData();
-        byte subType = message[2];
-
-        if (subType == 0x03) {
-            str += "\n - sub type = keep alive";
-        } else if (subType == 0x0A) {
-            str += "\n - sub type = enroll";
-            str += "\n - enroll = " + String.format("%02X", message[4]);
-        } else {
-            str += "\n - sub type = " + String.format("%02X", subType);
-        }
-
-        return str;
     }
 }

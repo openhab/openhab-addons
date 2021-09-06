@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,6 @@ public class RFXComGasMessageTest {
     @Test
     public void checkNotImplemented() {
         assertThrows(RFXComMessageNotImplementedException.class,
-                () -> RFXComMessageFactory.createMessage(PacketType.GAS));
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.GAS, null, null, null));
     }
 }

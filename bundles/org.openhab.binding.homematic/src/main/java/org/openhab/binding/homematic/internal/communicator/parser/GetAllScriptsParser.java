@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,8 @@
 package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
+import java.util.Objects;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
@@ -36,7 +36,7 @@ public class GetAllScriptsParser extends CommonRpcParser<Object[], Void> {
     public Void parse(Object[] message) throws IOException {
         message = (Object[]) message[0];
         for (int i = 0; i < message.length; i++) {
-            String scriptName = ObjectUtils.toString(message[i]);
+            String scriptName = Objects.toString(message[i], "");
             HmDatapoint dpScript = new HmDatapoint(scriptName, scriptName, HmValueType.BOOL, Boolean.FALSE, false,
                     HmParamsetType.VALUES);
             dpScript.setInfo(scriptName);

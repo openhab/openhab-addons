@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,12 +31,15 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class CallItemIntegrationTest extends AbstractTwoItemIntegrationTest {
 
+    public static final boolean LEGACY_MODE = false;
+
     private static final String NAME = "call";
     // values are encoded as part1,part2 - ordering goes wrt strings
     private static final StringListType STATE1 = new StringListType("part1", "foo");
     private static final StringListType STATE2 = new StringListType("part3", "bar");
     private static final StringListType STATE_BETWEEN = new StringListType("part2", "zzz");
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         CallItem item = (CallItem) ITEMS.get(NAME);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.tellstick.internal.core;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -119,7 +120,7 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
             case JNA.CLibrary.TELLSTICK_DIM:
                 dimValue = new BigDecimal(((TellstickDevice) device).getData());
                 dimValue = dimValue.multiply(new BigDecimal(100));
-                dimValue = dimValue.divide(new BigDecimal(255), 0, BigDecimal.ROUND_HALF_UP);
+                dimValue = dimValue.divide(new BigDecimal(255), 0, RoundingMode.HALF_UP);
                 break;
             default:
                 logger.warn("Could not handle {} for {}", ((TellstickDevice) device).getStatus(), device);

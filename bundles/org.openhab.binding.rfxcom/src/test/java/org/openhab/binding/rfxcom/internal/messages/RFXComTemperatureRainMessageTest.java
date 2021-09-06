@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,8 @@ public class RFXComTemperatureRainMessageTest {
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "0A4F01CCF001004F03B759";
         byte[] message = HexUtils.hexToBytes(hexMessage);
-        RFXComTemperatureRainMessage msg = (RFXComTemperatureRainMessage) RFXComMessageFactory.createMessage(message);
+        RFXComTemperatureRainMessage msg = (RFXComTemperatureRainMessage) RFXComMessageFactoryImpl.INSTANCE
+                .createMessage(message);
         assertEquals(WS1200, msg.subType, "SubType");
         assertEquals(204, (short) (msg.seqNbr & 0xFF), "Seq Number");
         assertEquals("61441", msg.getDeviceId(), "Sensor Id");

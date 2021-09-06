@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,9 @@ package org.openhab.binding.lutron.internal.radiora.protocol;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Button Press (BP) Command.
  * Trigger a Phantom Button Press on the RadioRA Serial Device.
@@ -22,6 +25,7 @@ import java.util.List;
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class ButtonPressCommand extends RadioRACommand {
 
     public enum ButtonState {
@@ -32,11 +36,13 @@ public class ButtonPressCommand extends RadioRACommand {
 
     private int buttonNumber; // 1 to 15, 16 ALL ON, 17 ALL OFF
     private ButtonState state; // ON/OFF/TOG
-    private Integer fadeSec; // 0 to 240 (optional)
+    private @Nullable Integer fadeSec; // 0 to 240 (optional)
+    private int system; // 1 or 2, or 0 for none
 
-    public ButtonPressCommand(int buttonNumber, ButtonState state) {
+    public ButtonPressCommand(int buttonNumber, ButtonState state, int system) {
         this.buttonNumber = buttonNumber;
         this.state = state;
+        this.system = system;
     }
 
     public void setFadeSeconds(int seconds) {
@@ -56,6 +62,10 @@ public class ButtonPressCommand extends RadioRACommand {
 
         if (fadeSec != null) {
             args.add(String.valueOf(fadeSec));
+        }
+
+        if (system == 1 || system == 2) {
+            args.add("S" + String.valueOf(system));
         }
 
         return args;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,10 +17,11 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * The {@link DataItemGroup} represents a list of all possible DataItem messages within the OpenTherm specification.
- * 
+ *
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
@@ -31,24 +32,34 @@ public class DataItemGroup {
     private static Map<Integer, DataItem[]> createDataItemGroups() {
         HashMap<Integer, DataItem[]> g = new HashMap<>();
 
-        g.put(0, new DataItem[] { new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 0, "ch_enable"),
-                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 1, "dhw_enable"),
-                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 2, "cooling_enabled"),
-                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 3, "otc_active"),
-                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 4, "ch2_enable"),
-                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 5, "0x00:5"),
-                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 6, "0x00:6"),
-                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 7, "0x00:7"),
-                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 0, "fault"),
-                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 1, "ch_mode"),
-                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 2, "dhw_mode"),
-                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 3, "flame"),
-                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 4, "cooling"),
-                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 5, "ch2E"),
-                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 6, "diag"),
-                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 7, "0x00:7") });
+        g.put(0, new DataItem[] {
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 0, "ch_enable", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 0, "ch_enablerequested", CodeType.T),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 0, "ch_enableoverride", CodeType.R),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 1, "dhw_enable", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 2, "cooling_enabled", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 3, "otc_active", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 4, "ch2_enable", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 4, "ch2_enablerequested", CodeType.T),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 4, "ch2_enableoverride", CodeType.R),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 5, "0x00:5", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 6, "0x00:6", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 7, "0x00:7", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 0, "fault", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 1, "ch_mode", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 2, "dhw_mode", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 3, "flame", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 4, "cooling", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 5, "ch2E", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 6, "diag", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 7, "0x00:7", CodeType.B) });
         g.put(1, new DataItem[] {
-                new DataItem(1, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpoint", SIUnits.CELSIUS) });
+                new DataItem(1, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpoint", SIUnits.CELSIUS,
+                        CodeType.B),
+                new DataItem(1, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpointrequested",
+                        SIUnits.CELSIUS, CodeType.T),
+                new DataItem(1, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpointoverride", SIUnits.CELSIUS,
+                        CodeType.R) });
         g.put(2, new DataItem[] { new DataItem(2, Msg.WRITE, ByteType.HIGHBYTE, DataType.FLAGS, 0, "0x02:0"),
                 new DataItem(2, Msg.WRITE, ByteType.HIGHBYTE, DataType.FLAGS, 1, "0x02:1"),
                 new DataItem(2, Msg.WRITE, ByteType.HIGHBYTE, DataType.FLAGS, 2, "0x02:2"),
@@ -95,7 +106,13 @@ public class DataItemGroup {
                 new DataItem(6, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 6, "0x06:h6"),
                 new DataItem(6, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 7, "0x06:h7") });
         g.put(7, new DataItem[] { new DataItem(7, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "0x07") });
-        g.put(8, new DataItem[] { new DataItem(8, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpoint2") });
+        g.put(8, new DataItem[] {
+                new DataItem(8, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpoint2", SIUnits.CELSIUS,
+                        CodeType.B),
+                new DataItem(8, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpoint2requested",
+                        SIUnits.CELSIUS, CodeType.T),
+                new DataItem(8, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpoint2override",
+                        SIUnits.CELSIUS, CodeType.R) });
         g.put(9, new DataItem[] { new DataItem(9, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "overridesetpoint") });
         g.put(10, new DataItem[] { new DataItem(10, Msg.WRITE, ByteType.HIGHBYTE, DataType.UINT8, 0, "0x0a:h"),
                 new DataItem(10, Msg.WRITE, ByteType.LOWBYTE, DataType.UINT8, 0, "0x0a:l") });
@@ -105,13 +122,16 @@ public class DataItemGroup {
                 new DataItem(12, Msg.READ, ByteType.LOWBYTE, DataType.UINT8, 0, "0x0c:l") });
         g.put(13, new DataItem[] { new DataItem(13, Msg.READ, ByteType.HIGHBYTE, DataType.UINT8, 0, "0x0d:h"),
                 new DataItem(13, Msg.READ, ByteType.LOWBYTE, DataType.UINT8, 0, "0x0d:l") });
-        g.put(14, new DataItem[] { new DataItem(14, Msg.READ, ByteType.LOWBYTE, DataType.FLOAT, 0, "maxrelmdulevel") });
+        g.put(14, new DataItem[] {
+                new DataItem(14, Msg.READ, ByteType.LOWBYTE, DataType.FLOAT, 0, "maxrelmdulevel", Units.PERCENT) });
         g.put(15, new DataItem[] { new DataItem(15, Msg.READ, ByteType.HIGHBYTE, DataType.UINT8, 0, "maxcapkw"),
                 new DataItem(15, Msg.READ, ByteType.LOWBYTE, DataType.UINT8, 0, "maxcapprc") });
         g.put(16, new DataItem[] {
                 new DataItem(16, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "roomsetpoint", SIUnits.CELSIUS) });
-        g.put(17, new DataItem[] { new DataItem(17, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "modulevel") });
-        g.put(18, new DataItem[] { new DataItem(18, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "waterpressure") });
+        g.put(17, new DataItem[] {
+                new DataItem(17, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "modulevel", Units.PERCENT) });
+        g.put(18, new DataItem[] {
+                new DataItem(18, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "waterpressure", Units.BAR) });
         g.put(19, new DataItem[] { new DataItem(19, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "dhwflow") });
         g.put(20, new DataItem[] { new DataItem(20, Msg.READWRITE, ByteType.BOTH, DataType.DOWTOD, 0, "dowtod") });
         g.put(21, new DataItem[] { new DataItem(21, Msg.READWRITE, ByteType.HIGHBYTE, DataType.UINT8, 0, "month"),
@@ -152,16 +172,22 @@ public class DataItemGroup {
                         new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 5, "rof5"),
                         new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 6, "rof6"),
                         new DataItem(100, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 7, "rof7") });
+        g.put(113, new DataItem[] {
+                new DataItem(113, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "unsuccessfulburnerstarts") });
         g.put(115, new DataItem[] { new DataItem(115, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "oemdiagcode") });
         g.put(116, new DataItem[] { new DataItem(116, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "burnerstarts") });
         g.put(117, new DataItem[] { new DataItem(117, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "chpumpstarts") });
         g.put(118, new DataItem[] { new DataItem(118, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwpvstarts") });
         g.put(119,
                 new DataItem[] { new DataItem(119, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwburnerstarts") });
-        g.put(120, new DataItem[] { new DataItem(120, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "burnerhours") });
-        g.put(121, new DataItem[] { new DataItem(121, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "chpumphours") });
-        g.put(122, new DataItem[] { new DataItem(122, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwpvhours") });
-        g.put(123, new DataItem[] { new DataItem(123, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwburnerhours") });
+        g.put(120, new DataItem[] {
+                new DataItem(120, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "burnerhours", Units.HOUR) });
+        g.put(121, new DataItem[] {
+                new DataItem(121, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "chpumphours", Units.HOUR) });
+        g.put(122, new DataItem[] {
+                new DataItem(122, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwpvhours", Units.HOUR) });
+        g.put(123, new DataItem[] {
+                new DataItem(123, Msg.READ, ByteType.BOTH, DataType.UINT16, 0, "dhwburnerhours", Units.HOUR) });
         g.put(124,
                 new DataItem[] { new DataItem(124, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "masterotversion") });
         g.put(125, new DataItem[] { new DataItem(125, Msg.READ, ByteType.BOTH, DataType.FLOAT, 0, "slaveotversion") });

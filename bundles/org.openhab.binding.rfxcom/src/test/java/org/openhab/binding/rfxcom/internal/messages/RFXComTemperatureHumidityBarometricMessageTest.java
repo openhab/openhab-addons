@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ public class RFXComTemperatureHumidityBarometricMessageTest {
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "0D54020EE90000C9270203E70439";
         byte[] message = HexUtils.hexToBytes(hexMessage);
-        RFXComTemperatureHumidityBarometricMessage msg = (RFXComTemperatureHumidityBarometricMessage) RFXComMessageFactory
+        RFXComTemperatureHumidityBarometricMessage msg = (RFXComTemperatureHumidityBarometricMessage) RFXComMessageFactoryImpl.INSTANCE
                 .createMessage(message);
         assertEquals(THB2, msg.subType, "SubType");
         assertEquals(14, msg.seqNbr, "Seq Number");

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -267,13 +267,15 @@ public class HomieThingHandlerTests {
         // Assign old value
         Value value = property.getChannelState().getCache();
         Command command = TypeParser.parseCommand(value.getSupportedCommandTypes(), "OLDVALUE");
-        property.getChannelState().getCache().update(command);
-        // Try to update with new value
-        updateValue = new StringType("SOMETHINGNEW");
-        thingHandler.handleCommand(property.channelUID, updateValue);
-        // Expect old value and no MQTT publish
-        assertThat(property.getChannelState().getCache().getChannelState().toString(), is("OLDVALUE"));
-        verify(connection, times(1)).publish(any(), any(), anyInt(), anyBoolean());
+        if (command != null) {
+            property.getChannelState().getCache().update(command);
+            // Try to update with new value
+            updateValue = new StringType("SOMETHINGNEW");
+            thingHandler.handleCommand(property.channelUID, updateValue);
+            // Expect old value and no MQTT publish
+            assertThat(property.getChannelState().getCache().getChannelState().toString(), is("OLDVALUE"));
+            verify(connection, times(1)).publish(any(), any(), anyInt(), anyBoolean());
+        }
     }
 
     public Object createSubscriberAnswer(InvocationOnMock invocation) {

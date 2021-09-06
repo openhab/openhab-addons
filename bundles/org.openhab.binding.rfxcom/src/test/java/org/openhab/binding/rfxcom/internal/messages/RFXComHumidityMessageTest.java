@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ public class RFXComHumidityMessageTest {
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "085101027700360189";
         byte[] message = HexUtils.hexToBytes(hexMessage);
-        RFXComHumidityMessage msg = (RFXComHumidityMessage) RFXComMessageFactory.createMessage(message);
+        RFXComHumidityMessage msg = (RFXComHumidityMessage) RFXComMessageFactoryImpl.INSTANCE.createMessage(message);
         assertEquals(RFXComHumidityMessage.SubType.HUM1, msg.subType, "SubType");
         assertEquals(2, (short) (msg.seqNbr & 0xFF), "Seq Number");
         assertEquals("30464", msg.getDeviceId(), "Sensor Id");

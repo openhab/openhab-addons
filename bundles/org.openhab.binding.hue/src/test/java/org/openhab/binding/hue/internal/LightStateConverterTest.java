@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,12 @@ package org.openhab.binding.hue.internal;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hue.internal.State.ColorMode;
+import org.openhab.binding.hue.internal.dto.ColorTemperature;
 import org.openhab.binding.hue.internal.handler.LightStateConverter;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -32,11 +34,43 @@ import org.openhab.core.library.types.PercentType;
 public class LightStateConverterTest {
 
     @Test
+    public void colorTemperatureLightStateConverterConversionIsBijectiveDefaultColorTemperatureCapabilities() {
+        final State lightState = new State();
+        final ColorTemperature colorTemperature = new ColorTemperature();
+        for (int percent = 1; percent <= 100; ++percent) {
+            StateUpdate stateUpdate = LightStateConverter
+                    .toColorTemperatureLightStateFromPercentType(new PercentType(percent), colorTemperature);
+            assertThat(stateUpdate.commands, hasSize(1));
+            assertThat(stateUpdate.commands.get(0).key, is("ct"));
+            lightState.ct = Integer.parseInt(stateUpdate.commands.get(0).value.toString());
+            assertThat(LightStateConverter.toColorTemperaturePercentType(lightState, colorTemperature).intValue(),
+                    is(percent));
+        }
+    }
+
+    @Test
+    public void colorTemperatureLightStateConverterConversionIsBijectiveIndividualColorTemperatureCapabilities() {
+        final State lightState = new State();
+        final ColorTemperature colorTemperature = new ColorTemperature();
+        colorTemperature.min = 250;
+        colorTemperature.max = 454;
+        for (int percent = 1; percent <= 100; ++percent) {
+            StateUpdate stateUpdate = LightStateConverter
+                    .toColorTemperatureLightStateFromPercentType(new PercentType(percent), colorTemperature);
+            assertThat(stateUpdate.commands, hasSize(1));
+            assertThat(stateUpdate.commands.get(0).key, is("ct"));
+            lightState.ct = Integer.parseInt(stateUpdate.commands.get(0).value.toString());
+            assertThat(LightStateConverter.toColorTemperaturePercentType(lightState, colorTemperature).intValue(),
+                    is(percent));
+        }
+    }
+
+    @Test
     public void brightnessOfZeroIsZero() {
         final State lightState = new State();
         // 0 percent should not be sent to the Hue interface
         StateUpdate stateUpdate = LightStateConverter.toBrightnessLightState(PercentType.ZERO);
-        assertThat(stateUpdate.commands.size(), is(1));
+        assertThat(stateUpdate.commands, hasSize(1));
         // a brightness of 0 should result in 0 percent
         lightState.bri = 0;
         assertThat(LightStateConverter.toBrightnessPercentType(lightState), is(PercentType.ZERO));
@@ -47,7 +81,7 @@ public class LightStateConverterTest {
         final State lightState = new State();
         for (int percent = 1; percent <= 100; ++percent) {
             StateUpdate stateUpdate = LightStateConverter.toBrightnessLightState(new PercentType(percent));
-            assertThat(stateUpdate.commands.size(), is(2));
+            assertThat(stateUpdate.commands, hasSize(2));
             assertThat(stateUpdate.commands.get(1).key, is("bri"));
             lightState.bri = Integer.parseInt(stateUpdate.commands.get(1).value.toString());
             assertThat(LightStateConverter.toBrightnessPercentType(lightState).intValue(), is(percent));
@@ -71,7 +105,7 @@ public class LightStateConverterTest {
         // 0 percent should not be sent to the Hue interface
         final HSBType hsbType = new HSBType(DecimalType.ZERO, PercentType.ZERO, PercentType.ZERO);
         StateUpdate stateUpdate = LightStateConverter.toColorLightState(hsbType, lightState);
-        assertThat(stateUpdate.commands.size(), is(2));
+        assertThat(stateUpdate.commands, hasSize(1));
         // a brightness of 0 should result in 0 percent
         lightState.bri = 0;
         assertThat(LightStateConverter.toHSBType(lightState).getBrightness(), is(PercentType.ZERO));
@@ -84,9 +118,9 @@ public class LightStateConverterTest {
         for (int percent = 1; percent <= 100; ++percent) {
             final HSBType hsbType = new HSBType(DecimalType.ZERO, PercentType.ZERO, new PercentType(percent));
             StateUpdate stateUpdate = LightStateConverter.toColorLightState(hsbType, lightState);
-            assertThat(stateUpdate.commands.size(), is(3));
-            assertThat(stateUpdate.commands.get(2).key, is("bri"));
-            lightState.bri = Integer.parseInt(stateUpdate.commands.get(2).value.toString());
+            assertThat(stateUpdate.commands, hasSize(2));
+            assertThat(stateUpdate.commands.get(1).key, is("bri"));
+            lightState.bri = Integer.parseInt(stateUpdate.commands.get(1).value.toString());
             assertThat(LightStateConverter.toHSBType(lightState).getBrightness().intValue(), is(percent));
         }
     }
@@ -115,11 +149,11 @@ public class LightStateConverterTest {
     @Test
     public void colorLightStateConverterForSaturationConversionIsBijective() {
         final State lightState = new State();
-        lightState.colormode = ColorMode.CT.toString();
+        lightState.colormode = ColorMode.HS.toString();
         for (int percent = 0; percent <= 100; ++percent) {
             final HSBType hsbType = new HSBType(DecimalType.ZERO, new PercentType(percent), PercentType.HUNDRED);
             StateUpdate stateUpdate = LightStateConverter.toColorLightState(hsbType, lightState);
-            assertThat(stateUpdate.commands.size(), is(3));
+            assertThat(stateUpdate.commands, hasSize(3));
             assertThat(stateUpdate.commands.get(1).key, is("sat"));
             lightState.sat = Integer.parseInt(stateUpdate.commands.get(1).value.toString());
             assertThat(LightStateConverter.toHSBType(lightState).getSaturation().intValue(), is(percent));
@@ -129,14 +163,41 @@ public class LightStateConverterTest {
     @Test
     public void colorLightStateConverterForHueConversionIsBijective() {
         final State lightState = new State();
+        lightState.colormode = ColorMode.HS.toString();
         for (int hue = 0; hue < 360; ++hue) {
             final HSBType hsbType = new HSBType(new DecimalType(hue), PercentType.HUNDRED, PercentType.HUNDRED);
             StateUpdate stateUpdate = LightStateConverter.toColorLightState(hsbType, lightState);
-            assertThat(stateUpdate.commands.size(), is(3));
+            assertThat(stateUpdate.commands, hasSize(3));
             assertThat(stateUpdate.commands.get(0).key, is("hue"));
             lightState.hue = Integer.parseInt(stateUpdate.commands.get(0).value.toString());
             assertThat(LightStateConverter.toHSBType(lightState).getHue().intValue(), is(hue));
         }
+    }
+
+    @Test
+    public void colorLightStateConverterColorModeSelection() {
+        final State lightState = new State();
+        final HSBType hsbType = new HSBType(PercentType.HUNDRED, PercentType.HUNDRED, PercentType.HUNDRED);
+
+        lightState.colormode = null;
+        StateUpdate stateUpdate = LightStateConverter.toColorLightState(hsbType, lightState);
+        assertThat(stateUpdate.commands, hasSize(2));
+        assertThat(stateUpdate.commands.get(0).key, is("xy"));
+
+        lightState.colormode = ColorMode.CT.toString();
+        stateUpdate = LightStateConverter.toColorLightState(hsbType, lightState);
+        assertThat(stateUpdate.commands, hasSize(2));
+        assertThat(stateUpdate.commands.get(0).key, is("xy"));
+
+        lightState.colormode = ColorMode.HS.toString();
+        stateUpdate = LightStateConverter.toColorLightState(hsbType, lightState);
+        assertThat(stateUpdate.commands, hasSize(3));
+        assertThat(stateUpdate.commands.get(0).key, is("hue"));
+
+        lightState.colormode = ColorMode.XY.toString();
+        stateUpdate = LightStateConverter.toColorLightState(hsbType, lightState);
+        assertThat(stateUpdate.commands, hasSize(2));
+        assertThat(stateUpdate.commands.get(0).key, is("xy"));
     }
 
     @Test

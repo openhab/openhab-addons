@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,7 @@ import org.openhab.core.io.transport.serial.SerialPortIdentifier;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -74,7 +75,7 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
     /**
      * Serial Port Manager.
      */
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
 
     /**
      * DSMR Device that is scanned when discovery process in progress.
@@ -90,6 +91,14 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
      * Keeps a boolean during time discovery process in progress.
      */
     private boolean scanning;
+
+    @Activate
+    public DSMRBridgeDiscoveryService(final @Reference TranslationProvider i18nProvider,
+            final @Reference LocaleProvider localeProvider, final @Reference SerialPortManager serialPortManager) {
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
+        this.serialPortManager = serialPortManager;
+    }
 
     /**
      * Starts a new discovery scan.
@@ -202,32 +211,5 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
     public void handleErrorEvent(DSMRConnectorErrorEvent portEvent) {
         logger.debug("[{}] Error on port during discovery: {}", currentScannedPortName, portEvent);
         stopSerialPortScan();
-    }
-
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
-    }
-
-    @Reference
-    protected void setLocaleProvider(final LocaleProvider localeProvider) {
-        this.localeProvider = localeProvider;
-    }
-
-    protected void unsetLocaleProvider(final LocaleProvider localeProvider) {
-        this.localeProvider = null;
-    }
-
-    @Reference
-    protected void setTranslationProvider(TranslationProvider i18nProvider) {
-        this.i18nProvider = i18nProvider;
-    }
-
-    protected void unsetTranslationProvider(TranslationProvider i18nProvider) {
-        this.i18nProvider = null;
     }
 }

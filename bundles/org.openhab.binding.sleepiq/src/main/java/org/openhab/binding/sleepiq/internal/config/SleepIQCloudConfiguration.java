@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,17 +12,20 @@
  */
 package org.openhab.binding.sleepiq.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration class for the SleepIQ cloud.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public class SleepIQCloudConfiguration {
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
     public static final String POLLING_INTERVAL = "pollingInterval";
 
-    public String username;
-    public String password;
+    public String username = "";
+    public String password = "";
     public int pollingInterval;
 }

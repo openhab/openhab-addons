@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,7 +56,7 @@ public class TouchWandDimmerHandler extends TouchWandBaseUnitHandler {
             state = new PercentType(convertStatus);
             updateState(CHANNEL_DIMMER, state);
         } else {
-            logger.warn("updateTouchWandUnitState incompatible TouchWandUnitData instance");
+            logger.debug("updateTouchWandUnitState incompatible TouchWandUnitData instance");
         }
     }
 }

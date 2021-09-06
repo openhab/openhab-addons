@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,11 @@ package org.openhab.binding.unifiedremote.internal;
 import static org.openhab.binding.unifiedremote.internal.UnifiedRemoteBindingConstants.*;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -107,8 +111,9 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
         String host = receivePacket.getAddress().getHostAddress();
         String reply = new String(receivePacket.getData()).replaceAll("[\\p{C}]", NON_PRINTABLE_CHARTS_REPLACEMENT)
                 .replaceAll("[^\\x00-\\x7F]", NON_PRINTABLE_CHARTS_REPLACEMENT);
-        if (!reply.startsWith(DISCOVERY_RESPONSE_PREFIX))
+        if (!reply.startsWith(DISCOVERY_RESPONSE_PREFIX)) {
             throw new ParseException("Bad discovery response prefix", 0);
+        }
         String[] parts = Arrays
                 .stream(reply.replace(DISCOVERY_RESPONSE_PREFIX, "").split(NON_PRINTABLE_CHARTS_REPLACEMENT))
                 .filter((String e) -> e.length() != 0).toArray(String[]::new);

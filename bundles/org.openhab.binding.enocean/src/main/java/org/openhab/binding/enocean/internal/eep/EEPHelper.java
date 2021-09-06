@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import javax.measure.quantity.Energy;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelTotalusageConfig;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -35,14 +35,14 @@ public abstract class EEPHelper {
             QuantityType<Energy> newValue = value.as(QuantityType.class);
 
             if (newValue != null) {
-                newValue = newValue.toUnit(SmartHomeUnits.KILOWATT_HOUR);
+                newValue = newValue.toUnit(Units.KILOWATT_HOUR);
             }
 
             @SuppressWarnings("unchecked")
             QuantityType<Energy> oldValue = currentState.as(QuantityType.class);
 
             if (oldValue != null) {
-                oldValue = oldValue.toUnit(SmartHomeUnits.KILOWATT_HOUR);
+                oldValue = oldValue.toUnit(Units.KILOWATT_HOUR);
             }
 
             if ((newValue != null) && (oldValue != null)) {

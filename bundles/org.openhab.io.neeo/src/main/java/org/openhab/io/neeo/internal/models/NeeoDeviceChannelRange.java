@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.io.neeo.internal.models;
 
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.PercentType;
@@ -64,7 +63,7 @@ public class NeeoDeviceChannelRange {
         }
         this.minValue = minValue;
         this.maxValue = maxValue;
-        this.unit = StringUtils.isEmpty(unit) ? UNIT_NUMBER : unit;
+        this.unit = unit.isEmpty() ? UNIT_NUMBER : unit;
     }
 
     /**

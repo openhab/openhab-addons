@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -217,7 +217,10 @@ public class VeluxProduct {
     // Class helper methods
 
     public String getProductUniqueIndex() {
-        return this.name.toString().concat("#").concat(this.typeId.toString());
+        if (!v2 || serialNumber.startsWith(VeluxProductSerialNo.UNKNOWN)) {
+            return name.toString();
+        }
+        return VeluxProductSerialNo.cleaned(serialNumber);
     }
 
     // Getter and Setter methods

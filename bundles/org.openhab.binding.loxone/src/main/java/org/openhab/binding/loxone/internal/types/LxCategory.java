@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,11 +57,11 @@ public class LxCategory extends LxContainer {
     public CategoryType getType() {
         if (catType == null && type != null) {
             String tl = type.toLowerCase();
-            if (tl.equals("lights")) {
+            if ("lights".equals(tl)) {
                 catType = CategoryType.LIGHTS;
-            } else if (tl.equals("shading")) {
+            } else if ("shading".equals(tl)) {
                 catType = CategoryType.SHADING;
-            } else if (tl.equals("indoortemperature")) {
+            } else if ("indoortemperature".equals(tl)) {
                 catType = CategoryType.TEMPERATURE;
             } else {
                 catType = CategoryType.UNDEFINED;

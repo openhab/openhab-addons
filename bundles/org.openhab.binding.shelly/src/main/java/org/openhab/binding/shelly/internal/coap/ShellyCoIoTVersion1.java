@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
@@ -28,12 +29,10 @@ import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tec.uom.se.unit.Units;
 
 /**
  * The {@link ShellyCoIoTVersion1} implements the parsing for CoIoT version 1
@@ -65,10 +64,10 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
      *            ignored.
      */
     @Override
-    public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, CoIotSensor s,
-            Map<String, State> updates) {
+    public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, int serial, CoIotSensor s,
+            Map<String, State> updates, ShellyColorUtils col) {
         // first check the base implementation
-        if (super.handleStatusUpdate(sensorUpdates, sen, s, updates)) {
+        if (super.handleStatusUpdate(sensorUpdates, sen, s, updates, col)) {
             // process by the base class
             return true;
         }
@@ -84,7 +83,7 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                     case "temperature": // Sensor Temp
                         if (getString(getProfile().settings.temperatureUnits)
                                 .equalsIgnoreCase(SHELLY_TEMP_FAHRENHEIT)) {
-                            value = ImperialUnits.FAHRENHEIT.getConverterTo(Units.CELSIUS).convert(getDouble(s.value))
+                            value = ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(getDouble(s.value))
                                     .doubleValue();
                         }
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
@@ -120,7 +119,7 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                 String mGroup = profile.numMeters == 1 ? CHANNEL_GROUP_METER
                         : CHANNEL_GROUP_METER + (profile.isEMeter ? sen.links : rIndex);
                 updateChannel(updates, mGroup, CHANNEL_METER_CURRENTWATTS,
-                        toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
+                        toQuantityType(s.value, DIGITS_WATT, Units.WATT));
                 updateChannel(updates, mGroup, CHANNEL_LAST_UPDATE, getTimestamp());
                 break;
             case "s" /* CatchAll */:
@@ -132,7 +131,7 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                         break;
                     case "energy counter 0 [w-min]":
                         updateChannel(updates, rGroup, CHANNEL_METER_LASTMIN1,
-                                toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
+                                toQuantityType(s.value, DIGITS_WATT, Units.WATT));
                         break;
                     case "energy counter 1 [w-min]":
                     case "energy counter 2 [w-min]":
@@ -142,32 +141,33 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                     case "energy counter total [w-min]":
                         Double total = profile.isEMeter ? s.value / 1000 : s.value / 60 / 1000;
                         updateChannel(updates, rGroup, CHANNEL_METER_TOTALKWH,
-                                toQuantityType(total, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
+                                toQuantityType(total, DIGITS_KWH, Units.KILOWATT_HOUR));
                         break;
                     case "voltage":
                         updateChannel(updates, rGroup, CHANNEL_EMETER_VOLTAGE,
-                                toQuantityType(getDouble(s.value), DIGITS_VOLT, SmartHomeUnits.VOLT));
+                                toQuantityType(getDouble(s.value), DIGITS_VOLT, Units.VOLT));
                         break;
                     case "current":
                         updateChannel(updates, rGroup, CHANNEL_EMETER_CURRENT,
-                                toQuantityType(getDouble(s.value), DIGITS_VOLT, SmartHomeUnits.AMPERE));
+                                toQuantityType(getDouble(s.value), DIGITS_VOLT, Units.AMPERE));
                         break;
                     case "pf":
-                        updateChannel(updates, rGroup, CHANNEL_EMETER_PFACTOR, getDecimal(s.value));
+                        updateChannel(updates, rGroup, CHANNEL_EMETER_PFACTOR,
+                                toQuantityType(getDecimal(s.value), Units.PERCENT));
                         break;
                     case "position":
                         // work around: Roller reports 101% instead max 100
                         double pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(s.value, SHELLY_MAX_ROLLER_POS));
                         updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_CONTROL,
-                                toQuantityType(SHELLY_MAX_ROLLER_POS - pos, SmartHomeUnits.PERCENT));
+                                toQuantityType(SHELLY_MAX_ROLLER_POS - pos, Units.PERCENT));
                         updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_POS,
-                                toQuantityType(pos, SmartHomeUnits.PERCENT));
+                                toQuantityType(pos, Units.PERCENT));
                         break;
                     case "input event": // Shelly Button 1
-                        handleInputEvent(sen, getString(s.valueStr), -1, updates);
+                        handleInputEvent(sen, getString(s.valueStr), -1, serial, updates);
                         break;
                     case "input event counter": // Shelly Button 1/ix3
-                        handleInputEvent(sen, "", getInteger((int) s.value), updates);
+                        handleInputEvent(sen, "", getInteger((int) s.value), serial, updates);
                         break;
                     case "flood":
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
@@ -175,11 +175,18 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                         break;
                     case "tilt": // DW with FW1.6.5+ //+
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT,
-                                toQuantityType(s.value, DIGITS_NONE, SmartHomeUnits.DEGREE_ANGLE));
+                                toQuantityType(s.value, DIGITS_NONE, Units.DEGREE_ANGLE));
                         break;
                     case "vibration": // DW with FW1.6.5+
-                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
-                                s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                        if (profile.isMotion) {
+                            // handle as status
+                            updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
+                                    s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                        } else if (s.value == 1) {
+                            // handle as event
+                            thingHandler.triggerChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ALARM_STATE,
+                                    EVENT_TYPE_VIBRATION);
+                        }
                         break;
                     case "temp": // Shelly Bulb
                     case "colortemperature": // Shelly Duo
@@ -229,7 +236,7 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
      * @return fixed Sensor description (sen)
      */
     @Override
-    public CoIotDescrSen fixDescription(CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
+    public CoIotDescrSen fixDescription(@Nullable CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
         // Shelly1: reports null descr+type "Switch" -> map to S
         // Shelly1PM: reports null descr+type "Overtemp" -> map to O
         // Shelly1PM: reports null descr+type "W" -> add description
@@ -240,6 +247,9 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
         // Shelly Sense: Motion is reported with Desc "battery", but type "H" instead of "B"
         // Shelly Bulb: Colors are coded with Type="Red" etc. rather than Type="S" and color as Descr
         // Shelly RGBW2 is reporting Brightness, Power, VSwitch for each channel, but all with L=0
+        if (sen == null) {
+            throw new IllegalArgumentException("sen should not be null!");
+        }
         if (sen.desc == null) {
             sen.desc = "";
         }
@@ -257,8 +267,10 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                 CoIotDescrBlk blk = new CoIotDescrBlk();
                 CoIotDescrBlk blk0 = blkMap.get("0"); // blk 0 is always there
                 blk.id = sen.links;
-                blk.desc = blk0.desc + "_" + blk.id;
-                blkMap.put(blk.id, blk);
+                if (blk0 != null) {
+                    blk.desc = blk0.desc + "_" + blk.id;
+                    blkMap.put(blk.id, blk);
+                }
             }
         }
 

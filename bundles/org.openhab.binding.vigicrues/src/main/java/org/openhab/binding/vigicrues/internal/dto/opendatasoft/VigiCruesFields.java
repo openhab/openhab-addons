@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,32 +29,20 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VigiCruesFields {
     @SerializedName("debit")
-    private @Nullable Double flow;
+    private double flow = -1;
     @SerializedName("hauteur")
-    private @Nullable Double height;
+    private double height = -1;
     private @Nullable ZonedDateTime timestamp;
 
     public Optional<ZonedDateTime> getTimestamp() {
-        ZonedDateTime timestamp = this.timestamp;
-        if (timestamp != null) {
-            return Optional.of(timestamp);
-        }
-        return Optional.empty();
+        return Optional.ofNullable(timestamp);
     }
 
-    public Optional<Double> getFlow() {
-        Double flow = this.flow;
-        if (flow != null) {
-            return Optional.of(flow);
-        }
-        return Optional.empty();
+    public double getFlow() {
+        return flow;
     }
 
-    public Optional<Double> getHeight() {
-        Double height = this.height;
-        if (height != null) {
-            return Optional.of(height);
-        }
-        return Optional.empty();
+    public double getHeight() {
+        return height;
     }
 }

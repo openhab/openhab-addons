@@ -5,16 +5,14 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:plclogo:digital">
-		<parameter name="kind" type="text" pattern="I|M|Q|NI|NQ">
+		<parameter name="kind" type="text" pattern="I|M|Q|NI|NQ" required="true">
 			<label>LOGO! Digital Block Kind</label>
 			<description>LOGO! digital block kind</description>
-			<required>true</required>
 		</parameter>
-		<parameter name="force" type="boolean">
+		<parameter name="force" type="boolean" required="false">
 			<label>Force Channels Update</label>
 			<description>Propagate channels update to openHAB whether value changed or not</description>
 			<default>false</default>
-			<required>false</required>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

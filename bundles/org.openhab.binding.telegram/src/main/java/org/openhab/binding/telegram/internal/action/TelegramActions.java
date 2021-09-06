@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,6 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FutureResponseListener;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.util.B64Code;
 import org.openhab.binding.telegram.internal.TelegramHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -336,8 +335,9 @@ public class TelegramActions implements ThingActions {
                 if (username != null && password != null) {
                     AuthenticationStore auth = client.getAuthenticationStore();
                     URI uri = URI.create(photoURL);
-                    auth.addAuthenticationResult(new BasicResult(HttpHeader.AUTHORIZATION, uri,
-                            "Basic " + B64Code.encode(username + ":" + password, StandardCharsets.ISO_8859_1)));
+                    auth.addAuthenticationResult(
+                            new BasicResult(HttpHeader.AUTHORIZATION, uri, "Basic " + Base64.getEncoder()
+                                    .encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8))));
                 }
                 try {
                     // API has 10mb limit to jpg file size, without this it can only accept 2mb
@@ -349,6 +349,7 @@ public class TelegramActions implements ThingActions {
                         sendPhoto = new SendPhoto(chatId, fileContent);
                     } else {
                         logger.warn("Download from {} failed with status: {}", photoURL, contentResponse.getStatus());
+                        sendTelegram(chatId, caption + ":Download failed with status " + contentResponse.getStatus());
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {
@@ -473,6 +474,7 @@ public class TelegramActions implements ThingActions {
                     } else {
                         logger.warn("Download from {} failed with status: {}", animationURL,
                                 contentResponse.getStatus());
+                        sendTelegram(chatId, caption + ":Download failed with status " + contentResponse.getStatus());
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {
@@ -550,6 +552,7 @@ public class TelegramActions implements ThingActions {
                         sendVideo = new SendVideo(chatId, fileContent);
                     } else {
                         logger.warn("Download from {} failed with status: {}", videoURL, contentResponse.getStatus());
+                        sendTelegram(chatId, caption + ":Download failed with status " + contentResponse.getStatus());
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {

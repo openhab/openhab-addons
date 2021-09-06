@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,15 +48,7 @@ public enum HomekitAccessoryType {
     HEATER_COOLER("HeaterCooler"),
     LIGHT_SENSOR("LightSensor"),
     AIR_QUALITY_SENSOR("AirQualitySensor"),
-    DUMMY("Dummy"),
-    @Deprecated()
-    BLINDS("Blinds"),
-    @Deprecated()
-    OLD_DIMMABLE_LIGHTBULB("DimmableLighting"),
-    @Deprecated()
-    OLD_HUMIDITY_SENSOR("CurrentHumidity"),
-    @Deprecated()
-    OLD_COLORFUL_LIGHTBULB("ColorfulLighting");
+    DUMMY("Dummy");
 
     private static final Map<String, HomekitAccessoryType> TAG_MAP = new HashMap<>();
 

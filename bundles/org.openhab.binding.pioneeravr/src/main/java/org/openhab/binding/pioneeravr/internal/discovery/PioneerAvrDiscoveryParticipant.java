@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.pioneeravr.internal.PioneerAvrBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -58,7 +57,7 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
     protected void activate(ComponentContext componentContext) {
         if (componentContext.getProperties() != null) {
             String autoDiscoveryPropertyValue = (String) componentContext.getProperties().get("enableAutoDiscovery");
-            if (StringUtils.isNotEmpty(autoDiscoveryPropertyValue)) {
+            if (autoDiscoveryPropertyValue != null && !autoDiscoveryPropertyValue.isEmpty()) {
                 isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
             }
         }
@@ -76,8 +75,8 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
         DiscoveryResult result = null;
         ThingUID thingUid = getThingUID(device);
         if (thingUid != null) {
-            String label = StringUtils.isEmpty(device.getDetails().getFriendlyName()) ? device.getDisplayString()
-                    : device.getDetails().getFriendlyName();
+            String friendlyName = device.getDetails().getFriendlyName();
+            String label = friendlyName == null || friendlyName.isEmpty() ? device.getDisplayString() : friendlyName;
             Map<String, Object> properties = new HashMap<>(2, 1);
             properties.put(PioneerAvrBindingConstants.HOST_PARAMETER,
                     device.getIdentity().getDescriptorURL().getHost());
@@ -93,15 +92,16 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
     public ThingUID getThingUID(RemoteDevice device) {
         ThingUID result = null;
         if (isAutoDiscoveryEnabled) {
-            if (StringUtils.containsIgnoreCase(device.getDetails().getManufacturerDetails().getManufacturer(),
-                    PioneerAvrBindingConstants.MANUFACTURER)) {
+            String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
+            if (manufacturer != null
+                    && manufacturer.toLowerCase().contains(PioneerAvrBindingConstants.MANUFACTURER.toLowerCase())) {
                 logger.debug("Manufacturer matched: search: {}, device value: {}.",
-                        PioneerAvrBindingConstants.MANUFACTURER,
-                        device.getDetails().getManufacturerDetails().getManufacturer());
-                if (StringUtils.containsIgnoreCase(device.getType().getType(),
-                        PioneerAvrBindingConstants.UPNP_DEVICE_TYPE)) {
+                        PioneerAvrBindingConstants.MANUFACTURER, manufacturer);
+                String type = device.getType().getType();
+                if (type != null
+                        && type.toLowerCase().contains(PioneerAvrBindingConstants.UPNP_DEVICE_TYPE.toLowerCase())) {
                     logger.debug("Device type matched: search: {}, device value: {}.",
-                            PioneerAvrBindingConstants.UPNP_DEVICE_TYPE, device.getType().getType());
+                            PioneerAvrBindingConstants.UPNP_DEVICE_TYPE, type);
 
                     String deviceModel = device.getDetails().getModelDetails() != null
                             ? device.getDetails().getModelDetails().getModelName()
@@ -150,7 +150,7 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
      * @return
      */
     private boolean isSupportedDeviceModel(String deviceModel, Set<String> supportedDeviceModels) {
-        return StringUtils.isNotBlank(deviceModel) && supportedDeviceModels.stream()
-                .anyMatch(input -> StringUtils.startsWithIgnoreCase(deviceModel, input));
+        return deviceModel != null && !deviceModel.isBlank() && supportedDeviceModels.stream()
+                .anyMatch(input -> deviceModel.toLowerCase().startsWith(input.toLowerCase()));
     }
 }

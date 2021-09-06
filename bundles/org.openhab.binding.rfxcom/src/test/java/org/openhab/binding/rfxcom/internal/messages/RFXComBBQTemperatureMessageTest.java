@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,8 @@ public class RFXComBBQTemperatureMessageTest {
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "0A4E012B2955001A002179";
         byte[] message = HexUtils.hexToBytes(hexMessage);
-        RFXComBBQTemperatureMessage msg = (RFXComBBQTemperatureMessage) RFXComMessageFactory.createMessage(message);
+        RFXComBBQTemperatureMessage msg = (RFXComBBQTemperatureMessage) RFXComMessageFactoryImpl.INSTANCE
+                .createMessage(message);
         assertEquals(BBQ1, msg.subType, "SubType");
         assertEquals(43, msg.seqNbr, "Seq Number");
         assertEquals("10581", msg.getDeviceId(), "Sensor Id");

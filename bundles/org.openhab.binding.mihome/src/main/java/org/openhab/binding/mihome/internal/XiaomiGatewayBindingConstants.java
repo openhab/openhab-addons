@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -123,6 +123,7 @@ public class XiaomiGatewayBindingConstants {
     public static final String SERIAL_NUMBER = "serialNumber";
     public static final String HOST = "ipAddress";
     public static final String PORT = "port";
+    public static final String INTERFACE = "interface";
     public static final String TOKEN = "token";
 
     // Item config properties

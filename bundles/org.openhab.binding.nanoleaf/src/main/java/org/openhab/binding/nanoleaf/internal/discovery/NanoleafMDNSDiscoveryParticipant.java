@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,14 +75,14 @@ public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
         properties.put(Thing.PROPERTY_MODEL_ID, modelId);
         properties.put(Thing.PROPERTY_VENDOR, "Nanoleaf");
         String qualifiedName = service.getQualifiedName();
-        logger.debug("AVR found: {}", qualifiedName);
+        logger.debug("Device found: {}", qualifiedName);
 
         logger.trace("Discovered nanoleaf host: {} port: {} firmWare: {} modelId: {} qualifiedName: {}", host, port,
                 firmwareVersion, modelId, qualifiedName);
-        logger.debug("Adding Nanoleaf controller {} with FW version {} found at {} {} to inbox", qualifiedName,
+        logger.debug("Adding Nanoleaf controller {} with FW version {} found at {}:{} to inbox", qualifiedName,
                 firmwareVersion, host, port);
         if (!OpenAPIUtils.checkRequiredFirmware(service.getPropertyString("md"), firmwareVersion)) {
-            logger.warn("Nanoleaf controller firmware is too old. Must be {} or higher",
+            logger.debug("Nanoleaf controller firmware is too old. Must be {} or higher",
                     MODEL_ID_LIGHTPANELS.equals(modelId) ? API_MIN_FW_VER_LIGHTPANELS : API_MIN_FW_VER_CANVAS);
         }
 

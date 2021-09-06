@@ -4,7 +4,7 @@ The binding uses the Tankerkönig API <https://www.tankerkoenig.de> for collecti
 Special thanks to the creators of Tankerkönig for providing an easy way to get data from the &lsqb;MTS-K&rsqb; (Markttransparenzstelle für Kraftstoffe).
 
 Tankerkönig is providing this service for free, however they request to prevent overloading of their server by reducing the number of web-requests.
-This binding handles those requests (minimum Refresh Interval is 10 minutes, a webserver does handle a maximum of 10 stations).
+This binding handles those requests (minimum Refresh Interval is 5 minutes, a webserver does handle a maximum of 10 stations).
 The data will be updated for each Station individually after the initialization and after each Refresh Interval for all (open) stations (Note: changing the Webservice will cause the Refresh Interval to restart).
 Additionally one may select the mode Opening-Times in which only those Stations get polled which are actually open.
 For a correct usage of opening times the binding needs the information if the actual day is a holiday.
@@ -49,7 +49,7 @@ The binding has no configuration options itself, all configuration is done at 'B
 
 ## Thing configuration
 
-The Webservice (bridge) needs to be configured with the personal API-Key, the desired Refresh Interval (the time interval between price-updates, default 60 minutes, minimum 10 minutes) and the Opening-Times mode selection (in this mode price-updates are only requested from stations that are actually open).
+The Webservice (bridge) needs to be configured with the personal API-Key, the desired Refresh Interval (the time interval between price-updates, default 60 minutes, minimum 5 minutes) and the Opening-Times mode selection (in this mode price-updates are only requested from stations that are actually open).
 A single Webservice can handle up to 10 Stations.
 
 Each Station needs to be configured with a LocationID and the Webservice to which it is linked.
@@ -123,28 +123,10 @@ If you receive the error because you are running an old Linux installation which
 
    1.) Update the Linux system and install the latest Java version
    
-   2.) Download the most recent JDK and install it directly on to your system without using a pre-composed package
-   
-   On Debian based systems one can use: http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html
+   2.) Download the most recent JDK and install it directly on to your system without using a pre-composed package   
 
    3.) Update the cacerts store by importing the missing certificate
-   
-   Note: Using this version, loaded certificates will expire!
-   If you still want to import the missing certificate, the example below may help:
-   Check which Java package you have installed:
-
-```java
->> sudo dpkg -l | grep java
->> ii  oracle-java8-jdk                    8u65                             armhf        Java™ Platform, Standard Edition 8 Development Kit
-```
-
-Find the ca-store of your JDK
-
-```java
->> sudo dpkg -L oracle-java8-jdk | grep cacerts
->> /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security/cacerts
-```
-    
+       
 Check which CA has validated the certificate
 
 Navigate to https://creativecommons.tankerkoenig.de/
@@ -156,7 +138,7 @@ Export the certificate of the certificate authority
 Import the certificate to the CA-store which you have found
 
 ```java
->> cd /usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security
+>> cd /usr/lib/jvm/jdk-11-oracle-arm32-vfp-hflt/jre/lib/security
 >> keytool -import -keystore cacerts -alias LetsEncrypt -file ca.crt
 ```
 
@@ -168,7 +150,7 @@ Restart your server
 
 Either the web-request to Tankerkönig returned a failure or no valid response was received (this could be caused by a banned API-key).
 In both cases the Webservice and the Station(s) go OFFLINE.
-If the Tankerkönig return indicates an error a descriptive message (in German) is added next to the OFFLINE which will be displayed on the Webservice and Station(s) pages on Paper UI.
+If the Tankerkönig return indicates an error a descriptive message (in German) is added next to the OFFLINE which will be displayed on the Webservice and Station(s) pages on UI. For further investigation the API Explorer can be used to show all data-fields of the things.
 On the next receipt of a valid message Webservice and Station(s) will go ONLINE again.
 The scheduled polling of price-data is canceled in case of no valid response.
 Users should check the log for any reports to solve the reason for the OFFLINE status.
@@ -187,4 +169,3 @@ This switch can be set either manually (only suggested for testing!) or by a rul
 *   <https://creativecommons.tankerkoenig.de/>  (sorry, only available in German)
 
 *   &lsqb;MTS-K&rsqb;: <https://www.bundeskartellamt.de/DE/Wirtschaftsbereiche/Mineral%C3%B6l/MTS-Kraftstoffe/Verbraucher/verbraucher_node.html>
-*   &lsqb;openhab1-addons rules&rsqb;: <https://github.com/openhab/openhab1-addons/wiki/Samples-Rules#how-to-calculate-public-holidays>

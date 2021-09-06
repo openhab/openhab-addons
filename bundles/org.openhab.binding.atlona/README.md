@@ -1,6 +1,7 @@
 # Atlona Binding
 
 This binding integrates Atlona AT-UHD-PRO3 HdBaseT matrix switches [Atlona AT-UHD-PRO3 HdBaseT matrix switches](https://www.atlona.com) into your openHAB installation.
+The older HD model 6x6 matrix [AT-PRO3HD66M] (https://atlona.com/product/at-pro3hd66m/) is also supported.
 
 ## Supported Things
 
@@ -12,10 +13,11 @@ This binding supports the following thing types:
 | pro3-66m      | Thing      | The AT-UHD-PRO3-66M 6x6 HDBaseT matrix.                 |
 | pro3-88m      | Thing      | The AT-UHD-PRO3-88M 8x8 HDBaseT matrix.                 |
 | pro3-1616m    | Thing      | The AT-UHD-PRO3-1616M 16x16 HDBaseT matrix.             |
+| pro3-hd66m    | Thing      | The AT-PRO3HD66M 6x6 HDBaseT matrix.                    |
 
 ## Discovery
 
-The Atlona AT-UHD-PRO3 switch can be discovered by starting a scan in the Paper UI and then logging into your switch and pressing the "SDDP" button on the "Network" tab.
+The Atlona AT-UHD-PRO3 switch can be discovered by starting a discovery scan in the UI and then logging into your switch and pressing the "SDDP" button on the "Network" tab.
 The "SDDP" (simple device discovery protocol) button will initiate the discovery process.
 If "Telnet Login" is enabled ("Network" tab from the switch configuration UI), you will need to set the username and password in the configuration of the newly discovered thing before a connection can be made.
 
@@ -145,6 +147,18 @@ If it is higher than the "IP Timeout" value, the switch will timeout our connect
 | pro3-1616m | volume11#volumemute                                             | Switch    | RW     | Mutes/Unmutes audio port #11                                                              |
 | pro3-1616m | volume12#volume                                                 | Number    | RW     | Sets the volume of audio port #12 to the specified decibel level (between -79db to +15db) |
 | pro3-1616m | volume12#volumemute                                             | Switch    | RW     | Mutes/Unmutes audio port #12                                                              |
+|            |                                                                 |           |        |                                                                                           |
+| pro3-hd66m | primary#power                                                   | Switch    | RW     | Matrix Power Switch                                                                       |
+| pro3-hd66m | primary#panellock                                               | Switch    | RW     | Sets the front panel locked or unlocked                                                   |
+| pro3-hd66m | primary#irenable                                                | Switch    | RW     | Enables/Disabled the front panel IR                                                       |
+| pro3-hd66m | primary#presetcmd                                               | Switch    | W      | Sends a preset command ('saveX', 'recallX', 'clearX') - see notes below                   |
+| pro3-hd66m | primary#matrixcmd                                               | Switch    | W      | Sends a matrix command ('resetmatrix', 'resetports', 'allportsX') - see notes below       |
+| pro3-hd66m | port1#portoutput                                                | Number    | RW     | Sets output port #1 to the specified input port                                           |
+| pro3-hd66m | port2#portoutput                                                | Number    | RW     | Sets output port #2 to the specified input port                                           |
+| pro3-hd66m | port3#portoutput                                                | Number    | RW     | Sets output port #3 to the specified input port                                           |
+| pro3-hd66m | port4#portoutput                                                | Number    | RW     | Sets output port #4 to the specified input port                                           |
+| pro3-hd66m | port5#portoutput                                                | Number    | RW     | Sets output port #5 to the specified input port                                           |
+| pro3-hd66m | port5#portoutput                                                | Number    | RW     | Sets output port #6 to the specified input port                                           |
 
 ### presetcmd
 

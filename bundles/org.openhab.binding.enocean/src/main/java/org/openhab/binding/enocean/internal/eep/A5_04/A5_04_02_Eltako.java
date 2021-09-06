@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import java.util.function.Function;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
 /**
@@ -37,7 +37,7 @@ public class A5_04_02_Eltako extends A5_04_02 {
             Function<String, State> getCurrentStateFunc, Configuration config) {
         if (channelId.equals(CHANNEL_BATTERY_VOLTAGE)) {
             double voltage = getDB_3Value() * 6.58 / 255.0; // not sure if this is right
-            return new QuantityType<>(voltage, SmartHomeUnits.VOLT);
+            return new QuantityType<>(voltage, Units.VOLT);
         }
 
         return super.convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config);

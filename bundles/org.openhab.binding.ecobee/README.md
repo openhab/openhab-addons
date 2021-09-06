@@ -47,6 +47,7 @@ Once logged in, select the **Developer** option from the menu.
 If you don't see the **Developer** option on the menu, then something went wrong with the previous step.
 
 4. Finally, create a new application.
+
 Give the application a name and fill in the application summary.
 Select the **Ecobee PIN** Authorization Method, then press **Create**.
 You now should see the **API key** for the application you just created.
@@ -107,7 +108,6 @@ The following configuration parameters are available on the Ecobee Account:
 | refreshIntervalQuick    | Integer    | Required         | Specifies the interval in seconds with which the Ecobee data will be updated after sending an update or executing a function. |
 | apiTimeout              | Integer    | Required         | Time in seconds to allow an API request against the Ecobee servers to complete. |
 | discoveryEnabled        | Switch     | Required         | Specifies whether the binding should auto-discover thermostats and remote sensors. |
-| discoveryInterval       | Integer    | Optional         | Specifies time interval in seconds in which the binding will attempt to discover thermostats. |
 
 ### Ecobee Thermostat
 

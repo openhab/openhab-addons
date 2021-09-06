@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.DatagramSocket;
 import java.time.Instant;
 import java.util.List;
@@ -567,7 +568,7 @@ public class GreeHandler extends BaseThingHandler {
 
     public static QuantityType<?> toQuantityType(Number value, int digits, Unit<?> unit) {
         BigDecimal bd = new BigDecimal(value.doubleValue());
-        return new QuantityType<>(bd.setScale(digits, BigDecimal.ROUND_HALF_EVEN), unit);
+        return new QuantityType<>(bd.setScale(digits, RoundingMode.HALF_EVEN), unit);
     }
 
     private void stopRefreshTask() {

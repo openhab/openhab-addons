@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,12 +41,10 @@ import com.google.gson.JsonSyntaxException;
 public final class RequestLogger {
     private final Logger logger = LoggerFactory.getLogger(RequestLogger.class);
     private final AtomicLong nextId = new AtomicLong();
-    private final JsonParser parser;
     private final Gson gson;
     private final String prefix;
 
     public RequestLogger(final String prefix, final Gson gson) {
-        parser = new JsonParser();
         this.gson = gson;
         this.prefix = prefix;
     }
@@ -133,7 +131,7 @@ public final class RequestLogger {
 
     private String reformatJson(final String jsonString) {
         try {
-            final JsonElement json = parser.parse(jsonString);
+            final JsonElement json = JsonParser.parseString(jsonString);
             return gson.toJson(json);
         } catch (final JsonSyntaxException e) {
             logger.debug("Could not reformat malformed JSON due to '{}'", e.getMessage());

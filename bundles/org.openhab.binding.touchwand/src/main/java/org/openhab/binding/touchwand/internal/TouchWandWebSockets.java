@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -148,9 +148,8 @@ public class TouchWandWebSockets {
         @OnWebSocketMessage
         public void onMessage(String msg) {
             TouchWandUnitData touchWandUnit;
-            JsonParser jsonParser = new JsonParser();
             try {
-                JsonObject unitObj = jsonParser.parse(msg).getAsJsonObject();
+                JsonObject unitObj = JsonParser.parseString(msg).getAsJsonObject();
                 boolean eventUnitChanged = unitObj.get("type").getAsString().equals("UNIT_CHANGED");
                 if (!eventUnitChanged) {
                     return;

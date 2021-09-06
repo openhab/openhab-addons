@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ public class OffDelayUpdateStateListener extends ChannelStateUpdateListenerProxy
     private final Value value;
     private final ScheduledExecutorService scheduler;
 
-    private AtomicReference<@Nullable ScheduledFuture<?>> delay = new AtomicReference<>();
+    private final AtomicReference<@Nullable ScheduledFuture<?>> delay = new AtomicReference<>();
 
     public OffDelayUpdateStateListener(ChannelStateUpdateListener original, int offDelay, Value value,
             ScheduledExecutorService scheduler) {

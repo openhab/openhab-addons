@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,16 @@ package org.openhab.transform.map.internal;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Locale;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.config.core.ConfigOptionProvider;
+import org.openhab.core.config.core.ParameterOption;
 import org.openhab.core.transform.AbstractFileTransformationService;
 import org.openhab.core.transform.TransformationException;
 import org.openhab.core.transform.TransformationService;
@@ -30,10 +38,17 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Initial contribution and API
  * @author Gaël L'hopital - Make it localizable
  */
-@Component(service = TransformationService.class, property = { "smarthome.transform=MAP" })
-public class MapTransformationService extends AbstractFileTransformationService<Properties> {
+@NonNullByDefault
+@Component(service = { TransformationService.class, ConfigOptionProvider.class }, property = {
+        "openhab.transform=MAP" })
+public class MapTransformationService extends AbstractFileTransformationService<Properties>
+        implements ConfigOptionProvider {
 
     private final Logger logger = LoggerFactory.getLogger(MapTransformationService.class);
+
+    private static final String PROFILE_CONFIG_URI = "profile:transform:MAP";
+    private static final String CONFIG_PARAM_FUNCTION = "function";
+    private static final String[] FILE_NAME_EXTENSIONS = { "map" };
 
     /**
      * <p>
@@ -43,9 +58,10 @@ public class MapTransformationService extends AbstractFileTransformationService<
      *
      * @param properties the list of properties which contains the key value pairs for the mapping.
      * @param source the input to transform
+     * @return the transformed result or null if the transformation couldn't be completed for any reason.
      */
     @Override
-    protected String internalTransform(Properties properties, String source) throws TransformationException {
+    protected @Nullable String internalTransform(Properties properties, String source) throws TransformationException {
         String target = properties.getProperty(source);
 
         if (target == null) {
@@ -68,5 +84,18 @@ public class MapTransformationService extends AbstractFileTransformationService<
         } catch (IOException e) {
             throw new TransformationException("An error occurred while opening file.", e);
         }
+    }
+
+    @Override
+    public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
+            @Nullable Locale locale) {
+        if (PROFILE_CONFIG_URI.equals(uri.toString())) {
+            switch (param) {
+                case CONFIG_PARAM_FUNCTION:
+                    return getFilenames(FILE_NAME_EXTENSIONS).stream().map(f -> new ParameterOption(f, f))
+                            .collect(Collectors.toList());
+            }
+        }
+        return null;
     }
 }

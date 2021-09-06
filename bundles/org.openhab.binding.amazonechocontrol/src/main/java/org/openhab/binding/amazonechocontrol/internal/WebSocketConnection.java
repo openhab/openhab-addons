@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,9 +73,7 @@ public class WebSocketConnection {
             IWebSocketCommandHandler webSocketCommandHandler) throws IOException {
         this.webSocketCommandHandler = webSocketCommandHandler;
         amazonEchoControlWebSocket = new AmazonEchoControlWebSocket();
-
-        SslContextFactory sslContextFactory = new SslContextFactory();
-        webSocketClient = new WebSocketClient(sslContextFactory);
+        webSocketClient = new WebSocketClient(new SslContextFactory.Client());
         try {
             String host;
             if (amazonSite.equalsIgnoreCase("amazon.com")) {

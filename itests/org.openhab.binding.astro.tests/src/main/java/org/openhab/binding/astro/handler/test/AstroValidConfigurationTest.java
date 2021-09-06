@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -108,7 +108,7 @@ public class AstroValidConfigurationTest {
     public void testIfTheIntervalForASunThingIsLessThan1_theThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, GEOLOCATION_VALUE);
-        thingConfiguration.put(INTERVAL_PROPERTY, new Integer(0));
+        thingConfiguration.put(INTERVAL_PROPERTY, Integer.valueOf(0));
         assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
@@ -116,7 +116,7 @@ public class AstroValidConfigurationTest {
     public void testIfTheIntervalForAMoonThingIsLessThan1_theThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, GEOLOCATION_VALUE);
-        thingConfiguration.put(INTERVAL_PROPERTY, new Integer(0));
+        thingConfiguration.put(INTERVAL_PROPERTY, Integer.valueOf(0));
         assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
@@ -124,7 +124,7 @@ public class AstroValidConfigurationTest {
     public void testIfTheIntervalForASunThingIsGreaterThan86400_theThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, GEOLOCATION_VALUE);
-        thingConfiguration.put(INTERVAL_PROPERTY, new Integer(86401));
+        thingConfiguration.put(INTERVAL_PROPERTY, Integer.valueOf(86401));
         assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
@@ -132,7 +132,7 @@ public class AstroValidConfigurationTest {
     public void testIfTheIntervalForAMoonThingIsGreaterThan86400_theThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, GEOLOCATION_VALUE);
-        thingConfiguration.put(INTERVAL_PROPERTY, new Integer(86401));
+        thingConfiguration.put(INTERVAL_PROPERTY, Integer.valueOf(86401));
         assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 

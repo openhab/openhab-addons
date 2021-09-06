@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -113,7 +114,7 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
     private SceneReadingJobExecutor sceneJobExecutor;
     private EventListener eventListener;
 
-    private final List<TrashDevice> trashDevices = new LinkedList<>();
+    private final List<TrashDevice> trashDevices = new CopyOnWriteArrayList<>();
 
     private long lastBinCheck = 0;
     private ManagerStates state = ManagerStates.STOPPED;
@@ -277,40 +278,39 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
             while (!currentDeviceList.isEmpty()) {
                 Device currentDevice = currentDeviceList.remove(0);
                 DSID currentDeviceDSID = currentDevice.getDSID();
-                Device eshDevice = tempDeviceMap.remove(currentDeviceDSID);
+                Device device = tempDeviceMap.remove(currentDeviceDSID);
 
-                if (eshDevice != null) {
-                    checkDeviceConfig(currentDevice, eshDevice);
+                if (device != null) {
+                    checkDeviceConfig(currentDevice, device);
 
-                    if (eshDevice.isPresent()) {
+                    if (device.isPresent()) {
                         // check device state updates
-                        while (!eshDevice.isDeviceUpToDate()) {
-                            DeviceStateUpdate deviceStateUpdate = eshDevice.getNextDeviceUpdateState();
+                        while (!device.isDeviceUpToDate()) {
+                            DeviceStateUpdate deviceStateUpdate = device.getNextDeviceUpdateState();
                             if (deviceStateUpdate != null) {
                                 switch (deviceStateUpdate.getType()) {
                                     case DeviceStateUpdate.OUTPUT:
                                     case DeviceStateUpdate.SLAT_ANGLE_INCREASE:
                                     case DeviceStateUpdate.SLAT_ANGLE_DECREASE:
-                                        filterCommand(deviceStateUpdate, eshDevice);
+                                        filterCommand(deviceStateUpdate, device);
                                         break;
                                     case DeviceStateUpdate.UPDATE_SCENE_CONFIG:
                                     case DeviceStateUpdate.UPDATE_SCENE_OUTPUT:
-                                        updateSceneData(eshDevice, deviceStateUpdate);
+                                        updateSceneData(device, deviceStateUpdate);
                                         break;
                                     case DeviceStateUpdate.UPDATE_OUTPUT_VALUE:
                                         if (deviceStateUpdate.getValueAsInteger() > -1) {
-                                            readOutputValue(eshDevice);
+                                            readOutputValue(device);
                                         } else {
-                                            removeSensorJob(eshDevice, deviceStateUpdate);
+                                            removeSensorJob(device, deviceStateUpdate);
                                         }
                                         break;
                                     default:
-                                        sendComandsToDSS(eshDevice, deviceStateUpdate);
+                                        sendComandsToDSS(device, deviceStateUpdate);
                                 }
                             }
                         }
                     }
-
                 } else {
                     logger.debug("Found new device!");
                     if (trashDevices.isEmpty()) {
@@ -320,21 +320,18 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
                                 currentDevice.getDSID());
                     } else {
                         logger.debug("Search device in trashDevices.");
-                        TrashDevice foundTrashDevice = null;
-                        for (TrashDevice trashDevice : trashDevices) {
-                            if (trashDevice != null) {
-                                if (trashDevice.getDevice().equals(currentDevice)) {
-                                    foundTrashDevice = trashDevice;
-                                    logger.debug(
-                                            "Found device in trashDevices, add TrashDevice with dSID {} to the StructureManager!",
-                                            currentDeviceDSID);
-                                }
+                        boolean found = trashDevices.removeIf(trashDevice -> {
+                            if (trashDevice.getDevice().equals(currentDevice)) {
+                                logger.debug(
+                                        "Found device in trashDevices, add TrashDevice with dSID {} to the StructureManager!",
+                                        currentDeviceDSID);
+                                strucMan.addDeviceToStructure(trashDevice.getDevice());
+                                return true;
+                            } else {
+                                return false;
                             }
-                        }
-                        if (foundTrashDevice != null) {
-                            trashDevices.remove(foundTrashDevice);
-                            strucMan.addDeviceToStructure(foundTrashDevice.getDevice());
-                        } else {
+                        });
+                        if (!found) {
                             strucMan.addDeviceToStructure(currentDevice);
                             logger.debug(
                                     "Can't find device in trashDevices, add Device with dSID: {} to the StructureManager!",
@@ -387,18 +384,19 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
                             DeviceStatusListener.DEVICE_DISCOVERY, device.getDSID().getValue());
                 } else {
                     logger.debug(
-                            "The device-Discovery is not registrated, can't inform device discovery about removed device.");
+                            "The device-Discovery is not registered, can't inform device discovery about removed device.");
                 }
             }
 
             if (!trashDevices.isEmpty() && (lastBinCheck + config.getBinCheckTime() < System.currentTimeMillis())) {
-                for (TrashDevice trashDevice : trashDevices) {
+                trashDevices.removeIf(trashDevice -> {
                     if (trashDevice.isTimeToDelete(Calendar.getInstance().get(Calendar.DAY_OF_YEAR))) {
-                        logger.debug("Found trashDevice that have to delete!");
-                        trashDevices.remove(trashDevice);
-                        logger.debug("Delete trashDevice: {}", trashDevice.getDevice().getDSID().getValue());
+                        logger.debug("Deleted trashDevice: {}", trashDevice.getDevice().getDSID().getValue());
+                        return true;
+                    } else {
+                        return false;
                     }
-                }
+                });
                 lastBinCheck = System.currentTimeMillis();
             }
         }
@@ -475,32 +473,32 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
         }
     }
 
-    private void removeSensorJob(Device eshDevice, DeviceStateUpdate deviceStateUpdate) {
+    private void removeSensorJob(Device device, DeviceStateUpdate deviceStateUpdate) {
         switch (deviceStateUpdate.getType()) {
             case DeviceStateUpdate.UPDATE_SCENE_CONFIG:
                 if (sceneJobExecutor != null) {
-                    sceneJobExecutor.removeSensorJob(eshDevice,
-                            SceneConfigReadingJob.getID(eshDevice, deviceStateUpdate.getSceneId()));
+                    sceneJobExecutor.removeSensorJob(device,
+                            SceneConfigReadingJob.getID(device, deviceStateUpdate.getSceneId()));
                 }
                 break;
             case DeviceStateUpdate.UPDATE_SCENE_OUTPUT:
                 if (sceneJobExecutor != null) {
-                    sceneJobExecutor.removeSensorJob(eshDevice,
-                            SceneOutputValueReadingJob.getID(eshDevice, deviceStateUpdate.getSceneId()));
+                    sceneJobExecutor.removeSensorJob(device,
+                            SceneOutputValueReadingJob.getID(device, deviceStateUpdate.getSceneId()));
                 }
                 break;
             case DeviceStateUpdate.UPDATE_OUTPUT_VALUE:
                 if (sensorJobExecutor != null) {
-                    sensorJobExecutor.removeSensorJob(eshDevice, DeviceOutputValueSensorJob.getID(eshDevice));
+                    sensorJobExecutor.removeSensorJob(device, DeviceOutputValueSensorJob.getID(device));
                 }
                 break;
         }
         if (deviceStateUpdate.isSensorUpdateType()) {
             if (sensorJobExecutor != null) {
                 logger.debug("remove SensorJob with ID: {}",
-                        DeviceConsumptionSensorJob.getID(eshDevice, deviceStateUpdate.getTypeAsSensorEnum()));
-                sensorJobExecutor.removeSensorJob(eshDevice,
-                        DeviceConsumptionSensorJob.getID(eshDevice, deviceStateUpdate.getTypeAsSensorEnum()));
+                        DeviceConsumptionSensorJob.getID(device, deviceStateUpdate.getTypeAsSensorEnum()));
+                sensorJobExecutor.removeSensorJob(device,
+                        DeviceConsumptionSensorJob.getID(device, deviceStateUpdate.getTypeAsSensorEnum()));
             }
         }
     }
@@ -751,35 +749,35 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
      * Updates the {@link Device} status of the given {@link Device} with handling outstanding commands, which are saved
      * as {@link DeviceStateUpdate}'s.
      *
-     * @param eshDevice to update
+     * @param device to update
      */
-    public synchronized void updateDevice(Device eshDevice) {
+    public synchronized void updateDevice(Device device) {
         logger.debug("Check device updates");
         // check device state updates
-        while (!eshDevice.isDeviceUpToDate()) {
-            DeviceStateUpdate deviceStateUpdate = eshDevice.getNextDeviceUpdateState();
+        while (!device.isDeviceUpToDate()) {
+            DeviceStateUpdate deviceStateUpdate = device.getNextDeviceUpdateState();
             if (deviceStateUpdate != null) {
                 if (deviceStateUpdate.getType() != DeviceStateUpdate.OUTPUT) {
                     if (deviceStateUpdate.getType() == DeviceStateUpdate.UPDATE_SCENE_CONFIG
                             || deviceStateUpdate.getType() == DeviceStateUpdate.UPDATE_SCENE_OUTPUT) {
-                        updateSceneData(eshDevice, deviceStateUpdate);
+                        updateSceneData(device, deviceStateUpdate);
                     } else {
-                        sendComandsToDSS(eshDevice, deviceStateUpdate);
+                        sendComandsToDSS(device, deviceStateUpdate);
                     }
                 } else {
-                    DeviceStateUpdate nextDeviceStateUpdate = eshDevice.getNextDeviceUpdateState();
+                    DeviceStateUpdate nextDeviceStateUpdate = device.getNextDeviceUpdateState();
                     while (nextDeviceStateUpdate != null
                             && nextDeviceStateUpdate.getType() == DeviceStateUpdate.OUTPUT) {
                         deviceStateUpdate = nextDeviceStateUpdate;
-                        nextDeviceStateUpdate = eshDevice.getNextDeviceUpdateState();
+                        nextDeviceStateUpdate = device.getNextDeviceUpdateState();
                     }
-                    sendComandsToDSS(eshDevice, deviceStateUpdate);
+                    sendComandsToDSS(device, deviceStateUpdate);
                     if (nextDeviceStateUpdate != null) {
                         if (deviceStateUpdate.getType() == DeviceStateUpdate.UPDATE_SCENE_CONFIG
                                 || deviceStateUpdate.getType() == DeviceStateUpdate.UPDATE_SCENE_OUTPUT) {
-                            updateSceneData(eshDevice, deviceStateUpdate);
+                            updateSceneData(device, deviceStateUpdate);
                         } else {
-                            sendComandsToDSS(eshDevice, deviceStateUpdate);
+                            sendComandsToDSS(device, deviceStateUpdate);
                         }
                     }
                 }

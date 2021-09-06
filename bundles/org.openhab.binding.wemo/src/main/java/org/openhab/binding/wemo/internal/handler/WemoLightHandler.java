@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.wemo.internal.handler;
 
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
+import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -21,8 +22,8 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
@@ -49,6 +50,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hans-Jörg Merk - Initial contribution
  */
+@NonNullByDefault
 public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(WemoLightHandler.class);
@@ -56,10 +58,11 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
     private Map<String, Boolean> subscriptionState = new HashMap<>();
 
     private UpnpIOService service;
+    private WemoHttpCall wemoCall;
 
-    private WemoBridgeHandler wemoBridgeHandler;
+    private @Nullable WemoBridgeHandler wemoBridgeHandler;
 
-    private String wemoLightID;
+    private @Nullable String wemoLightID;
 
     private int currentBrightness;
 
@@ -70,19 +73,12 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
 
     protected static final String SUBSCRIPTION = "bridge1";
 
-    protected static final int SUBSCRIPTION_DURATION = 600;
-
-    /**
-     * The default refresh interval in Seconds.
-     */
-    private final int DEFAULT_REFRESH_INTERVAL = 60;
-
     /**
      * The default refresh initial delay in Seconds.
      */
     private static final int DEFAULT_REFRESH_INITIAL_DELAY = 15;
 
-    private ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> refreshJob;
 
     private final Runnable refreshRunnable = new Runnable() {
 
@@ -103,16 +99,10 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
     };
 
     public WemoLightHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
-        super(thing);
+        super(thing, wemoHttpcaller);
 
-        this.wemoHttpCaller = wemoHttpcaller;
-
-        if (upnpIOService != null) {
-            logger.debug("UPnPIOService '{}'", upnpIOService);
-            this.service = upnpIOService;
-        } else {
-            logger.debug("upnpIOService not set.");
-        }
+        this.service = upnpIOService;
+        this.wemoCall = wemoHttpcaller;
     }
 
     @Override
@@ -120,17 +110,13 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
         // initialize() is only called if the required parameter 'deviceID' is available
         wemoLightID = (String) getConfig().get(DEVICE_ID);
 
-        if (getBridge() != null) {
-            logger.debug("Initializing WemoLightHandler for LightID '{}'", wemoLightID);
-            if (getBridge().getStatus() == ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-                onSubscription();
-                onUpdate();
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
-            }
+        final Bridge bridge = getBridge();
+        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+            onSubscription();
+            onUpdate();
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
         }
     }
 
@@ -142,10 +128,11 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
             onUpdate();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
-            if (refreshJob != null && !refreshJob.isCancelled()) {
-                refreshJob.cancel(true);
-                refreshJob = null;
+            ScheduledFuture<?> job = refreshJob;
+            if (job != null && !job.isCancelled()) {
+                job.cancel(true);
             }
+            refreshJob = null;
         }
     }
 
@@ -153,28 +140,26 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
     public void dispose() {
         logger.debug("WeMoLightHandler disposed.");
 
-        removeSubscription();
-
-        if (refreshJob != null && !refreshJob.isCancelled()) {
-            refreshJob.cancel(true);
-            refreshJob = null;
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
         }
+        refreshJob = null;
+        removeSubscription();
     }
 
-    private synchronized WemoBridgeHandler getWemoBridgeHandler() {
-        if (this.wemoBridgeHandler == null) {
-            Bridge bridge = getBridge();
-            if (bridge == null) {
-                logger.error("Required bridge not defined for device {}.", wemoLightID);
-                return null;
-            }
-            ThingHandler handler = bridge.getHandler();
-            if (handler instanceof WemoBridgeHandler) {
-                this.wemoBridgeHandler = (WemoBridgeHandler) handler;
-            } else {
-                logger.debug("No available bridge handler found for {} bridge {} .", wemoLightID, bridge.getUID());
-                return null;
-            }
+    private synchronized @Nullable WemoBridgeHandler getWemoBridgeHandler() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.error("Required bridge not defined for device {}.", wemoLightID);
+            return null;
+        }
+        ThingHandler handler = bridge.getHandler();
+        if (handler instanceof WemoBridgeHandler) {
+            this.wemoBridgeHandler = (WemoBridgeHandler) handler;
+        } else {
+            logger.debug("No available bridge handler found for {} bridge {} .", wemoLightID, bridge.getUID());
+            return null;
         }
         return this.wemoBridgeHandler;
     }
@@ -266,10 +251,11 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                         + "&lt;/CapabilityValue&gt;&lt;/DeviceStatus&gt;" + "</DeviceStatusList>"
                         + "</u:SetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-                String wemoURL = getWemoURL();
+                URL descriptorURL = service.getDescriptorURL(this);
+                String wemoURL = getWemoURL(descriptorURL, "bridge");
 
                 if (wemoURL != null && capability != null && value != null) {
-                    String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                    String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
                     if (wemoCallResponse != null) {
                         if (capability.equals("10008")) {
                             OnOffType binaryState = null;
@@ -285,7 +271,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
     }
 
     @Override
-    public String getUDN() {
+    public @Nullable String getUDN() {
         WemoBridgeHandler wemoBridge = getWemoBridgeHandler();
         if (wemoBridge == null) {
             logger.debug("wemoBridgeHandler not found");
@@ -307,14 +293,14 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                     + "<s:Body>" + "<u:GetDeviceStatus xmlns:u=\"urn:Belkin:service:bridge:1\">" + "<DeviceIDs>"
                     + wemoLightID + "</DeviceIDs>" + "</u:GetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-            String wemoURL = getWemoURL();
+            URL descriptorURL = service.getDescriptorURL(this);
+            String wemoURL = getWemoURL(descriptorURL, "bridge");
 
             if (wemoURL != null) {
-                String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
                 if (wemoCallResponse != null) {
-                    wemoCallResponse = StringEscapeUtils.unescapeXml(wemoCallResponse);
-                    String response = StringUtils.substringBetween(wemoCallResponse, "<CapabilityValue>",
-                            "</CapabilityValue>");
+                    wemoCallResponse = unescapeXml(wemoCallResponse);
+                    String response = substringBetween(wemoCallResponse, "<CapabilityValue>", "</CapabilityValue>");
                     logger.trace("wemoNewLightState = {}", response);
                     String[] splitResponse = response.split(",");
                     if (splitResponse[0] != null) {
@@ -341,15 +327,15 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
     }
 
     @Override
-    public void onServiceSubscribed(String service, boolean succeeded) {
+    public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
     }
 
     @Override
-    public void onValueReceived(String variable, String value, String service) {
+    public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.trace("Received pair '{}':'{}' (service '{}') for thing '{}'",
                 new Object[] { variable, value, service, this.getThing().getUID() });
-        String capabilityId = StringUtils.substringBetween(value, "<CapabilityId>", "</CapabilityId>");
-        String newValue = StringUtils.substringBetween(value, "<Value>", "</Value>");
+        String capabilityId = substringBetween(value, "<CapabilityId>", "</CapabilityId>");
+        String newValue = substringBetween(value, "<Value>", "</Value>");
         switch (capabilityId) {
             case "10006":
                 OnOffType binaryState = null;
@@ -377,9 +363,9 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
         if (service.isRegistered(this)) {
             logger.debug("Checking WeMo GENA subscription for '{}'", this);
 
-            if ((subscriptionState.get(SUBSCRIPTION) == null) || !subscriptionState.get(SUBSCRIPTION).booleanValue()) {
+            if (subscriptionState.get(SUBSCRIPTION) == null) {
                 logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(), SUBSCRIPTION);
-                service.addSubscription(this, SUBSCRIPTION, SUBSCRIPTION_DURATION);
+                service.addSubscription(this, SUBSCRIPTION, SUBSCRIPTION_DURATION_SECONDS);
                 subscriptionState.put(SUBSCRIPTION, true);
             }
         } else {
@@ -392,7 +378,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
         if (service.isRegistered(this)) {
             logger.debug("Removing WeMo GENA subscription for '{}'", this);
 
-            if ((subscriptionState.get(SUBSCRIPTION) != null) && subscriptionState.get(SUBSCRIPTION).booleanValue()) {
+            if (subscriptionState.get(SUBSCRIPTION) != null) {
                 logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), SUBSCRIPTION);
                 service.removeSubscription(this, SUBSCRIPTION);
             }
@@ -403,9 +389,10 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
     }
 
     private synchronized void onUpdate() {
-        if (refreshJob == null || refreshJob.isCancelled()) {
+        ScheduledFuture<?> job = refreshJob;
+        if (job == null || job.isCancelled()) {
             Configuration config = getThing().getConfiguration();
-            int refreshInterval = DEFAULT_REFRESH_INTERVAL;
+            int refreshInterval = DEFAULT_REFRESH_INTERVALL_SECONDS;
             Object refreshConfig = config.get("refresh");
             if (refreshConfig != null) {
                 refreshInterval = ((BigDecimal) refreshConfig).intValue();
@@ -418,16 +405,5 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
 
     private boolean isUpnpDeviceRegistered() {
         return service.isRegistered(this);
-    }
-
-    public String getWemoURL() {
-        URL descriptorURL = service.getDescriptorURL(this);
-        String wemoURL = null;
-        if (descriptorURL != null) {
-            String deviceURL = StringUtils.substringBefore(descriptorURL.toString(), "/setup.xml");
-            wemoURL = deviceURL + "/upnp/control/bridge1";
-            return wemoURL;
-        }
-        return null;
     }
 }

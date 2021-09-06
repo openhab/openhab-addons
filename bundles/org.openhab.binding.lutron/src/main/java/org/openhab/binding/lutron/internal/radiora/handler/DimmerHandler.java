@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.lutron.internal.radiora.handler;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lutron.internal.LutronBindingConstants;
 import org.openhab.binding.lutron.internal.radiora.config.DimmerConfig;
 import org.openhab.binding.lutron.internal.radiora.protocol.LocalZoneChangeFeedback;
@@ -34,6 +35,7 @@ import org.openhab.core.types.Command;
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class DimmerHandler extends LutronHandler {
 
     /**
@@ -41,8 +43,8 @@ public class DimmerHandler extends LutronHandler {
      * to external dimmer changes since RadioRA protocol does not send dimmer
      * levels in their messages.
      */
+    private @NonNullByDefault({}) DimmerConfig config;
     private AtomicInteger lastKnownIntensity = new AtomicInteger(100);
-
     private AtomicBoolean switchEnabled = new AtomicBoolean(false);
 
     public DimmerHandler(Thing thing) {
@@ -50,15 +52,24 @@ public class DimmerHandler extends LutronHandler {
     }
 
     @Override
+    public void initialize() {
+        config = getConfigAs(DimmerConfig.class);
+        super.initialize();
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        DimmerConfig config = getConfigAs(DimmerConfig.class);
+        RS232Handler bridgeHandler = getRS232Handler();
+        if (bridgeHandler == null) {
+            return;
+        }
 
         if (LutronBindingConstants.CHANNEL_LIGHTLEVEL.equals(channelUID.getId())) {
             if (command instanceof PercentType) {
                 int intensity = ((PercentType) command).intValue();
 
-                SetDimmerLevelCommand cmd = new SetDimmerLevelCommand(config.getZoneNumber(), intensity);
-                getRS232Handler().sendCommand(cmd);
+                SetDimmerLevelCommand cmd = new SetDimmerLevelCommand(config.getZoneNumber(), intensity, config.system);
+                bridgeHandler.sendCommand(cmd);
 
                 updateInternalState(intensity);
             }
@@ -66,11 +77,10 @@ public class DimmerHandler extends LutronHandler {
             if (command instanceof OnOffType) {
                 OnOffType onOffCmd = (OnOffType) command;
 
-                SetSwitchLevelCommand cmd = new SetSwitchLevelCommand(config.getZoneNumber(), onOffCmd);
-                getRS232Handler().sendCommand(cmd);
+                SetSwitchLevelCommand cmd = new SetSwitchLevelCommand(config.getZoneNumber(), onOffCmd, config.system);
+                bridgeHandler.sendCommand(cmd);
 
                 updateInternalState(onOffCmd);
-
             }
         }
     }
@@ -85,7 +95,10 @@ public class DimmerHandler extends LutronHandler {
     }
 
     private void handleZoneMapFeedback(ZoneMapFeedback feedback) {
-        char value = feedback.getZoneValue(getConfigAs(DimmerConfig.class).getZoneNumber());
+        if (!systemsMatch(feedback.getSystem(), config.system)) {
+            return;
+        }
+        char value = feedback.getZoneValue(config.getZoneNumber());
         if (value == '1') {
             turnDimmerOnToLastKnownIntensity();
         } else if (value == '0') {
@@ -94,7 +107,7 @@ public class DimmerHandler extends LutronHandler {
     }
 
     private void handleLocalZoneChangeFeedback(LocalZoneChangeFeedback feedback) {
-        if (feedback.getZoneNumber() == getConfigAs(DimmerConfig.class).getZoneNumber()) {
+        if (systemsMatch(feedback.getSystem(), config.system) && feedback.getZoneNumber() == config.getZoneNumber()) {
             if (LocalZoneChangeFeedback.State.ON.equals(feedback.getState())) {
                 turnDimmerOnToLastKnownIntensity();
             } else if (LocalZoneChangeFeedback.State.OFF.equals(feedback.getState())) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.avmfritz.internal.dto;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -25,13 +24,16 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for groups
+ * @author Ulrich Mertin - Added support for HAN-FUN blinds
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "device")
 public class DeviceModel extends AVMFritzBaseModel {
 
     private TemperatureModel temperature;
+    private HumidityModel humidity;
     private AlertModel alert;
+    private LevelcontrolModel levelcontrol;
 
     @XmlElement(name = "button", type = ButtonModel.class)
     private List<ButtonModel> buttons;
@@ -46,6 +48,14 @@ public class DeviceModel extends AVMFritzBaseModel {
         this.temperature = temperatureModel;
     }
 
+    public HumidityModel getHumidity() {
+        return humidity;
+    }
+
+    public void setHumidity(HumidityModel humidityModel) {
+        this.humidity = humidityModel;
+    }
+
     public AlertModel getAlert() {
         return alert;
     }
@@ -54,11 +64,16 @@ public class DeviceModel extends AVMFritzBaseModel {
         this.alert = alertModel;
     }
 
+    public LevelcontrolModel getLevelcontrol() {
+        return levelcontrol;
+    }
+
+    public void setLevelcontrol(LevelcontrolModel levelcontrol) {
+        this.levelcontrol = levelcontrol;
+    }
+
     public List<ButtonModel> getButtons() {
-        if (buttons == null) {
-            return Collections.emptyList();
-        }
-        return buttons;
+        return buttons == null ? List.of() : buttons;
     }
 
     public void setButtons(List<ButtonModel> buttons) {
@@ -75,25 +90,30 @@ public class DeviceModel extends AVMFritzBaseModel {
 
     @Override
     public String toString() {
-        return new StringBuilder().append(super.toString()).append(temperature).append(",").append(alert).append(",")
-                .append(getButtons()).append(",").append(etsiunitinfo).append("]").toString();
+        return new StringBuilder(super.toString()).append(temperature).append(",").append(humidity).append(",")
+                .append(alert).append(",").append(getButtons()).append(",").append(etsiunitinfo).append("]").toString();
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(propOrder = { "etsideviceid", "unittype", "interfaces" })
     public static class ETSUnitInfoModel {
+        public static final String HAN_FUN_UNITTYPE_AC_OUTLET = "262";
+        public static final String HAN_FUN_UNITTYPE_AC_OUTLET_SIMPLE_POWER_METERING = "263";
         public static final String HAN_FUN_UNITTYPE_SIMPLE_BUTTON = "273";
         public static final String HAN_FUN_UNITTYPE_SIMPLE_DETECTOR = "512";
-        public static final String HAN_FUN_UNITTYPE_MAGNETIC_CONTACT = "513";
-        public static final String HAN_FUN_UNITTYPE_OPTICAL_CONTACT = "514";
+        public static final String HAN_FUN_UNITTYPE_DOOR_OPEN_CLOSE_DETECTOR = "513";
+        public static final String HAN_FUN_UNITTYPE_WINDOW_OPEN_CLOSE_DETECTOR = "514";
         public static final String HAN_FUN_UNITTYPE_MOTION_DETECTOR = "515";
-        public static final String HAN_FUN_UNITTYPE_SMOKE_DETECTOR = "516";
+        public static final String HAN_FUN_UNITTYPE_SMOKE_DETECTOR = "516"; // undocumented
         public static final String HAN_FUN_UNITTYPE_FLOOD_DETECTOR = "518";
         public static final String HAN_FUN_UNITTYPE_GLAS_BREAK_DETECTOR = "519";
         public static final String HAN_FUN_UNITTYPE_VIBRATION_DETECTOR = "520";
+        public static final String HAN_FUN_UNITTYPE_SIREN = "640";
 
         public static final String HAN_FUN_INTERFACE_ALERT = "256";
         public static final String HAN_FUN_INTERFACE_KEEP_ALIVE = "277";
+        public static final String HAN_FUN_INTERFACE_ON_OFF = "512";
+        public static final String HAN_FUN_INTERFACE_SIMPLE_POWER_METERING = "768"; // undocumented
         public static final String HAN_FUN_INTERFACE_SIMPLE_BUTTON = "772";
 
         private String etsideviceid;
@@ -126,8 +146,8 @@ public class DeviceModel extends AVMFritzBaseModel {
 
         @Override
         public String toString() {
-            return new StringBuilder().append("[etsideviceid=").append(etsideviceid).append(",unittype=")
-                    .append(unittype).append(",interfaces=").append(interfaces).append("]").toString();
+            return new StringBuilder("[etsideviceid=").append(etsideviceid).append(",unittype=").append(unittype)
+                    .append(",interfaces=").append(interfaces).append("]").toString();
         }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,9 +29,9 @@ import org.openhab.binding.denonmarantz.internal.connector.telnet.DenonMarantzTe
 public class DenonMarantzConnectorFactory {
 
     public DenonMarantzConnector getConnector(DenonMarantzConfiguration config, DenonMarantzState state,
-            ScheduledExecutorService scheduler, HttpClient httpClient) {
+            ScheduledExecutorService scheduler, HttpClient httpClient, String thingUID) {
         if (config.isTelnet()) {
-            return new DenonMarantzTelnetConnector(config, state, scheduler);
+            return new DenonMarantzTelnetConnector(config, state, scheduler, thingUID);
         } else {
             return new DenonMarantzHttpConnector(config, state, scheduler, httpClient);
         }

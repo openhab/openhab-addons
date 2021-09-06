@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,10 +40,14 @@ import io.github.hapjava.services.impl.LockMechanismService;
  *
  */
 public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements LockMechanismAccessory {
+    final OnOffType securedState;
+    final OnOffType unsecuredState;
 
     public HomekitLockImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
+        securedState = taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON;
+        unsecuredState = taggedItem.isInverted() ? OnOffType.ON : OnOffType.OFF;
         getServices().add(new LockMechanismService(this));
     }
 
@@ -56,7 +60,7 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
             if (state instanceof DecimalType) {
                 lockState = LockCurrentStateEnum.fromCode(((DecimalType) state).intValue());
             } else if (state instanceof OnOffType) {
-                lockState = state == OnOffType.ON ? LockCurrentStateEnum.SECURED : LockCurrentStateEnum.UNSECURED;
+                lockState = state.equals(securedState) ? LockCurrentStateEnum.SECURED : LockCurrentStateEnum.UNSECURED;
             }
         }
         return CompletableFuture.completedFuture(lockState);
@@ -67,7 +71,7 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
         final @Nullable OnOffType state = getStateAs(HomekitCharacteristicType.LOCK_TARGET_STATE, OnOffType.class);
         if (state != null) {
             return CompletableFuture.completedFuture(
-                    state == OnOffType.ON ? LockTargetStateEnum.SECURED : LockTargetStateEnum.UNSECURED);
+                    state == securedState ? LockTargetStateEnum.SECURED : LockTargetStateEnum.UNSECURED);
         }
         return CompletableFuture.completedFuture(LockTargetStateEnum.UNSECURED);
         // Apple HAP specification has only SECURED and UNSECURED values for lock target state.
@@ -79,15 +83,13 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
         getItem(HomekitCharacteristicType.LOCK_TARGET_STATE, SwitchItem.class).ifPresent(item -> {
             switch (state) {
                 case SECURED:
-                    // Close the door
                     if (item instanceof SwitchItem) {
-                        item.send(OnOffType.ON);
+                        item.send(securedState);
                     }
                     break;
                 case UNSECURED:
-                    // Open the door
                     if (item instanceof SwitchItem) {
-                        item.send(OnOffType.OFF);
+                        item.send(unsecuredState);
                     }
                     break;
                 default:

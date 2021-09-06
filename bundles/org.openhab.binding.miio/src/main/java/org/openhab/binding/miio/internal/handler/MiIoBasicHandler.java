@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,15 +17,18 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.URL;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
-import javax.measure.format.ParserException;
+import javax.measure.format.MeasurementParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,7 +56,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -72,6 +75,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
@@ -119,6 +123,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command receivedCommand) {
         Command command = receivedCommand;
+        deviceVariables.put(TIMESTAMP, Instant.now().getEpochSecond());
         if (command == RefreshType.REFRESH) {
             if (updateDataCache.isExpired()) {
                 logger.debug("Refreshing {}", channelUID);
@@ -128,13 +133,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             }
             return;
         }
-        if (channelUID.getId().equals(CHANNEL_COMMAND)) {
-            cmds.put(sendCommand(command.toString()), command.toString());
+        if (handleCommandsChannels(channelUID, command)) {
+            forceStatusUpdate();
             return;
         }
         logger.debug("Locating action for {} channel '{}': '{}'", getThing().getUID(), channelUID.getId(), command);
         if (!actions.isEmpty()) {
-            MiIoBasicChannel miIoBasicChannel = actions.get(channelUID);
+            final MiIoBasicChannel miIoBasicChannel = actions.get(channelUID);
             if (miIoBasicChannel != null) {
                 int valuePos = 0;
                 for (MiIoDeviceAction action : miIoBasicChannel.getActions()) {
@@ -159,7 +164,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                                     qtc = ((QuantityType<?>) command).toUnit(unit);
                                 }
                             }
-                        } catch (ParserException e) {
+                        } catch (MeasurementParseException e) {
                             // swallow
                         }
                         if (qtc != null) {
@@ -195,6 +200,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             value = new JsonPrimitive(boolCommand);
                         } else if (paramType == CommandParameterType.ONOFFBOOLSTRING) {
                             value = new JsonPrimitive(command == OnOffType.ON ? "true" : "false");
+                        } else if (paramType == CommandParameterType.ONOFFNUMBER) {
+                            value = new JsonPrimitive(command == OnOffType.ON ? 1 : 0);
                         }
                     } else if (command instanceof DecimalType) {
                         value = new JsonPrimitive(((DecimalType) command).toBigDecimal());
@@ -254,18 +261,22 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             } else {
                 logger.debug("Channel Id {} not in mapping.", channelUID.getId());
                 if (logger.isTraceEnabled()) {
-                    for (ChannelUID a : actions.keySet()) {
-                        logger.trace("Available entries: {} : {}", a, actions.get(a).getFriendlyName());
+                    for (Entry<ChannelUID, MiIoBasicChannel> a : actions.entrySet()) {
+                        logger.trace("Available entries: {} : {}", a.getKey(), a.getValue().getFriendlyName());
                     }
                 }
             }
-            updateDataCache.invalidateValue();
-            miIoScheduler.schedule(() -> {
-                updateData();
-            }, 3000, TimeUnit.MILLISECONDS);
+            forceStatusUpdate();
         } else {
             logger.debug("Actions not loaded yet, or none available");
         }
+    }
+
+    private void forceStatusUpdate() {
+        updateDataCache.invalidateValue();
+        miIoScheduler.schedule(() -> {
+            updateData();
+        }, 3000, TimeUnit.MILLISECONDS);
     }
 
     private @Nullable JsonElement miotTransform(MiIoBasicChannel miIoBasicChannel, @Nullable JsonElement value) {
@@ -303,6 +314,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             }
             final MiIoBasicDevice midevice = miioDevice;
             if (midevice != null) {
+                deviceVariables.put(TIMESTAMP, Instant.now().getEpochSecond());
                 refreshProperties(midevice);
                 refreshCustomProperties(midevice);
                 refreshNetwork();
@@ -314,7 +326,22 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     private void refreshCustomProperties(MiIoBasicDevice midevice) {
         for (MiIoBasicChannel miChannel : refreshListCustomCommands.values()) {
-            sendCommand(miChannel.getChannelCustomRefreshCommand());
+            if (!isLinked(miChannel.getChannel())) {
+                logger.debug("Skip refresh of channel {} for {} as it is not linked", miChannel.getChannel(),
+                        getThing().getUID());
+                continue;
+            }
+            String cmd = miChannel.getChannelCustomRefreshCommand();
+            if (!cmd.startsWith("/")) {
+                cmds.put(sendCommand(miChannel.getChannelCustomRefreshCommand()), miChannel.getChannel());
+            } else {
+                if (cloudServer.isBlank()) {
+                    logger.debug("Cloudserver empty. Skipping refresh for {} channel '{}'", getThing().getUID(),
+                            miChannel.getChannel());
+                } else {
+                    cmds.put(sendCommand(cmd, cloudServer), miChannel.getChannel());
+                }
+            }
         }
     }
 
@@ -363,7 +390,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             return;
         }
         if (!hasChannelStructure) {
-            if (configuration.model == null || configuration.model.isEmpty()) {
+            if (configuration.model.isEmpty()) {
                 logger.debug("Model needs to be determined");
                 isIdentified = false;
             } else {
@@ -372,6 +399,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
         if (hasChannelStructure) {
             refreshList = new ArrayList<>();
+            refreshListCustomCommands = new HashMap<>();
             final MiIoBasicDevice miioDevice = this.miioDevice;
             if (miioDevice != null) {
                 for (MiIoBasicChannel miChannel : miioDevice.getDevice().getChannels()) {
@@ -411,6 +439,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             actions = new HashMap<>();
             final MiIoBasicDevice device = this.miioDevice;
             if (device != null) {
+                for (Channel cn : getThing().getChannels()) {
+                    logger.trace("Channel '{}' for thing {} already exist... removing", cn.getUID(),
+                            getThing().getUID());
+                    if (!PERSISTENT_CHANNELS.contains(cn.getUID().getId().toString())) {
+                        thingBuilder.withoutChannels(cn);
+                    }
+                }
                 for (MiIoBasicChannel miChannel : device.getDevice().getChannels()) {
                     logger.debug("properties {}", miChannel);
                     if (!miChannel.getType().isEmpty()) {
@@ -454,13 +489,6 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             return null;
         }
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), channel);
-
-        // TODO: Need to understand if this harms anything. If yes, channel only to be added when not there already.
-        // current way allows to have no issues when channels are changing.
-        if (getThing().getChannel(channel) != null) {
-            logger.info("Channel '{}' for thing {} already exist... removing", channel, getThing().getUID());
-            thingBuilder.withoutChannel(new ChannelUID(getThing().getUID(), channel));
-        }
         ChannelBuilder newChannel = ChannelBuilder.create(channelUID, dataType).withLabel(miChannel.getFriendlyName());
         boolean useGeneratedChannelType = false;
         if (!miChannel.getChannelType().isBlank()) {
@@ -468,7 +496,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             if (channelTypeRegistry.getChannelType(channelTypeUID) != null) {
                 newChannel = newChannel.withType(channelTypeUID);
                 final LinkedHashSet<String> tags = miChannel.getTags();
-                if (tags != null && tags.size() > 0) {
+                if (tags != null && !tags.isEmpty()) {
                     newChannel.withDefaultTags(tags);
                 }
             } else {
@@ -481,8 +509,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         if (useGeneratedChannelType) {
             newChannel = newChannel
                     .withType(new ChannelTypeUID(BINDING_ID, model.toUpperCase().replace(".", "_") + "_" + channel));
-            final LinkedHashSet<String> tags = miChannel.getTags();
-            if (tags != null && tags.size() > 0) {
+            final Set<String> tags = miChannel.getTags();
+            if (tags != null && !tags.isEmpty()) {
                 newChannel.withDefaultTags(tags);
             }
         }
@@ -500,9 +528,20 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         return null;
     }
 
+    private @Nullable MiIoBasicChannel getCustomRefreshChannel(String channelName) {
+        for (MiIoBasicChannel refreshEntry : refreshListCustomCommands.values()) {
+            if (refreshEntry.getChannel().equals(channelName)) {
+                return refreshEntry;
+            }
+        }
+        logger.trace("Did not find channel for {} in {}", channelName, refreshList);
+        return null;
+    }
+
     private void updatePropsFromJsonArray(MiIoSendCommand response) {
         JsonArray res = response.getResult().getAsJsonArray();
-        JsonArray para = parser.parse(response.getCommandString()).getAsJsonObject().get("params").getAsJsonArray();
+        JsonArray para = JsonParser.parseString(response.getCommandString()).getAsJsonObject().get("params")
+                .getAsJsonArray();
         if (res.size() != para.size()) {
             logger.debug("Unexpected size different. Request size {},  response size {}. (Req: {}, Resp:{})",
                     para.size(), res.size(), para, res);
@@ -545,13 +584,14 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     private void updateChannel(@Nullable MiIoBasicChannel basicChannel, String param, JsonElement value) {
         JsonElement val = value;
+        deviceVariables.put(param, val);
         if (basicChannel == null) {
             logger.debug("Channel not found for {}", param);
             return;
         }
-        final String transformation = basicChannel.getTransfortmation();
+        final String transformation = basicChannel.getTransformation();
         if (transformation != null) {
-            JsonElement transformed = Conversions.execute(transformation, val);
+            JsonElement transformed = Conversions.execute(transformation, val, deviceVariables);
             logger.debug("Transformed with '{}': {} {} -> {} ", transformation, basicChannel.getFriendlyName(), val,
                     transformed);
             val = transformed;
@@ -566,16 +606,37 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     updateState(basicChannel.getChannel(), new PercentType(val.getAsBigDecimal()));
                     break;
                 case "string":
-                    updateState(basicChannel.getChannel(), new StringType(val.getAsString()));
+                    if (val.isJsonPrimitive()) {
+                        updateState(basicChannel.getChannel(), new StringType(val.getAsString()));
+                    } else {
+                        updateState(basicChannel.getChannel(), new StringType(val.toString()));
+                    }
                     break;
                 case "switch":
-                    updateState(basicChannel.getChannel(), val.getAsString().toLowerCase().equals("on")
-                            || val.getAsString().toLowerCase().equals("true") ? OnOffType.ON : OnOffType.OFF);
+                    if (val.getAsJsonPrimitive().isNumber()) {
+                        updateState(basicChannel.getChannel(), val.getAsInt() > 0 ? OnOffType.ON : OnOffType.OFF);
+                    } else {
+                        String strVal = val.getAsString().toLowerCase();
+                        updateState(basicChannel.getChannel(),
+                                "on".equals(strVal) || "true".equals(strVal) || "1".equals(strVal) ? OnOffType.ON
+                                        : OnOffType.OFF);
+                    }
                     break;
                 case "color":
-                    Color rgb = new Color(val.getAsInt());
-                    HSBType hsb = HSBType.fromRGB(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
-                    updateState(basicChannel.getChannel(), hsb);
+                    if (val.isJsonPrimitive()
+                            && (val.getAsJsonPrimitive().isNumber() || val.getAsString().matches("^[0-9]+$"))) {
+                        Color rgb = new Color(val.getAsInt());
+                        HSBType hsb = HSBType.fromRGB(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
+                        updateState(basicChannel.getChannel(), hsb);
+                    } else {
+                        try {
+                            HSBType hsb = HSBType.valueOf(val.getAsString().replace("[", "").replace("]", ""));
+                            updateState(basicChannel.getChannel(), hsb);
+                        } catch (IllegalArgumentException e) {
+                            logger.debug("Failed updating channel '{}'. Could not convert '{}' to color",
+                                    basicChannel.getChannel(), val.getAsString());
+                        }
+                    }
                     break;
                 default:
                     logger.debug("No update logic for channeltype '{}' ", basicChannel.getType());
@@ -595,9 +656,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         basicChannel.getChannel(), basicChannel.getUnit(), unit);
                 updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), unit));
             } else {
-                logger.debug("Unit '{}' used by '{}' channel '{}' is not found.. using default unit.",
-                        getThing().getUID(), basicChannel.getUnit(), basicChannel.getChannel());
+                logger.debug(
+                        "Unit '{}' used by '{}' channel '{}' is not found in conversion table... Trying anyway to submit as the update.",
+                        basicChannel.getUnit(), getThing().getUID(), basicChannel.getChannel());
+                updateState(basicChannel.getChannel(),
+                        new QuantityType<>(val.getAsBigDecimal().toPlainString() + " " + basicChannel.getUnit()));
             }
+            return;
         }
         // if no unit is provided or unit not found use default units, these units have so far been seen for miio
         // devices
@@ -606,14 +671,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), SIUnits.CELSIUS));
                 break;
             case "electriccurrent":
-                updateState(basicChannel.getChannel(),
-                        new QuantityType<>(val.getAsBigDecimal(), SmartHomeUnits.AMPERE));
+                updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), Units.AMPERE));
                 break;
             case "energy":
-                updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), SmartHomeUnits.WATT));
+                updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), Units.WATT));
                 break;
             case "time":
-                updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), SmartHomeUnits.HOUR));
+                updateState(basicChannel.getChannel(), new QuantityType<>(val.getAsBigDecimal(), Units.HOUR));
                 break;
             default:
                 updateState(basicChannel.getChannel(), new DecimalType(val.getAsBigDecimal()));
@@ -640,22 +704,27 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     }
                     break;
                 default:
-                    if (refreshListCustomCommands.containsKey(response.getMethod())) {
-                        logger.debug("Processing custom refresh command response for !{}", response.getMethod());
-                        MiIoBasicChannel ch = refreshListCustomCommands.get(response.getMethod());
-                        if (response.getResult().isJsonArray()) {
-                            JsonArray cmdResponse = response.getResult().getAsJsonArray();
-                            final String transformation = ch.getTransfortmation();
-                            if (transformation == null || transformation.isBlank()) {
-                                updateChannel(ch, ch.getChannel(),
-                                        cmdResponse.get(0).isJsonPrimitive() ? cmdResponse.get(0)
-                                                : new JsonPrimitive(cmdResponse.get(0).toString()));
+                    String channel = cmds.get(response.getId());
+                    if (channel != null) {
+                        logger.debug("Processing custom refresh command response for '{}' - {}", response.getMethod(),
+                                response.getResult());
+                        final MiIoBasicChannel ch = getCustomRefreshChannel(channel);
+                        if (ch != null) {
+                            if (response.getResult().isJsonArray()) {
+                                JsonArray cmdResponse = response.getResult().getAsJsonArray();
+                                final String transformation = ch.getTransformation();
+                                if (transformation == null || transformation.isBlank()) {
+                                    JsonElement response0 = cmdResponse.get(0);
+                                    updateChannel(ch, ch.getChannel(), response0.isJsonPrimitive() ? response0
+                                            : new JsonPrimitive(response0.toString()));
+                                } else {
+                                    updateChannel(ch, ch.getChannel(), cmdResponse);
+                                }
                             } else {
-                                updateChannel(ch, ch.getChannel(), cmdResponse);
+                                updateChannel(ch, ch.getChannel(), new JsonPrimitive(response.getResult().toString()));
                             }
-                        } else {
-                            updateChannel(ch, ch.getChannel(), new JsonPrimitive(response.getResult().toString()));
                         }
+                        cmds.remove(response.getId());
                     }
                     break;
             }

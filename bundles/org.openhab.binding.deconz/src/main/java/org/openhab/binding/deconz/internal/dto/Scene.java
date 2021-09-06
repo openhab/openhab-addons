@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.deconz.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.types.CommandOption;
 
 /**
  * The {@link Scene} is send by the websocket connection as well as the Rest API.
@@ -24,4 +25,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class Scene {
     public String id = "";
     public String name = "";
+
+    public CommandOption toCommandOption() {
+        return new CommandOption(name, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Scene{" + "id='" + id + '\'' + ", name='" + name + '\'' + '}';
+    }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,10 +15,10 @@ package org.openhab.binding.modbus.stiebeleltron.internal.parser;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
+import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.io.transport.modbus.ModbusBitUtilities;
-import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
 
 /**
  * Base class for parsers with some helper methods

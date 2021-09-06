@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.onewire.internal.handler;
 
-import static org.openhab.binding.onewire.internal.OwBindingConstants.CHANNEL_DIGITAL;
-import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE_BASIC;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Set;
@@ -22,7 +21,14 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
-import org.openhab.binding.onewire.internal.device.*;
+import org.openhab.binding.onewire.internal.device.AbstractDigitalOwDevice;
+import org.openhab.binding.onewire.internal.device.DS18x20;
+import org.openhab.binding.onewire.internal.device.DS2401;
+import org.openhab.binding.onewire.internal.device.DS2405;
+import org.openhab.binding.onewire.internal.device.DS2406_DS2413;
+import org.openhab.binding.onewire.internal.device.DS2408;
+import org.openhab.binding.onewire.internal.device.DS2423;
+import org.openhab.binding.onewire.internal.device.OwSensorType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;

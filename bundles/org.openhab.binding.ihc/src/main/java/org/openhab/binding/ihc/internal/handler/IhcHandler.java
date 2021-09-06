@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,11 +50,13 @@ import org.openhab.binding.ihc.internal.ws.datatypes.WSSystemInfo;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSTimeManagerSettings;
 import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
+import org.openhab.binding.ihc.internal.ws.exeptions.IhcFatalExecption;
 import org.openhab.binding.ihc.internal.ws.projectfile.IhcEnumValue;
 import org.openhab.binding.ihc.internal.ws.projectfile.ProjectFileUtils;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -167,11 +169,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     }
 
     private String getFilePathInUserDataFolder(String fileName) {
-        String progArg = System.getProperty("smarthome.userdata");
-        if (progArg != null) {
-            return progArg + File.separator + fileName;
-        }
-        return fileName;
+        return OpenHAB.getUserDataFolder() + File.separator + fileName;
     }
 
     @Override
@@ -204,13 +202,18 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
 
         if (ihc == null) {
-            logger.warn("Connection is not initialized, abort resource value update for channel '{}'!", channelUID);
+            logger.debug("Connection is not initialized, aborting resource value update for channel '{}'!", channelUID);
             return;
         }
 
         if (ihc.getConnectionState() != ConnectionState.CONNECTED) {
-            logger.warn("Connection to controller is not open, abort resource value update for channel '{}'!",
+            logger.debug("Connection to controller is not open, aborting resource value update for channel '{}'!",
                     channelUID);
+            return;
+        }
+
+        if (thing.getStatus() != ThingStatus.ONLINE) {
+            logger.debug("Controller is not ONLINE, aborting resource value update for channel '{}'!", channelUID);
             return;
         }
 
@@ -537,7 +540,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             setConnectingState(true);
             logger.debug("Connecting to IHC / ELKO LS controller [hostname='{}', username='{}'].", conf.hostname,
                     conf.username);
-            ihc = new IhcClient(conf.hostname, conf.username, conf.password, conf.timeout);
+            ihc = new IhcClient(conf.hostname, conf.username, conf.password, conf.timeout, conf.tlsVersion);
             ihc.openConnection();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                     "Initializing communication to the IHC / ELKO controller");
@@ -886,6 +889,11 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 }
                 connect();
                 setReconnectRequest(false);
+            } catch (IhcFatalExecption e) {
+                logger.warn("Can't open connection to controller {}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                setReconnectRequest(false);
+                return;
             } catch (IhcExecption e) {
                 logger.debug("Can't open connection to controller {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

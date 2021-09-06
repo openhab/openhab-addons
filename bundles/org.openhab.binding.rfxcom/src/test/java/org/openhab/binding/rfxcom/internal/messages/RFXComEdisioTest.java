@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplemente
 public class RFXComEdisioTest {
     @Test
     public void checkNotImplemented() {
-        assertThrows(RFXComMessageNotImplementedException.class, () -> RFXComMessageFactory.createMessage(EDISIO));
+        assertThrows(RFXComMessageNotImplementedException.class,
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(EDISIO, null, null, null));
     }
 }

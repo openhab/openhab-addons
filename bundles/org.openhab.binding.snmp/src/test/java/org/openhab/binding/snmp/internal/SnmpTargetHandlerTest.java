@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,9 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingStatus;
 import org.snmp4j.PDU;
 import org.snmp4j.Snmp;
@@ -106,6 +108,19 @@ public class SnmpTargetHandlerTest extends AbstractSnmpTargetHandlerTest {
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
         verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(new DecimalType("12.4")));
+        verifyStatus(ThingStatus.ONLINE);
+    }
+
+    @Test
+    public void testNumberChannelsProperlyHandlingUnits() throws IOException {
+        setup(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER, SnmpChannelMode.READ, SnmpDatatype.FLOAT, null, null, null,
+                "°C");
+        PDU responsePDU = new PDU(PDU.RESPONSE,
+                Collections.singletonList(new VariableBinding(new OID(TEST_OID), new OctetString("12.4"))));
+        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        thingHandler.onResponse(event);
+        verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID),
+                eq(new QuantityType<>(12.4, SIUnits.CELSIUS)));
         verifyStatus(ThingStatus.ONLINE);
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,16 +53,16 @@ public class NikobusDimmerModuleHandler extends NikobusSwitchModuleHandler {
     }
 
     @Override
-    protected int valueFromCommand(Command command) {
+    protected int valueFromCommand(String channelId, Command command) {
         if (command instanceof PercentType) {
             return Math.round(((PercentType) command).floatValue() / 100f * 255f);
         }
 
-        return super.valueFromCommand(command);
+        return super.valueFromCommand(channelId, command);
     }
 
     @Override
-    protected State stateFromValue(int value) {
+    protected State stateFromValue(String channelId, int value) {
         int result = Math.round(value * 100f / 255f);
         return new PercentType(result);
     }

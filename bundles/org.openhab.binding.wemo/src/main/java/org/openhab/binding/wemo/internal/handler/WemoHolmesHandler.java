@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.wemo.internal.handler;
 
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
+import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -29,8 +30,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
@@ -62,25 +63,22 @@ import org.xml.sax.SAXException;
  *
  * @author Hans-Jörg Merk - Initial contribution;
  */
-
+@NonNullByDefault
 public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(WemoHolmesHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_PURIFIER);
 
-    /**
-     * The default refresh interval in Seconds.
-     */
-    private static final int DEFAULT_REFRESH_INTERVAL_SECONDS = 120;
     private static final int FILTER_LIFE_DAYS = 330;
     private static final int FILTER_LIFE_MINS = FILTER_LIFE_DAYS * 24 * 60;
     private final Map<String, Boolean> subscriptionState = new HashMap<>();
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     private UpnpIOService service;
+    private WemoHttpCall wemoCall;
 
-    private ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> refreshJob;
 
     private final Runnable refreshRunnable = () -> {
         if (!isUpnpDeviceRegistered()) {
@@ -91,18 +89,13 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
         }
     };
 
-    public WemoHolmesHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemohttpCaller) {
-        super(thing);
+    public WemoHolmesHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
+        super(thing, wemoHttpCaller);
 
-        this.wemoHttpCaller = wemohttpCaller;
+        this.service = upnpIOService;
+        this.wemoCall = wemoHttpCaller;
 
         logger.debug("Creating a WemoHolmesHandler for thing '{}'", getThing().getUID());
-
-        if (upnpIOService != null) {
-            this.service = upnpIOService;
-        } else {
-            logger.debug("upnpIOService not set.");
-        }
     }
 
     @Override
@@ -124,12 +117,12 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
     public void dispose() {
         logger.debug("WemoHolmesHandler disposed.");
 
-        removeSubscription();
-
-        if (refreshJob != null && !refreshJob.isCancelled()) {
-            refreshJob.cancel(true);
-            refreshJob = null;
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
         }
+        refreshJob = null;
+        removeSubscription();
     }
 
     @Override
@@ -243,10 +236,12 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                     + "<attributeList>&lt;attribute&gt;&lt;name&gt;" + attribute + "&lt;/name&gt;&lt;value&gt;" + value
                     + "&lt;/value&gt;&lt;/attribute&gt;</attributeList>" + "</u:SetAttributes>" + "</s:Body>"
                     + "</s:Envelope>";
-            String wemoURL = getWemoURL("deviceevent");
+
+            URL descriptorURL = service.getDescriptorURL(this);
+            String wemoURL = getWemoURL(descriptorURL, "deviceevent");
 
             if (wemoURL != null) {
-                wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                wemoCall.executeCall(wemoURL, soapHeader, content);
             }
         } catch (RuntimeException e) {
             logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
@@ -256,18 +251,23 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
     }
 
     @Override
-    public void onServiceSubscribed(String service, boolean succeeded) {
-        logger.debug("WeMo {}: Subscription to service {} {}", getUDN(), service, succeeded ? "succeeded" : "failed");
-        subscriptionState.put(service, succeeded);
+    public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
+        if (service != null) {
+            logger.debug("WeMo {}: Subscription to service {} {}", getUDN(), service,
+                    succeeded ? "succeeded" : "failed");
+            subscriptionState.put(service, succeeded);
+        }
     }
 
     @Override
-    public void onValueReceived(String variable, String value, String service) {
+    public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'", variable, value, service,
                 this.getThing().getUID());
 
         updateStatus(ThingStatus.ONLINE);
-        this.stateMap.put(variable, value);
+        if (variable != null && value != null) {
+            this.stateMap.put(variable, value);
+        }
     }
 
     private synchronized void onSubscription() {
@@ -276,9 +276,9 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
 
             String subscription = "basicevent1";
 
-            if ((subscriptionState.get(subscription) == null) || !subscriptionState.get(subscription).booleanValue()) {
+            if (subscriptionState.get(subscription) == null) {
                 logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(), subscription);
-                service.addSubscription(this, subscription, SUBSCRIPTION_DURATION);
+                service.addSubscription(this, subscription, SUBSCRIPTION_DURATION_SECONDS);
                 subscriptionState.put(subscription, true);
             }
 
@@ -294,7 +294,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
         if (service.isRegistered(this)) {
             String subscription = "basicevent1";
 
-            if ((subscriptionState.get(subscription) != null) && subscriptionState.get(subscription).booleanValue()) {
+            if (subscriptionState.get(subscription) != null) {
                 logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
                 service.removeSubscription(this, subscription);
             }
@@ -305,11 +305,12 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
     }
 
     private synchronized void onUpdate() {
-        if (refreshJob == null || refreshJob.isCancelled()) {
+        ScheduledFuture<?> job = refreshJob;
+        if (job == null || job.isCancelled()) {
             Configuration config = getThing().getConfiguration();
-            int refreshInterval = DEFAULT_REFRESH_INTERVAL_SECONDS;
+            int refreshInterval = DEFAULT_REFRESH_INTERVALL_SECONDS;
             Object refreshConfig = config.get("refresh");
-            refreshInterval = refreshConfig == null ? DEFAULT_REFRESH_INTERVAL_SECONDS
+            refreshInterval = refreshConfig == null ? DEFAULT_REFRESH_INTERVALL_SECONDS
                     : ((BigDecimal) refreshConfig).intValue();
             refreshJob = scheduler.scheduleWithFixedDelay(refreshRunnable, 0, refreshInterval, TimeUnit.SECONDS);
         }
@@ -340,18 +341,19 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                 + action + ">" + "</s:Body>" + "</s:Envelope>";
 
         try {
-            String wemoURL = getWemoURL(actionService);
+            URL descriptorURL = service.getDescriptorURL(this);
+            String wemoURL = getWemoURL(descriptorURL, actionService);
+
             if (wemoURL != null) {
-                String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
                 if (wemoCallResponse != null) {
                     logger.trace("State response '{}' for device '{}' received", wemoCallResponse, getThing().getUID());
 
-                    String stringParser = StringUtils.substringBetween(wemoCallResponse, "<attributeList>",
-                            "</attributeList>");
+                    String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
 
                     // Due to Belkins bad response formatting, we need to run this twice.
-                    stringParser = StringEscapeUtils.unescapeXml(stringParser);
-                    stringParser = StringEscapeUtils.unescapeXml(stringParser);
+                    stringParser = unescapeXml(stringParser);
+                    stringParser = unescapeXml(stringParser);
 
                     logger.trace("AirPurifier response '{}' for device '{}' received", stringParser,
                             getThing().getUID());
@@ -359,6 +361,13 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                     stringParser = "<data>" + stringParser + "</data>";
 
                     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                    // see
+                    // https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+                    dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                    dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                    dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                    dbf.setXIncludeAware(false);
+                    dbf.setExpandEntityReferences(false);
                     DocumentBuilder db = dbf.newDocumentBuilder();
                     InputSource is = new InputSource();
                     is.setCharacterStream(new StringReader(stringParser));
@@ -548,17 +557,6 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         updateStatus(ThingStatus.ONLINE);
-    }
-
-    public String getWemoURL(String actionService) {
-        URL descriptorURL = service.getDescriptorURL(this);
-        String wemoURL = null;
-        if (descriptorURL != null) {
-            String deviceURL = StringUtils.substringBefore(descriptorURL.toString(), "/setup.xml");
-            wemoURL = deviceURL + "/upnp/control/" + actionService + "1";
-            return wemoURL;
-        }
-        return null;
     }
 
     public static String getCharacterDataFromElement(Element e) {

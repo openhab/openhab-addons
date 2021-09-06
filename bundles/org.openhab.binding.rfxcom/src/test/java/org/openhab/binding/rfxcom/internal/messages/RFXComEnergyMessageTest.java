@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ public class RFXComEnergyMessageTest {
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "115A01071A7300000003F600000000350B89";
         byte[] message = HexUtils.hexToBytes(hexMessage);
-        RFXComEnergyMessage msg = (RFXComEnergyMessage) RFXComMessageFactory.createMessage(message);
+        RFXComEnergyMessage msg = (RFXComEnergyMessage) RFXComMessageFactoryImpl.INSTANCE.createMessage(message);
         assertEquals(ELEC2, msg.subType, "SubType");
         assertEquals(7, msg.seqNbr, "Seq Number");
         assertEquals("6771", msg.getDeviceId(), "Sensor Id");

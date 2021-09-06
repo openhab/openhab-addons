@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,6 +63,26 @@ public interface ZoneControl extends IStateUpdatable {
     void setSurroundProgram(String name) throws IOException, ReceivedMessageParseException;
 
     void setDialogueLevel(int level) throws IOException, ReceivedMessageParseException;
+
+    /**
+     * Switches the HDMI1 output on or off.
+     *
+     * @param on The new state
+     *
+     * @throws IOException
+     * @throws ReceivedMessageParseException
+     */
+    void setHDMI1Out(boolean on) throws IOException, ReceivedMessageParseException;
+
+    /**
+     * Switches the HDMI2 output on or off.
+     *
+     * @param on The new state
+     *
+     * @throws IOException
+     * @throws ReceivedMessageParseException
+     */
+    void setHDMI2Out(boolean on) throws IOException, ReceivedMessageParseException;
 
     /**
      * Sets the active scene for the zone.

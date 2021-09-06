@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,7 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A homie Property (which translates into an ESH channel).
+ * A homie Property (which translates into a channel).
  *
  * @author David Graeff - Initial contribution
  */
@@ -65,7 +65,6 @@ public class Property implements AttributeChanged {
     public final String propertyID;
     // Runtime state
     protected @Nullable ChannelState channelState;
-    // ESH
     public final ChannelUID channelUID;
     public final ChannelTypeUID channelTypeUID;
     private ChannelType type;
@@ -143,8 +142,8 @@ public class Property implements AttributeChanged {
         if (attributes.retained) {
             return ChannelTypeBuilder.state(channelTypeUID, attributes.name, channelState.getItemType())
                     .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HOMIE_CHANNEL))
-                    .withStateDescription(channelState.getCache().createStateDescription(!attributes.settable).build()
-                            .toStateDescription())
+                    .withStateDescriptionFragment(
+                            channelState.getCache().createStateDescription(!attributes.settable).build())
                     .build();
         } else {
             // Non-retained and settable property -> State channel

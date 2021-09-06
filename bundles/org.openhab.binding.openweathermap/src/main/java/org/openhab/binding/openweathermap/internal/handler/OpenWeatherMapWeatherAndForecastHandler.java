@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.openweathermap.internal.handler;
 import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingConstants.*;
 import static org.openhab.core.library.unit.MetricPrefix.*;
 import static org.openhab.core.library.unit.SIUnits.*;
-import static org.openhab.core.library.unit.SmartHomeUnits.*;
+import static org.openhab.core.library.unit.Units.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -428,6 +428,12 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                 case CHANNEL_TIME_STAMP:
                     state = getDateTimeTypeState(forecastData.getDt());
                     break;
+                case CHANNEL_SUNRISE:
+                    state = getDateTimeTypeState(forecastData.getSunrise());
+                    break;
+                case CHANNEL_SUNSET:
+                    state = getDateTimeTypeState(forecastData.getSunset());
+                    break;
                 case CHANNEL_CONDITION:
                     if (!forecastData.getWeather().isEmpty()) {
                         state = getStringTypeState(forecastData.getWeather().get(0).getDescription());
@@ -486,6 +492,10 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                 case CHANNEL_SNOW:
                     Double snow = forecastData.getSnow();
                     state = getQuantityTypeState(snow == null ? 0 : snow, MILLI(METRE));
+                    break;
+                case CHANNEL_PRECIP_PROBABILITY:
+                    Double probability = forecastData.getPop();
+                    state = getQuantityTypeState(probability == null ? 0 : probability * 100.0, PERCENT);
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);

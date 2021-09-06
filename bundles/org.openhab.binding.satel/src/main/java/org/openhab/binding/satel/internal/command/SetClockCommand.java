@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.satel.internal.command;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -37,7 +36,7 @@ public class SetClockCommand extends ControlCommand {
      * @param userCode code of the user on behalf the control is made
      */
     public SetClockCommand(LocalDateTime dateTime, String userCode) {
-        super(COMMAND_CODE, ArrayUtils.addAll(userCodeToBytes(userCode), getDateTimeBytes(dateTime)));
+        super(COMMAND_CODE, getDateTimeBytes(dateTime), userCode);
     }
 
     private static byte[] getDateTimeBytes(LocalDateTime dateTime) {

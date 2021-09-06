@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,6 +47,9 @@ public class XmlRpcResponse implements RpcResponse {
             throws SAXException, ParserConfigurationException, IOException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         InputSource inputSource = new InputSource(is);
         inputSource.setEncoding(encoding);
         saxParser.parse(inputSource, new XmlRpcHandler());
@@ -112,10 +115,10 @@ public class XmlRpcResponse implements RpcResponse {
                     break;
                 case "int":
                 case "i4":
-                    data.add(new Integer(currentValue));
+                    data.add(Integer.valueOf(currentValue));
                     break;
                 case "double":
-                    data.add(new Double(currentValue));
+                    data.add(Double.valueOf(currentValue));
                     break;
                 case "string":
                 case "name":

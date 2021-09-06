@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.client.ClientBuilder;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.lametrictime.api.Configuration;
 import org.openhab.binding.lametrictime.api.LaMetricTime;
 import org.openhab.binding.lametrictime.api.local.ApplicationActivationException;
@@ -360,12 +359,12 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
         String host = config.host;
         String apiKey = config.apiKey;
 
-        if (StringUtils.isEmpty(host)) {
+        if (host == null || host.isEmpty()) {
             configStatusMessages.add(ConfigStatusMessage.Builder.error(HOST)
                     .withMessageKeySuffix(LaMetricTimeConfigStatusMessage.HOST_MISSING).withArguments(HOST).build());
         }
 
-        if (StringUtils.isEmpty(apiKey)) {
+        if (apiKey == null || apiKey.isEmpty()) {
             configStatusMessages.add(ConfigStatusMessage.Builder.error(API_KEY)
                     .withMessageKeySuffix(LaMetricTimeConfigStatusMessage.API_KEY_MISSING).withArguments(API_KEY)
                     .build());

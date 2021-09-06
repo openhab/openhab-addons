@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.neohub.internal;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 import javax.measure.Unit;
@@ -39,6 +40,12 @@ public class NeoHubReadDcbResponse {
     @SerializedName("CORF")
     private @Nullable String degreesCorF;
 
+    @SerializedName("Firmware version")
+    private @Nullable BigDecimal firmwareVersionNew;
+
+    @SerializedName("HUB_VERSION")
+    private @Nullable BigDecimal firmwareVersionOld;
+
     /*
      * note: time-stamps are measured in seconds from 1970-01-01T00:00:00Z
      *
@@ -51,13 +58,23 @@ public class NeoHubReadDcbResponse {
         return "F".equalsIgnoreCase(degreesCorF) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS;
     }
 
+    public @Nullable String getFirmwareVersion() {
+        if (firmwareVersionNew != null) {
+            return firmwareVersionNew.toString();
+        }
+        if (firmwareVersionOld != null) {
+            return firmwareVersionOld.toString();
+        }
+        return null;
+    }
+
     /**
      * Create wrapper around a JSON string
-     * 
+     *
      * @param fromJson the JSON string
      * @return a NeoHubReadDcbResponse wrapper around the JSON string
      * @throws JsonSyntaxException
-     * 
+     *
      */
     public static @Nullable NeoHubReadDcbResponse createSystemData(String fromJson) throws JsonSyntaxException {
         return GSON.fromJson(fromJson, NeoHubReadDcbResponse.class);

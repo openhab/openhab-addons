@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.luftdateninfo.internal.handler;
+
+import static org.openhab.binding.luftdateninfo.internal.utils.Constants.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,19 +44,6 @@ public class HTTPHandler {
     private static final Gson GSON = new Gson();
     private static final HTTPHandler HTTP_HANDLER = new HTTPHandler();
 
-    public static final String P1 = "P1";
-    public static final String P2 = "P2";
-
-    public static final String TEMPERATURE = "temperature";
-    public static final String HUMIDITY = "humidity";
-    public static final String PRESSURE = "pressure";
-    public static final String PRESSURE_SEALEVEL = "pressure_at_sealevel";
-
-    public static final String NOISE_EQ = "noise_LAeq";
-    public static final String NOISE_MIN = "noise_LA_min";
-    public static final String NOISE_MAX = "noise_LA_max";
-
-    private static String sensorUrl = "http://data.sensor.community/airrohr/v1/sensor/";
     private static @Nullable HttpClient commonHttpClient;
 
     public static void init(HttpClient httpClient) {
@@ -65,12 +54,11 @@ public class HTTPHandler {
         return HTTP_HANDLER;
     }
 
-    public synchronized void request(int sensorId, BaseSensorHandler callback) {
+    public synchronized void request(String url, BaseSensorHandler callback) {
         HttpClient localClient = commonHttpClient;
         if (localClient == null) {
             logger.warn("HTTP Client not initialized");
         } else {
-            String url = sensorUrl + sensorId + "/";
             Request req = localClient.newRequest(url);
             req.timeout(15, TimeUnit.SECONDS).send(new BufferingResponseListener() {
                 @NonNullByDefault({})
@@ -142,7 +130,7 @@ public class HTTPHandler {
         if (valueList == null) {
             return false;
         }
-        return valueList.stream().map(v -> v.getValueType()).filter(t -> t.equals(P1) || t.equals(P2)).findAny()
+        return valueList.stream().map(v -> v.getValueType()).filter(t -> t.endsWith(P1) || t.endsWith(P2)).findAny()
                 .isPresent();
     }
 
@@ -150,9 +138,8 @@ public class HTTPHandler {
         if (valueList == null) {
             return false;
         }
-        return valueList.stream().map(v -> v.getValueType()).filter(
-                t -> t.equals(TEMPERATURE) || t.equals(HUMIDITY) || t.equals(PRESSURE) || t.equals(PRESSURE_SEALEVEL))
-                .findAny().isPresent();
+        return valueList.stream().map(v -> v.getValueType()).filter(t -> t.equals(TEMPERATURE) || t.endsWith(HUMIDITY)
+                || t.endsWith(PRESSURE) || t.endsWith(PRESSURE_SEALEVEL)).findAny().isPresent();
     }
 
     public boolean isNoise(@Nullable List<SensorDataValue> valueList) {
@@ -160,6 +147,7 @@ public class HTTPHandler {
             return false;
         }
         return valueList.stream().map(v -> v.getValueType())
-                .filter(t -> t.equals(NOISE_EQ) || t.equals(NOISE_MAX) || t.equals(NOISE_MIN)).findAny().isPresent();
+                .filter(t -> t.endsWith(NOISE_EQ) || t.endsWith(NOISE_MAX) || t.endsWith(NOISE_MIN)).findAny()
+                .isPresent();
     }
 }

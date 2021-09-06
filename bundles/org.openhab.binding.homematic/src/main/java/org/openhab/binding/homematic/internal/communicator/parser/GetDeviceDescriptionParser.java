@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public class GetDeviceDescriptionParser extends CommonRpcParser<Object[], GetDev
      * Returns the parsed firmware version.
      */
     public String getFirmware() {
-        return firmware;
+        return firmware == null ? "" : firmware;
     }
 
     /**

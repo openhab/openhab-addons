@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.UpnpService;
 import org.openhab.binding.samsungtv.internal.handler.SamsungTvHandler;
-import org.openhab.core.config.discovery.DiscoveryServiceRegistry;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.thing.Thing;
@@ -46,7 +45,6 @@ public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(SAMSUNG_TV_THING_TYPE);
 
     private @NonNullByDefault({}) UpnpIOService upnpIOService;
-    private @NonNullByDefault({}) DiscoveryServiceRegistry discoveryServiceRegistry;
     private @NonNullByDefault({}) UpnpService upnpService;
 
     @Reference
@@ -62,7 +60,7 @@ public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(SAMSUNG_TV_THING_TYPE)) {
-            return new SamsungTvHandler(thing, upnpIOService, discoveryServiceRegistry, upnpService, webSocketFactory);
+            return new SamsungTvHandler(thing, upnpIOService, upnpService, webSocketFactory);
         }
 
         return null;
@@ -75,15 +73,6 @@ public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
 
     protected void unsetUpnpIOService(UpnpIOService upnpIOService) {
         this.upnpIOService = null;
-    }
-
-    @Reference
-    protected void setDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
-        this.discoveryServiceRegistry = discoveryServiceRegistry;
-    }
-
-    protected void unsetDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
-        this.discoveryServiceRegistry = null;
     }
 
     @Reference

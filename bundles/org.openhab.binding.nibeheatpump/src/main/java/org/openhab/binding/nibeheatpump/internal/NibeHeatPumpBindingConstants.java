@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,10 @@ public class NibeHeatPumpBindingConstants {
     public static final ThingTypeUID THING_TYPE_F1X55_SERIAL = new ThingTypeUID(BINDING_ID, "f1x55-serial");
     public static final ThingTypeUID THING_TYPE_F1X55_SIMULATOR = new ThingTypeUID(BINDING_ID, "f1x55-simulator");
 
+    public static final ThingTypeUID THING_TYPE_SMO40_UDP = new ThingTypeUID(BINDING_ID, "smo40-udp");
+    public static final ThingTypeUID THING_TYPE_SMO40_SERIAL = new ThingTypeUID(BINDING_ID, "smo40-serial");
+    public static final ThingTypeUID THING_TYPE_SMO40_SIMULATOR = new ThingTypeUID(BINDING_ID, "smo40-simulator");
+
     public static final ThingTypeUID THING_TYPE_F750_UDP = new ThingTypeUID(BINDING_ID, "f750-udp");
     public static final ThingTypeUID THING_TYPE_F750_SERIAL = new ThingTypeUID(BINDING_ID, "f750-serial");
     public static final ThingTypeUID THING_TYPE_F750_SIMULATOR = new ThingTypeUID(BINDING_ID, "f750-simulator");
@@ -50,7 +54,8 @@ public class NibeHeatPumpBindingConstants {
      */
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(THING_TYPE_F1X45_UDP, THING_TYPE_F1X45_SERIAL, THING_TYPE_F1X45_SIMULATOR, THING_TYPE_F1X55_UDP,
-                    THING_TYPE_F1X55_SERIAL, THING_TYPE_F1X55_SIMULATOR, THING_TYPE_F750_UDP, THING_TYPE_F750_SERIAL,
-                    THING_TYPE_F750_SIMULATOR, THING_TYPE_F470_UDP, THING_TYPE_F470_SERIAL, THING_TYPE_F470_SIMULATOR)
+                    THING_TYPE_F1X55_SERIAL, THING_TYPE_F1X55_SIMULATOR, THING_TYPE_SMO40_UDP, THING_TYPE_SMO40_SERIAL,
+                    THING_TYPE_SMO40_SIMULATOR, THING_TYPE_F750_UDP, THING_TYPE_F750_SERIAL, THING_TYPE_F750_SIMULATOR,
+                    THING_TYPE_F470_UDP, THING_TYPE_F470_SERIAL, THING_TYPE_F470_SIMULATOR)
             .collect(Collectors.toSet());
 }

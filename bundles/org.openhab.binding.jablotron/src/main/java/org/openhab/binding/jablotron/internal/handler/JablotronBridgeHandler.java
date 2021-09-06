@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,10 +32,20 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.jablotron.internal.config.JablotronBridgeConfig;
 import org.openhab.binding.jablotron.internal.discovery.JablotronDiscoveryService;
-import org.openhab.binding.jablotron.internal.model.*;
+import org.openhab.binding.jablotron.internal.model.JablotronControlResponse;
+import org.openhab.binding.jablotron.internal.model.JablotronDataUpdateResponse;
+import org.openhab.binding.jablotron.internal.model.JablotronDiscoveredService;
+import org.openhab.binding.jablotron.internal.model.JablotronGetEventHistoryResponse;
+import org.openhab.binding.jablotron.internal.model.JablotronGetServiceResponse;
+import org.openhab.binding.jablotron.internal.model.JablotronHistoryDataEvent;
+import org.openhab.binding.jablotron.internal.model.JablotronLoginResponse;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronGetPGResponse;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronGetSectionsResponse;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;

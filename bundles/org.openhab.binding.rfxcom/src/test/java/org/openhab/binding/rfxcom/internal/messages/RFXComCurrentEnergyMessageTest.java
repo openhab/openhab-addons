@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ public class RFXComCurrentEnergyMessageTest {
     private void testMessage(String hexMsg, RFXComCurrentEnergyMessage.SubType subType, int seqNbr, String deviceId,
             int count, double channel1, double channel2, double channel3, double totalUsage, int signalLevel,
             int batteryLevel) throws RFXComException {
-        final RFXComCurrentEnergyMessage msg = (RFXComCurrentEnergyMessage) RFXComMessageFactory
+        final RFXComCurrentEnergyMessage msg = (RFXComCurrentEnergyMessage) RFXComMessageFactoryImpl.INSTANCE
                 .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals(subType, msg.subType, "SubType");
         assertEquals(seqNbr, (short) (msg.seqNbr & 0xFF), "Seq Number");

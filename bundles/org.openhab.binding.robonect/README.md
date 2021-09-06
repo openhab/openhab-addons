@@ -1,15 +1,13 @@
 # Robonect Binding
 
-Robonect is a piece of hardware which has to be put into your Husqvarna, Gardena and other branded automower and makes 
-it accessible in your internal network. 
+Robonect is a piece of hardware which has to be put into your Husqvarna, Gardena and other branded automower and makes it accessible in your internal network.
 More details about the Robonect module can be found at [robonect.de](https://forum.robonect.de/)
 
-This binding integrates mowers having the robonect module installed as a thing into the home automation solution, allowing to
-control the mower and react on mower status changes in rules. 
+This binding integrates mowers having the robonect module installed as a thing into the home automation solution, allowing to control the mower and react on mower status changes in rules.
 
 ## Supported Things
 
-The binding exposes just one Thing type which is the `mower`.
+The binding supports one Thing type which is the `mower`.
 
 Tested mowers
 
@@ -23,11 +21,11 @@ Tested mowers
 
 ## Discovery
 
-Robonect does not support automatic discovery. So the thing has to be added manually either via Paper UI or things configuration.
+Automatic discovery is not supported.
 
 ## Thing Configuration
 
-following configuration settings are supported for the `mower` thing.
+The following configuration settings are supported for the `mower` thing.
 
 | parameter name | mandatory | description                                                                                       |
 |----------------|-----------|---------------------------------------------------------------------------------------------------|
@@ -39,7 +37,7 @@ following configuration settings are supported for the `mower` thing.
 | timezone       | no        | the timezone as configured in Robonect on the robot (default: Europe/Berlin)                      |
 
 
-An example things configuration might look like
+An example things configuration might look like:
 
 ```java
 Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInterval="5", user="gardener", password = "cutter"]
@@ -51,7 +49,8 @@ Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInte
 |------------------------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `name`                       | String    | Retrieves or sets the name of the mower                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `battery`                    | Number    | Retrieves the current battery status in percent                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `status-duration`            | Number    | Retrieves the duration of the current status (see `status`) of the mower                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `status-duration`            | Number    | Retrieves the duration of the current status (see `status`) of the mower                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `status-distance`            | Number    | Retrieves the distance of the mower from the charging station when searching for the remote starting point                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `mowing-hours`               | Number    | Retrieves the number of hours of mowing operation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `mode`                       | String    | Retrieves or  sets the mode of the mower. Possible values retrieval values are <ul><li>HOME</li><li>AUTO</li><li>MANUAL</li><li>EOD : triggers the "end of day" mode. The mower will switch in to the HOME mode and stay int this mode for the rest of the day. After midnight it will switch back to the mode which was set previously.</li></ul>                                                                                                                                                                                      |
 | `status`                     | Number    | Retrieves the current mower status which can be <ul><li>0 : DETECTING_STATUS</li><li>1 : PARKING</li><li>2 : MOWING</li><li>3 : SEARCH_CHARGING_STATION</li><li>4 : CHARGING</li><li>5 : SEARCHING</li><li>6 : UNKNOWN_6</li><li>7 : ERROR_STATUS</li><li>16 : OFF</li><li>17 : SLEEPING</li><li>98 : OFFLINE (Binding cannot connect to mower)</li><li>99 : UNKNOWN</li></ul>                                                                                                                                                          |
@@ -71,7 +70,7 @@ Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInte
 
 ### Offline Trigger Channel
 
-This channel s triggered if the mower is longer than the configured `offlineTriggerTimeout` offline. 
+This channel s triggered if the mower is longer than the configured `offlineTriggerTimeout` offline.
 This may indicate that the mower may stuck somewhere in error state but does not have a signal.
 
 ## Full Example

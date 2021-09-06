@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.pushover.internal.actions;
 
-import static org.openhab.binding.pushover.internal.PushoverBindingConstants.DEFAULT_TITLE;
+import static org.openhab.binding.pushover.internal.PushoverBindingConstants.*;
 import static org.openhab.binding.pushover.internal.connection.PushoverMessageBuilder.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,6 +42,54 @@ public class PushoverActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(PushoverActions.class);
 
     private @NonNullByDefault({}) PushoverAccountHandler accountHandler;
+
+    @RuleAction(label = "@text/sendMessageActionLabel", description = "@text/sendMessageActionDescription")
+    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessage(
+            @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
+            @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
+            @ActionInput(name = "sound", label = "@text/sendMessageActionInputSoundLabel", description = "@text/sendMessageActionInputSoundDescription", type = "java.lang.String", defaultValue = DEFAULT_SOUND) @Nullable String sound,
+            @ActionInput(name = "url", label = "@text/sendMessageActionInputURLLabel", description = "@text/sendMessageActionInputURLDescription", type = "java.lang.String") @Nullable String url,
+            @ActionInput(name = "urlTitle", label = "@text/sendMessageActionInputURLTitleLabel", description = "@text/sendMessageActionInputURLTitleDescription", type = "java.lang.String") @Nullable String urlTitle,
+            @ActionInput(name = "attachment", label = "@text/sendMessageActionInputAttachmentLabel", description = "@text/sendMessageActionInputAttachmentDescription", type = "java.lang.String") @Nullable String attachment,
+            @ActionInput(name = "contentType", label = "@text/sendMessageActionInputContentTypeLabel", description = "@text/sendMessageActionInputContentTypeDescription", type = "java.lang.String", defaultValue = DEFAULT_CONTENT_TYPE) @Nullable String contentType,
+            @ActionInput(name = "priority", label = "@text/sendMessageActionInputPriorityLabel", description = "@text/sendMessageActionInputPriorityDescription", type = "java.lang.Integer", defaultValue = DEFAULT_EMERGENCY_PRIORITY) @Nullable Integer priority,
+            @ActionInput(name = "device", label = "@text/sendMessageActionInputDeviceLabel", description = "@text/sendMessageActionInputDeviceDescription", type = "java.lang.String") @Nullable String device) {
+        logger.trace(
+                "ThingAction 'sendMessage' called with value(s): message='{}', title='{}', sound='{}', url='{}', urlTitle='{}', attachment='{}', contentType='{}', priority='{}', device='{}'",
+                message, title, sound, url, urlTitle, attachment, contentType, priority, device);
+
+        PushoverMessageBuilder builder = getDefaultPushoverMessageBuilder(message);
+        // add sound, if defined
+        if (sound != null && !DEFAULT_SOUND.equals(sound)) {
+            builder.withSound(sound);
+        }
+        if (url != null) {
+            builder.withUrl(url);
+            if (urlTitle != null) {
+                builder.withUrlTitle(urlTitle);
+            }
+        }
+        if (attachment != null) {
+            builder.withAttachment(attachment);
+            if (contentType != null) {
+                builder.withContentType(contentType);
+            }
+        }
+        if (priority != null) {
+            builder.withPriority(priority.intValue());
+        }
+        if (device != null) {
+            builder.withDevice(device);
+        }
+        return send(builder, title);
+    }
+
+    public static Boolean sendMessage(ThingActions actions, String message, @Nullable String title,
+            @Nullable String sound, @Nullable String url, @Nullable String urlTitle, @Nullable String attachment,
+            @Nullable String contentType, @Nullable Integer priority, @Nullable String device) {
+        return ((PushoverActions) actions).sendMessage(message, title, sound, url, urlTitle, attachment, contentType,
+                priority, device);
+    }
 
     @RuleAction(label = "@text/sendMessageActionLabel", description = "@text/sendMessageActionDescription")
     public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessage(

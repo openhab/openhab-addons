@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,8 +82,8 @@ public class DsDeviceThingTypeProvider extends BaseDsI18n implements ThingTypePr
 
     private final Logger logger = LoggerFactory.getLogger(DsDeviceThingTypeProvider.class);
 
-    private final String DEVICE_WITH_POWER_SENSORS = "binding:digitalstrom:deviceWithPowerSensors";
-    private final String DEVICE_WITHOUT_POWER_SENSORS = "binding:digitalstrom:deviceWithoutPowerSensors";
+    private final String DEVICE_WITH_POWER_SENSORS = "thing-type:digitalstrom:deviceWithPowerSensors";
+    private final String DEVICE_WITHOUT_POWER_SENSORS = "thing-type:digitalstrom:deviceWithoutPowerSensors";
 
     @Activate
     @Override

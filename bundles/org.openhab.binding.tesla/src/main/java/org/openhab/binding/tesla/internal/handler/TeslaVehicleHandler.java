@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import javax.measure.quantity.Temperature;
 import javax.ws.rs.ProcessingException;
@@ -37,8 +39,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tesla.internal.TeslaBindingConstants;
 import org.openhab.binding.tesla.internal.TeslaBindingConstants.EventKeys;
@@ -137,7 +137,6 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     protected ScheduledFuture<?> slowStateJob;
 
     private final Gson gson = new Gson();
-    private final JsonParser parser = new JsonParser();
 
     public TeslaVehicleHandler(Thing thing, ClientBuilder clientBuilder) {
         super(thing);
@@ -474,12 +473,12 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     }
 
     @Override
-    protected void updateStatus(@NonNull ThingStatus status) {
+    protected void updateStatus(ThingStatus status) {
         super.updateStatus(status);
     }
 
     @Override
-    protected void updateStatus(@NonNull ThingStatus status, @NonNull ThingStatusDetail statusDetail) {
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail) {
         super.updateStatus(status, statusDetail);
     }
 
@@ -561,7 +560,9 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                 }
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                eventClient.close();
+                if (eventClient != null) {
+                    eventClient.close();
+                }
             } else if ((System.currentTimeMillis() - apiIntervalTimestamp) > 1000
                     * TeslaAccountHandler.API_ERROR_INTERVAL_SECONDS) {
                 logger.trace("Resetting the error counter. ({} errors in the last interval)", apiIntervalErrors);
@@ -711,7 +712,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     return null;
                 }
 
-                JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+                JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
                 Vehicle[] vehicleArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
 
                 for (Vehicle vehicle : vehicleArray) {
@@ -831,7 +832,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         break;
                     }
                     default: {
-                        jsonObject = parser.parse(result).getAsJsonObject();
+                        jsonObject = JsonParser.parseString(result).getAsJsonObject();
                         break;
                     }
                 }
@@ -991,7 +992,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     eventClient = clientBuilder.build()
                             .register(new Authenticator((String) getConfig().get(CONFIG_USERNAME), vehicle.tokens[0]));
                     eventTarget = eventClient.target(URI_EVENT).path(vehicle.vehicle_id + "/").queryParam("values",
-                            StringUtils.join(EventKeys.values(), ',', 1, EventKeys.values().length));
+                            Arrays.asList(EventKeys.values()).stream().skip(1).map(Enum::toString)
+                                    .collect(Collectors.joining(",")));
                     eventResponse = eventTarget.request(MediaType.TEXT_PLAIN_TYPE).get();
 
                     logger.debug("Event Stream: Establishing the event stream: Response: {}:{}",

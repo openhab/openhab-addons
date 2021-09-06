@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,8 @@ package org.openhab.persistence.jdbc.db;
 
 import org.knowm.yank.Yank;
 import org.openhab.core.items.Item;
-import org.openhab.persistence.jdbc.model.ItemVO;
-import org.openhab.persistence.jdbc.model.ItemsVO;
+import org.openhab.persistence.jdbc.dto.ItemVO;
+import org.openhab.persistence.jdbc.dto.ItemsVO;
 import org.openhab.persistence.jdbc.utils.StringUtilsExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

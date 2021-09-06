@@ -5,11 +5,13 @@
 			"yeelink.light.color2",
 			"yeelink.light.color3",
 			"yeelink.light.color4",
+			"yeelink.light.color5",
 			"yeelink.light.strip1",
 			"yeelink.light.strip2",
 			"yeelink.light.bslamp1",
 			"yeelink.light.bslamp2",
-			"yeelink.light.bslamp3"
+			"yeelink.light.bslamp3",
+			"yeelink.light.colora"
 		],
 		"maxProperties": 7,
 		"channels": [
@@ -17,25 +19,25 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
-				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": [
 					{
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
 				"property": "bright",
 				"friendlyName": "Brightness",
 				"channel": "brightness",
-				"channelType": "brightness",
 				"type": "Dimmer",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_bright",
@@ -51,16 +53,23 @@
 							"name": "BrightnessOnOff"
 						}
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Setpoint",
+					"Light"
 				]
 			},
 			{
 				"property": "delayoff",
 				"friendlyName": "Shutdown Timer",
 				"channel": "delayoff",
-				"channelType": "delayoff",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "cron_add",
@@ -70,16 +79,25 @@
 							"$value$"
 						]
 					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
 				]
 			},
 			{
 				"property": "ct",
 				"friendlyName": "Color Temperature",
 				"channel": "colorTemperature",
-				"channelType": "colorTemperature",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 1700,
+					"maximum": 6500,
+					"step": 1,
+					"pattern": "%.0f K"
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_ct_abx",
@@ -90,30 +108,11 @@
 							500
 						]
 					}
-				]
-			},
-			{
-				"property": "color_mode",
-				"friendlyName": "Color Mode",
-				"channel": "colorMode",
-				"channelType": "colorMode",
-				"type": "String",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": []
-			},
-			{
-				"property": "toggle",
-				"friendlyName": "toggle",
-				"channel": "toggle",
-				"type": "Switch",
-				"refresh": false,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "toggle",
-						"parameterType": "EMPTY"
-					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Setpoint",
+					"Temperature"
 				]
 			},
 			{
@@ -122,6 +121,7 @@
 				"channel": "rgbColor",
 				"type": "Color",
 				"refresh": true,
+				"transformation": "addBrightToHSV",
 				"ChannelGroup": "actions",
 				"actions": [
 					{
@@ -150,6 +150,133 @@
 							"name": "BrightnessOnOff"
 						}
 					}
+				],
+				"category": "colorpicker",
+				"tags": [
+					"Control",
+					"Light"
+				]
+			},
+			{
+				"property": "color_mode",
+				"friendlyName": "Color Mode",
+				"channel": "colorMode",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 5,
+					"step": 1,
+					"options": [
+						{
+							"value": "0",
+							"label": "Default"
+						},
+						{
+							"value": "2",
+							"label": "CT mode"
+						},
+						{
+							"value": "1",
+							"label": "RGB mode"
+						},
+						{
+							"value": "3",
+							"label": "HSV mode"
+						},
+						{
+							"value": "4",
+							"label": "Color Flow mode"
+						},
+						{
+							"value": "5",
+							"label": "Night Light mode"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_rgb",
+						"parameterType": "NONE",
+						"parameters": [
+							"$rgb$",
+							"smooth",
+							500
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "1"
+								}
+							]
+						}
+					},
+					{
+						"command": "set_ct_abx",
+						"parameterType": "NONE",
+						"parameters": [
+							"$ct$",
+							"smooth",
+							500
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "2"
+								}
+							]
+						}
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Note, currently only supporting switching to RGB or CT mode. Value mapping `[\"0\"\u003d\"Default\",\"2\"\u003d\"CT mode\",\"1\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\",\"5\"\u003d\"Night Light mode\"]`"
+			},
+			{
+				"property": "flowing",
+				"friendlyName": "Color Flow",
+				"channel": "colorflow",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "start_cf",
+						"parameterType": "NONE",
+						"parameters": [
+							0,
+							0,
+							"500,1,255,100,500,1,5292678,100,500,1,11673869,100,500,1,16776960,100,500,1,7733248,100"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON"
+								}
+							]
+						}
+					},
+					{
+						"command": "stop_cf",
+						"parameterType": "EMPTY",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF"
+								}
+							]
+						}
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -158,13 +285,13 @@
 				"channel": "name",
 				"type": "String",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_name",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"category": "text"
 			}
 		]
 	}

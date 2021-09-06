@@ -28,6 +28,25 @@ For defining a thing textually, you have to find out the start address of the mo
 While the length is usually fixed, the address is not.
 Please refer to your device's vendor documentation how model blocks are laid for your equipment.
 
+OR: If there is no offset configured (default config) on the dip switch in RS-485, the following are mostly interesting for getting things up and running:
+
+|--------|-----------------------|
+| Offset | Device                |
+|--------|-----------------------|
+| 10     | Multicast Xtender     |
+| 11-19  | Xtender 1-9           |
+| 20     | Multicast Variotrack  |
+| 21-35  | Variotrack 1-15       |
+| 40     | Multicast Variostring |
+| 41-55  | Variostring 1-15      |
+| 61     | BSP/Xcom-CAN          |
+|--------|-----------------------|
+
+More Details about that can be found in the technical specification and appendix for Studer RTU Modbus protocol. Check default config (dip switches 1 and 2 off) while configuring the pin-out on the RS-485!
+
+Multicast writes on any devices of given class, but reads only on the first available device (Not Summary!). As currently there are no writes available, 10/20/40 is useless for now.
+
+
 The following parameters are valid for all thing types:
 
 | Parameter | Type    | Required | Default if omitted      | Description                                                                |
@@ -114,29 +133,53 @@ All channels read for a VarioString device
 
 ```
 Bridge modbus:serial:bridge [port="/dev/ttyUSB0",baud=9600,dataBits=8,parity="even",stopBits="1.0",encoding="rtu"]
-Thing modbus:xtender:bridge:xtenderdevice "Xtender" (modbus:serial:modbusbridge) [ slaveAddress=10, refresh=5 ]
+..or..
+Bridge modbus:tcp:bridge [host="192.168.178.56", port=502, rtuEncoded=true]
+
+...
+
+Thing modbus:xtender:bridge:xtender_Phase1 "Xtender" (modbus:serial:modbusbridge) [ slaveAddress=11, refresh=5 ]
+Thing modbus:variostring:bridge:variostring_left "Xtender" (modbus:serial:modbusbridge) [ slaveAddress=41, refresh=5 ]
+Thing modbus:variostring:bridge:variostring_right "Xtender" (modbus:serial:modbusbridge) [ slaveAddress=42, refresh=5 ]
+Thing modbus:bsp:bridge:byd "BydBox" (modbus:serial:modbusbridge) [ slaveAddress=61, refresh=5 ]
 ```
+
 
 Note: Make sure that refresh and slave address are numerical, without quotes.
 
 ### Item Configuration
 
 ```
-Number XtenderStuderThing_InputVoltage "Input Voltage [%.2f %unit%]"  
-{channel="modbus:xtender:bridge:xtenderdevice:inputVoltage"}
+Number Studer_Xtender_Phase1_InputVoltage "Input Voltage [%.2f V]"          {channel="modbus:xtender:bridge:xtender_Phase1:inputVoltage"}
+Number Studer_Xtender_Phase1_InputCurrent "Input Current [%.2f A]"          {channel="modbus:xtender:bridge:xtender_Phase1:inputCurrent"}
+String Studer_Xtender_Phase1_StateInverter "State: [%s]"                    {channel="modbus:xtender:bridge:xtender_Phase1:stateInverter"}
 
-Number XtenderStuderThing_InputCurrent "Input Current [%.2f %unit%]"  {channel="modbus:xtender:bridge:xtenderdevice:inputCurrent"}
+Number Studer_PVCurrent_Left               "Current [%.2f]"                 {channel="modbus:variostring:bridge:variostring_left:PVCurrent"}
+Number Studer_PVPower_Left                 "Power"                          {channel="modbus:variostring:bridge:variostring_left:PVPower"}
+Number Studer_ProductionPVCurrentDay_Left  "ProductionCurrentDay [%.3f kW]" {channel="modbus:variostring:bridge:variostring_left:ProductionPVCurrentDay"}
+String Studer_PVMode_Left                  "Mode: [%s]"                     {channel="modbus:variostring:bridge:variostring_left:PVMode"}
+String Studer_stateVarioString_Left        "State: [%s]"                    {channel="modbus:variostring:bridge:variostring_left:stateVarioString"}
 
-String XtenderStuderThing_StateInverter "State: [%s]" {channel="modbus:xtender:bridge:xtenderdevice:stateInverter"}
+Number Studer_BSP_SOC                "State: [%s]"                          {channel="modbus:bsp:bridge:byd:stateOfCharge"}
+Number Studer_BSP_batteryVoltage     "Battery Voltage: [%s]"                {channel="modbus:bsp:bridge:byd:batteryVoltage"}
 ```
 
 ### Sitemap Configuration
 
 ```
-Text item=XtenderStuderThing_InputVoltage
-Text item=XtenderStuderThing_InputCurrent
-Text item=XtenderStuderThing_StateInverter
+Text item=Studer_Xtender_Phase1_InputVoltage
+Text item=Studer_Xtender_Phase1_InputCurrent
+Text item=Studer_Xtender_Phase1_StateInverter
             
-Chart item=XtenderStuderThing_InputVoltage period=D refresh=600000
-Chart item=XtenderStuderThing_InputCurrent period=D refresh=30000
+Chart item=Studer_Xtender_Phase1_InputVoltage period=D refresh=600000
+Chart item=Studer_Xtender_Phase1_InputCurrent period=D refresh=30000
+
+Text item=Studer_BSP_SOC
+Text item=Studer_BSP_batteryVoltage
+
+Text item=Studer_PVCurrent_Left
+Text item=Studer_PVPower_Left
+Text item=Studer_ProductionPVCurrentDay_Left
+Text item=Studer_PVMode_Left
+Text item=Studer_stateVarioString_Left
 ```

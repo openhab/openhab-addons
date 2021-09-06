@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,6 +47,8 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         FAN_SEAV(23, RFXComFanMessage.SubType.SEAV_TXS4),
         FAN_FT1211R(23, RFXComFanMessage.SubType.FT1211R),
         FAN_FALMEC(23, RFXComFanMessage.SubType.FALMEC),
+        FAN_ITHO_CVE_ECO_RFT(23, RFXComFanMessage.SubType.ITHO_CVE_ECO_RFT),
+        FAN_NOVY(23, RFXComFanMessage.SubType.NOVY),
         CURTAIN1(24),
         BLINDS1(25),
         RFY(26),
@@ -83,6 +85,7 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         RFXSENSOR(112),
         RFXMETER(113),
         FS20(114),
+        RAW(127),
         IO_LINES(128);
 
         private final int packetType;
@@ -163,7 +166,7 @@ public abstract class RFXComBaseMessage implements RFXComMessage {
         }
 
         str += ", Packet type = " + packetType;
-        str += ", Seq number = " + (short) (seqNbr & 0xFF);
+        str += ", Seq number = " + Byte.toUnsignedInt(seqNbr);
 
         return str;
     }

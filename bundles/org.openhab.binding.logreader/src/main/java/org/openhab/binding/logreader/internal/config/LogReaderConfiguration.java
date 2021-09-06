@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,20 +12,24 @@
  */
 package org.openhab.binding.logreader.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Configuration class for {@link LogReaderBinding} binding.
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class LogReaderConfiguration {
-    public String filePath;
-    public int refreshRate;
-    public String warningPatterns;
-    public String warningBlacklistingPatterns;
-    public String errorPatterns;
-    public String errorBlacklistingPatterns;
-    public String customPatterns;
-    public String customBlacklistingPatterns;
+    public String filePath = "${OPENHAB_LOGDIR}/openhab.log";
+    public int refreshRate = 1000;
+    public String warningPatterns = "WARN+";
+    public @Nullable String warningBlacklistingPatterns;
+    public String errorPatterns = "ERROR+";
+    public @Nullable String errorBlacklistingPatterns;
+    public @Nullable String customPatterns;
+    public @Nullable String customBlacklistingPatterns;
 
     @Override
     public String toString() {

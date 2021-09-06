@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,6 @@ import org.openhab.core.items.GenericItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.types.RefreshType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
@@ -75,8 +74,8 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
     public HomekitValveImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        inUseReader = createBooleanReader(INUSE_STATUS, OnOffType.ON, OpenClosedType.OPEN);
-        activeReader = createBooleanReader(ACTIVE_STATUS, OnOffType.ON, OpenClosedType.OPEN);
+        inUseReader = createBooleanReader(INUSE_STATUS);
+        activeReader = createBooleanReader(ACTIVE_STATUS);
         ValveService service = new ValveService(this);
         getServices().add(service);
         final String timerConfig = getAccessoryConfiguration(CONFIG_TIMER, "");

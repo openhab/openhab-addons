@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * Homie 3.x Node.
  *
  * A Homie Node contains Homie Properties ({@link Property}) but can also have attributes ({@link NodeAttributes}).
- * It corresponds to an ESH ChannelGroup.
+ * It corresponds to a ChannelGroup.
  *
  * @author David Graeff - Initial contribution
  */
@@ -53,7 +53,6 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     public ChildMap<Property> properties;
     // Runtime
     public final DeviceCallback callback;
-    // ESH
     protected final ChannelGroupUID channelGroupUID;
     public final ChannelGroupTypeUID channelGroupTypeUID;
     private final String topic;

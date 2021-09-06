@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -96,7 +96,6 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
 
     @Override
     public void setChannelState(ChannelUID channelId, State state) {
-        // TODO Auto-generated method stub
     }
 
     @Override
@@ -108,13 +107,11 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
 
     @Override
     public String getSetting(String name) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setSettings(Map<String, String> properties) {
-        // TODO Auto-generated method stub
     }
 
     @Override

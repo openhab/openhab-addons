@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,9 +18,20 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.deconz.internal.handler.*;
+import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
+import org.openhab.binding.deconz.internal.handler.GroupThingHandler;
+import org.openhab.binding.deconz.internal.handler.LightThingHandler;
+import org.openhab.binding.deconz.internal.handler.SensorThermostatThingHandler;
+import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
-import org.openhab.binding.deconz.internal.types.*;
+import org.openhab.binding.deconz.internal.types.GroupType;
+import org.openhab.binding.deconz.internal.types.GroupTypeDeserializer;
+import org.openhab.binding.deconz.internal.types.LightType;
+import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
+import org.openhab.binding.deconz.internal.types.ResourceType;
+import org.openhab.binding.deconz.internal.types.ResourceTypeDeserializer;
+import org.openhab.binding.deconz.internal.types.ThermostatMode;
+import org.openhab.binding.deconz.internal.types.ThermostatModeGsonTypeAdapter;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
@@ -54,15 +65,18 @@ public class DeconzHandlerFactory extends BaseThingHandlerFactory {
     private final Gson gson;
     private final WebSocketFactory webSocketFactory;
     private final HttpClientFactory httpClientFactory;
-    private final StateDescriptionProvider stateDescriptionProvider;
+    private final DeconzDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final DeconzDynamicCommandDescriptionProvider commandDescriptionProvider;
 
     @Activate
     public DeconzHandlerFactory(final @Reference WebSocketFactory webSocketFactory,
             final @Reference HttpClientFactory httpClientFactory,
-            final @Reference StateDescriptionProvider stateDescriptionProvider) {
+            final @Reference DeconzDynamicStateDescriptionProvider stateDescriptionProvider,
+            final @Reference DeconzDynamicCommandDescriptionProvider commandDescriptionProvider) {
         this.webSocketFactory = webSocketFactory;
         this.httpClientFactory = httpClientFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = commandDescriptionProvider;
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LightType.class, new LightTypeDeserializer());
@@ -85,13 +99,13 @@ public class DeconzHandlerFactory extends BaseThingHandlerFactory {
             return new DeconzBridgeHandler((Bridge) thing, webSocketFactory,
                     new AsyncHttpClient(httpClientFactory.getCommonHttpClient()), gson);
         } else if (LightThingHandler.SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID)) {
-            return new LightThingHandler(thing, gson, stateDescriptionProvider);
+            return new LightThingHandler(thing, gson, stateDescriptionProvider, commandDescriptionProvider);
         } else if (SensorThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new SensorThingHandler(thing, gson);
         } else if (SensorThermostatThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new SensorThermostatThingHandler(thing, gson);
         } else if (GroupThingHandler.SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID)) {
-            return new GroupThingHandler(thing, gson);
+            return new GroupThingHandler(thing, gson, commandDescriptionProvider);
         }
 
         return null;

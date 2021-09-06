@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,11 +33,13 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class RollershutterItemIntegrationTest extends AbstractTwoItemIntegrationTest {
 
+    public static final boolean LEGACY_MODE = false;
     private static final String NAME = "rollershutter";
     private static final PercentType STATE1 = PercentType.ZERO;
     private static final PercentType STATE2 = new PercentType("72.938289428989489389329834898929892439842399483498");
     private static final PercentType STATE_BETWEEN = new PercentType(66); // no such that exists
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         RollershutterItem item = (RollershutterItem) ITEMS.get(NAME);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,7 @@ public class RFXComHandlerFactory extends BaseThingHandlerFactory {
 
         if (RFXComBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new RFXComBridgeHandler((Bridge) thing, serialPortManager);
-        } else if (supportsThingType(thingTypeUID)) {
+        } else if (RFXComBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new RFXComHandler(thing);
         }
 

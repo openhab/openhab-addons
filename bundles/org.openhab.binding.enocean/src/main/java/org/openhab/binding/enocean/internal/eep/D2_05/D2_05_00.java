@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -98,7 +98,8 @@ public class D2_05_00 extends _VLDMessage {
 
     @Override
     public void addConfigPropertiesTo(DiscoveryResultBuilder discoveredThingResultBuilder) {
-        discoveredThingResultBuilder.withProperty(PARAMETER_EEPID, getEEPType().getId());
+        discoveredThingResultBuilder.withProperty(PARAMETER_SENDINGEEPID, getEEPType().getId())
+                .withProperty(PARAMETER_RECEIVINGEEPID, getEEPType().getId());
     }
 
     @Override

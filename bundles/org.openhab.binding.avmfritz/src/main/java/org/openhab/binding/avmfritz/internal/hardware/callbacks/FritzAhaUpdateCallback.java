@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,10 @@ import static org.eclipse.jetty.http.HttpMethod.GET;
 import java.io.StringReader;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.avmfritz.internal.dto.DeviceListModel;
@@ -56,21 +59,26 @@ public class FritzAhaUpdateCallback extends FritzAhaReauthCallback {
         this.handler = handler;
     }
 
+    @SuppressWarnings({ "null", "unused" })
     @Override
     public void execute(int status, String response) {
         super.execute(status, response);
         logger.trace("Received State response {}", response);
         if (isValidRequest()) {
             try {
+                XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
                 Unmarshaller unmarshaller = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
-                DeviceListModel model = (DeviceListModel) unmarshaller.unmarshal(new StringReader(response));
+                DeviceListModel model = unmarshaller.unmarshal(xsr, DeviceListModel.class).getValue();
                 if (model != null) {
                     handler.onDeviceListAdded(model.getDevicelist());
                 } else {
                     logger.debug("no model in response");
                 }
                 handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
-            } catch (JAXBException e) {
+            } catch (UnmarshalException e) {
+                logger.debug("Failed to unmarshal XML document: {}", e.getMessage());
+                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (JAXBException | XMLStreamException e) {
                 logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
                 handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         e.getLocalizedMessage());

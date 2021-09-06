@@ -1,7 +1,9 @@
 {
 	"deviceMapping": {
 		"id": [
-			"chuangmi.plug.v3old"
+			"chuangmi.plug.v3",
+			"chuangmi.plug.hmi206",
+			"chuangmi.plug.hmi208"
 		],
 		"channels": [
 			{
@@ -13,10 +15,15 @@
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_*",
-						"parameterType": "ONOFFPARA"
+						"command": "set_power",
+						"parameterType": "ONOFF"
 					}
-				]
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "If this channel does not respond to on/off upgrade firmware"
 			},
 			{
 				"property": "usb_on",
@@ -37,11 +44,13 @@
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"channelType": "temperatureC",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "",
 				"actions": [],
 				"category": "temperature",
 				"tags": [

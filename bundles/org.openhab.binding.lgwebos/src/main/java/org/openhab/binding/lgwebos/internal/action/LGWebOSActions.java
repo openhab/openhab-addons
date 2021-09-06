@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -154,8 +154,7 @@ public class LGWebOSActions implements ThingActions {
             @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId,
             @ActionInput(name = "params", label = "@text/actionLaunchApplicationInputParamsLabel", description = "@text/actionLaunchApplicationInputParamsDesc") String params) {
         try {
-            JsonParser parser = new JsonParser();
-            JsonObject payload = (JsonObject) parser.parse(params);
+            JsonObject payload = (JsonObject) JsonParser.parseString(params);
 
             Optional<AppInfo> appInfo = getAppInfos().stream().filter(a -> a.getId().equals(appId)).findFirst();
             if (appInfo.isPresent()) {

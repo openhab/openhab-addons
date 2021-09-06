@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,11 +13,11 @@
 package org.openhab.binding.miio.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static tec.uom.se.unit.Units.SQUARE_METRE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * Test case for {@link MiIoQuantityTypes}
@@ -29,32 +29,29 @@ import org.openhab.core.library.unit.SmartHomeUnits;
 public class MiIoQuantityTypesTest {
 
     @Test
-    public void UnknownUnitTest() {
-
+    public void unknownUnitTest() {
         String unitName = "some none existent unit";
         assertNull(MiIoQuantiyTypes.get(unitName));
     }
 
     @Test
     public void regularsUnitTest() {
-
         String unitName = "minute";
-        assertEquals(SmartHomeUnits.MINUTE, MiIoQuantiyTypes.get(unitName));
+        assertEquals(Units.MINUTE, MiIoQuantiyTypes.get(unitName));
 
         unitName = "Minute";
-        assertEquals(SmartHomeUnits.MINUTE, MiIoQuantiyTypes.get(unitName));
+        assertEquals(Units.MINUTE, MiIoQuantiyTypes.get(unitName));
     }
 
     @Test
     public void aliasUnitsTest() {
-
         String unitName = "square_meter";
-        assertEquals(SQUARE_METRE, MiIoQuantiyTypes.get(unitName));
+        assertEquals(SIUnits.SQUARE_METRE, MiIoQuantiyTypes.get(unitName));
 
         unitName = "Square_meter";
-        assertEquals(SQUARE_METRE, MiIoQuantiyTypes.get(unitName));
+        assertEquals(SIUnits.SQUARE_METRE, MiIoQuantiyTypes.get(unitName));
 
         unitName = "squaremeter";
-        assertEquals(SQUARE_METRE, MiIoQuantiyTypes.get(unitName));
+        assertEquals(SIUnits.SQUARE_METRE, MiIoQuantiyTypes.get(unitName));
     }
 }

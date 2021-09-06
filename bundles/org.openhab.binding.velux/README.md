@@ -2,7 +2,7 @@
 # Velux Binding
 
 This binding integrates the <B>Velux</B> devices with help of a gateway, the <B>Velux Bridge KLF200</B>, which is able to control 200 actuators.
-The Velux Binding interacts via the Velux Bridge with any [io-homecontrol](http://www.io-homecontrol.com/)-based
+The Velux Binding interacts via the Velux Bridge with any [io-homecontrol](https://www.io-homecontrol.com/)-based
 devices like window openers, shutters and others.
 
 ![Velux](doc/veluxlogo.jpg)
@@ -11,8 +11,8 @@ Based on the VELUX API this binding integrates <B>Velux</B> and other io-homecon
 
 For details about the features, see the following websites:
 
-- [Velux](http://www.velux.com)
-- [Velux API](http://www.velux.com/api/klf200)
+- [Velux](https://www.velux.com)
+- [Velux API](https://www.velux.com/api/klf200)
 
 ## Supported Things
 
@@ -52,7 +52,7 @@ In addition there are some optional Configuration Parameters.
 |-------------------------|------------------|:--------:|--------------------------------------------------------------|
 | ipAddress               |                  |   Yes    | Hostname or address for accessing the Velux Bridge.          |
 | password                | velux123         |   Yes    | Password for authentication against the Velux Bridge.(\*\*)  |
-| timeoutMsecs            | 2000             |    No    | Communication timeout in milliseconds.                       |
+| timeoutMsecs            | 3000             |    No    | Communication timeout in milliseconds.                       |
 | protocol                | slip             |    No    | Underlying communication protocol (http/https/slip).         |
 | tcpPort                 | 51200            |    No    | TCP port (80 or 51200) for accessing the Velux Bridge.       |
 | retries                 | 5                |    No    | Number of retries during I/O.                                |
@@ -82,17 +82,17 @@ These types of Thing only supported in the Velux Bridge in API version two or hi
 These types of Thing are configured by means of their serial number in the hub.
 In addition there are some optional Configuration Parameters.
 
-| Configuration Parameter | Default                | Required | Description                                                       |
-|-------------------------|------------------------|:--------:|-------------------------------------------------------------------|
-| serial                  |                        |   Yes    | Serial number of the io-homecontrol device in the hub.            |
-| name                    |                        |    No    | (Optional) name of the io-homecontrol device in the hub.          |
-| inverted                | false                  |    No    | (Optional) the position is inverted (i.e. 0% translates to 100%). |
+| Configuration Parameter | Default | Type    | Required | Description                                                                            |
+|-------------------------|---------|---------|:--------:|----------------------------------------------------------------------------------------|
+| serial                  |         | custom  |   Yes    | Serial number of the device in the hub (custom format 00:00:00:00:00:00:00:00)         |
+| name                    |         | text    |    No    | Name of the device in the hub.                                                         |
+| inverted                | false   | boolean |    No    | The `position` and `state` (if available) are inverted (i.e. 0% <-> 100%, OFF <-> ON). |
 
 Notes:
 
 1. To enable a complete inversion of all parameter values (i.e. for Velux windows), use the property `inverted` or add a trailing star to the eight-byte serial number. For an example, see below at item `Velux DG Window Bathroom`.
 
-2. Somfy devices do not provide a valid serial number to the Velux KLF200 gateway. The bridge reports a registration of the serial number 00:00:00:00:00:00:00:00. Therefore the binding implements a fallback to allow an item specification with a actuator `name` instead of actuator serial number whenever such an invalid serial number occurs. For an example, see below at item `Velux OG Somfy Shutter`.
+2. Somfy devices do not provide a valid serial number to the Velux KLF200 gateway. In this case you should enter the default `serial` number 00:00:00:00:00:00:00:00, and in addition enter the `name` parameter; this is the name that you gave to the actuator when you first registered it in the KLF200 Bridge. For an example, see below at item `Velux OG Somfy Shutter`.
 
 ### Thing Configuration for "scene"
 
@@ -100,10 +100,10 @@ The Velux Bridge in API version one (firmware version 0.1.1.*) allows activating
 So besides the bridge, only one real Thing type exists, namely "scene".
 This type of Thing is configured by means of its scene name in the hub.
 
-| Configuration Parameter | Default                | Required | Description                                                           |
-|-------------------------|------------------------|:--------:|-----------------------------------------------------------------------|
-| sceneName               |                        |   Yes    | Name of the scene in the hub.                                         |
-| velocity                |                        |   No     | The speed at which the scene will be executed (deafult, silent, fast) |
+| Configuration Parameter | Default   | Type | Required | Description                                                                 |
+|-------------------------|-----------|------|:--------:|-----------------------------------------------------------------------------|
+| sceneName               |           | text |   Yes    | Name of the scene in the hub.                                               |
+| velocity                | 'default' | text |    No    | The speed at which the scene will be executed ('default', 'silent', 'fast') |
 
 ### Thing Configuration for "vshutter"
 
@@ -112,10 +112,10 @@ So besides the bridge, this binding provides a virtual rollershutter Thing consi
 Therefore the respective Item definition contains multiple pairs of rollershutter levels each followed by a scene name.
 The virtual shutter Thing must be configured with pairs of level (0..10%) combined with the appropriate scene names (text) as follows.
 
-| Configuration Parameter | Default                | Required | Description                                               |
-|-------------------------|------------------------|:--------:|-----------------------------------------------------------|
-| sceneLevels             |                        |   Yes    | <Level1>,<Scene1>,<Level2>,<Scene2>,....                  |
-| currentLevel            | 0                      |    No    | Inverts any device values.                                |
+| Configuration Parameter | Default | Type    | Required | Description                             |
+|-------------------------|---------|---------|:--------:|-----------------------------------------|
+| sceneLevels             |         | text    |   Yes    | {Level1},{Scene1},{Level2},{Scene2},..  |
+| currentLevel            | 0       | integer |    No    | Inverts any device values (0..100).     |
 
 ## Supported Channels for Thing Types
 
@@ -361,7 +361,7 @@ log:tail
 This, of course, is possible on command line with the commands:
 
 ```
-% openhab-cli console log:set TRACE org.openhab.binding.velux 
+% openhab-cli console log:set TRACE org.openhab.binding.velux
 % openhab-cli console log:tail org.openhab.binding.velux
 ```
 

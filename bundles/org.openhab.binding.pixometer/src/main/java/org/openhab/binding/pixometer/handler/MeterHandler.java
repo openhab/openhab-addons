@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -70,7 +70,6 @@ public class MeterHandler extends BaseThingHandler {
     private final GsonBuilder gsonBuilder = new GsonBuilder().registerTypeAdapter(ReadingInstance.class,
             new CustomReadingInstanceDeserializer());
     private final Gson gson = gsonBuilder.create();
-    private final JsonParser jsonParser = new JsonParser();
 
     private @NonNullByDefault({}) String resourceID;
     private @NonNullByDefault({}) String meterID;
@@ -178,7 +177,7 @@ public class MeterHandler extends BaseThingHandler {
             urlHeader.put("Authorization", token);
 
             String urlResponse = HttpUtil.executeUrl("GET", url, urlHeader, null, null, 2000);
-            JsonObject responseJson = (JsonObject) jsonParser.parse(urlResponse);
+            JsonObject responseJson = (JsonObject) JsonParser.parseString(urlResponse);
 
             if (responseJson.has("meter_id")) {
                 setMeterID(responseJson.get("meter_id").toString());
@@ -225,8 +224,7 @@ public class MeterHandler extends BaseThingHandler {
             ThingTypeUID thingtype = getThing().getThingTypeUID();
 
             if (THING_TYPE_ENERGYMETER.equals(thingtype)) {
-                QuantityType<Energy> state = new QuantityType<>(meterState.getReadingValue(),
-                        SmartHomeUnits.KILOWATT_HOUR);
+                QuantityType<Energy> state = new QuantityType<>(meterState.getReadingValue(), Units.KILOWATT_HOUR);
                 updateState(CHANNEL_LAST_READING_VALUE, state);
             }
 
@@ -252,7 +250,7 @@ public class MeterHandler extends BaseThingHandler {
 
             String urlResponse = HttpUtil.executeUrl("GET", url, urlHeader, null, null, 2000);
 
-            ReadingInstance latestReading = gson.fromJson(new JsonParser().parse(urlResponse), ReadingInstance.class);
+            ReadingInstance latestReading = gson.fromJson(JsonParser.parseString(urlResponse), ReadingInstance.class);
 
             return new MeterState(Objects.requireNonNull(latestReading));
         } catch (IOException e) {

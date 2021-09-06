@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,9 +21,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-public interface DynamoDBItemVisitor {
+public interface DynamoDBItemVisitor<T> {
 
-    public void visit(DynamoDBBigDecimalItem dynamoBigDecimalItem);
+    public T visit(DynamoDBBigDecimalItem dynamoBigDecimalItem);
 
-    public void visit(DynamoDBStringItem dynamoStringItem);
+    public T visit(DynamoDBStringItem dynamoStringItem);
 }

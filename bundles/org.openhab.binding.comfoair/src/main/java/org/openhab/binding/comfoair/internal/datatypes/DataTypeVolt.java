@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public class DataTypeVolt implements ComfoAirDataType {
         } else {
             int[] readReplyDataPos = commandType.getReadReplyDataPos();
             if (readReplyDataPos != null && readReplyDataPos[0] < data.length) {
-                return new QuantityType<>((double) data[readReplyDataPos[0]] * 10 / 255, SmartHomeUnits.VOLT);
+                return new QuantityType<>((double) data[readReplyDataPos[0]] * 10 / 255, Units.VOLT);
             } else {
                 return UnDefType.NULL;
             }
@@ -59,7 +59,7 @@ public class DataTypeVolt implements ComfoAirDataType {
     @Override
     public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
         int[] template = commandType.getChangeDataTemplate();
-        QuantityType<?> volts = ((QuantityType<?>) value).toUnit(SmartHomeUnits.VOLT);
+        QuantityType<?> volts = ((QuantityType<?>) value).toUnit(Units.VOLT);
 
         if (volts != null) {
             template[commandType.getChangeDataPos()] = (int) (volts.doubleValue() * 255 / 10);

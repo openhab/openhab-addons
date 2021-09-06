@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,8 @@ public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
         DeviceDetails details = device.getDetails();
         String modelName = details.getModelDetails().getModelName();
         String modelManufacturer = details.getManufacturerDetails().getManufacturer();
-        if ("Denon".equals(modelManufacturer) && (modelName.startsWith("HEOS") || modelName.endsWith("H"))) {
+        if ("Denon".equals(modelManufacturer)
+                && (modelName.startsWith("HEOS") || modelName.endsWith("H") || modelName.contains("Home"))) {
             String deviceType = device.getType().getType();
             if (deviceType.startsWith("ACT") || deviceType.startsWith("Aios")) {
                 return new ThingUID(THING_TYPE_BRIDGE, device.getIdentity().getUdn().getIdentifierString());

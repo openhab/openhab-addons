@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
@@ -52,11 +51,12 @@ public class Ffmpeg {
     private List<String> commandArrayList = new ArrayList<String>();
     private IpCameraFfmpegThread ipCameraFfmpegThread = new IpCameraFfmpegThread();
     private int keepAlive = 8;
-    private boolean running = false;
+    private String password;
 
     public Ffmpeg(IpCameraHandler handle, FFmpegFormat format, String ffmpegLocation, String inputArguments,
             String input, String outArguments, String output, String username, String password) {
         this.format = format;
+        this.password = password;
         ipCameraHandler = handle;
         String altInput = input;
         // Input can be snapshots not just rtsp or http
@@ -84,10 +84,14 @@ public class Ffmpeg {
     }
 
     public void checkKeepAlive() {
-        if (keepAlive <= -1) {
-            return;
-        } else if (--keepAlive == 0) {
+        if (keepAlive == 1) {
             stopConverting();
+        } else if (keepAlive <= -1 && !getIsAlive()) {
+            logger.warn("HLS stream was not running, restarting it now.");
+            startConverting();
+        }
+        if (keepAlive > 0) {
+            keepAlive--;
         }
     }
 
@@ -123,20 +127,39 @@ public class Ffmpeg {
                     BufferedReader bufferedReader = new BufferedReader(errorStreamReader);
                     String line = null;
                     while ((line = bufferedReader.readLine()) != null) {
+                        logger.debug("{}", line);
                         if (format.equals(FFmpegFormat.RTSP_ALARMS)) {
-                            logger.debug("{}", line);
                             if (line.contains("lavfi.")) {
-                                if (countOfMotions == 4) {
-                                    ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                                } else {
+                                // When the number of pixels that change are below the noise floor we need to look
+                                // across frames to confirm it is motion and not noise.
+                                if (countOfMotions < 10) {// Stop increasing otherwise it will take too long to go OFF.
                                     countOfMotions++;
+                                }
+                                if (countOfMotions > 9) {
+                                    ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                } else if (countOfMotions > 4 && ipCameraHandler.motionThreshold.intValue() > 10) {
+                                    ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                } else if (countOfMotions > 3 && ipCameraHandler.motionThreshold.intValue() > 15) {
+                                    ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                } else if (countOfMotions > 2 && ipCameraHandler.motionThreshold.intValue() > 30) {
+                                    ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                } else if (countOfMotions > 0 && ipCameraHandler.motionThreshold.intValue() > 89) {
+                                    ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                    countOfMotions = 4;// Used to debounce the Alarm.
                                 }
                             } else if (line.contains("speed=")) {
                                 if (countOfMotions > 0) {
-                                    countOfMotions--;
-                                    countOfMotions--;
+                                    if (ipCameraHandler.motionThreshold.intValue() > 89) {
+                                        countOfMotions--;
+                                    }
+                                    if (ipCameraHandler.motionThreshold.intValue() > 10) {
+                                        countOfMotions -= 2;
+                                    } else {
+                                        countOfMotions -= 4;
+                                    }
                                     if (countOfMotions <= 0) {
                                         ipCameraHandler.noMotionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                        countOfMotions = 0;
                                     }
                                 }
                             } else if (line.contains("silence_start")) {
@@ -144,8 +167,6 @@ public class Ffmpeg {
                             } else if (line.contains("silence_end")) {
                                 ipCameraHandler.audioDetected();
                             }
-                        } else {
-                            logger.debug("{}", line);
                         }
                     }
                 }
@@ -169,9 +190,8 @@ public class Ffmpeg {
     public void startConverting() {
         if (!ipCameraFfmpegThread.isAlive()) {
             ipCameraFfmpegThread = new IpCameraFfmpegThread();
-            logger.debug("Starting ffmpeg with this command now:{}", ffmpegCommand);
+            logger.debug("Starting ffmpeg with this command now:{}", ffmpegCommand.replaceAll(password, "********"));
             ipCameraFfmpegThread.start();
-            running = true;
             if (format.equals(FFmpegFormat.HLS)) {
                 ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.ON);
             }
@@ -182,7 +202,11 @@ public class Ffmpeg {
     }
 
     public boolean getIsAlive() {
-        return running;
+        Process localProcess = process;
+        if (localProcess != null) {
+            return localProcess.isAlive();
+        }
+        return false;
     }
 
     public void stopConverting() {
@@ -191,18 +215,10 @@ public class Ffmpeg {
             Process localProcess = process;
             if (localProcess != null) {
                 localProcess.destroyForcibly();
-                running = false;
             }
             if (format.equals(FFmpegFormat.HLS)) {
-                if (keepAlive == -1) {
-                    logger.warn("HLS stopped when Stream should be running non stop, restarting HLS now.");
-                    startConverting();
-                    return;
-                } else {
-                    ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.OFF);
-                }
+                ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.OFF);
             }
-            keepAlive = 8;
         }
     }
 }

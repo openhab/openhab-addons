@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:altona:hdmimatrix">
+		<parameter name="ipAddress" type="text" required="true">
+			<context>network-address</context>
+			<label>IP or Host Name</label>
+			<description>IP or Host name of Atlona Matrix Switch</description>
+		</parameter>
+		<parameter name="userName" type="text" required="false">
+			<label>User Name</label>
+			<description>User Name to login with if Telnet Login is on</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="password" type="text" required="false">
+			<context>password</context>
+			<label>Password</label>
+			<description>Password to login with if Telnet Login is on</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="polling" type="integer" min="10" max="9999" unit="s" required="false">
+			<label>Polling Interval</label>
+			<description>Interval (in seconds) to poll the actual state of the Matrix</description>
+			<default>600</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="ping" type="integer" min="10" max="600" unit="s" required="false">
+			<label>Ping Interval</label>
+			<description>Ping Interval (in seconds) to keep the connection alive</description>
+			<default>30</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="retryPolling" type="integer" min="10" max="60" unit="s" required="false">
+			<label>Polling Interval to Try to Reconnect</label>
+			<description>Interval (in seconds) to try to (re)connect to the Matrix</description>
+			<default>10</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.logreader.internal.filereader.api.FileReaderListener;
 import org.openhab.binding.logreader.internal.filereader.api.LogFileReader;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractLogFileReader implements LogFileReader {
     private final Logger logger = LoggerFactory.getLogger(AbstractLogFileReader.class);
 

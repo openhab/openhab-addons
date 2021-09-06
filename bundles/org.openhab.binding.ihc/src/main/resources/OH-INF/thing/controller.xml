@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="controller"
-		extensible="switch, contact, number, dimmmer, datetime, string, rollershutter, pulse-output, rf-device-battery-level, rf-device-signal-strength, push-button-trigger">
+		extensible="switch, contact, number, dimmer, datetime, string, rollershutter, rf-device-low-battery, rf-device-signal-strength, push-button-trigger">
 
 		<label>IHC / ELKO Controller</label>
 		<description></description>
@@ -58,6 +58,17 @@
 				<description>Create channels automatically from project file. Project file loading parameter should be enabled as
 					well.</description>
 				<default>true</default>
+			</parameter>
+			<parameter name="tlsVersion" type="text" required="false">
+				<label>TLS version</label>
+				<description>TLS version used for controller communication. Choose TLSv1 for older firmware versions and TLSv1.2 for
+					never versions (since fall 2021). Auto mode try to recognize correct version.</description>
+				<default>TLSv1</default>
+				<options>
+					<option value="TLSv1">TLSv1</option>
+					<option value="TLSv1.2">TLSv1.2</option>
+					<option value="AUTO">Auto</option>
+				</options>
 			</parameter>
 		</config-description>
 	</thing-type>

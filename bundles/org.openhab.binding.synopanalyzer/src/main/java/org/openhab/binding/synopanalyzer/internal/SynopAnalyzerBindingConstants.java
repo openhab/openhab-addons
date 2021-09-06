@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -53,7 +53,7 @@ public class SynopAnalyzerBindingConstants {
     // Default units
     public static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;
     public static final Unit<Pressure> PRESSURE_UNIT = HECTO(SIUnits.PASCAL);
-    public static final Unit<Angle> WIND_DIRECTION_UNIT = SmartHomeUnits.DEGREE_ANGLE;
+    public static final Unit<Angle> WIND_DIRECTION_UNIT = Units.DEGREE_ANGLE;
 
     // Synop message origin station codes
     public static final String LAND_STATION_CODE = "AAXX";

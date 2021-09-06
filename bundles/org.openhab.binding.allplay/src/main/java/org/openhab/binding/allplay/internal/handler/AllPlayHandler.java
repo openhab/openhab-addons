@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
 import org.openhab.binding.allplay.internal.AllPlayBindingConstants;
 import org.openhab.binding.allplay.internal.AllPlayBindingProperties;
 import org.openhab.core.common.ThreadPoolManager;
@@ -538,7 +537,7 @@ public class AllPlayHandler extends BaseThingHandler
     private byte[] getRawDataFromUrl(String urlString) throws Exception {
         URL url = new URL(urlString);
         URLConnection connection = url.openConnection();
-        return IOUtils.toByteArray(connection.getInputStream());
+        return connection.getInputStream().readAllBytes();
     }
 
     private int convertPercentToAbsoluteVolume(PercentType percentVolume) throws SpeakerException {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,9 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -47,10 +48,12 @@ public class SomfyTahomaValveHeatingSystemHandler extends SomfyTahomaBaseThingHa
         if (command instanceof RefreshType) {
             return;
         } else {
-            if (DEROGATED_TARGET_TEMPERATURE.equals(channelUID.getId()) && command instanceof QuantityType) {
-                QuantityType type = (QuantityType) command;
-                String param = "[" + type.doubleValue() + ", \"next_mode\"]";
-                sendCommand(COMMAND_SET_DEROGATION, param);
+            if (DEROGATED_TARGET_TEMPERATURE.equals(channelUID.getId())) {
+                BigDecimal temperature = toTemperature(command);
+                if (temperature != null) {
+                    String param = "[" + temperature.toPlainString() + ", \"next_mode\"]";
+                    sendCommand(COMMAND_SET_DEROGATION, param);
+                }
             } else if (DEROGATION_HEATING_MODE.equals(channelUID.getId())) {
                 switch (command.toString()) {
                     case "auto":

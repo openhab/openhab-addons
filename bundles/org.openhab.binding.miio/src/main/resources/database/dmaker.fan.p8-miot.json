@@ -8,56 +8,42 @@
 		"maxProperties": 2,
 		"channels": [
 			{
-				"property": "manufacturer",
-				"siid": 1,
-				"piid": 1,
-				"friendlyName": "Device Information-Device Manufacturer",
-				"channel": "Manufacturer",
-				"channelType": "miot_string",
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
 				"type": "String",
-				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "model",
-				"siid": 1,
-				"piid": 2,
-				"friendlyName": "Device Information-Device Model",
-				"channel": "Model",
-				"channelType": "miot_string",
-				"type": "String",
-				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "serial-number",
-				"siid": 1,
-				"piid": 3,
-				"friendlyName": "Device Information-Device Serial Number",
-				"channel": "SerialNumber",
-				"channelType": "miot_string",
-				"type": "String",
-				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "firmware-revision",
-				"siid": 1,
-				"piid": 4,
-				"friendlyName": "Device Information-Current Firmware Version",
-				"channel": "FirmwareRevision",
-				"channelType": "miot_string",
-				"type": "String",
-				"refresh": true,
-				"actions": []
+				"stateDescription": {
+					"options": [
+						{
+							"value": "fan-toggle",
+							"label": "Fan Toggle"
+						}
+					]
+				},
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "fan-toggle"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping `[\"fan-toggle\"\u003d\"Fan Toggle\"]`"
 			},
 			{
 				"property": "on",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Fan-Switch Status",
+				"friendlyName": "Fan - Switch Status",
 				"channel": "On",
-				"channelType": "miot_bool",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -65,6 +51,10 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -73,15 +63,35 @@
 				"piid": 2,
 				"friendlyName": "Fan-Fan Level",
 				"channel": "FanLevel",
-				"channelType": "miot_uint8",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Level1"
+						},
+						{
+							"value": "2",
+							"label": "Level2"
+						},
+						{
+							"value": "3",
+							"label": "Level3"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "fan",
+				"tags": [
+					"SetPoint"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]`"
 			},
 			{
 				"property": "horizontal-swing",
@@ -89,7 +99,6 @@
 				"piid": 3,
 				"friendlyName": "Fan-Horizontal Swing",
 				"channel": "HorizontalSwing",
-				"channelType": "miot_bool",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -105,15 +114,31 @@
 				"piid": 7,
 				"friendlyName": "Fan-Mode",
 				"channel": "Mode",
-				"channelType": "miot_uint8",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Straight Wind"
+						},
+						{
+							"value": "1",
+							"label": "Sleep"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "flow",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Straight Wind\",\"1\"\u003d\"Sleep\"]`"
 			},
 			{
 				"property": "off-delay-time",
@@ -121,14 +146,24 @@
 				"piid": 10,
 				"friendlyName": "Fan-Power Off Delay Time",
 				"channel": "OffDelayTime",
-				"channelType": "miot_uint16",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 480,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
 				]
 			},
 			{
@@ -137,7 +172,6 @@
 				"piid": 11,
 				"friendlyName": "Fan-Alarm",
 				"channel": "Alarm",
-				"channelType": "miot_bool",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -145,7 +179,8 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				]
+				],
+				"category": "alarm"
 			},
 			{
 				"property": "brightness",
@@ -153,7 +188,6 @@
 				"piid": 12,
 				"friendlyName": "Fan-Brightness",
 				"channel": "Brightness",
-				"channelType": "miot_bool",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -161,6 +195,11 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
 				]
 			},
 			{
@@ -169,7 +208,6 @@
 				"piid": 1,
 				"friendlyName": "Physical Control Locked-Physical Control Locked",
 				"channel": "PhysicalControlsLocked",
-				"channelType": "miot_bool",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -179,6 +217,8 @@
 					}
 				]
 			}
-		]
+		],
+		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"fan-toggle\",\"siid\":2,\"aiid\":1,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",
+		"experimental": true
 	}
 }

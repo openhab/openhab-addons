@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
-import org.openhab.binding.wemo.internal.handler.AbstractWemoHandler;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -26,7 +24,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -42,19 +39,19 @@ import org.openhab.core.thing.type.ChannelKind;
 public class GenericWemoLightOSGiTestParent extends GenericWemoOSGiTest {
 
     // Thing information
-    protected ThingTypeUID THING_TYPE_UID = WemoBindingConstants.THING_TYPE_MZ100;
-    protected ThingTypeUID BRIDGE_TYPE_UID = WemoBindingConstants.THING_TYPE_BRIDGE;
-    protected String WEMO_BRIDGE_ID = BRIDGE_TYPE_UID.getId();
-    protected String DEFAULT_TEST_CHANNEL = WemoBindingConstants.CHANNEL_STATE;
-    protected String DEFAULT_TEST_CHANNEL_TYPE = "Switch";
+    protected static final ThingTypeUID THING_TYPE_UID = WemoBindingConstants.THING_TYPE_MZ100;
+    protected static final ThingTypeUID BRIDGE_TYPE_UID = WemoBindingConstants.THING_TYPE_BRIDGE;
+    protected static final String WEMO_BRIDGE_ID = BRIDGE_TYPE_UID.getId();
+    protected static final String DEFAULT_TEST_CHANNEL = WemoBindingConstants.CHANNEL_STATE;
+    protected static final String DEFAULT_TEST_CHANNEL_TYPE = "Switch";
 
-    private final String WEMO_LIGHT_ID = THING_TYPE_UID.getId();
+    private static final String WEMO_LIGHT_ID = THING_TYPE_UID.getId();
 
     // UPnP service information
-    protected String DEVICE_MODEL_NAME = WEMO_LIGHT_ID;
-    protected String SERVICE_ID = "bridge";
-    protected String SERVICE_NUMBER = "1";
-    protected String SERVLET_URL = DEVICE_CONTROL_PATH + SERVICE_ID + SERVICE_NUMBER;
+    protected static final String DEVICE_MODEL_NAME = WEMO_LIGHT_ID;
+    protected static final String SERVICE_ID = "bridge";
+    protected static final String SERVICE_NUMBER = "1";
+    protected static final String SERVLET_URL = DEVICE_CONTROL_PATH + SERVICE_ID + SERVICE_NUMBER;
 
     private Bridge bridge;
 
@@ -71,8 +68,7 @@ public class GenericWemoLightOSGiTestParent extends GenericWemoOSGiTest {
     }
 
     @Override
-    protected Thing createThing(ThingTypeUID thingTypeUID, String channelID, String itemAcceptedType,
-            WemoHttpCall wemoHttpCaller) {
+    protected Thing createThing(ThingTypeUID thingTypeUID, String channelID, String itemAcceptedType) {
         Configuration configuration = new Configuration();
         configuration.put(WemoBindingConstants.DEVICE_ID, WEMO_LIGHT_ID);
 
@@ -87,13 +83,6 @@ public class GenericWemoLightOSGiTestParent extends GenericWemoOSGiTest {
                 .withBridge(bridgeUID).build();
 
         managedThingProvider.add(thing);
-
-        ThingHandler handler = thing.getHandler();
-        if (handler != null) {
-            AbstractWemoHandler h = (AbstractWemoHandler) handler;
-            h.setWemoHttpCaller(wemoHttpCaller);
-        }
-
         return thing;
     }
 

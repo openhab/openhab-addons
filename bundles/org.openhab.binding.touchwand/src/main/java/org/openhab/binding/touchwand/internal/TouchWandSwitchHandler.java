@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,7 +52,7 @@ public class TouchWandSwitchHandler extends TouchWandBaseUnitHandler {
             }
             updateState(CHANNEL_SWITCH, state);
         } else {
-            logger.warn("updateTouchWandUnitState incompatible TouchWandUnitData instance");
+            logger.debug("updateTouchWandUnitState incompatible TouchWandUnitData instance");
         }
     }
 

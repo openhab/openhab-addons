@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ public class RFXComInvalidMessageTypeTest {
     @Test
     public void testMessage() {
         byte[] message = HexUtils.hexToBytes("07CC01271356ECC0");
-        assertThrows(RFXComUnsupportedValueException.class, () -> RFXComMessageFactory.createMessage(message));
+        assertThrows(RFXComUnsupportedValueException.class,
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(message));
     }
 }

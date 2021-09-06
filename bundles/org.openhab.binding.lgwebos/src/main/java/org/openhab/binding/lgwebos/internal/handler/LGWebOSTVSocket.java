@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -520,20 +520,22 @@ public class LGWebOSTVSocket {
         return request;
     }
 
+    private Float volumeFromResponse(JsonObject jsonObj) {
+        final String VOLUME_STATUS = "volumeStatus";
+        final String VOLUME = "volume";
+        JsonObject parent = jsonObj.has(VOLUME_STATUS) ? jsonObj.getAsJsonObject(VOLUME_STATUS) : jsonObj;
+        return parent.get(VOLUME).getAsInt() >= 0 ? (float) (parent.get(VOLUME).getAsInt() / 100.0) : Float.NaN;
+    }
+
     public ServiceSubscription<Float> subscribeVolume(ResponseListener<Float> listener) {
-        ServiceSubscription<Float> request = new ServiceSubscription<>(VOLUME, null,
-                jsonObj -> jsonObj.get("volume").getAsInt() >= 0 ? (float) (jsonObj.get("volume").getAsInt() / 100.0)
-                        : Float.NaN,
+        ServiceSubscription<Float> request = new ServiceSubscription<>(VOLUME, null, this::volumeFromResponse,
                 listener);
         sendCommand(request);
         return request;
     }
 
     public ServiceCommand<Float> getVolume(ResponseListener<Float> listener) {
-        ServiceCommand<Float> request = new ServiceCommand<>(VOLUME, null,
-                jsonObj -> jsonObj.get("volume").getAsInt() >= 0 ? (float) (jsonObj.get("volume").getAsInt() / 100.0)
-                        : Float.NaN,
-                listener);
+        ServiceCommand<Float> request = new ServiceCommand<>(VOLUME, null, this::volumeFromResponse, listener);
         sendCommand(request);
         return request;
     }

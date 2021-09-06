@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ public class ParsingStationsTest extends AbstractFMIResponseParsingTest {
                                 new BigDecimal("25.549164"))),
                         deeplyEqualTo(new Location("Parainen Utö", "100908", new BigDecimal("59.779094"),
                                 new BigDecimal("21.374788"))),
-                        deeplyEqualTo(new Location("Lemland Nyhamn", "100909", new BigDecimal("59.959108"),
-                                new BigDecimal("19.953736")))));
+                        deeplyEqualTo(new Location("Lemland Nyhamn", "100909", new BigDecimal("59.959194"),
+                                new BigDecimal("19.953667")))));
     }
 }

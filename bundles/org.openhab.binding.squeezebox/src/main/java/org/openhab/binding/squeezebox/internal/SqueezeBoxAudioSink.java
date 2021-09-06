@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxPlayerHandler;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
@@ -66,8 +65,8 @@ public class SqueezeBoxAudioSink implements AudioSink {
         this.playerHandler = playerHandler;
         this.audioHTTPServer = audioHTTPServer;
         this.callbackUrl = callbackUrl;
-        if (StringUtils.isNotEmpty(callbackUrl)) {
-            logger.debug("SqueezeBox AudioSink created with callback URL {}", callbackUrl);
+        if (callbackUrl != null && !callbackUrl.isEmpty()) {
+            logger.debug("SqueezeBox AudioSink created with callback URL: {}", callbackUrl);
         }
     }
 
@@ -104,7 +103,7 @@ public class SqueezeBoxAudioSink implements AudioSink {
 
             // Form the URL for streaming the notification from the OH2 web server
             // Use the callback URL if it is set in the binding configuration
-            String host = StringUtils.isEmpty(callbackUrl) ? playerHandler.getHostAndPort() : callbackUrl;
+            String host = callbackUrl == null || callbackUrl.isEmpty() ? playerHandler.getHostAndPort() : callbackUrl;
             if (host == null) {
                 logger.warn("Unable to get host/port from which to stream notification");
                 return;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,8 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.openhab.binding.ihc.internal.ws.exeptions.IhcFatalExecption;
+import org.openhab.binding.ihc.internal.ws.exeptions.IhcTlsExecption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +46,7 @@ import org.slf4j.LoggerFactory;
 public class IhcConnectionPool {
 
     private final Logger logger = LoggerFactory.getLogger(IhcConnectionPool.class);
+    private static final String DEFAULT_TLS_VER = "TLSv1";
 
     /**
      * Controller TLS certificate is self signed, which means that certificate
@@ -58,83 +61,93 @@ public class IhcConnectionPool {
 
     private HttpClientBuilder httpClientBuilder;
     private HttpClientContext localContext;
+    private String tlsVersion = DEFAULT_TLS_VER;
 
-    public IhcConnectionPool() {
+    public IhcConnectionPool() throws IhcFatalExecption {
+        this(DEFAULT_TLS_VER);
+    }
+
+    public IhcConnectionPool(String tlsVersion) throws IhcFatalExecption {
+        if (!tlsVersion.isEmpty()) {
+            this.tlsVersion = tlsVersion;
+        }
         init();
     }
 
-    private void init() {
-        // Create a local instance of cookie store
-        cookieStore = new BasicCookieStore();
-
-        // Create local HTTP context
-        localContext = HttpClientContext.create();
-
-        // Bind custom cookie store to the local context
-        localContext.setCookieStore(cookieStore);
-
-        httpClientBuilder = HttpClientBuilder.create();
-
-        // Setup a Trust Strategy that allows all certificates.
-
-        logger.debug("Initialize SSL context");
-
-        // Create a trust manager that does not validate certificate chains, but accept all.
-        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-
-            @Override
-            public X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-
-            @Override
-            public void checkClientTrusted(X509Certificate[] certs, String authType) {
-            }
-
-            @Override
-            public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                logger.trace("Trusting server cert: {}", certs[0].getIssuerDN());
-            }
-        } };
-
-        // Install the all-trusting trust manager
-
+    private void init() throws IhcFatalExecption {
         try {
-            // Controller supports only SSLv3 and TLSv1
-            sslContext = SSLContext.getInstance("TLSv1");
+
+            // Create a local instance of cookie store
+            cookieStore = new BasicCookieStore();
+
+            // Create local HTTP context
+            localContext = HttpClientContext.create();
+
+            // Bind custom cookie store to the local context
+            localContext.setCookieStore(cookieStore);
+
+            httpClientBuilder = HttpClientBuilder.create();
+
+            // Setup a Trust Strategy that allows all certificates.
+
+            logger.debug("Initialize SSL context");
+
+            // Create a trust manager that does not validate certificate chains, but accept all.
+            TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
+                @Override
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                    logger.trace("Trusting server cert: {}", certs[0].getIssuerDN());
+                }
+            } };
+
+            // Install the all-trusting trust manager
+
+            // Old controller FW supports only SSLv3 and TLSv1, never controller TLSv1.2
+            sslContext = SSLContext.getInstance(tlsVersion);
+            logger.debug("Using TLS version {}", sslContext.getProtocol());
             sslContext.init(null, trustAllCerts, new SecureRandom());
-        } catch (NoSuchAlgorithmException e) {
-            logger.warn("Exception", e);
+
+            // Controller accepts only HTTPS connections and because normally IP address are used on home network rather
+            // than DNS names, create custom host name verifier.
+            HostnameVerifier hostnameVerifier = new HostnameVerifier() {
+
+                @Override
+                public boolean verify(String arg0, SSLSession arg1) {
+                    logger.trace("HostnameVerifier: arg0 = {}, arg1 = {}", arg0, arg1);
+                    return true;
+                }
+            };
+
+            // Create an SSL Socket Factory, to use our weakened "trust strategy"
+            SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext,
+                    new String[] { tlsVersion }, null, hostnameVerifier);
+
+            Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
+                    .register("https", sslSocketFactory).build();
+
+            // Create connection-manager using our Registry. Allows multi-threaded use
+            PoolingHttpClientConnectionManager connMngr = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+
+            // Increase max connection counts
+            connMngr.setMaxTotal(20);
+            connMngr.setDefaultMaxPerRoute(6);
+
+            httpClientBuilder.setConnectionManager(connMngr);
         } catch (KeyManagementException e) {
-            logger.warn("Exception", e);
+            throw new IhcFatalExecption(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IhcTlsExecption(e);
         }
-
-        // Controller accepts only HTTPS connections and because normally IP address are used on home network rather
-        // than DNS names, create custom host name verifier.
-        HostnameVerifier hostnameVerifier = new HostnameVerifier() {
-
-            @Override
-            public boolean verify(String arg0, SSLSession arg1) {
-                logger.trace("HostnameVerifier: arg0 = {}, arg1 = {}", arg0, arg1);
-                return true;
-            }
-        };
-
-        // Create an SSL Socket Factory, to use our weakened "trust strategy"
-        SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext,
-                new String[] { "TLSv1" }, null, hostnameVerifier);
-
-        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
-                .register("https", sslSocketFactory).build();
-
-        // Create connection-manager using our Registry. Allows multi-threaded use
-        PoolingHttpClientConnectionManager connMngr = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-
-        // Increase max connection counts
-        connMngr.setMaxTotal(20);
-        connMngr.setDefaultMaxPerRoute(6);
-
-        httpClientBuilder.setConnectionManager(connMngr);
     }
 
     public HttpClient getHttpClient() {

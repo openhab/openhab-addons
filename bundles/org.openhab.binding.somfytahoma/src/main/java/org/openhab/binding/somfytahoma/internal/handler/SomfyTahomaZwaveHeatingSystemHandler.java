@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,8 @@
 package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
+import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ChannelUID;
@@ -44,8 +46,11 @@ public class SomfyTahomaZwaveHeatingSystemHandler extends SomfyTahomaBaseThingHa
             return;
         } else {
             if (TARGET_TEMPERATURE.equals(channelUID.getId())) {
-                String param = "[" + command.toString() + "]";
-                sendCommand("setTargetTemperature", param);
+                BigDecimal temperature = toTemperature(command);
+                if (temperature != null) {
+                    String param = "[" + temperature.toPlainString() + "]";
+                    sendCommand("setTargetTemperature", param);
+                }
             }
         }
     }

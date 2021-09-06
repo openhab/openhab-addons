@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,7 +71,7 @@ public class Client {
 
     private static final Map<String, String> NAMESPACES = new HashMap<>();
     static {
-        NAMESPACES.put("target", "http://xml.fmi.fi/namespace/om/atmosphericfeatures/1.0");
+        NAMESPACES.put("target", "http://xml.fmi.fi/namespace/om/atmosphericfeatures/1.1");
         NAMESPACES.put("gml", "http://www.opengis.net/gml/3.2");
         NAMESPACES.put("xlink", "http://www.w3.org/1999/xlink");
         NAMESPACES.put("ows", "http://www.opengis.net/ows/1.1");
@@ -105,6 +105,12 @@ public class Client {
     public Client() {
         documentBuilderFactory.setNamespaceAware(true);
         try {
+            // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+            documentBuilderFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            documentBuilderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            documentBuilderFactory.setXIncludeAware(false);
+            documentBuilderFactory.setExpandEntityReferences(false);
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
             throw new IllegalStateException(e);
@@ -368,7 +374,8 @@ public class Client {
      */
     private String takeFirstOrError(String errorDescription, String[] values) throws FMIUnexpectedResponseException {
         if (values.length != 1) {
-            throw new FMIUnexpectedResponseException(String.format("No unique match found: %s", errorDescription));
+            throw new FMIUnexpectedResponseException(
+                    String.format("No unique match found: %s (found %d)", errorDescription, values.length));
         }
         return values[0];
     }

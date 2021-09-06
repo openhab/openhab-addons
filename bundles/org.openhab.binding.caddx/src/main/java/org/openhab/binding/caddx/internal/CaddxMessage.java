@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,14 +40,9 @@ public class CaddxMessage {
     private final byte checksum2In;
     private final byte checksum1Calc;
     private final byte checksum2Calc;
+    private CaddxMessageContext context;
 
-    /**
-     * Constructor.
-     *
-     * @param message
-     *            - the message received
-     */
-    public CaddxMessage(byte[] message, boolean withChecksum) {
+    public CaddxMessage(CaddxMessageContext context, byte[] message, boolean withChecksum) {
         if (withChecksum && message.length < 3) {
             logger.debug("CaddxMessage: The message should be at least 3 bytes long.");
             throw new IllegalArgumentException("The message should be at least 3 bytes long");
@@ -58,6 +53,7 @@ public class CaddxMessage {
         }
 
         // Received data
+        this.context = context;
         byte[] msg = message;
 
         // Fill in the checksum
@@ -100,7 +96,7 @@ public class CaddxMessage {
         processCaddxMessage();
     }
 
-    public CaddxMessage(CaddxMessageType type, String data) {
+    public CaddxMessage(CaddxMessageContext context, CaddxMessageType type, String data) {
         int length = type.length;
         String[] tokens = data.split("\\,");
         if (length != 1 && tokens.length != length - 1) {
@@ -108,6 +104,7 @@ public class CaddxMessage {
             throw new IllegalArgumentException("CaddxMessage: data has not the correct format.");
         }
 
+        this.context = context;
         byte[] msg = new byte[length];
         msg[0] = (byte) type.number;
         for (int i = 0; i < length - 1; i++) {
@@ -137,6 +134,14 @@ public class CaddxMessage {
 
         // Fill-in the properties
         processCaddxMessage();
+    }
+
+    public CaddxMessageContext getContext() {
+        return context;
+    }
+
+    public void setContext(CaddxMessageContext context) {
+        this.context = context;
     }
 
     public byte getChecksum1In() {
@@ -264,6 +269,9 @@ public class CaddxMessage {
         if (mt == null) {
             return "Unknown message type";
         }
+
+        sb.append(String.format("Context: %s", context.toString()));
+        sb.append(System.lineSeparator());
 
         sb.append("Message: ");
         sb.append(String.format("%2s", Integer.toHexString(message[0])));

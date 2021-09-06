@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,9 +18,9 @@ import java.util.BitSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
+import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.io.transport.modbus.ModbusBitUtilities;
 
 /**
  * The {@link EmergencyBlock} Data object for E3DC Info Block
@@ -67,7 +67,7 @@ public class EmergencyBlock implements Data {
         BitSet bs = BitSet.valueOf(emsStatusBytes);
         batteryChargingLocked = OnOffType.from(bs.get(EMS_CHARGING_LOCK_BIT));
         batteryDischargingLocked = OnOffType.from(bs.get(EMS_DISCHARGING_LOCK_BIT));
-        epPossible = OnOffType.from(bs.get(EMS_DISCHARGING_LOCK_BIT));
+        epPossible = OnOffType.from(bs.get(EMS_AVAILABLE_BIT));
         weatherPredictedCharging = OnOffType.from(bs.get(EMS_WEATHER_CHARGING_BIT));
         regulationStatus = OnOffType.from(bs.get(EMS_REGULATION_BIT));
         chargeLockTime = OnOffType.from(bs.get(EMS_CHARGE_LOCKTIME_BIT));

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.globalcache.internal.GlobalCacheBindingConstants.CommandType;
 import org.openhab.binding.globalcache.internal.command.CommandGetstate;
@@ -252,7 +251,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
         }
 
         String mapFile = (String) thing.getConfiguration().get(THING_CONFIG_MAP_FILENAME);
-        if (StringUtils.isEmpty(mapFile)) {
+        if (mapFile == null || mapFile.isEmpty()) {
             logger.warn("MAP file is not defined in configuration of thing {}", thingID());
             return null;
         }
@@ -266,14 +265,13 @@ public class GlobalCacheHandler extends BaseThingHandler {
         String code;
         try {
             code = transformService.transform(mapFile, command.toString());
-
         } catch (TransformationException e) {
             logger.error("Failed to transform {} for thing {} using map file '{}', exception={}", command, thingID(),
                     mapFile, e.getMessage());
             return null;
         }
 
-        if (StringUtils.isEmpty(code)) {
+        if (code == null || code.isEmpty()) {
             logger.warn("No entry for {} in map file '{}' for thing {}", command, mapFile, thingID());
             return null;
         }
@@ -638,7 +636,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         private String getIPAddress() {
             String ipAddress = ((GlobalCacheHandler) thing.getHandler()).getIP();
-            if (StringUtils.isEmpty(ipAddress)) {
+            if (ipAddress == null || ipAddress.isEmpty()) {
                 logger.debug("Handler for thing {} could not get IP address from config", thingID());
                 markThingOfflineWithError(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "IP address not set");
             }
@@ -912,7 +910,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
             if (Boolean.TRUE.equals(enableTwoWay)) {
                 // Get the end of message delimiter from the config, URL decode it, and convert it to a byte array
                 String endOfMessageString = (String) thing.getConfiguration().get(endOfMessageDelimiterConfig);
-                if (StringUtils.isNotEmpty(endOfMessageString)) {
+                if (endOfMessageString != null && !endOfMessageString.isEmpty()) {
                     logger.debug("End of message is {} for thing {} {}", endOfMessageString, thingID(), serialDevice);
                     byte[] endOfMessage;
                     try {

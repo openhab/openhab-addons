@@ -9,7 +9,6 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
-				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -17,13 +16,16 @@
 						"command": "set_power",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
 				"property": "angle_enable",
 				"friendlyName": "Rotation",
 				"channel": "angleEnable",
-				"channelType": "angleEnable",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -31,64 +33,101 @@
 						"command": "set_angle_enable",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
 				"property": "use_time",
 				"friendlyName": "Run Time",
 				"channel": "usedhours",
-				"channelType": "usedhours",
 				"type": "Number:Time",
 				"unit": "hours",
 				"refresh": true,
 				"transformation": "SecondsToHours",
-				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "angle",
 				"friendlyName": "Angle",
 				"channel": "angle",
-				"channelType": "angle",
-				"type": "Number",
+				"type": "Number:Angle",
+				"unit": "degree",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "30",
+							"label": "30"
+						},
+						{
+							"value": "60",
+							"label": "60"
+						},
+						{
+							"value": "90",
+							"label": "90"
+						},
+						{
+							"value": "120",
+							"label": "120"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_angle",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "incline",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Value mapping `[\"30\"\u003d\"30\",\"60\"\u003d\"60\",\"90\"\u003d\"90\",\"120\"\u003d\"120\"]`"
 			},
 			{
 				"property": "poweroff_time",
-				"friendlyName": "Timer",
+				"friendlyName": "Power-Off Timer",
 				"channel": "poweroffTime",
-				"channelType": "poweroffTime",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "hours",
 				"refresh": true,
-				"ChannelGroup": "actions",
+				"transformation": "SecondsToHours",
 				"actions": [
 					{
 						"command": "set_poweroff_time",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
 				]
 			},
 			{
 				"property": "buzzer",
 				"friendlyName": "Buzzer",
 				"channel": "buzzer",
-				"channelType": "buzzer",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_buzzer",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -96,14 +135,34 @@
 				"friendlyName": "LED",
 				"channel": "led_b",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Bright"
+						},
+						{
+							"value": "1",
+							"label": "Dimmed"
+						},
+						{
+							"value": "2",
+							"label": "Off"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_led_b",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "light",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Bright\",\"1\"\u003d\"Dimmed\",\"2\"\u003d\"Off\"]`"
 			},
 			{
 				"property": "child_lock",
@@ -111,83 +170,130 @@
 				"channel": "child_lock",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_child_lock",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "lock",
+				"tags": [
+					"Control"
 				]
 			},
 			{
 				"property": "speed_level",
 				"friendlyName": "Speed Level",
 				"channel": "speedLevel",
-				"channelType": "speedLevel",
-				"type": "Number",
+				"type": "Dimmer",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%"
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_speed_level",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "fan",
+				"tags": [
+					"Setpoint",
+					"Level"
 				]
 			},
 			{
 				"property": "speed",
 				"friendlyName": "Speed",
 				"channel": "speed",
-				"channelType": "speed",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f RPM",
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_speed",
-						"parameterType": "NUMBER"
-					}
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Level"
 				]
 			},
 			{
 				"property": "natural_level",
 				"friendlyName": "Natural Level",
 				"channel": "naturalLevel",
-				"channelType": "naturalLevel",
-				"type": "Number",
+				"type": "Dimmer",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%"
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_natural_level",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "flow",
+				"tags": [
+					"Setpoint",
+					"Level"
 				]
 			},
 			{
 				"property": "ac_power",
 				"friendlyName": "AC Power",
 				"channel": "acPower",
-				"channelType": "acPower",
 				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "poweroutlet_eu",
+				"tags": [
+					"Switch"
+				]
 			},
 			{
 				"property": "",
 				"friendlyName": "Move Direction",
 				"channel": "move",
-				"channelType": "move",
 				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "",
+							"label": "None"
+						},
+						{
+							"value": "left",
+							"label": "Left"
+						},
+						{
+							"value": "right",
+							"label": "Right"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_move",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"category": "movecontrol",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"\"\u003d\"None\",\"left\"\u003d\"Left\",\"right\"\u003d\"Right\"]`"
 			}
 		]
 	}

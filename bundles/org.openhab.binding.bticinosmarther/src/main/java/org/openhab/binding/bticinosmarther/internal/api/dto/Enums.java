@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bticinosmarther.internal.api.exception.SmartherIllegalPropertyValueException;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * The {@code Enums} class represents a container for enums related to Smarther API.
@@ -175,7 +175,7 @@ public class Enums {
                 return CELSIUS;
             } else if (unit == ImperialUnits.FAHRENHEIT) {
                 return FAHRENHEIT;
-            } else if (unit == SmartHomeUnits.PERCENT) {
+            } else if (unit == Units.PERCENT) {
                 return PERCENTAGE;
             } else {
                 return DIMENSIONLESS;

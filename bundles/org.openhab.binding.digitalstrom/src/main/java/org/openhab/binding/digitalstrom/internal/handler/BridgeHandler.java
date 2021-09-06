@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.TemperatureControlStatus;
 import org.openhab.binding.digitalstrom.internal.lib.config.Config;
@@ -64,7 +63,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -199,9 +197,10 @@ public class BridgeHandler extends BaseBridgeHandler
             if (versions != null) {
                 properties.putAll(versions);
             }
-            if (StringUtils.isBlank(getThing().getProperties().get(DigitalSTROMBindingConstants.SERVER_CERT))
-                    && StringUtils.isNotBlank(config.getCert())) {
-                properties.put(DigitalSTROMBindingConstants.SERVER_CERT, config.getCert());
+            String certProperty = getThing().getProperties().get(DigitalSTROMBindingConstants.SERVER_CERT);
+            String certConfig = config.getCert();
+            if ((certProperty == null || certProperty.isBlank()) && (certConfig != null && !certConfig.isBlank())) {
+                properties.put(DigitalSTROMBindingConstants.SERVER_CERT, certConfig);
             }
             logger.debug("update properties");
             updateProperties(properties);
@@ -236,8 +235,12 @@ public class BridgeHandler extends BaseBridgeHandler
     }
 
     private boolean checkLoginConfig(Config config) {
-        if ((StringUtils.isNotBlank(config.getUserName()) && StringUtils.isNotBlank(config.getPassword()))
-                || StringUtils.isNotBlank(config.getAppToken())) {
+        String userName = config.getUserName();
+        String password = config.getPassword();
+        String appToken = config.getAppToken();
+
+        if (((userName != null && !userName.isBlank()) && (password != null && !password.isBlank()))
+                || (appToken != null && !appToken.isBlank())) {
             return true;
         }
         onConnectionStateChange(CONNECTION_LOST, NO_USER_PASSWORD);
@@ -297,8 +300,9 @@ public class BridgeHandler extends BaseBridgeHandler
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, excText + " have to be a number.");
             return null;
         }
-        if (StringUtils.isNotBlank(getThing().getProperties().get(DigitalSTROMBindingConstants.SERVER_CERT))) {
-            config.setCert(getThing().getProperties().get(DigitalSTROMBindingConstants.SERVER_CERT));
+        String servertCert = getThing().getProperties().get(DigitalSTROMBindingConstants.SERVER_CERT);
+        if (servertCert != null && !servertCert.isBlank()) {
+            config.setCert(servertCert);
         }
         return config;
     }
@@ -308,8 +312,9 @@ public class BridgeHandler extends BaseBridgeHandler
             this.config = new Config();
         }
         // load and check connection and authorization data
-        if (StringUtils.isNotBlank((String) thingConfig.get(HOST))) {
-            config.setHost(thingConfig.get(HOST).toString());
+        String host = (String) thingConfig.get(HOST);
+        if (host != null && !host.isBlank()) {
+            config.setHost(host);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The connection to the digitalSTROM-Server can't established, because the host address is missing. Please set the host address.");
@@ -367,14 +372,8 @@ public class BridgeHandler extends BaseBridgeHandler
 
     @Override
     public void handleRemoval() {
-        for (Thing thing : getThing().getThings()) {
-            // Inform Thing-Child's about removed bridge.
-            final ThingHandler thingHandler = thing.getHandler();
-            if (thingHandler != null) {
-                thingHandler.bridgeStatusChanged(ThingStatusInfoBuilder.create(ThingStatus.REMOVED).build());
-            }
-        }
-        if (StringUtils.isNotBlank((String) super.getConfig().get(APPLICATION_TOKEN))) {
+        String applicationToken = (String) super.getConfig().get(APPLICATION_TOKEN);
+        if (applicationToken != null && !applicationToken.isEmpty()) {
             if (connMan == null) {
                 Config config = loadAndCheckConnectionData(this.getConfig());
                 if (config != null) {

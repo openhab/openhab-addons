@@ -10,18 +10,15 @@
 			<label>Hostname</label>
 			<description>The hostname or the IP address of the PCK gateway</description>
 			<context>network-address</context>
-			<required>true</required>
 		</parameter>
 		<parameter name="port" type="integer" required="true" min="1" max="65535">
 			<label>Port</label>
 			<description>The IP port of the PCK gateway</description>
 			<default>4114</default>
-			<required>true</required>
 		</parameter>
 		<parameter name="username" type="text" required="true">
 			<label>Username</label>
 			<description>The login username of the PCK gateway</description>
-			<required>true</required>
 		</parameter>
 		<parameter name="password" type="text" required="true">
 			<label>Password</label>
@@ -36,18 +33,17 @@
 				<option value="native50">0 - 50</option>
 				<option value="native200">0 - 200</option>
 			</options>
-			<required>true</required>
 		</parameter>
 		<parameter name="timeoutMs" type="integer" required="true" unit="ms">
 			<label>Connection Timeout</label>
 			<description>Period after which an LCN command is resent, when no acknowledge has been received (in ms).</description>
 			<default>3500</default>
-			<required>true</required>
+			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:lcn:module">
-		<parameter name="moduleId" type="integer" required="true" min="5" max="254">
+		<parameter name="moduleId" type="integer" required="true" min="1" max="254">
 			<label>Module ID</label>
 			<description>The module ID, configured in LCN-PRO</description>
 		</parameter>
@@ -62,7 +58,7 @@
 			<label>Group Number</label>
 			<description>The group number, configured in LCN-PRO</description>
 		</parameter>
-		<parameter name="moduleId" type="integer" required="true" min="5" max="254">
+		<parameter name="moduleId" type="integer" required="true" min="1" max="254">
 			<label>Module ID</label>
 			<description>The module ID of any module in the group. The state of this module is used for visualization of the
 				group as representative for all modules.</description>
@@ -91,12 +87,18 @@
 				<option value="angle">Angle (°)</option>
 				<option value="windspeed">Windspeed (m/s)</option>
 			</options>
-			<required>true</required>
 		</parameter>
 		<parameter name="parameter" type="integer" min="1">
 			<label>Pulses per kWh</label>
 			<description>Only for S0 counters (power or energy)</description>
 			<default>1000</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="profile:lcn:output">
+		<parameter name="ramp" type="decimal" required="false" min="0.25" max="486.0" unit="s">
+			<label>Ramp</label>
+			<description>Time in seconds until the output's value is reached.</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

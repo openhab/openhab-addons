@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -119,8 +119,11 @@ public class ApiAccess {
                     retVal = new Gson().fromJson(reply, outClass);
                 }
             }
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (ExecutionException e) {
             logger.debug("Error in handling request: ", e);
+        } catch (InterruptedException e) {
+            logger.debug("Handling request interrupted: ", e);
+            Thread.currentThread().interrupt();
         }
 
         return retVal;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import static java.util.Arrays.asList;
 import static java.util.Calendar.SECOND;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang.time.DateUtils.truncatedEquals;
+import static org.apache.commons.lang3.time.DateUtils.truncatedEquals;
 import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.util.DateTimeUtils.*;
 

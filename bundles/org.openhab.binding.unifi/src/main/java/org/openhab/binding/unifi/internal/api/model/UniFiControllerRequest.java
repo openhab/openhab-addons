@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,6 +83,10 @@ public class UniFiControllerRequest<T> {
 
     private String path = "/";
 
+    private final boolean unifios;
+
+    private String csrfToken;
+
     private Map<String, String> queryParameters = new HashMap<>();
 
     private Map<String, String> bodyParameters = new HashMap<>();
@@ -91,12 +95,23 @@ public class UniFiControllerRequest<T> {
 
     // Public API
 
-    public UniFiControllerRequest(Class<T> resultType, Gson gson, HttpClient httpClient, String host, int port) {
+    public UniFiControllerRequest(Class<T> resultType, Gson gson, HttpClient httpClient, String host, int port,
+            String csrfToken, boolean unifios) {
         this.resultType = resultType;
         this.gson = gson;
         this.httpClient = httpClient;
         this.host = host;
         this.port = port;
+        this.csrfToken = csrfToken;
+        this.unifios = unifios;
+    }
+
+    public void setAPIPath(String relativePath) {
+        if (unifios) {
+            this.path = "/proxy/network" + relativePath;
+        } else {
+            this.path = relativePath;
+        }
     }
 
     public void setPath(String path) {
@@ -116,7 +131,7 @@ public class UniFiControllerRequest<T> {
         String json = getContent();
         // mgb: only try and unmarshall non-void result types
         if (!Void.class.equals(resultType)) {
-            JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
+            JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
             if (jsonObject.has(PROPERTY_DATA) && jsonObject.get(PROPERTY_DATA).isJsonArray()) {
                 result = gson.fromJson(jsonObject.getAsJsonArray(PROPERTY_DATA), resultType);
             }
@@ -135,6 +150,11 @@ public class UniFiControllerRequest<T> {
                 content = response.getContentAsString();
                 if (logger.isTraceEnabled()) {
                     logger.trace("<< {} {} \n{}", status, HttpStatus.getMessage(status), prettyPrintJson(content));
+                }
+
+                String csrfToken = response.getHeaders().get("X-CSRF-Token");
+                if (csrfToken != null && !csrfToken.isEmpty()) {
+                    this.csrfToken = csrfToken;
                 }
                 break;
             case HttpStatus.BAD_REQUEST_400:
@@ -184,6 +204,10 @@ public class UniFiControllerRequest<T> {
         return response;
     }
 
+    public String getCsrfToken() {
+        return csrfToken;
+    }
+
     private Request newRequest() {
         HttpMethod method = bodyParameters.isEmpty() ? HttpMethod.GET : HttpMethod.POST;
         HttpURI uri = new HttpURI(HttpScheme.HTTPS.asString(), host, port, path);
@@ -198,16 +222,20 @@ public class UniFiControllerRequest<T> {
                     StandardCharsets.UTF_8);
             request = request.content(content);
         }
+
+        if (!csrfToken.isEmpty()) {
+            request.header("x-csrf-token", this.csrfToken);
+        }
+
         return request;
     }
 
     private String getRequestBodyAsJson() {
-        JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = new JsonObject();
         JsonElement jsonElement = null;
         for (Entry<String, String> entry : bodyParameters.entrySet()) {
             try {
-                jsonElement = jsonParser.parse(entry.getValue());
+                jsonElement = JsonParser.parseString(entry.getValue());
             } catch (JsonSyntaxException e) {
                 jsonElement = new JsonPrimitive(entry.getValue());
             }
@@ -217,8 +245,7 @@ public class UniFiControllerRequest<T> {
     }
 
     private static String prettyPrintJson(String content) {
-        JsonParser parser = new JsonParser();
-        JsonObject json = parser.parse(content).getAsJsonObject();
+        JsonObject json = JsonParser.parseString(content).getAsJsonObject();
         Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
         return prettyGson.toJson(json);
     }

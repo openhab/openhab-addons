@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -66,6 +66,8 @@ public class WLedHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private final WledDynamicStateDescriptionProvider stateDescriptionProvider;
     private @Nullable ScheduledFuture<?> pollingFuture = null;
+    private BigDecimal hue65535 = BigDecimal.ZERO;
+    private BigDecimal saturation255 = BigDecimal.ZERO;
     private BigDecimal masterBrightness255 = BigDecimal.ZERO;
     private HSBType primaryColor = new HSBType();
     private BigDecimal primaryWhite = BigDecimal.ZERO;
@@ -157,8 +159,8 @@ public class WLedHandler extends BaseThingHandler {
                 updateState(CHANNEL_SECONDARY_WHITE,
                         new PercentType(secondaryWhite.divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
             }
-        } catch (NumberFormatException e) {
-            logger.warn("NumberFormatException when parsing the WLED colour and white fields:{}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.warn("IllegalArgumentException when parsing the WLED colour and white fields:{}", e.getMessage());
         }
     }
 
@@ -254,7 +256,7 @@ public class WLedHandler extends BaseThingHandler {
      * @return WLED needs the letter h followed by 2 digit HEX code for RRGGBB
      */
     private String createColorHex(HSBType hsb) {
-        return String.format("h%06X", hsb.getRGB());
+        return String.format("h%06X", hsb.getRGB() & 0x00FFFFFF);
     }
 
     @Override
@@ -320,6 +322,8 @@ public class WLedHandler extends BaseThingHandler {
                         sendGetRequest("/win&TT=500&T=0");
                     }
                     primaryColor = (HSBType) command;
+                    hue65535 = primaryColor.getHue().toBigDecimal().multiply(BIG_DECIMAL_182_04);
+                    saturation255 = primaryColor.getSaturation().toBigDecimal().multiply(BIG_DECIMAL_2_55);
                     masterBrightness255 = primaryColor.getBrightness().toBigDecimal().multiply(BIG_DECIMAL_2_55);
                     if (primaryColor.getSaturation().intValue() < config.saturationThreshold) {
                         sendWhite();
@@ -328,8 +332,13 @@ public class WLedHandler extends BaseThingHandler {
                         // Google sends this when it wants white
                         sendWhite();
                     } else {
-                        sendGetRequest("/win&TT=1000&FX=0&CY=0&CL=" + createColorHex(primaryColor) + "&A="
-                                + masterBrightness255);
+                        if (config.segmentIndex == -1) {
+                            sendGetRequest("/win&TT=1000&FX=0&CY=0&HU=" + hue65535 + "&SA=" + saturation255 + "&A="
+                                    + masterBrightness255);
+                        } else {
+                            sendGetRequest("/win&TT=1000&FX=0&CY=0&CL=" + createColorHex(primaryColor) + "&A="
+                                    + masterBrightness255);
+                        }
                     }
                 } else if (command instanceof PercentType) {
                     masterBrightness255 = ((PercentType) command).toBigDecimal().multiply(BIG_DECIMAL_2_55);
@@ -388,7 +397,7 @@ public class WLedHandler extends BaseThingHandler {
                 break;
             case CHANNEL_PRESET_DURATION:
                 if (command instanceof QuantityType) {
-                    QuantityType<?> seconds = ((QuantityType<?>) command).toUnit(SmartHomeUnits.SECOND);
+                    QuantityType<?> seconds = ((QuantityType<?>) command).toUnit(Units.SECOND);
                     if (seconds != null) {
                         bigTemp = new BigDecimal(seconds.intValue()).multiply(new BigDecimal(1000));
                         sendGetRequest("/win&PT=" + bigTemp.intValue());
@@ -397,7 +406,7 @@ public class WLedHandler extends BaseThingHandler {
                 break;
             case CHANNEL_TRANS_TIME:
                 if (command instanceof QuantityType) {
-                    QuantityType<?> seconds = ((QuantityType<?>) command).toUnit(SmartHomeUnits.SECOND);
+                    QuantityType<?> seconds = ((QuantityType<?>) command).toUnit(Units.SECOND);
                     if (seconds != null) {
                         bigTemp = new BigDecimal(seconds.intValue()).multiply(new BigDecimal(1000));
                         sendGetRequest("/win&TT=" + bigTemp.intValue());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.snmp.internal.config;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,9 +40,11 @@ public class SnmpInternalChannelConfiguration {
     public final @Nullable Variable offValue;
     public final State exceptionValue;
     public final boolean doNotLogException;
+    public final @Nullable Unit<?> unit;
 
     public SnmpInternalChannelConfiguration(ChannelUID channelUID, OID oid, SnmpChannelMode mode, SnmpDatatype datatype,
-            @Nullable Variable onValue, @Nullable Variable offValue, State exceptionValue, boolean doNotLogException) {
+            @Nullable Variable onValue, @Nullable Variable offValue, State exceptionValue, boolean doNotLogException,
+            @Nullable Unit<?> unit) {
         this.channelUID = channelUID;
         this.oid = oid;
         this.mode = mode;
@@ -49,5 +53,6 @@ public class SnmpInternalChannelConfiguration {
         this.offValue = offValue;
         this.exceptionValue = exceptionValue;
         this.doNotLogException = doNotLogException;
+        this.unit = unit;
     }
 }

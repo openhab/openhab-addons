@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.network.internal.handler;
 
 import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
-import static org.openhab.core.library.unit.SmartHomeUnits.*;
+import static org.openhab.core.library.unit.Units.*;
 
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
@@ -26,7 +26,7 @@ import org.openhab.core.library.dimension.DataTransferRate;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -77,7 +77,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
             updateState(CHANNEL_TEST_ISRUNNING, OnOffType.ON);
             updateState(CHANNEL_TEST_START, new DateTimeType());
             updateState(CHANNEL_TEST_END, UnDefType.NULL);
-            updateProgress(new QuantityType<>(0, SmartHomeUnits.PERCENT));
+            updateProgress(new QuantityType<>(0, Units.PERCENT));
             socket.startDownload(configuration.getDownloadURL());
         } else {
             logger.info("A speedtest is already in progress, will retry on next refresh");
@@ -153,7 +153,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
 
     @Override
     public void onProgress(float percent, @Nullable SpeedTestReport testReport) {
-        updateProgress(new QuantityType<>(Math.round(percent), SmartHomeUnits.PERCENT));
+        updateProgress(new QuantityType<>(Math.round(percent), Units.PERCENT));
     }
 
     private void updateProgress(State state) {

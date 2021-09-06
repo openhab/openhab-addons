@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,6 +70,10 @@ public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
             return new TouchWandDimmerHandler(thing);
         } else if (THING_TYPE_ALARMSENSOR.equals(thingTypeUID)) {
             return new TouchWandAlarmSensorHandler(thing);
+        } else if (THING_TYPE_BSENSOR.equals(thingTypeUID)) {
+            return new TouchWandBSensorHandler(thing);
+        } else if (THING_TYPE_THERMOSTAT.equals(thingTypeUID)) {
+            return new TouchWandThermostatHandler(thing);
         }
 
         return null;

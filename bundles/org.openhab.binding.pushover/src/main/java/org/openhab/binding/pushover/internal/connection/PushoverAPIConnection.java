@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.pushover.internal.connection;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +36,7 @@ import org.openhab.core.cache.ExpiringCacheMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -61,8 +60,6 @@ public class PushoverAPIConnection {
 
     private final ExpiringCacheMap<String, String> cache = new ExpiringCacheMap<>(TimeUnit.DAYS.toMillis(1));
 
-    private final JsonParser parser = new JsonParser();
-
     public PushoverAPIConnection(HttpClient httpClient, PushoverAccountConfiguration config) {
         this.httpClient = httpClient;
         this.config = config;
@@ -80,7 +77,7 @@ public class PushoverAPIConnection {
 
     public String sendPriorityMessage(PushoverMessageBuilder message)
             throws PushoverCommunicationException, PushoverConfigurationException {
-        final JsonObject json = parser.parse(post(MESSAGE_URL, message.build())).getAsJsonObject();
+        final JsonObject json = JsonParser.parseString(post(MESSAGE_URL, message.build())).getAsJsonObject();
         return getMessageStatus(json) && json.has("receipt") ? json.get("receipt").getAsString() : "";
     }
 
@@ -100,16 +97,13 @@ public class PushoverAPIConnection {
         params.put(PushoverMessageBuilder.MESSAGE_KEY_TOKEN, localApikey);
 
         // TODO do not cache the response, cache the parsed list of sounds
-        final JsonObject json = parser.parse(getFromCache(buildURL(SOUNDS_URL, params))).getAsJsonObject();
-        if (json.has("sounds")) {
-            final JsonObject sounds = json.get("sounds").getAsJsonObject();
-            if (sounds != null) {
-                return Collections.unmodifiableList(sounds.entrySet().stream()
-                        .map(entry -> new Sound(entry.getKey(), entry.getValue().getAsString()))
-                        .collect(Collectors.toList()));
-            }
-        }
-        return Collections.emptyList();
+        final String content = getFromCache(buildURL(SOUNDS_URL, params));
+        final JsonObject json = content == null ? null : JsonParser.parseString(content).getAsJsonObject();
+        final JsonObject sounds = json == null || !json.has("sounds") ? null : json.get("sounds").getAsJsonObject();
+
+        return sounds == null ? List.of()
+                : sounds.entrySet().stream().map(entry -> new Sound(entry.getKey(), entry.getValue().getAsString()))
+                        .collect(Collectors.toUnmodifiableList());
     }
 
     private String buildURL(String url, Map<String, String> requestParams) {
@@ -134,11 +128,12 @@ public class PushoverAPIConnection {
         return executeRequest(HttpMethod.POST, url, body);
     }
 
-    private String executeRequest(HttpMethod httpMethod, String url, @Nullable ContentProvider body)
+    private synchronized String executeRequest(HttpMethod httpMethod, String url, @Nullable ContentProvider body)
             throws PushoverCommunicationException, PushoverConfigurationException {
         logger.trace("Pushover request: {} - URL = '{}'", httpMethod, url);
         try {
-            final Request request = httpClient.newRequest(url).method(httpMethod).timeout(10, TimeUnit.SECONDS);
+            final Request request = httpClient.newRequest(url).method(httpMethod).timeout(config.timeout,
+                    TimeUnit.SECONDS);
 
             if (body != null) {
                 if (logger.isTraceEnabled()) {
@@ -172,18 +167,16 @@ public class PushoverAPIConnection {
     }
 
     private String getMessageError(String content) {
-        final JsonObject json = parser.parse(content).getAsJsonObject();
-        if (json.has("errors")) {
-            final JsonArray errors = json.get("errors").getAsJsonArray();
-            if (errors != null) {
-                return errors.toString();
-            }
+        final JsonObject json = JsonParser.parseString(content).getAsJsonObject();
+        final JsonElement errorsElement = json.get("errors");
+        if (errorsElement != null && errorsElement.isJsonArray()) {
+            return errorsElement.getAsJsonArray().toString();
         }
-        return "Unknown error occured.";
+        return "@text/offline.conf-error-unknown";
     }
 
     private boolean getMessageStatus(String content) {
-        final JsonObject json = parser.parse(content).getAsJsonObject();
+        final JsonObject json = JsonParser.parseString(content).getAsJsonObject();
         return json.has("status") ? json.get("status").getAsInt() == 1 : false;
     }
 

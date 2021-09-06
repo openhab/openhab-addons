@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,9 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.homematic.internal.discovery.eq3udp;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * Extracts a UDP response from a Homematic CCU gateway.
@@ -86,7 +83,7 @@ public class Eq3UdpResponse {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("deviceTypeId", deviceTypeId)
-                .append("serialNumber", serialNumber).toString();
+        return String.format("%s[deviceTypeId=%s,serialNumber=%s]", getClass().getSimpleName(), deviceTypeId,
+                serialNumber);
     }
 }

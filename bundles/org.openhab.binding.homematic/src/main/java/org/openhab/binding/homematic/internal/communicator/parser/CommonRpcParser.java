@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,11 +13,10 @@
 package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
+import java.util.Objects;
 
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.homematic.internal.misc.HomematicConstants;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
@@ -38,7 +37,8 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
      * Converts the object to a string.
      */
     protected String toString(Object object) {
-        return StringUtils.trimToNull(ObjectUtils.toString(object));
+        String value = Objects.toString(object, "").trim();
+        return value.isEmpty() ? null : value;
     }
 
     /**
@@ -49,7 +49,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
             return (Integer) object;
         }
         try {
-            return Double.valueOf(ObjectUtils.toString(object)).intValue();
+            return Double.valueOf(object.toString()).intValue();
         } catch (NumberFormatException ex) {
             logger.debug("Failed converting {} to a Double", object, ex);
             return null;
@@ -64,7 +64,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
             return (Double) object;
         }
         try {
-            return Double.valueOf(ObjectUtils.toString(object));
+            return Double.valueOf(object.toString());
         } catch (NumberFormatException ex) {
             logger.debug("Failed converting {} to a Double", object, ex);
             return null;
@@ -79,7 +79,12 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
             return (Number) object;
         }
         try {
-            return NumberUtils.createNumber(ObjectUtils.toString(object));
+            String value = object.toString();
+            if (value.contains(".")) {
+                return Float.parseFloat(value);
+            } else {
+                return Integer.parseInt(value);
+            }
         } catch (NumberFormatException ex) {
             logger.debug("Failed converting {} to a Number", object, ex);
             return null;
@@ -93,7 +98,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         if (object == null || object instanceof Boolean) {
             return (Boolean) object;
         }
-        return BooleanUtils.toBoolean(ObjectUtils.toString(object));
+        return "true".equals(object.toString().toLowerCase());
     }
 
     /**
@@ -114,9 +119,10 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     /**
      * Returns the address of a device, replacing group address identifier and illegal characters.
      */
+    @NonNull
     protected String getSanitizedAddress(Object object) {
-        String address = StringUtils.trimToNull(StringUtils.replaceOnce(toString(object), "*", "T-"));
-        return MiscUtils.validateCharacters(address, "Address", "_");
+        String address = Objects.toString(object, "").trim().replaceFirst("\\*", "T-");
+        return MiscUtils.validateCharacters(address.isEmpty() ? null : address, "Address", "_");
     }
 
     /**
@@ -167,9 +173,22 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         HmDatapoint dp = new HmDatapoint();
         dp.setName(name);
         dp.setDescription(name);
-        dp.setUnit(StringUtils.replace(StringUtils.trimToNull(unit), "\ufffd", "°"));
-        if (dp.getUnit() == null && StringUtils.startsWith(dp.getName(), "RSSI_")) {
-            dp.setUnit("dBm");
+        if (unit != null) {
+            unit = unit.trim().replace("\ufffd", "°");
+        }
+        dp.setUnit(unit == null || unit.isEmpty() ? null : unit);
+
+        // Bypass: For several devices the CCU does not send a unit together with the value in the data point definition
+        if (dp.getUnit() == null && dp.getName() != null) {
+            if (dp.getName().startsWith("RSSI_")) {
+                dp.setUnit("dBm");
+            } else if (dp.getName().startsWith(HomematicConstants.DATAPOINT_NAME_OPERATING_VOLTAGE)) {
+                dp.setUnit("V");
+            } else if (HomematicConstants.DATAPOINT_NAME_HUMIDITY.equals(dp.getName())) {
+                dp.setUnit("%");
+            } else if (HomematicConstants.DATAPOINT_NAME_LEVEL.equals(dp.getName())) {
+                dp.setUnit("100%");
+            }
         }
 
         HmValueType valueType = HmValueType.parse(type);
@@ -210,7 +229,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
      * Converts a string value to the type.
      */
     protected Object convertToType(String value) {
-        if (StringUtils.isBlank(value)) {
+        if (value == null || value.isBlank()) {
             return null;
         }
         if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("on")) {

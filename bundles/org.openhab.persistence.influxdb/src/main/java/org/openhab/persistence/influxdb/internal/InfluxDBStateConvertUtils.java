@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,7 +93,7 @@ public class InfluxDBStateConvertUtils {
      * @return the state of the item represented by the itemName parameter, else the string value of
      *         the Object parameter
      */
-    public static State objectToState(Object value, String itemName, @Nullable ItemRegistry itemRegistry) {
+    public static State objectToState(@Nullable Object value, String itemName, @Nullable ItemRegistry itemRegistry) {
         State state = null;
         if (itemRegistry != null) {
             try {
@@ -111,9 +111,10 @@ public class InfluxDBStateConvertUtils {
         return state;
     }
 
-    public static State objectToState(Object value, Item itemToSetState) {
+    public static State objectToState(@Nullable Object value, Item itemToSetState) {
         String valueStr = String.valueOf(value);
 
+        @Nullable
         Item item = itemToSetState;
         if (item instanceof GroupItem) {
             item = ((GroupItem) item).getBaseItem();
@@ -145,7 +146,7 @@ public class InfluxDBStateConvertUtils {
         if (object instanceof Boolean) {
             return (Boolean) object;
         } else if (object != null) {
-            if ("1".equals(object)) {
+            if ("1".equals(object) || "1.0".equals(object)) {
                 return true;
             } else {
                 return Boolean.valueOf(String.valueOf(object));

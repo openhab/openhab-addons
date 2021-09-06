@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,12 +14,15 @@ package org.openhab.binding.lutron.internal.radiora.protocol;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Abstract base class for commands.
  *
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public abstract class RadioRACommand {
 
     protected static final String FIELD_SEPARATOR = ",";

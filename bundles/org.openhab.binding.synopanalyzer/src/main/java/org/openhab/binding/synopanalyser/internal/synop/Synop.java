@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import javax.measure.quantity.Speed;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * The {@link Synop} is the ancestor common class for analyzing
@@ -311,7 +311,7 @@ public abstract class Synop {
 
     public Unit<Speed> getWindUnit() {
         return (getWindIndicator() == WS_WILDTYPE_IN_MPS || getWindIndicator() == WS_ANEMOMETER_IN_MPS)
-                ? SmartHomeUnits.METRE_PER_SECOND
-                : SmartHomeUnits.KNOT;
+                ? Units.METRE_PER_SECOND
+                : Units.KNOT;
     }
 }

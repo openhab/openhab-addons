@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,31 +21,20 @@ import java.math.BigDecimal;
  *
  */
 public class DimmerConfig {
-    private int zoneNumber;
-    private BigDecimal fadeOutSec;
-    private BigDecimal fadeInSec;
+    public int zoneNumber;
+    public int system = 0;
+    public BigDecimal fadeOutSec;
+    public BigDecimal fadeInSec;
 
     public int getZoneNumber() {
         return zoneNumber;
-    }
-
-    public void setZoneNumber(int zoneNumber) {
-        this.zoneNumber = zoneNumber;
     }
 
     public BigDecimal getFadeOutSec() {
         return fadeOutSec;
     }
 
-    public void setFadeOutSec(BigDecimal fadeOutSec) {
-        this.fadeOutSec = fadeOutSec;
-    }
-
     public BigDecimal getFadeInSec() {
         return fadeInSec;
-    }
-
-    public void setFadeInSec(BigDecimal fadeInSec) {
-        this.fadeInSec = fadeInSec;
     }
 }

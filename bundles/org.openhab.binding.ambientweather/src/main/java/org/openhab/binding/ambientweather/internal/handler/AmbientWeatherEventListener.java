@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.openhab.binding.ambientweather.internal.model.DeviceJson;
 import org.openhab.binding.ambientweather.internal.model.EventDataGenericJson;
@@ -318,8 +317,9 @@ public class AmbientWeatherEventListener {
         logger.debug("Listener: Data: {}", jsonData);
         try {
             EventDataGenericJson data = gson.fromJson(jsonData, EventDataGenericJson.class);
-            if (StringUtils.isNotEmpty(data.macAddress)) {
-                sendWeatherDataToHandler(data.macAddress, jsonData);
+            String macAddress = data == null ? null : data.macAddress;
+            if (macAddress != null && !macAddress.isEmpty()) {
+                sendWeatherDataToHandler(macAddress, jsonData);
             }
         } catch (JsonSyntaxException e) {
             logger.info("Listener: Exception parsing subscribed event: {}", e.getMessage());

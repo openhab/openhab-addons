@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 /**
  * The goal of this class is to test the model parser to make sure the structures
  * returned from the module can be handled.
- * 
+ *
  * @author Marco Meyer - Initial contribution
  */
 public class ModelParserTest {
@@ -48,12 +48,12 @@ public class ModelParserTest {
         String correctModel = "{\"successful\": false, \"error_code\": 7, \"error_message\": \"Automower already stopped\"}";
         RobonectAnswer answer = subject.parse(correctModel, RobonectAnswer.class);
         assertFalse(answer.isSuccessful());
-        assertEquals(new Integer(7), answer.getErrorCode());
+        assertEquals(Integer.valueOf(7), answer.getErrorCode());
         assertEquals("Automower already stopped", answer.getErrorMessage());
 
         MowerInfo info = subject.parse(correctModel, MowerInfo.class);
         assertFalse(info.isSuccessful());
-        assertEquals(new Integer(7), info.getErrorCode());
+        assertEquals(Integer.valueOf(7), info.getErrorCode());
         assertEquals("Automower already stopped", info.getErrorMessage());
     }
 
@@ -143,7 +143,7 @@ public class ModelParserTest {
         assertTrue(mowerInfo.getStatus().isStopped());
         assertNotNull(mowerInfo.getError());
         assertEquals("Mein Automower ist angehoben", mowerInfo.getError().getErrorMessage());
-        assertEquals(new Integer(15), mowerInfo.getError().getErrorCode());
+        assertEquals(Integer.valueOf(15), mowerInfo.getError().getErrorCode());
         assertEquals("02.05.2017", mowerInfo.getError().getDate());
         assertEquals("20:36:43", mowerInfo.getError().getTime());
         assertEquals("1493757403", mowerInfo.getError().getUnix());
@@ -155,7 +155,7 @@ public class ModelParserTest {
         ErrorList errorList = subject.parse(errorsListResponse, ErrorList.class);
         assertTrue(errorList.isSuccessful());
         assertEquals(10, errorList.getErrors().size());
-        assertEquals(new Integer(15), errorList.getErrors().get(0).getErrorCode());
+        assertEquals(Integer.valueOf(15), errorList.getErrors().get(0).getErrorCode());
         assertEquals("Grasi ist angehoben", errorList.getErrors().get(0).getErrorMessage());
         assertEquals("02.05.2017", errorList.getErrors().get(0).getDate());
         assertEquals("20:36:43", errorList.getErrors().get(0).getTime());

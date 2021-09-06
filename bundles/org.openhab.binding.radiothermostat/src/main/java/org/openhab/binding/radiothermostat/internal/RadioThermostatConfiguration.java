@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,5 +28,6 @@ public class RadioThermostatConfiguration {
     public @Nullable Integer logRefresh;
     public boolean isCT80 = false;
     public boolean disableLogs = false;
+    public boolean clockSync = false;
     public String setpointMode = "temporary";
 }

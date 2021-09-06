@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -259,7 +259,7 @@ public class StateUtils {
         if (newState.ct != null) {
             try {
                 // We can't do anything here with a white color temperature.
-                // The core ESH color type does not support setting it.
+                // The color type does not support setting it.
 
                 // Adjusting the color temperature implies setting the mode to ct
                 if (state instanceof HueStateColorBulb) {
@@ -279,7 +279,7 @@ public class StateUtils {
         if (newState.ct_inc != null) {
             try {
                 // We can't do anything here with a white color temperature.
-                // The core ESH color type does not support setting it.
+                // The color type does not support setting it.
 
                 // Adjusting the color temperature implies setting the mode to ct
                 if (state instanceof HueStateColorBulb) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link Message} represent a single message received from the OpenTherm Gateway.
- * 
+ *
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
@@ -27,22 +27,12 @@ public class Message {
 
     private static final Pattern messagePattern = Pattern.compile("[TBRA]{1}[A-F0-9]{8}");
 
-    /*
-     * The code field is not part of OpenTherm specification, but added by OpenTherm Gateway.
-     * It can be any of the following:
-     *
-     * T: Message received from the thermostat
-     * B: Message received from the boiler
-     * R: Request sent to the boiler
-     * A: Response returned to the thermostat
-     * E: Parity or stop bit error
-     */
-    private String code;
+    private CodeType code;
     private MessageType messageType;
     private int id;
     private String data;
 
-    public String getCode() {
+    public CodeType getCode() {
         return this.code;
     }
 
@@ -139,8 +129,7 @@ public class Message {
         // If the message is a Request sent to the boiler or an Answer returned to the
         // thermostat, and it's ID is equal to the previous message, then this is an
         // override sent by the OpenTherm Gateway
-        return other != null && this.getID() == other.getID()
-                && ("R".equals(this.getCode()) || "A".equals(this.getCode()));
+        return other != null && this.getID() == other.getID() && (this.code == CodeType.R || this.code == CodeType.A);
     }
 
     @Override
@@ -148,7 +137,7 @@ public class Message {
         return String.format("%s - %s - %s", this.code, this.id, this.data);
     }
 
-    public Message(String code, MessageType messageType, int id, String data) {
+    public Message(CodeType code, MessageType messageType, int id, String data) {
         this.code = code;
         this.messageType = messageType;
         this.id = id;
@@ -158,7 +147,7 @@ public class Message {
     public static @Nullable Message parse(String message) {
         if (messagePattern.matcher(message).matches()) {
             // For now, only parse TBRA codes
-            String code = message.substring(0, 1);
+            CodeType code = CodeType.valueOf(message.substring(0, 1));
             MessageType messageType = getMessageType(message.substring(1, 3));
             int id = Integer.valueOf(message.substring(3, 5), 16);
             String data = message.substring(5);

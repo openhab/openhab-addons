@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ import org.openhab.core.util.HexUtils;
 public class RFXComTemperatureMessageTest {
     private void testMessage(String hexMsg, RFXComTemperatureMessage.SubType subType, int seqNbr, String deviceId,
             double temperature, int signalLevel, int bateryLevel) throws RFXComException {
-        final RFXComTemperatureMessage msg = (RFXComTemperatureMessage) RFXComMessageFactory
+        final RFXComTemperatureMessage msg = (RFXComTemperatureMessage) RFXComMessageFactoryImpl.INSTANCE
                 .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals(subType, msg.subType, "SubType");
         assertEquals(seqNbr, (short) (msg.seqNbr & 0xFF), "Seq Number");

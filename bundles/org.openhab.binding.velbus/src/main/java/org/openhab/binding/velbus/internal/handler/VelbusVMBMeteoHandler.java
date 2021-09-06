@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import org.openhab.binding.velbus.internal.packets.VelbusSensorReadoutRequestPac
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -125,7 +125,7 @@ public class VelbusVMBMeteoHandler extends VelbusTemperatureSensorHandler {
                 double windValue = (((highByteCurrentWindValue & 0xff) << 8) + (lowByteCurrentWindValue & 0xff)) / 10;
 
                 QuantityType<Length> rainValueState = new QuantityType<>(rainValue, MetricPrefix.MILLI(SIUnits.METRE));
-                QuantityType<Illuminance> lightValueState = new QuantityType<>(lightValue, SmartHomeUnits.LUX);
+                QuantityType<Illuminance> lightValueState = new QuantityType<>(lightValue, Units.LUX);
                 QuantityType<Speed> windValueState = new QuantityType<>(windValue, SIUnits.KILOMETRE_PER_HOUR);
 
                 updateState(rainfallChannel, rainValueState);

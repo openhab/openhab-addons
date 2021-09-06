@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,7 +71,7 @@ public class LxDiscoveryParticipant implements UpnpDiscoveryParticipant {
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, serial);
 
             return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
-                    .withRepresentationProperty(serial).build();
+                    .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build();
         }
         return null;
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,10 +62,10 @@ public class DataBlockTest {
         Optional<Data> dataOpt = mc.parse(DataType.POWER);
         assertTrue(dataOpt.isPresent());
         PowerBlock b = (PowerBlock) dataOpt.get();
-        assertEquals("242.0 W", b.pvPowerSupply.toString(), "PV Supply");
-        assertEquals("14.0 W", b.gridPowerSupply.toString(), "Grid Supply");
-        assertEquals("0.0 W", b.gridPowerConsumpition.toString(), "Grid Consumption");
-        assertEquals("303.0 W", b.batteryPowerSupply.toString(), "Battery Supply");
+        assertEquals("242 W", b.pvPowerSupply.toString(), "PV Supply");
+        assertEquals("14 W", b.gridPowerSupply.toString(), "Grid Supply");
+        assertEquals("0 W", b.gridPowerConsumpition.toString(), "Grid Consumption");
+        assertEquals("303 W", b.batteryPowerSupply.toString(), "Battery Supply");
     }
 
     @Test
@@ -73,10 +73,10 @@ public class DataBlockTest {
         Optional<Data> dataOpt = mcNegativePVSupply.parse(DataType.POWER);
         assertTrue(dataOpt.isPresent());
         PowerBlock b = (PowerBlock) dataOpt.get();
-        assertEquals("-330.0 W", b.pvPowerSupply.toString(), "PV Supply");
-        assertEquals("14.0 W", b.gridPowerSupply.toString(), "Grid Supply");
-        assertEquals("0.0 W", b.gridPowerConsumpition.toString(), "Grid Consumption");
-        assertEquals("303.0 W", b.batteryPowerSupply.toString(), "Battery Supply");
+        assertEquals("-330 W", b.pvPowerSupply.toString(), "PV Supply");
+        assertEquals("14 W", b.gridPowerSupply.toString(), "Grid Supply");
+        assertEquals("0 W", b.gridPowerConsumpition.toString(), "Grid Consumption");
+        assertEquals("303 W", b.batteryPowerSupply.toString(), "Battery Supply");
     }
 
     @Test

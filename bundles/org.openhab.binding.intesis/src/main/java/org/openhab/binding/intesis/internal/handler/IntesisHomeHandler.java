@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -392,6 +392,16 @@ public class IntesisHomeHandler extends BaseThingHandler {
                         itemType = "Number:Temperature";
                         addChannel(channelId, itemType, null);
                         break;
+                    case 14:
+                        channelId = CHANNEL_TYPE_ERRORSTATUS;
+                        itemType = "Switch";
+                        addChannel(channelId, itemType, null);
+                        break;
+                    case 15:
+                        channelId = CHANNEL_TYPE_ERRORCODE;
+                        itemType = "String";
+                        addChannel(channelId, itemType, null);
+                        break;
                     case 37:
                         channelId = CHANNEL_TYPE_OUTDOORTEMP;
                         itemType = "Number:Temperature";
@@ -484,6 +494,13 @@ public class IntesisHomeHandler extends BaseThingHandler {
                         unit = Math.round((element.value) / 10);
                         stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
                         updateState(CHANNEL_TYPE_AMBIENTTEMP, stateValue);
+                        break;
+                    case 14:
+                        updateState(CHANNEL_TYPE_ERRORSTATUS,
+                                String.valueOf(element.value).equals("0") ? OnOffType.OFF : OnOffType.ON);
+                        break;
+                    case 15:
+                        updateState(CHANNEL_TYPE_ERRORCODE, StringType.valueOf(String.valueOf(element.value)));
                         break;
                     case 37:
                         unit = Math.round((element.value) / 10);

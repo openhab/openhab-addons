@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,7 +63,7 @@ public class JSONResponseHandler {
     public static JsonObject toJsonObject(String jsonResponse) {
         if (jsonResponse != null && !jsonResponse.trim().equals("")) {
             try {
-                return (JsonObject) new JsonParser().parse(jsonResponse);
+                return (JsonObject) JsonParser.parseString(jsonResponse);
             } catch (JsonParseException e) {
                 LOGGER.error("An JsonParseException occurred by parsing jsonRequest: {}", jsonResponse, e);
             }

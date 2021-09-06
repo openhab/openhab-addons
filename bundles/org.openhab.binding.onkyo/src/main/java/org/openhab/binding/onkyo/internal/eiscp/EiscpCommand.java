@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,9 @@ public enum EiscpCommand {
     VOLUME_QUERY("MVL", "QSTN"),
     VOLUME_SET("MVL", "%02X"),
     VOLUME("MVL", ""),
+
+    AUDIOINFO("IFA", ""),
+    AUDIOINFO_QUERY("IFA", "QSTN"),
 
     SOURCE_UP("SLI", "UP"),
     SOURCE_DOWN("SLI", "DOWN"),

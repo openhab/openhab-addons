@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.openhab.binding.regoheatpump.internal.protocol.RegoConnection;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -188,7 +188,7 @@ abstract class HusdataHandler extends BaseThingHandler {
 
         switch (dataType) {
             case 0x00: // Degrees
-                updateState(channelID, new QuantityType<>(value / 10.0, SmartHomeUnits.DEGREE_ANGLE));
+                updateState(channelID, new QuantityType<>(value / 10.0, Units.DEGREE_ANGLE));
                 break;
 
             case 0x02: // Number
@@ -196,27 +196,27 @@ abstract class HusdataHandler extends BaseThingHandler {
                 break;
 
             case 0x03: // Percent
-                updateState(channelID, new QuantityType<>(value / 10.0, SmartHomeUnits.PERCENT));
+                updateState(channelID, new QuantityType<>(value / 10.0, Units.PERCENT));
                 break;
 
             case 0x04: // Ampere
-                updateState(channelID, new QuantityType<>(value / 10.0, SmartHomeUnits.AMPERE));
+                updateState(channelID, new QuantityType<>(value / 10.0, Units.AMPERE));
                 break;
 
             case 0x05: // kWh
-                updateState(channelID, new QuantityType<>(value / 10.0, SmartHomeUnits.KILOWATT_HOUR));
+                updateState(channelID, new QuantityType<>(value / 10.0, Units.KILOWATT_HOUR));
                 break;
 
             case 0x06: // Hours
-                updateState(channelID, new QuantityType<>(value, SmartHomeUnits.HOUR));
+                updateState(channelID, new QuantityType<>(value, Units.HOUR));
                 break;
 
             case 0x07: // Minutes
-                updateState(channelID, new QuantityType<>(value, SmartHomeUnits.MINUTE));
+                updateState(channelID, new QuantityType<>(value, Units.MINUTE));
                 break;
 
             case 0x09: // kw
-                updateState(channelID, new QuantityType<>(value, MetricPrefix.KILO(SmartHomeUnits.WATT)));
+                updateState(channelID, new QuantityType<>(value, MetricPrefix.KILO(Units.WATT)));
                 break;
 
             case 0x01: // Switch

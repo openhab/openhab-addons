@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,17 +21,17 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lifx.internal.dto.GetEchoRequest;
+import org.openhab.binding.lifx.internal.dto.GetServiceRequest;
+import org.openhab.binding.lifx.internal.dto.Packet;
 import org.openhab.binding.lifx.internal.handler.LifxLightHandler.CurrentLightState;
-import org.openhab.binding.lifx.internal.protocol.GetEchoRequest;
-import org.openhab.binding.lifx.internal.protocol.GetServiceRequest;
-import org.openhab.binding.lifx.internal.protocol.Packet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link LifxLightOnlineStateUpdater} sets the state of a light offline when it no longer responds to echo packets.
  *
- * @author Wouter Born - Extracted class from LifxLightHandler
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public class LifxLightOnlineStateUpdater {

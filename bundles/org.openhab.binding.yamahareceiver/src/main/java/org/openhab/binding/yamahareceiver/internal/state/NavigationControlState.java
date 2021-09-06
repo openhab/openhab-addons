@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.yamahareceiver.internal.state;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.protocol.xml.InputWithNavigationControlXML;
 
 /**
@@ -37,7 +36,7 @@ public class NavigationControlState implements Invalidateable {
     public String getAllItemLabels() {
         StringBuilder sb = new StringBuilder();
         for (String item : items) {
-            if (StringUtils.isNotEmpty(item)) {
+            if (item != null && !item.isEmpty()) {
                 sb.append(item);
                 sb.append(',');
             }

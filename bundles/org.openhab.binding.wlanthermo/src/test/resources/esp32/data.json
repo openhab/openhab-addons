@@ -1,0 +1,151 @@
+{
+  "system": {
+    "time": "1610894101",
+    "unit": "C",
+    "soc": 89,
+    "charge": false,
+    "rssi": -32,
+    "online": 0
+  },
+  "channel": [
+    {
+      "number": 1,
+      "name": "Kanal Eins",
+      "typ": 0,
+      "temp": 23.7,
+      "min": 17,
+      "max": 104,
+      "alarm": 1,
+      "color": "#270000",
+      "fixed": false,
+      "connected": false
+    },
+    {
+      "number": 2,
+      "name": "Kanal 2",
+      "typ": 0,
+      "temp": 999,
+      "min": 50,
+      "max": 95,
+      "alarm": 0,
+      "color": "#22B14C",
+      "fixed": false,
+      "connected": false
+    },
+    {
+      "number": 3,
+      "name": "Kanal 3",
+      "typ": 0,
+      "temp": 999,
+      "min": 50,
+      "max": 95,
+      "alarm": 0,
+      "color": "#EF562D",
+      "fixed": false,
+      "connected": false
+    },
+    {
+      "number": 4,
+      "name": "Kanal 4",
+      "typ": 0,
+      "temp": 999,
+      "min": 50,
+      "max": 95,
+      "alarm": 0,
+      "color": "#FFC100",
+      "fixed": false,
+      "connected": false
+    },
+    {
+      "number": 5,
+      "name": "Kanal 5",
+      "typ": 0,
+      "temp": 999,
+      "min": 50,
+      "max": 95,
+      "alarm": 0,
+      "color": "#A349A4",
+      "fixed": false,
+      "connected": false
+    },
+    {
+      "number": 6,
+      "name": "Kanal 6",
+      "typ": 0,
+      "temp": 999,
+      "min": 50,
+      "max": 95,
+      "alarm": 0,
+      "color": "#804000",
+      "fixed": false,
+      "connected": false
+    },
+    {
+      "number": 7,
+      "name": "Kanal 7",
+      "typ": 0,
+      "temp": 23.7,
+      "min": 10,
+      "max": 95,
+      "alarm": 0,
+      "color": "#5587A2",
+      "fixed": false,
+      "connected": false
+    },
+    {
+      "number": 8,
+      "name": "Kanal 8",
+      "typ": 0,
+      "temp": 999,
+      "min": 50,
+      "max": 95,
+      "alarm": 0,
+      "color": "#5C7148",
+      "fixed": false,
+      "connected": false
+    },
+    {
+      "number": 9,
+      "name": "Kanal 9",
+      "typ": 16,
+      "temp": 999,
+      "min": 50,
+      "max": 95,
+      "alarm": 0,
+      "color": "#A349A4",
+      "fixed": true,
+      "connected": false
+    },
+    {
+      "number": 10,
+      "name": "Kanal 10",
+      "typ": 16,
+      "temp": 999,
+      "min": 50,
+      "max": 95,
+      "alarm": 0,
+      "color": "#5587A2",
+      "fixed": true,
+      "connected": false
+    }
+  ],
+  "pitmaster": {
+    "type": [
+      "off",
+      "manual",
+      "auto"
+    ],
+    "pm": [
+      {
+        "id": 0,
+        "channel": 1,
+        "pid": 1,
+        "value": 70,
+        "set": 50,
+        "typ": "manual",
+        "set_color": "#ff0000",
+        "value_color": "#000000"
+      }
+    ]
+  }
+}

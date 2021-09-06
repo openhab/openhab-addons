@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,19 +13,28 @@
 package org.openhab.binding.somfytahoma.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants;
 
 /**
  * The {@link SomfyTahomaConfig} is is the base class for configuration
  * information held by devices and modules.
  *
  * @author Ondrej Pecta - Initial contribution
+ * @author Laurent Garnier - new parameter portalUrl
  */
 @NonNullByDefault
 public class SomfyTahomaConfig {
+    private String cloudPortal = SomfyTahomaBindingConstants.TAHOMA_PORTAL;
     private String email = "";
     private String password = "";
     private int refresh = 30;
     private int statusTimeout = 300;
+    private int retries = 10;
+    private int retryDelay = 1000;
+
+    public String getCloudPortal() {
+        return cloudPortal;
+    }
 
     public String getEmail() {
         return email;
@@ -43,11 +52,31 @@ public class SomfyTahomaConfig {
         return statusTimeout;
     }
 
+    public int getRetries() {
+        return retries;
+    }
+
+    public int getRetryDelay() {
+        return retryDelay;
+    }
+
+    public void setCloudPortal(String cloudPortal) {
+        this.cloudPortal = cloudPortal;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setRetries(int retries) {
+        this.retries = retries;
+    }
+
+    public void setRetryDelay(int retryDelay) {
+        this.retryDelay = retryDelay;
     }
 }

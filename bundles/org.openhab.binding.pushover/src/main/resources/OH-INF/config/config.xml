@@ -32,7 +32,7 @@
 		</parameter>
 		<parameter name="sound" type="text">
 			<label>Notification Sound</label>
-			<description>The default notification sound on target device.</description>
+			<description>The notification sound on target device.</description>
 			<default>default</default>
 		</parameter>
 		<parameter name="retry" type="integer" min="30" unit="s">
@@ -47,6 +47,13 @@
 			<label>Expire</label>
 			<description>The expire parameter specifies how long your notification will continue to be retried.</description>
 			<default>3600</default>
+		</parameter>
+		<parameter name="timeout" type="integer" min="0" max="10800" unit="s">
+			<advanced>true</advanced>
+			<label>Timeout</label>
+			<description>The timeout parameter specifies maximum number of seconds a request to Pushover can
+				take.</description>
+			<default>10</default>
 		</parameter>
 	</config-description>
 

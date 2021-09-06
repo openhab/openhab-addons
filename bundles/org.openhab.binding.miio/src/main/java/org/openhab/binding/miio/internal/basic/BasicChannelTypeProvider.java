@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,10 +17,10 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_ID;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -108,8 +108,8 @@ public class BasicChannelTypeProvider implements ChannelTypeProvider {
             if (category != null) {
                 channelTypeBuilder.withCategory(category);
             }
-            final LinkedHashSet<String> tags = miChannel.getTags();
-            if (tags != null && tags.size() > 0) {
+            final Set<String> tags = miChannel.getTags();
+            if (tags != null && !tags.isEmpty()) {
                 channelTypeBuilder.withTags(tags);
             }
             channelTypes.put(channelTypeUID.getAsString(), channelTypeBuilder.build());

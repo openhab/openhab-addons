@@ -1,13 +1,13 @@
 # Digiplex/EVO Binding
 
-This binding provides integration with Digiplex/EVO alarm systems from [Paradox](http://paradox.com).
-It utilizes [PRT3 module](http://www.paradox.com/Products/default.asp?CATID=7&SUBCATID=75&PRD=234) for serial communication.
+This binding provides integration with Digiplex/EVO alarm systems from [Paradox](https://paradox.com).
+It utilizes [PRT3 module](https://www.paradox.com/Products/default.asp?CATID=7&SUBCATID=75&PRD=234) for serial communication.
 
 ## Supported Things
 
 ### PRT3 Module
 
-Before the binding can be used, a serial adapter must be added manually. Select `PRT3 Module` and enter serial port parameters. 
+Before the binding can be used, a serial adapter must be added manually. Select `PRT3 Module` and enter serial port parameters.
 Please refer to PRT3 module manual for instructions how to modify baudrate (default setting is 2400)
 
 ## Discovery

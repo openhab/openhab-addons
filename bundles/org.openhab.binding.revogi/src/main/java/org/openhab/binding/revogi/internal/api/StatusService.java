@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.revogi.internal.udp.UdpResponseDTO;
 import org.openhab.binding.revogi.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
@@ -56,7 +55,6 @@ public class StatusService {
         return responses.thenApply(this::getStatus);
     }
 
-    @NotNull
     private StatusDTO getStatus(final List<UdpResponseDTO> singleResponse) {
         return singleResponse.stream()
                 .filter(response -> !response.getAnswer().isEmpty() && response.getAnswer().contains(VERSION_STRING))

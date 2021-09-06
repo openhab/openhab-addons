@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.tellstick.internal.live;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -248,7 +249,7 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
             case JNA.CLibrary.TELLSTICK_DIM:
                 dimValue = new BigDecimal(((TellstickNetDevice) device).getStatevalue());
                 dimValue = dimValue.multiply(new BigDecimal(100));
-                dimValue = dimValue.divide(new BigDecimal(255), 0, BigDecimal.ROUND_HALF_UP);
+                dimValue = dimValue.divide(new BigDecimal(255), 0, RoundingMode.HALF_UP);
                 break;
             default:
                 logger.warn("Could not handle {} for {}", (((TellstickNetDevice) device).getState()), device);
@@ -309,6 +310,8 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
         // TelldusLiveHandler.logger.info("Devices" + resp.getResponseBody());
         JAXBContext jc = JAXBContext.newInstance(response);
         XMLInputFactory xif = XMLInputFactory.newInstance();
+        xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         XMLStreamReader xsr = xif.createXMLStreamReader(resp.getResponseBodyAsStream());
         // xsr = new PropertyRenamerDelegate(xsr);
 

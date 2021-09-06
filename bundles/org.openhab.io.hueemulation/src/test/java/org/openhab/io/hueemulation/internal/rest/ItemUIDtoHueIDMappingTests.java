@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,7 +88,7 @@ public class ItemUIDtoHueIDMappingTests {
         itemRegistry.add(item);
 
         String hueID = cs.mapItemUIDtoHueID(item);
-        assertThat(hueID, CoreMatchers.is("02"));
+        assertThat(hueID, CoreMatchers.is("2"));
 
         HueLightEntry device = cs.ds.lights.get(hueID);
         assertThat(device.item, is(item));
@@ -108,7 +108,7 @@ public class ItemUIDtoHueIDMappingTests {
         itemRegistry.add(item);
 
         String hueID = cs.mapItemUIDtoHueID(item);
-        assertThat(hueID, CoreMatchers.is("0A"));
+        assertThat(hueID, CoreMatchers.is("10"));
 
         HueLightEntry device = cs.ds.lights.get(hueID);
         assertThat(device.item, is(item));

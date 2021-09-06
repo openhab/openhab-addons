@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -136,7 +136,7 @@ public class VoiceRSSTTSService implements TTSService {
         // only a default voice
         try {
             File cacheAudioFile = voiceRssImpl.getTextToSpeechAsFile(apiKey, trimmedText,
-                    voice.getLocale().toLanguageTag(), getApiAudioFormat(requestedFormat));
+                    voice.getLocale().toLanguageTag(), voice.getLabel(), getApiAudioFormat(requestedFormat));
             if (cacheAudioFile == null) {
                 throw new TTSException("Could not read from VoiceRSS service");
             }

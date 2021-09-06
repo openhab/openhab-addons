@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -278,6 +278,9 @@ public class DLinkMotionSensorCommunication extends DLinkHNAPCommunication {
                 } else {
                     unexpectedResult("getLastDetection - Unexpected response", soapResponse);
                 }
+            } catch (final InterruptedException e) {
+                status = DeviceStatus.COMMUNICATION_ERROR;
+                Thread.currentThread().interrupt();
             } catch (final Exception e) {
                 // Assume there has been some problem trying to send one of the messages
                 if (status != DeviceStatus.COMMUNICATION_ERROR) {

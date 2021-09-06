@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -78,6 +77,12 @@ public class DeviceTypeLoader {
      */
     public void loadDeviceTypesXML(InputStream in) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+        dbFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        dbFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        dbFactory.setXIncludeAware(false);
+        dbFactory.setExpandEntityReferences(false);
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(in);
         doc.getDocumentElement().normalize();
@@ -113,7 +118,7 @@ public class DeviceTypeLoader {
      */
     private void processDevice(Element e) throws SAXException {
         String productKey = e.getAttribute("productKey");
-        if (productKey.equals("")) {
+        if ("".equals(productKey)) {
             throw new SAXException("device in device_types file has no product key!");
         }
         if (deviceTypes.containsKey(productKey)) {
@@ -129,13 +134,14 @@ public class DeviceTypeLoader {
                 continue;
             }
             Element subElement = (Element) node;
-            if (subElement.getNodeName().equals("model")) {
+            String nodeName = subElement.getNodeName();
+            if ("model".equals(nodeName)) {
                 devType.setModel(subElement.getTextContent());
-            } else if (subElement.getNodeName().equals("description")) {
+            } else if ("description".equals(nodeName)) {
                 devType.setDescription(subElement.getTextContent());
-            } else if (subElement.getNodeName().equals("feature")) {
+            } else if ("feature".equals(nodeName)) {
                 processFeature(devType, subElement);
-            } else if (subElement.getNodeName().equals("feature_group")) {
+            } else if ("feature_group".equals(nodeName)) {
                 processFeatureGroup(devType, subElement);
             }
             deviceTypes.put(productKey, devType);
@@ -144,7 +150,7 @@ public class DeviceTypeLoader {
 
     private String processFeature(DeviceType devType, Element e) throws SAXException {
         String name = e.getAttribute("name");
-        if (name.equals("")) {
+        if ("".equals(name)) {
             throw new SAXException("feature " + e.getNodeName() + " has feature without name!");
         }
         if (!name.equals(name.toLowerCase())) {
@@ -158,11 +164,11 @@ public class DeviceTypeLoader {
 
     private String processFeatureGroup(DeviceType devType, Element e) throws SAXException {
         String name = e.getAttribute("name");
-        if (name.equals("")) {
+        if ("".equals(name)) {
             throw new SAXException("feature group " + e.getNodeName() + " has no name attr!");
         }
         String type = e.getAttribute("type");
-        if (type.equals("")) {
+        if ("".equals(type)) {
             throw new SAXException("feature group " + e.getNodeName() + " has no type attr!");
         }
         FeatureGroup fg = new FeatureGroup(name, type);
@@ -173,9 +179,10 @@ public class DeviceTypeLoader {
                 continue;
             }
             Element subElement = (Element) node;
-            if (subElement.getNodeName().equals("feature")) {
+            String nodeName = subElement.getNodeName();
+            if ("feature".equals(nodeName)) {
                 fg.addFeature(processFeature(devType, subElement));
-            } else if (subElement.getNodeName().equals("feature_group")) {
+            } else if ("feature_group".equals(nodeName)) {
                 fg.addFeature(processFeatureGroup(devType, subElement));
             }
         }
@@ -183,16 +190,6 @@ public class DeviceTypeLoader {
             throw new SAXException("duplicate feature group " + name);
         }
         return (name);
-    }
-
-    /**
-     * Helper function for debugging
-     */
-    private void logDeviceTypes() {
-        for (Entry<String, DeviceType> dt : getDeviceTypes().entrySet()) {
-            String msg = String.format("%-10s->", dt.getKey()) + dt.getValue();
-            logger.debug("{}", msg);
-        }
     }
 
     /**

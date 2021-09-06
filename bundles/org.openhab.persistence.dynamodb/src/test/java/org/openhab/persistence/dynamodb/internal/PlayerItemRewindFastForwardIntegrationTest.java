@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,12 @@ package org.openhab.persistence.dynamodb.internal;
 
 import java.time.ZonedDateTime;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInfo;
 import org.openhab.core.library.items.PlayerItem;
-import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.types.State;
 
@@ -30,23 +31,41 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class PlayerItemRewindFastForwardIntegrationTest extends AbstractTwoItemIntegrationTest {
 
+    public static final boolean LEGACY_MODE = false;
     private static final String NAME = "player_rewindfastforward";
-    private static final RewindFastforwardType STATE1 = RewindFastforwardType.FASTFORWARD;
-    private static final RewindFastforwardType STATE2 = RewindFastforwardType.REWIND;
-    private static final @Nullable PlayPauseType STATE_BETWEEN = null;
 
+    private static @Nullable RewindFastforwardType STATE1, STATE2;
+    private static final @Nullable RewindFastforwardType STATE_BETWEEN = null;
+
+    @SuppressWarnings("null")
     @BeforeAll
-    public static void storeData() throws InterruptedException {
+    public static void storeData(TestInfo testInfo) throws InterruptedException {
+        @NonNull
+        RewindFastforwardType localState1, localState2;
+        if (isLegacyTest(testInfo)) {
+            // In legacy, FASTFORWARD < REWIND
+            STATE1 = RewindFastforwardType.FASTFORWARD;
+            STATE2 = RewindFastforwardType.REWIND;
+        } else {
+            // In non-legacy, FASTFORWARD (serialized as 1) > REWIND (-1)
+            STATE1 = RewindFastforwardType.REWIND;
+            STATE2 = RewindFastforwardType.FASTFORWARD;
+        }
+        localState1 = (@NonNull RewindFastforwardType) STATE1;
+        localState2 = (@NonNull RewindFastforwardType) STATE2;
+        assert localState1 != null;
+        assert localState2 != null;
+
         PlayerItem item = (PlayerItem) ITEMS.get(NAME);
 
-        item.setState(STATE1);
+        item.setState(localState1);
 
         beforeStore = ZonedDateTime.now();
         Thread.sleep(10);
         service.store(item);
         afterStore1 = ZonedDateTime.now();
         Thread.sleep(10);
-        item.setState(STATE2);
+        item.setState(localState2);
         service.store(item);
         Thread.sleep(10);
         afterStore2 = ZonedDateTime.now();
@@ -62,12 +81,12 @@ public class PlayerItemRewindFastForwardIntegrationTest extends AbstractTwoItemI
 
     @Override
     protected State getFirstItemState() {
-        return STATE1;
+        return (@NonNull RewindFastforwardType) STATE1;
     }
 
     @Override
     protected State getSecondItemState() {
-        return STATE2;
+        return (@NonNull RewindFastforwardType) STATE2;
     }
 
     @Override

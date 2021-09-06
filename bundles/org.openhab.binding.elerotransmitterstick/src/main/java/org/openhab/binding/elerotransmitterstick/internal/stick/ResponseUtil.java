@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ public class ResponseUtil {
     /**
      * returns the list of channels (starting with 1)
      */
-    private static int[] getChannelIds(byte upperChannelByte, byte lowerChannelByte) {
+    public static int[] getChannelIds(byte upperChannelByte, byte lowerChannelByte) {
         int[] result = new int[16];
         int idx = 0;
 

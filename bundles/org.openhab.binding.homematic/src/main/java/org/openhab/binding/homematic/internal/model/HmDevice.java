@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,12 +16,11 @@ import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Object that represents a Homematic device.
@@ -29,6 +28,8 @@ import org.openhab.binding.homematic.internal.misc.MiscUtils;
  * @author Gerhard Riegler - Initial contribution
  */
 public class HmDevice {
+    private final Logger logger = LoggerFactory.getLogger(HmDevice.class);
+
     public static final String TYPE_GATEWAY_EXTRAS = "GATEWAY-EXTRAS";
     public static final String ADDRESS_GATEWAY_EXTRAS = "GWE00000000";
 
@@ -46,10 +47,15 @@ public class HmDevice {
             String firmware) {
         this.address = address;
         this.hmInterface = hmInterface;
-        this.type = type;
+        this.firmware = firmware;
+        if ("HM-ES-TX-WM".equals(type) && Float.valueOf(firmware) > 2.0) {
+            logger.debug("Found HM-ES-TX-WM with firmware version > 2.0, creating virtual type");
+            this.type = type + "2";
+        } else {
+            this.type = type;
+        }
         this.gatewayId = gatewayId;
         this.homegearId = homegearId;
-        this.firmware = firmware;
     }
 
     /**
@@ -202,7 +208,7 @@ public class HmDevice {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(address).toHashCode();
+        return Objects.hash(address);
     }
 
     @Override
@@ -211,13 +217,12 @@ public class HmDevice {
             return false;
         }
         HmDevice comp = (HmDevice) obj;
-        return new EqualsBuilder().append(address, comp.getAddress()).isEquals();
+        return Objects.equals(address, comp.getAddress());
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("hmInterface", hmInterface)
-                .append("address", address).append("type", type).append("name", name).append("firmware", firmware)
-                .append("gatewayId", gatewayId).toString();
+        return String.format("%s[hmInterface=%s,address=%s,type=%s,name=%s,firmware=%s,gatewayId=%s]",
+                getClass().getSimpleName(), hmInterface, address, type, name, firmware, gatewayId);
     }
 }

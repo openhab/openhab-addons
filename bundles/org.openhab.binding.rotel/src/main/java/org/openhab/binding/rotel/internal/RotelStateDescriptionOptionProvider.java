@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,12 @@
 package org.openhab.binding.rotel.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -28,14 +31,12 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class RotelStateDescriptionOptionProvider extends BaseDynamicStateDescriptionProvider {
 
-    @Reference
-    protected void setChannelTypeI18nLocalizationService(
-            final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+    @Activate
+    public RotelStateDescriptionOptionProvider(final @Reference EventPublisher eventPublisher, //
+            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry, //
+            final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+        this.eventPublisher = eventPublisher;
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
-    }
-
-    protected void unsetChannelTypeI18nLocalizationService(
-            final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
-        this.channelTypeI18nLocalizationService = null;
     }
 }

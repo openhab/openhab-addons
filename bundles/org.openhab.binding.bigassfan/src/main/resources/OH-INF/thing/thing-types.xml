@@ -40,6 +40,8 @@
 			<channel id="time" typeId="time"/>
 		</channels>
 
+		<representation-property>macAddress</representation-property>
+
 		<config-description-ref uri="thing-type:bigassfan:device"/>
 	</thing-type>
 
@@ -63,6 +65,8 @@
 			<channel id="time" typeId="time"/>
 		</channels>
 
+		<representation-property>macAddress</representation-property>
+
 		<config-description-ref uri="thing-type:bigassfan:device"/>
 	</thing-type>
 
@@ -75,6 +79,8 @@
 			<channel id="motion" typeId="motion"/>
 			<channel id="time" typeId="time"/>
 		</channels>
+
+		<representation-property>macAddress</representation-property>
 
 		<config-description-ref uri="thing-type:bigassfan:device"/>
 	</thing-type>

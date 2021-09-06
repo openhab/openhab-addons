@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,4 +41,9 @@ public class EpsonProjectorConfiguration {
      * Polling interval to refresh states.
      */
     public int pollingInterval;
+
+    /**
+     * Maximum volume setting of this projector, ie 20, 40, etc.
+     */
+    public int maxVolume = 20;
 }

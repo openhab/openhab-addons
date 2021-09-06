@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openmuc.jsml.EUnit;
 
 /**
@@ -35,22 +35,22 @@ public class SmlUnitConversion {
         Unit<?> javaUnit = null;
         switch (unit) {
             case AMPERE:
-                javaUnit = SmartHomeUnits.AMPERE;
+                javaUnit = Units.AMPERE;
                 break;
             case AMPERE_HOUR:
-                javaUnit = SmartHomeUnits.AMPERE.divide(SmartHomeUnits.HOUR);
+                javaUnit = Units.AMPERE.divide(Units.HOUR);
                 break;
             case AMPERE_PER_METRE:
-                javaUnit = SmartHomeUnits.AMPERE.multiply(SIUnits.METRE);
+                javaUnit = Units.AMPERE.multiply(SIUnits.METRE);
                 break;
             case AMPERE_SQUARED_HOURS:
-                javaUnit = SmartHomeUnits.AMPERE.pow(2).multiply(SmartHomeUnits.HOUR);
+                javaUnit = Units.AMPERE.pow(2).multiply(Units.HOUR);
                 break;
             case BAR:
                 javaUnit = SIUnits.PASCAL.multiply(100000);
                 break;
             case COULOMB:
-                javaUnit = SmartHomeUnits.COULOMB;
+                javaUnit = Units.COULOMB;
                 break;
 
             case CUBIC_METRE:
@@ -59,51 +59,51 @@ public class SmlUnitConversion {
                 break;
             case CUBIC_METRE_PER_DAY:
             case CUBIC_METRE_PER_DAY_CORRECTED:
-                javaUnit = SIUnits.CUBIC_METRE.divide(SmartHomeUnits.DAY);
+                javaUnit = SIUnits.CUBIC_METRE.divide(Units.DAY);
                 break;
             case CUBIC_METRE_PER_HOUR:
             case CUBIC_METRE_PER_HOUR_CORRECTED:
-                javaUnit = SIUnits.CUBIC_METRE.divide(SmartHomeUnits.HOUR);
+                javaUnit = SIUnits.CUBIC_METRE.divide(Units.HOUR);
                 break;
 
             case DAY:
-                javaUnit = SmartHomeUnits.DAY;
+                javaUnit = Units.DAY;
                 break;
             case DEGREE:
-                javaUnit = SmartHomeUnits.DEGREE_ANGLE;
+                javaUnit = Units.DEGREE_ANGLE;
                 break;
             case DEGREE_CELSIUS:
                 javaUnit = SIUnits.CELSIUS;
                 break;
 
             case FARAD:
-                javaUnit = SmartHomeUnits.FARAD;
+                javaUnit = Units.FARAD;
                 break;
             case HENRY:
-                javaUnit = SmartHomeUnits.HENRY;
+                javaUnit = Units.HENRY;
                 break;
             case HERTZ:
-                javaUnit = SmartHomeUnits.HERTZ;
+                javaUnit = Units.HERTZ;
                 break;
             case HOUR:
-                javaUnit = SmartHomeUnits.HOUR;
+                javaUnit = Units.HOUR;
                 break;
             case JOULE:
-                javaUnit = SmartHomeUnits.JOULE;
+                javaUnit = Units.JOULE;
                 break;
             case JOULE_PER_HOUR:
-                javaUnit = SmartHomeUnits.JOULE.divide(SmartHomeUnits.HOUR);
+                javaUnit = Units.JOULE.divide(Units.HOUR);
                 break;
             case KELVIN:
-                javaUnit = SmartHomeUnits.KELVIN;
+                javaUnit = Units.KELVIN;
                 break;
             case KILOGRAM:
                 javaUnit = SIUnits.KILOGRAM;
             case KILOGRAM_PER_SECOND:
-                javaUnit = SIUnits.KILOGRAM.divide(SmartHomeUnits.SECOND);
+                javaUnit = SIUnits.KILOGRAM.divide(Units.SECOND);
                 break;
             case LITRE:
-                javaUnit = SmartHomeUnits.LITRE;
+                javaUnit = Units.LITRE;
                 break;
             case MASS_DENSITY:
                 break;
@@ -113,75 +113,75 @@ public class SmlUnitConversion {
                 javaUnit = SIUnits.METRE;
                 break;
             case METRE_PER_SECOND:
-                javaUnit = SmartHomeUnits.METRE_PER_SECOND;
+                javaUnit = Units.METRE_PER_SECOND;
                 break;
             case MOLE_PERCENT:
-                javaUnit = SmartHomeUnits.MOLE;
+                javaUnit = Units.MOLE;
                 break;
             case MONTH:
-                javaUnit = SmartHomeUnits.YEAR.divide(12);
+                javaUnit = Units.YEAR.divide(12);
                 break;
             case NEWTON:
-                javaUnit = SmartHomeUnits.NEWTON;
+                javaUnit = Units.NEWTON;
             case NEWTONMETER:
-                javaUnit = SmartHomeUnits.NEWTON.multiply(SIUnits.METRE);
+                javaUnit = Units.NEWTON.multiply(SIUnits.METRE);
                 break;
             case OHM:
-                javaUnit = SmartHomeUnits.OHM;
+                javaUnit = Units.OHM;
                 break;
             case OHM_METRE:
-                javaUnit = SmartHomeUnits.OHM.multiply(SIUnits.METRE);
+                javaUnit = Units.OHM.multiply(SIUnits.METRE);
                 break;
             case PASCAL:
                 javaUnit = SIUnits.PASCAL;
                 break;
             case PASCAL_SECOND:
-                javaUnit = SIUnits.PASCAL.multiply(SmartHomeUnits.SECOND);
+                javaUnit = SIUnits.PASCAL.multiply(Units.SECOND);
                 break;
             case PERCENTAGE:
-                javaUnit = SmartHomeUnits.PERCENT;
+                javaUnit = Units.PERCENT;
                 break;
             case SECOND:
-                javaUnit = SmartHomeUnits.SECOND;
+                javaUnit = Units.SECOND;
                 break;
             case TESLA:
-                javaUnit = SmartHomeUnits.TESLA;
+                javaUnit = Units.TESLA;
                 break;
             case VAR:
-                javaUnit = SmartHomeUnits.WATT.alternate("Var");
+                javaUnit = Units.WATT.alternate("Var");
                 break;
             case VAR_HOUR:
-                javaUnit = SmartHomeUnits.WATT.alternate("Var").multiply(SmartHomeUnits.HOUR);
+                javaUnit = Units.WATT.alternate("Var").multiply(Units.HOUR);
                 break;
             case VOLT:
-                javaUnit = SmartHomeUnits.VOLT;
+                javaUnit = Units.VOLT;
                 break;
             case VOLT_AMPERE:
-                javaUnit = SmartHomeUnits.VOLT.multiply(SmartHomeUnits.AMPERE);
+                javaUnit = Units.VOLT.multiply(Units.AMPERE);
                 break;
             case VOLT_AMPERE_HOUR:
-                javaUnit = SmartHomeUnits.VOLT.multiply(SmartHomeUnits.AMPERE).multiply(SmartHomeUnits.HOUR);
+                javaUnit = Units.VOLT.multiply(Units.AMPERE).multiply(Units.HOUR);
                 break;
             case VOLT_PER_METRE:
-                javaUnit = SmartHomeUnits.WATT.divide(SIUnits.METRE);
+                javaUnit = Units.WATT.divide(SIUnits.METRE);
                 break;
             case VOLT_SQUARED_HOURS:
-                javaUnit = SmartHomeUnits.VOLT.pow(2).multiply(SmartHomeUnits.HOUR);
+                javaUnit = Units.VOLT.pow(2).multiply(Units.HOUR);
                 break;
             case WATT:
-                javaUnit = SmartHomeUnits.WATT;
+                javaUnit = Units.WATT;
                 break;
             case WATT_HOUR:
-                javaUnit = SmartHomeUnits.WATT.multiply(SmartHomeUnits.HOUR);
+                javaUnit = Units.WATT.multiply(Units.HOUR);
                 break;
             case WEBER:
-                javaUnit = SmartHomeUnits.WEBER;
+                javaUnit = Units.WEBER;
                 break;
             case WEEK:
-                javaUnit = SmartHomeUnits.WEEK;
+                javaUnit = Units.WEEK;
                 break;
             case YEAR:
-                javaUnit = SmartHomeUnits.YEAR;
+                javaUnit = Units.YEAR;
                 break;
 
             // not clearly defined yet:

@@ -17,6 +17,7 @@
 			<channel id="derogation_activation" typeId="derogation_activation"></channel>
 			<channel id="derogated_target_temperature" typeId="target_temperature"></channel>
 		</channels>
+		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
 

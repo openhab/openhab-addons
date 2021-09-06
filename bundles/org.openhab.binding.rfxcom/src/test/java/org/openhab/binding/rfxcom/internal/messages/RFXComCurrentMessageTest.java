@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ public class RFXComCurrentMessageTest {
     public void testSomeMessages() throws RFXComException {
         String message = "0D59010F860004001D0000000049";
 
-        final RFXComCurrentMessage msg = (RFXComCurrentMessage) RFXComMessageFactory
+        final RFXComCurrentMessage msg = (RFXComCurrentMessage) RFXComMessageFactoryImpl.INSTANCE
                 .createMessage(HexUtils.hexToBytes(message));
         assertEquals(SubType.ELEC1, msg.subType, "SubType");
         assertEquals(15, (short) (msg.seqNbr & 0xFF), "Seq Number");

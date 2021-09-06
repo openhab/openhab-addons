@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.persistence.influxdb.internal;
 import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Row data returned from database query
@@ -25,9 +26,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class InfluxRow {
     private final String itemName;
     private final Instant time;
-    private final Object value;
+    private final @Nullable Object value;
 
-    public InfluxRow(Instant time, String itemName, Object value) {
+    public InfluxRow(Instant time, String itemName, @Nullable Object value) {
         this.time = time;
         this.itemName = itemName;
         this.value = value;
@@ -41,7 +42,7 @@ public class InfluxRow {
         return itemName;
     }
 
-    public Object getValue() {
+    public @Nullable Object getValue() {
         return value;
     }
 }

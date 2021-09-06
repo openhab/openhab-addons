@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lutron.internal.radiora.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lutron.internal.LutronBindingConstants;
 import org.openhab.binding.lutron.internal.radiora.config.PhantomButtonConfig;
 import org.openhab.binding.lutron.internal.radiora.protocol.ButtonPressCommand;
@@ -28,20 +29,31 @@ import org.openhab.core.types.Command;
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class PhantomButtonHandler extends LutronHandler {
+
+    private @NonNullByDefault({}) PhantomButtonConfig config;
 
     public PhantomButtonHandler(Thing thing) {
         super(thing);
     }
 
     @Override
+    public void initialize() {
+        config = getConfigAs(PhantomButtonConfig.class);
+        super.initialize();
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        RS232Handler bridgeHandler = getRS232Handler();
         if (channelUID.getId().equals(LutronBindingConstants.CHANNEL_SWITCH)) {
             if (command instanceof OnOffType) {
-                ButtonPressCommand cmd = new ButtonPressCommand(
-                        getConfigAs(PhantomButtonConfig.class).getButtonNumber(),
-                        ButtonPressCommand.ButtonState.valueOf(command.toString()));
-                getRS232Handler().sendCommand(cmd);
+                ButtonPressCommand cmd = new ButtonPressCommand(config.getButtonNumber(),
+                        ButtonPressCommand.ButtonState.valueOf(command.toString()), config.system);
+                if (bridgeHandler != null) {
+                    bridgeHandler.sendCommand(cmd);
+                }
             }
         }
     }

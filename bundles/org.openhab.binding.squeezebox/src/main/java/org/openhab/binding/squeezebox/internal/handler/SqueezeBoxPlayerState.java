@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ class SqueezeBoxPlayerState {
     }
 
     boolean isShuffling() {
-        return savedShuffle == 0 ? false : true;
+        return savedShuffle != 0;
     }
 
     int getShuffle() {
@@ -68,7 +68,7 @@ class SqueezeBoxPlayerState {
     }
 
     boolean isRepeating() {
-        return savedRepeat == 0 ? false : true;
+        return savedRepeat != 0;
     }
 
     int getRepeat() {

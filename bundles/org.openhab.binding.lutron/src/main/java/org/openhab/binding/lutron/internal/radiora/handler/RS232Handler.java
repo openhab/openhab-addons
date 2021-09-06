@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.binding.lutron.internal.radiora.handler;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lutron.internal.radiora.RS232Connection;
 import org.openhab.binding.lutron.internal.radiora.RadioRAConnection;
 import org.openhab.binding.lutron.internal.radiora.RadioRAConnectionException;
@@ -41,13 +43,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jeff Lauterbach - Initial contribution
  */
+@NonNullByDefault
 public class RS232Handler extends BaseBridgeHandler implements RadioRAFeedbackListener {
 
-    private Logger logger = LoggerFactory.getLogger(RS232Handler.class);
+    private final Logger logger = LoggerFactory.getLogger(RS232Handler.class);
 
     private RadioRAConnection connection;
 
-    private ScheduledFuture<?> zoneMapScheduledTask;
+    private @Nullable ScheduledFuture<?> zoneMapScheduledTask;
 
     public RS232Handler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
@@ -58,6 +61,7 @@ public class RS232Handler extends BaseBridgeHandler implements RadioRAFeedbackLi
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> zoneMapScheduledTask = this.zoneMapScheduledTask;
         if (zoneMapScheduledTask != null) {
             zoneMapScheduledTask.cancel(true);
         }

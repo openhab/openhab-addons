@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,12 +15,12 @@ package org.openhab.voice.mactts.internal;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Kelly Davis
  */
 @Component
+@NonNullByDefault
 public class MacTTSService implements TTSService {
 
     private final Logger logger = LoggerFactory.getLogger(MacTTSService.class);
@@ -51,34 +52,30 @@ public class MacTTSService implements TTSService {
     /**
      * Set of supported audio formats
      */
-    private final Set<AudioFormat> audioFormats = initAudioFormats();
+    private final Set<AudioFormat> audioFormats = Set.of(
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, (long) 44100));
 
     @Override
     public Set<Voice> getAvailableVoices() {
-        return this.voices;
+        return voices;
     }
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return this.audioFormats;
+        return audioFormats;
     }
 
     @Override
     public AudioStream synthesize(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
         // Validate arguments
-        if ((null == text) || text.isEmpty()) {
+        if (text.isEmpty()) {
             throw new TTSException("The passed text is null or empty");
         }
-        if (!this.voices.contains(voice)) {
+        if (!voices.contains(voice)) {
             throw new TTSException("The passed voice is unsupported");
         }
-        boolean isAudioFormatSupported = false;
-        for (AudioFormat currentAudioFormat : this.audioFormats) {
-            if (currentAudioFormat.isCompatible(requestedFormat)) {
-                isAudioFormatSupported = true;
-                break;
-            }
-        }
+        boolean isAudioFormatSupported = audioFormats.stream()
+                .anyMatch(audioFormat -> audioFormat.isCompatible(requestedFormat));
         if (!isAudioFormatSupported) {
             throw new TTSException("The passed AudioFormat is unsupported");
         }
@@ -96,35 +93,16 @@ public class MacTTSService implements TTSService {
      * @return The voices of this instance
      */
     private final Set<Voice> initVoices() {
-        Set<Voice> voices = new HashSet<>();
-        InputStreamReader inputStreamReader = null;
-        BufferedReader bufferedReader = null;
         try {
             Process process = Runtime.getRuntime().exec("say -v ?");
-            inputStreamReader = new InputStreamReader(process.getInputStream());
-            bufferedReader = new BufferedReader(inputStreamReader);
-
-            String nextLine;
-            while ((nextLine = bufferedReader.readLine()) != null) {
-                voices.add(new MacTTSVoice(nextLine));
+            try (InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+                return bufferedReader.lines().map(MacTTSVoice::new).collect(Collectors.toSet());
             }
         } catch (IOException e) {
             logger.error("Error while executing the 'say -v ?' command: {}", e.getMessage());
-        } finally {
-            IOUtils.closeQuietly(bufferedReader);
+            return Set.of();
         }
-        return voices;
-    }
-
-    /**
-     * Initializes this.audioFormats
-     *
-     * @return The audio formats of this instance
-     */
-    private final Set<AudioFormat> initAudioFormats() {
-        AudioFormat audioFormat = new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16,
-                null, (long) 44100);
-        return Collections.singleton(audioFormat);
     }
 
     @Override
@@ -133,7 +111,7 @@ public class MacTTSService implements TTSService {
     }
 
     @Override
-    public String getLabel(Locale locale) {
+    public String getLabel(@Nullable Locale locale) {
         return "macOS TTS";
     }
 }

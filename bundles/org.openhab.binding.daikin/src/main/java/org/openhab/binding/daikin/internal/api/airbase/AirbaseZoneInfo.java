@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,10 +48,11 @@ public class AirbaseZoneInfo {
         info.zonenames = Optional.ofNullable(responseMap.get("zone_name")).orElse("");
         String zoneinfo = Optional.ofNullable(responseMap.get("zone_onoff")).orElse("");
 
-        String[] Zones = zoneinfo.split("%3b");
+        String[] zones = zoneinfo.split("%3b");
 
-        for (int i = 1; i < 9; i++)
-            info.zone[i] = "1".equals(Zones[i - 1]);
+        for (int i = 1; i < 9; i++) {
+            info.zone[i] = "1".equals(zones[i - 1]);
+        }
         return info;
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants.Led;
@@ -124,7 +124,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
         if (selector != null) {
             if (getConfig().get(IP_ADDRESS) != null && getConfig().get(PORT_NUMBER) != null) {
                 if (pollingThread == null) {
-                    pollingThread = new Thread(pollingRunnable, "ESH-IRtrans-Polling " + getThing().getUID());
+                    pollingThread = new Thread(pollingRunnable, "OH-binding-" + getThing().getUID() + "-polling");
                     pollingThread.start();
                 }
             } else {
@@ -603,7 +603,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                 SelectionKey selKey = it.next();
                 it.remove();
                 if (selKey.isValid()) {
-                    if (selKey.isAcceptable() && selKey == listenerKey) {
+                    if (selKey.isAcceptable() && selKey.equals(listenerKey)) {
                         try {
                             SocketChannel newChannel = listenerChannel.accept();
                             newChannel.configureBlocking(false);
@@ -849,7 +849,6 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
 
         Matcher matcher = RESPONSE_PATTERN.matcher(response);
         if (matcher.matches()) {
-            String byteCountAsString = matcher.group(1);
             message = matcher.group(2);
         }
 

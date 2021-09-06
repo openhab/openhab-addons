@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ipcamera.internal;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
@@ -68,7 +67,7 @@ public class IpCameraDiscoveryService extends AbstractDiscoveryService {
         removeOlderResults(getTimestampOfLastScan());
         OnvifDiscovery onvifDiscovery = new OnvifDiscovery(this);
         try {
-            onvifDiscovery.discoverCameras(3702);// WS discovery
+            onvifDiscovery.discoverCameras();
         } catch (UnknownHostException | InterruptedException e) {
             logger.warn(
                     "IpCamera Discovery has an issue discovering the network settings to find cameras with. Try setting up the camera manually.");

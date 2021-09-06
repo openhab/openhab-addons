@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,10 +21,10 @@ import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
-import tec.uom.se.quantity.QuantityDimension;
+import tech.units.indriya.unit.UnitDimension;
 
 /**
  * Tests for {@link AbstractTypeConverter#convertFromBinding(HmDatapoint)}.
@@ -75,12 +75,12 @@ public class ConvertFromBindingTest extends BaseConverterTest {
         floatQuantityDp.setUnit("°C");
         convertedState = temperatureConverter.convertFromBinding(floatQuantityDp);
         assertThat(convertedState, instanceOf(QuantityType.class));
-        assertThat(((QuantityType<?>) convertedState).getDimension(), is(QuantityDimension.TEMPERATURE));
+        assertThat(((QuantityType<?>) convertedState).getDimension(), is(UnitDimension.TEMPERATURE));
         assertThat(((QuantityType<?>) convertedState).doubleValue(), is(10.5));
         assertThat(((QuantityType<?>) convertedState).toUnit(ImperialUnits.FAHRENHEIT).doubleValue(), is(50.9));
 
         floatQuantityDp.setUnit("Â°C");
-        assertThat(((QuantityType<?>) convertedState).getDimension(), is(QuantityDimension.TEMPERATURE));
+        assertThat(((QuantityType<?>) convertedState).getDimension(), is(UnitDimension.TEMPERATURE));
         assertThat(((QuantityType<?>) convertedState).doubleValue(), is(10.5));
 
         integerQuantityDp.setValue(50000);
@@ -88,17 +88,17 @@ public class ConvertFromBindingTest extends BaseConverterTest {
         convertedState = frequencyConverter.convertFromBinding(integerQuantityDp);
         assertThat(convertedState, instanceOf(QuantityType.class));
         assertThat(((QuantityType<?>) convertedState).getDimension(),
-                is(QuantityDimension.NONE.divide(QuantityDimension.TIME)));
+                is(UnitDimension.NONE.divide(UnitDimension.TIME)));
         assertThat(((QuantityType<?>) convertedState).intValue(), is(50000));
-        assertThat(((QuantityType<?>) convertedState).toUnit(SmartHomeUnits.HERTZ).intValue(), is(50));
+        assertThat(((QuantityType<?>) convertedState).toUnit(Units.HERTZ).intValue(), is(50));
 
         floatQuantityDp.setValue(0.7);
         floatQuantityDp.setUnit("100%");
         convertedState = timeConverter.convertFromBinding(floatQuantityDp);
         assertThat(convertedState, instanceOf(QuantityType.class));
-        assertThat(((QuantityType<?>) convertedState).getDimension(), is(QuantityDimension.NONE));
+        assertThat(((QuantityType<?>) convertedState).getDimension(), is(UnitDimension.NONE));
         assertThat(((QuantityType<?>) convertedState).doubleValue(), is(70.0));
-        assertThat(((QuantityType<?>) convertedState).getUnit(), is(SmartHomeUnits.PERCENT));
-        assertThat(((QuantityType<?>) convertedState).toUnit(SmartHomeUnits.ONE).doubleValue(), is(0.7));
+        assertThat(((QuantityType<?>) convertedState).getUnit(), is(Units.PERCENT));
+        assertThat(((QuantityType<?>) convertedState).toUnit(Units.ONE).doubleValue(), is(0.7));
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,6 +45,9 @@ public class MiIoInfoDTO {
     @SerializedName("model")
     @Expose
     public String model;
+    @SerializedName("ap")
+    @Expose
+    public MiIoInfoApDTO ap;
     @SerializedName("wifi_fw_ver")
     @Expose
     public String wifiFwVer;

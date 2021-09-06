@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Time;
 
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * Holds the calculates moon phase informations.
@@ -99,7 +99,7 @@ public class MoonPhase {
      * Returns the age in days.
      */
     public QuantityType<Time> getAge() {
-        return new QuantityType<>(age, SmartHomeUnits.DAY);
+        return new QuantityType<>(age, Units.DAY);
     }
 
     /**
@@ -113,7 +113,7 @@ public class MoonPhase {
      * Returns the illumination.
      */
     public QuantityType<Dimensionless> getIllumination() {
-        return new QuantityType<>(illumination, SmartHomeUnits.PERCENT);
+        return new QuantityType<>(illumination, Units.PERCENT);
     }
 
     /**
@@ -141,7 +141,7 @@ public class MoonPhase {
      * Returns the age in degree.
      */
     public QuantityType<Angle> getAgeDegree() {
-        return new QuantityType<>(ageDegree, SmartHomeUnits.DEGREE_ANGLE);
+        return new QuantityType<>(ageDegree, Units.DEGREE_ANGLE);
     }
 
     /**
@@ -155,7 +155,7 @@ public class MoonPhase {
      * Returns the age in percent.
      */
     public QuantityType<Dimensionless> getAgePercent() {
-        return new QuantityType<>(agePercent, SmartHomeUnits.PERCENT);
+        return new QuantityType<>(agePercent, Units.PERCENT);
     }
 
     /**

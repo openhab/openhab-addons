@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deconz.internal.types.ResourceType;
 
 /**
  * http://dresden-elektronik.github.io/deconz-rest-doc/configuration/
@@ -42,4 +44,17 @@ public class BridgeFullState {
     public Map<String, SensorMessage> sensors = Collections.emptyMap();
     public Map<String, LightMessage> lights = Collections.emptyMap();
     public Map<String, GroupMessage> groups = Collections.emptyMap();
+
+    public @Nullable DeconzBaseMessage getMessage(ResourceType resourceType, String id) {
+        switch (resourceType) {
+            case LIGHTS:
+                return lights.get(id);
+            case SENSORS:
+                return sensors.get(id);
+            case GROUPS:
+                return groups.get(id);
+            default:
+                return null;
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 import org.openhab.binding.astro.internal.model.Range;
 import org.slf4j.Logger;
@@ -159,15 +159,22 @@ public class DateTimeUtils {
     /**
      * Returns the next Calendar from today.
      */
-    public static Calendar getNext(Calendar... calendars) {
-        Calendar now = Calendar.getInstance();
+    public static Calendar getNextFromToday(Calendar... calendars) {
+        return getNext(Calendar.getInstance(), calendars);
+    }
+
+    static Calendar getNext(Calendar now, Calendar... calendars) {
         Calendar next = null;
+        Calendar firstSeasonOfYear = null;
         for (Calendar calendar : calendars) {
+            if (firstSeasonOfYear == null || calendar.before(firstSeasonOfYear)) {
+                firstSeasonOfYear = calendar;
+            }
             if (calendar.after(now) && (next == null || calendar.before(next))) {
                 next = calendar;
             }
         }
-        return next;
+        return next == null ? firstSeasonOfYear : next;
     }
 
     /**

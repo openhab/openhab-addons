@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.homematic.internal.communicator.parser;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.homematic.internal.communicator.client.UnknownParameterSetException;
 import org.openhab.binding.homematic.internal.communicator.client.UnknownRpcFailureException;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
@@ -43,9 +42,9 @@ public class RpcResponseParser extends CommonRpcParser<Object[], Object[]> {
                     Number faultCode = toNumber(map.get("faultCode"));
                     String faultString = toString(map.get("faultString"));
                     String faultMessage = String.format("%s %s (sending %s)", faultCode, faultString, request);
-                    if (faultCode.intValue() == -1 && StringUtils.equals("Failure", faultString)) {
+                    if (faultCode.intValue() == -1 && "Failure".equals(faultString)) {
                         throw new UnknownRpcFailureException(faultMessage);
-                    } else if (faultCode.intValue() == -3 && StringUtils.equals("Unknown paramset", faultString)) {
+                    } else if (faultCode.intValue() == -3 && "Unknown paramset".equals(faultString)) {
                         throw new UnknownParameterSetException(faultMessage);
                     }
                     throw new IOException(faultMessage);

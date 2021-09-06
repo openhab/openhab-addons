@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -116,8 +116,7 @@ class SSLconnection implements Closeable {
      * @throws java.net.UnknownHostException in case of continuous communication I/O failures.
      */
     SSLconnection(VeluxBridgeHandler bridgeInstance) throws ConnectException, IOException, UnknownHostException {
-        logger.debug("SSLconnection() called");
-        logger.info("Starting {} bridge connection.", VeluxBindingConstants.BINDING_ID);
+        logger.debug("Starting {} bridge connection.", VeluxBindingConstants.BINDING_ID);
         SSLContext ctx = null;
         try {
             ctx = SSLContext.getInstance("SSL");

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import org.openhab.binding.lifx.internal.LifxLightPropertiesUpdater;
  * The {@link LifxPropertiesUpdateListener} is notified when the {@link LifxLightPropertiesUpdater} has
  * updated light properties.
  *
- * @author Wouter Born - Update light properties when online
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public interface LifxPropertiesUpdateListener {

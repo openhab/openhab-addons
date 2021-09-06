@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,7 @@
 package org.openhab.binding.ojelectronics.internal.models.userprofile;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-
-import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.ojelectronics.internal.models.RequestModelBase;
 
 /**
  * Model for signing sin
@@ -22,10 +21,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class PostSignInQueryModel {
-
-    @SerializedName("APIKEY")
-    public String apiKey = "";
+public class PostSignInQueryModel extends RequestModelBase {
 
     public String userName = "";
 
@@ -34,17 +30,6 @@ public class PostSignInQueryModel {
     public int customerId;
 
     public int clientSWVersion;
-
-    /**
-     * Add API-Key
-     *
-     * @param apiKey API-Key
-     * @return Model
-     */
-    public PostSignInQueryModel withApiKey(String apiKey) {
-        this.apiKey = apiKey;
-        return this;
-    }
 
     /**
      * Add User-Name

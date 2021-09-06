@@ -14,7 +14,7 @@ First of all you have to configure an EnOcean transceiver (gateway).
 A directly connected USB300 can be auto discovered, an EnOceanPi has to be added manually to openHAB.
 Both gateways are represented by an _EnOcean gateway_ in openHAB.
 If you want to place the gateway for better reception apart from your openHAB server, you can forward its serial messages over TCP/IP (_ser2net_).
-In this case you have to define the path to the gateway like this rfc2217://x.x.x.x:3001.
+In this case you have to define the path to the gateway like this rfc2217://x.x.x.x:3001. When using _ser2net_ make sure to use _telnet_  instead of _raw_ in the _set2net_ config file.
 If everything is running fine you should see the _base id_ of your gateway in the properties of your bridge.
 
 Another way to improve sending and reception reliability is to setup a wired connection.
@@ -67,6 +67,7 @@ This binding is developed on and tested with the following devices
  * Thermokon SR04 room control
  * Hoppe SecuSignal window handles
  * Rocker switches (NodOn, Eltako FT55 etc)
+ * Siegenia Senso Secure window sensors
 
 However, because of the standardized EnOcean protocol it is more important which EEP this binding supports.
 Hence if your device supports one of the following EEPs the chances are good that your device is also supported by this binding.
@@ -89,7 +90,9 @@ Hence if your device supports one of the following EEPs the chances are good tha
 | centralCommand                  | A5-38       | 0x08          | dimmer, generalSwitch        | Eltako FUD14, FSR14            | Teach-in |
 | rollershutter                   | A5-3F/D2-05/A5-38 | 0x7F/00/08 | rollershutter             | Eltako FSB14, NodOn SIN-2-RS-01| Teach-in/Discovery |
 | measurementSwitch               | D2-01       | 0x00-0F,11,12 | generalSwitch(/A/B), instantpower,<br/>totalusage, repeaterMode | NodOn In Wall Switch | Discovery |
+| windowSashHandleSensor          | D2-06       | 0x50          | windowHandleState, windowSashState, batteryLevel, batteryLow, windowBreachEvent, windowCalibrationState, windowCalibrationStep | Siegenia Senso Secure | Discovery |
 | multiFunctionSmokeDetector      | D2-14/F6-05 | 0x30/02       | smokeDetection, batteryLow   | Insafe+, Afriso ASD | Discovery |
+| heatRecoveryVentilation         | D2-50       | 0x00,01,10,11 | a lot of different state channels | Dimplex DL WE2 | Discovery |
 | classicDevice                   | F6-02       | 0x01-02       | virtualRockerswitchA, virtualRockerswitchB | - | Teach-in |
 
 ¹ Not all channels are supported by all devices, it depends which specific EEP type is used by the device, all thing types additionally support `rssi`, `repeatCount` and `lastReceived` channels
@@ -114,7 +117,7 @@ To pair an EnOcean device with its openHAB thing representation, you have to dif
 
 ### Sensors
 
-To pair a sensor with its thing, you first have to start the discovery scan for this binding in PaperUI.
+To pair a sensor with its thing, you first have to start the discovery scan for this binding.
 Then press the "teach-in" button of the sensor.
 The sensor sends a teach-in message which contains the information about the EEP and the EnOceanId of the sensor.
 If the EEP is known by this binding the thing representation of the device is created.
@@ -123,9 +126,23 @@ The corresponding channels are created dynamically, too.
 ### Actuators
  
 If the actuator supports UTE teach-in, the corresponding thing can be created and paired automatically.
-First you have to **start the discovery scan for a gateway** in PaperUI.
+First you have to **start the discovery scan for a gateway**.
 Then press the teach-in button of the actuator.
-If the EEP of the actuator is known, the binding sends an UTE teach-in response with a new SenderId and creates a new thing with its channels. 
+If the EEP of the actuator is known, the binding sends an UTE teach-in response with a new SenderId and creates a new thing with its channels.
+
+This binding supports so called smart acknowlegde (SMACK) devices too.
+Before you can pair a SMACK device you have to configure your gateway bridge as a SMACK postmaster.
+If this option is enabled you can pair up to 20 SMACK devices with your gateway.
+
+Communication between your gateway and a SMACK device is handled through mailboxes.
+A mailbox is created for each paired SMACK device and deleted after teach out.
+You can see the paired SMACK devices and their mailbox index in the gateway properties.
+SMACK devices send periodically status updates followed by a response request.
+Whenever such a request is received a `requestAnswer` event is triggered for channel `statusRequestEvent`.
+Afterwards you have 100ms time to recalculate your items states and update them.
+A message with the updated item states is built, put into the corresponding mailbox and automatically sent upon request of the device.
+Pairing and unpairing can be done through a discovery scan.
+The corresponding thing of an unpaired device gets disabled, you have to delete it manually if you want to.
 
 If the actuator does not support UTE teach-ins, you have to create, configure and choose the right EEP of the thing manually.
 It is important to link the teach-in channel of this thing to a switch item.
@@ -144,8 +161,8 @@ To set this SenderId to a specific one, you have to use the nextSenderId paramet
 
 ## Thing Configuration
 
-The pairing process of an openHAB thing and an EnOcean device has to be triggered within Paper UI.
-Therefore if you do not want to use Paper UI, a mixed mode configuration approach has to be done.
+The pairing process of an openHAB thing and an EnOcean device has to be triggered within the UI.
+Therefore if you do not want to use the UI, a mixed mode configuration approach has to be done.
 To determine the EEP and EnOceanId of the device and announce a SenderId to it, you first have to pair an openHAB thing with the EnOcean device.
 Afterwards you can delete this thing and manage it with its necessary parameters through a configuration file.
 If you change the SenderId of your thing, you have to pair again the thing with your device.
@@ -157,6 +174,8 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | espVersion        | ESP Version of gateway | ESP3, ESP2 |
 |                                 | rs485             | If gateway is directly connected to a RS485 bus the BaseId is set to 0x00 | true, false
 |                                 | rs485BaseId       | Override BaseId 0x00 if your bus contains a telegram duplicator (FTD14 for ex) | 4 byte hex value |
+|                                 | enableSmack       | Enables SMACK pairing and handling of SMACK messages | true, false |
+|                                 | sendTeachOuts     | Defines if a repeated teach in request should be answered with a learned in or teach out response | true, false |
 | pushButton                      | receivingEEPId    | EEP used for receiving msg  | F6_01_01, D2_03_0A |
 |                                 | enoceanId         | EnOceanId of device this thing belongs to | hex value as string |
 | rockerSwitch                    | receivingEEPId    |                             | F6_02_01, F6_02_02 |
@@ -196,9 +215,9 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | suppressRepeating | Suppress repeating of msg   | true, false |
 | rollershutter                   | senderIdOffset    |                             | 1-127 |
 |                                 | enoceanId         | | |
-|                                 | sendingEEPId      |                             | A5_3F_7F_EltakoFSB, A5_38_08_07, D2_05_00 |
+|                                 | sendingEEPId      |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_38_08_07, D2_05_00 |
 |                                 | broadcastMessages |                             | true, false |
-|                                 | receivingEEPId¹   |                             | A5_3F_7F_EltakoFSB, A5_11_03, D2_05_00 |
+|                                 | receivingEEPId¹   |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_11_03, D2_05_00 |
 |                                 | suppressRepeating |                             | true, false |
 |                                 | pollingInterval   | Refresh interval in seconds | Integer |
 | measurementSwitch               | senderIdOffset    |                             | 1-127 |
@@ -208,8 +227,16 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | broadcastMessages |                             | true, false |
 |                                 | pollingInterval   |                             | Integer |
 |                                 | suppressRepeating |                             | true, false |
+| windowSashHandleSensor          | receivingEEPId    |                             | D2_06_50 |
+|                                 | enoceanId         | | |
 | multiFunctionSmokeDetector      | receivingEEPId    |                             | F6_05_02, D2_14_30 |
 |                                 | enoceanId         | | |
+| heatRecoveryVentilation         | senderIdOffset    |                             | 1-127 |
+|                                 | enoceanId         | | |
+|                                 | sendingEEPId      |                             | D2_50_00, D2_50_01,<br/>D2_50_10, D2_50_11 |
+|                                 | receivingEEPId    |                             | D2_50_00, D2_50_01,<br/>D2_50_10, D2_50_11 |
+|                                 | broadcastMessages |                             | true, false |
+|                                 | suppressRepeating |                             | true, false |
 | classicDevice                   | senderIdOffset    |                             | 1-127 |
 |                                 | sendingEEPId      |                             | F6_02_01, F6_02_02 |
 |                                 | broadcastMessages |                             | true, false |
@@ -232,6 +259,9 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | longPress           | Trigger            | Channel type system:rawbutton, emits PRESSED and RELEASED events |
 | rockerswitchA/B     | Trigger            | Channel type system:rawrocker, emits DIR1_PRESSED, DIR1_RELEASED, DIR2_PRESSED, DIR2_RELEASED events |
 | windowHandleState   | String             | Textual representation of handle position (OPEN, CLOSED, TILTED) |
+| windowSashState     | String             | Textual representation of sash position (OPEN, CLOSED, TILTED) |
+| windowCalibrationState | String             | Textual representation of the calibration state (OK, ERROR, INVALID) |
+| windowCalibrationStep | String             | Textual representation of the next step that must be performed for calibrating the device (e.g. NONE, SASH CLOSED HANDLE CLOSED, SASH CLOSED HANDLE OPEN, SASH OPEN HANDLE TILTED, and so on) |
 | contact             | Contact            | State OPEN/CLOSED (tilted handle => OPEN) |
 | temperature         | Number:Temperature | Temperature in degree Celsius |
 | humidity            | Number             | Relative humidity level in percentages |
@@ -267,9 +297,35 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | remainingPLT         | Number:Time        | Remaining product life time |
 | hygroComfortIndex    | String             | Hygrothermal Comfort Index |
 | indoorAirAnalysis    | String             | Indoor Air Analysis |
+| ventilationOperationMode | String         | Direct Operation Mode Control |
+| fireplaceSafetyMode  | Switch             | Fireplace Safety Mode |
+| heatExchangerBypassStatus | Contact       | Heat Exchanger Bypass Status |
+| supplyAirFlapStatus  | Contact            | Supply Air Flap Position |
+| exhaustAirFlapStatus | Contact            | Exhaust Air Flap Position |
+| defrostMode          | Switch             | Defrost Mode |
+| coolingProtectionMode | Switch            | Cooling Protection Mode |
+| outdoorAirHeaterStatus | Switch           | Outdoor Air Heater Status |
+| supplyAirHeaterStatus | Switch            | Supply Air Heater Status |
+| drainHeaterStatus    | Switch             | Drain Heater Status |
+| timerOperationMode   | Switch             | Timer Operation Mode |
+| weeklyTimerProgramStatus | Switch         | Weekly Timer Program Status |
+| roomTemperatureControlStatus | Switch     | Room Temperature Control Status |
+| airQualityValue1     | Number:Dimensionless | Air Quality Value in percent |
+| airQualityValue2     | Number:Dimensionless | Air Quality Value in percent |
+| outdoorAirTemperature | Number:Temperature | Outdoor Temperature |
+| supplyAirTemperature | Number:Temperature | Supply Air Temperature |
+| indoorAirTemperature | Number:Temperature | Indoor Temperature |
+| exhaustAirTemperature | Number:Temperature | Exhaust Air Temperature |
+| supplyAirFanAirFlowRate | Number:VolumetricFlowRate | Supply Air Fan Air Flow Rate |
+| exhaustAirFanAirFlowRate | Number:VolumetricFlowRate | Exhaust Air Fan Air Flow Rate |
+| supplyFanSpeed       | Number:Dimensionless | Supply Fan Speed in rpm |
+| exhaustFanSpeed      | Number:Dimensionless | Exhaust Fan Speed |
 | rssi                 | Number                   | Received Signal Strength Indication (dBm) of last received message |
 | repeatCount          | Number                   | Number of repeaters involved in the transmission of the telegram |
 | lastReceived         | DateTime                 | Date and time the last telegram was received |
+| statusRequestEvent   | Trigger                  | Emits event 'requestAnswer' | 
+| windowBreachEvent    | Trigger                  | Emits event 'ALARM' | 
+
 
 Items linked to bi-directional actuators (actuator sends status messages back) should always disable the `autoupdate`.
 This is especially true for Eltako rollershutter, as their position is calculated out of the current position and the moving time.
@@ -287,6 +343,7 @@ Some channels can be configured with parameters.
 | teachInCMD    | manufacturerId | Id is used for 4BS teach in with EEP                                 | HEX                                                                                                                                 |
 |               | teachInMSG     | Use this message if teach in type and/or manufacturer id are unknown | HEX                                                                                                                                 |
 |  totalusage   | validateValue  | Filter out increases more than 10.0 kWh and decreases less than 1.0 kWh | true / false                                                                                                                     |
+|               | tariff         | Tariff info or measurement channel to listen to | 0-15 |
 |  contact      | inverted       | Swap OPEN / CLOSED. Set True for Eltako FPE-2.                    | true / false. Defaults to false.                                                                                                    |
 
 Possible declaration in Thing DSL:

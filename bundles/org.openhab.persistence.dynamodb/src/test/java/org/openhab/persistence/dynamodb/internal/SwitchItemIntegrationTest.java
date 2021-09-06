@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,7 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class SwitchItemIntegrationTest extends AbstractTwoItemIntegrationTest {
 
+    public static final boolean LEGACY_MODE = false;
     private static final String NAME = "switch";
     private static final OnOffType STATE1 = OnOffType.OFF;
     private static final OnOffType STATE2 = OnOffType.ON;
@@ -36,6 +37,7 @@ public class SwitchItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     // Omit extended query tests AbstractTwoItemIntegrationTest by setting stateBetween to null.
     private static final @Nullable OnOffType STATE_BETWEEN = null;
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         SwitchItem item = (SwitchItem) ITEMS.get(NAME);

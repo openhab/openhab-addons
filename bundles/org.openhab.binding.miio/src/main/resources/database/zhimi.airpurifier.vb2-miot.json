@@ -1,0 +1,1099 @@
+{
+	"deviceMapping": {
+		"id": [
+			"zhimi.airpurifier.vb2"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 3,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "button-toggle",
+							"label": "Toggle"
+						},
+						{
+							"value": "button-toggle-mode",
+							"label": "Toggle Mode"
+						}
+					]
+				},
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "button-toggle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "button-toggle-mode"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping `[\"button-toggle\"\u003d\"Toggle\",\"button-toggle-mode\"\u003d\"Toggle Mode\"]`"
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Air Purifier - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No faults"
+						},
+						{
+							"value": "1",
+							"label": "m1_run"
+						},
+						{
+							"value": "2",
+							"label": "m1_stuck"
+						},
+						{
+							"value": "3",
+							"label": "no_sensor"
+						},
+						{
+							"value": "4",
+							"label": "error_hum"
+						},
+						{
+							"value": "5",
+							"label": "error_temp"
+						},
+						{
+							"value": "6",
+							"label": "timer_error1"
+						},
+						{
+							"value": "7",
+							"label": "timer_error2"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\",\"1\"\u003d\"m1_run\",\"2\"\u003d\"m1_stuck\",\"3\"\u003d\"no_sensor\",\"4\"\u003d\"error_hum\",\"5\"\u003d\"error_temp\",\"6\"\u003d\"timer_error1\",\"7\"\u003d\"timer_error2\"]`"
+			},
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Air Purifier - Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "fan-level",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Air Purifier - Fan Level",
+				"channel": "fan_level",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Level1"
+						},
+						{
+							"value": "2",
+							"label": "Level2"
+						},
+						{
+							"value": "3",
+							"label": "Level3"
+						},
+						{
+							"value": "0",
+							"label": "Sleep"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\",\"0\"\u003d\"Sleep\"]`"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Air Purifier - Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Auto"
+						},
+						{
+							"value": "1",
+							"label": "Night"
+						},
+						{
+							"value": "2",
+							"label": "Favourite"
+						},
+						{
+							"value": "3",
+							"label": "Manual"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Night\",\"2\"\u003d\"Favourite\",\"3\"\u003d\"Manual\"]`"
+			},
+			{
+				"property": "pm2.5-density",
+				"siid": 3,
+				"piid": 6,
+				"friendlyName": "Environment - PM2 5 Density",
+				"channel": "pm2_5_density",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 600,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "relative-humidity",
+				"siid": 3,
+				"piid": 7,
+				"friendlyName": "Environment - Relative Humidity",
+				"channel": "relative_humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "temperature",
+				"siid": 3,
+				"piid": 8,
+				"friendlyName": "Environment - Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "CELSIUS",
+				"stateDescription": {
+					"minimum": -40,
+					"maximum": 125,
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "filter-life-level",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Filter - Filter Life Level",
+				"channel": "filter_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "filter-used-time",
+				"siid": 4,
+				"piid": 5,
+				"friendlyName": "Filter - Filter Used Time",
+				"channel": "filter_used_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 18000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "alarm",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Alarm - Alarm",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "volume",
+				"siid": 5,
+				"piid": 2,
+				"friendlyName": "Alarm - Volume",
+				"channel": "volume",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "brightness",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Indicator Light - Brightness",
+				"channel": "brightness",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "brightest"
+						},
+						{
+							"value": "1",
+							"label": "glimmer"
+						},
+						{
+							"value": "2",
+							"label": "not bright"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"brightest\",\"1\"\u003d\"glimmer\",\"2\"\u003d\"not bright\"]`"
+			},
+			{
+				"property": "on1",
+				"siid": 6,
+				"piid": 6,
+				"friendlyName": "Indicator Light - Switch Status",
+				"channel": "on1",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Physical Control Locked - Physical Control Locked",
+				"channel": "physical_controls_locked",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "button-pressed",
+				"siid": 8,
+				"piid": 1,
+				"friendlyName": "Button - Button_pressed",
+				"channel": "button_pressed",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "filter-max-time",
+				"siid": 9,
+				"piid": 1,
+				"friendlyName": "Filter Time - Filter Max Time",
+				"channel": "filter_max_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 2000,
+					"maximum": 8000,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "filter-hour-used-debug",
+				"siid": 9,
+				"piid": 2,
+				"friendlyName": "Filter Time - Filter Hour Used Debug",
+				"channel": "filter_hour_used_debug",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 18000,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "m1-strong",
+				"siid": 10,
+				"piid": 1,
+				"friendlyName": "Motor Speed - M1 Strong",
+				"channel": "m1_strong",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 300,
+					"maximum": 2300,
+					"step": 10,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "m1-high",
+				"siid": 10,
+				"piid": 2,
+				"friendlyName": "Motor Speed - M1 High",
+				"channel": "m1_high",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 300,
+					"maximum": 2300,
+					"step": 10,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "m1-med",
+				"siid": 10,
+				"piid": 3,
+				"friendlyName": "Motor Speed - M1 Med",
+				"channel": "m1_med",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 300,
+					"maximum": 2300,
+					"step": 10,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "m1-med-l",
+				"siid": 10,
+				"piid": 4,
+				"friendlyName": "Motor Speed - M1 Med L",
+				"channel": "m1_med_l",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 300,
+					"maximum": 2300,
+					"step": 10,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "m1-low",
+				"siid": 10,
+				"piid": 5,
+				"friendlyName": "Motor Speed - M1 Low",
+				"channel": "m1_low",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 300,
+					"maximum": 2300,
+					"step": 10,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "m1-silent",
+				"siid": 10,
+				"piid": 6,
+				"friendlyName": "Motor Speed - M1 Silent",
+				"channel": "m1_silent",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 300,
+					"maximum": 2300,
+					"step": 10,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "m1-favorite",
+				"siid": 10,
+				"piid": 7,
+				"friendlyName": "Motor Speed - M1 Favorite",
+				"channel": "m1_favorite",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 300,
+					"maximum": 2300,
+					"step": 10,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "motor1-speed",
+				"siid": 10,
+				"piid": 8,
+				"friendlyName": "Motor Speed - Motor1 Speed",
+				"channel": "motor1_speed",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 10000,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "motor1-set-speed",
+				"siid": 10,
+				"piid": 9,
+				"friendlyName": "Motor Speed - Motor1 Set Speed",
+				"channel": "motor1_set_speed",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 10000,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "favorite-level",
+				"siid": 10,
+				"piid": 10,
+				"friendlyName": "Motor Speed - Favorite Level",
+				"channel": "favorite_level",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 9,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "use-time",
+				"siid": 12,
+				"piid": 1,
+				"friendlyName": "Use Time - Use Time",
+				"channel": "use_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2147483647,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "purify-volume",
+				"siid": 13,
+				"piid": 1,
+				"friendlyName": "Aqi - Purify Volume",
+				"channel": "purify_volume",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2147483647,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "average-aqi",
+				"siid": 13,
+				"piid": 2,
+				"friendlyName": "Aqi - Average Aqi",
+				"channel": "average_aqi",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 600,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "average-aqi-cnt",
+				"siid": 13,
+				"piid": 3,
+				"friendlyName": "Aqi - Average_aqi Read Times",
+				"channel": "average_aqi_cnt",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2147483647,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "aqi-zone",
+				"siid": 13,
+				"piid": 4,
+				"friendlyName": "Aqi - Aqi Zone",
+				"channel": "aqi_zone",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "sensor-state",
+				"siid": 13,
+				"piid": 5,
+				"friendlyName": "Aqi - Sensor State",
+				"channel": "sensor_state",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "waiting"
+						},
+						{
+							"value": "1",
+							"label": "ready"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"waiting\",\"1\"\u003d\"ready\"]`"
+			},
+			{
+				"property": "aqi-goodh",
+				"siid": 13,
+				"piid": 6,
+				"friendlyName": "Aqi - Aqi Goodh",
+				"channel": "aqi_goodh",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 255,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "aqi-runstate",
+				"siid": 13,
+				"piid": 7,
+				"friendlyName": "Aqi - Runstate",
+				"channel": "aqi_runstate",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "continue"
+						},
+						{
+							"value": "1",
+							"label": "hold"
+						},
+						{
+							"value": "2",
+							"label": "sleep"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"continue\",\"1\"\u003d\"hold\",\"2\"\u003d\"sleep\"]`"
+			},
+			{
+				"property": "aqi-state",
+				"siid": 13,
+				"piid": 8,
+				"friendlyName": "Aqi - Aqi State",
+				"channel": "aqi_state",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "AQI_GOOD_L"
+						},
+						{
+							"value": "1",
+							"label": "AQI_GOOD_H"
+						},
+						{
+							"value": "2",
+							"label": "AQI_MID_L"
+						},
+						{
+							"value": "3",
+							"label": "AQI_MID_H"
+						},
+						{
+							"value": "4",
+							"label": "AQI_BAD_L"
+						},
+						{
+							"value": "5",
+							"label": "AQI_BAD_H"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"AQI_GOOD_L\",\"1\"\u003d\"AQI_GOOD_H\",\"2\"\u003d\"AQI_MID_L\",\"3\"\u003d\"AQI_MID_H\",\"4\"\u003d\"AQI_BAD_L\",\"5\"\u003d\"AQI_BAD_H\"]`"
+			},
+			{
+				"property": "rfid-tag",
+				"siid": 14,
+				"piid": 1,
+				"friendlyName": "Rfid - Rfid Tag",
+				"channel": "rfid_tag",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "rfid-factory-id",
+				"siid": 14,
+				"piid": 2,
+				"friendlyName": "Rfid - Rfid Factory Id",
+				"channel": "rfid_factory_id",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "rfid-product-id",
+				"siid": 14,
+				"piid": 3,
+				"friendlyName": "Rfid - Rfid Product Id",
+				"channel": "rfid_product_id",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "rfid-time",
+				"siid": 14,
+				"piid": 4,
+				"friendlyName": "Rfid - Rfid Time",
+				"channel": "rfid_time",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "rfid-serial-num",
+				"siid": 14,
+				"piid": 5,
+				"friendlyName": "Rfid - Rfid Serial Num",
+				"channel": "rfid_serial_num",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "app-extra",
+				"siid": 15,
+				"piid": 1,
+				"friendlyName": "Others - App Extra",
+				"channel": "app_extra",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2147483647,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "main-channel",
+				"siid": 15,
+				"piid": 2,
+				"friendlyName": "Others - Main Channel",
+				"channel": "main_channel",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2147483647,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "slave-channel",
+				"siid": 15,
+				"piid": 3,
+				"friendlyName": "Others - Slave Channel",
+				"channel": "slave_channel",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2147483647,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "cola",
+				"siid": 15,
+				"piid": 4,
+				"friendlyName": "Others - Cola",
+				"channel": "cola",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "buttom-door",
+				"siid": 15,
+				"piid": 5,
+				"friendlyName": "Others - Buttom Door",
+				"channel": "buttom_door",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "reboot-cause",
+				"siid": 15,
+				"piid": 6,
+				"friendlyName": "Others - Reboot_cause",
+				"channel": "reboot_cause",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "REASON_HW_BOOT"
+						},
+						{
+							"value": "1",
+							"label": "REASON_USER_REBOOT"
+						},
+						{
+							"value": "2",
+							"label": "REASON_UPDATE"
+						},
+						{
+							"value": "3",
+							"label": "REASON_WDT"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"REASON_HW_BOOT\",\"1\"\u003d\"REASON_USER_REBOOT\",\"2\"\u003d\"REASON_UPDATE\",\"3\"\u003d\"REASON_WDT\"]`"
+			},
+			{
+				"property": "manual-level",
+				"siid": 15,
+				"piid": 7,
+				"friendlyName": "Others - Manual Level",
+				"channel": "manual_level",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "level1"
+						},
+						{
+							"value": "2",
+							"label": "level2"
+						},
+						{
+							"value": "3",
+							"label": "level3"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"level1\",\"2\"\u003d\"level2\",\"3\"\u003d\"level3\"]`"
+			},
+			{
+				"property": "powertime",
+				"siid": 15,
+				"piid": 8,
+				"friendlyName": "Others - Powertime",
+				"channel": "powertime",
+				"type": "Number:duration",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2147483647,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "country-code",
+				"siid": 15,
+				"piid": 9,
+				"friendlyName": "Others - Country Code",
+				"channel": "country_code",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "91",
+							"label": "India"
+						},
+						{
+							"value": "44",
+							"label": "UK"
+						},
+						{
+							"value": "852",
+							"label": "Hong Kong"
+						},
+						{
+							"value": "886",
+							"label": "Taiwan"
+						},
+						{
+							"value": "82",
+							"label": "Korea"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"91\"\u003d\"India\",\"44\"\u003d\"UK\",\"852\"\u003d\"Hong Kong\",\"886\"\u003d\"Taiwan\",\"82\"\u003d\"Korea\"]`"
+			}
+		],
+		"experimental": false
+	}
+}

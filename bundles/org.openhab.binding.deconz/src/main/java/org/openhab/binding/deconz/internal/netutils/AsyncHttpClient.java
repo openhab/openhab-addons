@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public class AsyncHttpClient {
      * @param timeout A timeout
      * @return The result
      */
-    public CompletableFuture<Result> put(String address, String jsonString, int timeout) {
+    public CompletableFuture<Result> put(String address, @Nullable String jsonString, int timeout) {
         return doNetwork(HttpMethod.PUT, address, jsonString, timeout);
     }
 

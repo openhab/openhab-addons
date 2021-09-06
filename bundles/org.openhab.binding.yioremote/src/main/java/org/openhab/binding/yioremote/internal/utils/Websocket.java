@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,7 @@ public class Websocket {
 
     @OnWebSocketError
     public void onError(Throwable cause) {
-        logger.warn("WebSocketError {}", cause.getMessage());
+        logger.debug("WebSocketError {}", cause.getMessage());
         if (websocketHandler != null) {
             websocketHandler.onError(cause);
         }
