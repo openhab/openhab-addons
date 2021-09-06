@@ -40,7 +40,7 @@ Some notes:
 
 * The binding should work on all Epson projectors that support the ESC/VP21 protocol, however not all binding channels will be useable on all projectors.
 * The _source_ channel includes a dropdown with the most common source inputs.
-* If your projector has a source input that is not in the dropdown, the two digit hex code to access that input will be displayed by the _source_ channel when that input is selected by the remote control.
+* If your projector has a source input that is not in the dropdown, the two character hex code to access that input will be displayed by the _source_ channel when that input is selected by the remote control.
 * By using the sitemap mapping or a rule to send the input's code back to the _source_ channel, any source on the projector can be accessed by the binding.
 * The following channels _aspectratio_, _colormode_, _luminance_, _gamma_ and _background_ are pre-populated with a full set of options but not every option will be useable on all projectors.
 * If your projector has an option in one of the above mentioned channels that is not recognized by the binding, the channel will display 'UNKNOWN' if that un-recognized option is selected by the remote control.

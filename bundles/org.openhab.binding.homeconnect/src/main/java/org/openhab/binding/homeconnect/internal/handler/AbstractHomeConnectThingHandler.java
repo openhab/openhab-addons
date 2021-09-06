@@ -16,7 +16,7 @@ import static java.util.Collections.emptyList;
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 import static org.openhab.binding.homeconnect.internal.client.model.EventType.*;
 import static org.openhab.core.library.unit.ImperialUnits.FAHRENHEIT;
-import static org.openhab.core.library.unit.SIUnits.CELSIUS;
+import static org.openhab.core.library.unit.SIUnits.*;
 import static org.openhab.core.library.unit.Units.*;
 import static org.openhab.core.thing.ThingStatus.*;
 
@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import javax.measure.UnconvertibleException;
 import javax.measure.Unit;
+import javax.measure.quantity.Mass;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -75,6 +76,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -474,6 +476,21 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     }
 
     /**
+     * Get thing linked channel by given channel id.
+     *
+     * @param channelId channel id
+     * @return channel if linked
+     */
+    protected Optional<Channel> getLinkedChannel(String channelId) {
+        Channel channel = getThing().getChannel(channelId);
+        if (channel == null || !isLinked(channelId)) {
+            return Optional.empty();
+        } else {
+            return Optional.of(channel);
+        }
+    }
+
+    /**
      * Configure channel update handlers. Classes which extend {@link AbstractHomeConnectThingHandler} must implement
      * this class and add handlers.
      *
@@ -571,16 +588,16 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     protected void resetChannelsOnOfflineEvent() {
         logger.debug("Resetting channel states due to OFFLINE event. thing={}, haId={}", getThingLabel(),
                 getThingHaId());
-        getThingChannel(CHANNEL_POWER_STATE).ifPresent(channel -> updateState(channel.getUID(), OnOffType.OFF));
-        getThingChannel(CHANNEL_OPERATION_STATE).ifPresent(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_DOOR_STATE).ifPresent(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_LOCAL_CONTROL_ACTIVE_STATE)
+        getLinkedChannel(CHANNEL_POWER_STATE).ifPresent(channel -> updateState(channel.getUID(), OnOffType.OFF));
+        getLinkedChannel(CHANNEL_OPERATION_STATE).ifPresent(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
+        getLinkedChannel(CHANNEL_DOOR_STATE).ifPresent(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
+        getLinkedChannel(CHANNEL_LOCAL_CONTROL_ACTIVE_STATE)
                 .ifPresent(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_REMOTE_CONTROL_ACTIVE_STATE)
+        getLinkedChannel(CHANNEL_REMOTE_CONTROL_ACTIVE_STATE)
                 .ifPresent(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_REMOTE_START_ALLOWANCE_STATE)
+        getLinkedChannel(CHANNEL_REMOTE_START_ALLOWANCE_STATE)
                 .ifPresent(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE)
+        getLinkedChannel(CHANNEL_SELECTED_PROGRAM_STATE)
                 .ifPresent(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
     }
 
@@ -656,6 +673,22 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             return CELSIUS;
         } else {
             return FAHRENHEIT;
+        }
+    }
+
+    /**
+     * Map unit string (returned by home connect api) to Unit
+     *
+     * @param unit String eg. "gram"
+     * @return Unit
+     */
+    protected Unit<Mass> mapMass(@Nullable String unit) {
+        if ("gram".equalsIgnoreCase(unit)) {
+            return GRAM;
+        } else if ("kilogram".equalsIgnoreCase(unit)) {
+            return KILOGRAM;
+        } else {
+            return GRAM;
         }
     }
 
@@ -776,43 +809,43 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     }
 
     protected EventHandler defaultElapsedProgramTimeEventHandler() {
-        return event -> getThingChannel(CHANNEL_ELAPSED_PROGRAM_TIME)
+        return event -> getLinkedChannel(CHANNEL_ELAPSED_PROGRAM_TIME)
                 .ifPresent(channel -> updateState(channel.getUID(), new QuantityType<>(event.getValueAsInt(), SECOND)));
     }
 
     protected EventHandler defaultPowerStateEventHandler() {
         return event -> {
-            getThingChannel(CHANNEL_POWER_STATE).ifPresent(
+            getLinkedChannel(CHANNEL_POWER_STATE).ifPresent(
                     channel -> updateState(channel.getUID(), OnOffType.from(STATE_POWER_ON.equals(event.getValue()))));
 
             if (STATE_POWER_ON.equals(event.getValue())) {
                 getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE).ifPresent(c -> updateChannel(c.getUID()));
             } else {
                 resetProgramStateChannels(true);
-                getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE)
+                getLinkedChannel(CHANNEL_SELECTED_PROGRAM_STATE)
                         .ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
             }
         };
     }
 
     protected EventHandler defaultDoorStateEventHandler() {
-        return event -> getThingChannel(CHANNEL_DOOR_STATE).ifPresent(channel -> updateState(channel.getUID(),
+        return event -> getLinkedChannel(CHANNEL_DOOR_STATE).ifPresent(channel -> updateState(channel.getUID(),
                 STATE_DOOR_OPEN.equals(event.getValue()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED));
     }
 
     protected EventHandler defaultOperationStateEventHandler() {
         return event -> {
             String value = event.getValue();
-            getThingChannel(CHANNEL_OPERATION_STATE).ifPresent(channel -> updateState(channel.getUID(),
+            getLinkedChannel(CHANNEL_OPERATION_STATE).ifPresent(channel -> updateState(channel.getUID(),
                     value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
 
             if (STATE_OPERATION_FINISHED.equals(value)) {
-                getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
+                getLinkedChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
                         .ifPresent(c -> updateState(c.getUID(), new QuantityType<>(100, PERCENT)));
-                getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE)
+                getLinkedChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE)
                         .ifPresent(c -> updateState(c.getUID(), new QuantityType<>(0, SECOND)));
             } else if (STATE_OPERATION_RUN.equals(value)) {
-                getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
+                getLinkedChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
                         .ifPresent(c -> updateState(c.getUID(), new QuantityType<>(0, PERCENT)));
                 getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateChannel(c.getUID()));
             } else if (STATE_OPERATION_READY.equals(value)) {
@@ -824,7 +857,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     protected EventHandler defaultActiveProgramEventHandler() {
         return event -> {
             String value = event.getValue();
-            getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(channel -> updateState(channel.getUID(),
+            getLinkedChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(channel -> updateState(channel.getUID(),
                     value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
             if (value == null) {
                 resetProgramStateChannels(false);
@@ -835,7 +868,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     protected EventHandler updateProgramOptionsAndActiveProgramStateEventHandler() {
         return event -> {
             String value = event.getValue();
-            getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(channel -> updateState(channel.getUID(),
+            getLinkedChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(channel -> updateState(channel.getUID(),
                     value == null ? UnDefType.UNDEF : new StringType(mapStringType(value))));
             if (value == null) {
                 resetProgramStateChannels(false);
@@ -858,34 +891,34 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     }
 
     protected EventHandler defaultEventPresentStateEventHandler(String channelId) {
-        return event -> getThingChannel(channelId).ifPresent(channel -> updateState(channel.getUID(),
+        return event -> getLinkedChannel(channelId).ifPresent(channel -> updateState(channel.getUID(),
                 OnOffType.from(!STATE_EVENT_PRESENT_STATE_OFF.equals(event.getValue()))));
     }
 
     protected EventHandler defaultBooleanEventHandler(String channelId) {
-        return event -> getThingChannel(channelId)
+        return event -> getLinkedChannel(channelId)
                 .ifPresent(channel -> updateState(channel.getUID(), OnOffType.from(event.getValueAsBoolean())));
     }
 
     protected EventHandler defaultRemainingProgramTimeEventHandler() {
-        return event -> getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE)
+        return event -> getLinkedChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE)
                 .ifPresent(channel -> updateState(channel.getUID(), new QuantityType<>(event.getValueAsInt(), SECOND)));
     }
 
     protected EventHandler defaultSelectedProgramStateEventHandler() {
-        return event -> getThingChannel(CHANNEL_SELECTED_PROGRAM_STATE)
+        return event -> getLinkedChannel(CHANNEL_SELECTED_PROGRAM_STATE)
                 .ifPresent(channel -> updateState(channel.getUID(),
                         event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue())));
     }
 
     protected EventHandler defaultAmbientLightColorStateEventHandler() {
-        return event -> getThingChannel(CHANNEL_AMBIENT_LIGHT_COLOR_STATE)
+        return event -> getLinkedChannel(CHANNEL_AMBIENT_LIGHT_COLOR_STATE)
                 .ifPresent(channel -> updateState(channel.getUID(),
                         event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue())));
     }
 
     protected EventHandler defaultAmbientLightCustomColorStateEventHandler() {
-        return event -> getThingChannel(CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE).ifPresent(channel -> {
+        return event -> getLinkedChannel(CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE).ifPresent(channel -> {
             String value = event.getValue();
             if (value != null) {
                 updateState(channel.getUID(), mapColor(value));
@@ -963,12 +996,12 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     }
 
     protected EventHandler defaultPercentQuantityTypeEventHandler(String channelId) {
-        return event -> getThingChannel(channelId).ifPresent(
+        return event -> getLinkedChannel(channelId).ifPresent(
                 channel -> updateState(channel.getUID(), new QuantityType<>(event.getValueAsInt(), PERCENT)));
     }
 
     protected EventHandler defaultPercentHandler(String channelId) {
-        return event -> getThingChannel(channelId)
+        return event -> getLinkedChannel(channelId)
                 .ifPresent(channel -> updateState(channel.getUID(), new PercentType(event.getValueAsInt())));
     }
 
@@ -1014,18 +1047,18 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                     if (enabled) {
                         // brightness
                         Data brightnessData = apiClient.get().getAmbientLightBrightnessState(getThingHaId());
-                        getThingChannel(CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE)
+                        getLinkedChannel(CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE)
                                 .ifPresent(channel -> updateState(channel.getUID(),
                                         new PercentType(brightnessData.getValueAsInt())));
 
                         // color
                         Data colorData = apiClient.get().getAmbientLightColorState(getThingHaId());
-                        getThingChannel(CHANNEL_AMBIENT_LIGHT_COLOR_STATE).ifPresent(
+                        getLinkedChannel(CHANNEL_AMBIENT_LIGHT_COLOR_STATE).ifPresent(
                                 channel -> updateState(channel.getUID(), new StringType(colorData.getValue())));
 
                         // custom color
                         Data customColorData = apiClient.get().getAmbientLightCustomColorState(getThingHaId());
-                        getThingChannel(CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE).ifPresent(channel -> {
+                        getLinkedChannel(CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE).ifPresent(channel -> {
                             String value = customColorData.getValue();
                             if (value != null) {
                                 updateState(channel.getUID(), mapColor(value));
@@ -1334,109 +1367,98 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         }
     }
 
+    private Optional<Option> getOption(List<Option> options, String optionKey) {
+        return options.stream().filter(option -> optionKey.equals(option.getKey())).findFirst();
+    }
+
+    private void setStringChannelFromOption(String channelId, List<Option> options, String optionKey,
+            @Nullable State defaultState) {
+        setStringChannelFromOption(channelId, options, optionKey, value -> value, defaultState);
+    }
+
+    private void setStringChannelFromOption(String channelId, List<Option> options, String optionKey,
+            Function<String, String> mappingFunc, @Nullable State defaultState) {
+        getLinkedChannel(channelId)
+                .ifPresent(channel -> getOption(options, optionKey).map(option -> option.getValue()).ifPresentOrElse(
+                        value -> updateState(channel.getUID(), new StringType(mappingFunc.apply(value))), () -> {
+                            if (defaultState != null) {
+                                updateState(channel.getUID(), defaultState);
+                            }
+                        }));
+    }
+
+    private void setQuantityChannelFromOption(String channelId, List<Option> options, String optionKey,
+            Function<@Nullable String, Unit<?>> unitMappingFunc, @Nullable State defaultState) {
+        getLinkedChannel(channelId).ifPresent(channel -> getOption(options, optionKey) //
+                .ifPresentOrElse(
+                        option -> updateState(channel.getUID(),
+                                new QuantityType<>(option.getValueAsInt(), unitMappingFunc.apply(option.getUnit()))),
+                        () -> {
+                            if (defaultState != null) {
+                                updateState(channel.getUID(), defaultState);
+                            }
+                        }));
+    }
+
+    private void setOnOffChannelFromOption(String channelId, List<Option> options, String optionKey,
+            @Nullable State defaultState) {
+        getLinkedChannel(channelId)
+                .ifPresent(channel -> getOption(options, optionKey).map(option -> option.getValueAsBoolean())
+                        .ifPresentOrElse(value -> updateState(channel.getUID(), OnOffType.from(value)), () -> {
+                            if (defaultState != null) {
+                                updateState(channel.getUID(), defaultState);
+                            }
+                        }));
+    }
+
     protected void processProgramOptions(List<Option> options) {
-        options.forEach(option -> {
-            String key = option.getKey();
-            if (key != null) {
-                switch (key) {
-                    case OPTION_WASHER_TEMPERATURE:
-                        getThingChannel(CHANNEL_WASHER_TEMPERATURE)
-                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
-                        break;
-                    case OPTION_WASHER_SPIN_SPEED:
-                        getThingChannel(CHANNEL_WASHER_SPIN_SPEED)
-                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
-                        break;
-                    case OPTION_WASHER_IDOS_1_DOSING_LEVEL:
-                        getThingChannel(CHANNEL_WASHER_IDOS1_LEVEL)
-                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
-                        break;
-                    case OPTION_WASHER_IDOS_2_DOSING_LEVEL:
-                        getThingChannel(CHANNEL_WASHER_IDOS2_LEVEL)
-                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
-                        break;
-                    case OPTION_DRYER_DRYING_TARGET:
-                        getThingChannel(CHANNEL_DRYER_DRYING_TARGET)
-                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
-                        break;
-                    case OPTION_HOOD_INTENSIVE_LEVEL:
-                        String hoodIntensiveLevelValue = option.getValue();
-                        if (hoodIntensiveLevelValue != null) {
-                            getThingChannel(CHANNEL_HOOD_INTENSIVE_LEVEL)
-                                    .ifPresent(channel -> updateState(channel.getUID(),
-                                            new StringType(mapStageStringType(hoodIntensiveLevelValue))));
-                        }
-                        break;
-                    case OPTION_HOOD_VENTING_LEVEL:
-                        String hoodVentingLevel = option.getValue();
-                        if (hoodVentingLevel != null) {
-                            getThingChannel(CHANNEL_HOOD_VENTING_LEVEL)
-                                    .ifPresent(channel -> updateState(channel.getUID(),
-                                            new StringType(mapStageStringType(hoodVentingLevel))));
-                        }
-                        break;
-                    case OPTION_SETPOINT_TEMPERATURE:
-                        getThingChannel(CHANNEL_SETPOINT_TEMPERATURE).ifPresent(channel -> updateState(channel.getUID(),
-                                new QuantityType<>(option.getValueAsInt(), mapTemperature(option.getUnit()))));
-                        break;
-                    case OPTION_DURATION:
-                        getThingChannel(CHANNEL_DURATION).ifPresent(channel -> updateState(channel.getUID(),
-                                new QuantityType<>(option.getValueAsInt(), SECOND)));
-                        break;
-                    case OPTION_FINISH_IN_RELATIVE:
-                    case OPTION_REMAINING_PROGRAM_TIME:
-                        getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE)
-                                .ifPresent(channel -> updateState(channel.getUID(),
-                                        new QuantityType<>(option.getValueAsInt(), SECOND)));
-                        break;
-                    case OPTION_ELAPSED_PROGRAM_TIME:
-                        getThingChannel(CHANNEL_ELAPSED_PROGRAM_TIME).ifPresent(channel -> updateState(channel.getUID(),
-                                new QuantityType<>(option.getValueAsInt(), SECOND)));
-                        break;
-                    case OPTION_PROGRAM_PROGRESS:
-                        getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE)
-                                .ifPresent(channel -> updateState(channel.getUID(),
-                                        new QuantityType<>(option.getValueAsInt(), PERCENT)));
-                        break;
-                    case OPTION_WASHER_IDOS_1_ACTIVE:
-                        getThingChannel(CHANNEL_WASHER_IDOS1).ifPresent(
-                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
-                        break;
-                    case OPTION_WASHER_IDOS_2_ACTIVE:
-                        getThingChannel(CHANNEL_WASHER_IDOS2).ifPresent(
-                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
-                        break;
-                    case OPTION_WASHER_VARIO_PERFECT:
-                        getThingChannel(CHANNEL_WASHER_VARIO_PERFECT)
-                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
-                        break;
-                    case OPTION_WASHER_LESS_IRONING:
-                        getThingChannel(CHANNEL_WASHER_LESS_IRONING).ifPresent(
-                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
-                        break;
-                    case OPTION_WASHER_PRE_WASH:
-                        getThingChannel(CHANNEL_WASHER_PRE_WASH).ifPresent(
-                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
-                        break;
-                    case OPTION_WASHER_RINSE_PLUS:
-                        getThingChannel(CHANNEL_WASHER_RINSE_PLUS)
-                                .ifPresent(channel -> updateState(channel.getUID(), new StringType(option.getValue())));
-                        break;
-                    case OPTION_WASHER_SOAK:
-                        getThingChannel(CHANNEL_WASHER_SOAK).ifPresent(
-                                channel -> updateState(channel.getUID(), OnOffType.from(option.getValueAsBoolean())));
-                        break;
-                    case OPTION_WASHER_ENERGY_FORECAST:
-                        getThingChannel(CHANNEL_PROGRAM_ENERGY).ifPresent(channel -> updateState(channel.getUID(),
-                                new QuantityType<>(option.getValueAsInt(), PERCENT)));
-                        break;
-                    case OPTION_WASHER_WATER_FORECAST:
-                        getThingChannel(CHANNEL_PROGRAM_WATER).ifPresent(channel -> updateState(channel.getUID(),
-                                new QuantityType<>(option.getValueAsInt(), PERCENT)));
-                        break;
-                }
-            }
-        });
+        String operationState = getOperationState();
+
+        Map.of(CHANNEL_WASHER_TEMPERATURE, OPTION_WASHER_TEMPERATURE, CHANNEL_WASHER_SPIN_SPEED,
+                OPTION_WASHER_SPIN_SPEED, CHANNEL_WASHER_IDOS1_LEVEL, OPTION_WASHER_IDOS_1_DOSING_LEVEL,
+                CHANNEL_WASHER_IDOS2_LEVEL, OPTION_WASHER_IDOS_2_DOSING_LEVEL, CHANNEL_DRYER_DRYING_TARGET,
+                OPTION_DRYER_DRYING_TARGET)
+                .forEach((channel, option) -> setStringChannelFromOption(channel, options, option, UnDefType.UNDEF));
+
+        Map.of(CHANNEL_WASHER_IDOS1, OPTION_WASHER_IDOS_1_ACTIVE, CHANNEL_WASHER_IDOS2, OPTION_WASHER_IDOS_2_ACTIVE,
+                CHANNEL_WASHER_LESS_IRONING, OPTION_WASHER_LESS_IRONING, CHANNEL_WASHER_PRE_WASH,
+                OPTION_WASHER_PRE_WASH, CHANNEL_WASHER_SOAK, OPTION_WASHER_SOAK, CHANNEL_WASHER_RINSE_HOLD,
+                OPTION_WASHER_RINSE_HOLD)
+                .forEach((channel, option) -> setOnOffChannelFromOption(channel, options, option, OnOffType.OFF));
+
+        setStringChannelFromOption(CHANNEL_HOOD_INTENSIVE_LEVEL, options, OPTION_HOOD_INTENSIVE_LEVEL,
+                value -> mapStageStringType(value), UnDefType.UNDEF);
+        setStringChannelFromOption(CHANNEL_HOOD_VENTING_LEVEL, options, OPTION_HOOD_VENTING_LEVEL,
+                value -> mapStageStringType(value), UnDefType.UNDEF);
+        setQuantityChannelFromOption(CHANNEL_SETPOINT_TEMPERATURE, options, OPTION_SETPOINT_TEMPERATURE,
+                unit -> mapTemperature(unit), UnDefType.UNDEF);
+        setQuantityChannelFromOption(CHANNEL_DURATION, options, OPTION_DURATION, unit -> SECOND, UnDefType.UNDEF);
+        // The channel remaining_program_time_state depends on two program options: FinishInRelative and
+        // RemainingProgramTime. When the start of the program is delayed, the two options are returned by the API with
+        // different values. In this case, we consider the value of the option FinishInRelative.
+        setQuantityChannelFromOption(CHANNEL_REMAINING_PROGRAM_TIME_STATE, options,
+                getOption(options, OPTION_FINISH_IN_RELATIVE).isPresent() ? OPTION_FINISH_IN_RELATIVE
+                        : OPTION_REMAINING_PROGRAM_TIME,
+                unit -> SECOND, UnDefType.UNDEF);
+        setQuantityChannelFromOption(CHANNEL_ELAPSED_PROGRAM_TIME, options, OPTION_ELAPSED_PROGRAM_TIME, unit -> SECOND,
+                new QuantityType<>(0, SECOND));
+        setQuantityChannelFromOption(CHANNEL_PROGRAM_PROGRESS_STATE, options, OPTION_PROGRAM_PROGRESS, unit -> PERCENT,
+                new QuantityType<>(0, PERCENT));
+        // When the program is not in ready state, the vario perfect option is not always provided by the API returning
+        // the options of the current active program. So in this case we avoid updating the channel (to the default
+        // state) by passing a null value as parameter.to setStringChannelFromOption.
+        setStringChannelFromOption(CHANNEL_WASHER_VARIO_PERFECT, options, OPTION_WASHER_VARIO_PERFECT,
+                OPERATION_STATE_READY.equals(operationState)
+                        ? new StringType("LaundryCare.Common.EnumType.VarioPerfect.Off")
+                        : null);
+        setStringChannelFromOption(CHANNEL_WASHER_RINSE_PLUS, options, OPTION_WASHER_RINSE_PLUS,
+                new StringType("LaundryCare.Washer.EnumType.RinsePlus.Off"));
+        setQuantityChannelFromOption(CHANNEL_WASHER_LOAD_RECOMMENDATION, options, OPTION_WASHER_LOAD_RECOMMENDATION,
+                unit -> mapMass(unit), UnDefType.UNDEF);
+        setQuantityChannelFromOption(CHANNEL_PROGRAM_ENERGY, options, OPTION_WASHER_ENERGY_FORECAST, unit -> PERCENT,
+                UnDefType.UNDEF);
+        setQuantityChannelFromOption(CHANNEL_PROGRAM_WATER, options, OPTION_WASHER_WATER_FORECAST, unit -> PERCENT,
+                UnDefType.UNDEF);
     }
 
     protected String convertWasherTemperature(String value) {

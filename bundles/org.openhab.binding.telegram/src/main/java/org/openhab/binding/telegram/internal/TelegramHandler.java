@@ -419,7 +419,7 @@ public class TelegramHandler extends BaseThingHandler {
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    public <T extends BaseRequest, R extends BaseResponse> R execute(BaseRequest<T, R> request) {
+    public <T extends BaseRequest, R extends BaseResponse> R execute(BaseRequest<?, R> request) {
         TelegramBot localBot = bot;
         return localBot != null ? localBot.execute(request) : null;
     }

@@ -38,9 +38,11 @@ public class HDPowerViewBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_SHADE_POSITION = "position";
+    public static final String CHANNEL_SHADE_SECONDARY_POSITION = "secondary";
     public static final String CHANNEL_SHADE_VANE = "vane";
     public static final String CHANNEL_SHADE_LOW_BATTERY = "lowBattery";
-    public static final String CHANNEL_SHADE_SECONDARY_POSITION = "secondary";
+    public static final String CHANNEL_SHADE_BATTERY_VOLTAGE = "batteryVoltage";
+    public static final String CHANNEL_SHADE_SIGNAL_STRENGTH = "signalStrength";
 
     public static final String CHANNELTYPE_SCENE_ACTIVATE = "scene-activate";
 

@@ -17,6 +17,7 @@
 			<channel id="start" typeId="startType"/>
 			<channel id="status" typeId="mowerStatusType"/>
 			<channel id="status-duration" typeId="durationType"/>
+			<channel id="status-distance" typeId="distanceType"/>
 
 			<channel id="timer-status" typeId="timerStatusType"/>
 			<channel id="timer-next" typeId="nextTimerType"/>
@@ -123,6 +124,13 @@
 		<item-type>Number:Time</item-type>
 		<label>Status Duration</label>
 		<description>The number of seconds the mower is in the current status.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="distanceType">
+		<item-type>Number:Length</item-type>
+		<label>Status Distance</label>
+		<description>The distance the mower is away from the charging station when searching the remote start.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 

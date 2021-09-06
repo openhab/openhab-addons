@@ -52,6 +52,7 @@
     <module>org.openhab.binding.amazondashbutton</module>
     <module>org.openhab.binding.amazonechocontrol</module>
     <module>org.openhab.binding.ambientweather</module>
+    <module>org.openhab.binding.amplipi</module>
     <module>org.openhab.binding.androiddebugbridge</module>
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.atlona</module>
@@ -254,6 +255,7 @@
     <module>org.openhab.binding.openweathermap</module>
     <module>org.openhab.binding.openwebnet</module>
     <module>org.openhab.binding.oppo</module>
+    <module>org.openhab.binding.orbitbhyve</module>
     <module>org.openhab.binding.orvibo</module>
     <module>org.openhab.binding.paradoxalarm</module>
     <module>org.openhab.binding.pentair</module>
@@ -329,6 +331,7 @@
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tr064</module>
     <module>org.openhab.binding.tradfri</module>
+    <module>org.openhab.binding.twitter</module>
     <module>org.openhab.binding.unifi</module>
     <module>org.openhab.binding.unifiedremote</module>
     <module>org.openhab.binding.upnpcontrol</module>

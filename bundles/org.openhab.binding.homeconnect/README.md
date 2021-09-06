@@ -64,7 +64,9 @@ After the bridge has been added and authorized, devices are discovered automatic
 | laundry_care_washer_less_ironing | Switch | true | This status indicates whether less ironing is activated for a washer program of the home appliance. | washer, washerdryer | 
 | laundry_care_washer_pre_wash | Switch | true | This status indicates whether the pre-wash is activated for a washer program of the home appliance. | washer, washerdryer | 
 | laundry_care_washer_rinse_plus | String | true | This status defines the number of additional rinses of a washer program of the home appliance. | washer, washerdryer | 
+| laundry_care_washer_rinse_hold | Switch | true | This status indicates whether the spin function is deactivated for a washer program of the home appliance (washing will remain in the water after the last rinse cycle). | washer, washerdryer | 
 | laundry_care_washer_soak | Switch | true | This status indicates whether the soaking is activated for a washer program of the home appliance. | washer, washerdryer | 
+| laundry_care_washer_load_recommendation | Number:Mass | true | This channel indicates the maximum laundry load recommended for a program of the home appliance. | washer, washerdryer | 
 | program_energy | Number:Dimensionless | true | This channel provides the estimated energy required in percentage for a program of the home appliance. | washer, washerdryer | 
 | program_water | Number:Dimensionless | true | This channel provides the estimated water required in percentage for a program of the home appliance. | washer, washerdryer | 
 | dryer_drying_target | String | false | This status defines the desired dryness of a program of the home appliance. | dryer, washerdryer | 
@@ -274,6 +276,12 @@ curl -X POST --header "Content-Type: text/plain" --header "Accept: application/j
 ```
 
 Please replace `homeconnect_CoffeeMaker_BOSCH_HCS06COM1_B95E5103934D_basic_actions_state` with your item name (of channel type `basic_actions_state`).
+
+### How to avoid having to re-authorize the bridge after a new openHAB installation
+
+OAuth is storing data in two files: your access tokens in the file `userdata/jsondb/StorageHandler.For.OAuthClientService.json` and the encryption/decryption key in the file `userdata/config/SymmetricKeyCipher.config`.
+Consider backing up and restoring these two files when installing a new openHAB server from scratch.
+Otherwise, all you need to do is re-authorize your bridge.
 
 ## FAQ
 
