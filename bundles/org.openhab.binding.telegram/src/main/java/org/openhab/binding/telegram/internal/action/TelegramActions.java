@@ -239,7 +239,12 @@ public class TelegramActions implements ThingActions {
                     logger.warn("replyId {} must not contain spaces. ReplyMarkup will be ignored.", replyId);
                 }
             }
-            SendResponse retMessage = localHandler.execute(sendMessage);
+            SendResponse retMessage = null;
+            try {
+                retMessage = localHandler.execute(sendMessage);
+            } catch (Exception e) {
+                logger.warn("Exception occured whilst sending message:{}",e.getMessage());
+            }
             if (!evaluateResponse(retMessage)) {
                 return false;
             }
