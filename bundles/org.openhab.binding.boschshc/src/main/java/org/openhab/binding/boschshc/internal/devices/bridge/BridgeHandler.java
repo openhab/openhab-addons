@@ -302,11 +302,12 @@ public class BridgeHandler extends BaseBridgeHandler {
             if (update != null && update.state != null) {
                 logger.debug("Got update of type {}: {}", update.type, update.state);
 
-                if (update.deviceId == null) {
+                var updateDeviceId = update.deviceId;
+                if (updateDeviceId == null) {
                     continue;
                 }
 
-                logger.debug("Got update for {}", update.deviceId);
+                logger.debug("Got update for {}", updateDeviceId);
 
                 boolean handled = false;
 
@@ -321,9 +322,9 @@ public class BridgeHandler extends BaseBridgeHandler {
                         String deviceId = handler.getBoschID();
 
                         handled = true;
-                        logger.debug("Registered device: {} - looking for {}", deviceId, update.deviceId);
+                        logger.debug("Registered device: {} - looking for {}", deviceId, updateDeviceId);
 
-                        if (deviceId != null && update.deviceId.equals(deviceId)) {
+                        if (deviceId != null && updateDeviceId.equals(deviceId)) {
                             logger.debug("Found child: {} - calling processUpdate (id: {}) with {}", handler, update.id,
                                     update.state);
                             handler.processUpdate(update.id, update.state);
@@ -334,7 +335,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                 }
 
                 if (!handled) {
-                    logger.debug("Could not find a thing for device ID: {}", update.deviceId);
+                    logger.debug("Could not find a thing for device ID: {}", updateDeviceId);
                 }
             }
         }
