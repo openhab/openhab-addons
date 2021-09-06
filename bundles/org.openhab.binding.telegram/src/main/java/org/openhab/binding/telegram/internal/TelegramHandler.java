@@ -156,7 +156,7 @@ public class TelegramHandler extends BaseThingHandler {
         }
 
         OkHttpClient.Builder prepareConnection = new OkHttpClient.Builder().connectTimeout(75, TimeUnit.SECONDS)
-                .readTimeout(75, TimeUnit.SECONDS);
+                .writeTimeout(75, TimeUnit.SECONDS).readTimeout(75, TimeUnit.SECONDS);
 
         String proxyHost = config.getProxyHost();
         Integer proxyPort = config.getProxyPort();
