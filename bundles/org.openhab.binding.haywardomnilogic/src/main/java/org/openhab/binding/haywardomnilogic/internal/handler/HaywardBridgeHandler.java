@@ -272,7 +272,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
         // Debug: Inject xml file for testing
         // Need to import java.nio.file.Paths
-        // String path = "C:/Users/Controls/Desktop/stagF15 getMSP.txt";
+        // String path = "C:/Users/Controls/Desktop/Blueflame66 getMSP.txt";
         // try {
         // xmlResponse = new String(Files.readAllBytes(Paths.get(path)));
         // } catch (IOException e) {
@@ -318,7 +318,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         String xmlResponse = httpXmlResponse(urlParameters);
 
         // Debug: Inject xml file for testing
-        // String path = "C:/Users/Controls/Desktop/stagF15 getTelemetry.txt";
+        // String path = "C:/Users/Controls/Desktop/Blueflame66 getTelemetry.txt";
         // try {
         // xmlResponse = new String(Files.readAllBytes(Paths.get(path)));
         // } catch (IOException e) {

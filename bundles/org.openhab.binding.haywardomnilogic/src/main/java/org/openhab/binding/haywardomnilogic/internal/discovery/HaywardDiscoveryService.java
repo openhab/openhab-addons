@@ -252,9 +252,8 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                 });
 
         // Find Relays
-        final List<String> relayProperty1 = bridgehandler.evaluateXPath("//Body-of-water/Relay/Type/text()",
-                xmlResponse);
-        final List<String> relayProperty2 = bridgehandler.evaluateXPath("//Body-of-water/Relay/Function/text()",
+        final List<String> relayProperty1 = bridgehandler.evaluateXPath("//Backyard//Relay/Type/text()", xmlResponse);
+        final List<String> relayProperty2 = bridgehandler.evaluateXPath("//Backyard//Relay/Function/text()",
                 xmlResponse);
 
         discoverDevices(bridgehandler, xmlResponse, "Relay", HaywardTypeToRequest.RELAY,
@@ -285,9 +284,8 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                 });
 
         // Find Sensors
-        final List<String> sensorProperty1 = bridgehandler.evaluateXPath("//Body-of-water/Sensor/Type/text()",
-                xmlResponse);
-        final List<String> sensorProperty2 = bridgehandler.evaluateXPath("//Body-of-water/Sensor/Units/text()",
+        final List<String> sensorProperty1 = bridgehandler.evaluateXPath("//Backyard//Sensor/Type/text()", xmlResponse);
+        final List<String> sensorProperty2 = bridgehandler.evaluateXPath("//Backyard//Sensor/Units/text()",
                 xmlResponse);
 
         discoverDevices(bridgehandler, xmlResponse, "Sensor", HaywardTypeToRequest.SENSOR,
@@ -300,7 +298,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
     private void discoverDevices(HaywardBridgeHandler bridgehandler, String xmlResponse, String xmlSearchTerm,
             HaywardTypeToRequest type, ThingTypeUID thingType,
             @Nullable BiConsumer<Map<String, Object>, Integer> additionalPropertyConsumer) {
-        List<String> systemIDs = bridgehandler.evaluateXPath("//Body-of-water/" + xmlSearchTerm + "/System-Id/text()",
+        List<String> systemIDs = bridgehandler.evaluateXPath("//Backyard//" + xmlSearchTerm + "/System-Id/text()",
                 xmlResponse);
         List<String> names;
 
@@ -309,7 +307,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
             names = new ArrayList<>(systemIDs);
             Collections.fill(names, "Heater");
         } else {
-            names = bridgehandler.evaluateXPath("//Body-of-water/" + xmlSearchTerm + "/Name/text()", xmlResponse);
+            names = bridgehandler.evaluateXPath("//Backyard//" + xmlSearchTerm + "/Name/text()", xmlResponse);
         }
 
         for (int i = 0; i < systemIDs.size(); i++) {
@@ -319,18 +317,31 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
             List<String> bowName = bridgehandler.evaluateXPath(
                     "//*[System-Id=" + systemIDs.get(i) + "]/ancestor::Body-of-water/Name/text()", xmlResponse);
 
-            // skip system sensors with no BOW
-            if (bowID.isEmpty()) {
-                continue;
-            }
-
             Map<String, Object> properties = new HashMap<>();
             properties.put(HaywardBindingConstants.PROPERTY_TYPE, type);
             properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemIDs.get(i));
-            properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID.get(0));
-            properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName.get(0));
+
+            if (!bowID.isEmpty()) {
+                properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID.get(0));
+            } else {
+                // Set BOWID = 0 for backyard items
+                properties.put(HaywardBindingConstants.PROPERTY_BOWID, "0");
+            }
+
+            if (!bowName.isEmpty()) {
+                properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName.get(0));
+            } else {
+                // Set BOWNAME = Backyard for backyard items
+                properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, "Backyard");
+            }
+
             if (additionalPropertyConsumer != null) {
                 additionalPropertyConsumer.accept(properties, i);
+            }
+
+            // skip system sensors with no BOW
+            if ((thingType == HaywardBindingConstants.THING_TYPE_SENSOR) && (bowID.isEmpty())) {
+                continue;
             }
             onDeviceDiscovered(thingType, names.get(i), properties);
         }

@@ -1,0 +1,108 @@
+[1mdiff --git a/bundles/org.openhab.binding.haywardomnilogic/src/main/java/org/openhab/binding/haywardomnilogic/internal/discovery/HaywardDiscoveryService.java b/bundles/org.openhab.binding.haywardomnilogic/src/main/java/org/openhab/binding/haywardomnilogic/internal/discovery/HaywardDiscoveryService.java[m
+[1mindex 8f46e0e2bb..d8c10f27c6 100644[m
+[1m--- a/bundles/org.openhab.binding.haywardomnilogic/src/main/java/org/openhab/binding/haywardomnilogic/internal/discovery/HaywardDiscoveryService.java[m
+[1m+++ b/bundles/org.openhab.binding.haywardomnilogic/src/main/java/org/openhab/binding/haywardomnilogic/internal/discovery/HaywardDiscoveryService.java[m
+[36m@@ -252,9 +252,8 @@[m [mpublic class HaywardDiscoveryService extends AbstractDiscoveryService implements[m
+                 });[m
+ [m
+         // Find Relays[m
+[31m-        final List<String> relayProperty1 = bridgehandler.evaluateXPath("//Body-of-water/Relay/Type/text()",[m
+[31m-                xmlResponse);[m
+[31m-        final List<String> relayProperty2 = bridgehandler.evaluateXPath("//Body-of-water/Relay/Function/text()",[m
+[32m+[m[32m        final List<String> relayProperty1 = bridgehandler.evaluateXPath("//Backyard//Relay/Type/text()", xmlResponse);[m
+[32m+[m[32m        final List<String> relayProperty2 = bridgehandler.evaluateXPath("//Backyard//Relay/Function/text()",[m
+                 xmlResponse);[m
+ [m
+         discoverDevices(bridgehandler, xmlResponse, "Relay", HaywardTypeToRequest.RELAY,[m
+[36m@@ -285,9 +284,8 @@[m [mpublic class HaywardDiscoveryService extends AbstractDiscoveryService implements[m
+                 });[m
+ [m
+         // Find Sensors[m
+[31m-        final List<String> sensorProperty1 = bridgehandler.evaluateXPath("//Body-of-water/Sensor/Type/text()",[m
+[31m-                xmlResponse);[m
+[31m-        final List<String> sensorProperty2 = bridgehandler.evaluateXPath("//Body-of-water/Sensor/Units/text()",[m
+[32m+[m[32m        final List<String> sensorProperty1 = bridgehandler.evaluateXPath("//Backyard//Sensor/Type/text()", xmlResponse);[m
+[32m+[m[32m        final List<String> sensorProperty2 = bridgehandler.evaluateXPath("//Backyard//Sensor/Units/text()",[m
+                 xmlResponse);[m
+ [m
+         discoverDevices(bridgehandler, xmlResponse, "Sensor", HaywardTypeToRequest.SENSOR,[m
+[36m@@ -300,7 +298,7 @@[m [mpublic class HaywardDiscoveryService extends AbstractDiscoveryService implements[m
+     private void discoverDevices(HaywardBridgeHandler bridgehandler, String xmlResponse, String xmlSearchTerm,[m
+             HaywardTypeToRequest type, ThingTypeUID thingType,[m
+             @Nullable BiConsumer<Map<String, Object>, Integer> additionalPropertyConsumer) {[m
+[31m-        List<String> systemIDs = bridgehandler.evaluateXPath("//Body-of-water/" + xmlSearchTerm + "/System-Id/text()",[m
+[32m+[m[32m        List<String> systemIDs = bridgehandler.evaluateXPath("//Backyard//" + xmlSearchTerm + "/System-Id/text()",[m
+                 xmlResponse);[m
+         List<String> names;[m
+ [m
+[36m@@ -309,7 +307,7 @@[m [mpublic class HaywardDiscoveryService extends AbstractDiscoveryService implements[m
+             names = new ArrayList<>(systemIDs);[m
+             Collections.fill(names, "Heater");[m
+         } else {[m
+[31m-            names = bridgehandler.evaluateXPath("//Body-of-water/" + xmlSearchTerm + "/Name/text()", xmlResponse);[m
+[32m+[m[32m            names = bridgehandler.evaluateXPath("//Backyard//" + xmlSearchTerm + "/Name/text()", xmlResponse);[m
+         }[m
+ [m
+         for (int i = 0; i < systemIDs.size(); i++) {[m
+[36m@@ -319,19 +317,32 @@[m [mpublic class HaywardDiscoveryService extends AbstractDiscoveryService implements[m
+             List<String> bowName = bridgehandler.evaluateXPath([m
+                     "//*[System-Id=" + systemIDs.get(i) + "]/ancestor::Body-of-water/Name/text()", xmlResponse);[m
+ [m
+[31m-            // skip system sensors with no BOW[m
+[31m-            if (bowID.isEmpty()) {[m
+[31m-                continue;[m
+[31m-            }[m
+[31m-[m
+             Map<String, Object> properties = new HashMap<>();[m
+             properties.put(HaywardBindingConstants.PROPERTY_TYPE, type);[m
+             properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, systemIDs.get(i));[m
+[31m-            properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID.get(0));[m
+[31m-            properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName.get(0));[m
+[32m+[m
+[32m+[m[32m            if (!bowID.isEmpty()) {[m
+[32m+[m[32m                properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID.get(0));[m
+[32m+[m[32m            } else {[m
+[32m+[m[32m                // Set BOWID = 0 for backyard items[m
+[32m+[m[32m                properties.put(HaywardBindingConstants.PROPERTY_BOWID, "0");[m
+[32m+[m[32m            }[m
+[32m+[m
+[32m+[m[32m            if (!bowName.isEmpty()) {[m
+[32m+[m[32m                properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName.get(0));[m
+[32m+[m[32m            } else {[m
+[32m+[m[32m                // Set BOWNAME = Backyard for backyard items[m
+[32m+[m[32m                properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, "Backyard");[m
+[32m+[m[32m            }[m
+[32m+[m
+             if (additionalPropertyConsumer != null) {[m
+                 additionalPropertyConsumer.accept(properties, i);[m
+             }[m
+[32m+[m
+[32m+[m[32m            // skip system sensors with no BOW[m
+[32m+[m[32m            if ((thingType == HaywardBindingConstants.THING_TYPE_SENSOR) && (bowID.isEmpty())) {[m
+[32m+[m[32m                continue;[m
+[32m+[m[32m            }[m
+             onDeviceDiscovered(thingType, names.get(i), properties);[m
+         }[m
+     }[m
+[1mdiff --git a/bundles/org.openhab.binding.haywardomnilogic/src/main/java/org/openhab/binding/haywardomnilogic/internal/handler/HaywardBridgeHandler.java b/bundles/org.openhab.binding.haywardomnilogic/src/main/java/org/openhab/binding/haywardomnilogic/internal/handler/HaywardBridgeHandler.java[m
+[1mindex ee99461ab4..29f53aa881 100644[m
+[1m--- a/bundles/org.openhab.binding.haywardomnilogic/src/main/java/org/openhab/binding/haywardomnilogic/internal/handler/HaywardBridgeHandler.java[m
+[1m+++ b/bundles/org.openhab.binding.haywardomnilogic/src/main/java/org/openhab/binding/haywardomnilogic/internal/handler/HaywardBridgeHandler.java[m
+[36m@@ -272,7 +272,7 @@[m [mpublic class HaywardBridgeHandler extends BaseBridgeHandler {[m
+ [m
+         // Debug: Inject xml file for testing[m
+         // Need to import java.nio.file.Paths[m
+[31m-        // String path = "C:/Users/Controls/Desktop/stagF15 getMSP.txt";[m
+[32m+[m[32m        // String path = "C:/Users/Controls/Desktop/Blueflame66 getMSP.txt";[m
+         // try {[m
+         // xmlResponse = new String(Files.readAllBytes(Paths.get(path)));[m
+         // } catch (IOException e) {[m
+[36m@@ -318,7 +318,7 @@[m [mpublic class HaywardBridgeHandler extends BaseBridgeHandler {[m
+         String xmlResponse = httpXmlResponse(urlParameters);[m
+ [m
+         // Debug: Inject xml file for testing[m
+[31m-        // String path = "C:/Users/Controls/Desktop/stagF15 getTelemetry.txt";[m
+[32m+[m[32m        // String path = "C:/Users/Controls/Desktop/Blueflame66 getTelemetry.txt";[m
+         // try {[m
+         // xmlResponse = new String(Files.readAllBytes(Paths.get(path)));[m
+         // } catch (IOException e) {[m
