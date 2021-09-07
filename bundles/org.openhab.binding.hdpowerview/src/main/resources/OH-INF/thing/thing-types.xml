@@ -48,6 +48,8 @@
 			</channel>
 			<channel id="vane" typeId="shade-vane"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
+			<channel id="batteryVoltage" typeId="battery-voltage"/>
+			<channel id="signalStrength" typeId="system.signal-strength"/>
 		</channels>
 
 		<properties>
@@ -80,6 +82,13 @@
 		<item-type>Switch</item-type>
 		<label>Activate</label>
 		<description>Activates the scene</description>
+	</channel-type>
+
+	<channel-type id="battery-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<description>Battery voltage reported by the shade</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>
