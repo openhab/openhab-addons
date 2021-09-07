@@ -134,6 +134,10 @@ public class TelegramActions implements ThingActions {
                 }
             }
             Integer messageId = localHandler.removeMessageId(chatId, replyId);
+            if (messageId == null) {
+                logger.warn("messageId could not be found for chatId {} and replyId {}", messageId, chatId, replyId);
+                return false;
+            }
             logger.debug("remove messageId {} for chatId {} and replyId {}", messageId, chatId, replyId);
 
             EditMessageReplyMarkup editReplyMarkup = new EditMessageReplyMarkup(chatId, messageId.intValue())
