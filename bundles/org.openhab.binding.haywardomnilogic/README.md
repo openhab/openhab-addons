@@ -101,10 +101,12 @@ Hayward OmniLogic Connection Parameters:
 
 ### Pump Channels
 
-| Channel Type ID | Item Type            | Description     | Read Write |
-|-----------------|----------------------|-----------------|:----------:|
-| pumpEnable      | Switch               | Pump enable     |      R     |
-| pumpSpeed       | Number:Dimensionless | Pump speed in % |      R     |
+| Channel Type ID | Item Type            | Description          | Read Write |
+|-----------------|----------------------|----------------------|:----------:|
+| pumpEnable      | Switch               | Pump enable          |     R/W    |
+| pumpSpeed       | Number:Dimensionless | Pump speed in %      |     R/W    |
+| pumpState       | String               | Pump state           |      R     |
+| pumpLastSpeed   | Number:Dimensionless | Pump last speed in % |      R     |
 
 ### Relay Channels
 
