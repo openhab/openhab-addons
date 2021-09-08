@@ -27,6 +27,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.IdentityManager;
+import org.openhab.binding.connectedcar.internal.api.carnet.BrandCarNetAudi.AudiVehicles.AudiVehicle;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,10 +87,10 @@ public class BrandCarNetAudi extends CarNetApi implements BrandAuthenticator {
         properties.tokenRefreshUrl = properties.tokenUrl;
         properties.clientId = "09b6cbec-cd19-4589-82fd-363dfa8c24da@apps_vw-dilab_com";
         properties.xClientId = "77869e21-e30a-4a92-b016-48ab7d3db1d8";
-        properties.authScope = "openid mbb vin profile name nickname address";
+        properties.authScope = "openid mbb vin profile gallery";
         properties.redirect_uri = "myaudi:///";
         properties.responseType = "token id_token";
-        properties.xappVersion = "3.22.0";
+        properties.xappVersion = "3.9.1";
         properties.xappName = "myAudi";
         properties.xrequest = "de.myaudi.mobile.assistant";
     }
@@ -112,7 +113,6 @@ public class BrandCarNetAudi extends CarNetApi implements BrandAuthenticator {
     @Override
     public CombinedConfig initialize(String vin, CombinedConfig configIn) throws ApiException {
         CombinedConfig config = super.initialize(vin, configIn);
-
         if (!config.vstatus.pairingInfo.isPairingCompleted()) {
             logger.warn("{}: Unable to verify pairing or pairing not completed (status {}, userId {}, code {})",
                     thingId, getString(config.vstatus.pairingInfo.pairingStatus), getString(config.user.id),
@@ -136,7 +136,7 @@ public class BrandCarNetAudi extends CarNetApi implements BrandAuthenticator {
                     "getImageUrls", AudiVehicles.class);
             String[] imageUrls = new String[1];
             if (data.vehicles != null) {
-                for (AudiVehicles.AudiVehicle vehicle : data.vehicles) {
+                for (AudiVehicle vehicle : data.vehicles) {
                     if (config.vehicle.vin.equalsIgnoreCase(getString(vehicle.vin)) && vehicle.imageUrl != null) {
                         // for whatever reason the imageUrl is missing http: at the beginning
                         imageUrls[0] = vehicle.imageUrl.startsWith("//") ? "https:" + vehicle.imageUrl

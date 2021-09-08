@@ -18,6 +18,8 @@ import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * {@link WeConnectApiJsonDTO} defines the We Connect API data formats
  *
@@ -67,7 +69,39 @@ public class WeConnectApiJsonDTO {
     }
 
     public static class WCVehicleStatusData {
+        public class WCSingleStatusItem {
+            /*
+             * {
+             * "name": "left",
+             * "status": "on"
+             * },
+             */
+            public String name;
+            public String status;
+        }
+
+        public class WCMultiStatusItem {
+            /*
+             * {
+             * "name": "bonnet",
+             * "status": [
+             * "closed"
+             * ]
+             * },
+             */
+            public String name;
+            public ArrayList<String> status;
+        }
+
         public class WCVehicleStatus {
+            public class WCAccessStatus {
+
+                public String carCapturedTimestamp;
+                public String overallStatus;
+                public ArrayList<WCMultiStatusItem> doors;
+                public ArrayList<WCMultiStatusItem> windows;
+            }
+
             public class WCBatteryStatus {
                 /*
                  * "batteryStatus": {
@@ -79,6 +113,10 @@ public class WeConnectApiJsonDTO {
                 public String carCapturedTimestamp;
                 public Integer currentSOC_pct;
                 public Integer cruisingRangeElectric_km;
+            }
+
+            public class WCLVBatteryStatus {
+                public String batterySupport;
             }
 
             public class WCChargingStatus {
@@ -113,6 +151,20 @@ public class WeConnectApiJsonDTO {
                 public String maxChargeCurrentAC;
                 public String autoUnlockPlugWhenCharged;
                 public Integer targetSOC_pct;
+            }
+
+            public class WCChargeMode {
+                /*
+                 * "chargeMode":{
+                 * "preferredChargeMode":"manual",
+                 * "availableChargeModes":[
+                 * "invalid"
+                 * ]
+                 * },
+                 *
+                 */
+                public String preferredChargeMode;
+                public ArrayList<String> availableChargeModes;
             }
 
             public class WCPlugStatus {
@@ -180,6 +232,7 @@ public class WeConnectApiJsonDTO {
 
                     public String id;
                     public Boolean enabled;
+                    public WCSingleTimer singleTimer;
                 }
 
                 public ArrayList<WCClimaTimer> timers;
@@ -213,6 +266,26 @@ public class WeConnectApiJsonDTO {
                 public ArrayList<WCHeatingStatus> windowHeatingStatus;
             }
 
+            public class WCLightStatus {
+                /*
+                 * "lightsStatus": {
+                 * "carCapturedTimestamp": "2021-09-04T16:59:11Z",
+                 * "lights": [
+                 * {
+                 * "name": "right",
+                 * "status": "off"
+                 * },
+                 * {
+                 * "name": "left",
+                 * "status": "off"
+                 * }
+                 * ]
+                 * },
+                 */
+                public String carCapturedTimestamp;
+                public ArrayList<WCSingleStatusItem> lights;
+            }
+
             public class WCRangeStatus {
                 /*
                  * "rangeStatus":
@@ -239,6 +312,20 @@ public class WeConnectApiJsonDTO {
                 public Integer totalRange_km;
             }
 
+            public class WCMaintenanceStatus {
+                public String carCapturedTimestamp;
+                @SerializedName("inspectionDue_days")
+                public Integer inspectionDueDays;
+                @SerializedName("inspectionDue_km")
+                public Integer inspectionDueKm;
+                @SerializedName("mileage_km")
+                public Integer mileageKm;
+                @SerializedName("oilServiceDue_days")
+                public Integer oilServiceDueDays;
+                @SerializedName("oilServiceDue_km")
+                public Integer oilServiceDueKm;
+            }
+
             public class WCCapabilityStatus {
                 /*
                  * "capabilityStatus":
@@ -260,16 +347,21 @@ public class WeConnectApiJsonDTO {
                 public ArrayList<WCCapability> capabilities;
             }
 
+            public WCAccessStatus accessStatus;
             public WCBatteryStatus batteryStatus;
+            public WCLVBatteryStatus lvBatteryStatus;
             public WCChargingStatus chargingStatus;
             public WCChargingSettings chargingSettings;
+            public WCChargeMode chargeMode;
             public WCPlugStatus plugStatus;
             public WCClimatisationStatus climatisationStatus;
             public WCClimatisationSettings climatisationSettings;
             public WCClimatisationTimer climatisationTimer;
             public WCWindowHeatingStatus windowHeatingStatus;
+            public WCLightStatus lightStatus;
             public WCRangeStatus rangeStatus;
             public WCCapabilityStatus capabilityStatus;
+            public WCMaintenanceStatus maintenanceStatus;
             public String error;
         }
 
@@ -315,6 +407,24 @@ public class WeConnectApiJsonDTO {
         public WCApiError error;
     }
 
+    public class WCParkingPosition {
+        /*
+         * {
+         * "data": {
+         * "lon": 6.83788,
+         * "lat": 50.960526,
+         * "carCapturedTimestamp": "2021-09-07T08:53:28Z"
+         * }
+         * }
+         */
+        public class WeConnectParkingPosition {
+            public String carCapturedTimestamp;
+            public String lon, lat;
+        }
+
+        WeConnectParkingPosition data;
+    }
+
     public static class WCPendingRequest {
         public String vin = "";
         public String service = "";
@@ -344,73 +454,4 @@ public class WeConnectApiJsonDTO {
             return (diff / 1000) > timeout;
         }
     }
-
-    /*
-     * public class WCChargingRecordResponse {
-     * public class WeChargeRecord {
-     *
-     * @SerializedName("authentication_method")
-     * public String authenticationMethod;
-     *
-     * @SerializedName("authorization_mode")
-     * public String authorizationMode;
-     *
-     * @SerializedName("charging_session_id")
-     * public String chargingSessionId;
-     *
-     * @SerializedName("connector_id")
-     * public Double connectorId;
-     *
-     * @SerializedName("rfid_card_id")
-     * public String rfidCardId;
-     *
-     * @SerializedName("rfid_card_label")
-     * public String rfidCardLabel;
-     *
-     * @SerializedName("rfid_card_serial_number")
-     * public String rfidCardSerialNumber;
-     *
-     * @SerializedName("session_faulted")
-     * public Boolean sessionFaulted;
-     *
-     * @SerializedName("start_date_time")
-     * public String startDateTime;
-     *
-     * @SerializedName("station_id")
-     * public String stationId;
-     *
-     * @SerializedName("station_name")
-     * public String stationName;
-     *
-     * @SerializedName("station_serial_number")
-     * public String stationSerialNumber;
-     *
-     * @SerializedName("stop_date_time")
-     * public String stopDateTime;
-     *
-     * @SerializedName("transaction_id")
-     * public String transactionId;
-     *
-     * @SerializedName("station_model")
-     * public String stationModel;
-     * public WCStationLocation location;
-     *
-     * @SerializedName("current_station_name")
-     * public String currentStationName;
-     *
-     * @SerializedName("created_at")
-     * public String createdAt;
-     * }
-     *
-     * public String timestamp;
-     *
-     * @SerializedName("total_count")
-     * public Integer totalCount;
-     * public Integer offset;
-     * public Integer limit;
-     *
-     * @SerializedName("charging_records")
-     * public ArrayList<WeChargeRecord> chargingRecords;
-     * }
-     */
 }

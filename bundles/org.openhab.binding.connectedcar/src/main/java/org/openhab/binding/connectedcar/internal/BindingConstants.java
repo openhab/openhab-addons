@@ -223,6 +223,8 @@ public class BindingConstants {
     public static final String CHANNEL_WIN_FROOFPOS = "roofFrontCoverPos";
     public static final String CHANNEL_WIN_RROOFSTATE = "roofRearCoverState";
     public static final String CHANNEL_WIN_RROOFPOS = "roofRearCoverPos";
+    public static final String CHANNEL_WIN_SROOFSTATE = "sunRoofCoverState";
+    public static final String CHANNEL_WIN_SROOFPOS = "sunRoofCoverPos";
 
     // Group Doors
     public static final String CHANNEL_GROUP_DOORS = "doors";

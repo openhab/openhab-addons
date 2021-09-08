@@ -30,6 +30,7 @@ import org.openhab.binding.connectedcar.internal.api.skodae.SEApiJsonDTO.SEVehic
 import org.openhab.binding.connectedcar.internal.api.skodae.SEApiJsonDTO.SEVehicleStatusData;
 import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WeChargeStationDetails;
 import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.WeChargeStatus;
+import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCParkingPosition.WeConnectParkingPosition;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleList.WCVehicle;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleStatusData.WCVehicleStatus;
 import org.openhab.binding.connectedcar.internal.config.CombinedConfig;
@@ -136,6 +137,8 @@ public class ApiDataTypesDTO {
         public @Nullable SEVehicleStatusData seStatus;
         public @Nullable FPVehicleStatusData fpStatus;
         public @Nullable WeChargeStatus weChargeStatus;
+        public GeoPosition vehicleLocation = new GeoPosition();
+        public GeoPosition parkingPosition = new GeoPosition();
 
         public VehicleStatus() {
         }
@@ -157,7 +160,7 @@ public class ApiDataTypesDTO {
         }
 
         public VehicleStatus(WeChargeStatus status) {
-            weChargeStatus = status;
+            this.weChargeStatus = status;
         }
     }
 
@@ -187,13 +190,24 @@ public class ApiDataTypesDTO {
         }
 
         public GeoPosition(String sLongitude, String sLatitude) {
-            coordinate.longitude = (int) (Double.parseDouble(sLongitude) * 1000000);
-            coordinate.latitude = (int) (Double.parseDouble(sLatitude) * 1000000);
+            if (!sLongitude.isEmpty() || !sLatitude.isEmpty()) {
+                coordinate.longitude = (int) (Double.parseDouble(sLongitude) * 1000000);
+                coordinate.latitude = (int) (Double.parseDouble(sLatitude) * 1000000);
+            }
+        }
+
+        public GeoPosition(WeConnectParkingPosition pos) {
+            this(pos.lon, pos.lat);
+            parkingTimeUTC = getString(pos.carCapturedTimestamp);
         }
 
         public GeoPosition(PointType point) {
             coordinate.latitude = point.getLatitude().intValue() * 1000000;
             coordinate.longitude = point.getLongitude().intValue() * 1000000;
+        }
+
+        public boolean isValid() {
+            return coordinate.latitude > 0 && coordinate.longitude > 0;
         }
 
         public double getLattitude() {
@@ -204,7 +218,7 @@ public class ApiDataTypesDTO {
             return coordinate.longitude / 1000000.0;
         }
 
-        public PointType getAsPointType() {
+        public PointType asPointType() {
             return new PointType(new DecimalType(getLattitude()), new DecimalType(getLongitude()));
         }
 

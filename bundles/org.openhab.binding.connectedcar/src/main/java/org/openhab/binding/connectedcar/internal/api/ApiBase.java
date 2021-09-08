@@ -136,15 +136,16 @@ public class ApiBase extends ApiRequestQueue implements ApiBrandInterface, Brand
         try {
             ApiResult res = http.get(uri, vin, headers);
             json = res.response;
-        } catch (ApiException e) {
-            ApiResult res = e.getApiResult();
-            if (e.isSecurityException() || res.isHttpUnauthorized()) {
-                json = loadJson(function);
-            } else if (e.getApiResult().isRedirect()) {
+            if (res.isRedirect()) {
                 // Handle redirect
                 String newLocation = res.getLocation();
                 logger.debug("{}: Handle HTTP Redirect -> {}", config.vehicle.vin, newLocation);
                 json = http.get(newLocation, vin, fillAppHeaders()).response;
+            }
+        } catch (ApiException e) {
+            ApiResult res = e.getApiResult();
+            if (e.isSecurityException() || res.isHttpUnauthorized()) {
+                json = loadJson(function);
             }
 
             if ((json == null) || json.isEmpty()) {

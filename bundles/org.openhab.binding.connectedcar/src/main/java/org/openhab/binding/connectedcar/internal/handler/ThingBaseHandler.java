@@ -29,7 +29,6 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.connectedcar.internal.TextResources;
 import org.openhab.binding.connectedcar.internal.api.ApiBase;
 import org.openhab.binding.connectedcar.internal.api.ApiBaseService;
 import org.openhab.binding.connectedcar.internal.api.ApiBrandProperties;
@@ -45,6 +44,7 @@ import org.openhab.binding.connectedcar.internal.provider.CarChannelTypeProvider
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.binding.connectedcar.internal.util.ChannelCache;
+import org.openhab.binding.connectedcar.internal.util.TextResources;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -639,7 +639,7 @@ public abstract class ThingBaseHandler extends BaseThingHandler implements Accou
         ApiResult res = e.getApiResult();
         if (res.httpCode == HttpStatus.FORBIDDEN_403) {
             logger.info("{}: API Service is not available: ", thingId);
-            return "";
+            return "API Service not accessable or disabled";
         }
 
         String reason = "";

@@ -85,17 +85,25 @@ public class ApiResult {
         return httpCode == HttpStatus.OK_200 || httpCode == HttpStatus.ACCEPTED_202;
     }
 
+    public boolean isHttpNotFound() {
+        return httpCode == HttpStatus.NOT_FOUND_404;
+    }
+
     public boolean isHttpUnauthorized() {
-        return (httpCode == UNAUTHORIZED_401 || httpCode == HttpStatus.FORBIDDEN_403
-                || httpCode == HttpStatus.PROXY_AUTHENTICATION_REQUIRED_407);
+        return httpCode == UNAUTHORIZED_401 || httpCode == HttpStatus.FORBIDDEN_403
+                || httpCode == HttpStatus.PROXY_AUTHENTICATION_REQUIRED_407;
     }
 
     public boolean isHttpServerError() {
-        return (httpCode >= INTERNAL_SERVER_ERROR_500) && (httpCode <= INTERNAL_SERVER_ERROR_500 + 99);
+        return httpCode >= INTERNAL_SERVER_ERROR_500 && httpCode <= INTERNAL_SERVER_ERROR_500 + 99;
     }
 
     public boolean isHttpNotModified() {
         return httpCode == HttpStatus.NOT_MODIFIED_304;
+    }
+
+    public boolean isHttpNoContent() {
+        return httpCode == HttpStatus.NO_CONTENT_204;
     }
 
     public boolean isHttpTooManyRequests() {
@@ -103,8 +111,8 @@ public class ApiResult {
     }
 
     public boolean isRedirect() {
-        return (httpCode == HttpStatus.MOVED_PERMANENTLY_301) || (httpCode == HttpStatus.FOUND_302)
-                || (httpCode == HttpStatus.TEMPORARY_REDIRECT_307);
+        return httpCode == HttpStatus.MOVED_PERMANENTLY_301 || httpCode == HttpStatus.FOUND_302
+                || httpCode == HttpStatus.TEMPORARY_REDIRECT_307;
     }
 
     public String getLocation() {

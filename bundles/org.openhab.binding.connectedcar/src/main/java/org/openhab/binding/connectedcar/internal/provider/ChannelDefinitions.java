@@ -24,8 +24,8 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.connectedcar.internal.TextResources;
 import org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CarNetVehicleStatus.CNStoredVehicleDataResponse.CNVehicleData.CNStatusData.CNStatusField;
+import org.openhab.binding.connectedcar.internal.util.TextResources;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -414,6 +414,8 @@ public class ChannelDefinitions {
         add("POS_ROOF_FRONT_COVER", "0x030105000C", CHANNEL_WIN_FROOFPOS, ITEMT_PERCENT, CHANNEL_GROUP_WINDOWS);
         add("STATE3_ROOF_REAR_COVER", "0x030105000D", CHANNEL_WIN_RROOFSTATE, ITEMT_CONTACT, CHANNEL_GROUP_WINDOWS);
         add("POS_ROOF_REAR_COVER", "0x030105000E", CHANNEL_WIN_RROOFPOS, ITEMT_PERCENT, CHANNEL_GROUP_WINDOWS);
+        add("STATE3_SUNROOF_COVER", "", CHANNEL_WIN_SROOFSTATE, ITEMT_CONTACT, CHANNEL_GROUP_WINDOWS);
+        add("POS_SUNROOF_COVER", "", CHANNEL_WIN_SROOFPOS, ITEMT_PERCENT, CHANNEL_GROUP_WINDOWS);
 
         // Tires
         add("STATE1_TPRESS_LEFT_FRONT_CURRENT", "0x0301060001", CHANNEL_TIREP_FRONTLEFT, ITEMT_SWITCH,

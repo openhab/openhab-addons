@@ -255,7 +255,7 @@ public class WeChargeJsonDTO {
             @SerializedName("total_time")
             public Double totalTime;
             @SerializedName("created_at")
-            public String created_At;
+            public String createdAt;
             @SerializedName("updated_at")
             public String updatedAt;
             @SerializedName("start_date_time")
@@ -322,11 +322,11 @@ public class WeChargeJsonDTO {
 
     public static class WeChargeRecord extends WeChargePayRecord {
         public String rfidCard, tariff;
-        public Boolean sessionFaulted = false;
+        public Boolean sessionFaulted;
 
         public WeChargeRecord(WeChargeHomeRecord r, WeChargeStatus status) {
             this.id = r.transactionId;
-            this.created_At = r.createdAt;
+            this.createdAt = r.createdAt;
             this.updatedAt = r.createdAt;
             this.rfidCard = r.rfidCardLabel;
             this.locationEvseId = r.stationId;
@@ -358,7 +358,7 @@ public class WeChargeJsonDTO {
 
         public WeChargeRecord(WeChargePayRecord r, WeChargeStatus status) {
             this.id = r.id;
-            this.created_At = r.created_At;
+            this.createdAt = r.createdAt;
             this.updatedAt = r.updatedAt;
             this.locationName = r.locationName;
             this.locationEvseId = r.locationEvseId;

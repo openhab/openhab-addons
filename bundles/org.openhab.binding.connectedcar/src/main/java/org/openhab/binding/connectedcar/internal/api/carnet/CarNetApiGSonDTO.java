@@ -30,7 +30,7 @@ public class CarNetApiGSonDTO {
     public static final String CNAPI_HEADER_APP = "X-App-Name";
     public static final String CNAPI_HEADER_VERS = "X-App-Version";
     public static final String CNAPI_HEADER_VERS_VALUE = "1.0.0";
-    public static final String CNAPI_HEADER_USER_AGENT = "okhttp/3.10.0";
+    public static final String CNAPI_HEADER_USER_AGENT = "okhttp/3.11.0";
     public static final String CNAPI_HEADER_AUTHORIZATION = "Authorization";
     public static final String CNAPI_HEADER_CLIENTID = "X-Client-Id";
 

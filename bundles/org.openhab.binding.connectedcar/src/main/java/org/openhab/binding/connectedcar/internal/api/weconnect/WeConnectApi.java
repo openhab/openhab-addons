@@ -24,15 +24,18 @@ import javax.measure.IncommensurableException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpHeader;
+import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.GeoPosition;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleDetails;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleStatus;
 import org.openhab.binding.connectedcar.internal.api.ApiEventListener;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpClient;
 import org.openhab.binding.connectedcar.internal.api.ApiHttpMap;
+import org.openhab.binding.connectedcar.internal.api.ApiResult;
 import org.openhab.binding.connectedcar.internal.api.ApiWithOAuth;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.IdentityManager;
+import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCParkingPosition;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleList;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleList.WCVehicle;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleStatusData;
@@ -70,8 +73,7 @@ public class WeConnectApi extends ApiWithOAuth implements BrandAuthenticator {
     @Override
     public ArrayList<String> getVehicles() throws ApiException {
         ApiHttpMap params = crerateParameters();
-        WCVehicleList weList = callApi("", "https://mobileapi.apps.emea.vwapps.io/vehicles", params.getHeaders(),
-                "getVehicleList", WCVehicleList.class);
+        WCVehicleList weList = callApi("", "/vehicles", params.getHeaders(), "getVehicleList", WCVehicleList.class);
         ArrayList<String> list = new ArrayList<String>();
         for (WCVehicle wev : weList.data) {
             list.add(wev.vin);
@@ -92,7 +94,37 @@ public class WeConnectApi extends ApiWithOAuth implements BrandAuthenticator {
 
     @Override
     public VehicleStatus getVehicleStatus() throws ApiException {
-        return new VehicleStatus(getWCStatus());
+        // getChargingStations("50.577417", "7.240451");
+        VehicleStatus status = new VehicleStatus(getWCStatus());
+        status.parkingPosition = getParkingPosition();
+        getVehicleLocation();
+        return status;
+    }
+
+    public void getChargingStations(String latitude, String longitude) throws ApiException {
+        String json = callApi("", "/charging-stations/v2?latitude=" + latitude + "&longitude=" + longitude,
+                crerateParameters().getHeaders(), "getChargingStations", String.class);
+    }
+
+    public GeoPosition getParkingPosition() throws ApiException {
+        try {
+            WCParkingPosition pos = callApi("", "/vehicles/{2}/parkingposition", crerateParameters().getHeaders(),
+                    "getParkingPosition", WCParkingPosition.class);
+            return new GeoPosition(pos.data);
+        } catch (ApiException e) {
+            ApiResult res = e.getApiResult();
+            if (res.isHttpNoContent() || res.isHttpNotFound() || res.isHttpUnauthorized()) {
+                // (Temporary) not available
+            } else {
+                throw e;
+            }
+        }
+        return new GeoPosition();
+    }
+
+    public GeoPosition getVehicleLocation() throws ApiException {
+        // so far the endpoint is unknown
+        return new GeoPosition();
     }
 
     @Override
@@ -103,8 +135,8 @@ public class WeConnectApi extends ApiWithOAuth implements BrandAuthenticator {
 
     private WCVehicleStatus getWCStatus() throws ApiException {
         ApiHttpMap params = crerateParameters();
-        return callApi("", "https://mobileapi.apps.emea.vwapps.io/vehicles/{2}/status", params.getHeaders(),
-                "getVehicleStatus", WCVehicleStatusData.class).data;
+        return callApi("", "vehicles/{2}/status", params.getHeaders(), "getVehicleStatus",
+                WCVehicleStatusData.class).data;
     }
 
     @Override
@@ -164,15 +196,13 @@ public class WeConnectApi extends ApiWithOAuth implements BrandAuthenticator {
 
     private String sendAction(String service, String action, String body) throws ApiException {
         ApiHttpMap headers = crerateParameters();
-        String json = http.post("https://mobileapi.apps.emea.vwapps.io/vehicles/{2}/" + service + "/" + action,
-                headers.getHeaders(), body).response;
+        String json = http.post("vehicles/{2}/" + service + "/" + action, headers.getHeaders(), body).response;
         return API_REQUEST_STARTED;
     }
 
     private String sendSettings(String service, String body) throws ApiException {
         ApiHttpMap headers = crerateParameters();
-        String json = http.put("https://mobileapi.apps.emea.vwapps.io/vehicles/{2}/" + service + "/settings",
-                headers.getHeaders(), body).response;
+        String json = http.put("vehicles/{2}/" + service + "/settings", headers.getHeaders(), body).response;
         return API_REQUEST_STARTED;
     }
 

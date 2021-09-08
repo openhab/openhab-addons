@@ -110,6 +110,10 @@ public class ApiWithOAuth extends ApiBase implements BrandAuthenticator {
                     .data("password", URLEncoder.encode(config.account.password, UTF_8)) //
                     .post(url, false);
             url = oauth.location; // Continue URL
+            if (url.contains("terms-and-conditions")) {
+                throw new ApiException(
+                        "Consent to terms&conditions required, login to the Web portal and give consent");
+            }
 
             // Now we need to follow multiple redirects, required data is fetched from the redirect URLs
             // String userId = "";

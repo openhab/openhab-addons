@@ -16,18 +16,26 @@ import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
 import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.connectedcar.internal.api.ApiBase;
 import org.openhab.binding.connectedcar.internal.api.ApiBaseService;
+import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.VehicleStatus;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
+import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleStatusData.WCMultiStatusItem;
+import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleStatusData.WCSingleStatusItem;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleStatusData.WCVehicleStatus;
+import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleStatusData.WCVehicleStatus.WCMaintenanceStatus;
 import org.openhab.binding.connectedcar.internal.handler.ThingBaseHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +47,23 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WeConnectServiceStatus extends ApiBaseService {
     private final Logger logger = LoggerFactory.getLogger(WeConnectServiceStatus.class);
+    static Map<String, String> MAP_DOOR_NAME = new HashMap<>();
+    static Map<String, String> MAP_WINDOW_NAME = new HashMap<>();
+    static {
+        MAP_DOOR_NAME.put("bonnet", "hood");
+        MAP_DOOR_NAME.put("frontLeft", "doorFrontLeft");
+        MAP_DOOR_NAME.put("frontRight", "doorFrontRight");
+        MAP_DOOR_NAME.put("rearLeft", "doorRearLeft");
+        MAP_DOOR_NAME.put("rearRight", "doorRearRight");
+        MAP_DOOR_NAME.put("trunk", "trunkLid");
+
+        MAP_WINDOW_NAME.put("frontLeft", "windowFrontLeft");
+        MAP_WINDOW_NAME.put("frontRight", "windowFrontRight");
+        MAP_WINDOW_NAME.put("rearLeft", "windowRearLeft");
+        MAP_WINDOW_NAME.put("rearRight", "windowRearRight");
+        MAP_WINDOW_NAME.put("roofCover", "roofFrontCover");
+        MAP_WINDOW_NAME.put("sunRoof", "sunRoofCover");
+    }
     String thingId = API_BRAND_VWID;
 
     public WeConnectServiceStatus(ThingBaseHandler thingHandler, ApiBase api) {
@@ -49,7 +74,8 @@ public class WeConnectServiceStatus extends ApiBaseService {
     @Override
     public boolean createChannels(Map<String, ChannelIdMapEntry> channels) throws ApiException {
         // Try to query status information from vehicle
-        WCVehicleStatus status = api.getVehicleStatus().wcStatus;
+        VehicleStatus data = api.getVehicleStatus();
+        WCVehicleStatus status = data.wcStatus;
         if (status == null) {
             logger.warn("{}: Unable to read vehicle status, can't create channels!", thingId);
             return false;
@@ -68,6 +94,20 @@ public class WeConnectServiceStatus extends ApiBaseService {
                 CHANNEL_CONTROL_TARGET_TEMP);
         addChannels(channels, status.climatisationTimer != null, CHANNEL_STATUS_TIMEINCAR);
         addChannels(channels, status.windowHeatingStatus != null, CHANNEL_CONTROL_WINHEAT);
+        addChannels(channels, status.maintenanceStatus != null, CHANNEL_STATUS_ODOMETER, CHANNEL_MAINT_DISTINSP,
+                CHANNEL_MAINT_DISTTIME, CHANNEL_MAINT_OILDIST, CHANNEL_MAINT_OILINTV);
+        addChannels(channels, status.lightStatus != null, CHANNEL_STATUS_LIGHTS);
+        addChannels(channels, data.vehicleLocation.isValid(), CHANNEL_LOCATTION_GEO, CHANNEL_LOCATTION_TIME);
+        addChannels(channels, data.parkingPosition.isValid(), CHANNEL_PARK_LOCATION, CHANNEL_PARK_TIME);
+        if (status.accessStatus != null) {
+            addChannels(channels, status.accessStatus.overallStatus != null, CHANNEL_STATUS_LOCKED);
+            addChannels(channels, status.accessStatus.doors != null, CHANNEL_DOORS_FLSTATE, CHANNEL_DOORS_FLLOCKED,
+                    CHANNEL_DOORS_FRSTATE, CHANNEL_DOORS_FRLOCKED, CHANNEL_DOORS_RLSTATE, CHANNEL_DOORS_RLLOCKED,
+                    CHANNEL_DOORS_RRSTATE, CHANNEL_DOORS_RRLOCKED, CHANNEL_DOORS_HOODSTATE, CHANNEL_DOORS_TRUNKLSTATE,
+                    CHANNEL_DOORS_TRUNKLLOCKED);
+            addChannels(channels, status.accessStatus.windows != null, CHANNEL_WIN_FLSTATE, CHANNEL_WIN_RLSTATE,
+                    CHANNEL_WIN_FRSTATE, CHANNEL_WIN_RRSTATE, CHANNEL_WIN_FROOFSTATE, CHANNEL_WIN_SROOFSTATE);
+        }
         return true;
     }
 
@@ -77,17 +117,21 @@ public class WeConnectServiceStatus extends ApiBaseService {
         logger.debug("{}: Get Vehicle Status", thingId);
         boolean updated = false;
 
-        WCVehicleStatus status = api.getVehicleStatus().wcStatus;
+        VehicleStatus data = api.getVehicleStatus();
+        WCVehicleStatus status = data.wcStatus;
         if (status != null) {
             logger.debug("{}: Vehicle Status:\n{}", thingId, status);
 
             String group = CHANNEL_GROUP_STATUS;
             updated |= updateChannel(group, CHANNEL_STATUS_ERROR, getStringType(status.error));
-
+            updated |= updateAccess(status);
             updated |= updateRange(status);
             updated |= updateChargingStatus(status);
             updated |= updateClimatisationStatus(status);
             updated |= updateWindowHeatStatus(status);
+            updated |= updateMaintenanceStatus(status);
+            updated |= updatLightStatus(status);
+            updated |= updatePosition(data);
         }
         return updated;
     }
@@ -173,6 +217,117 @@ public class WeConnectServiceStatus extends ApiBaseService {
             }
             updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_WINHEAT, on ? OnOffType.ON : OnOffType.OFF);
         }
+        return updated;
+    }
+
+    private boolean updateMaintenanceStatus(WCVehicleStatus status) {
+        boolean updated = false;
+        WCMaintenanceStatus data = status.maintenanceStatus;
+        if (status.maintenanceStatus != null) {
+            updated |= updateChannel(CHANNEL_STATUS_ODOMETER, getDecimal(data.mileageKm));
+            updated |= updateChannel(CHANNEL_MAINT_DISTINSP, getDecimal(data.inspectionDueKm));
+            updated |= updateChannel(CHANNEL_MAINT_DISTTIME, getDecimal(data.inspectionDueDays));
+            updated |= updateChannel(CHANNEL_MAINT_OILDIST, getDecimal(data.oilServiceDueKm));
+            updated |= updateChannel(CHANNEL_MAINT_OILINTV, getDecimal(data.oilServiceDueDays));
+        }
+        return updated;
+    }
+
+    private boolean updatLightStatus(WCVehicleStatus status) {
+        boolean updated = false;
+        if (status.lightStatus != null) {
+            boolean lightsOn = false;
+            for (WCSingleStatusItem light : status.lightStatus.lights) {
+                lightsOn |= "on".equalsIgnoreCase(light.status);
+            }
+            updated |= updateChannel(CHANNEL_STATUS_LIGHTS, getOnOff(lightsOn));
+        }
+        return updated;
+    }
+
+    private boolean updatePosition(VehicleStatus status) {
+        boolean updated = false;
+        if (status.vehicleLocation.isValid()) {
+            updated |= updateChannel(CHANNEL_PARK_LOCATION, status.vehicleLocation.asPointType());
+            updated |= updateChannel(CHANNEL_PARK_TIME, getDateTime(status.vehicleLocation.parkingTimeUTC));
+        }
+        if (status.parkingPosition.isValid()) {
+            updated |= updateChannel(CHANNEL_PARK_LOCATION, status.parkingPosition.asPointType());
+            updated |= updateChannel(CHANNEL_PARK_TIME, getDateTime(status.parkingPosition.parkingTimeUTC));
+        }
+        return updated;
+    }
+
+    private boolean updateAccess(WCVehicleStatus status) {
+        boolean updated = false;
+        if (status.accessStatus != null) {
+            updated |= updateChannel(CHANNEL_STATUS_LOCKED,
+                    getOnOff(status.accessStatus.overallStatus.equalsIgnoreCase("safe")));
+
+            if (status.accessStatus.doors != null) {
+                // Map door status to channels
+                for (WCMultiStatusItem door : status.accessStatus.doors) {
+                    String channelPre = MAP_DOOR_NAME.get(door.name);
+                    if (channelPre == null) {
+                        // unknown name
+                        continue;
+                    }
+                    String channelSuf = "";
+                    State value = UnDefType.UNDEF;
+                    for (String s : door.status) {
+                        switch (s) {
+                            case "locked":
+                            case "unlocked":
+                                channelSuf = "Locked";
+                                value = getOnOff("locked".equalsIgnoreCase(s));
+                                break;
+                            case "open:":
+                            case "closed":
+                                channelSuf = "State";
+                                value = "closed".equalsIgnoreCase(s) ? OpenClosedType.CLOSED : OpenClosedType.CLOSED;
+                                break;
+                            case "unsupported":
+                                channelSuf = "State";
+                                value = UnDefType.UNDEF;
+                                break;
+                            default:
+                                continue;
+                        }
+                        updated |= updateChannel(channelPre + channelSuf, value);
+                    }
+                }
+            }
+
+            if (status.accessStatus.windows != null) {
+                // Map window status to channels
+                for (WCMultiStatusItem window : status.accessStatus.windows) {
+                    String channelPre = MAP_WINDOW_NAME.get(window.name);
+                    if (channelPre == null) {
+                        // unknown name
+                        continue;
+                    }
+                    String channelSuf = "";
+                    State value = UnDefType.UNDEF;
+                    for (String s : window.status) {
+                        switch (s) {
+                            case "open:":
+                            case "closed":
+                                channelSuf = "State";
+                                value = "closed".equalsIgnoreCase(s) ? OpenClosedType.CLOSED : OpenClosedType.CLOSED;
+                                break;
+                            case "unsupported":
+                                channelSuf = "State";
+                                value = UnDefType.UNDEF;
+                                break;
+                            default:
+                                continue;
+                        }
+                        updated |= updateChannel(channelPre + channelSuf, value);
+                    }
+                }
+            }
+        }
+
         return updated;
     }
 }

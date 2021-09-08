@@ -21,12 +21,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.connectedcar.internal.TextResources;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
 import org.openhab.binding.connectedcar.internal.api.IdentityManager;
 import org.openhab.binding.connectedcar.internal.discovery.ConnectedCarDiscoveryService;
 import org.openhab.binding.connectedcar.internal.provider.CarChannelTypeProvider;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions;
+import org.openhab.binding.connectedcar.internal.util.TextResources;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;

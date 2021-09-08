@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.connectedcar.internal;
+package org.openhab.binding.connectedcar.internal.util;
 
 import java.util.Locale;
 

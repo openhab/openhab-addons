@@ -20,7 +20,6 @@ import java.time.ZoneId;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.connectedcar.internal.TextResources;
 import org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.ApiActionRequest;
 import org.openhab.binding.connectedcar.internal.api.ApiErrorDTO;
 import org.openhab.binding.connectedcar.internal.api.ApiException;
@@ -40,6 +39,7 @@ import org.openhab.binding.connectedcar.internal.api.carnet.CarNetServiceTripDat
 import org.openhab.binding.connectedcar.internal.provider.CarChannelTypeProvider;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
+import org.openhab.binding.connectedcar.internal.util.TextResources;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;

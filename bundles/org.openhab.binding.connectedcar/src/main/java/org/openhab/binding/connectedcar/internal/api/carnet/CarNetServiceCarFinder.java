@@ -57,14 +57,14 @@ public class CarNetServiceCarFinder extends ApiBaseService {
         try {
             logger.debug("{}: Get Vehicle Position", thingId);
             GeoPosition position = api.getVehiclePosition();
-            updated |= updateChannel(CHANNEL_LOCATTION_GEO, position.getAsPointType());
+            updated |= updateChannel(CHANNEL_LOCATTION_GEO, position.asPointType());
 
             String time = position.getCarSentTime();
             updated |= updateChannel(CHANNEL_LOCATTION_TIME, new DateTimeType(time));
             updated |= updateAddress(position, CHANNEL_LOCATTION_ADDRESS);
 
             position = api.getStoredPosition();
-            updated |= updateChannel(CHANNEL_PARK_LOCATION, position.getAsPointType());
+            updated |= updateChannel(CHANNEL_PARK_LOCATION, position.asPointType());
             updated |= updateChannel(CHANNEL_LOCATTION_TIME, new DateTimeType(time));
             updated |= updateAddress(position, CHANNEL_PARK_ADDRESS);
             String parkingTime = getString(position.getParkingTime());
@@ -84,6 +84,6 @@ public class CarNetServiceCarFinder extends ApiBaseService {
     }
 
     private boolean updateAddress(GeoPosition position, String channel) {
-        return updateLocationAddress(position.getAsPointType(), channel);
+        return updateLocationAddress(position.asPointType(), channel);
     }
 }

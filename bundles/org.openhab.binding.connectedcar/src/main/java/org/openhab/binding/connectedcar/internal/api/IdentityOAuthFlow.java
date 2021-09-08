@@ -159,7 +159,11 @@ public class IdentityOAuthFlow extends ApiHttpMap {
             }
             if (location.contains("&updated=dataprivacy")) {
                 throw new ApiSecurityException(
-                        "Login failed: New Terms&Conditions/Data Privacy Policy has to be accepted, login to Web portal");
+                        "Login failed: New Data Privacy Policy has to be accepted, login to Web portal");
+            }
+            if (location.contains("terms-and-conditions")) {
+                throw new ApiException(
+                        "Consent to terms&conditions required, login to the Web portal and give consent");
             }
 
             if (location.contains("relayState=")) {

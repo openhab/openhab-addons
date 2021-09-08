@@ -90,8 +90,7 @@ public class WeChargeApi extends ApiWithOAuth implements BrandAuthenticator {
 
     @Override
     public VehicleStatus getVehicleStatus() throws ApiException {
-        updateVehicleStatus();
-        return new VehicleStatus(baseStatus);
+        return new VehicleStatus(updateVehicleStatus());
     }
 
     @Override
@@ -113,7 +112,7 @@ public class WeChargeApi extends ApiWithOAuth implements BrandAuthenticator {
         return API_REQUEST_SUCCESSFUL;
     }
 
-    protected void updateVehicleStatus() throws ApiException {
+    protected WeChargeStatus updateVehicleStatus() throws ApiException {
         logger.debug("{}: Updating WeCharge status", thingId);
         baseStatus.station = getStationDetails(config.vehicle.vin);
         if (baseStatus.subscriptions.size() == 0) {
@@ -125,6 +124,7 @@ public class WeChargeApi extends ApiWithOAuth implements BrandAuthenticator {
         loadHomeSession();
         loadHomeChargingData();
         loadPayChargingData();
+        return baseStatus;
     }
 
     private void loadSubscriptions() throws ApiException {

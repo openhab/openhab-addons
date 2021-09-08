@@ -126,6 +126,15 @@ public class CarNetApi extends ApiWithOAuth {
         CarNetOperationList ol = getOperationList();
         if (ol != null) {
             config.vstatus.operationList = ol;
+            CarNetServiceInfo desc = getServiceDescriptor(CNAPI_SERVICE_VEHICLE_STATUS_REPORT);
+            if (desc != null && desc.invocationUrl != null) {
+                String url = desc.invocationUrl.content;
+                if (url.startsWith("https://mal-3a.") && url.contains("/api")) {
+                    config.vstatus.homeRegionUrl = substringBefore(url, "/api") + "/api";
+                    logger.debug("{}: Home Region URL changed to {}", config.getLogId(), config.vstatus.homeRegionUrl);
+                }
+            }
+
             config.user.id = ol.userId;
             config.user.role = ol.role;
             config.user.status = ol.status;
@@ -187,8 +196,12 @@ public class CarNetApi extends ApiWithOAuth {
     @Override
     public ArrayList<String> getVehicles() throws ApiException {
         // return callApi("https://msg.volkswagen.de/fs-car/usermanagement/users/v1/{0}/{1}/vehicles", "getVehicles",
-        return callApi("usermanagement/users/v1/{0}/{1}/vehicles", "getVehicles",
-                CarNetVehicleList.class).userVehicles.vehicle;
+        CarNetVehicleList vehicles = callApi("usermanagement/users/v1/{0}/{1}/vehicles", "getVehicles",
+                CarNetVehicleList.class);
+        if (vehicles.userVehicles != null && vehicles.userVehicles.vehicle != null) {
+            return vehicles.userVehicles.vehicle;
+        }
+        throw new ApiException("Account has no registered vehicles, go to online port and add at least 1 vehicle");
     }
 
     @Override

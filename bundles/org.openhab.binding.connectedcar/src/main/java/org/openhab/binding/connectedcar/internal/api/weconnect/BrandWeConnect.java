@@ -46,6 +46,7 @@ public class BrandWeConnect extends WeConnectApi implements BrandAuthenticator {
     static ApiBrandProperties properties = new ApiBrandProperties();
     static {
         properties.brand = API_BRAND_VWID;
+        properties.apiDefaultUrl = "https://mobileapi.apps.emea.vwapps.io";
         properties.userAgent = "WeConnect/5 CFNetwork/1206 Darwin/20.1.0";
         properties.xcountry = "DE";
         properties.apiDefaultUrl = WCAPI_BASE_URL;
@@ -55,7 +56,7 @@ public class BrandWeConnect extends WeConnectApi implements BrandAuthenticator {
         properties.tokenRefreshUrl = "https://login.apps.emea.vwapps.io/refresh/v1";
         properties.clientId = "a24fba63-34b3-4d43-b181-942111e6bda8@apps_vw-dilab_com";
         properties.xClientId = "1e63bd93-ce66-4aa3-b373-0ec56247e1d7";
-        properties.authScope = "openid profile badge cars dealers vin";
+        properties.authScope = "openid cars vin profile";
         properties.redirect_uri = "weconnect://authenticated";
         properties.xrequest = "com.volkswagen.weconnect";
         properties.responseType = "code id_token token";

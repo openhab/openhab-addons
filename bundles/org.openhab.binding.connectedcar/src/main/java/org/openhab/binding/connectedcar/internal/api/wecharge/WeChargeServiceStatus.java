@@ -16,6 +16,10 @@ import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
 import static org.openhab.binding.connectedcar.internal.api.ApiDataTypesDTO.*;
 import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -135,14 +139,23 @@ public class WeChargeServiceStatus extends ApiBaseService {
             updated |= updateChannel(group, CHANNEL_RFID_UPDATE, getDateTime(card.updatedAt));
         }
 
+        // Sort records, newest first
+        List<WeChargeRecord> recordList = new ArrayList<>(status.chargingRecords.values());
+        Collections.sort(recordList, Collections.reverseOrder(new Comparator<WeChargeRecord>() {
+            @Override
+            public int compare(WeChargeRecord a, WeChargeRecord b) {
+                return a.createdAt.compareTo(b.createdAt);
+            }
+        }));
+
         i = 1;
-        for (Map.Entry<String, WeChargeRecord> c : status.chargingRecords.entrySet()) {
-            WeChargeRecord record = c.getValue();
+        int count = getConfig().vehicle.numChargingRecords;
+        for (WeChargeRecord record : recordList) {
             String group = CHANNEL_CHANNEL_GROUP_TRANSACTIONS + i++;
             updated |= updateChannel(group, CHANNEL_TRANS_ID, getStringType(record.id));
             updated |= updateChannel(group, CHANNEL_TRANS_LOCATION,
                     new GeoPosition(record.locationCoordinatesLatitude, record.locationCoordinatesLongitude)
-                            .getAsPointType());
+                            .asPointType());
             updated |= updateChannel(group, CHANNEL_TRANS_ADDRESS, getStringType(record.locationAddress));
             updated |= updateChannel(group, CHANNEL_TRANS_EVSE, getStringType(record.locationEvseId));
             updated |= updateChannel(group, CHANNEL_TRANS_SUBID, getStringType(record.subscriptionId));
@@ -155,7 +168,7 @@ public class WeChargeServiceStatus extends ApiBaseService {
             updated |= updateChannel(group, CHANNEL_TRANS_ENERGY, getDecimal(record.totalEnergy));
             updated |= updateChannel(group, CHANNEL_TRANS_DURATION, getDecimal(record.totalTime));
             updated |= updateChannel(group, CHANNEL_TRANS_PRICE, getDecimal(record.totalPrice));
-            if (i >= getConfig().vehicle.numChargingRecords) {
+            if (i >= count) {
                 break;
             }
         }
