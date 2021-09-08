@@ -17,6 +17,20 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="last_message_time" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Message Time</label>
+		<description>Timestamp when the most recent message of any kind was received from the panel</description>
+		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
+	</channel-type>
+
+	<channel-type id="active_alerts">
+		<item-type>String</item-type>
+		<label>Active Alarms and Alerts</label>
+		<description>List of active alarms and alerts</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
 	<channel-type id="trouble">
 		<item-type>Switch</item-type>
 		<label>Trouble Detected</label>
@@ -28,6 +42,13 @@
 		<item-type>Switch</item-type>
 		<label>Alert in Memory</label>
 		<description>Whether or not an alert is saved in system memory</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="ringing">
+		<item-type>Switch</item-type>
+		<label>Ringing</label>
+		<description>Whether or not the alarm siren is currently ringing</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -107,6 +128,36 @@
 		<description>Whether or not the zone is bypassed</description>
 	</channel-type>
 
+	<channel-type id="alarmed">
+		<item-type>Switch</item-type>
+		<label>Zone Alarmed</label>
+		<description>Whether or not the zone has an active alarm condition, or has had an active alarm since the memory was
+			last cleared</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="tamper_alarm">
+		<item-type>Switch</item-type>
+		<label>Zone Tamper Alarm</label>
+		<description>Whether or not the zone's sensor has an active tamper condition, or has had an active tamper condition
+			since the memory was last cleared</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="inactive">
+		<item-type>Switch</item-type>
+		<label>Zone Inactive</label>
+		<description>Whether or not the zone's sensor is inactive (loss of supervision)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="tampered">
+		<item-type>Switch</item-type>
+		<label>Zone Tampered</label>
+		<description>Whether or not the zone's sensor is reporting a tamper condition</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="armed">
 		<item-type>Switch</item-type>
 		<label>Zone Armed (Switch)</label>
@@ -119,6 +170,20 @@
 		<label>Zone Armed (Contact)</label>
 		<description>Whether or not the zone is armed (CLOSED when armed)</description>
 		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="zone_last_message">
+		<item-type>String</item-type>
+		<label>Zone Last Status Message</label>
+		<description>The most recent status message reported by the zone</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="zone_last_message_time">
+		<item-type>DateTime</item-type>
+		<label>Zone Last Status Time</label>
+		<description>Timestamp when Zone Last Status Message was received</description>
+		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
 	</channel-type>
 
 	<channel-type id="pgm_status" advanced="true">
