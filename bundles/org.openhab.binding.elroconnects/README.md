@@ -1,0 +1,190 @@
+# ElroConnects Binding
+
+The ElroConnects binding provides integration with the [Elro Connects](https://www.elro.eu/en/smart-home) smart home system.
+
+The system uses a Wifi Hub (K1 Connector) to enable communication with various smart home devices.
+The devices communicate with the hub using 868MHz RF.
+The binding only communicates with the Elro Connects system and K1 Connector using UDP in the local network.
+
+The binding exposes the devices' status and controls to openHAB.
+The K1 connector itself allows setting up scenes through a mobile application.
+The binding supports selecting a specific scene.
+
+Many of the sensor devices are battery powered.
+
+## Supported Things
+
+The Elro Connects supported device types are:
+
+* K1 connector hub: `connector`
+* Smoke detector: `smokealarm`
+* Carbon monoxide detector: `coalarm`
+* Heat detector: `heatalarm`
+* Water detector: `wateralarm`
+* Windows/door contact: `entrysensor`
+* Motion detector: `motionsensor`
+* Temperature and humidity monitor: `temperaturesensor`
+* Plug-in switch: `powersocket`
+
+The `connector` is the bridge thing.
+All other things are connected to the bridge.
+
+Testing was only done with smoke and water detectors connected to a K1 connector.
+The firmware version of the K1 connector was 2.0.3.30 at time of test.
+Older versions of the firmware are known to have differences in the communication protocol.
+
+## Discovery
+
+The K1 connector `connector` cannot be auto-discovered.
+Once the bridge thing representing the K1 connector is correctly set up and online, discovery will allow discovering all devices connected to the K1 connector.
+
+The communication between the hub and devices may be disturbed.
+Therefore devices may not appear or stay offline.
+Alarm devices can still trigger alarms and pass them between each other, even if the connection with the hub is lost.
+It will not be possible to discover and control them from openHAB in this case.
+
+## Thing Configuration
+
+### K1 connector hub
+
+The K1 connector has one required configuration parameter, `connectorId`.
+It should be set to ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector.
+This `connectorId` can also be found in the Elro Connects mobile application.
+                    
+There is one optional advanced parameter, `refreshInterval`.
+This parameter controls the connection refresh heartbeat interval.
+The default is 60s.
+
+The syntax for configuration in a `.things` file is:
+
+```
+Thing elroconnects:connector:<connectorId> [connectorId="ST_<MAC address of connector>", refreshInterval=<heartbeat interval>]
+```
+
+### Devices connected to K1 connected hub
+
+All devices have only one configuration parameter, `deviceId`.
+This parameter is set by discovery and cannot easily be found manually.
+It should be a number.
+
+The syntax for configuration in a `.things` file is:
+
+```
+Thing elroconnects:<thingtype>:<deviceId> [deviceId="<numeric device id>"]
+```
+
+## Channels
+
+### K1 connector hub
+
+The `connector` bridge thing has only one channel:
+
+| Channel Type ID    | Item Type            | Access Mode | Description                                        |
+|--------------------|----------------------|-------------|----------------------------------------------------|
+| `scene`            | String               | RW          | current scene                                      |
+
+The `scene` channel has a dynamic state options list with all possible scene choices available in the hub.
+
+## Smoke, carbon monoxide, heat and water alarms
+
+All these things have the same channels:
+
+| Channel Type ID    | Item Type            | Access Mode | Description                                        |
+|--------------------|----------------------|-------------|----------------------------------------------------|
+| `muteAlarm`        | Switch               | RW          | mute alarm                                         |
+| `testAlarm`        | Switch               | RW          | test alarm                                         |
+| `battery`          | Number               | R           | battery level in %                                 |
+| `lowBattery`       | Switch               | R           | on for low battery (below 15%)                     |
+
+Each also has a trigger channel, resp. `smokeAlarm`, `coAlarm`, `heatAlarm` and `waterAlarm`.
+
+## Door/window contact
+
+The `entrysensor` thing has the following channels:
+
+| Channel Type ID    | Item Type            | Access Mode | Description                                        |
+|--------------------|----------------------|-------------|----------------------------------------------------|
+| `entry`            | Contact              | R           | open/closed door/window                            |
+| `battery`          | Number               | R           | battery level in %                                 |
+| `lowBattery`       | Switch               | R           | on for low battery (below 15%)                     |
+
+The `entrysensor` thing also has a trigger channel, `entryAlarm`.
+
+## Motion sensor
+
+The `motionsensor` thing has the following channels:
+
+| Channel Type ID    | Item Type            | Access Mode | Description                                        |
+|--------------------|----------------------|-------------|----------------------------------------------------|
+| `motion`           | Switch               | R           | on when motion detected                            |
+| `battery`          | Number               | R           | battery level in %                                 |
+| `lowBattery`       | Switch               | R           | on for low battery (below 15%)                     |
+
+The `motionsensor` thing also has a trigger channel, `motionAlarm`.
+
+## Temperature and humidity monitor
+
+The `temperaturesensor` thing has the following channels:
+
+| Channel Type ID    | Item Type            | Access Mode | Description                                        |
+|--------------------|----------------------|-------------|----------------------------------------------------|
+| `temperature`      | Number:Temperature   | R           | temperature                                        |
+| `humidity`         | Number:Dimensionless | R           | device status                                      |
+| `battery`          | Number               | R           | battery level in %                                 |
+| `lowBattery`       | Switch               | R           | on for low battery (below 15%)                     |
+
+## Plug-in switch
+
+The `powersocket` thing has only one channel:
+
+| Channel Type ID    | Item Type            | Access Mode | Description                                        |
+|--------------------|----------------------|-------------|----------------------------------------------------|
+| `powerState`       | Switch               | RW          | power on/off                                       |
+
+
+## Full Example
+
+.things:
+
+```
+Bridge elroconnects:connector:myhub [ connectorId="ST_aabbccddaabbccdd", refreshInterval=120 ] {
+    smokealarm 1 "LivingRoom" [ deviceId="1" ]
+    coalarm 2 "Garage" [ deviceId="2" ]
+    heatalarm 3 "Kitchen" [ deviceId="3" ]
+    wateralarm 4 "Basement" [ deviceId="4" ]
+    entrysensor 5 "Back Door" [ deviceId="5" ]
+    motionsensor 6 "Hallway" [ deviceId="6" ]
+    temperaturesensor 7 "Family Room" [ deviceId = "7" ]
+    powersocket 8 "Television" [ deviceId = "8" ]
+}
+```
+
+.items:
+
+```
+String Scene            {channel="elroconnects:connector:myhub:scene"}
+Number BatteryLevel     {channel="elroconnects:smokealarm:myhub:1:battery"}
+Switch AlarmTest        {channel="elroconnects:smokealarm:myhub:1:test"}
+```
+
+.sitemap:
+
+```
+Text item=Scene
+Number item=BatteryLevel
+Switch item=AlarmTest
+```
+
+Example trigger rule:
+
+```
+rule "example trigger rule"
+when
+    Channel 'elroconnects:smokealarm:myhub:1:smokeAlarm' triggered
+then
+    logInfo("Smoke alarm living room")
+    ...
+end
+```
+
+
