@@ -16,7 +16,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.stream.IntStream;
 
+import org.openhab.binding.powermax.internal.message.PowermaxMessageConstants;
 import org.openhab.binding.powermax.internal.message.PowermaxSendType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +78,20 @@ public class PowermaxPanelSettings {
     }
 
     /**
+     * @return the length of time the bell or siren sounds (in minutes)
+     */
+    public int getBellTime() {
+        return bellTime;
+    }
+
+    /**
+     * @return true if panic alarms are silent; false if audible
+     */
+    public boolean isSilentPanic() {
+        return silentPanic;
+    }
+
+    /**
      * @return true if bypassing zones is enabled; false if not
      */
     public boolean isBypassEnabled() {
@@ -118,6 +134,13 @@ public class PowermaxPanelSettings {
     }
 
     /**
+     * @return an integer stream for iterating over the range of zone numbers
+     */
+    public IntStream getZoneRange() {
+        return IntStream.rangeClosed(1, getNbZones());
+    }
+
+    /**
      * Get the settings relative to a zone
      *
      * @param zone the zone index (from 1 to NumberOfZones)
@@ -126,6 +149,36 @@ public class PowermaxPanelSettings {
      */
     public PowermaxZoneSettings getZoneSettings(int zone) {
         return ((zone < 1) || (zone > zoneSettings.length)) ? null : zoneSettings[zone - 1];
+    }
+
+    /**
+     * Get a zone's display name
+     *
+     * @param zone the zone index (from 1 to NumberOfZones)
+     *
+     * @return the name of the zone
+     */
+    public String getZoneName(int zone) {
+        PowermaxZoneSettings zoneSettings = getZoneSettings(zone);
+        return (zoneSettings == null) ? null : zoneSettings.getName();
+    }
+
+    /**
+     * Get a friendly display name for a zone, user, or device
+     * (any possible source for an event)
+     *
+     * @param zoneOrUser the zone, user, or device code
+     *
+     * @return the display name
+     */
+    public String getZoneOrUserName(int zoneOrUser) {
+        String zoneName = getZoneName(zoneOrUser);
+
+        if (zoneOrUser >= 1 && zoneOrUser <= zoneSettings.length && zoneName != null) {
+            return String.format("%s[%d]", zoneName, zoneOrUser);
+        } else {
+            return PowermaxMessageConstants.getZoneOrUser(zoneOrUser);
+        }
     }
 
     /**
