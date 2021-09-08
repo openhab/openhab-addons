@@ -266,8 +266,14 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
                             for (Thing appliance : getThing().getThings()) {
                                 if (appliance.getStatus() == ThingStatus.ONLINE) {
-                                    String UID = appliance.getProperties().get(PROTOCOL_PROPERTY_NAME)
-                                            + (String) appliance.getConfiguration().getProperties().get(APPLIANCE_ID);
+                                    String applianceId = (String) appliance.getConfiguration().getProperties()
+                                            .get(APPLIANCE_ID);
+                                    String protocol = appliance.getProperties().get(PROTOCOL_PROPERTY_NAME);
+                                    if (protocol == null) {
+                                        logger.error("Protocol property is missing for {}", applianceId);
+                                        continue;
+                                    }
+                                    String UID = protocol + applianceId;
 
                                     Object[] args = new Object[2];
                                     args[0] = UID;
@@ -280,7 +286,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                                 DeviceClassObject dco = gson.fromJson(obj, DeviceClassObject.class);
 
                                                 for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                                    listener.onApplianceStateChanged(UID, dco);
+                                                    listener.onApplianceStateChanged(applianceId, dco);
                                                 }
                                             } catch (Exception e) {
                                                 logger.debug("An exception occurred while quering an appliance : '{}'",
