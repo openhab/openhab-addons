@@ -143,8 +143,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     @Override
     public void onApplianceStateChanged(String UID, DeviceClassObject dco) {
-        String myUID = (getThing().getProperties().get(PROTOCOL_PROPERTY_NAME))
-                + (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String myUID = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
         String modelID = StringUtils.right(dco.DeviceClass,
                 dco.DeviceClass.length() - new String("com.miele.xgw3000.gateway.hdm.deviceclasses.Miele").length());
 
@@ -167,8 +166,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     @Override
     public void onAppliancePropertyChanged(String UID, DeviceProperty dp) {
-        String myUID = (getThing().getProperties().get(PROTOCOL_PROPERTY_NAME))
-                + (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String myUID = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
         if (myUID.equals(UID)) {
             try {
@@ -230,7 +228,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     @Override
     public void onApplianceRemoved(HomeDevice appliance) {
         if (uid != null) {
-            if (uid.equals(appliance.UID)) {
+            if (uid.equals(appliance.getApplianceId())) {
                 updateStatus(ThingStatus.OFFLINE);
             }
         }
@@ -239,7 +237,11 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     @Override
     public void onApplianceAdded(HomeDevice appliance) {
         if (uid != null) {
-            if (uid.equals(appliance.UID)) {
+            if (uid.equals(appliance.getApplianceId())) {
+                Map<String, String> properties = editProperties();
+                properties.put(PROTOCOL_PROPERTY_NAME, appliance.getProtocol());
+                updateProperties(properties);
+
                 updateStatus(ThingStatus.ONLINE);
             }
         }
