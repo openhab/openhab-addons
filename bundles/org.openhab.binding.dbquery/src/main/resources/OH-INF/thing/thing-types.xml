@@ -54,7 +54,7 @@
 				<label>Interval</label>
 				<description>
 					An interval, in seconds, the query will be repeatedly executed. Default values is 0, which means that
-					query is never executed manually (you need to send ON to execute channel)
+					query is never executed automatically. You need to send the ON command each time you wish to execute.
 				</description>
 				<default>0</default>
 			</parameter>
