@@ -39,7 +39,7 @@
 				<default>false</default>
 			</parameter>
 			<parameter name="scalarResult" type="boolean">
-				<label>Scalar result</label>
+				<label>Scalar Result</label>
 				<description>True if the query always return only one single scalar value (only one row and one value-column in this
 					row), otherwise false</description>
 				<default>true</default>
