@@ -45,7 +45,7 @@
 				<default>true</default>
 			</parameter>
 			<parameter name="scalarColumn" type="text" required="false">
-				<label>Scalar column name</label>
+				<label>Scalar Column Name</label>
 				<description>The column's name that is used to extract scalarResult. If only one column is returned this
 					parameter
 					can be blank</description>
