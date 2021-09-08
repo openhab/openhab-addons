@@ -1526,55 +1526,65 @@ public class Connection {
             Map<String, Object> parameters, List<@Nullable Integer> ttsVolumes,
             List<@Nullable Integer> standardVolumes) {
         JsonArray serialNodesToExecute = new JsonArray();
-        JsonArray ttsVolumeNodesToExecute = new JsonArray();
+        JsonArray ttsVolumeNodesToExecuteParallel = new JsonArray();
+        // Create a parallel node to execute the TTS volume setting on all devices
         for (int i = 0; i < devices.size(); i++) {
             Integer ttsVolume = ttsVolumes.size() > i ? ttsVolumes.get(i) : null;
             Integer standardVolume = standardVolumes.size() > i ? standardVolumes.get(i) : null;
             if (ttsVolume != null && (standardVolume != null || !ttsVolume.equals(standardVolume))) {
-                ttsVolumeNodesToExecute.add(
+                ttsVolumeNodesToExecuteParallel.add(
                         createExecutionNode(devices.get(i), "Alexa.DeviceControls.Volume", Map.of("value", ttsVolume)));
             }
         }
-        if (ttsVolumeNodesToExecute.size() > 0) {
+        if (ttsVolumeNodesToExecuteParallel.size() > 0) {
             JsonObject parallelNodesToExecute = new JsonObject();
             parallelNodesToExecute.addProperty("@type", "com.amazon.alexa.behaviors.model.ParallelNode");
-            parallelNodesToExecute.add("nodesToExecute", ttsVolumeNodesToExecute);
+            parallelNodesToExecute.add("nodesToExecute", ttsVolumeNodesToExecuteParallel);
             serialNodesToExecute.add(parallelNodesToExecute);
         }
-
+        // create a serial node to execute Announcment,
+        // in this case Announcment has the device list in the parameters
+        // -- or --
+        // create a parallel node to execute TTS or other commands on all devices
         if (command != null && !parameters.isEmpty()) {
-            JsonArray commandNodesToExecute = new JsonArray();
-            if ("Alexa.Speak".equals(command) || "Alexa.TextCommand".equals(command)) {
-                for (Device device : devices) {
-                    commandNodesToExecute.add(createExecutionNode(device, command, parameters));
-                }
+            if ("AlexaAnnouncement".equals(command)) {
+                // Announcment
+                serialNodesToExecute.add(createExecutionNode(devices.get(0), command, parameters));
+                // Workaround: Add an empty TTS, otherwise amazon executes Announcment async
+                // and the reset of the volumes happens to early
+                serialNodesToExecute.add(createExecutionNode(devices.get(0), "Alexa.Speak",
+                        Map.of("textToSpeak", "<speak><break time=\"1ms\"/></speak>")));
             } else {
-                commandNodesToExecute.add(createExecutionNode(devices.get(0), command, parameters));
-            }
-            if (commandNodesToExecute.size() > 0) {
-                JsonObject parallelNodesToExecute = new JsonObject();
-                parallelNodesToExecute.addProperty("@type", "com.amazon.alexa.behaviors.model.ParallelNode");
-                parallelNodesToExecute.add("nodesToExecute", commandNodesToExecute);
-                serialNodesToExecute.add(parallelNodesToExecute);
+                // TTS and other commands
+                JsonArray commandNodesToExecuteParallel = new JsonArray();
+                for (Device device : devices) {
+                    commandNodesToExecuteParallel.add(createExecutionNode(device, command, parameters));
+                }
+                if (commandNodesToExecuteParallel.size() > 0) {
+                    JsonObject nodesToExecute = new JsonObject();
+                    nodesToExecute.addProperty("@type", "com.amazon.alexa.behaviors.model.ParallelNode");
+                    nodesToExecute.add("nodesToExecute", commandNodesToExecuteParallel);
+                    serialNodesToExecute.add(nodesToExecute);
+                }
             }
         }
-
-        JsonArray standardVolumeNodesToExecute = new JsonArray();
+        // Create a parallel node to execute the reset volume setting on all devices
+        JsonArray standardVolumeNodesToExecuteParallel = new JsonArray();
         for (int i = 0; i < devices.size(); i++) {
             Integer ttsVolume = ttsVolumes.size() > i ? ttsVolumes.get(i) : null;
             Integer standardVolume = standardVolumes.size() > i ? standardVolumes.get(i) : null;
             if (ttsVolume != null && standardVolume != null && !ttsVolume.equals(standardVolume)) {
-                standardVolumeNodesToExecute.add(createExecutionNode(devices.get(i), "Alexa.DeviceControls.Volume",
-                        Map.of("value", standardVolume)));
+                standardVolumeNodesToExecuteParallel.add(createExecutionNode(devices.get(i),
+                        "Alexa.DeviceControls.Volume", Map.of("value", standardVolume)));
             }
         }
-        if (standardVolumeNodesToExecute.size() > 0) {
+        if (standardVolumeNodesToExecuteParallel.size() > 0) {
             JsonObject parallelNodesToExecute = new JsonObject();
             parallelNodesToExecute.addProperty("@type", "com.amazon.alexa.behaviors.model.ParallelNode");
-            parallelNodesToExecute.add("nodesToExecute", standardVolumeNodesToExecute);
+            parallelNodesToExecute.add("nodesToExecute", standardVolumeNodesToExecuteParallel);
             serialNodesToExecute.add(parallelNodesToExecute);
         }
-
+        // Now execute the sequence if there are entries in it
         if (serialNodesToExecute.size() > 0) {
             executeSequenceNodes(devices, serialNodesToExecute, false);
         }
