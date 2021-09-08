@@ -50,6 +50,7 @@ import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDeviceTempe
 import org.openhab.binding.elroconnects.internal.discovery.ElroConnectsDiscoveryService;
 import org.openhab.binding.elroconnects.internal.util.ElroConnectsUtil;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -234,7 +235,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             getCurrentScene();
 
             updateStatus(ThingStatus.ONLINE);
-            updateState(SCENE, new DecimalType(currentScene));
+            updateState(SCENE, new StringType(String.valueOf(currentScene)));
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error in communication getting initial data.");
@@ -363,6 +364,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                 keepAlive();
                 syncDevices();
                 syncScenes();
+                getCurrentScene();
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Error in communication refreshing device status.");
@@ -426,7 +428,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     }
 
     private void processDeviceStatusMessage(ElroConnectsMessage message) {
-        Integer deviceId = message.getDeviceId();
+        int deviceId = message.getDeviceId();
         String deviceStatus = message.getDeviceStatus();
         if ("OVER".equals(deviceStatus)) {
             // last message in series received
@@ -457,7 +459,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        Integer deviceId = Integer.parseInt(answerContent.substring(0, 4), 16);
+        int deviceId = Integer.parseInt(answerContent.substring(0, 4), 16);
         String deviceName = (new String(HexUtils.hexToBytes(answerContent.substring(4)))).replaceAll("[@$]*", "");
         ElroConnectsDevice device = devices.get(deviceId);
         if (device != null) {
@@ -467,7 +469,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     }
 
     private void processSceneNameMessage(ElroConnectsMessage message) {
-        Integer sceneId = message.getSceneGroup();
+        int sceneId = message.getSceneGroup();
         String answerContent = message.getAnswerContent();
         String sceneName;
         if (sceneId > MAX_DEFAULT_SCENE) {
@@ -492,11 +494,11 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     }
 
     private void processSceneMessage(ElroConnectsMessage message) {
-        Integer sceneId = message.getSceneGroup();
+        int sceneId = message.getSceneGroup();
 
         currentScene = sceneId;
 
-        updateState(SCENE, new DecimalType(currentScene));
+        updateState(SCENE, new StringType(String.valueOf(currentScene)));
     }
 
     private void processAlarmTriggerMessage(ElroConnectsMessage message) {
@@ -506,7 +508,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        Integer deviceId = Integer.parseInt(answerContent.substring(6, 10), 16);
+        int deviceId = Integer.parseInt(answerContent.substring(6, 10), 16);
 
         ElroConnectsDeviceHandler handler = deviceHandlers.get(deviceId);
         if (handler != null) {
@@ -516,7 +518,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     }
 
     private @Nullable ElroConnectsDevice addDevice(ElroConnectsMessage message) {
-        Integer deviceId = message.getDeviceId();
+        int deviceId = message.getDeviceId();
         String deviceType = message.getDeviceName();
         ElroDeviceType type = TYPE_MAP.getOrDefault(deviceType, ElroDeviceType.DEFAULT);
 
@@ -749,7 +751,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         logger.debug("Channel {}, command {}, type {}", channelUID, command, command.getClass());
         if (SCENE.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
-                updateState(SCENE, new DecimalType(currentScene));
+                updateState(SCENE, new StringType(String.valueOf(currentScene)));
             } else if (command instanceof DecimalType) {
                 try {
                     selectScene(((DecimalType) command).intValue());
