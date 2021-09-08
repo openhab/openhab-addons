@@ -25,6 +25,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
