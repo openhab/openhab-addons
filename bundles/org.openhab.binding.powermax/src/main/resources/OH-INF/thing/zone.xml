@@ -25,8 +25,8 @@
 			<channel id="tamper_alarm" typeId="tamper_alarm"/>
 			<channel id="inactive" typeId="inactive"/>
 			<channel id="tampered" typeId="tampered"/>
-			<channel id="zone_last_message" typeId="zone_last_message"/>
-			<channel id="zone_last_message_time" typeId="zone_last_message_time"/>
+			<channel id="last_message" typeId="zone_last_message"/>
+			<channel id="last_message_time" typeId="zone_last_message_time"/>
 		</channels>
 
 		<config-description>

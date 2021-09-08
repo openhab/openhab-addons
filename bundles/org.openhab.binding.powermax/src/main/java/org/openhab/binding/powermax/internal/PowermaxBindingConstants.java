@@ -47,7 +47,7 @@ public class PowermaxBindingConstants {
 
     // List of all Channel ids
     public static final String MODE = "mode";
-    public static final String LAST_MESSAGE = "last_message";
+    public static final String LAST_MESSAGE_TIME = "last_message_time";
     public static final String ACTIVE_ALERTS = "active_alerts";
     public static final String TROUBLE = "trouble";
     public static final String ALERT_IN_MEMORY = "alert_in_memory";
@@ -67,8 +67,8 @@ public class PowermaxBindingConstants {
     public static final String TAMPERED = "tampered";
     public static final String ARMED = "armed";
     public static final String LOCKED = "locked";
-    public static final String ZONE_LAST_MESSAGE = "zone_last_message";
-    public static final String ZONE_LAST_MESSAGE_TIME = "zone_last_message_time";
+    public static final String ZONE_LAST_MESSAGE = "last_message";
+    public static final String ZONE_LAST_MESSAGE_TIME = "last_message_time";
     public static final String LOW_BATTERY = "low_battery";
     public static final String PGM_STATUS = "pgm_status";
     public static final String X10_STATUS = "x10_status";

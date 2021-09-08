@@ -20,7 +20,7 @@
 			<channel id="ringing" typeId="ringing"/>
 			<channel id="pgm_status" typeId="pgm_status"/>
 			<channel id="mode" typeId="mode"/>
-			<channel id="last_message" typeId="last_message"/>
+			<channel id="last_message_time" typeId="last_message_time"/>
 			<channel id="active_alerts" typeId="active_alerts"/>
 			<channel id="event_log_1" typeId="event_log"/>
 			<channel id="event_log_2" typeId="event_log"/>

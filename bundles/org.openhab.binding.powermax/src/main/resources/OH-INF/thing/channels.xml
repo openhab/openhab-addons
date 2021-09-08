@@ -17,9 +17,9 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="last_message">
+	<channel-type id="last_message_time" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>System Last Message Received</label>
+		<label>Last Message Time</label>
 		<description>Timestamp when the most recent message of any kind was received from the panel</description>
 		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
 	</channel-type>
@@ -45,7 +45,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="ringing" advanced="true">
+	<channel-type id="ringing">
 		<item-type>Switch</item-type>
 		<label>Ringing</label>
 		<description>Whether or not the alarm siren is currently ringing</description>

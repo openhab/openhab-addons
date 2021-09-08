@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.powermax.internal.message.PowermaxMessageConstants;
@@ -54,7 +53,7 @@ public class PowermaxState extends PowermaxStateContainer {
     public StringValue armMode = new StringValue(this, "_arm_mode");
     public BooleanValue downloadSetupRequired = new BooleanValue(this, "_download_setup_required");
     public DateTimeValue lastKeepAlive = new DateTimeValue(this, "_last_keepalive");
-    public DateTimeValue lastMessageReceived = new DateTimeValue(this, LAST_MESSAGE);
+    public DateTimeValue lastMessageTime = new DateTimeValue(this, LAST_MESSAGE_TIME);
 
     public DynamicValue<Boolean> isArmed = new DynamicValue<>(this, SYSTEM_ARMED, () -> {
         return isArmed();
@@ -128,36 +127,15 @@ public class PowermaxState extends PowermaxStateContainer {
         pgmX10DevicesStatus = new Boolean[panelSettings.getNbPGMX10Devices()];
         updatedZoneNames = new HashMap<>();
         updatedZoneInfos = new HashMap<>();
+        activeAlertList = new ArrayList<>();
         activeAlertQueue = new ArrayList<>();
-    }
 
-    /**
-     * New PowermaxState objects are created with null values for most fields.
-     * When the binding starts up, to prevent fields from being shown as null
-     * or using persisted values which may be stale, we'll initialize a known
-     * empty state for many fields.
-     */
-    public void setInitialState() {
-        Consumer<Value<?>> initialize = value -> {
-            if (value.getChannel().startsWith("_")) {
-                return;
-            }
+        // Most fields will get populated by the initial download, but we set
+        // the ringing indicator in response to an alarm message. We have no
+        // other way to know if the siren is ringing so we'll initialize it to
+        // false.
 
-            if (value instanceof BooleanValue) {
-                ((BooleanValue) value).setValue(false);
-            } else if (value instanceof StringValue) {
-                ((StringValue) value).setValue("Unknown");
-            }
-        };
-
-        values.forEach(initialize);
-
-        for (int zone = 1; zone <= zones.length; zone++) {
-            PowermaxZoneState thisZone = getZone(zone);
-            thisZone.values.forEach(initialize);
-        }
-
-        resolveActiveAlerts(null);
+        this.ringing.setValue(false);
     }
 
     /**
@@ -288,10 +266,6 @@ public class PowermaxState extends PowermaxStateContainer {
     }
 
     public String getActiveAlerts() {
-        if (activeAlertList == null) {
-            return null;
-        }
-
         if (activeAlertList.isEmpty()) {
             return "None";
         }

@@ -284,8 +284,8 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
             commManager.sendRestoreMessage();
             currentState.lastKeepAlive.setValue(now);
         } else if (!Boolean.TRUE.equals(currentState.downloadMode.getValue())
-                && (currentState.lastMessageReceived.getValue() != null)
-                && ((now - currentState.lastMessageReceived.getValue()) > FIVE_MINUTES)) {
+                && (currentState.lastMessageTime.getValue() != null)
+                && ((now - currentState.lastMessageTime.getValue()) > FIVE_MINUTES)) {
             // In Standard mode: ping the panel every so often to detect disconnects
             commManager.sendMessage(PowermaxSendType.STATUS);
         }
@@ -295,7 +295,6 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         logger.info("Trying to connect or reconnect...");
         closeConnection();
         currentState = commManager.createNewState();
-        currentState.setInitialState();
         try {
             openConnection();
             logger.debug("openConnection(): connected");
