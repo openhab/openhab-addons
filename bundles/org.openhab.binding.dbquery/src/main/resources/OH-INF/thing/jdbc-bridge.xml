@@ -25,7 +25,7 @@
 				<description>Password to authenticate to the database</description>
 			</parameter>
 			<parameter name="type" type="text" required="true">
-				<label>Database type</label>
+				<label>Database Type</label>
 				<description>Type of database</description>
 				<options>
 					<option value="MySQL"/>
