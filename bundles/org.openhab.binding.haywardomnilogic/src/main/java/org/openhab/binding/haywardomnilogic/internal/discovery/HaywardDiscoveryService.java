@@ -282,17 +282,6 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                     props.put(HaywardBindingConstants.PROPERTY_VIRTUALHEATER_MAXWATERTEMP,
                             virtualHeaterProperty4.get(i));
                 });
-
-        // Find Sensors
-        final List<String> sensorProperty1 = bridgehandler.evaluateXPath("//Backyard//Sensor/Type/text()", xmlResponse);
-        final List<String> sensorProperty2 = bridgehandler.evaluateXPath("//Backyard//Sensor/Units/text()",
-                xmlResponse);
-
-        discoverDevices(bridgehandler, xmlResponse, "Sensor", HaywardTypeToRequest.SENSOR,
-                HaywardBindingConstants.THING_TYPE_SENSOR, (props, i) -> {
-                    props.put(HaywardBindingConstants.PROPERTY_SENSOR_TYPE, sensorProperty1.get(i));
-                    props.put(HaywardBindingConstants.PROPERTY_SENSOR_UNITS, sensorProperty2.get(i));
-                });
     }
 
     private void discoverDevices(HaywardBridgeHandler bridgehandler, String xmlResponse, String xmlSearchTerm,
@@ -339,10 +328,6 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                 additionalPropertyConsumer.accept(properties, i);
             }
 
-            // skip system sensors with no BOW
-            if ((thingType == HaywardBindingConstants.THING_TYPE_SENSOR) && (bowID.isEmpty())) {
-                continue;
-            }
             onDeviceDiscovered(thingType, names.get(i), properties);
         }
     }

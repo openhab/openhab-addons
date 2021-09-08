@@ -31,7 +31,6 @@ import org.openhab.binding.haywardomnilogic.internal.handler.HaywardFilterHandle
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardHeaterHandler;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardPumpHandler;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardRelayHandler;
-import org.openhab.binding.haywardomnilogic.internal.handler.HaywardSensorHandler;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardVirtualHeaterHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -102,9 +101,7 @@ public class HaywardHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_RELAY)) {
             return new HaywardRelayHandler(thing);
-        }
-        if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_SENSOR)) {
-            return new HaywardSensorHandler(thing);
+
         }
         if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_VIRTUALHEATER)) {
             return new HaywardVirtualHeaterHandler(thing);
