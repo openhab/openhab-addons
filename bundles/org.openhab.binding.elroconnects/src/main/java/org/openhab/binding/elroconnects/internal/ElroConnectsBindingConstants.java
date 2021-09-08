@@ -166,4 +166,8 @@ public class ElroConnectsBindingConstants {
         FAULT,
         UNDEF
     }
+
+    // Listener threadname prefix
+    public static final String THREAD_NAME_PREFIX = "OH-" + BINDING_ID + "-";
+
 }

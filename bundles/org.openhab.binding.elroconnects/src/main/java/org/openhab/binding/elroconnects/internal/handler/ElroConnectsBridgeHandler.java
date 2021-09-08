@@ -175,11 +175,6 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     }
 
     private synchronized void startCommunication() {
-        if (this.connectorId.isEmpty()) {
-            // Should not happen, as this is set in initialize()
-            return;
-        }
-
         InetAddress addr = null;
         try {
             addr = getAddr();
@@ -222,7 +217,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         try {
             // Start Elro Connects listener. This listener will act on all messages coming from
             // Elro K1 Connector.
-            (new Thread(() -> runElroEvents(socket))).start();
+            (new Thread(this::runElroEvents, THREAD_NAME_PREFIX + thing.getUID().getAsString())).start();
 
             keepAlive();
 
@@ -337,20 +332,27 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
      *
      * @param socket
      */
-    private void runElroEvents(DatagramSocket socket) {
-        logger.debug("Listening for messages");
+    private void runElroEvents() {
+        DatagramSocket socket = this.socket;
 
-        try {
-            byte[] buffer = new byte[4096];
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-            keepRunning = true;
-            while (keepRunning) {
-                String response = receive(socket, buffer, packet);
-                processMessage(socket, response);
+        if (socket != null) {
+            logger.debug("Listening for messages");
+
+            try {
+                byte[] buffer = new byte[4096];
+                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                keepRunning = true;
+                while (keepRunning) {
+                    String response = receive(socket, buffer, packet);
+                    processMessage(socket, response);
+                }
+            } catch (IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Communication error in listener.");
+                restartCommunication();
             }
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication error in listener.");
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error initiating communication.");
             restartCommunication();
         }
     }
