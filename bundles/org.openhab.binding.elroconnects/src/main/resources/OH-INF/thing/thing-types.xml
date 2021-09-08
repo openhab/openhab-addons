@@ -231,24 +231,24 @@
 			<tag>Water</tag>
 		</tags>
 	</channel-type>
-    <channel-type id="entryalarm">
-        <kind>trigger</kind>
-        <label>Entry Alarm</label>
-        <description>Entry alarm triggered</description>
-        <tags>
-            <tag>Alarm</tag>
-            <tag>OpenState</tag>
-        </tags>
-    </channel-type>
-    <channel-type id="motionalarm">
-        <kind>trigger</kind>
-        <label>Motion Alarm</label>
-        <description>Motion alarm triggered</description>
-        <tags>
-            <tag>Alarm</tag>
-            <tag>Presence</tag>
-        </tags>
-    </channel-type>
+	<channel-type id="entryalarm">
+		<kind>trigger</kind>
+		<label>Entry Alarm</label>
+		<description>Entry alarm triggered</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>OpenState</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="motionalarm">
+		<kind>trigger</kind>
+		<label>Motion Alarm</label>
+		<description>Motion alarm triggered</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Presence</tag>
+		</tags>
+	</channel-type>
 	<channel-type id="entry">
 		<item-type>Contact</item-type>
 		<label>Entry Contact</label>
