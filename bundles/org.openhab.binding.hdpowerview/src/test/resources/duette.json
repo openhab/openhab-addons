@@ -6,8 +6,8 @@
 		{
 			"id": 63778,
 			"type": 8,
-			"batteryStatus": 0,
-			"batteryStrength": 0,
+			"batteryStatus": 3,
+			"batteryStrength": 168,
 			"roomId": 891,
 			"firmware": {
 				"revision": 1,
