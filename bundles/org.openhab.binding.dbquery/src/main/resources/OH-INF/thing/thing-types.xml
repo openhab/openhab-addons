@@ -109,7 +109,8 @@
 	</channel-type>
 	<channel-type id="correct-channel">
 		<item-type>Switch</item-type>
-		<label>True if last query executed correctly, otherwise false</label>
+		<label>Last Query Worked</label>
+		<description>True if last query executed correctly</description>
 	</channel-type>
 	<channel-type id="calculate-parameters-channel">
 		<kind>trigger</kind>
