@@ -48,6 +48,7 @@
 			</channel>
 			<channel id="vane" typeId="shade-vane"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
 			<channel id="batteryVoltage" typeId="battery-voltage"/>
 			<channel id="signalStrength" typeId="system.signal-strength"/>
 		</channels>
