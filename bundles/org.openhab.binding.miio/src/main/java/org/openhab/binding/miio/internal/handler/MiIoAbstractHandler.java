@@ -77,7 +77,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected static final Gson GSON = new GsonBuilder().create();
     protected static final String TIMESTAMP = "timestamp";
 
-    protected ScheduledExecutorService miIoScheduler = scheduler;
+    protected ScheduledExecutorService miIoScheduler = new ScheduledThreadPoolExecutor(3,
+            new NamedThreadFactory("binding-" + getThing().getUID().getAsString(), true));
+
     protected @Nullable ScheduledFuture<?> pollingJob;
     protected MiIoDevices miDevice = MiIoDevices.UNKNOWN;
     protected boolean isIdentified;
@@ -134,7 +136,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 getThing().getThingTypeUID());
 
         ScheduledThreadPoolExecutor miIoScheduler = new ScheduledThreadPoolExecutor(3,
-                new NamedThreadFactory(getThing().getUID().getAsString(), true));
+                new NamedThreadFactory("binding-" + getThing().getUID().getAsString(), true));
         miIoScheduler.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
         miIoScheduler.setRemoveOnCancelPolicy(true);
         this.miIoScheduler = miIoScheduler;
