@@ -38,6 +38,7 @@ The following configuration parameters are available on the Doorbird A1081 Contr
 | Hostname                 | doorbirdHost | Required          | The hostname or IP address of the Doorbird device. |
 | User ID                  | userId       | Required          | User Id of a Doorbird user that has permissions to access the API. The User ID and Password must be created using the Doorbird smart phone application. |
 | Password                 | userPassword | Required          | Password of a Doorbird user. |
+| Controller Id            | controllerId | Optional          | Doorbird Id of the controller to reliable target the relays of this device. E.g. "gggaaa" |
 
 ## Discovery
 

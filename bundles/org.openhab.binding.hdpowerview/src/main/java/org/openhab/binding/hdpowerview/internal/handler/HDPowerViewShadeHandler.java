@@ -30,10 +30,13 @@ import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -134,7 +137,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (shadeData != null) {
             updateStatus(ThingStatus.ONLINE);
             updateBindingStates(shadeData.positions);
-            updateState(CHANNEL_SHADE_LOW_BATTERY, shadeData.batteryStatus < 2 ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_SHADE_LOW_BATTERY, shadeData.batteryStatus == 1 ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_SHADE_BATTERY_VOLTAGE, new QuantityType<>(shadeData.batteryStrength / 10, Units.VOLT));
+            updateState(CHANNEL_SHADE_SIGNAL_STRENGTH, new DecimalType(shadeData.signalStrength));
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
