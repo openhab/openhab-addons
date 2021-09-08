@@ -147,8 +147,8 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
                 });
 
         // Find ColorLogic Lights
-        final List<String> colorLogicProperty1 = bridgehandler
-                .evaluateXPath("//Body-of-water/ColorLogic-Light/Type/text()", xmlResponse);
+        final List<String> colorLogicProperty1 = bridgehandler.evaluateXPath("//Backyard//ColorLogic-Light/Type/text()",
+                xmlResponse);
 
         discoverDevices(bridgehandler, xmlResponse, "ColorLogic-Light", HaywardTypeToRequest.COLORLOGIC,
                 HaywardBindingConstants.THING_TYPE_COLORLOGIC, (props, i) -> {
