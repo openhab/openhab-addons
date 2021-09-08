@@ -259,7 +259,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
             updateState = createNewState();
         }
 
-        updateState.lastMessageReceived.setValue(System.currentTimeMillis());
+        updateState.lastMessageTime.setValue(System.currentTimeMillis());
 
         if (updateState.getUpdateSettings() != null) {
             panelSettings.updateRawSettings(updateState.getUpdateSettings());

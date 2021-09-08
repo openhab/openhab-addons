@@ -36,7 +36,7 @@ public abstract class PowermaxStateContainer {
     protected List<Value<?>> values;
 
     public abstract class Value<T> {
-        protected T value;
+        protected @Nullable T value;
         protected final String channel;
 
         public Value(PowermaxStateContainer parent, String channel) {
