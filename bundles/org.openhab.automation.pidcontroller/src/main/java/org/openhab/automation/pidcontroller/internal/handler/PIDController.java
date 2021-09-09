@@ -34,12 +34,17 @@ class PIDController {
     private double ki;
     private double kd;
     private double derivativeTimeConstantSec;
+    private double iMinValue;
+    private double iMaxValue;
 
-    public PIDController(double kpAdjuster, double kiAdjuster, double kdAdjuster, double derivativeTimeConstantSec) {
+    public PIDController(double kpAdjuster, double kiAdjuster, double kdAdjuster, double derivativeTimeConstantSec,
+            double iMinValue, double iMaxValue) {
         this.kp = kpAdjuster;
         this.ki = kiAdjuster;
         this.kd = kdAdjuster;
         this.derivativeTimeConstantSec = derivativeTimeConstantSec;
+        this.iMinValue = iMinValue;
+        this.iMaxValue = iMaxValue;
     }
 
     public PIDOutputDTO calculate(double input, double setpoint, long lastInvocationMs, int loopTimeMs) {
@@ -58,8 +63,17 @@ class PIDController {
 
         // calculate parts
         final double proportionalPart = kp * error;
-        final double integralPart = ki * integralResult;
+
+        double integralPart = ki * integralResult;
+        if (Double.isFinite(iMinValue)) {
+            integralPart = Math.max(integralPart, iMinValue);
+        }
+        if (Double.isFinite(iMaxValue)) {
+            integralPart = Math.min(integralPart, iMaxValue);
+        }
+
         final double derivativePart = kd * derivativeResult;
+
         output = proportionalPart + integralPart + derivativePart;
 
         return new PIDOutputDTO(output, proportionalPart, integralPart, derivativePart, error);
