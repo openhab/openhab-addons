@@ -96,7 +96,7 @@ Hayward OmniLogic Connection Parameters:
 
 | Channel Type ID | Item Type | Description   | Read Write |
 |-----------------|-----------|---------------|:----------:|
-| heaterState     | Number    | Heater state  |      R     |
+| heaterState     | String    | Heater state  |      R     |
 | heaterEnable    | Switch    | Heater enable |      R     |
 
 ### Pump Channels
