@@ -69,7 +69,7 @@ public class D2_06_50 extends _VLDMessage {
     }
 
     protected State getCalibrationState() {
-        int calibrationState = bytes[2] >>> 6;
+        int calibrationState = bytes[1] >>> 6;
         if (calibrationState == 0x00) {
             return new StringType("OK");
         } else if (calibrationState == 0x01) {
