@@ -73,7 +73,7 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link ElroConnectsBridgeHandler} is the bridge handler responsible to for handling all communication with the
- * Elro Connects K1 Hub. All individual device communication passes through the hub.
+ * ELRO Connects K1 Hub. All individual device communication passes through the hub.
  *
  * @author Mark Herwege - Initial contribution
  */
@@ -215,8 +215,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         logger.debug("Connected to connector {} at {}:{}", connectorId, addr, PORT);
 
         try {
-            // Start Elro Connects listener. This listener will act on all messages coming from
-            // Elro K1 Connector.
+            // Start ELRO Connects listener. This listener will act on all messages coming from
+            // ELRO K1 Connector.
             (new Thread(this::runElroEvents, THREAD_NAME_PREFIX + thing.getUID().getAsString())).start();
 
             keepAlive();
@@ -280,7 +280,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Cleanup socket when the communication with Elro Connects connector is closed.
+     * Cleanup socket when the communication with ELRO Connects connector is closed.
      *
      */
     private synchronized void stopCommunication() {
@@ -305,7 +305,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Close and restart communication with Elro Connects system.
+     * Close and restart communication with ELRO Connects system.
      */
     private synchronized void restartCommunication() {
         stopCommunication();
@@ -651,7 +651,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
      * for creating the appropriate command string.
      *
      * @param deviceId
-     * @param deviceCommand Elro Connects device command string
+     * @param deviceCommand ELRO Connects device command string
      * @throws IOException
      */
     public void deviceControl(int deviceId, String deviceCommand) throws IOException {

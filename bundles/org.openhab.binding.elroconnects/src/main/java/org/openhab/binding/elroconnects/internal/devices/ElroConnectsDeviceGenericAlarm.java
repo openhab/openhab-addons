@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ElroConnectsDeviceGenericAlarm} is representing a generic Elro Connects Alarm device.
+ * The {@link ElroConnectsDeviceGenericAlarm} is representing a generic ELRO Connects Alarm device.
  *
  * @author Mark Herwege - Initial contribution
  */

@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ElroConnectsDeviceCxsmAlarm} is representing an Elro Connects Cxsm Alarm device.
+ * The {@link ElroConnectsDeviceCxsmAlarm} is representing an ELRO Connects Cxsm Alarm device.
  *
  * @author Mark Herwege - Initial contribution
  */

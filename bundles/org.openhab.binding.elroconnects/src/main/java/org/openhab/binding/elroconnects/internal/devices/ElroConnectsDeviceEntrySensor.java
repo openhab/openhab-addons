@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ElroConnectsDeviceEntrySensor} is representing a generic Elro Connects Entry Sensor device.
+ * The {@link ElroConnectsDeviceEntrySensor} is representing a generic ELRO Connects Entry Sensor device.
  *
  * @author Mark Herwege - Initial contribution
  */

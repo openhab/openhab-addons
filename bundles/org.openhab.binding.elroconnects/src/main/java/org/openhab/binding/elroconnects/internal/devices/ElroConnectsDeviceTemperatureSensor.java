@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ElroConnectsDeviceTemperatureSensor} is representing an Elro Connects temperature and humidity sensor
+ * The {@link ElroConnectsDeviceTemperatureSensor} is representing an ELRO Connects temperature and humidity sensor
  * device.
  *
  * @author Mark Herwege - Initial contribution

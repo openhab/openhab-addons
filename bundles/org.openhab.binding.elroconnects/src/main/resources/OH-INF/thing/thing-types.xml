@@ -19,7 +19,7 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer">
 				<label>Refresh Interval</label>
-				<description>Heartbeat device refresh interval for communication with Elro Connects K1 Connector in seconds, default
+				<description>Heartbeat device refresh interval for communication with ELRO Connects K1 Connector in seconds, default
 					60s</description>
 				<default>60</default>
 				<advanced>true</advanced>
@@ -192,7 +192,7 @@
 	<channel-type id="scene">
 		<item-type>String</item-type>
 		<label>Scene</label>
-		<description>Scene selection from scenes configured in the Elro Connects app, enables configuring alarm modes</description>
+		<description>Scene selection from scenes configured in the ELRO Connects app, enables configuring alarm modes</description>
 	</channel-type>
 
 	<channel-type id="smokealarm">

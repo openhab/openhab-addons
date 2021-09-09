@@ -30,7 +30,7 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link ElroConnectsDeviceHandler} represents the thing handler for an Elro Connects device.
+ * The {@link ElroConnectsDeviceHandler} represents the thing handler for an ELRO Connects device.
  *
  * @author Mark Herwege - Initial contribution
  */

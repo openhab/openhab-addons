@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ElroConnectsDevicePowerSocket} is representing an Elro Connects power socket device.
+ * The {@link ElroConnectsDevicePowerSocket} is representing an ELRO Connects power socket device.
  *
  * @author Mark Herwege - Initial contribution
  */

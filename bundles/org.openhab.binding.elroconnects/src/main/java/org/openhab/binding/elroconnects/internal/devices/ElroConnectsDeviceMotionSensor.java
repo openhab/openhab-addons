@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ElroConnectsDeviceMotionSensor} is representing an Elro Connects Motion Sensor device.
+ * The {@link ElroConnectsDeviceMotionSensor} is representing an ELRO Connects Motion Sensor device.
  *
  * @author Mark Herwege - Initial contribution
  */

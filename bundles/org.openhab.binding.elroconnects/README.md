@@ -1,10 +1,10 @@
-# ElroConnects Binding
+# ELRO Connects Binding
 
-The ElroConnects binding provides integration with the [Elro Connects](https://www.elro.eu/en/smart-home) smart home system.
+The ELRO Connects binding provides integration with the [ELRO Connects](https://www.elro.eu/en/smart-home) smart home system.
 
-The system uses a Wifi Hub (K1 Connector) to enable communication with various smart home devices.
+The system uses a Wi-Fi Hub (K1 Connector) to enable communication with various smart home devices.
 The devices communicate with the hub using 868MHz RF.
-The binding only communicates with the Elro Connects system and K1 Connector using UDP in the local network.
+The binding only communicates with the ELRO Connects system and K1 Connector using UDP in the local network.
 
 The binding exposes the devices' status and controls to openHAB.
 The K1 connector itself allows setting up scenes through a mobile application.
@@ -14,7 +14,7 @@ Many of the sensor devices are battery powered.
 
 ## Supported Things
 
-The Elro Connects supported device types are:
+The ELRO Connects supported device types are:
 
 * K1 connector hub: `connector`
 * Smoke detector: `smokealarm`
@@ -30,7 +30,7 @@ The `connector` is the bridge thing.
 All other things are connected to the bridge.
 
 Testing was only done with smoke and water detectors connected to a K1 connector.
-The firmware version of the K1 connector was 2.0.3.30 at time of test.
+The firmware version of the K1 connector was 2.0.3.30 at the time of testing.
 Older versions of the firmware are known to have differences in the communication protocol.
 
 ## Discovery
@@ -38,10 +38,9 @@ Older versions of the firmware are known to have differences in the communicatio
 The K1 connector `connector` cannot be auto-discovered.
 Once the bridge thing representing the K1 connector is correctly set up and online, discovery will allow discovering all devices connected to the K1 connector.
 
-The communication between the hub and devices may be disturbed.
-Therefore devices may not appear or stay offline.
+If devices are outside reliable RF range, devices known to the K1 hub will be discovered but may stay offline when added as a thing.
 Alarm devices can still trigger alarms and pass them between each other, even if the connection with the hub is lost.
-It will not be possible to discover and control them from openHAB in this case.
+It will not be possible to receive alarms and control them from openHAB in this case.
 
 ## Thing Configuration
 
@@ -49,7 +48,7 @@ It will not be possible to discover and control them from openHAB in this case.
 
 The K1 connector has one required configuration parameter, `connectorId`.
 It should be set to ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector.
-This `connectorId` can also be found in the Elro Connects mobile application.
+This `connectorId` can also be found in the ELRO Connects mobile application.
                     
 There is one optional advanced parameter, `refreshInterval`.
 This parameter controls the connection refresh heartbeat interval.
@@ -79,7 +78,7 @@ Thing elroconnects:<thingtype>:<deviceId> [deviceId="<numeric device id>"]
 
 The `connector` bridge thing has only one channel:
 
-| Channel Type ID    | Item Type            | Access Mode | Description                                        |
+| Channel ID         | Item Type            | Access Mode | Description                                        |
 |--------------------|----------------------|-------------|----------------------------------------------------|
 | `scene`            | String               | RW          | current scene                                      |
 
@@ -89,7 +88,7 @@ The `scene` channel has a dynamic state options list with all possible scene cho
 
 All these things have the same channels:
 
-| Channel Type ID    | Item Type            | Access Mode | Description                                        |
+| Channel ID         | Item Type            | Access Mode | Description                                        |
 |--------------------|----------------------|-------------|----------------------------------------------------|
 | `muteAlarm`        | Switch               | RW          | mute alarm                                         |
 | `testAlarm`        | Switch               | RW          | test alarm                                         |
@@ -102,7 +101,7 @@ Each also has a trigger channel, resp. `smokeAlarm`, `coAlarm`, `heatAlarm` and 
 
 The `entrysensor` thing has the following channels:
 
-| Channel Type ID    | Item Type            | Access Mode | Description                                        |
+| Channel ID         | Item Type            | Access Mode | Description                                        |
 |--------------------|----------------------|-------------|----------------------------------------------------|
 | `entry`            | Contact              | R           | open/closed door/window                            |
 | `battery`          | Number               | R           | battery level in %                                 |
@@ -114,7 +113,7 @@ The `entrysensor` thing also has a trigger channel, `entryAlarm`.
 
 The `motionsensor` thing has the following channels:
 
-| Channel Type ID    | Item Type            | Access Mode | Description                                        |
+| Channel ID         | Item Type            | Access Mode | Description                                        |
 |--------------------|----------------------|-------------|----------------------------------------------------|
 | `motion`           | Switch               | R           | on when motion detected                            |
 | `battery`          | Number               | R           | battery level in %                                 |
@@ -126,7 +125,7 @@ The `motionsensor` thing also has a trigger channel, `motionAlarm`.
 
 The `temperaturesensor` thing has the following channels:
 
-| Channel Type ID    | Item Type            | Access Mode | Description                                        |
+| Channel ID         | Item Type            | Access Mode | Description                                        |
 |--------------------|----------------------|-------------|----------------------------------------------------|
 | `temperature`      | Number:Temperature   | R           | temperature                                        |
 | `humidity`         | Number:Dimensionless | R           | device status                                      |
@@ -137,7 +136,7 @@ The `temperaturesensor` thing has the following channels:
 
 The `powersocket` thing has only one channel:
 
-| Channel Type ID    | Item Type            | Access Mode | Description                                        |
+| Channel ID         | Item Type            | Access Mode | Description                                        |
 |--------------------|----------------------|-------------|----------------------------------------------------|
 | `powerState`       | Switch               | RW          | power on/off                                       |
 

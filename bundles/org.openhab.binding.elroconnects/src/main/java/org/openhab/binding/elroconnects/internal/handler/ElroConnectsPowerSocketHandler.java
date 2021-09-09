@@ -22,7 +22,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 
 /**
- * The {@link ElroConnectsPowerSocketHandler} represents the thing handler for an Elro Connects power socket device.
+ * The {@link ElroConnectsPowerSocketHandler} represents the thing handler for an ELRO Connects power socket device.
  *
  * @author Mark Herwege - Initial contribution
  */

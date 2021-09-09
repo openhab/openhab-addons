@@ -85,7 +85,7 @@ public class ElroConnectsBindingConstants {
     public static final String CONFIG_DEVICE_ID = "deviceId";
     public static final String CONFIG_DEVICE_TYPE = "deviceType";
 
-    // Elro cmd constants
+    // ELRO cmd constants
     public static final int ELRO_DEVICE_CONTROL = 101;
     public static final int ELRO_GET_DEVICE_NAME = 14;
     public static final int ELRO_GET_DEVICE_STATUSES = 15;
@@ -104,7 +104,7 @@ public class ElroConnectsBindingConstants {
 
     public static final int ELRO_IGNORE_YES_NO = 11;
 
-    // Elro device types
+    // ELRO device types
     public static enum ElroDeviceType {
         ENTRY_SENSOR,
         CO_ALARM,
@@ -156,7 +156,7 @@ public class ElroConnectsBindingConstants {
             .flatMap(e -> e.getValue().stream().map(v -> Map.entry(v, e.getKey())))
             .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 
-    // Elro device status
+    // ELRO device status
     public static enum ElroDeviceStatus {
         NORMAL,
         TRIGGERED,

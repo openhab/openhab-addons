@@ -22,7 +22,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 
 /**
- * The {@link ElroConnectsCOAlarmHandler} represents the thing handler for an Elro Connects CO alarm device.
+ * The {@link ElroConnectsCOAlarmHandler} represents the thing handler for an ELRO Connects CO alarm device.
  *
  * @author Mark Herwege - Initial contribution
  */
