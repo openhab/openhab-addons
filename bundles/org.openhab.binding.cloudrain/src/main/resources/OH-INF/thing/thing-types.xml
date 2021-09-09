@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="cloudrain"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<!-- ############################### Irrigation Zone ############################### -->
+
+	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Cloudrain Zone</label>
+		<description>Represents a Watering Zone as defined in Cloudrain</description>
+
+		<channel-groups>
+			<channel-group id="irrigation" typeId="irrigation"/>
+			<channel-group id="command" typeId="command"/>
+		</channel-groups>
+		<properties>
+			<property name="uid"/>
+			<property name="zoneId"/>
+			<property name="zoneName"/>
+			<property name="controllerId"/>
+			<property name="controllerName"/>
+		</properties>
+	</thing-type>
+
+	<!-- ############################### channels and groups ############################### -->
+
+	<channel-group-type id="irrigation">
+		<label>Irrigation Properties</label>
+		<description>Properties of an irrigation in a zone</description>
+		<channels>
+			<channel id="state" typeId="state">
+				<label>Irrigation Status</label>
+			</channel>
+			<channel id="startTime" typeId="timestamp">
+				<label>Start Timestamp</label>
+			</channel>
+			<channel id="plannedEndTime" typeId="timestamp">
+				<label>Planned End Timestamp</label>
+			</channel>
+			<channel id="remainingSeconds" typeId="durationSec">
+				<label>Remaining Seconds</label>
+			</channel>
+			<channel id="duration" typeId="durationSec">
+				<label>Duration</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="command">
+		<label>Irrigation Commands</label>
+		<description>Commands to control an irrigation in a zone</description>
+		<channels>
+			<channel id="commandDuration" typeId="irrigationCommandDuration">
+				<label>Irrigation Duration</label>
+				<description>The duration in seconds to be used for the next command.</description>
+			</channel>
+			<channel id="startIrrigation" typeId="cloudrainCommand">
+				<label>Start irrigation</label>
+				<description>Start an irrigation with the define duration. Behaves like changing the irrigation if one is active
+					exists in the zone.</description>
+			</channel>
+			<channel id="changeIrrigation" typeId="cloudrainCommand">
+				<label>Change irrigation</label>
+				<description>Change an active irrigation to the defined duration. The active irrigation will start over with the new
+					duration. Has no effect if no irrigation is active in the zone.</description>
+			</channel>
+			<channel id="stopIrrigation" typeId="cloudrainCommand">
+				<label>Stop irrigation,</label>
+				<description>Stop the current irrigation and continue with the schedule. Has no effect if no irrigation is active in
+					the zone.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="cloudrainCommand">
+		<item-type>Switch</item-type>
+		<label>Command</label>
+		<description>A command for an irrigation zone</description>
+	</channel-type>
+
+	<channel-type id="irrigationCommandDuration">
+		<item-type>Number:Time</item-type>
+		<label>Command Duration</label>
+		<description>A duration in seconds for an irrigation command</description>
+		<state pattern="%d sec" min="60" max="3600" step="60"/>
+	</channel-type>
+
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>State</label>
+		<description>The state of an irrigation</description>
+		<state readOnly="true">
+			<options>
+				<option value="ON">ON</option>
+				<option value="OFF">OFF</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Timestamp</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="durationSec">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<description>Duration in seconds</description>
+		<state readOnly="true" pattern="%d sec"/>
+	</channel-type>
+
+</thing:thing-descriptions>

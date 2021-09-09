@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="cloudrain"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Cloudrain Account -->
+	<bridge-type id="account">
+		<label>Cloudrain Account</label>
+		<description>The Cloudrain account</description>
+
+		<config-description>
+			<parameter name="user" type="text" required="true">
+				<label>Username</label>
+				<description>Username for logging into the Cloudrain system</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<context>password</context>
+				<description>Password for logging into the Cloudrain system</description>
+			</parameter>
+			<parameter name="clientId" type="text" required="true">
+				<label>Client ID</label>
+				<description>The Cloudrain Developer API Client ID</description>
+			</parameter>
+			<parameter name="clientSecret" type="text" required="true">
+				<label>Client Secret</label>
+				<description>The Cloudrain Developer API Client Secret</description>
+			</parameter>
+			<parameter name="connectionTimeout" type="integer" min="0" unit="s">
+				<label>Connection Timeout</label>
+				<description>The timeout in seconds for connections to the Cloudrain Developer API. Zero value means infinite
+					timeout.</description>
+				<unitLabel>seconds</unitLabel>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="irrigationUpdateInterval" type="integer" min="10" max="3600" unit="s">
+				<label>Irrigation Update Interval</label>
+				<description>The interval in seconds in which the status of irrigations is polled from the Cloudrain Developer API.</description>
+				<unitLabel>seconds</unitLabel>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="zoneUpdateInterval" type="integer" min="10" max="86400" unit="s">
+				<label>Zone Update Interval</label>
+				<description>The interval in seconds in which existing zones are polled from the Cloudrain Developer API. This only
+					updates the zone's properties such as the name and the thing status (online / offline). New zones can be discovered
+					by running a scan job manually.</description>
+				<unitLabel>seconds</unitLabel>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="realtimeUpdates" type="boolean">
+				<label>Realtime Updates</label>
+				<description>Updates the remaining seconds of active irrigations in realtime without waiting for the polling
+					interval. This update does not access the Cloudrain API. Offers more acurate status, but may increase overhead e.g.
+					log entries.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="updateAfterIrrigation" type="boolean">
+				<label>Update a zone's status after an active irrigation ended</label>
+				<description>Fetches an update from the Cloudrain API after projected end of an active irrigation without having to
+					wait for the regular polling interval. Increases the amount of API calls, but offers more accuracy.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="testMode" type="boolean">
+				<label>Testmode</label>
+				<description>The test mode does not require a Cloudrain account and provides a dummy implementation of the API in
+					order to test the Binding.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
