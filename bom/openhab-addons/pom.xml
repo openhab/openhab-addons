@@ -746,11 +746,13 @@
       <artifactId>org.openhab.binding.lifx</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
+    <!-- linky binding suppressed from the distribution until it is fixed
+      <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.linky</artifactId>
       <version>${project.version}</version>
-    </dependency>
+      </dependency>
+    -->
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.linuxinput</artifactId>
