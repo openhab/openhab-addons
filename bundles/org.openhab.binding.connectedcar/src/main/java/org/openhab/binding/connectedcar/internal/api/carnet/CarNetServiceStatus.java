@@ -14,7 +14,7 @@ package org.openhab.binding.connectedcar.internal.api.carnet;
 
 import static org.openhab.binding.connectedcar.internal.BindingConstants.*;
 import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNAPI_SERVICE_VEHICLE_STATUS_REPORT;
-import static org.openhab.binding.connectedcar.internal.util.Helpers.getString;
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -170,11 +170,11 @@ public class CarNetServiceStatus extends ApiBaseService {
         }
 
         // Update aggregated status
-        updated |= updateChannel(CHANNEL_STATUS_LOCKED, vehicleLocked ? OnOffType.ON : OnOffType.OFF);
-        updated |= updateChannel(CHANNEL_CONTROL_LOCK, vehicleLocked ? OnOffType.ON : OnOffType.OFF);
-        updated |= updateChannel(CHANNEL_STATUS_MAINTREQ, maintenanceRequired ? OnOffType.ON : OnOffType.OFF);
-        updated |= updateChannel(CHANNEL_STATUS_TIRESOK, tiresOk ? OnOffType.ON : OnOffType.OFF);
-        updated |= updateChannel(CHANNEL_STATUS_WINCLOSED, windowsClosed ? OnOffType.ON : OnOffType.OFF);
+        updated |= updateChannel(CHANNEL_STATUS_LOCKED, getOnOff(vehicleLocked));
+        updated |= updateChannel(CHANNEL_CONTROL_LOCK, getOnOff(vehicleLocked));
+        updated |= updateChannel(CHANNEL_STATUS_MAINTREQ, getOnOff(maintenanceRequired));
+        updated |= updateChannel(CHANNEL_STATUS_TIRESOK, getOnOff(tiresOk));
+        updated |= updateChannel(CHANNEL_STATUS_WINCLOSED, getOnOff(windowsClosed));
 
         return updated;
     }
@@ -233,7 +233,7 @@ public class CarNetServiceStatus extends ApiBaseService {
         if (!val.isEmpty()) {
             double value = Double.parseDouble(val);
             if (value < 0) {
-                value = value * -1.0; // no egative values
+                value = definition.symbolicName.startsWith("GT0") ? 0 : value * -1.0; // no egative values
             }
             BigDecimal bd = new BigDecimal(value);
             if (definition.unit != null) {

@@ -224,7 +224,8 @@ public class WeConnectServiceStatus extends ApiBaseService {
         boolean updated = false;
         WCMaintenanceStatus data = status.maintenanceStatus;
         if (status.maintenanceStatus != null) {
-            updated |= updateChannel(CHANNEL_STATUS_ODOMETER, getDecimal(data.mileageKm));
+            int odometer = getInteger(data.mileageKm); // sometimes the API returns 0
+            updated |= updateChannel(CHANNEL_STATUS_ODOMETER, odometer > 0 ? getDecimal(odometer) : UnDefType.UNDEF);
             updated |= updateChannel(CHANNEL_MAINT_DISTINSP, getDecimal(data.inspectionDueKm));
             updated |= updateChannel(CHANNEL_MAINT_DISTTIME, getDecimal(data.inspectionDueDays));
             updated |= updateChannel(CHANNEL_MAINT_OILDIST, getDecimal(data.oilServiceDueKm));
