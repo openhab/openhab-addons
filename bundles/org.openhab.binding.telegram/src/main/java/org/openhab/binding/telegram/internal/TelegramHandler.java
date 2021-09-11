@@ -156,7 +156,7 @@ public class TelegramHandler extends BaseThingHandler {
         }
 
         OkHttpClient.Builder prepareConnection = new OkHttpClient.Builder().connectTimeout(75, TimeUnit.SECONDS)
-                .readTimeout(75, TimeUnit.SECONDS);
+                .writeTimeout(75, TimeUnit.SECONDS).readTimeout(75, TimeUnit.SECONDS);
 
         String proxyHost = config.getProxyHost();
         Integer proxyPort = config.getProxyPort();
@@ -324,20 +324,20 @@ public class TelegramHandler extends BaseThingHandler {
                             update.callbackQuery().data());
                 }
             }
-            updateChannel(LASTMESSAGETEXT, lastMessageText != null ? new StringType(lastMessageText) : UnDefType.NULL);
+            updateChannel(CHATID, chatId != null ? new StringType(chatId.toString()) : UnDefType.NULL);
+            updateChannel(REPLYID, replyId != null ? new StringType(replyId) : UnDefType.NULL);
             updateChannel(LASTMESSAGEURL, lastMessageURL != null ? new StringType(lastMessageURL) : UnDefType.NULL);
-            updateChannel(LASTMESSAGEDATE, lastMessageDate != null
-                    ? new DateTimeType(
-                            ZonedDateTime.ofInstant(Instant.ofEpochSecond(lastMessageDate.intValue()), ZoneOffset.UTC))
-                    : UnDefType.NULL);
             updateChannel(LASTMESSAGENAME, (lastMessageFirstName != null || lastMessageLastName != null)
                     ? new StringType((lastMessageFirstName != null ? lastMessageFirstName + " " : "")
                             + (lastMessageLastName != null ? lastMessageLastName : ""))
                     : UnDefType.NULL);
             updateChannel(LASTMESSAGEUSERNAME,
                     lastMessageUsername != null ? new StringType(lastMessageUsername) : UnDefType.NULL);
-            updateChannel(CHATID, chatId != null ? new StringType(chatId.toString()) : UnDefType.NULL);
-            updateChannel(REPLYID, replyId != null ? new StringType(replyId) : UnDefType.NULL);
+            updateChannel(LASTMESSAGETEXT, lastMessageText != null ? new StringType(lastMessageText) : UnDefType.NULL);
+            updateChannel(LASTMESSAGEDATE, lastMessageDate != null
+                    ? new DateTimeType(
+                            ZonedDateTime.ofInstant(Instant.ofEpochSecond(lastMessageDate.intValue()), ZoneOffset.UTC))
+                    : UnDefType.NULL);
         }
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
