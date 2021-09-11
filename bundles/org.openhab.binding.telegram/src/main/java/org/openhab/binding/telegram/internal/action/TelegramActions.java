@@ -134,6 +134,10 @@ public class TelegramActions implements ThingActions {
                 }
             }
             Integer messageId = localHandler.removeMessageId(chatId, replyId);
+            if (messageId == null) {
+                logger.warn("messageId could not be found for chatId {} and replyId {}", chatId, replyId);
+                return false;
+            }
             logger.debug("remove messageId {} for chatId {} and replyId {}", messageId, chatId, replyId);
 
             EditMessageReplyMarkup editReplyMarkup = new EditMessageReplyMarkup(chatId, messageId.intValue())
@@ -239,7 +243,12 @@ public class TelegramActions implements ThingActions {
                     logger.warn("replyId {} must not contain spaces. ReplyMarkup will be ignored.", replyId);
                 }
             }
-            SendResponse retMessage = localHandler.execute(sendMessage);
+            SendResponse retMessage = null;
+            try {
+                retMessage = localHandler.execute(sendMessage);
+            } catch (Exception e) {
+                logger.warn("Exception occured whilst sending message:{}", e.getMessage());
+            }
             if (!evaluateResponse(retMessage)) {
                 return false;
             }
