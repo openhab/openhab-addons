@@ -114,7 +114,6 @@ public class MagentaTVPoweroffListener extends Thread {
     }
 
     public boolean isStarted() {
-        // return socket.isBound();
         return started;
     }
 
