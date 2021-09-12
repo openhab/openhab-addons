@@ -131,12 +131,6 @@ public class TelegramActions implements ThingActions {
                     return false;
                 }
             }
-            Integer messageId = localHandler.removeMessageId(chatId, replyId);
-            if (messageId == null) {
-                logger.warn("messageId could not be found for chatId {} and replyId {}", chatId, replyId);
-                return false;
-            }
-            logger.debug("remove messageId {} for chatId {} and replyId {}", messageId, chatId, replyId)
             EditMessageReplyMarkup editReplyMarkup = new EditMessageReplyMarkup(chatId, messageId.intValue())
                     .replyMarkup(new InlineKeyboardMarkup(new InlineKeyboardButton[0]));// remove reply markup from
                                                                                         // old message
