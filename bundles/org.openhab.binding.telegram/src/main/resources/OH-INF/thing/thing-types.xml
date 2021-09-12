@@ -118,7 +118,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="messageEvent">
+	<channel-type id="messageEvent" advanced="true">
 		<kind>trigger</kind>
 		<label>Message Received</label>
 		<description>
