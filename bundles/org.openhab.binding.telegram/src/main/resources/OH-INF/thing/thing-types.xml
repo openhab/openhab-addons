@@ -151,7 +151,7 @@
 		<event></event>
 	</channel-type>
 
-	<channel-type id="callbackEvent">
+	<channel-type id="callbackEvent" advanced="true">
 		<kind>trigger</kind>
 		<label>Query Callback Received</label>
 		<description>
