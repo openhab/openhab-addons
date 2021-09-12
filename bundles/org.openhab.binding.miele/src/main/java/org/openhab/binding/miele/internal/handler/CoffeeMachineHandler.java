@@ -13,7 +13,9 @@
 package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.PROTOCOL_PROPERTY_NAME;
 
+import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -30,6 +32,7 @@ import com.google.gson.JsonElement;
  *
  * @author Stephan Esch - Initial contribution
  * @author Martin Lepsy - fixed handling of empty JSON results
+ * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
 public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineChannelSelector> {
 
@@ -44,7 +47,9 @@ public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineCha
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();
-        String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String protocol = getThing().getProperties().get(PROTOCOL_PROPERTY_NAME);
+        var applianceIdentifier = new FullyQualifiedApplianceIdentifier(applianceId, protocol);
 
         CoffeeMachineChannelSelector selector = (CoffeeMachineChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
@@ -54,9 +59,9 @@ public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineCha
                 switch (selector) {
                     case SWITCH: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "switchOn");
+                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "switchOn");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "switchOff");
+                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "switchOff");
                         }
                         break;
                     }

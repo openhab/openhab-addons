@@ -13,7 +13,9 @@
 package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.PROTOCOL_PROPERTY_NAME;
 
+import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -31,7 +33,8 @@ import com.google.gson.JsonElement;
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - fixed handling of REFRESH commands
  * @author Martin Lepsy - fixed handling of empty JSON results
- */
+ * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
+ **/
 public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineChannelSelector> {
 
     private final Logger logger = LoggerFactory.getLogger(WashingMachineHandler.class);
@@ -45,7 +48,9 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();
-        String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String protocol = getThing().getProperties().get(PROTOCOL_PROPERTY_NAME);
+        var applianceIdentifier = new FullyQualifiedApplianceIdentifier(applianceId, protocol);
 
         WashingMachineChannelSelector selector = (WashingMachineChannelSelector) getValueSelectorFromChannelID(
                 channelID);
@@ -56,9 +61,9 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
                 switch (selector) {
                     case SWITCH: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "start");
+                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "start");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stop");
+                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "stop");
                         }
                         break;
                     }
