@@ -120,7 +120,7 @@
 
 	<channel-type id="messageEvent">
 		<kind>trigger</kind>
-		<label>Message Received Event</label>
+		<label>Message Received</label>
 		<description>
 			<![CDATA[
 			Message encoded as JSON.<br />
