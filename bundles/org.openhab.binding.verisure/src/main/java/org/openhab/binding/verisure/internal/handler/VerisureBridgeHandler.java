@@ -105,6 +105,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
         logger.debug("Initializing Verisure Binding");
         VerisureBridgeConfiguration config = getConfigAs(VerisureBridgeConfiguration.class);
         REFRESH_SEC = config.refresh;
+
         this.pinCode = config.pin;
         if (config.username == null || config.password == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -116,6 +117,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                 authstring = "j_username=" + config.username + "&j_password="
                         + URLEncoder.encode(config.password, StandardCharsets.UTF_8.toString())
                         + "&spring-security-redirect=" + START_REDIRECT;
+                authstring = "j_username=" + config.username;
                 scheduler.execute(() -> {
 
                     if (session == null) {
@@ -125,12 +127,9 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                     VerisureSession session = this.session;
                     updateStatus(ThingStatus.UNKNOWN);
                     if (session != null) {
-                        if (!session.initialize(authstring, pinCode, config.username)) {
-                            logger.warn("Failed to initialize bridge, please check your credentials!");
+                        if (!session.initialize(authstring, pinCode, config.username, config.password)) {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR,
-                                    "Failed to login to Verisure, please check your credentials!");
-                            dispose();
-                            initialize();
+                                    "Failed to login to Verisure, please check your account settings! Is MFA activated?");
                             return;
                         }
                         startAutomaticRefresh();
