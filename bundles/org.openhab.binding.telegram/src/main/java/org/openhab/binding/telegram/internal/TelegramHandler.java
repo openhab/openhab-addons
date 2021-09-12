@@ -398,8 +398,7 @@ public class TelegramHandler extends BaseThingHandler {
                     JsonObject callbackRaw = json.parse(gson.toJson(callbackQuery)).getAsJsonObject();
                     JsonObject callbackPayload = new JsonObject();
                     callbackPayload.addProperty("message_id", callbackQuery.message().messageId());
-                    callbackPayload.addProperty("from", String.join(" ",
-                            new String[] { callbackQuery.from().firstName(), callbackQuery.from().lastName() }));
+                    callbackPayload.addProperty("from", lastMessageFirstName + " " + lastMessageLastName);
                     callbackPayload.addProperty("chat_id", callbackQuery.message().chat().id());
                     callbackPayload.addProperty("callback_id", callbackQuery.id());
                     callbackPayload.addProperty("reply_id", callbackData[0]);
