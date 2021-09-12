@@ -173,7 +173,7 @@
 
 	<channel-type id="callbackRawEvent">
 		<kind>trigger</kind>
-		<label>Callback Query Received Event</label>
+		<label>Raw Callback Query Received</label>
 		<description>Raw Callback Query response from the Telegram library encoded as JSON.</description>
 		<event></event>
 	</channel-type>
