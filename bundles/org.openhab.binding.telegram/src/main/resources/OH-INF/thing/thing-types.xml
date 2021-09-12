@@ -146,7 +146,7 @@
 
 	<channel-type id="messageRawEvent">
 		<kind>trigger</kind>
-		<label>Message Received Event</label>
+		<label>Raw Message Received</label>
 		<description>Raw Message from the Telegram library as JSON.</description>
 		<event></event>
 	</channel-type>
