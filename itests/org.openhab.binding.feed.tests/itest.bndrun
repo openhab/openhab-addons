@@ -67,7 +67,7 @@ Fragment-Host: org.openhab.binding.feed
 	org.ops4j.pax.web.pax-web-jetty;version='[7.3.16,7.3.17)',\
 	org.ops4j.pax.web.pax-web-runtime;version='[7.3.16,7.3.17)',\
 	org.ops4j.pax.web.pax-web-spi;version='[7.3.16,7.3.17)',\
-	xstream;version='[1.4.17,1.4.18)',\
+	xstream;version='[1.4.18,1.4.19)',\
 	org.openhab.binding.feed;version='[3.2.0,3.2.1)',\
 	org.openhab.binding.feed.tests;version='[3.2.0,3.2.1)',\
 	org.openhab.core;version='[3.2.0,3.2.1)',\
