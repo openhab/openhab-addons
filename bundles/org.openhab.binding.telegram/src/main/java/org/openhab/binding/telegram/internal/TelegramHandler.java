@@ -114,11 +114,8 @@ public class TelegramHandler extends BaseThingHandler {
     }
 
     private static Gson gson = new Gson();
-    private static JsonParser json = new JsonParser();
-
     private final List<Long> authorizedSenderChatId = new ArrayList<>();
     private final List<Long> receiverChatId = new ArrayList<>();
-
     private final Logger logger = LoggerFactory.getLogger(TelegramHandler.class);
     private @Nullable ScheduledFuture<?> thingOnlineStatusJob;
 
@@ -299,7 +296,7 @@ public class TelegramHandler extends BaseThingHandler {
                 }
 
                 // build and publish messageEvent trigger channel payload
-                JsonObject messageRaw = json.parse(gson.toJson(message)).getAsJsonObject();
+                JsonObject messageRaw = JsonParser.parseString(gson.toJson(message)).getAsJsonObject();
                 JsonObject messagePayload = new JsonObject();
                 messagePayload.addProperty("message_id", message.messageId());
                 messagePayload.addProperty("from",
@@ -395,7 +392,7 @@ public class TelegramHandler extends BaseThingHandler {
                     replyIdToCallbackId.put(new ReplyKey(chatId, replyId), callbackQuery.id());
 
                     // build and publish callbackEvent trigger channel payload
-                    JsonObject callbackRaw = json.parse(gson.toJson(callbackQuery)).getAsJsonObject();
+                    JsonObject callbackRaw = JsonParser.parseString(gson.toJson(callbackQuery)).getAsJsonObject();
                     JsonObject callbackPayload = new JsonObject();
                     callbackPayload.addProperty("message_id", callbackQuery.message().messageId());
                     callbackPayload.addProperty("from", lastMessageFirstName + " " + lastMessageLastName);
