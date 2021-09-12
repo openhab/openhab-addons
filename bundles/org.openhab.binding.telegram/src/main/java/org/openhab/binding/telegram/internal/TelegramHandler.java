@@ -467,7 +467,7 @@ public class TelegramHandler extends BaseThingHandler {
     }
 
     public void triggerEvent(String channelName, String payload) {
-        triggerChannel(new ChannelUID(getThing().getUID(), channelName), payload);
+        triggerChannel(channelName, payload);
     }
 
     @Override
