@@ -81,9 +81,7 @@ import okhttp3.OkHttpClient;
 @NonNullByDefault
 public class TelegramHandler extends BaseThingHandler {
 
-    @NonNullByDefault
     private class ReplyKey {
-
         final Long chatId;
         final String replyId;
 
