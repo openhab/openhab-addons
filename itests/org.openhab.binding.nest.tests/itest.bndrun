@@ -91,7 +91,7 @@ Fragment-Host: org.openhab.binding.nest
 	org.ops4j.pax.web.pax-web-api;version='[7.3.16,7.3.17)',\
 	org.ops4j.pax.web.pax-web-jetty;version='[7.3.16,7.3.17)',\
 	org.ops4j.pax.web.pax-web-spi;version='[7.3.16,7.3.17)',\
-	xstream;version='[1.4.17,1.4.18)',\
+	xstream;version='[1.4.18,1.4.19)',\
 	org.openhab.binding.nest;version='[3.2.0,3.2.1)',\
 	org.openhab.binding.nest.tests;version='[3.2.0,3.2.1)',\
 	org.openhab.core;version='[3.2.0,3.2.1)',\
