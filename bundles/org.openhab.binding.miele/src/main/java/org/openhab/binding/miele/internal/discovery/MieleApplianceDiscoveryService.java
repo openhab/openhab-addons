@@ -117,7 +117,8 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
             }
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withBridge(bridgeUID).withLabel((String) properties.get(DEVICE_CLASS)).build();
+                    .withBridge(bridgeUID).withLabel((String) properties.get(DEVICE_CLASS))
+                    .withRepresentationProperty(APPLIANCE_ID).build();
 
             thingDiscovered(discoveryResult);
         } else {
