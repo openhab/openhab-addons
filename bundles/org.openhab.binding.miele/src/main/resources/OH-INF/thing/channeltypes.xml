@@ -76,7 +76,7 @@
 	<channel-type id="stop" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Stop</label>
-		<description>Stop the hood</description>
+		<description>Stop the appliance</description>
 	</channel-type>
 
 	<channel-type id="step" advanced="true">
