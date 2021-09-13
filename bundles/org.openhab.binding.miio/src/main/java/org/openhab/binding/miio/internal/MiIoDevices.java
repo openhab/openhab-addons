@@ -294,6 +294,7 @@ public enum MiIoDevices {
     YEELINK_LIGHT_CEILING21("yeelink.light.ceiling21", "Mi Smart LED Living Room Ceiling Light", THING_TYPE_BASIC),
     YEELINK_LIGHT_CEILING22("yeelink.light.ceiling22", "Mi Smart LED Ceiling Light", THING_TYPE_BASIC),
     YEELINK_LIGHT_CEILING23("yeelink.light.ceiling23", "Mi Smart LED Ceiling Light (350mm)", THING_TYPE_BASIC),
+    YEELINK_LIGHT_CEIL26("yeelink.light.ceil26", "Yeelight Jade Smart LED Ceiling Light C2001", THING_TYPE_BASIC),
     YEELINK_LIGHT_COLOR1("yeelink.light.color1", "Yeelight Color Bulb", THING_TYPE_BASIC),
     YEELINK_LIGHT_COLOR2("yeelink.light.color2", "Yeelight LED Bulb (Color)", THING_TYPE_BASIC),
     YEELINK_LIGHT_COLOR3("yeelink.light.color3", "Mi LED Smart Bulb (White and Color)", THING_TYPE_BASIC),
