@@ -183,7 +183,9 @@
     <module>org.openhab.binding.lgtvserial</module>
     <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.lifx</module>
-    <module>org.openhab.binding.linky</module>
+    <!-- linky binding suppressed from the distribution until it is fixed
+      <module>org.openhab.binding.linky</module>
+    -->
     <module>org.openhab.binding.linuxinput</module>
     <module>org.openhab.binding.lirc</module>
     <module>org.openhab.binding.logreader</module>
