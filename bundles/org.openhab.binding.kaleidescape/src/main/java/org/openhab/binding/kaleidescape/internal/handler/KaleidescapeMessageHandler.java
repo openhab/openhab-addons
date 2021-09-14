@@ -288,7 +288,7 @@ public enum KaleidescapeMessageHandler {
                     try {
                         handler.connector.sendCommand(GET_CONTENT_DETAILS + matcher.group(5) + ":");
                     } catch (KaleidescapeException e) {
-                        logger.debug("GET_CONTENT_DETAILS - exception loading content details for handle: {}",
+                        logger.debug("GET_CONTENT_DETAILS - exception loading album details for handle: {}",
                                 matcher.group(5));
                     }
                 }
