@@ -48,7 +48,7 @@ public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandl
                 HmDatapoint dp = addDatapoint(device, channel.getNumber(), getName(), HmValueType.STRING, null, false);
                 dp.setTrigger(true);
                 dp.setOptions(new String[] { CommonTriggerEvents.SHORT_PRESSED, CommonTriggerEvents.LONG_PRESSED,
-                        LONG_REPEATED_EVENT, LONG_RELEASED_EVENT, CommonTriggerEvents.DOUBLE_PRESSED });
+                        LONG_REPEATED_EVENT, LONG_RELEASED_EVENT });
             }
         }
     }
@@ -68,15 +68,11 @@ public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandl
                 || LONG_REPEATED_EVENT.equals(vdp.getValue());
         if (MiscUtils.isTrueValue(dp.getValue())) {
             switch (pressType) {
-                case "SHORT":
-                    if (dp.getValue() == null || !dp.getValue().equals(dp.getPreviousValue())) {
-                        vdp.setValue(CommonTriggerEvents.SHORT_PRESSED);
-                    } else {
-                        // two (or more) PRESS_SHORT events were received
-                        // within AbstractHomematicGateway#DEFAULT_DISABLE_DELAY seconds
-                        vdp.setValue(CommonTriggerEvents.DOUBLE_PRESSED);
-                    }
+                case "SHORT": {
+                    vdp.setValue(null); // Force sending new event
+                    vdp.setValue(CommonTriggerEvents.SHORT_PRESSED);
                     break;
+                }
                 case "LONG":
                     if (LONG_REPEATED_EVENT.equals(vdp.getValue())) {
                         // Suppress long press events during an ongoing long press

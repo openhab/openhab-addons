@@ -18,7 +18,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.misc.HomematicConstants;
@@ -98,28 +97,6 @@ public class ButtonDatapointTest extends JavaTest {
         assertThat(contButtonVirtualDatapoint.getValue(), nullValue());
         assertThat(releaseButtonVirtualDatapoint.getValue(), nullValue());
         assertThat(crapButtonVirtualDatapoint, nullValue());
-    }
-
-    @Test
-    @Disabled(value = "Test is unstable see #10753")
-    public void testDoublePress() throws IOException, HomematicClientException, InterruptedException {
-        HmDatapoint shortPressDp = createPressDatapoint("PRESS_SHORT", Boolean.TRUE);
-        HmDatapoint buttonVirtualDatapoint = getButtonVirtualDatapoint(shortPressDp);
-
-        mockEventReceiver.eventReceived(shortPressDp);
-        assertThat(buttonVirtualDatapoint.getValue(), is(CommonTriggerEvents.SHORT_PRESSED));
-
-        Thread.sleep(DISABLE_DATAPOINT_DELAY / 2);
-
-        shortPressDp.setValue(Boolean.TRUE);
-        mockEventReceiver.eventReceived(shortPressDp);
-        assertThat(buttonVirtualDatapoint.getValue(), is(CommonTriggerEvents.DOUBLE_PRESSED));
-
-        Thread.sleep(DISABLE_DATAPOINT_DELAY * 2);
-
-        shortPressDp.setValue(Boolean.TRUE);
-        mockEventReceiver.eventReceived(shortPressDp);
-        assertThat(buttonVirtualDatapoint.getValue(), is(CommonTriggerEvents.SHORT_PRESSED));
     }
 
     private HmDatapoint createPressDatapoint(String channelName, Object value) {
