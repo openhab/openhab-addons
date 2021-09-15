@@ -132,6 +132,7 @@ public class CameraServlet extends HttpServlet {
                 try {
                     Thread.sleep(HLS_STARTUP_DELAY_MS);
                 } catch (InterruptedException e) {
+                    return;
                 }
                 sendFile(resp, pathInfo, "application/x-mpegURL");
                 return;
@@ -232,16 +233,15 @@ public class CameraServlet extends HttpServlet {
                 InstarHandler instar = new InstarHandler(handler);
                 instar.alarmTriggered(pathInfo + "?" + req.getQueryString());
                 return;
-            case "/ipcamera0.ts":
             default:
-                if (pathInfo.contains(".ts")) {
+                if (pathInfo.endsWith(".ts")) {
                     sendFile(resp, pathInfo, "video/MP2T");
-                } else if (pathInfo.contains(".gif")) {
+                } else if (pathInfo.endsWith(".gif")) {
                     sendFile(resp, pathInfo, "image/gif");
-                } else if (pathInfo.contains(".jpg")) {
+                } else if (pathInfo.endsWith(".jpg")) {
                     // Allow access to the preroll and postroll jpg files
                     sendFile(resp, pathInfo, "image/jpg");
-                } else if (pathInfo.contains(".m4s") || pathInfo.contains(".mp4")) {
+                } else if (pathInfo.endsWith(".mp4")) {
                     sendFile(resp, pathInfo, "video/mp4");
                 }
                 return;

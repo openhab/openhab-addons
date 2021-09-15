@@ -92,6 +92,7 @@ public class GroupServlet extends HttpServlet {
                     try {
                         TimeUnit.MILLISECONDS.sleep(HLS_STARTUP_DELAY_MS);
                     } catch (InterruptedException e) {
+                        return;
                     }
                 }
                 String playList = groupHandler.getPlayList();
