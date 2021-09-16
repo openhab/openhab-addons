@@ -33,9 +33,10 @@ Support for push-based monitoring systems (e. g. InfluxDB) have to be enabled se
 
 The following configuration parameters can be set:
 
-|Config param|Description|Default value|
-|--|--|--|
-|influxMetricsEnabled|Enable the Influx (www.influxdata.com) metrics. Further configuration of the InfluxDB instance necessary.|false|
+| Config param         | Description                                                                                               | Default value |
+|----------------------|-----------------------------------------------------------------------------------------------------------|---------------|
+| influxMetricsEnabled | Enable the Influx (www.influxdata.com) metrics. Further configuration of the InfluxDB instance necessary. | false         |
+| jmxMetricsEnabled    | Enable the Java Management Extensions (JMX) metrics.                                                      | false         |
 
 Refer to the corresponding monitoring system sections for monitoring system specific configuration parameters.  
 
@@ -65,7 +66,7 @@ Replace `openhab.local` by the openhab host.
 
 #### Available configuration parameters
 
-There are no Prometheus specific configuration paramters.
+There are no Prometheus specific configuration parameters.
 
 ### InfluxDB
 
@@ -73,13 +74,21 @@ The InfluxDB exporter service will start as soon as the _influxMetricsEnabled_ c
 
 #### Available configuration parameters
 
-|Config param|Description|Default value|
-|--|--|--|
-|influxURL|The URL of the InfluxDB instance. Defaults to http://localhost:8086|http://localhost:8086|
-|influxDB|The name of the database to use. Defaults to "openhab".|openhab|
-|influxUsername|InfluxDB user name|n/a|
-|influxPassword|The InfluxDB password (no default).|n/a|
-|influxUpdateIntervalInSeconds|Controls how often metrics are exported to InfluxDB (in seconds). Defaults to 300|300|
+| Config param                  | Description                                                                       | Default value         |
+|-------------------------------|-----------------------------------------------------------------------------------|-----------------------|
+| influxURL                     | The URL of the InfluxDB instance. Defaults to http://localhost:8086               | http://localhost:8086 |
+| influxDB                      | The name of the database to use. Defaults to "openhab".                           | openhab               |
+| influxUsername                | InfluxDB user name                                                                | n/a                   |
+| influxPassword                | The InfluxDB password (no default).                                               | n/a                   |
+| influxUpdateIntervalInSeconds | Controls how often metrics are exported to InfluxDB (in seconds). Defaults to 300 | 300                   |
+
+### JMX
+
+The Java Management Extensions (JMX) exporter service will start as soon as the _jmxMetricsEnabled_ configuration parameter is set to true.
+
+You can monitor the JMX metrics using a tool like [JConsole](https://docs.oracle.com/en/java/javase/11/management/using-jconsole.html) or [VisualVM](https://visualvm.github.io/) (after installing the VisualVM-MBeans plugin).
+When the JMX exporter is enabled, the metrics will be available under the "metrics" MBean.
+JConsole and VisualVM will only be able to connect using JMX when openHAB is started in debug mode (use `start_debug.sh` or `start_debug.bat`).
 
 ## Additional metric formats
 
