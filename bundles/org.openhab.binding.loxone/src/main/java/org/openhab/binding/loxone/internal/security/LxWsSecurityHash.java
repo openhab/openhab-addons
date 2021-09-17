@@ -57,7 +57,7 @@ class LxWsSecurityHash extends LxWsSecurity {
         if (!checkResponse(resp)) {
             return false;
         }
-        String hash = hashString(user + ":" + password, resp.getValueAsString());
+        String hash = hashString(user + ":" + password, resp.getValueAsString(), false);
         if (hash == null) {
             return setError(LxErrorCode.INTERNAL_ERROR, "Error hashing credentials.");
         }
