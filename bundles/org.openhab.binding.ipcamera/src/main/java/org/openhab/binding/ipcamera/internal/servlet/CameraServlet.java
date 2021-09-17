@@ -14,16 +14,10 @@ package org.openhab.binding.ipcamera.internal.servlet;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.HLS_STARTUP_DELAY_MS;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
-import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,9 +28,6 @@ import org.openhab.binding.ipcamera.internal.InstarHandler;
 import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link CameraServlet} is responsible for serving files for a single camera back to the Jetty server normally
@@ -45,28 +36,16 @@ import org.slf4j.LoggerFactory;
  * @author Matthew Skinner - Initial contribution
  */
 @NonNullByDefault
-public class CameraServlet extends HttpServlet {
-    private static final long serialVersionUID = -23465822674L;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+public class CameraServlet extends IpCameraServlet {
+    private static final long serialVersionUID = -134658667574L;
     private final IpCameraHandler handler;
-    private final HttpService httpService;
     private int autofpsStreamsOpen = 0;
     private int snapshotStreamsOpen = 0;
     public OpenStreams openStreams = new OpenStreams();
 
-    public CameraServlet(IpCameraHandler ipCameraHandler, HttpService httpService) {
-        handler = ipCameraHandler;
-        this.httpService = httpService;
-        startListening();
-    }
-
-    public void startListening() {
-        try {
-            httpService.registerServlet("/ipcamera/" + handler.getThing().getUID().getId(), this, null,
-                    httpService.createDefaultHttpContext());
-        } catch (NamespaceException | ServletException e) {
-            logger.warn("Registering servlet failed:{}", e.getMessage());
-        }
+    public CameraServlet(IpCameraHandler handler, HttpService httpService) {
+        super(handler, httpService);
+        this.handler = handler;
     }
 
     @Override
@@ -125,7 +104,8 @@ public class CameraServlet extends HttpServlet {
                     localFfmpeg.startConverting();
                 } else {
                     localFfmpeg.setKeepAlive(8);
-                    sendFile(resp, pathInfo, "application/x-mpegURL");
+                    sendFile(resp, new File(handler.cameraConfig.getFfmpegOutput() + pathInfo),
+                            "application/x-mpegURL");
                     return;
                 }
                 // Allow files to be created, or you get old m3u8 from the last time this ran.
@@ -134,16 +114,16 @@ public class CameraServlet extends HttpServlet {
                 } catch (InterruptedException e) {
                     return;
                 }
-                sendFile(resp, pathInfo, "application/x-mpegURL");
+                sendFile(resp, new File(handler.cameraConfig.getFfmpegOutput() + pathInfo), "application/x-mpegURL");
                 return;
             case "/ipcamera.mpd":
-                sendFile(resp, pathInfo, "application/dash+xml");
+                sendFile(resp, new File(handler.cameraConfig.getFfmpegOutput() + pathInfo), "application/dash+xml");
                 return;
             case "/ipcamera.gif":
-                sendFile(resp, pathInfo, "image/gif");
+                sendFile(resp, new File(handler.cameraConfig.getFfmpegOutput() + pathInfo), "image/gif");
                 return;
             case "/ipcamera.jpg":
-                sendSnapshotImage(resp, "image/jpg");
+                sendSnapshotImage(resp, "image/jpg", handler.getSnapshot());
                 return;
             case "/snapshots.mjpeg":
                 req.getSession().setMaxInactiveInterval(0);
@@ -235,77 +215,22 @@ public class CameraServlet extends HttpServlet {
                 return;
             default:
                 if (pathInfo.endsWith(".ts")) {
-                    sendFile(resp, pathInfo, "video/MP2T");
+                    sendFile(resp, new File(handler.cameraConfig.getFfmpegOutput() + pathInfo), "video/MP2T");
                 } else if (pathInfo.endsWith(".gif")) {
-                    sendFile(resp, pathInfo, "image/gif");
+                    sendFile(resp, new File(handler.cameraConfig.getFfmpegOutput() + pathInfo), "image/gif");
                 } else if (pathInfo.endsWith(".jpg")) {
                     // Allow access to the preroll and postroll jpg files
-                    sendFile(resp, pathInfo, "image/jpg");
+                    sendFile(resp, new File(handler.cameraConfig.getFfmpegOutput() + pathInfo), "image/jpg");
                 } else if (pathInfo.endsWith(".mp4")) {
-                    sendFile(resp, pathInfo, "video/mp4");
+                    sendFile(resp, new File(handler.cameraConfig.getFfmpegOutput() + pathInfo), "video/mp4");
                 }
                 return;
         }
     }
 
-    private void sendFile(HttpServletResponse response, @Nullable String fileUri, String contentType)
-            throws IOException {
-        File file = new File(handler.cameraConfig.getFfmpegOutput() + fileUri);
-        if (!file.exists()) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-        response.setBufferSize((int) file.length());
-        response.setContentType(contentType);
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Expose-Headers", "*");
-        response.setHeader("Content-Length", String.valueOf(file.length()));
-        response.setHeader("Pragma", "no-cache");
-        response.setHeader("Cache-Control", "max-age=0, no-cache, no-store");
-        BufferedInputStream input = null;
-        BufferedOutputStream output = null;
-        try {
-            input = new BufferedInputStream(new FileInputStream(file), (int) file.length());
-            output = new BufferedOutputStream(response.getOutputStream(), (int) file.length());
-            byte[] buffer = new byte[(int) file.length()];
-            int length;
-            while ((length = input.read(buffer)) > 0) {
-                output.write(buffer, 0, length);
-            }
-        } finally {
-            if (output != null) {
-                output.close();
-            }
-            if (input != null) {
-                input.close();
-            }
-        }
-    }
-
-    private void sendSnapshotImage(HttpServletResponse response, String contentType) {
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Expose-Headers", "*");
-        response.setContentType(contentType);
-        byte[] snapshot = handler.getSnapshot();
-        if (snapshot.length == 1) {
-            logger.warn("ipcamera.jpg was requested but there was no jpg in ram to send.");
-            return;
-        }
-        try {
-            response.setContentLength(snapshot.length);
-            ServletOutputStream servletOut = response.getOutputStream();
-            servletOut.write(snapshot);
-        } catch (IOException e) {
-        }
-    }
-
+    @Override
     public void dispose() {
-        try {
-            openStreams.closeAllStreams();
-            httpService.unregister("/ipcamera/" + handler.getThing().getUID().getId());
-            this.destroy();
-        } catch (IllegalArgumentException e) {
-            logger.debug("Unregistration of servlet failed:{}", e.getMessage());
-        }
+        openStreams.closeAllStreams();
+        super.dispose();
     }
 }
