@@ -12,50 +12,25 @@
  */
 package org.openhab.binding.freeboxos.internal.api.repeater;
 
+import java.time.ZonedDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.FbxDevice;
 
 /**
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class Repeater {
+public class Repeater extends FbxDevice {
     private @Nullable String connection;
-    private long bootTime;
+    private @Nullable ZonedDateTime bootTime;
     private boolean ledActivated;
-    private @NonNullByDefault({}) String mainMac;
     private @NonNullByDefault({}) String sn;
-    private int id;
-    private @Nullable String name;
-    private @NonNullByDefault({}) String model;
     private @NonNullByDefault({}) String firmwareVersion;
 
-    public String getMac() {
-        return mainMac.toLowerCase();
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public @Nullable String getName() {
-        return name;
-    }
-
-    public String getSerial() {
-        return sn;
-    }
-
-    public String getFirmwareVersion() {
-        return firmwareVersion;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public long getBootTime() {
+    public @Nullable ZonedDateTime getBootTime() {
         return bootTime;
     }
 
@@ -65,5 +40,13 @@ public class Repeater {
 
     public boolean getLedActivated() {
         return ledActivated;
+    }
+
+    public String getSerial() {
+        return sn;
+    }
+
+    public String getFirmwareVersion() {
+        return firmwareVersion;
     }
 }

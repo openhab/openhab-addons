@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PlayerActions implements ThingActions {
     private final static Logger logger = LoggerFactory.getLogger(PlayerActions.class);
-    private @Nullable PlayerHandler handler;
+    protected @Nullable PlayerHandler handler;
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
@@ -86,17 +86,6 @@ public class PlayerActions implements ThingActions {
         PlayerHandler playerHandler = this.handler;
         if (playerHandler != null) {
             playerHandler.sendKey(key, false, count);
-        } else {
-            logger.warn("Freebox Player Action service ThingHandler is null!");
-        }
-    }
-
-    @RuleAction(label = "reboot freebox player", description = "Reboots the Freebox Player")
-    public void reboot() {
-        logger.debug("Player reboot called");
-        PlayerHandler playerHandler = this.handler;
-        if (playerHandler != null) {
-            playerHandler.reboot();
         } else {
             logger.warn("Freebox Player Action service ThingHandler is null!");
         }

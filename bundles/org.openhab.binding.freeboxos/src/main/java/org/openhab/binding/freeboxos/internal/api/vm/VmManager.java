@@ -15,8 +15,8 @@ package org.openhab.binding.freeboxos.internal.api.vm;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
@@ -30,12 +30,8 @@ import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
  */
 @NonNullByDefault
 public class VmManager extends RestManager {
-    public static Permission associatedPermission() {
-        return Permission.VM;
-    }
-
-    public VmManager(ApiHandler apiHandler) {
-        super(apiHandler, "vm");
+    public VmManager(FreeboxOsSession session) throws FreeboxException {
+        super("vm", session, Permission.VM);
     }
 
     public VirtualMachine getVM(int vmId) throws FreeboxException {

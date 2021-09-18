@@ -13,35 +13,16 @@
 package org.openhab.binding.freeboxos.internal.api.player;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.FbxDevice;
 
 /**
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class Player {
-    private @NonNullByDefault({}) String mac;
-    private int id;
+public class Player extends FbxDevice {
     private boolean apiAvailable;
     private boolean reachable;
-    private @NonNullByDefault({}) String deviceName;
-    private @NonNullByDefault({}) String deviceModel;
-
-    public String getMac() {
-        return mac.toLowerCase();
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getModel() {
-        return deviceModel;
-    }
-
-    public String getName() {
-        return deviceName;
-    }
 
     public boolean isApiAvailable() {
         return apiAvailable;
@@ -50,5 +31,4 @@ public class Player {
     public boolean isReachable() {
         return reachable;
     }
-
 }

@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.freeboxos.internal.api.player;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ApiHandler;
-import org.openhab.binding.freeboxos.internal.api.ApiVersion;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
@@ -34,19 +35,13 @@ import org.openhab.binding.freeboxos.internal.api.system.DeviceConfig;
 public class PlayerManager extends RestManager {
     private static String PLAYER_URL = "player";
 
-    public static Permission associatedPermission() {
-        return Permission.PLAYER;
-    }
+    private final Map<Integer, String> subPaths = new HashMap<>();
 
-    private final ApiVersion version;
-
-    public PlayerManager(ApiHandler apiHandler, ApiVersion version) {
-        super(apiHandler, PLAYER_URL);
-        this.version = version;
-    }
-
-    private String buildSubPath(int playerId, String path) {
-        return String.format("%d%s/%s", playerId, version.baseUrl(), path);
+    public PlayerManager(FreeboxOsSession session) throws FreeboxException {
+        super(PLAYER_URL, session, Permission.PLAYER);
+        getPlayers().forEach(player -> {
+            subPaths.put(player.getId(), player.baseUrl());
+        });
     }
 
     public List<Player> getPlayers() throws FreeboxException {
@@ -54,15 +49,15 @@ public class PlayerManager extends RestManager {
     }
 
     public PlayerStatus getPlayerStatus(int id) throws FreeboxException {
-        return get(buildSubPath(id, "status"), PlayerResponse.class, true);
+        return get(subPaths.get(id) + "status", PlayerResponse.class, true);
     }
 
     public DeviceConfig getConfig(int id) throws FreeboxException {
-        return get(buildSubPath(id, "system"), PlayerConfigurationResponse.class, true);
+        return get(subPaths.get(id) + "system", PlayerConfigurationResponse.class, true);
     }
 
     public void reboot(int id) throws FreeboxException {
-        post(buildSubPath(id, "system/reboot"));
+        post(subPaths.get(id) + "system/reboot");
     }
 
     // Response classes and validity evaluations

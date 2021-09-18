@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants;
-import org.openhab.binding.freeboxos.internal.handler.ApiBridgeHandler;
+import org.openhab.binding.freeboxos.internal.handler.FreeboxOsBridgeHandler;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
@@ -60,11 +60,11 @@ public class FreeboxOsCommandExtension extends AbstractConsoleCommandExtension {
                 thing = null;
             }
             ThingHandler thingHandler = null;
-            ApiBridgeHandler handler = null;
+            FreeboxOsBridgeHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof ApiBridgeHandler) {
-                    handler = (ApiBridgeHandler) thingHandler;
+                if (thingHandler instanceof FreeboxOsBridgeHandler) {
+                    handler = (FreeboxOsBridgeHandler) thingHandler;
                 }
             }
             if (thing == null) {
@@ -80,7 +80,8 @@ public class FreeboxOsCommandExtension extends AbstractConsoleCommandExtension {
                 switch (args[1]) {
                     case APP_TOKEN:
                         String token = handler.getConfiguration().appToken;
-                        console.println("Your application token is " + (!token.isEmpty() ? token : "undefined"));
+                        console.println("Your application token is "
+                                + (token == null || token.isEmpty() ? "undefined" : token));
                         break;
                     default:
                         printUsage(console);

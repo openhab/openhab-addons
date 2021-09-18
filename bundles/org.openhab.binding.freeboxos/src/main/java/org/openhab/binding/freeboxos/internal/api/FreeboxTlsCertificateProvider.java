@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freeboxos.internal.api;
 
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.DEFAULT_FREEBOX_NAME;
+
 import java.net.URL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,7 +31,7 @@ public class FreeboxTlsCertificateProvider implements TlsCertificateProvider {
 
     @Override
     public String getHostName() {
-        return "mafreebox.freebox.fr";
+        return DEFAULT_FREEBOX_NAME;
     }
 
     @Override

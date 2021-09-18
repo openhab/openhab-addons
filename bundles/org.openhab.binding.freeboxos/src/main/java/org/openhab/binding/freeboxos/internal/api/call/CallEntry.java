@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freeboxos.internal.api.call;
 
+import java.time.ZonedDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -39,11 +41,11 @@ public class CallEntry {
 
     private int id;
     private CallType type = CallType.UNKNOWN;
-    private long datetime; // Call creation timestamp.
+    private @Nullable ZonedDateTime datetime; // Call creation timestamp.
     private @Nullable String number;
     private @Nullable String name;
     private int duration; // Call duration in seconds.
-    private int contactId;
+    // private int contactId;
 
     public int getId() {
         return id;
@@ -56,11 +58,11 @@ public class CallEntry {
         return type;
     }
 
-    public long getDatetime() {
+    public @Nullable ZonedDateTime getDatetime() {
         return datetime;
     }
 
-    public @Nullable String getNumber() {
+    public @Nullable String getPhoneNumber() {
         return number;
     }
 
@@ -70,9 +72,5 @@ public class CallEntry {
 
     public int getDuration() {
         return duration;
-    }
-
-    public int getContactId() {
-        return contactId;
     }
 }

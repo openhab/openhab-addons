@@ -14,8 +14,11 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
-import java.time.ZoneId;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
@@ -38,85 +41,89 @@ import org.slf4j.LoggerFactory;
  * The {@link LandlineHandler} is responsible for handling everything associated to
  * to the phone landline associated with the Freebox Server.
  *
- * @author Laurent Garnier - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class LandlineHandler extends ApiConsumerHandler {
     private final static String LAST_CALL_TIMESTAMP = "last-call-timestamp";
     private final Logger logger = LoggerFactory.getLogger(LandlineHandler.class);
-    private long lastCallTimestamp;
+    private ZonedDateTime lastCallTimestamp = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneOffset.UTC);
 
-    public LandlineHandler(Thing thing, ZoneId zoneId) {
-        super(thing, zoneId);
+    public LandlineHandler(Thing thing) {
+        super(thing);
         String lastCall = thing.getProperties().get(LAST_CALL_TIMESTAMP);
         if (lastCall != null) {
-            lastCallTimestamp = Long.parseLong(lastCall) - 1;
+            lastCallTimestamp = ZonedDateTime.parse(lastCall).minusSeconds(1);
         }
     }
 
     @Override
-    protected void internalPoll() throws FreeboxException {
-        PhoneManager phoneManager = getApi().getPhoneManager();
-        CallManager callManager = getApi().getCallManager();
-        if (phoneManager != null) {
-            pollStatus(phoneManager);
-            pollCalls(callManager);
-            pollConfig(phoneManager);
-        }
+    void internalGetProperties(Map<String, String> properties) throws FreeboxException {
+        PhoneManager phoneManager = getManager(PhoneManager.class);
+        PhoneStatus config = phoneManager.getStatus();
+        properties.put(PHONE_TYPE, config.getType().name());
     }
 
-    private void pollCalls(CallManager callManager) throws FreeboxException {
-        logger.debug("Polling phone calls since last...");
+    @Override
+    protected void internalPoll() throws FreeboxException {
+        pollStatus();
+        pollCalls();
+    }
 
-        callManager.getCallEntries(lastCallTimestamp).stream().sorted(Comparator.comparingLong(CallEntry::getDatetime))
-                .filter(c -> c.getDatetime() > lastCallTimestamp).forEach(call -> {
+    private void pollCalls() throws FreeboxException {
+        logger.debug("Polling phone calls since last...");
+        CallManager callManager = getManager(CallManager.class);
+
+        callManager.getCallEntries(lastCallTimestamp).stream().filter(entry -> entry.getDatetime() != null)
+                .sorted(Comparator.comparing(CallEntry::getDatetime))
+                .filter(c -> lastCallTimestamp.isBefore(c.getDatetime())).forEach(call -> {
                     if (call.getType() == CallType.INCOMING) {
                         triggerChannel(new ChannelUID(getThing().getUID(), STATE, PHONE_EVENT),
-                                "incoming_call#" + call.getNumber());
+                                "incoming_call#" + call.getPhoneNumber());
                     } else {
-                        updateChannels(call);
-                        lastCallTimestamp = call.getDatetime();
-                        updateProperty(LAST_CALL_TIMESTAMP, Long.toString(lastCallTimestamp));
+                        updateCallChannels(call);
+                        ZonedDateTime timeStamp = call.getDatetime();
+                        if (timeStamp != null) {
+                            lastCallTimestamp = timeStamp;
+                            updateProperty(LAST_CALL_TIMESTAMP, timeStamp.toString());
+                        }
                     }
                 });
     }
 
-    private void pollStatus(PhoneManager phoneManager) throws FreeboxException {
+    private void pollStatus() throws FreeboxException {
         logger.debug("Polling phone status...");
+        PhoneManager phoneManager = getManager(PhoneManager.class);
 
         PhoneStatus status = phoneManager.getStatus();
         updateChannelOnOff(STATE, ONHOOK, status.isOnHook());
         updateChannelOnOff(STATE, RINGING, status.isRinging());
-    }
-
-    private void pollConfig(PhoneManager phoneManager) throws FreeboxException {
-        logger.debug("Polling phone status...");
 
         PhoneConfig config = phoneManager.getConfig();
         updateChannelOnOff(PHONE_MISC, ALTERNATE_RING, config.isDectRingOnOff());
         updateChannelOnOff(PHONE_MISC, DECT_ACTIVE, config.isDectEnabled());
     }
 
-    private void updateChannels(CallEntry call) {
+    private void updateCallChannels(CallEntry call) {
         String group = call.getType().name().toLowerCase();
-        String phoneNumber = call.getNumber();
+        String phoneNumber = call.getPhoneNumber();
 
         ChannelUID id = new ChannelUID(getThing().getUID(), group, NUMBER);
-        updateState(id, new StringType(call.getNumber()));
+        updateState(id, new StringType(call.getPhoneNumber()));
         updateChannelDateTimeState(group, TIMESTAMP, call.getDatetime());
         if (call.getType() != CallType.MISSED) { // Missed call have no duration by definition
             updateChannelQuantity(group, DURATION, call.getDuration(), Units.SECOND);
         }
         if (phoneNumber != null && !phoneNumber.equals(call.getName())) {
-            updateChannelString(group, NAME, call.getNumber());
+            updateChannelString(group, NAME, call.getPhoneNumber());
         }
     }
 
     @Override
     protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
-        PhoneManager phoneManager = getApi().getPhoneManager();
+        PhoneManager phoneManager = getManager(PhoneManager.class);
         String target = channelUID.getIdWithoutGroup();
-        if (command instanceof OnOffType && phoneManager != null) {
+        if (command instanceof OnOffType) {
             boolean status = (OnOffType) command == OnOffType.ON;
             if (RINGING.equals(target)) {
                 phoneManager.ring(status);
@@ -129,6 +136,6 @@ public class LandlineHandler extends ApiConsumerHandler {
                 return true;
             }
         }
-        return false;
+        return super.internalHandleCommand(channelUID, command);
     }
 }

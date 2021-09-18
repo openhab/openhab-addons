@@ -14,20 +14,24 @@ package org.openhab.binding.freeboxos.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * The {@link ApiVersion} is the Java class used to map the api_version
- * answer
+ * The {@link ApiVersion} is the Java class used to map the api_version answer
  * http://mafreebox.freebox.fr/api_version
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class ApiVersion {
-    private @NonNullByDefault({}) String apiBaseUrl;
+    private String apiBaseUrl = "/api/";
+    @SerializedName(value = "api_version", alternate = { "api_ver" })
     private @NonNullByDefault({}) String apiVersion;
 
-    // Returns a string like '/api/v8'
+    /**
+     * @return a string like eg : '/api/v8'
+     */
     public String baseUrl() {
-        return apiBaseUrl + "v" + apiVersion.split("\\.")[0];
+        return String.format("%sv%s", apiBaseUrl, apiVersion.split("\\.")[0]);
     }
 }

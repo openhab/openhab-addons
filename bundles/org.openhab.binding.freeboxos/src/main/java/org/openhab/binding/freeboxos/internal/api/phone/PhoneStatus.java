@@ -13,7 +13,6 @@
 package org.openhab.binding.freeboxos.internal.api.phone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -33,10 +32,10 @@ public class PhoneStatus {
         DECT;
     }
 
+    private int id;
     private boolean isRinging;
     private boolean onHook;
-    private int id;
-    private @Nullable PhoneType type;
+    private PhoneType type = PhoneType.UNKNOWN;
 
     public boolean isRinging() {
         return isRinging;
@@ -47,8 +46,7 @@ public class PhoneStatus {
     }
 
     public PhoneType getType() {
-        PhoneType localType = type;
-        return localType != null ? localType : PhoneType.UNKNOWN;
+        return type;
     }
 
     public long getId() {

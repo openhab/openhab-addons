@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.freeboxos.internal.api.lan;
 
-import java.time.Instant;
+import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,8 +38,6 @@ public class LanConfig implements ConnectivityData {
 
     private @Nullable String ip;
     private @Nullable NetworkMode mode;
-    private boolean isReachable = true;
-    private long lastSeen = Instant.now().getEpochSecond();
 
     public NetworkMode getMode() {
         NetworkMode localMode = mode;
@@ -48,12 +46,12 @@ public class LanConfig implements ConnectivityData {
 
     @Override
     public boolean isReachable() {
-        return isReachable;
+        return true;
     }
 
     @Override
-    public long getLastSeen() {
-        return lastSeen;
+    public @Nullable ZonedDateTime getLastSeen() {
+        return ZonedDateTime.now();
     }
 
     @Override

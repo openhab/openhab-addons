@@ -13,7 +13,6 @@
 package org.openhab.binding.freeboxos.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Defines an API result that returns a single object
@@ -29,9 +28,9 @@ public abstract class Response<T> extends BaseResponse {
         return result;
     }
 
-    @Override
-    protected @Nullable String internalEvaluate() {
-        String base = super.internalEvaluate();
-        return base != null ? base : ((result == null) ? "result should never be null" : null);
-    }
+    // @Override
+    // protected @Nullable String internalEvaluate() {
+    // String base = super.internalEvaluate();
+    // return base != null ? base : ((result == null) ? "result should never be null" : null);
+    // }
 }

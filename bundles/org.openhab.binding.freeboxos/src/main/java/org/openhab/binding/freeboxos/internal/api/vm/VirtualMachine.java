@@ -13,19 +13,19 @@
 package org.openhab.binding.freeboxos.internal.api.vm;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.FbxDevice;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VirtualMachine} is the Java class used to map the "LanHost"
- * structure used by the Lan Hosts Browser API
+ * The {@link VirtualMachine} is the Java class used to map the "VirtualMachine"
+ * structure used by the Virtual Machine API
  * https://dev.freebox.fr/sdk/os/lan/#lan-browser
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class VirtualMachine {
+public class VirtualMachine extends FbxDevice {
     public static enum Status {
         UNKNOWN,
         @SerializedName("stopped")
@@ -34,25 +34,9 @@ public class VirtualMachine {
         RUNNING;
     }
 
-    private @NonNullByDefault({}) String mac;
-    private int id;
-    private @Nullable Status status;
-    private @Nullable String name;
-
-    public int getId() {
-        return id;
-    }
-
-    public String getMac() {
-        return mac.toLowerCase();
-    }
+    private Status status = Status.UNKNOWN;
 
     public Status getStatus() {
-        Status localStatus = status;
-        return localStatus != null ? localStatus : Status.UNKNOWN;
-    }
-
-    public @Nullable String getName() {
-        return name;
+        return status;
     }
 }

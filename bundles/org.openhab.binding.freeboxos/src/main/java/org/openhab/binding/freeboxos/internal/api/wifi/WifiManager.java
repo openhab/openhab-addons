@@ -22,8 +22,8 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
@@ -39,8 +39,8 @@ public class WifiManager extends RestManager {
     private List<AccessPoint> accessPoints = new ArrayList<>();
     private final UriBuilder apBuilder;
 
-    public WifiManager(ApiHandler apiHandler) {
-        super(apiHandler, "wifi");
+    public WifiManager(FreeboxOsSession session) {
+        super("wifi", session);
         apBuilder = getUriBuilder().path("ap");
     }
 
@@ -50,7 +50,7 @@ public class WifiManager extends RestManager {
 
     public boolean setStatus(boolean enable) throws FreeboxException {
         WifiConfig config = new WifiConfig();
-        return put("config", config, WifiGlobalConfigResponse.class).isEnabled();
+        return put(WifiGlobalConfigResponse.class, "config", config).isEnabled();
     }
 
     private synchronized List<AccessPoint> getAccessPoints() throws FreeboxException {

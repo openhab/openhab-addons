@@ -27,7 +27,7 @@
 	<channel-group-type id="file-sharing">
 		<label>File Sharing</label>
 		<channels>
-            <channel id="ftp-status" typeId="ftp-status"/>
+			<channel id="ftp-status" typeId="ftp-status"/>
 			<channel id="samba-file-status" typeId="samba-file-status"/>
 			<channel id="samba-printer-status" typeId="samba-printer-status"/>
 		</channels>

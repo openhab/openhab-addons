@@ -59,19 +59,14 @@ public class Session {
         PLAYER;
     }
 
-    private @Nullable String sessionToken;
-    private @Nullable String challenge;
     private Map<Permission, @Nullable Boolean> permissions = Map.of();
+    private @Nullable String sessionToken;
 
     public @Nullable String getSessionToken() {
         return sessionToken;
     }
 
-    public @Nullable String getChallenge() {
-        return challenge;
-    }
-
-    public Map<Permission, @Nullable Boolean> getPermissions() {
-        return permissions;
+    public boolean hasPermission(Permission checked) {
+        return Boolean.TRUE.equals(permissions.get(checked));
     }
 }

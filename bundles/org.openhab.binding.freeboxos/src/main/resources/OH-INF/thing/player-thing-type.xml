@@ -14,6 +14,25 @@
 
 		<channel-groups>
 			<channel-group typeId="player-actions" id="player-actions"/>
+			<channel-group typeId="sysinfo" id="sysinfo"/>
+			<channel-group typeId="connectivity" id="connectivity"/>
+		</channel-groups>
+
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:freeboxos:player"/>
+	</thing-type>
+
+	<thing-type id="active_player">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Freebox Player</label>
+		<description>The player is the device connected to your TV with API capabilities</description>
+
+		<channel-groups>
+			<channel-group typeId="player-actions" id="player-actions"/>
 			<channel-group typeId="player-status" id="player-status"/>
 			<channel-group typeId="sysinfo" id="sysinfo"/>
 			<channel-group typeId="connectivity" id="connectivity"/>

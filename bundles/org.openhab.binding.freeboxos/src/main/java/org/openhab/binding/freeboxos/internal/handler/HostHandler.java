@@ -14,17 +14,19 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
-import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.action.HostActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.lan.ConnectivityData;
 import org.openhab.binding.freeboxos.internal.api.lan.LanHost;
-import org.openhab.binding.freeboxos.internal.config.HostConfiguration;
+import org.openhab.binding.freeboxos.internal.api.lan.LanManager;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,19 +35,23 @@ import org.slf4j.LoggerFactory;
  * The {@link HostHandler} is responsible for handling everything associated to
  * any Freebox thing types except the bridge thing type.
  *
- * @author Laurent Garnier - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class HostHandler extends ApiConsumerHandler {
     private final Logger logger = LoggerFactory.getLogger(HostHandler.class);
-    private @NonNullByDefault({}) String ipAddress;
+    private @Nullable String ipAddress;
 
-    public HostHandler(Thing thing, ZoneId zoneId) {
-        super(thing, zoneId);
+    public HostHandler(Thing thing) {
+        super(thing);
     }
 
-    protected String getMac() {
-        return (String) getConfig().get(HostConfiguration.MAC_ADDRESS);
+    @Override
+    void internalGetProperties(Map<String, String> properties) throws FreeboxException {
+        LanHost lanHost = getManager(LanManager.class).getHostsMap().get(getMac());
+        if (lanHost != null) {
+            properties.put(Thing.PROPERTY_VENDOR, lanHost.getVendorName().orElse("Unknown"));
+        }
     }
 
     @Override
@@ -55,23 +61,24 @@ public class HostHandler extends ApiConsumerHandler {
         updateChannelOnOff(CONNECTIVITY, REACHABLE, lanHost.isReachable());
         updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, lanHost.getLastSeen());
         updateChannelString(CONNECTIVITY, IP_ADDRESS, ipAddress);
+        updateStatus(lanHost.isReachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
     }
 
     protected ConnectivityData fetchConnectivity() throws FreeboxException {
-        LanHost lanHost = getApi().getLanManager().getHostsMap().get(getMac());
+        LanHost lanHost = getManager(LanManager.class).getHostsMap().get(getMac());
         if (lanHost != null) {
             return lanHost;
         }
         throw new FreeboxException("Host data not found");
     }
 
-    public String getIpAddress() {
+    public @Nullable String getIpAddress() {
         return ipAddress;
     }
 
     public void wol() {
         try {
-            getApi().getLanManager().wakeOnLan(getMac());
+            getManager(LanManager.class).wakeOnLan(getMac());
         } catch (FreeboxException e) {
             logger.warn("Error waking up host : {}", e.getMessage());
         }
@@ -80,5 +87,9 @@ public class HostHandler extends ApiConsumerHandler {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(HostActions.class);
+    }
+
+    protected String getMac() {
+        return ((String) getConfig().get(Thing.PROPERTY_MAC_ADDRESS)).toLowerCase();
     }
 }

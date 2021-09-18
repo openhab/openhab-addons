@@ -9,7 +9,7 @@
 		<label>Screen Brightness</label>
 		<description>Brightness level of the screen in percent</description>
 		<category>DimmableLight</category>
-		<state pattern="%d %unit%" min="0" max="100" />
+		<state pattern="%d %unit%" min="0" max="100"/>
 	</channel-type>
 
 	<channel-type id="lcd-orientation">

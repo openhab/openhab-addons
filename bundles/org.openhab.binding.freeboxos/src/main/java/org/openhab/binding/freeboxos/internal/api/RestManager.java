@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freeboxos.internal.api;
 
+import static org.eclipse.jetty.http.HttpMethod.*;
+
 import java.net.URI;
 import java.util.List;
 
@@ -19,7 +21,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
 
 /**
  * Base class for all various rest managers
@@ -28,12 +30,19 @@ import org.eclipse.jetty.http.HttpMethod;
  */
 @NonNullByDefault
 public class RestManager {
-    private final ApiHandler apiHandler;
     private final UriBuilder uriBuilder;
+    protected FreeboxOsSession session;
 
-    public RestManager(ApiHandler apiHandler, String path) {
-        this.apiHandler = apiHandler;
-        this.uriBuilder = apiHandler.getUriBuilder().path(path);
+    public RestManager(String path, FreeboxOsSession session) {
+        this.uriBuilder = session.getUriBuilder().path(path);
+        this.session = session;
+    }
+
+    public RestManager(String path, FreeboxOsSession session, Permission required) throws FreeboxException {
+        this(path, session);
+        if (!session.hasPermission(required)) {
+            throw new FreeboxException("Permission missing : " + required.toString());
+        }
     }
 
     protected UriBuilder getUriBuilder() {
@@ -50,34 +59,38 @@ public class RestManager {
 
     public <F, T extends ListResponse<F>> List<F> getList(URI uri, Class<T> classOfT, boolean retryAuth)
             throws FreeboxException {
-        return apiHandler.executeList(uri, HttpMethod.GET, null, classOfT, retryAuth);
+        return session.executeList(uri, GET, retryAuth, 3, classOfT, null);
     }
 
     public <F, T extends ListResponse<F>> List<F> getList(Class<T> classOfT, boolean retryAuth)
             throws FreeboxException {
-        return apiHandler.executeList(buildUri(null), HttpMethod.GET, null, classOfT, retryAuth);
+        return getList(buildUri(null), classOfT, retryAuth);
     }
 
     public <F, T extends Response<F>> F get(@Nullable String path, @Nullable Class<T> classOfT, boolean retryAuth)
             throws FreeboxException {
-        return apiHandler.execute(buildUri(path), HttpMethod.GET, null, classOfT, retryAuth);
+        return session.execute(buildUri(path), GET, retryAuth, 3, classOfT, null);
     }
 
     public void post(String path, Object payload) throws FreeboxException {
-        apiHandler.execute(buildUri(path), HttpMethod.POST, payload, null, true);
+        session.execute(buildUri(path), POST, true, 3, GenericResponse.class, payload);
     }
 
     public void post(String path) throws FreeboxException {
-        apiHandler.execute(buildUri(path), HttpMethod.POST, null, null, true);
+        session.execute(buildUri(path), POST, true, 3, GenericResponse.class, null);
     }
 
-    public <F, T extends Response<F>> F post(String path, @Nullable Object payload, Class<T> classOfT)
+    public <F, T extends Response<F>> F post(Class<T> classOfT, @Nullable String path, @Nullable Object payload)
             throws FreeboxException {
-        return apiHandler.execute(buildUri(path), HttpMethod.POST, payload, classOfT, true);
+        return session.execute(buildUri(path), POST, true, 3, classOfT, payload);
     }
 
-    public <F, T extends Response<F>> F put(@Nullable String path, Object payload, Class<T> classOfT)
+    public <F, T extends Response<F>> F put(Class<T> classOfT, @Nullable String path, Object payload)
             throws FreeboxException {
-        return apiHandler.execute(buildUri(path), HttpMethod.PUT, payload, classOfT, true);
+        return session.execute(buildUri(path), PUT, true, 3, classOfT, payload);
+    }
+
+    private class GenericResponse extends Response<Object> {
+
     }
 }

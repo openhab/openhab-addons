@@ -13,8 +13,8 @@
 package org.openhab.binding.freeboxos.internal.api.netshare;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 
@@ -27,8 +27,8 @@ import org.openhab.binding.freeboxos.internal.api.RestManager;
 @NonNullByDefault
 public class NetShareManager extends RestManager {
 
-    public NetShareManager(ApiHandler apiHandler) {
-        super(apiHandler, "netshare/samba");
+    public NetShareManager(FreeboxOsSession session) {
+        super("netshare/samba", session);
     }
 
     public SambaConfig getSambaConfig() throws FreeboxException {
@@ -36,7 +36,7 @@ public class NetShareManager extends RestManager {
     }
 
     public SambaConfig setSambaConfig(SambaConfig config) throws FreeboxException {
-        return put(null, config, SambaConfigResponse.class);
+        return put(SambaConfigResponse.class, null, config);
     }
 
     // Response classes and validity evaluations

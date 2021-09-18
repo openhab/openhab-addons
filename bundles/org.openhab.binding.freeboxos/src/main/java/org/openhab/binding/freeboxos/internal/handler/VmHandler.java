@@ -14,8 +14,6 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
-import java.time.ZoneId;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.vm.VirtualMachine;
@@ -39,34 +37,26 @@ import org.slf4j.LoggerFactory;
 public class VmHandler extends HostHandler {
     private final Logger logger = LoggerFactory.getLogger(VmHandler.class);
 
-    public VmHandler(Thing thing, ZoneId zoneId) {
-        super(thing, zoneId);
+    public VmHandler(Thing thing) {
+        super(thing);
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
         logger.debug("Polling Virtual machine status");
-        VmManager vmManager = getApi().getVmManager();
-        if (vmManager != null) {
-            VirtualMachine vm = vmManager.getVM(getConfigAs(ClientConfiguration.class).id);
-            updateChannelOnOff(VM_STATUS, STATUS, vm.getStatus() == Status.RUNNING);
-        } else {
-            logger.warn("Vm Manager unavailable");
-        }
+        VmManager vmManager = getManager(VmManager.class);
+        VirtualMachine vm = vmManager.getVM(getConfigAs(ClientConfiguration.class).id);
+        updateChannelOnOff(VM_STATUS, STATUS, vm.getStatus() == Status.RUNNING);
     }
 
     @Override
     protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
-        VmManager vmManager = getApi().getVmManager();
-        if (vmManager != null) {
-            if (STATUS.equals(channelUID.getIdWithoutGroup()) && command instanceof OnOffType) {
-                vmManager.power(getConfigAs(ClientConfiguration.class).id, command == OnOffType.ON);
-                return true;
-            }
-        } else {
-            logger.warn("Vm Manager unavailable");
+        VmManager vmManager = getManager(VmManager.class);
+        if (STATUS.equals(channelUID.getIdWithoutGroup()) && command instanceof OnOffType) {
+            vmManager.power(getConfigAs(ClientConfiguration.class).id, command == OnOffType.ON);
+            return true;
         }
-        return false;
+        return super.internalHandleCommand(channelUID, command);
     }
 }

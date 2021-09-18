@@ -13,8 +13,8 @@
 package org.openhab.binding.freeboxos.internal.api.system;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 
@@ -30,8 +30,8 @@ public class SystemManager extends RestManager {
     private static final String REBOOT_SUB_PATH = "reboot";
     private static final String SYSTEM_PATH = "system";
 
-    public SystemManager(ApiHandler apiHandler) {
-        super(apiHandler, SYSTEM_PATH);
+    public SystemManager(FreeboxOsSession session) {
+        super(SYSTEM_PATH, session);
     }
 
     public SystemConf getConfig() throws FreeboxException {

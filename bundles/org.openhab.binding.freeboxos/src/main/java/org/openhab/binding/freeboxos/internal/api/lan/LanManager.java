@@ -21,8 +21,8 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
@@ -44,8 +44,8 @@ public class LanManager extends RestManager {
     private @NonNullByDefault({}) NetworkMode networkMode;
     private final UriBuilder browserBuilder;
 
-    public LanManager(ApiHandler apiHandler) {
-        super(apiHandler, "lan");
+    public LanManager(FreeboxOsSession session) {
+        super("lan", session);
         browserBuilder = getUriBuilder().path("browser");
     }
 

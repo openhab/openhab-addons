@@ -13,8 +13,8 @@
 package org.openhab.binding.freeboxos.internal.api.connection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 
@@ -28,8 +28,8 @@ import org.openhab.binding.freeboxos.internal.api.RestManager;
 @NonNullByDefault
 public class ConnectionManager extends RestManager {
 
-    public ConnectionManager(ApiHandler apiHandler) {
-        super(apiHandler, "connection");
+    public ConnectionManager(FreeboxOsSession session) {
+        super("connection", session);
     }
 
     public ConnectionStatus getStatus() throws FreeboxException {

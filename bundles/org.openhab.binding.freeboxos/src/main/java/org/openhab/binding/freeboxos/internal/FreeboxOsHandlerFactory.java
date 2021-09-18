@@ -14,12 +14,12 @@ package org.openhab.binding.freeboxos.internal;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
-import java.time.ZoneId;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.freeboxos.internal.handler.ApiBridgeHandler;
+import org.openhab.binding.freeboxos.internal.api.ApiHandler;
+import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
+import org.openhab.binding.freeboxos.internal.handler.ActivePlayerHandler;
+import org.openhab.binding.freeboxos.internal.handler.FreeboxOsBridgeHandler;
 import org.openhab.binding.freeboxos.internal.handler.HostHandler;
 import org.openhab.binding.freeboxos.internal.handler.LandlineHandler;
 import org.openhab.binding.freeboxos.internal.handler.PlayerHandler;
@@ -29,8 +29,6 @@ import org.openhab.binding.freeboxos.internal.handler.ServerHandler;
 import org.openhab.binding.freeboxos.internal.handler.VmHandler;
 import org.openhab.binding.freeboxos.internal.handler.WifiHostHandler;
 import org.openhab.core.audio.AudioHTTPServer;
-import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -54,19 +52,16 @@ import org.osgi.service.component.annotations.Reference;
 public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
     private final AudioHTTPServer audioHTTPServer;
     private final NetworkAddressService networkAddressService;
-    private final ZoneId zoneId;
-    private final HttpClient httpClient;
+    private final ApiHandler apiHandler;
 
     @Activate
     public FreeboxOsHandlerFactory(final @Reference AudioHTTPServer audioHTTPServer,
-            final @Reference NetworkAddressService networkAddressService,
-            final @Reference TimeZoneProvider timeZoneProvider, @Reference HttpClientFactory httpClientFactory,
+            final @Reference NetworkAddressService networkAddressService, final @Reference ApiHandler apiHandler,
             ComponentContext componentContext) {
         super.activate(componentContext);
         this.audioHTTPServer = audioHTTPServer;
         this.networkAddressService = networkAddressService;
-        this.zoneId = timeZoneProvider.getTimeZone();
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.apiHandler = apiHandler;
     }
 
     @Override
@@ -78,23 +73,25 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(BRIDGE_TYPE_API)) {
-            return new ApiBridgeHandler((Bridge) thing, httpClient);
+            return new FreeboxOsBridgeHandler((Bridge) thing, new FreeboxOsSession(apiHandler));
         } else if (thingTypeUID.equals(THING_TYPE_REVOLUTION)) {
-            return new RevolutionHandler(thing, zoneId);
+            return new RevolutionHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_DELTA)) {
-            return new ServerHandler(thing, zoneId);
+            return new ServerHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_ACTIVE_PLAYER)) {
+            return new ActivePlayerHandler(thing, audioHTTPServer, networkAddressService, bundleContext);
         } else if (thingTypeUID.equals(THING_TYPE_PLAYER)) {
-            return new PlayerHandler(thing, zoneId, audioHTTPServer, networkAddressService, bundleContext);
+            return new PlayerHandler(thing, audioHTTPServer, networkAddressService, bundleContext);
         } else if (thingTypeUID.equals(THING_TYPE_HOST)) {
-            return new HostHandler(thing, zoneId);
+            return new HostHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_WIFI_HOST)) {
-            return new WifiHostHandler(thing, zoneId);
+            return new WifiHostHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_LANDLINE)) {
-            return new LandlineHandler(thing, zoneId);
+            return new LandlineHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_VM)) {
-            return new VmHandler(thing, zoneId);
+            return new VmHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_REPEATER)) {
-            return new RepeaterHandler(thing, zoneId);
+            return new RepeaterHandler(thing);
         }
         return null;
     }

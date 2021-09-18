@@ -15,10 +15,10 @@ package org.openhab.binding.freeboxos.internal.handler;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 import static org.openhab.core.library.unit.Units.PERCENT;
 
-import java.time.ZoneId;
 import java.util.concurrent.Callable;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.lcd.LcdConfig;
 import org.openhab.binding.freeboxos.internal.api.lcd.LcdManager;
@@ -38,49 +38,48 @@ import org.slf4j.LoggerFactory;
  * revolution server specifics
  *
  * @author Gaël L'hopital - Initial contribution
- * @author Laurent Garnier - updated to a bridge handler and delegate few things to another handler
  */
 @NonNullByDefault
 public class RevolutionHandler extends ServerHandler {
     private final Logger logger = LoggerFactory.getLogger(RevolutionHandler.class);
-    private @NonNullByDefault({}) LcdManager lcdManager;
+    private @Nullable LcdManager lcdManager;
 
-    public RevolutionHandler(Thing thing, ZoneId zoneId) {
-        super(thing, zoneId);
+    public RevolutionHandler(Thing thing) {
+        super(thing);
     }
 
-    @Override
-    public void initialize() {
-        super.initialize();
-        lcdManager = getApi().getLcdManager();
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        try {
-            switch (channelUID.getIdWithoutGroup()) {
-                case LCD_BRIGHTNESS:
-                    setBrightness(command);
-                    break;
-                case LCD_ORIENTATION:
-                    setOrientation(command);
-                    break;
-                case LCD_FORCED:
-                    setForced(command);
-                    break;
-                default:
-                    super.handleCommand(channelUID, command);
-            }
-            internalPoll();
-        } catch (FreeboxException e) {
-            logger.warn("Error while handling command {} from channel {}", command, channelUID.getId(), e);
+    private LcdManager getLcdManager() throws FreeboxException {
+        LcdManager manager = lcdManager;
+        if (manager == null) {
+            manager = getManager(LcdManager.class);
+            lcdManager = manager;
         }
+        return manager;
+    }
+
+    @Override
+    protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {
+        switch (channelUID.getIdWithoutGroup()) {
+            case LCD_BRIGHTNESS:
+                setBrightness(command);
+                internalPoll();
+                return true;
+            case LCD_ORIENTATION:
+                setOrientation(command);
+                internalPoll();
+                return true;
+            case LCD_FORCED:
+                setForced(command);
+                internalPoll();
+                return true;
+        }
+        return super.internalHandleCommand(channelUID, command);
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
-        LcdConfig config = lcdManager.getConfig();
+        LcdConfig config = getLcdManager().getConfig();
         updateChannelQuantity(DISPLAY, LCD_BRIGHTNESS, config.getBrightness(), PERCENT);
         updateChannelDecimal(DISPLAY, LCD_ORIENTATION, config.getOrientation());
         updateChannelOnOff(DISPLAY, LCD_FORCED, config.isOrientationForced());
@@ -88,9 +87,9 @@ public class RevolutionHandler extends ServerHandler {
 
     private void setOrientation(Command command) throws FreeboxException {
         if (command instanceof DecimalType) {
-            LcdConfig config = lcdManager.getConfig();
+            LcdConfig config = getLcdManager().getConfig();
             config.setOrientation(((DecimalType) command).intValue());
-            lcdManager.setConfig(config);
+            getLcdManager().setConfig(config);
         } else {
             logger.warn("Invalid command {} from channel {}", command, LCD_ORIENTATION);
         }
@@ -98,9 +97,9 @@ public class RevolutionHandler extends ServerHandler {
 
     private void setForced(Command command) throws FreeboxException {
         if (ON_OFF_CLASSES.contains(command.getClass())) {
-            LcdConfig config = lcdManager.getConfig();
+            LcdConfig config = getLcdManager().getConfig();
             config.setOrientationForced(TRUE_COMMANDS.contains(command));
-            lcdManager.setConfig(config);
+            getLcdManager().setConfig(config);
         } else {
             logger.warn("Invalid command {} from channel {}", command, LCD_FORCED);
         }
@@ -108,7 +107,7 @@ public class RevolutionHandler extends ServerHandler {
 
     private void setBrightness(Command command) throws FreeboxException {
         if (command instanceof IncreaseDecreaseType) {
-            LcdConfig config = lcdManager.getConfig();
+            LcdConfig config = getLcdManager().getConfig();
             changeLcdBrightness(() -> config.getBrightness() + (command == IncreaseDecreaseType.INCREASE ? 1 : -1));
         } else if (command instanceof OnOffType) {
             changeLcdBrightness(() -> command == OnOffType.ON ? 100 : 0);
@@ -122,11 +121,11 @@ public class RevolutionHandler extends ServerHandler {
     }
 
     private void changeLcdBrightness(Callable<Integer> function) throws FreeboxException {
-        LcdConfig config = lcdManager.getConfig();
+        LcdConfig config = getLcdManager().getConfig();
         try {
             int newValue = function.call();
             config.setBrightness(newValue);
-            lcdManager.setConfig(config);
+            getLcdManager().setConfig(config);
         } catch (Exception e) {
             throw new FreeboxException("Error setting brightness", e);
         }

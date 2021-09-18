@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.freeboxos.internal.api.call;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
@@ -31,17 +32,15 @@ import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
  */
 @NonNullByDefault
 public class CallManager extends RestManager {
-    public static Permission associatedPermission() {
-        return Permission.CALLS;
+    public final static String CALL_PATH = "call";
+
+    public CallManager(FreeboxOsSession session) throws FreeboxException {
+        super(CALL_PATH, session, Permission.CALLS);
     }
 
-    public CallManager(ApiHandler apiHandler) {
-        super(apiHandler, "call");
-    }
-
-    public List<CallEntry> getCallEntries(long startTime) throws FreeboxException {
+    public List<CallEntry> getCallEntries(ZonedDateTime startTime) throws FreeboxException {
         UriBuilder myBuilder = getUriBuilder();
-        myBuilder.path("log/").queryParam("_dc", startTime);
+        myBuilder.path("log/").queryParam("_dc", startTime.toInstant().toEpochMilli());
         return getList(myBuilder.build(), CallEntriesResponse.class, true);
     }
 

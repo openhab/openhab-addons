@@ -12,353 +12,93 @@
  */
 package org.openhab.binding.freeboxos.internal.api;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.InputStreamContentProvider;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.freeboxos.internal.api.BaseResponse.ErrorCode;
-import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaManager;
-import org.openhab.binding.freeboxos.internal.api.call.CallManager;
-import org.openhab.binding.freeboxos.internal.api.connection.ConnectionManager;
-import org.openhab.binding.freeboxos.internal.api.ftp.FtpManager;
-import org.openhab.binding.freeboxos.internal.api.lan.LanManager;
-import org.openhab.binding.freeboxos.internal.api.lcd.LcdManager;
-import org.openhab.binding.freeboxos.internal.api.login.LoginManager;
-import org.openhab.binding.freeboxos.internal.api.netshare.NetShareManager;
-import org.openhab.binding.freeboxos.internal.api.phone.PhoneManager;
-import org.openhab.binding.freeboxos.internal.api.player.PlayerManager;
-import org.openhab.binding.freeboxos.internal.api.repeater.RepeaterManager;
-import org.openhab.binding.freeboxos.internal.api.system.SystemManager;
-import org.openhab.binding.freeboxos.internal.api.upnpav.UPnPAVManager;
-import org.openhab.binding.freeboxos.internal.api.vm.VmManager;
-import org.openhab.binding.freeboxos.internal.api.wifi.WifiManager;
-import org.openhab.binding.freeboxos.internal.config.ApiConfiguration;
-import org.openhab.binding.freeboxos.internal.handler.ApiBridgeHandler;
-import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSyntaxException;
 
 /**
+ * The {@link ApiHandler} is responsible for sending requests toward
+ * a given url and transform the answer in appropriate dto.
+ *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
+@Component(service = ApiHandler.class)
 public class ApiHandler {
+    private static final long DEFAULT_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(8);
+    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static final String AUTH_HEADER = "X-Fbx-App-Auth";
-    private static final String CONTENT_TYPE = "application/json; charset=utf-8";
-    private static final long DEFAULT_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(10);
+    private static final String CONTENT_TYPE = "application/json; charset=" + DEFAULT_CHARSET.name();
 
     private final Logger logger = LoggerFactory.getLogger(ApiHandler.class);
-    private final Map<String, String> httpHeaders = new HashMap<>(2);
-    private final Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
     private final HttpClient httpClient;
-    private final ApiBridgeHandler apiBridgeHandler;
-    private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .create();
+    private final Gson gson;
 
-    private @NonNullByDefault({}) ApiConfiguration configuration;
-    private @NonNullByDefault({}) UriBuilder uriBuilder;
-    private @NonNullByDefault({}) ApiVersion version;
-
-    public ApiHandler(ApiBridgeHandler apiBridgeHandler, HttpClient httpClient) {
-        this.httpClient = httpClient;
-        this.apiBridgeHandler = apiBridgeHandler;
-        this.httpHeaders.put("Content-Type", CONTENT_TYPE);
+    @Activate
+    public ApiHandler(final @Reference HttpClientFactory httpClientFactory,
+            final @Reference TimeZoneProvider timeZoneProvider) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .registerTypeAdapter(ZonedDateTime.class,
+                        (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> {
+                            long timestamp = json.getAsJsonPrimitive().getAsLong();
+                            Instant i = Instant.ofEpochSecond(timestamp);
+                            return ZonedDateTime.ofInstant(i, timeZoneProvider.getTimeZone());
+                        })
+                .create();
     }
 
-    public void openConnection(ApiConfiguration configuration) {
-        this.configuration = configuration;
+    public synchronized <T> T executeUri(URI uri, HttpMethod method, @Nullable String sessionToken,
+            @Nullable Object payload, @Nullable Type classOfT) throws FreeboxException {
+        logger.debug("executeUrl {} - {} ", method, uri);
+
+        Request request = httpClient.newRequest(uri).method(method).header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE);
+
+        if (sessionToken != null) {
+            request.header(AUTH_HEADER, sessionToken);
+        }
+
+        if (payload != null) {
+            request.content(new StringContentProvider(gson.toJson(payload), DEFAULT_CHARSET), null);
+        }
 
         try {
-            uriBuilder = UriBuilder.fromPath("/").scheme(configuration.getScheme()).port(configuration.getPort())
-                    .host(configuration.apiDomain);
+            ContentResponse serviceResponse = request.timeout(DEFAULT_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
+            String response = new String(serviceResponse.getContent(), DEFAULT_CHARSET);
 
-            Request request = httpClient.newRequest(getUriBuilder().path("api_version").build()).method(HttpMethod.GET);
-            version = gson.fromJson(sendRequest(request), ApiVersion.class);
+            logger.trace("executeUrl {} - {} returned {}", method, uri, response);
 
-            uriBuilder.path(version.baseUrl());
-
-            getLoginManager();
-        } catch (FreeboxException e) {
-            apiBridgeHandler.pushStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        }
-    }
-
-    public UriBuilder getUriBuilder() {
-        return uriBuilder.clone();
-    }
-
-    public synchronized LoginManager getLoginManager() {
-        LoginManager manager = (LoginManager) managers.get(LoginManager.class);
-        if (manager == null) {
-            manager = new LoginManager(this);
-            try {
-                String sessionToken = manager.openSession(configuration.appToken);
-                httpHeaders.put(AUTH_HEADER, sessionToken);
-                apiBridgeHandler.pushStatus(ThingStatusDetail.NONE, "");
-            } catch (FreeboxException e) {
-                BaseResponse response = e.getResponse();
-                if (response != null && response.getErrorCode() == ErrorCode.INVALID_TOKEN) {
-                    apiBridgeHandler.pushStatus(ThingStatusDetail.CONFIGURATION_PENDING,
-                            "Please accept pairing request directly on your freebox");
-                    try {
-                        String appToken = getLoginManager().grant();
-                        apiBridgeHandler.pushAppToken(appToken);
-                    } catch (FreeboxException e1) {
-                        apiBridgeHandler.pushStatus(ThingStatusDetail.CONFIGURATION_ERROR, e1.getMessage());
-                    }
-                } else {
-                    apiBridgeHandler.pushStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-                }
-            }
-            managers.put(LoginManager.class, manager);
-        }
-        return manager;
-    }
-
-    public synchronized SystemManager getSystemManager() {
-        SystemManager manager = (SystemManager) managers.get(SystemManager.class);
-        if (manager == null) {
-            manager = new SystemManager(this);
-            managers.put(SystemManager.class, manager);
-        }
-        return manager;
-    }
-
-    public synchronized ConnectionManager getConnectionManager() {
-        ConnectionManager manager = (ConnectionManager) managers.get(ConnectionManager.class);
-        if (manager == null) {
-            manager = new ConnectionManager(this);
-            managers.put(ConnectionManager.class, manager);
-        }
-        return manager;
-    }
-
-    public synchronized LanManager getLanManager() {
-        LanManager manager = (LanManager) managers.get(LanManager.class);
-        if (manager == null) {
-            manager = new LanManager(this);
-            managers.put(LanManager.class, manager);
-        }
-        return manager;
-    }
-
-    public synchronized LcdManager getLcdManager() {
-        LcdManager manager = (LcdManager) managers.get(LcdManager.class);
-        if (manager == null) {
-            manager = new LcdManager(this);
-            managers.put(LcdManager.class, manager);
-        }
-        return manager;
-    }
-
-    public synchronized AirMediaManager getAirMediaManager() {
-        AirMediaManager manager = (AirMediaManager) managers.get(AirMediaManager.class);
-        if (manager == null) {
-            manager = new AirMediaManager(this);
-            managers.put(AirMediaManager.class, manager);
-        }
-        return manager;
-    }
-
-    public synchronized WifiManager getWifiManager() {
-        WifiManager manager = (WifiManager) managers.get(WifiManager.class);
-        if (manager == null) {
-            manager = new WifiManager(this);
-            managers.put(WifiManager.class, manager);
-        }
-        return manager;
-    }
-
-    public synchronized FtpManager getFtpManager() {
-        FtpManager manager = (FtpManager) managers.get(FtpManager.class);
-        if (manager == null) {
-            manager = new FtpManager(this);
-            managers.put(FtpManager.class, manager);
-        }
-        return manager;
-    }
-
-    public synchronized UPnPAVManager getUPnPAVManager() {
-        UPnPAVManager manager = (UPnPAVManager) managers.get(UPnPAVManager.class);
-        if (manager == null) {
-            manager = new UPnPAVManager(this);
-            managers.put(UPnPAVManager.class, manager);
-        }
-        return manager;
-    }
-
-    public synchronized NetShareManager getNetShareManager() {
-        NetShareManager manager = (NetShareManager) managers.get(NetShareManager.class);
-        if (manager == null) {
-            manager = new NetShareManager(this);
-            managers.put(NetShareManager.class, manager);
-        }
-        return manager;
-    }
-
-    public synchronized RepeaterManager getRepeaterManager() {
-        RepeaterManager manager = (RepeaterManager) managers.get(RepeaterManager.class);
-        if (manager == null) {
-            manager = new RepeaterManager(this);
-            managers.put(RepeaterManager.class, manager);
-        }
-        return manager;
-    }
-
-    public synchronized CallManager getCallManager() {
-        CallManager manager = (CallManager) managers.get(CallManager.class);
-        if (manager == null) {
-            manager = new CallManager(this);
-            managers.put(CallManager.class, manager);
-        }
-        return manager;
-    }
-
-    public synchronized @Nullable PhoneManager getPhoneManager() {
-        PhoneManager manager = (PhoneManager) managers.get(PhoneManager.class);
-        if (manager == null) {
-            if (getLoginManager().hasPermission(PhoneManager.associatedPermission())) {
-                manager = new PhoneManager(this);
-                managers.put(PhoneManager.class, manager);
-            } else {
-                logger.debug("Permissions missing to initialize PhoneManager");
-            }
-        }
-        return manager;
-    }
-
-    public synchronized @Nullable VmManager getVmManager() {
-        VmManager manager = (VmManager) managers.get(VmManager.class);
-        if (manager == null) {
-            if (getLoginManager().hasPermission(VmManager.associatedPermission())) {
-                manager = new VmManager(this);
-                managers.put(VmManager.class, manager);
-            } else {
-                logger.debug("Permissions missing to initialize VmManager");
-            }
-        }
-        return manager;
-    }
-
-    public synchronized @Nullable PlayerManager getPlayerManager() {
-        PlayerManager manager = (PlayerManager) managers.get(PlayerManager.class);
-        if (manager == null) {
-            if (getLoginManager().hasPermission(PlayerManager.associatedPermission())) {
-                manager = new PlayerManager(this, version);
-                managers.put(PlayerManager.class, manager);
-            } else {
-                logger.debug("Permissions missing to initialize PlayerManager");
-            }
-        }
-        return manager;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <F, T extends Response<F>> F execute(URI url, HttpMethod method, @Nullable Object aPayload,
-            @Nullable Class<T> classOfT, boolean retryAuth) throws FreeboxException {
-        Object serialized = executeUrl(url, method, aPayload, classOfT, retryAuth, 3);
-        return classOfT != null ? ((T) serialized).getResult() : null;
-    }
-
-    <F, T extends ListResponse<F>> List<F> executeList(URI anUrl, HttpMethod method, @Nullable String aPayload,
-            Class<T> classOfT, boolean retryAuth) throws FreeboxException {
-        T serialized = executeUrl(anUrl, method, aPayload, classOfT, retryAuth, 3);
-        return serialized.getResult();
-    }
-
-    private String sendRequest(Request request) throws FreeboxException {
-        try {
-            ContentResponse response = request.timeout(DEFAULT_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
-            return new String(response.getContent(), StandardCharsets.UTF_8);
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            return gson.fromJson(response, classOfT != null ? classOfT : BaseResponse.class);
+        } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
             throw new FreeboxException("Exception while calling " + request.getURI(), e);
         }
-    }
-
-    private synchronized <T extends BaseResponse> T executeUrl(URI url, HttpMethod method, @Nullable Object aPayload,
-            @Nullable Class<T> classOfT, boolean retryAuth, int retryCount) throws FreeboxException {
-        logger.debug("executeUrl {} - {} ", method, url);
-        try {
-            Request request = httpClient.newRequest(url).method(method);
-            httpHeaders.entrySet().forEach(entry -> request.header(entry.getKey(), entry.getValue()));
-
-            if (aPayload != null) {
-                String payload = gson.toJson(aPayload);
-                InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
-                try (final InputStreamContentProvider contentProvider = new InputStreamContentProvider(stream)) {
-                    request.content(contentProvider, null);
-                }
-            }
-            String response = sendRequest(request);
-            logger.trace("executeUrl {} - {} returned {}", method, url, response);
-            T serialized = deserialize(classOfT, response);
-            serialized.evaluate();
-            return serialized;
-        } catch (FreeboxException e) {
-            BaseResponse response = e.getResponse();
-            if (response != null) {
-                if (response.getErrorCode() == ErrorCode.INTERNAL_ERROR && retryCount > 0) {
-                    return executeUrl(url, method, aPayload, classOfT, retryAuth, retryCount - 1);
-                } else if (retryAuth && response.getErrorCode() == ErrorCode.AUTHORIZATION_REQUIRED) {
-                    httpHeaders.put(AUTH_HEADER, getLoginManager().openSession(configuration.appToken));
-                    return executeUrl(url, method, aPayload, classOfT, false, retryCount);
-                }
-            }
-            throw e;
-        }
-    }
-
-    private <T extends BaseResponse> T deserialize(@Nullable Class<T> classOfT, String serviceAnswer)
-            throws FreeboxException {
-        try {
-            @Nullable
-            T deserialized = gson.fromJson(serviceAnswer, classOfT != null ? classOfT : BaseResponse.class);
-            if (deserialized != null) {
-                return deserialized;
-            }
-            throw new FreeboxException("Deserialization lead to null object");
-        } catch (JsonSyntaxException e1) {
-            if (classOfT != null) {
-                try {
-                    BaseResponse serialized = gson.fromJson(serviceAnswer, BaseResponse.class);
-                    throw new FreeboxException("Received an unexpected answer from api", e1, serialized);
-                } catch (JsonSyntaxException e2) {
-                    throw new FreeboxException(String.format("Unexpected error deserializing '%s'", serviceAnswer), e2);
-                }
-            }
-            throw new FreeboxException(String.format("Unexpected error deserializing '%s'", serviceAnswer), e1);
-        }
-    }
-
-    public void closeSession() {
-        try {
-            if (httpHeaders.containsKey(AUTH_HEADER)) {
-                getLoginManager().closeSession();
-            }
-        } catch (FreeboxException e) {
-            logger.warn("Error closing session : {}", e.getMessage());
-        }
-        httpHeaders.remove(AUTH_HEADER);
     }
 }

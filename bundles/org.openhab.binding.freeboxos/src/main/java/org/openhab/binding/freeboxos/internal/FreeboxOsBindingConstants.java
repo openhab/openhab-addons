@@ -40,17 +40,21 @@ public class FreeboxOsBindingConstants {
     public static final ThingTypeUID THING_TYPE_HOST = new ThingTypeUID(BINDING_ID, "host");
     public static final ThingTypeUID THING_TYPE_WIFI_HOST = new ThingTypeUID(BINDING_ID, "wifihost");
     public static final ThingTypeUID THING_TYPE_PLAYER = new ThingTypeUID(BINDING_ID, "player");
+    public static final ThingTypeUID THING_TYPE_ACTIVE_PLAYER = new ThingTypeUID(BINDING_ID, "active_player");
     public static final ThingTypeUID THING_TYPE_VM = new ThingTypeUID(BINDING_ID, "vm");
     public static final ThingTypeUID THING_TYPE_REPEATER = new ThingTypeUID(BINDING_ID, "repeater");
 
     // All supported Thing types
     public static final Set<ThingTypeUID> BRIDGE_TYPE_UID = Set.of(BRIDGE_TYPE_API);
     public static final Set<ThingTypeUID> THINGS_TYPES_UIDS = Set.of(THING_TYPE_LANDLINE, THING_TYPE_HOST,
-            THING_TYPE_VM, THING_TYPE_PLAYER, THING_TYPE_DELTA, THING_TYPE_REVOLUTION, THING_TYPE_REPEATER,
-            THING_TYPE_WIFI_HOST);
+            THING_TYPE_VM, THING_TYPE_PLAYER, THING_TYPE_ACTIVE_PLAYER, THING_TYPE_DELTA, THING_TYPE_REVOLUTION,
+            THING_TYPE_REPEATER, THING_TYPE_WIFI_HOST);
 
     protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .concat(BRIDGE_TYPE_UID.stream(), THINGS_TYPES_UIDS.stream()).collect(Collectors.toSet());
+
+    // Thing properties
+    public static final String PHONE_TYPE = "Phone Type";
 
     // List of all Group Channel ids
     public static final String GROUP_SENSORS = "sensors";
@@ -63,7 +67,7 @@ public class FreeboxOsBindingConstants {
     public static final String STATE = "state";
     public static final String DISPLAY = "display";
     public static final String VM_STATUS = "vmstatus";
-    public static final String WIFI = "wifi";
+    public static final String GROUP_WIFI = "wifi";
     public static final String REPEATER_MISC = "repeater-misc";
     public static final String PHONE_MISC = "phone-misc";
 
@@ -117,4 +121,7 @@ public class FreeboxOsBindingConstants {
     public static final String LED = "led";
     public static final String HOST_COUNT = "host-count";
     public static final String RPT_TIMESTAMP = "start-timestamp";
+
+    // Defaults api strings
+    public static final String DEFAULT_FREEBOX_NAME = "mafreebox.freebox.fr";
 }

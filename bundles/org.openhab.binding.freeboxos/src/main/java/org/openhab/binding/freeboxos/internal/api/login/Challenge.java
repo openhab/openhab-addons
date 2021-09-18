@@ -27,7 +27,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Challenge {
     public static enum Status {
-        NONE,
         @SerializedName("unknown")
         UNKNOWN, // the app_token is invalid or has been revoked
         @SerializedName("pending")
@@ -54,6 +53,6 @@ public class Challenge {
 
     public Status getStatus() {
         Status localStatus = status;
-        return localStatus != null ? localStatus : Status.NONE;
+        return localStatus != null ? localStatus : Status.UNKNOWN;
     }
 }

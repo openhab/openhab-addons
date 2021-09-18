@@ -16,7 +16,6 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*
 import static org.openhab.core.audio.AudioFormat.*;
 
 import java.io.IOException;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,22 +23,26 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.freeboxos.internal.action.PlayerActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaActionData.MediaAction;
 import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaActionData.MediaType;
 import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaConfig;
+import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaManager;
 import org.openhab.binding.freeboxos.internal.api.lan.LanConfig.NetworkMode;
+import org.openhab.binding.freeboxos.internal.api.lan.LanHost;
+import org.openhab.binding.freeboxos.internal.api.lan.LanManager;
 import org.openhab.binding.freeboxos.internal.api.lan.NameSource;
+import org.openhab.binding.freeboxos.internal.api.player.Player;
 import org.openhab.binding.freeboxos.internal.api.player.PlayerManager;
-import org.openhab.binding.freeboxos.internal.api.player.PlayerStatus;
 import org.openhab.binding.freeboxos.internal.api.system.DeviceConfig;
 import org.openhab.binding.freeboxos.internal.config.PlayerConfiguration;
 import org.openhab.core.audio.AudioFormat;
@@ -102,14 +105,33 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
     private final BundleContext bundleContext;
 
     @SuppressWarnings("unchecked")
-    public PlayerHandler(Thing thing, ZoneId zoneId, AudioHTTPServer audioHTTPServer,
-            NetworkAddressService networkAddressService, BundleContext bundleContext) {
-        super(thing, zoneId);
+    public PlayerHandler(Thing thing, AudioHTTPServer audioHTTPServer, NetworkAddressService networkAddressService,
+            BundleContext bundleContext) {
+        super(thing);
         this.audioHTTPServer = audioHTTPServer;
         this.networkAddressService = networkAddressService;
         this.bundleContext = bundleContext;
         reg = (ServiceRegistration<AudioSink>) bundleContext.registerService(AudioSink.class.getName(), this,
                 new Hashtable<>());
+    }
+
+    @Override
+    void internalGetProperties(Map<String, String> properties) throws FreeboxException {
+        super.internalGetProperties(properties);
+        for (Player player : getManager(PlayerManager.class).getPlayers()) {
+            if (player.getMac().equals(getMac())) {
+                properties.put(Thing.PROPERTY_MODEL_ID, player.getModel());
+                if (player.isApiAvailable() && player.isReachable()) {
+                    DeviceConfig config = getManager(PlayerManager.class).getConfig(player.getId());
+                    properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.getSerial());
+                    properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion());
+                }
+                LanHost lanhost = getManager(LanManager.class).getHostsMap().get(getMac());
+                if (lanhost != null) {
+                    properties.put(NameSource.UPNP.name(), lanhost.getPrimaryName().orElse("Freebox Player"));
+                }
+            }
+        }
     }
 
     @Override
@@ -144,52 +166,15 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
         fetchAirMediaStatus();
-        fetchPlayerStatus();
-    }
-
-    private void fetchPlayerStatus() throws FreeboxException {
-        // TODO : if player is unreachable it should be set offline and some function should not be reachable if no api
-        // is available
-        // cf player discovery on this topic.
-        // for (Player player : playMgr.getPlayers()) {
-        // if (player.isApiAvailable() && player.isReachable()) {
-        //
-        // Question : should we set the thing offline or should we use its status ???
-        //
-        PlayerConfiguration config = getConfigAs(PlayerConfiguration.class);
-        PlayerManager playerManager = getApi().getPlayerManager();
-        if (playerManager != null) {
-            PlayerStatus status = playerManager.getPlayerStatus(config.id);
-            updateChannelString(PLAYER_STATUS, PLAYER_STATUS, status.getPowerState().name());
-        }
     }
 
     private void fetchAirMediaStatus() throws FreeboxException {
         Boolean airMediaStatus = false;
-        if (getApi().getLanManager().getNetworkMode() != NetworkMode.BRIDGE) {
-            AirMediaConfig response = getApi().getAirMediaManager().getConfig();
+        if (getManager(LanManager.class).getNetworkMode() != NetworkMode.BRIDGE) {
+            AirMediaConfig response = getManager(AirMediaManager.class).getConfig();
             airMediaStatus = response.isEnabled();
         }
         updateChannelOnOff(PLAYER_ACTIONS, AIRMEDIA_STATUS, airMediaStatus);
-    }
-
-    @Override
-    protected DeviceConfig getDeviceConfig() throws FreeboxException {
-        PlayerConfiguration config = getConfigAs(PlayerConfiguration.class);
-        PlayerManager playerManager = getApi().getPlayerManager();
-        if (playerManager != null) {
-            return playerManager.getConfig(config.id);
-        }
-        throw new FreeboxException("Player Manager unavailable");
-    }
-
-    @Override
-    protected void internalCallReboot() throws FreeboxException {
-        PlayerConfiguration config = getConfigAs(PlayerConfiguration.class);
-        PlayerManager playerManager = getApi().getPlayerManager();
-        if (playerManager != null) {
-            playerManager.reboot(config.id);
-        }
     }
 
     @Override
@@ -215,7 +200,7 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
         if (getThing().getStatus() == ThingStatus.ONLINE && playerName != null) {
             if (audioStream == null) {
                 try {
-                    getApi().getAirMediaManager().sendToReceiver(playerName, getPassword(), MediaAction.STOP,
+                    getManager(AirMediaManager.class).sendToReceiver(playerName, getPassword(), MediaAction.STOP,
                             MediaType.VIDEO);
                 } catch (FreeboxException e) {
                     logger.warn("Exception while stopping audio stream playback: {}", e.getMessage());
@@ -240,7 +225,7 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
                     audioStream.close();
                     try {
                         logger.debug("AirPlay audio sink: process url {}", url);
-                        getApi().getAirMediaManager().sendToReceiver(playerName, getPassword(), MediaAction.START,
+                        getManager(AirMediaManager.class).sendToReceiver(playerName, getPassword(), MediaAction.START,
                                 MediaType.VIDEO, url);
                     } catch (FreeboxException e) {
                         logger.warn("Audio stream playback failed: {}", e.getMessage());
@@ -253,9 +238,9 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
     }
 
     private boolean enableAirMedia(boolean enable) throws FreeboxException {
-        AirMediaConfig config = getApi().getAirMediaManager().getConfig();
+        AirMediaConfig config = getManager(AirMediaManager.class).getConfig();
         config.setEnable(enable);
-        config = getApi().getAirMediaManager().setConfig(config);
+        config = getManager(AirMediaManager.class).setConfig(config);
         return config.isEnabled();
     }
 
@@ -274,11 +259,13 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
 
     public void sendKey(String key, boolean longPress, int count) {
         String aKey = key.toLowerCase();
-        if (VALID_REMOTE_KEYS.contains(aKey)) {
+        String ip = getIpAddress();
+        if (ip == null) {
+            logger.info("Player IP is unknown");
+        } else if (VALID_REMOTE_KEYS.contains(aKey)) {
             String remoteCode = (String) getConfig().get(PlayerConfiguration.REMOTE_CODE);
             if (remoteCode != null) {
-                UriBuilder uriBuilder = UriBuilder.fromPath("pub").scheme("http").host(getIpAddress())
-                        .path("remote_control");
+                UriBuilder uriBuilder = UriBuilder.fromPath("pub").scheme("http").host(ip).path("remote_control");
                 uriBuilder.queryParam("code", remoteCode).queryParam("key", aKey);
                 if (longPress) {
                     uriBuilder.queryParam("long", true);
@@ -286,11 +273,12 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
                 if (count > 1) {
                     uriBuilder.queryParam("repeat", count);
                 }
-                try {
-                    getApi().execute(uriBuilder.build(), HttpMethod.GET, null, null, false);
-                } catch (FreeboxException e) {
-                    logger.warn("Error calling Player url : {}", e.getMessage());
-                }
+                // try {
+                // TODO : s Correct this
+                // getApi().execute(uriBuilder.build(), HttpMethod.GET, null, null, false);
+                // } catch (FreeboxException e) {
+                // logger.warn("Error calling Player url : {}", e.getMessage());
+                // }
             } else {
                 logger.warn("A remote code must be configured in the on the player thing.");
             }
@@ -335,5 +323,14 @@ public class PlayerHandler extends FreeDeviceHandler implements AudioSink {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(PlayerActions.class);
+    }
+
+    @Override
+    protected Optional<DeviceConfig> getDeviceConfig() throws FreeboxException {
+        return Optional.empty();
+    }
+
+    @Override
+    protected void internalCallReboot() throws FreeboxException {
     }
 }

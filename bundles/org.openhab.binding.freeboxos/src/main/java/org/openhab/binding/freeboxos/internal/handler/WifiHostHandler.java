@@ -14,7 +14,6 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
-import java.time.ZoneId;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,12 +22,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.lan.LanAccessPoint;
 import org.openhab.binding.freeboxos.internal.api.lan.LanHost;
+import org.openhab.binding.freeboxos.internal.api.repeater.RepeaterManager;
 import org.openhab.binding.freeboxos.internal.api.wifi.AccessPointHost;
+import org.openhab.binding.freeboxos.internal.api.wifi.WifiManager;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link WifiHostHandler} is responsible for handling everything associated to
@@ -38,57 +39,46 @@ import org.openhab.core.thing.ThingStatusDetail;
  */
 @NonNullByDefault
 public class WifiHostHandler extends HostHandler {
-    public WifiHostHandler(Thing thing, ZoneId zoneId) {
-        super(thing, zoneId);
+    private static String SERVEUR_HOST = "Server";
+
+    public WifiHostHandler(Thing thing) {
+        super(thing);
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
-        Optional<AccessPointHost> host = getApi().getWifiManager().getHost(getMac());
+        Optional<AccessPointHost> host = getManager(WifiManager.class).getHost(getMac());
         if (host.isPresent()) {
             AccessPointHost wifiHost = host.get();
-            int rssi = wifiHost.getSignal();
-            updateChannels(rssi, "server", wifiHost.getSsid());
-            return;
-        }
-
-        Map<String, @Nullable LanHost> map = getApi().getRepeaterManager().getHostsMap();
-        LanHost wifiHost = map.get(getMac());
-        if (wifiHost != null) {
-            LanAccessPoint accessPoint = wifiHost.getAccessPoint();
+            updateChannels(wifiHost.getSignal(), SERVEUR_HOST, wifiHost.getSsid());
+        } else {
+            Map<String, @Nullable LanHost> map = getManager(RepeaterManager.class).getHostsMap();
+            LanHost wifiHost = map.get(getMac());
+            LanAccessPoint accessPoint = null;
+            if (wifiHost != null) {
+                accessPoint = wifiHost.getAccessPoint();
+            }
             if (accessPoint != null) {
-                int rssi = accessPoint.getSignal();
-                updateChannels(rssi, String.format("%s-%s", accessPoint.getType(), accessPoint.getId()),
-                        accessPoint.getSsid());
-                return;
+                updateChannels(accessPoint.getSignal(),
+                        String.format("%s-%s", accessPoint.getType(), accessPoint.getId()), accessPoint.getSsid());
+
+            } else {
+                // Not found a wifi repeater/host, so update all wifi channels to NULL
+                getThing().getChannelsOfGroup(GROUP_WIFI).stream().map(Channel::getUID).filter(uid -> isLinked(uid))
+                        .forEach(uid -> updateState(uid, UnDefType.NULL));
             }
         }
-        updateChannels(0, null, null);
     }
 
-    private void updateChannels(int rssi, @Nullable String host, @Nullable String ssid) {
-        if (rssi != 0) {
-            updateChannelDecimal(WIFI, WIFI_QUALITY, toQoS(rssi));
-            updateChannelString(WIFI, SSID, ssid);
-            updateChannelString(WIFI, WIFI_HOST, host);
-            updateChannelQuantity(WIFI, RSSI, new QuantityType<>(rssi, Units.DECIBEL_MILLIWATTS));
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-        }
+    private void updateChannels(int rssi, String host, @Nullable String ssid) {
+        updateChannelString(GROUP_WIFI, SSID, ssid);
+        updateChannelString(GROUP_WIFI, WIFI_HOST, host);
+        updateChannelQuantity(GROUP_WIFI, RSSI, rssi <= 0 ? new QuantityType<>(rssi, Units.DECIBEL_MILLIWATTS) : null);
+        updateChannelDecimal(GROUP_WIFI, WIFI_QUALITY, rssi <= 0 ? toQoS(rssi) : null);
     }
 
     private int toQoS(int rssi) {
-        if (rssi > -50) {
-            return 4;
-        } else if (rssi > -60) {
-            return 3;
-        } else if (rssi > -70) {
-            return 2;
-        } else if (rssi > -85) {
-            return 1;
-        }
-        return 0;
+        return rssi > -50 ? 4 : rssi > -60 ? 3 : rssi > -70 ? 2 : rssi > -85 ? 1 : 0;
     }
 }

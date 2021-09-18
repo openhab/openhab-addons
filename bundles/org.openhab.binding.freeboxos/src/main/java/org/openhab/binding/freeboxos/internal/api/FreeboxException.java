@@ -34,7 +34,7 @@ public class FreeboxException extends Exception {
         this(msg, cause, null);
     }
 
-    FreeboxException(@Nullable String msg, BaseResponse response) {
+    FreeboxException(BaseResponse response, @Nullable String msg) {
         this(msg, null, response);
     }
 

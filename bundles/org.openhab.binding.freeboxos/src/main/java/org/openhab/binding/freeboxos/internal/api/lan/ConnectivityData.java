@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freeboxos.internal.api.lan;
 
+import java.time.ZonedDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -24,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public interface ConnectivityData {
     public boolean isReachable();
 
-    public long getLastSeen();
+    public @Nullable ZonedDateTime getLastSeen();
 
     public @Nullable String getIpv4();
 }

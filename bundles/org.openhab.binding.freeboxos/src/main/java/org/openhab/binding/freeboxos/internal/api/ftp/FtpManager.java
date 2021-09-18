@@ -13,8 +13,8 @@
 package org.openhab.binding.freeboxos.internal.api.ftp;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 
@@ -27,9 +27,11 @@ import org.openhab.binding.freeboxos.internal.api.RestManager;
  */
 @NonNullByDefault
 public class FtpManager extends RestManager {
+    private static final String FTP_PATH = "ftp";
+    private static final String CONFIG_SPATH = "config";
 
-    public FtpManager(ApiHandler apiHandler) {
-        super(apiHandler, "ftp");
+    public FtpManager(FreeboxOsSession session) {
+        super(FTP_PATH, session);
     }
 
     public boolean getFtpStatus() throws FreeboxException {
@@ -39,11 +41,11 @@ public class FtpManager extends RestManager {
     public boolean changeFtpStatus(boolean enable) throws FreeboxException {
         FtpConfig config = getFtpConfig();
         config.setEnabled(enable);
-        return put("config", config, FtpConfigResponse.class).isEnabled();
+        return put(FtpConfigResponse.class, CONFIG_SPATH, config).isEnabled();
     }
 
     private FtpConfig getFtpConfig() throws FreeboxException {
-        return get("config", FtpConfigResponse.class, true);
+        return get(CONFIG_SPATH, FtpConfigResponse.class, true);
     }
 
     // Response classes and validity evaluations

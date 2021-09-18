@@ -15,8 +15,6 @@ package org.openhab.binding.freeboxos.internal.discovery;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 import static org.openhab.binding.freeboxos.internal.config.ApiConfiguration.*;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -57,22 +55,18 @@ public class ApiDiscoveryParticipant implements MDNSDiscoveryParticipant {
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         logger.debug("createResult ServiceInfo: {}", service);
         ThingUID thingUID = getThingUID(service);
-        if (thingUID != null) {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(HTTPS_PORT, service.getPropertyString("https_port"));
-            properties.put(HTTPS_AVAILABLE, "1".equals(service.getPropertyString("https_available")));
-            properties.put(API_DOMAIN, service.getPropertyString("api_domain"));
-
-            logger.debug("Created a DiscoveryResult for Freebox Api Bridge {}.", thingUID);
-            return DiscoveryResultBuilder.create(thingUID).withLabel("Bridge Freebox OS").withProperties(properties)
-                    .withRepresentationProperty(API_DOMAIN).build();
-        }
-        return null;
+        return thingUID != null
+                ? DiscoveryResultBuilder.create(thingUID).withLabel("Bridge Freebox OS")
+                        .withRepresentationProperty(API_DOMAIN)
+                        .withProperty(HTTPS_AVAILABLE, "1".equals(service.getPropertyString(HTTPS_AVAILABLE)))
+                        .withProperty(HTTPS_PORT, service.getPropertyString(HTTPS_PORT))
+                        .withProperty(API_DOMAIN, service.getPropertyString(API_DOMAIN)).build()
+                : null;
     }
 
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
-        String apiDomain = service.getPropertyString("api_domain");
+        String apiDomain = service.getPropertyString(API_DOMAIN);
         if (apiDomain != null) {
             String[] elements = apiDomain.split("\\.");
             if (elements.length > 0) {

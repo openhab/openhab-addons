@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class HostConfiguration extends ApiConsumerConfiguration {
-    public static final String MAC_ADDRESS = "macAddress";
     private String macAddress = "";
 
     public String getMac() {

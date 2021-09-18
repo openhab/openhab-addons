@@ -21,8 +21,8 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
@@ -39,8 +39,8 @@ public class RepeaterManager extends RestManager {
     private static String REPEATER_URL = "repeater";
     private List<Repeater> repeaters = new ArrayList<>();
 
-    public RepeaterManager(ApiHandler apiHandler) {
-        super(apiHandler, REPEATER_URL);
+    public RepeaterManager(FreeboxOsSession session) throws FreeboxException {
+        super(REPEATER_URL, session);
     }
 
     public synchronized List<Repeater> getRepeaters() throws FreeboxException {
@@ -80,13 +80,13 @@ public class RepeaterManager extends RestManager {
         return get(String.format("%d", id), RepeaterResponse.class, true);
     }
 
-    // Response classes and validity evaluations
+    // Response classes
     private static class RepeatersResponse extends ListResponse<Repeater> {
     }
 
     private static class RepeaterResponse extends Response<Repeater> {
     }
 
-    private class AccessPointHostsResponse extends ListResponse<LanHost> {
+    private static class AccessPointHostsResponse extends ListResponse<LanHost> {
     }
 }

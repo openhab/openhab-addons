@@ -14,11 +14,12 @@ package org.openhab.binding.freeboxos.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Common class for all api responses
+ * Base class for all api responses
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -37,20 +38,20 @@ public class BaseResponse {
     private boolean success;
     private ErrorCode errorCode = ErrorCode.NONE;
     private @Nullable String msg;
-    private @Nullable String missingRight;
+    private @Nullable Permission missingRight;
 
-    protected @Nullable String internalEvaluate() {
-        return !success ? msg : null;
-    }
+    // protected @Nullable String internalEvaluate() {
+    // return !success ? msg : null;
+    // }
 
-    public void evaluate() throws FreeboxException {
-        String error = internalEvaluate();
-        if (error != null) {
-            throw new FreeboxException(error, this);
-        }
-    }
+    // public void evaluate() throws FreeboxException {
+    // String error = internalEvaluate();
+    // if (error != null) {
+    // throw new FreeboxException(this, error);
+    // }
+    // }
 
-    public @Nullable String getMissingRight() {
+    public @Nullable Permission getMissingRight() {
         return missingRight;
     }
 

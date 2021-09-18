@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.freeboxos.internal.api.phone;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
@@ -29,16 +30,17 @@ import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
  */
 @NonNullByDefault
 public class PhoneManager extends RestManager {
-    public static Permission associatedPermission() {
-        return Permission.CALLS;
-    }
 
-    public PhoneManager(ApiHandler apiHandler) {
-        super(apiHandler, "phone");
+    public PhoneManager(FreeboxOsSession session) throws FreeboxException {
+        super("phone", session, Permission.CALLS);
     }
 
     public PhoneStatus getStatus() throws FreeboxException {
-        return getList(PhoneStatusResponse.class, true).get(0);
+        List<PhoneStatus> statuses = getList(PhoneStatusResponse.class, true);
+        if (statuses.size() > 0) {
+            return statuses.get(0);
+        }
+        throw new FreeboxException("No phone status in response");
     }
 
     public PhoneConfig getConfig() throws FreeboxException {
@@ -52,23 +54,23 @@ public class PhoneManager extends RestManager {
     public void activateDect(boolean status) throws FreeboxException {
         PhoneConfig config = getConfig();
         config.setDectEnabled(status);
-        put("config", config, PhoneConfigResponse.class);
+        put(PhoneConfigResponse.class, "config", config);
     }
 
     public void alternateRing(boolean status) throws FreeboxException {
         PhoneConfig config = getConfig();
         config.setDectRingOnOff(status);
-        put("config", config, PhoneConfigResponse.class);
+        put(PhoneConfigResponse.class, "config", config);
     }
 
     private class PhoneConfigResponse extends Response<PhoneConfig> {
     }
 
     private static class PhoneStatusResponse extends ListResponse<PhoneStatus> {
-        @Override
-        protected @Nullable String internalEvaluate() {
-            String error = super.internalEvaluate();
-            return error != null ? error : getResult().size() == 0 ? "No phone status in response" : null;
-        }
+        // @Override
+        // protected @Nullable String internalEvaluate() {
+        // String error = super.internalEvaluate();
+        // return error != null ? error : getResult().size() == 0 ? "No phone status in response" : null;
+        // }
     }
 }

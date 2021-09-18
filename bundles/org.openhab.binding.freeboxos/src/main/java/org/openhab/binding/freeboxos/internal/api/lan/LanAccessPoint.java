@@ -45,6 +45,7 @@ public class LanAccessPoint {
     }
 
     public int getSignal() {
-        return wifiInformation != null ? wifiInformation.getSignal() : 0;
+        // Valid RSSI values goes from -120 to 0.
+        return wifiInformation != null ? wifiInformation.getSignal() : 1;
     }
 }

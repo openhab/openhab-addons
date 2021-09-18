@@ -13,8 +13,8 @@
 package org.openhab.binding.freeboxos.internal.api.upnpav;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 
@@ -28,8 +28,8 @@ import org.openhab.binding.freeboxos.internal.api.RestManager;
 public class UPnPAVManager extends RestManager {
     private static String UPNPAV_URL = "upnpav/config";
 
-    public UPnPAVManager(ApiHandler apiHandler) {
-        super(apiHandler, UPNPAV_URL);
+    public UPnPAVManager(FreeboxOsSession session) {
+        super(UPNPAV_URL, session);
     }
 
     public boolean getStatus() throws FreeboxException {
@@ -39,7 +39,7 @@ public class UPnPAVManager extends RestManager {
     public boolean changeStatus(boolean enable) throws FreeboxException {
         UPnPAVConfig config = new UPnPAVConfig();
         config.setEnabled(enable);
-        return put(null, config, UPnPAVConfigResponse.class).isEnabled();
+        return put(UPnPAVConfigResponse.class, null, config).isEnabled();
     }
 
     // Response classes and validity evaluations

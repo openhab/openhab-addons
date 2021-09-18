@@ -18,8 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
@@ -34,11 +34,13 @@ import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaActionData.Me
  */
 @NonNullByDefault
 public class AirMediaManager extends RestManager {
+    private static final String AIR_MEDIA_PATH = "airmedia";
+    private static final String CONFIG_SPATH = "config";
 
     private final URI receiverURI;
 
-    public AirMediaManager(ApiHandler apiHandler) {
-        super(apiHandler, "airmedia");
+    public AirMediaManager(FreeboxOsSession session) {
+        super(AIR_MEDIA_PATH, session);
         this.receiverURI = getUriBuilder().path("receivers").build();
     }
 
@@ -47,11 +49,11 @@ public class AirMediaManager extends RestManager {
     }
 
     public AirMediaConfig getConfig() throws FreeboxException {
-        return get("config", AirMediaConfigResponse.class, true);
+        return get(CONFIG_SPATH, AirMediaConfigResponse.class, true);
     }
 
     public AirMediaConfig setConfig(AirMediaConfig config) throws FreeboxException {
-        return put("config", config, AirMediaConfigResponse.class);
+        return put(AirMediaConfigResponse.class, CONFIG_SPATH, config);
     }
 
     public void sendToReceiver(String receiver, String password, MediaAction action, MediaType type)

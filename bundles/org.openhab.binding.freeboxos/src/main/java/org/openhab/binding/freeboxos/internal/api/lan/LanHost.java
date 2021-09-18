@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.freeboxos.internal.api.lan;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,8 +34,8 @@ public class LanHost implements ConnectivityData {
     private @Nullable List<L3Connectivity> l3connectivities;
     private @Nullable LanAccessPoint accessPoint;
     private boolean reachable;
-    private long lastTimeReachable;
-    private long lastActivity;
+    private @Nullable ZonedDateTime lastTimeReachable;
+    private @Nullable ZonedDateTime lastActivity;
 
     public @Nullable String getMac() {
         return l2ident != null ? l2ident.getIfMac() : null;
@@ -43,20 +44,18 @@ public class LanHost implements ConnectivityData {
     @Override
     public @Nullable String getIpv4() {
         List<L3Connectivity> connectivities = l3connectivities;
-        if (connectivities != null) {
-            Optional<@Nullable String> match = connectivities.stream().filter(c -> c.isActive() && c.getIpv4() != null)
-                    .map(c -> c.getIpv4()).findFirst();
-            return match.isPresent() ? match.get() : null;
-        }
-        return null;
+        return connectivities != null
+                ? connectivities.stream().filter(c -> c.isActive() && c.getIpv4() != null).map(c -> c.getIpv4())
+                        .findFirst().orElse(null)
+                : null;
     }
 
     public Optional<String> getPrimaryName() {
         return Optional.ofNullable(primaryName);
     }
 
-    public @Nullable String getVendorName() {
-        return vendorName;
+    public Optional<String> getVendorName() {
+        return Optional.ofNullable(vendorName);
     }
 
     @Override
@@ -65,8 +64,19 @@ public class LanHost implements ConnectivityData {
     }
 
     @Override
-    public long getLastSeen() {
-        return Math.max(lastActivity, lastTimeReachable);
+    public @Nullable ZonedDateTime getLastSeen() {
+        ZonedDateTime localLastActivity = lastActivity;
+        if (lastTimeReachable == null && localLastActivity == null) {
+            return null;
+        }
+        if (lastTimeReachable == null) {
+            return lastActivity;
+        }
+        if (localLastActivity == null) {
+            return lastTimeReachable;
+        } else {
+            return localLastActivity.isAfter(lastTimeReachable) ? lastActivity : lastTimeReachable;
+        }
     }
 
     public @Nullable LanAccessPoint getAccessPoint() {

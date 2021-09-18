@@ -14,8 +14,8 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
-import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
@@ -28,8 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link RepeaterHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link RepeaterHandler} is responsible for interface to a freebox
+ * pop repeater.
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -37,15 +37,26 @@ import org.slf4j.LoggerFactory;
 public class RepeaterHandler extends HostHandler {
     private final Logger logger = LoggerFactory.getLogger(RepeaterHandler.class);
 
-    public RepeaterHandler(Thing thing, ZoneId zoneId) {
-        super(thing, zoneId);
+    public RepeaterHandler(Thing thing) {
+        super(thing);
+    }
+
+    @Override
+    void internalGetProperties(Map<String, String> properties) throws FreeboxException {
+        super.internalGetProperties(properties);
+        getManager(RepeaterManager.class).getRepeaters().stream().filter(rep -> rep.getMac().equals(getMac()))
+                .forEach(repeater -> {
+                    properties.put(Thing.PROPERTY_SERIAL_NUMBER, repeater.getSerial());
+                    properties.put(Thing.PROPERTY_FIRMWARE_VERSION, repeater.getFirmwareVersion());
+                    properties.put(Thing.PROPERTY_MODEL_ID, repeater.getModel());
+                });
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
         logger.debug("Polling Repeater status");
-        RepeaterManager repeaterManager = getApi().getRepeaterManager();
+        RepeaterManager repeaterManager = getManager(RepeaterManager.class);
 
         ClientConfiguration config = getConfigAs(ClientConfiguration.class);
         List<LanHost> hosts = repeaterManager.getRepeaterHosts(config.id);

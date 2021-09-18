@@ -14,10 +14,10 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -47,39 +47,16 @@ public abstract class FreeDeviceHandler extends HostHandler {
     private final Logger logger = LoggerFactory.getLogger(FreeDeviceHandler.class);
     private long uptime = -1;
 
-    public FreeDeviceHandler(Thing thing, ZoneId zoneId) {
-        super(thing, zoneId);
+    public FreeDeviceHandler(Thing thing) {
+        super(thing);
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-        try {
-            while (!checkBridgeHandler()) {
-                Thread.sleep(1000);
-            }
-            initializeChannels();
-        } catch (InterruptedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
-    }
-
-    @Override
-    protected void internalPoll() throws FreeboxException {
-        super.internalPoll();
-        fetchSystemConfig();
-    }
-
-    protected abstract DeviceConfig getDeviceConfig() throws FreeboxException;
-
-    protected abstract void internalCallReboot() throws FreeboxException;
-
-    private void initializeChannels() {
-        List<Channel> channels = new ArrayList<>(getThing().getChannels());
-
-        try {
-            DeviceConfig systemConfig = getDeviceConfig();
-            List<Sensor> sensors = systemConfig.getAllSensors();
+    void internalGetProperties(Map<String, String> properties) throws FreeboxException {
+        super.internalGetProperties(properties);
+        getDeviceConfig().ifPresent(config -> {
+            List<Channel> channels = new ArrayList<>(getThing().getChannels());
+            List<Sensor> sensors = config.getAllSensors();
             sensors.forEach(sensor -> {
                 ChannelUID sensorId = new ChannelUID(thing.getUID(), GROUP_SENSORS, sensor.getId());
                 if (channels.stream().noneMatch(c -> c.getUID().equals(sensorId))) {
@@ -96,41 +73,49 @@ public abstract class FreeDeviceHandler extends HostHandler {
                 }
             });
             updateThing(editThing().withChannels(channels).build());
-        } catch (FreeboxException e) {
-            logger.warn("Error getting list of optional channels : {}", e.getMessage());
-        }
+        });
     }
 
+    @Override
+    protected void internalPoll() throws FreeboxException {
+        super.internalPoll();
+        fetchSystemConfig();
+    }
+
+    protected abstract Optional<DeviceConfig> getDeviceConfig() throws FreeboxException;
+
+    protected abstract void internalCallReboot() throws FreeboxException;
+
     private void fetchSystemConfig() throws FreeboxException {
-        DeviceConfig systemConfig = getDeviceConfig();
+        getDeviceConfig().ifPresent(config -> {
+            List<Sensor> sensors = config.getAllSensors();
+            sensors.forEach(sensor -> {
+                switch (sensor.getKind()) {
+                    case FAN:
+                        updateChannelDecimal(GROUP_SENSORS, sensor.getId(), sensor.getValue());
+                        break;
+                    case TEMP:
+                        updateChannelQuantity(GROUP_SENSORS, sensor.getId(), sensor.getValue(), SIUnits.CELSIUS);
+                        break;
+                    case UNKNOWN:
+                        logger.warn("Unknown sensor kind : {}", sensor);
+                        break;
+                }
+            });
 
-        List<Sensor> sensors = systemConfig.getAllSensors();
-        sensors.forEach(sensor -> {
-            switch (sensor.getKind()) {
-                case FAN:
-                    updateChannelDecimal(GROUP_SENSORS, sensor.getId(), sensor.getValue());
-                    break;
-                case TEMP:
-                    updateChannelQuantity(GROUP_SENSORS, sensor.getId(), sensor.getValue(), SIUnits.CELSIUS);
-                    break;
-                case UNKNOWN:
-                    logger.warn("Unknown sensor kind : {}", sensor);
-                    break;
+            long newUptime = config.getUptimeVal();
+            if (newUptime < uptime) {
+                triggerChannel(new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT), "restarted");
+                Map<String, String> properties = editProperties();
+                if (!config.getFirmwareVersion().equals(properties.get(Thing.PROPERTY_FIRMWARE_VERSION))) {
+                    properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion());
+                    triggerChannel(new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT), "firmware_updated");
+                    updateProperties(properties);
+                }
             }
+            uptime = newUptime;
+            updateChannelQuantity(SYS_INFO, UPTIME, uptime, Units.SECOND);
         });
-
-        long newUptime = systemConfig.getUptimeVal();
-        if (newUptime < uptime) {
-            triggerChannel(new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT), "restarted");
-            Map<String, String> properties = editProperties();
-            if (!systemConfig.getFirmwareVersion().equals(properties.get(Thing.PROPERTY_FIRMWARE_VERSION))) {
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemConfig.getFirmwareVersion());
-                triggerChannel(new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT), "firmware_updated");
-                updateProperties(properties);
-            }
-        }
-        uptime = newUptime;
-        updateChannelQuantity(SYS_INFO, UPTIME, uptime, Units.SECOND);
     }
 
     public void reboot() {

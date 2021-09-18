@@ -13,8 +13,8 @@
 package org.openhab.binding.freeboxos.internal.api.lcd;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 
@@ -28,8 +28,8 @@ import org.openhab.binding.freeboxos.internal.api.RestManager;
 @NonNullByDefault
 public class LcdManager extends RestManager {
 
-    public LcdManager(ApiHandler apiHandler) {
-        super(apiHandler, "lcd/config");
+    public LcdManager(FreeboxOsSession session) {
+        super("lcd/config", session);
     }
 
     public LcdConfig getConfig() throws FreeboxException {
@@ -37,7 +37,7 @@ public class LcdManager extends RestManager {
     }
 
     public LcdConfig setConfig(LcdConfig config) throws FreeboxException {
-        return put(null, config, LcdConfigResponse.class);
+        return put(LcdConfigResponse.class, null, config);
     }
 
     // Response classes and validity evaluations
