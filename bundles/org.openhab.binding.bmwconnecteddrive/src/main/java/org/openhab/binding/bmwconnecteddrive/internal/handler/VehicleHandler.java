@@ -695,7 +695,6 @@ public class VehicleHandler extends VehicleChannelHandler {
             if (content != null) {
                 try {
                     NavigationContainer nav = Converter.getGson().fromJson(content, NavigationContainer.class);
-
                     updateChannel(CHANNEL_GROUP_RANGE, SOC_MAX, QuantityType.valueOf(nav.socmax, Units.KILOWATT_HOUR));
                 } catch (JsonSyntaxException jse) {
                     logger.debug("{}", jse.getMessage());

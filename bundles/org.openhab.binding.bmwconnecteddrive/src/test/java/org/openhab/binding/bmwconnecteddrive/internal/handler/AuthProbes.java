@@ -113,7 +113,7 @@ public class AuthProbes {
         // see https://customer.bmwgroup.com/one/app/oauth.js
         StringBuilder uri = new StringBuilder();
         uri.append("https://customer.bmwgroup.com");
-        if (BimmerConstants.SERVER_NORTH_AMERICA.equals(configuration.region)) {
+        if (BimmerConstants.LEGACY_AUTH_SERVER_MAP.equals(configuration.region)) {
             uri.append("/gcdm/usa/oauth/authenticate");
         } else {
             uri.append("/gcdm/oauth/authenticate");
@@ -130,7 +130,7 @@ public class AuthProbes {
     }
 
     private String getRegionServer() {
-        String retVal = BimmerConstants.SERVER_MAP.get(configuration.region);
+        String retVal = BimmerConstants.LEGACY_AUTH_SERVER_MAP.get(configuration.region);
         if (retVal != null) {
             return retVal;
         } else {
@@ -163,9 +163,9 @@ public class AuthProbes {
 
         req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
         req.header(HttpHeader.CONNECTION, KEEP_ALIVE);
-        req.header(HttpHeader.HOST, BimmerConstants.SERVER_MAP.get(configuration.region));
+        req.header(HttpHeader.HOST, BimmerConstants.LEGACY_AUTH_SERVER_MAP.get(configuration.region));
         req.header(HttpHeader.AUTHORIZATION, BimmerConstants.AUTHORIZATION_VALUE_MAP.get(configuration.region));
-        req.header(CREDENTIALS, BimmerConstants.CREDENTIAL_VALUES);
+        req.header(CREDENTIALS, BimmerConstants.LEGACY_CREDENTIAL_VALUES);
 
         MultiMap<String> dataMap = new MultiMap<String>();
         dataMap.add(CLIENT_ID, clientId);
@@ -208,10 +208,10 @@ public class AuthProbes {
             con.setRequestProperty(HttpHeader.CONTENT_TYPE.toString(), CONTENT_TYPE_URL_ENCODED);
             con.setRequestProperty(HttpHeader.CONNECTION.toString(), KEEP_ALIVE);
             con.setRequestProperty(HttpHeader.HOST.toString(),
-                    BimmerConstants.SERVER_MAP.get(BimmerConstants.SERVER_ROW));
+                    BimmerConstants.LEGACY_AUTH_SERVER_MAP.get(BimmerConstants.AUTH_SERVER_ROW));
             con.setRequestProperty(HttpHeader.AUTHORIZATION.toString(),
                     BimmerConstants.AUTHORIZATION_VALUE_MAP.get(configuration.region));
-            con.setRequestProperty(CREDENTIALS, BimmerConstants.CREDENTIAL_VALUES);
+            con.setRequestProperty(CREDENTIALS, BimmerConstants.LEGACY_CREDENTIAL_VALUES);
             con.setDoOutput(true);
 
             MultiMap<String> dataMap = new MultiMap<String>();
@@ -249,7 +249,7 @@ public class AuthProbes {
             con.setRequestProperty(HttpHeader.CONTENT_TYPE.toString(), CONTENT_TYPE_URL_ENCODED);
             con.setRequestProperty(HttpHeader.CONNECTION.toString(), KEEP_ALIVE);
             con.setRequestProperty(HttpHeader.HOST.toString(),
-                    BimmerConstants.SERVER_MAP.get(BimmerConstants.SERVER_ROW));
+                    BimmerConstants.LEGACY_AUTH_SERVER_MAP.get(BimmerConstants.LEGACY_AUTH_SERVER_ROW));
             // con.setRequestProperty(HttpHeader.AUTHORIZATION.toString(), BimmerConstants.LEGACY_AUTHORIZATION_VALUE);
             con.setRequestProperty(CREDENTIALS, BimmerConstants.LEGACY_CREDENTIAL_VALUES);
             con.setDoOutput(true);

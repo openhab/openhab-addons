@@ -95,6 +95,14 @@ The region Configuration has 3 different options
 * _CHINA_
 * _ROW_  (Rest of World)
 
+
+#### Advanced Configuration
+
+| Parameter       | Type    | Description                                                        |           
+|-----------------|---------|--------------------------------------------------------------------|
+| preferMyBmw     | boolean | Prefer *MyBMW* API instead of *BMW Connected Drive*                |
+
+
 ### Thing Configuration
 
 Same configuration is needed for all things
@@ -202,6 +210,7 @@ Last update reasons
 * _VEHICLE_SHUTDOWN_
 * _VEHICLE_SHUTDOWN_SECURED_
 * _VEHICLE_UNSECURED_
+
 #### Services
 
 Group for all upcoming services with description, service date and/or service mileage.

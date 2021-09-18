@@ -24,5 +24,11 @@
 			</options>
 			<default>ROW</default>
 		</parameter>
+		<parameter name="preferMyBmw" type="boolean" required="false">
+			<label>Prefer MyBMW API</label>
+			<description>Prefer *MyBMW* API instead of *BMW Connected Drive*</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

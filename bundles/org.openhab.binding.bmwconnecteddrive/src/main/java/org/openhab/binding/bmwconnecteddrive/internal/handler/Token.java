@@ -25,6 +25,15 @@ public class Token {
     private String token = Constants.EMPTY;
     private String tokenType = Constants.EMPTY;
     private long expiration = 0;
+    private boolean myBmwApiUsage = false;
+
+    public boolean isMyBmwApiUsage() {
+        return myBmwApiUsage;
+    }
+
+    public void setMyBmwApiUsage(boolean myBmwAppUsage) {
+        this.myBmwApiUsage = myBmwAppUsage;
+    }
 
     public String getBearerToken() {
         return new StringBuilder(tokenType).append(Constants.SPACE).append(token).toString();
@@ -51,5 +60,10 @@ public class Token {
 
     public boolean isValid() {
         return (!token.equals(Constants.EMPTY) && !tokenType.equals(Constants.EMPTY) && expiration > 0);
+    }
+
+    @Override
+    public String toString() {
+        return tokenType + token;
     }
 }
