@@ -32,9 +32,8 @@ The supported thing types are:
 
 ## Discovery
 
-Manually initiated Auto-discovery is supported if Kaleidescape components are accessible on the same IP subnet of the openHAB server.
-Since discovery involves scanning all IP addresses in the subnet range for an open socket, the discovery must be initiated by the user.
-In the Inbox, select Search For Things and then choose the Kaleidescape System Binding to initiate discovery.
+Manually initiated Auto-discovery will locate all suported Kaleidescape components if they are on the same IP subnet of the openHAB server.
+In the Inbox, select Search For Things and then choose the Kaleidescape System Binding to initiate a discovery scan.
 
 ## Binding Configuration
 
