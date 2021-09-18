@@ -165,7 +165,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             future.cancel(false);
         }
         if (hardRefreshBatteryLevelInterval > 0) {
-            logger.debug("Scheduling hard battery level refresh every {}hours", hardRefreshBatteryLevelInterval);
+            logger.debug("Scheduling hard battery level refresh every {} hours", hardRefreshBatteryLevelInterval);
             this.hardRefreshBatteryLevelFuture = scheduler.scheduleWithFixedDelay(
                     this::requestRefreshShadeBatteryLevels, 1, hardRefreshBatteryLevelInterval, TimeUnit.HOURS);
         }
