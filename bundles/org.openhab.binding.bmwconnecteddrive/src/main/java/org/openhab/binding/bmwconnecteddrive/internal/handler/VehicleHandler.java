@@ -691,7 +691,6 @@ public class VehicleHandler extends VehicleChannelHandler {
     public class NavigationStatusCallback implements StringResponseCallback {
         @Override
         public void onResponse(@Nullable String content) {
-            logger.debug("Navigation: {}", content);
             if (content != null) {
                 try {
                     NavigationContainer nav = Converter.getGson().fromJson(content, NavigationContainer.class);
