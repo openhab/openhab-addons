@@ -44,6 +44,7 @@ If in the future, you add additional shades or scenes to your system, the bindin
 | host                    | The host name or IP address of the hub on your network. |
 | refresh                 | The number of milli-seconds between fetches of the PowerView hub's shade state (default 60'000 one minute). |
 | hardRefresh             | The number of minutes between hard refreshes of the PowerView hub's shade state (default 180 three hours). See [Refreshing the PowerView Hub Cache](#Refreshing-the-PowerView-Hub-Cache). |
+| hardRefreshBatteryLevel | The number of hours between hard refreshes of battery levels from the PowerView Hub (or 0 to disable, defaulting to weekly). See [Refreshing the PowerView Hub Cache](#Refreshing-the-PowerView-Hub-Cache). |
 
 ### Thing Configuration for PowerView Shades
 
@@ -134,6 +135,10 @@ In neither case will the hub be aware of the shade’s new position.
 The hub periodically does a _**"hard refresh"**_ in order to overcome this issue.
 The time interval between hard refreshes is set in the `hardRefresh` configuration parameter.
 To disable periodic hard refreshes, set `hardRefresh` to zero.
+
+Similarly, the battery level is transient and is only updated automatically by the hub once a week.
+To change this interval, set `hardRefreshBatteryLevel` to number of hours between refreshes.
+To use default hub behavior (weekly updates), set `hardRefreshBatteryLevel` to zero.
 
 Note: You can also force the hub to refresh itself by sending a `REFRESH` command in a rule to an item that is connected to a channel in the hub as follows:
 

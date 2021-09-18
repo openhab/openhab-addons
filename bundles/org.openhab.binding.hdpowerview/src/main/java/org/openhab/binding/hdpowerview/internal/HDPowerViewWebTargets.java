@@ -234,8 +234,8 @@ public class HDPowerViewWebTargets {
 
     /**
      * Instructs the hub to do a hard refresh (discovery on the hubs RF network) on
-     * a specific shade; fetches a JSON package that describes that shade, and wraps
-     * it in a Shade class instance
+     * a specific shade's position; fetches a JSON package that describes that shade,
+     * and wraps it in a Shade class instance
      *
      * @param shadeId id of the shade to be refreshed
      * @return Shade class instance
@@ -243,10 +243,28 @@ public class HDPowerViewWebTargets {
      * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public @Nullable Shade refreshShade(int shadeId)
+    public @Nullable Shade refreshShadePosition(int shadeId)
             throws JsonParseException, HubProcessingException, HubMaintenanceException {
         String json = invoke(HttpMethod.GET, shades + Integer.toString(shadeId),
                 Query.of("refresh", Boolean.toString(true)), null);
+        return gson.fromJson(json, Shade.class);
+    }
+
+    /**
+     * Instructs the hub to do a hard refresh (discovery on the hubs RF network) on
+     * a specific shade's battery level; fetches a JSON package that describes that shade,
+     * and wraps it in a Shade class instance
+     *
+     * @param shadeId id of the shade to be refreshed
+     * @return Shade class instance
+     * @throws JsonParseException if there is a JSON parsing error
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public @Nullable Shade refreshShadeBatteryLevel(int shadeId)
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, shades + Integer.toString(shadeId),
+                Query.of("updateBatteryLevel", Boolean.toString(true)), null);
         return gson.fromJson(json, Shade.class);
     }
 
