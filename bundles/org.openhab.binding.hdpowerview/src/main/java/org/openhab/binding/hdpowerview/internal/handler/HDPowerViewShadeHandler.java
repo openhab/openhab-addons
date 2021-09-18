@@ -146,7 +146,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             updateStatus(ThingStatus.ONLINE);
             updateBindingStates(shadeData.positions);
             updateBatteryLevel(shadeData.batteryStatus);
-            updateState(CHANNEL_SHADE_BATTERY_VOLTAGE, new QuantityType<>(shadeData.batteryStrength / 10, Units.VOLT));
+            updateState(CHANNEL_SHADE_BATTERY_VOLTAGE,
+                    shadeData.batteryStrength > 0 ? new QuantityType<>(shadeData.batteryStrength / 10, Units.VOLT)
+                            : UnDefType.UNDEF);
             updateState(CHANNEL_SHADE_SIGNAL_STRENGTH, new DecimalType(shadeData.signalStrength));
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -179,6 +181,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 mappedValue = 100;
                 break;
             default: // No status available (0) or invalid
+                updateState(CHANNEL_SHADE_LOW_BATTERY, UnDefType.UNDEF);
+                updateState(CHANNEL_SHADE_BATTERY_LEVEL, UnDefType.UNDEF);
                 return;
         }
         updateState(CHANNEL_SHADE_LOW_BATTERY, batteryStatus == 1 ? OnOffType.ON : OnOffType.OFF);
