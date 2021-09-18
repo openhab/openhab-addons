@@ -29,4 +29,5 @@ public class HDPowerViewHubConfiguration {
 
     public long refresh;
     public long hardRefresh;
+    public long hardRefreshBatteryLevel;
 }

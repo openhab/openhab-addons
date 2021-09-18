@@ -218,7 +218,7 @@ public class HDPowerViewJUnitTests {
             Shade shade = null;
             try {
                 assertNotEquals(0, shadeId);
-                shade = webTargets.refreshShade(shadeId);
+                shade = webTargets.refreshShadePosition(shadeId);
                 assertNotNull(shade);
             } catch (HubProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
