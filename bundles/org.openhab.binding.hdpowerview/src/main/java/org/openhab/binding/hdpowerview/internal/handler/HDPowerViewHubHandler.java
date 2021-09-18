@@ -155,7 +155,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             future.cancel(false);
         }
         if (hardRefreshPositionInterval > 0) {
-            logger.debug("Scheduling hard position refresh every {}minutes", hardRefreshPositionInterval);
+            logger.debug("Scheduling hard position refresh every {} minutes", hardRefreshPositionInterval);
             this.hardRefreshPositionFuture = scheduler.scheduleWithFixedDelay(this::requestRefreshShadePositions, 1,
                     hardRefreshPositionInterval, TimeUnit.MINUTES);
         }
