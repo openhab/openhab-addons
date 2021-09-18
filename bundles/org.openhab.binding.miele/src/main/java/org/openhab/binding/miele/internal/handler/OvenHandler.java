@@ -15,6 +15,7 @@ package org.openhab.binding.miele.internal.handler;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.PROTOCOL_PROPERTY_NAME;
 
+import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -32,6 +33,7 @@ import com.google.gson.JsonElement;
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - fixed handling of REFRESH commands
  * @author Martin Lepsy - fixed handling of empty JSON results
+ * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
 public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
 
@@ -46,8 +48,9 @@ public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();
-        String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
-        String protocol = (String) getThing().getProperties().get(PROTOCOL_PROPERTY_NAME);
+        String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String protocol = getThing().getProperties().get(PROTOCOL_PROPERTY_NAME);
+        var applianceIdentifier = new FullyQualifiedApplianceIdentifier(applianceId, protocol);
 
         OvenChannelSelector selector = (OvenChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
@@ -57,15 +60,15 @@ public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
                 switch (selector) {
                     case SWITCH: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "switchOn", protocol);
+                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "switchOn");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "switchOff", protocol);
+                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "switchOff");
                         }
                         break;
                     }
                     case STOP: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stop", protocol);
+                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "stop");
                         }
                         break;
                     }
