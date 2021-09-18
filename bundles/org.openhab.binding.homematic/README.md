@@ -343,16 +343,17 @@ A virtual datapoint (String) to simulate a key press, available on all channels 
 
 Available values:
 
-- `SHORT_PRESS`: triggered on a short key press
-- `LONG_PRESS`: triggered on a key press longer than `LONG_PRESS_TIME` (variable configuration per key, default is 0.4 s)
-- `DOUBLE_PRESS`: triggered on a short key press but only if the latest `SHORT_PRESS` or `DOUBLE_PRESS` event is not older than 2.0 s (not related to `DBL_PRESS_TIME` configuration, which is more like a key lock because if it is other than `0.0` single presses are not notified anymore)
+- `SHORT_PRESSED`: triggered on a short key press
+- `LONG_PRESSED`: triggered on a key press longer than `LONG_PRESS_TIME` (variable configuration per key, default is 0.4 s)
+- `LONG_REPEATED`: triggered on long key press repetition, that is, in `LONG_PRESS_TIME` intervals as long as key is held
+- `LONG_RELEASED`: triggered when a key is released after being long pressed
 
 **Example:** to capture a short key press on the 19 button remote control in a rule
 
 ```javascript
 rule "example trigger rule"
 when
-    Channel 'homematic:HM-RC-19-B:ccu:KEQ0012345:1#BUTTON' triggered SHORT_PRESS
+    Channel 'homematic:HM-RC-19-B:ccu:KEQ0012345:1#BUTTON' triggered SHORT_PRESSED
 then
     ...
 end

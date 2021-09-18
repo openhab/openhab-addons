@@ -384,8 +384,9 @@ public class HomematicThingHandler extends BaseThingHandler {
     private void updateChannelState(final HmDatapoint dp, Channel channel)
             throws IOException, GatewayNotAvailableException, ConverterException {
         if (dp.isTrigger()) {
-            if (dp.getValue() != null) {
-                triggerChannel(channel.getUID(), dp.getValue() == null ? "" : dp.getValue().toString());
+            final Object value = dp.getValue();
+            if (value != null && !value.equals(dp.getPreviousValue())) {
+                triggerChannel(channel.getUID(), value.toString());
             }
         } else if (isLinked(channel)) {
             loadHomematicChannelValues(dp.getChannel());
