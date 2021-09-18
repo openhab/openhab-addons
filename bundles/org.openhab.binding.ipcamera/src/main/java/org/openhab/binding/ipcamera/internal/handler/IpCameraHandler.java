@@ -514,8 +514,9 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     private void checkCameraConnection() {
-        if (mainBootstrap != null) {
-            ChannelFuture chFuture = mainBootstrap
+        Bootstrap localBootstrap = mainBootstrap;
+        if (localBootstrap != null) {
+            ChannelFuture chFuture = localBootstrap
                     .connect(new InetSocketAddress(cameraConfig.getIp(), cameraConfig.getPort()));
             if (chFuture.awaitUninterruptibly(500)) {
                 chFuture.channel().close();

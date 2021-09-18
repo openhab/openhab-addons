@@ -329,8 +329,9 @@ public class IpCameraGroupHandler extends BaseThingHandler {
             future.cancel(true);
         }
         cameraOrder.clear();
-        if (servlet != null) {
-            servlet.dispose();
+        GroupServlet localServlet = servlet;
+        if (localServlet != null) {
+            localServlet.dispose();
         }
     }
 }
