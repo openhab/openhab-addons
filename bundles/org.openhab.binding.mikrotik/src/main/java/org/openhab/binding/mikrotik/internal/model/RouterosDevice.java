@@ -167,25 +167,28 @@ public class RouterosDevice {
 
     public @Nullable RouterosCapsmanRegistration findCapsmanRegistration(String macAddress) {
         Optional<RouterosCapsmanRegistration> searchResult = capsmanRegistrationCache.stream()
-                .filter(registration -> registration.getMacAddress().equalsIgnoreCase(macAddress)).findFirst();
+                .filter(registration -> macAddress.equalsIgnoreCase(registration.getMacAddress())).findFirst();
         return searchResult.orElse(null);
     }
 
     public @Nullable RouterosWirelessRegistration findWirelessRegistration(String macAddress) {
         Optional<RouterosWirelessRegistration> searchResult = wirelessRegistrationCache.stream()
-                .filter(registration -> registration.getMacAddress().equalsIgnoreCase(macAddress)).findFirst();
+                .filter(registration -> macAddress.equalsIgnoreCase(registration.getMacAddress())).findFirst();
         return searchResult.orElse(null);
     }
 
+    @SuppressWarnings("null")
     public @Nullable RouterosInterfaceBase findInterface(String name) {
         Optional<RouterosInterfaceBase> searchResult = interfaceCache.stream()
                 .filter(iface -> iface.getName() != null && iface.getName().equalsIgnoreCase(name)).findFirst();
         return searchResult.orElse(null);
     }
 
+    @SuppressWarnings("null")
     private void updateInterfaceData() throws MikrotikApiException {
-        if (connection == null)
+        if (connection == null) {
             return;
+        }
 
         List<Map<String, String>> ifaceResponse = connection.execute(CMD_PRINT_IFACES);
 
@@ -241,12 +244,16 @@ public class RouterosDevice {
 
     private void updateCapsmanRegistrations() throws MikrotikApiException {
         List<Map<String, String>> response = connection.execute(CMD_PRINT_CAPSMAN_REGS);
-        capsmanRegistrationCache = response.stream().map(RouterosCapsmanRegistration::new).collect(Collectors.toList());
+        if (response != null) {
+            capsmanRegistrationCache = response.stream().map(RouterosCapsmanRegistration::new)
+                    .collect(Collectors.toList());
+        }
     }
 
     private void updateWirelessRegistrations() throws MikrotikApiException {
-        if (connection == null)
+        if (connection == null) {
             return;
+        }
         List<Map<String, String>> response = connection.execute(CMD_PRINT_WIRELESS_REGS);
         wirelessRegistrationCache = response.stream().map(props -> {
             String wlanIfaceName = props.get("interface");
@@ -260,8 +267,9 @@ public class RouterosDevice {
     }
 
     private void updateResources() throws MikrotikApiException {
-        if (connection == null)
+        if (connection == null) {
             return;
+        }
         List<Map<String, String>> response = connection.execute(CMD_PRINT_RESOURCE);
         this.resourcesCache = new RouterosSystemResources(response.get(0));
     }

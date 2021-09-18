@@ -72,8 +72,9 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
             RouterosDevice routeros = getRouterOs();
 
             RouterosWirelessRegistration wifiRegistration = null;
-            if (routeros != null)
+            if (routeros != null) {
                 wifiRegistration = routeros.findWirelessRegistration(config.mac);
+            }
             this.wifiReg = wifiRegistration;
             if (this.wifiReg != null && !config.ssid.isBlank() && !config.ssid.equalsIgnoreCase(wifiReg.getSSID())) {
                 this.wifiReg = null;
@@ -104,15 +105,17 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
             rxByteRate.update(wifiReg.getRxBytes());
             txPacketRate.update(wifiReg.getTxPackets());
             rxPacketRate.update(wifiReg.getRxPackets());
-            continuousConnection = LocalDateTime.now()
-                    .isAfter(wifiReg.getUptimeStart().plusSeconds(config.considerContinuous));
+            LocalDateTime uptimeStart = wifiReg.getUptimeStart();
+            continuousConnection = (uptimeStart != null)
+                    && LocalDateTime.now().isAfter(uptimeStart.plusSeconds(this.config.considerContinuous));
         }
     }
 
     @Override
     protected void refreshChannel(ChannelUID channelUID) {
-        if (wifiReg == null)
+        if (wifiReg == null) {
             return;
+        }
 
         String channelID = channelUID.getIdWithoutGroup();
         State oldState = currentState.getOrDefault(channelID, UnDefType.NULL);
@@ -186,9 +189,11 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
         }
     }
 
+    @SuppressWarnings("null")
     protected State getCapsmanRegistrationChannelState(String channelID) {
-        if (this.wifiReg == null)
+        if (this.wifiReg == null) {
             return UnDefType.UNDEF;
+        }
 
         RouterosCapsmanRegistration capsmanReg = (RouterosCapsmanRegistration) this.wifiReg;
         switch (channelID) {
@@ -199,9 +204,11 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
         }
     }
 
+    @SuppressWarnings("null")
     protected State getWirelessRegistrationChannelState(String channelID) {
-        if (this.wifiReg == null)
+        if (this.wifiReg == null) {
             return UnDefType.UNDEF;
+        }
 
         RouterosWirelessRegistration wirelessReg = (RouterosWirelessRegistration) this.wifiReg;
         switch (channelID) {

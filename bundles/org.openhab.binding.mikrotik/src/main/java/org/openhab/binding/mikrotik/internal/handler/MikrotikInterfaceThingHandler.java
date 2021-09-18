@@ -22,7 +22,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mikrotik.internal.MikrotikBindingConstants;
 import org.openhab.binding.mikrotik.internal.config.InterfaceThingConfig;
-import org.openhab.binding.mikrotik.internal.model.*;
+import org.openhab.binding.mikrotik.internal.model.RouterosCapInterface;
+import org.openhab.binding.mikrotik.internal.model.RouterosDevice;
+import org.openhab.binding.mikrotik.internal.model.RouterosEthernetInterface;
+import org.openhab.binding.mikrotik.internal.model.RouterosInterfaceBase;
+import org.openhab.binding.mikrotik.internal.model.RouterosL2TPCliInterface;
+import org.openhab.binding.mikrotik.internal.model.RouterosL2TPSrvInterface;
+import org.openhab.binding.mikrotik.internal.model.RouterosPPPoECliInterface;
+import org.openhab.binding.mikrotik.internal.model.RouterosWlanInterface;
 import org.openhab.binding.mikrotik.internal.util.RateCalculator;
 import org.openhab.binding.mikrotik.internal.util.StateUtil;
 import org.openhab.core.thing.ChannelUID;
@@ -191,8 +198,9 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
     }
 
     protected State getEtherIterfaceChannelState(String channelID) {
-        if (iface == null)
+        if (iface == null) {
             return UnDefType.UNDEF;
+        }
 
         RouterosEthernetInterface etherIface = (RouterosEthernetInterface) iface;
         switch (channelID) {
@@ -208,8 +216,9 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
     }
 
     protected State getCapIterfaceChannelState(String channelID) {
-        if (iface == null)
+        if (iface == null) {
             return UnDefType.UNDEF;
+        }
 
         RouterosCapInterface capIface = (RouterosCapInterface) iface;
         switch (channelID) {
@@ -227,8 +236,9 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
     }
 
     protected State getWlanIterfaceChannelState(String channelID) {
-        if (iface == null)
+        if (iface == null) {
             return UnDefType.UNDEF;
+        }
 
         RouterosWlanInterface wlIface = (RouterosWlanInterface) iface;
         switch (channelID) {
@@ -246,8 +256,9 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
     }
 
     protected State getPPPoECliChannelState(String channelID) {
-        if (iface == null)
+        if (iface == null) {
             return UnDefType.UNDEF;
+        }
 
         RouterosPPPoECliInterface pppCli = (RouterosPPPoECliInterface) iface;
         switch (channelID) {
@@ -261,8 +272,9 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
     }
 
     protected State getL2TPSrvChannelState(String channelID) {
-        if (iface == null)
+        if (iface == null) {
             return UnDefType.UNDEF;
+        }
 
         RouterosL2TPSrvInterface vpnSrv = (RouterosL2TPSrvInterface) iface;
         switch (channelID) {
@@ -276,8 +288,9 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
     }
 
     protected State getL2TPCliChannelState(String channelID) {
-        if (iface == null)
+        if (iface == null) {
             return UnDefType.UNDEF;
+        }
 
         RouterosL2TPCliInterface vpnCli = (RouterosL2TPCliInterface) iface;
         switch (channelID) {
@@ -292,8 +305,9 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
 
     @Override
     protected void executeCommand(ChannelUID channelUID, Command command) {
-        if (iface == null)
+        if (iface == null) {
             return;
+        }
         logger.warn("Ignoring unsupported command = {} for channel = {}", command, channelUID);
     }
 }

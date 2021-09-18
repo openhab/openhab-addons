@@ -157,12 +157,13 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
                 logger.warn("Error while logging in to RouterOS {} | Cause: {}", getThing().getUID(), e, e.getCause());
 
                 String errorMessage = e.getMessage();
-                if (errorMessage == null)
+                if (errorMessage == null) {
                     errorMessage = "Error connecting (UNKNOWN ERROR)";
+                }
                 if (errorMessage.contains("Command timed out") || errorMessage.contains("Error connecting")) {
                     routeros.stop();
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
-                } else if (e.getMessage().contains("Connection refused")) {
+                } else if (errorMessage.contains("Connection refused")) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Remote host refused to connect, make sure port is correct");
                 } else {
@@ -190,8 +191,8 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
             // refresh all the client things below
             getThing().getThings().forEach(thing -> {
                 ThingHandler handler = thing.getHandler();
-                if (handler instanceof MikrotikBaseThingHandler) {
-                    ((MikrotikBaseThingHandler) handler).refresh();
+                if (handler instanceof MikrotikBaseThingHandler<?>) {
+                    ((MikrotikBaseThingHandler<?>) handler).refresh();
                 }
             });
         } catch (ChannelUpdateException e) {
@@ -223,8 +224,12 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
     }
 
     protected void refreshChannel(ChannelUID channelUID) {
+        RouterosDevice routerOs = getRouteros();
         String channelID = channelUID.getIdWithoutGroup();
-        RouterosSystemResources rbRes = getRouteros().getSysResources();
+        RouterosSystemResources rbRes = null;
+        if (routerOs != null) {
+            rbRes = routerOs.getSysResources();
+        }
         State oldState = currentState.getOrDefault(channelID, UnDefType.NULL);
         State newState = oldState;
 

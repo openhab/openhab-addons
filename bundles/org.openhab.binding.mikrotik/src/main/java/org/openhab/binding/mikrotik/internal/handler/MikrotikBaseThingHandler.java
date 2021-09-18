@@ -118,7 +118,7 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
         C localConfig = (C) getConfigAs(klass);
         this.config = localConfig;
 
-        if (!config.isValid()) {
+        if (!localConfig.isValid()) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, String.format("%s is invalid", klass.getSimpleName()));
             return;
         }
@@ -143,6 +143,7 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
         }
     }
 
+    @SuppressWarnings("null")
     private void scheduleRefreshJob() {
         synchronized (this) {
             if (refreshJob == null) {

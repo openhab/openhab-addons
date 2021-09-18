@@ -74,10 +74,12 @@ public class RouterosWlanInterface extends RouterosInterfaceBase {
     }
 
     public int getRegisteredClients() {
-        return getIntProp("registered-clients");
+        Integer registeredClients = getIntProp("registered-clients");
+        return registeredClients == null ? 0 : registeredClients;
     }
 
     public int getAuthorizedClients() {
-        return getIntProp("authenticated-clients");
+        Integer authedClients = getIntProp("authenticated-clients");
+        return authedClients == null ? 0 : authedClients;
     }
 }
