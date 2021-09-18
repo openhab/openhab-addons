@@ -41,7 +41,7 @@ Otherwise you will not be able to receive those messages.
 
 **telegramBot** - A Telegram Bot that can send and receive messages.
 
-The Telegram binding supports the following things which originate from the last message sent to the Telegram bot:
+The Telegram binding supports the following state channels which originate from the last message sent to the Telegram bot:
 
 * message text or URL
 * message date
@@ -49,6 +49,8 @@ The Telegram binding supports the following things which originate from the last
 * username of sender
 * chat id (used to identify the chat of the last message)
 * reply id (used to identify an answer from a user of a previously sent message by the binding)
+
+There are also event channels that provide received messages or query callback responses as JSON payloads for easier handling in rules.
 
 Please note that the binding channels cannot be used to send messages.
 In order to send a message, an action must be used instead.
@@ -105,7 +107,7 @@ or HTTP proxy server
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyHost="localhost", proxyPort="8123", proxyType="HTTP" ]
 ```
 
-## Channels
+## State Channels
 
 | Channel Type ID                      | Item Type | Description                                                     |
 |--------------------------------------|-----------|-----------------------------------------------------------------|
@@ -121,6 +123,52 @@ All channels are read-only.
 Either `lastMessageText` or `lastMessageURL` are populated for a given message.
 If the message did contain text, the content is written to `lastMessageText`.
 If the message did contain an audio, photo, video or voice, the URL to retrieve that content can be found in `lastMessageURL`.
+
+## Event Channels
+
+### messageEvent
+
+When a message is received this channel will be triggered with a simplified version of the message data as the `event`, payload encoded as a JSON string.
+The following table shows the possible fields, any `null` values will be missing from the JSON payload.
+
+| Field            | Type   | Description                           |
+|------------------|--------|---------------------------------------|
+| `message_id`     | Long   | Unique message ID in this chat        |
+| `from`           | String | First and/or last name of sender      |
+| `chat_id`        | Long   | Unique chat ID                        |
+| `text`           | String | Message text                          |
+| `animation_url`  | String | URL to download animation from        |
+| `audio_url`      | String | URL to download audio from            |
+| `document_url`   | String | URL to download file from             |
+| `photo_url`      | Array  | Array of URLs to download photos from |
+| `sticker_url`    | String | URL to download sticker from          |
+| `video_url`      | String | URL to download video from            |
+| `video_note_url` | String | URL to download video note from       |
+| `voice_url`      | String | URL to download voice clip from       |
+
+### messageRawEvent
+
+When a message is received this channel will be triggered with the raw message data as the `event` payload, encoded as a JSON string.
+See the [`Message` class for details](https://github.com/pengrad/java-telegram-bot-api/blob/4.9.0/library/src/main/java/com/pengrad/telegrambot/model/Message.java)
+
+### callbackEvent
+
+When a Callback Query response is received this channel will be triggered with a simplified version of the callback data as the `event`, payload encoded as a JSON string.
+The following table shows the possible fields, any `null` values will be missing from the JSON payload.
+
+| Field         | Type   | Description                                                |
+|---------------|--------|------------------------------------------------------------|
+| `message_id`  | Long   | Unique message ID of the original Query message            |
+| `from`        | String | First and/or last name of sender                           |
+| `chat_id`     | Long   | Unique chat ID                                             |
+| `callback_id` | String | Unique callback ID to send receipt confirmation to         |
+| `reply_id`    | String | Plain text name of original Query                          |
+| `text`        | String | Selected response text from options give in original Query |
+
+### callbackRawEvent
+
+When a Callback Query response is received this channel will be triggered with the raw callback data as the `event` payload, encoded as a JSON string.
+See the [`CallbackQuery` class for details](https://github.com/pengrad/java-telegram-bot-api/blob/4.9.0/library/src/main/java/com/pengrad/telegrambot/model/CallbackQuery.java)
 
 ## Rule Actions
 
@@ -170,6 +218,15 @@ Just put the chat id (must be a long value!) followed by an "L" as the first arg
 
 ```
 telegramAction.sendTelegram(1234567L, "Hello world!")
+```
+
+### Advanced Callback Query Response
+
+This binding stores the `callbackId` and recalls it using the `replyId`, but this information is lost if openHAB restarts.
+If you store the `callbackId`, `chatId`, and optionally `messageId` somewhere that will be persisted when openHAB shuts down, you can use the following overload of `sendTelegramAnswer` to respond to any Callback Query.
+
+```
+telegramAction.sendTelegramAnswer(chatId, callbackId, messageId, message)
 ```
 
 ## Full Example
