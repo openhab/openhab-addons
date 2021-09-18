@@ -20,6 +20,8 @@
 			<channel id="stop" typeId="stop"/>
 		</channels>
 
+		<representation-property>uid</representation-property>
+
 		<config-description>
 			<parameter name="uid" type="text" required="true">
 				<label>ID</label>
