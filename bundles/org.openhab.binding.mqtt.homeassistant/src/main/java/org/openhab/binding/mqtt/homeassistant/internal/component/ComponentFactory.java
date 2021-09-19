@@ -35,7 +35,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ComponentFactory {
-    private static final Logger logger = LoggerFactory.getLogger(ComponentFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ComponentFactory.class);
 
     /**
      * Create a HA MQTT component. The configuration JSon string is required.
@@ -79,7 +79,7 @@ public class ComponentFactory {
                     return new Switch(componentConfiguration);
             }
         } catch (UnsupportedOperationException e) {
-            logger.warn("Not supported", e);
+            LOGGER.warn("Not supported", e);
         }
         return null;
     }

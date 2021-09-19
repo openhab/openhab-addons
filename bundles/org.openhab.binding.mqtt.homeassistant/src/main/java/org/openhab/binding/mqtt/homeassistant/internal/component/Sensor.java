@@ -24,6 +24,8 @@ import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A MQTT sensor, following the https://www.home-assistant.io/components/sensor.mqtt/ specification.
  *
@@ -31,8 +33,8 @@ import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStat
  */
 @NonNullByDefault
 public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
-    public static final String sensorChannelID = "sensor"; // Randomly chosen channel "ID"
-    private static final Pattern triggerIcons = Pattern.compile("^mdi:(toggle|gesture).*$");
+    public static final String SENSOR_CHANNEL_ID = "sensor"; // Randomly chosen channel "ID"
+    private static final Pattern TRIGGER_ICONS = Pattern.compile("^mdi:(toggle|gesture).*$");
 
     /**
      * Configuration class for MQTT component
@@ -42,23 +44,31 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
             super("MQTT Sensor");
         }
 
-        protected @Nullable String unit_of_measurement;
-        protected @Nullable String device_class;
-        protected boolean force_update = false;
-        protected @Nullable Integer expire_after;
+        @SerializedName("unit_of_measurement")
+        protected @Nullable String unitOfMeasurement;
+        @SerializedName("device_class")
+        protected @Nullable String deviceClass;
+        @SerializedName("force_update")
+        protected boolean forceUpdate = false;
+        @SerializedName("expire_after")
+        protected @Nullable Integer expireAfter;
 
-        protected String state_topic = "";
+        @SerializedName("state_topic")
+        protected String stateTopic = "";
 
-        protected @Nullable String json_attributes_topic;
-        protected @Nullable String json_attributes_template;
-        protected @Nullable List<String> json_attributes;
+        @SerializedName("json_attributes_topic")
+        protected @Nullable String jsonAttributesTopic;
+        @SerializedName("json_attributes_template")
+        protected @Nullable String jsonAttributesTemplate;
+        @SerializedName("json_attributes")
+        protected @Nullable List<String> jsonAttributes;
     }
 
     public Sensor(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
         Value value;
-        String uom = channelConfiguration.unit_of_measurement;
+        String uom = channelConfiguration.unitOfMeasurement;
 
         if (uom != null && !uom.isBlank()) {
             value = new NumberValue(null, null, null, uom);
@@ -68,19 +78,20 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
 
         String icon = channelConfiguration.getIcon();
 
-        boolean trigger = triggerIcons.matcher(icon).matches();
+        boolean trigger = TRIGGER_ICONS.matcher(icon).matches();
 
-        buildChannel(sensorChannelID, value, channelConfiguration.getName(), getListener(componentConfiguration, value))
-                .stateTopic(channelConfiguration.state_topic, channelConfiguration.getValueTemplate())//
-                .trigger(trigger).build();
+        buildChannel(SENSOR_CHANNEL_ID, value, channelConfiguration.getName(),
+                getListener(componentConfiguration, value))
+                        .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())//
+                        .trigger(trigger).build();
     }
 
     private ChannelStateUpdateListener getListener(ComponentFactory.ComponentConfiguration componentConfiguration,
             Value value) {
         ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
 
-        if (channelConfiguration.expire_after != null) {
-            updateListener = new ExpireUpdateStateListener(updateListener, channelConfiguration.expire_after, value,
+        if (channelConfiguration.expireAfter != null) {
+            updateListener = new ExpireUpdateStateListener(updateListener, channelConfiguration.expireAfter, value,
                     componentConfiguration.getTracker(), componentConfiguration.getScheduler());
         }
         return updateListener;

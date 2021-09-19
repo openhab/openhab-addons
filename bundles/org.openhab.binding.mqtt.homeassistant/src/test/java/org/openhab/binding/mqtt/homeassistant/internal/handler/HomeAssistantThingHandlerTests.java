@@ -47,8 +47,8 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 @SuppressWarnings({ "ConstantConditions" })
 @ExtendWith(MockitoExtension.class)
 public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
-    private final static int SUBSCRIBE_TIMEOUT = 10000;
-    private final static int ATTRIBUTE_RECEIVE_TIMEOUT = 2000;
+    private static final int SUBSCRIBE_TIMEOUT = 10000;
+    private static final int ATTRIBUTE_RECEIVE_TIMEOUT = 2000;
 
     private static final List<String> CONFIG_TOPICS = Arrays.asList("climate/0x847127fffe11dd6a_climate_zigbee2mqtt",
             "switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt",
