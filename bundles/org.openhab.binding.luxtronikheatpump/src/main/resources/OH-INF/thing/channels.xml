@@ -2063,7 +2063,7 @@
 
 	<channel-type id="temperatureHeatingLimit">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature Heatling Limit</label>
+		<label>Temperature Heating Limit</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
