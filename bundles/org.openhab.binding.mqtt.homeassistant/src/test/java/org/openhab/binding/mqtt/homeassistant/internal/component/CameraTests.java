@@ -56,11 +56,11 @@ public class CameraTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("cam1"));
 
-        assertChannel(component, Camera.cameraChannelID, "zigbee2mqtt/cam1/state", "", "cam1", ImageValue.class);
+        assertChannel(component, Camera.CAMERA_CHANNEL_ID, "zigbee2mqtt/cam1/state", "", "cam1", ImageValue.class);
 
         var imageBytes = getResourceAsByteArray("component/image.png");
         publishMessage("zigbee2mqtt/cam1/state", imageBytes);
-        assertState(component, Camera.cameraChannelID, new RawType(imageBytes, "image/png"));
+        assertState(component, Camera.CAMERA_CHANNEL_ID, new RawType(imageBytes, "image/png"));
     }
 
     protected Set<String> getConfigTopics() {

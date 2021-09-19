@@ -14,6 +14,8 @@ package org.openhab.binding.mqtt.homeassistant.internal.config;
 
 import java.lang.reflect.Type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Connection;
 
 import com.google.gson.JsonArray;
@@ -29,11 +31,23 @@ import com.google.gson.JsonParseException;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class ConnectionDeserializer implements JsonDeserializer<Connection> {
-    @Override
-    public Connection deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+    public @Nullable Connection deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-        JsonArray list = json.getAsJsonArray();
+        JsonArray list;
+        if (json == null) {
+            throw new JsonParseException("JSON element is null");
+        }
+        try {
+            list = json.getAsJsonArray();
+        } catch (IllegalStateException e) {
+            throw new JsonParseException("Cannot parse JSON array", e);
+        }
+        if (list.size() != 2) {
+            throw new JsonParseException(
+                    "Connection information must be a tuple, but has " + list.size() + " elements!");
+        }
         return new Connection(list.get(0).getAsString(), list.get(1).getAsString());
     }
 }
