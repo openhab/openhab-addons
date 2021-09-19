@@ -226,6 +226,7 @@
 			<channel id="thermalDisinfectionPermanent" typeId="thermalDisinfectionPermanent"/>
 			<channel id="temperatureComfortCoolingATRelease" typeId="temperatureComfortCoolingATRelease"/>
 			<channel id="temperatureComfortCoolingATReleaseTarget" typeId="temperatureComfortCoolingATReleaseTarget"/>
+			<channel id="temperatureHeatingLimit" typeId="temperatureHeatingLimit"/>
 			<channel id="comfortCoolingATExcess" typeId="comfortCoolingATExcess"/>
 			<channel id="comfortCoolingATUndercut" typeId="comfortCoolingATUndercut"/>
 		</channels>
