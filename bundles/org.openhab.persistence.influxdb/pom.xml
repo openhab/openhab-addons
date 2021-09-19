@@ -71,7 +71,7 @@
     <dependency>
       <artifactId>okhttp</artifactId>
       <groupId>com.squareup.okhttp3</groupId>
-      <version>3.14.4</version>
+      <version>${okhttp.version}</version>
     </dependency>
     <dependency>
       <artifactId>retrofit</artifactId>
@@ -86,7 +86,7 @@
     <dependency>
       <artifactId>logging-interceptor</artifactId>
       <groupId>com.squareup.okhttp3</groupId>
-      <version>3.14.4</version>
+      <version>${okhttp.version}</version>
     </dependency>
     <dependency>
       <artifactId>rxjava</artifactId>
