@@ -36,6 +36,13 @@
 		</tags>
 	</channel-type>
 
+	<channel-type id="hevcycle">
+		<item-type>Switch</item-type>
+		<label>HEV Cycle</label>
+		<description>Controls the HEV clean cycle of the light</description>
+		<config-description-ref uri="channel-type:lifx:hevcycle"/>
+	</channel-type>
+
 	<channel-type id="infrared">
 		<item-type>Dimmer</item-type>
 		<label>Infrared</label>

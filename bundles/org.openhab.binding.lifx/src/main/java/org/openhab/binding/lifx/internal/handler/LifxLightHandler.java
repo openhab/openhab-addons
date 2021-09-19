@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,11 +43,13 @@ import org.openhab.binding.lifx.internal.LifxLightStateChanger;
 import org.openhab.binding.lifx.internal.LifxProduct;
 import org.openhab.binding.lifx.internal.LifxProduct.Features;
 import org.openhab.binding.lifx.internal.dto.Effect;
+import org.openhab.binding.lifx.internal.dto.GetHevCycleRequest;
 import org.openhab.binding.lifx.internal.dto.GetLightInfraredRequest;
 import org.openhab.binding.lifx.internal.dto.GetLightPowerRequest;
 import org.openhab.binding.lifx.internal.dto.GetRequest;
 import org.openhab.binding.lifx.internal.dto.GetTileEffectRequest;
 import org.openhab.binding.lifx.internal.dto.GetWifiInfoRequest;
+import org.openhab.binding.lifx.internal.dto.HevCycleState;
 import org.openhab.binding.lifx.internal.dto.Packet;
 import org.openhab.binding.lifx.internal.dto.PowerState;
 import org.openhab.binding.lifx.internal.dto.SignalStrength;
@@ -94,6 +97,7 @@ public class LifxLightHandler extends BaseThingHandler {
     private final LifxChannelFactory channelFactory;
     private @NonNullByDefault({}) Features features;
 
+    private Duration hevCycleDuration = Duration.ZERO;
     private @Nullable PercentType powerOnBrightness;
     private @Nullable HSBType powerOnColor;
     private @Nullable PercentType powerOnTemperature;
@@ -192,6 +196,14 @@ public class LifxLightHandler extends BaseThingHandler {
         }
 
         @Override
+        public void setHevCycleState(HevCycleState hevCycleState) {
+            if (!isStateChangePending() || hevCycleState.equals(pendingLightState.getHevCycleState())) {
+                updateStateIfChanged(CHANNEL_HEV_CYCLE, OnOffType.from(hevCycleState.isEnable()));
+            }
+            super.setHevCycleState(hevCycleState);
+        }
+
+        @Override
         public void setInfrared(PercentType infrared) {
             if (!isStateChangePending() || infrared.equals(pendingLightState.getInfrared())) {
                 updateStateIfChanged(CHANNEL_INFRARED, infrared);
@@ -263,6 +275,8 @@ public class LifxLightHandler extends BaseThingHandler {
             if (speed != null) {
                 effectFlameSpeed = speed;
             }
+            hevCycleDuration = getHevCycleDuration();
+
             channelStates.clear();
             currentLightState = new CurrentLightState();
             pendingLightState = new LifxLightState();
@@ -410,6 +424,19 @@ public class LifxLightHandler extends BaseThingHandler {
         return speed == null ? null : Double.valueOf(speed.toString());
     }
 
+    private Duration getHevCycleDuration() {
+        ChannelUID channelUID = new ChannelUID(getThing().getUID(), LifxBindingConstants.CHANNEL_HEV_CYCLE);
+        Channel channel = getThing().getChannel(channelUID.getId());
+
+        if (channel == null) {
+            return Duration.ZERO;
+        }
+
+        Configuration configuration = channel.getConfiguration();
+        Object duration = configuration.get(LifxBindingConstants.CONFIG_PROPERTY_HEV_CYCLE_DURATION);
+        return duration == null ? Duration.ZERO : Duration.ofSeconds(Integer.valueOf(duration.toString()));
+    }
+
     private Features getFeatures() {
         LifxProduct product = getProduct();
 
@@ -486,118 +513,126 @@ public class LifxLightHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            channelStates.remove(channelUID.getId());
-            switch (channelUID.getId()) {
-                case CHANNEL_COLOR:
-                case CHANNEL_BRIGHTNESS:
-                    sendPacket(new GetLightPowerRequest());
-                    sendPacket(new GetRequest());
-                    break;
-                case CHANNEL_TEMPERATURE:
-                    sendPacket(new GetRequest());
-                    break;
-                case CHANNEL_INFRARED:
-                    sendPacket(new GetLightInfraredRequest());
-                    break;
-                case CHANNEL_SIGNAL_STRENGTH:
-                    sendPacket(new GetWifiInfoRequest());
-                    break;
-                case CHANNEL_EFFECT:
-                    if (features.hasFeature(TILE_EFFECT)) {
-                        sendPacket(new GetTileEffectRequest());
-                    }
-                    break;
-                default:
-                    break;
-            }
+            handleRefreshCommand(channelUID);
         } else {
-            boolean supportedCommand = true;
-            switch (channelUID.getId()) {
-                case CHANNEL_COLOR:
-                    if (command instanceof HSBType) {
-                        handleHSBCommand((HSBType) command);
-                    } else if (command instanceof PercentType) {
-                        handlePercentCommand((PercentType) command);
-                    } else if (command instanceof OnOffType) {
-                        handleOnOffCommand((OnOffType) command);
-                    } else if (command instanceof IncreaseDecreaseType) {
-                        handleIncreaseDecreaseCommand((IncreaseDecreaseType) command);
-                    } else {
-                        supportedCommand = false;
-                    }
-                    break;
-                case CHANNEL_BRIGHTNESS:
-                    if (command instanceof PercentType) {
-                        handlePercentCommand((PercentType) command);
-                    } else if (command instanceof OnOffType) {
-                        handleOnOffCommand((OnOffType) command);
-                    } else if (command instanceof IncreaseDecreaseType) {
-                        handleIncreaseDecreaseCommand((IncreaseDecreaseType) command);
-                    } else {
-                        supportedCommand = false;
-                    }
-                    break;
-                case CHANNEL_TEMPERATURE:
-                    if (command instanceof PercentType) {
-                        handleTemperatureCommand((PercentType) command);
-                    } else if (command instanceof IncreaseDecreaseType) {
-                        handleIncreaseDecreaseTemperatureCommand((IncreaseDecreaseType) command);
-                    } else {
-                        supportedCommand = false;
-                    }
-                    break;
-                case CHANNEL_INFRARED:
-                    if (command instanceof PercentType) {
-                        handleInfraredCommand((PercentType) command);
-                    } else if (command instanceof IncreaseDecreaseType) {
-                        handleIncreaseDecreaseInfraredCommand((IncreaseDecreaseType) command);
-                    } else {
-                        supportedCommand = false;
-                    }
-                    break;
-                case CHANNEL_EFFECT:
-                    if (command instanceof StringType && features.hasFeature(TILE_EFFECT)) {
-                        handleTileEffectCommand((StringType) command);
-                    } else {
-                        supportedCommand = false;
-                    }
-                    break;
-                default:
-                    try {
-                        if (channelUID.getId().startsWith(CHANNEL_COLOR_ZONE)) {
-                            int zoneIndex = Integer.parseInt(channelUID.getId().replace(CHANNEL_COLOR_ZONE, ""));
-                            if (command instanceof HSBType) {
-                                handleHSBCommand((HSBType) command, zoneIndex);
-                            } else if (command instanceof PercentType) {
-                                handlePercentCommand((PercentType) command, zoneIndex);
-                            } else if (command instanceof IncreaseDecreaseType) {
-                                handleIncreaseDecreaseCommand((IncreaseDecreaseType) command, zoneIndex);
-                            } else {
-                                supportedCommand = false;
-                            }
-                        } else if (channelUID.getId().startsWith(CHANNEL_TEMPERATURE_ZONE)) {
-                            int zoneIndex = Integer.parseInt(channelUID.getId().replace(CHANNEL_TEMPERATURE_ZONE, ""));
-                            if (command instanceof PercentType) {
-                                handleTemperatureCommand((PercentType) command, zoneIndex);
-                            } else if (command instanceof IncreaseDecreaseType) {
-                                handleIncreaseDecreaseTemperatureCommand((IncreaseDecreaseType) command, zoneIndex);
-                            } else {
-                                supportedCommand = false;
-                            }
-                        } else {
-                            supportedCommand = false;
-                        }
-                    } catch (NumberFormatException e) {
-                        logger.error("Failed to parse zone index for a command of a light ({}) : {}", logId,
-                                e.getMessage());
-                        supportedCommand = false;
-                    }
-                    break;
+            Runnable channelCommandRunnable = getChannelCommandRunnable(channelUID, command);
+            if (channelCommandRunnable == null) {
+                return;
             }
 
-            if (supportedCommand && !(command instanceof OnOffType) && !CHANNEL_INFRARED.equals(channelUID.getId())) {
-                getLightStateForCommand().setPowerState(PowerState.ON);
+            String channelId = channelUID.getId();
+            boolean isHevCycleChannelCommand = CHANNEL_HEV_CYCLE.equals(channelId);
+            boolean isInfraredChannelCommand = CHANNEL_INFRARED.equals(channelId);
+            boolean waitForHevCycleDisabled = false;
+
+            if (getFeatures().hasFeature(HEV) && !isHevCycleChannelCommand) {
+                LifxLightState lightState = getLightStateForCommand();
+                HevCycleState currentHevCycleState = lightState.getHevCycleState();
+                if (currentHevCycleState == null || currentHevCycleState.isEnable()) {
+                    lightState.setHevCycleState(HevCycleState.OFF);
+                    lightState.setPowerState(PowerState.OFF);
+                    waitForHevCycleDisabled = true;
+                }
             }
+
+            Runnable compositeCommandsRunnable = () -> {
+                channelCommandRunnable.run();
+                if (!(command instanceof OnOffType) && !isHevCycleChannelCommand && !isInfraredChannelCommand) {
+                    getLightStateForCommand().setPowerState(PowerState.ON);
+                }
+            };
+
+            if (waitForHevCycleDisabled) {
+                scheduler.schedule(compositeCommandsRunnable, 200, TimeUnit.MILLISECONDS);
+            } else {
+                compositeCommandsRunnable.run();
+            }
+        }
+    }
+
+    private @Nullable Runnable getChannelCommandRunnable(ChannelUID channelUID, Command command) {
+        switch (channelUID.getId()) {
+            case CHANNEL_BRIGHTNESS:
+                if (command instanceof PercentType) {
+                    return () -> handlePercentCommand((PercentType) command);
+                } else if (command instanceof OnOffType) {
+                    return () -> handleOnOffCommand((OnOffType) command);
+                } else if (command instanceof IncreaseDecreaseType) {
+                    return () -> handleIncreaseDecreaseCommand((IncreaseDecreaseType) command);
+                } else {
+                    return null;
+                }
+            case CHANNEL_COLOR:
+                if (command instanceof HSBType) {
+                    return () -> handleHSBCommand((HSBType) command);
+                } else if (command instanceof PercentType) {
+                    return () -> handlePercentCommand((PercentType) command);
+                } else if (command instanceof OnOffType) {
+                    return () -> handleOnOffCommand((OnOffType) command);
+                } else if (command instanceof IncreaseDecreaseType) {
+                    return () -> handleIncreaseDecreaseCommand((IncreaseDecreaseType) command);
+                } else {
+                    return null;
+                }
+            case CHANNEL_EFFECT:
+                if (command instanceof StringType && features.hasFeature(TILE_EFFECT)) {
+                    return () -> handleTileEffectCommand((StringType) command);
+                } else {
+                    return null;
+                }
+            case CHANNEL_HEV_CYCLE:
+                if (command instanceof OnOffType) {
+                    return () -> handleHevCycleCommand((OnOffType) command);
+                } else {
+                    return null;
+                }
+            case CHANNEL_INFRARED:
+                if (command instanceof PercentType) {
+                    return () -> handleInfraredCommand((PercentType) command);
+                } else if (command instanceof IncreaseDecreaseType) {
+                    return () -> handleIncreaseDecreaseInfraredCommand((IncreaseDecreaseType) command);
+                } else {
+                    return null;
+                }
+            case CHANNEL_TEMPERATURE:
+                if (command instanceof PercentType) {
+                    return () -> handleTemperatureCommand((PercentType) command);
+                } else if (command instanceof IncreaseDecreaseType) {
+                    return () -> handleIncreaseDecreaseTemperatureCommand((IncreaseDecreaseType) command);
+                } else {
+                    return null;
+                }
+            default:
+                try {
+                    if (channelUID.getId().startsWith(CHANNEL_COLOR_ZONE)) {
+                        int zoneIndex = Integer.parseInt(channelUID.getId().replace(CHANNEL_COLOR_ZONE, ""));
+                        if (command instanceof HSBType) {
+                            return () -> handleHSBCommand((HSBType) command, zoneIndex);
+                        } else if (command instanceof PercentType) {
+                            return () -> handlePercentCommand((PercentType) command, zoneIndex);
+                        } else if (command instanceof IncreaseDecreaseType) {
+                            return () -> handleIncreaseDecreaseCommand((IncreaseDecreaseType) command, zoneIndex);
+                        } else {
+                            return null;
+                        }
+                    } else if (channelUID.getId().startsWith(CHANNEL_TEMPERATURE_ZONE)) {
+                        int zoneIndex = Integer.parseInt(channelUID.getId().replace(CHANNEL_TEMPERATURE_ZONE, ""));
+                        if (command instanceof PercentType) {
+                            return () -> handleTemperatureCommand((PercentType) command, zoneIndex);
+                        } else if (command instanceof IncreaseDecreaseType) {
+                            return () -> handleIncreaseDecreaseTemperatureCommand((IncreaseDecreaseType) command,
+                                    zoneIndex);
+                        } else {
+                            return null;
+                        }
+                    } else {
+                        return null;
+                    }
+                } catch (NumberFormatException e) {
+                    logger.error("Failed to parse zone index for a command of a light ({}) : {}", logId,
+                            e.getMessage());
+                    return null;
+                }
         }
     }
 
@@ -610,6 +645,36 @@ public class LifxLightHandler extends BaseThingHandler {
 
     private boolean isStateChangePending() {
         return pendingLightState.getDurationSinceLastChange().minus(MAX_STATE_CHANGE_DURATION).isNegative();
+    }
+
+    private void handleRefreshCommand(ChannelUID channelUID) {
+        channelStates.remove(channelUID.getId());
+        switch (channelUID.getId()) {
+            case CHANNEL_COLOR:
+            case CHANNEL_BRIGHTNESS:
+                sendPacket(new GetLightPowerRequest());
+                sendPacket(new GetRequest());
+                break;
+            case CHANNEL_EFFECT:
+                if (features.hasFeature(TILE_EFFECT)) {
+                    sendPacket(new GetTileEffectRequest());
+                }
+                break;
+            case CHANNEL_HEV_CYCLE:
+                sendPacket(new GetHevCycleRequest());
+                break;
+            case CHANNEL_INFRARED:
+                sendPacket(new GetLightInfraredRequest());
+                break;
+            case CHANNEL_SIGNAL_STRENGTH:
+                sendPacket(new GetWifiInfoRequest());
+                break;
+            case CHANNEL_TEMPERATURE:
+                sendPacket(new GetRequest());
+                break;
+            default:
+                break;
+        }
     }
 
     private void handleTemperatureCommand(PercentType temperature) {
@@ -686,6 +751,11 @@ public class LifxLightHandler extends BaseThingHandler {
                 features.getTemperatureRange());
         PercentType newTemperature = increaseDecreasePercentType(increaseDecrease, baseTemperature);
         handleTemperatureCommand(newTemperature, zoneIndex);
+    }
+
+    private void handleHevCycleCommand(OnOffType onOff) {
+        HevCycleState hevCycleState = new HevCycleState(onOff == OnOffType.ON, hevCycleDuration);
+        getLightStateForCommand().setHevCycleState(hevCycleState);
     }
 
     private void handleInfraredCommand(PercentType infrared) {

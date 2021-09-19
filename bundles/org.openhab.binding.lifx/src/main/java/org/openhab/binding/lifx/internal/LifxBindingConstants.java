@@ -13,8 +13,6 @@
 package org.openhab.binding.lifx.internal;
 
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lifx.internal.fields.HSBK;
@@ -55,6 +53,7 @@ public class LifxBindingConstants {
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_COLOR_ZONE = "colorzone";
     public static final String CHANNEL_EFFECT = "effect";
+    public static final String CHANNEL_HEV_CYCLE = "hevcycle";
     public static final String CHANNEL_INFRARED = "infrared";
     public static final String CHANNEL_SIGNAL_STRENGTH = "signalstrength";
     public static final String CHANNEL_TEMPERATURE = "temperature";
@@ -80,11 +79,12 @@ public class LifxBindingConstants {
     public static final String CONFIG_PROPERTY_FADETIME = "fadetime";
 
     // Config property for channel configuration
+    public static final String CONFIG_PROPERTY_HEV_CYCLE_DURATION = "hevCycleDuration";
+    public static final String CONFIG_PROPERTY_EFFECT_FLAME_SPEED = "effectFlameSpeed";
+    public static final String CONFIG_PROPERTY_EFFECT_MORPH_SPEED = "effectMorphSpeed";
     public static final String CONFIG_PROPERTY_POWER_ON_BRIGHTNESS = "powerOnBrightness";
     public static final String CONFIG_PROPERTY_POWER_ON_COLOR = "powerOnColor";
     public static final String CONFIG_PROPERTY_POWER_ON_TEMPERATURE = "powerOnTemperature";
-    public static final String CONFIG_PROPERTY_EFFECT_MORPH_SPEED = "effectMorphSpeed";
-    public static final String CONFIG_PROPERTY_EFFECT_FLAME_SPEED = "effectFlameSpeed";
 
     // Property keys
     public static final String PROPERTY_HOST = "host";
@@ -100,12 +100,13 @@ public class LifxBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_COLORLIGHT = new ThingTypeUID(BINDING_ID, "colorlight");
+    public static final ThingTypeUID THING_TYPE_COLORHEVLIGHT = new ThingTypeUID(BINDING_ID, "colorhevlight");
     public static final ThingTypeUID THING_TYPE_COLORIRLIGHT = new ThingTypeUID(BINDING_ID, "colorirlight");
     public static final ThingTypeUID THING_TYPE_COLORMZLIGHT = new ThingTypeUID(BINDING_ID, "colormzlight");
-    public static final ThingTypeUID THING_TYPE_WHITELIGHT = new ThingTypeUID(BINDING_ID, "whitelight");
     public static final ThingTypeUID THING_TYPE_TILELIGHT = new ThingTypeUID(BINDING_ID, "tilelight");
+    public static final ThingTypeUID THING_TYPE_WHITELIGHT = new ThingTypeUID(BINDING_ID, "whitelight");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(THING_TYPE_COLORLIGHT,
-            THING_TYPE_COLORIRLIGHT, THING_TYPE_COLORMZLIGHT, THING_TYPE_WHITELIGHT, THING_TYPE_TILELIGHT)
-            .collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_COLORLIGHT,
+            THING_TYPE_COLORHEVLIGHT, THING_TYPE_COLORIRLIGHT, THING_TYPE_COLORMZLIGHT, THING_TYPE_TILELIGHT,
+            THING_TYPE_WHITELIGHT);
 }
