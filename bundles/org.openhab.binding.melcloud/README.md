@@ -136,13 +136,13 @@ DateTime    nextCommunication   { channel="melcloud:acdevice:myaccount:livingroo
 Switch      offline             { channel="melcloud:acdevice:myaccount:livingroom:offline" }
 Switch      hasPendingCommand   { channel="melcloud:acdevice:myaccount:livingroom:hasPendingCommand" }
 
-Switch      heatpumpPower               { channel="melcloud:heatpump:myaccount:attic:power" }
-Switch      heatpumpForcedHotWaterMode  { channel="melcloud:heatpump:myaccount:attic:forcedHotWaterMode" }
-Number      heatpumpSetTemperatureZone1 { channel="melcloud:heatpump:myaccount:attic:setTemperatureZone1" }
-Number      heatpumpRoomTemperatureZone1{ channel="melcloud:heatpump:myaccount:attic:roomTemperatureZone1" }
-Number      heatpumpTankWaterTemperature{ channel="melcloud:heatpump:myaccount:attic:tankWaterTemperature" }
-DateTime    heatpumpLastCommunication   { channel="melcloud:heatpump:myaccount:attic:lastCommunication" }
-DateTime    heatpumpNextCommunication   { channel="melcloud:heatpump:myaccount:attic:nextCommunication" }
-Switch      heatpumpOffline             { channel="melcloud:heatpump:myaccount:attic:offline" }
-Switch      heatpumpHasPendingCommand   { channel="melcloud:heatpump:myaccount:attic:hasPendingCommand" }
+Switch      heatpumpPower               { channel="melcloud:heatpumpdevice:myaccount:attic:power" }
+Switch      heatpumpForcedHotWaterMode  { channel="melcloud:heatpumpdevice:myaccount:attic:forcedHotWaterMode" }
+Number      heatpumpSetTemperatureZone1 { channel="melcloud:heatpumpdevice:myaccount:attic:setTemperatureZone1" }
+Number      heatpumpRoomTemperatureZone1{ channel="melcloud:heatpumpdevice:myaccount:attic:roomTemperatureZone1" }
+Number      heatpumpTankWaterTemperature{ channel="melcloud:heatpumpdevice:myaccount:attic:tankWaterTemperature" }
+DateTime    heatpumpLastCommunication   { channel="melcloud:heatpumpdevice:myaccount:attic:lastCommunication" }
+DateTime    heatpumpNextCommunication   { channel="melcloud:heatpumpdevice:myaccount:attic:nextCommunication" }
+Switch      heatpumpOffline             { channel="melcloud:heatpumpdevice:myaccount:attic:offline" }
+Switch      heatpumpHasPendingCommand   { channel="melcloud:heatpumpdevice:myaccount:attic:hasPendingCommand" }
 ```
