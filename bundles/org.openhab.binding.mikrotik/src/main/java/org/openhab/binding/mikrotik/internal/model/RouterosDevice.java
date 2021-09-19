@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.mikrotik.internal.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.net.SocketFactory;
 
@@ -62,11 +62,11 @@ public class RouterosDevice {
     private static final String CMD_PRINT_RESOURCE = "/system/resource/print";
     private static final String CMD_PRINT_RB_INFO = "/system/routerboard/print";
 
-    private @Nullable List<RouterosInterfaceBase> interfaceCache;
-    private @Nullable List<RouterosCapsmanRegistration> capsmanRegistrationCache;
-    private @Nullable List<RouterosWirelessRegistration> wirelessRegistrationCache;
-    private Set<String> monitoredInterfaces = new HashSet<>();
-    private Map<String, String> wlanSsid = new HashMap<>();
+    private final List<RouterosInterfaceBase> interfaceCache = new ArrayList<>();
+    private final List<RouterosCapsmanRegistration> capsmanRegistrationCache = new ArrayList<>();
+    private final List<RouterosWirelessRegistration> wirelessRegistrationCache = new ArrayList<>();
+    private final Set<String> monitoredInterfaces = new HashSet<>();
+    private final Map<String, String> wlanSsid = new HashMap<>();
 
     private @Nullable RouterosSystemResources resourcesCache;
     private @Nullable RouterosRouterboardInfo rbInfo;
@@ -105,7 +105,8 @@ public class RouterosDevice {
     }
 
     public boolean isConnected() {
-        return connection != null && connection.isConnected();
+        ApiConnection conn = this.connection;
+        return conn != null && conn.isConnected();
     }
 
     public void start() throws MikrotikApiException {
@@ -114,28 +115,31 @@ public class RouterosDevice {
     }
 
     public void stop() {
-        if (connection != null && connection.isConnected()) {
+        ApiConnection conn = this.connection;
+        if (conn != null && conn.isConnected()) {
             logout();
         }
     }
 
     public void login() throws MikrotikApiException {
         logger.debug("Attempting login to {} ...", host);
-        this.connection = ApiConnection.connect(SocketFactory.getDefault(), host, port, connectionTimeout);
-        connection.login(login, password);
+        ApiConnection conn = ApiConnection.connect(SocketFactory.getDefault(), host, port, connectionTimeout);
+        conn.login(login, password);
         logger.debug("Logged in to RouterOS at {} !", host);
+        this.connection = conn;
     }
 
     public void logout() {
+        ApiConnection conn = this.connection;
         logger.debug("Logging out of {}", host);
-        if (connection != null) {
+        if (conn != null) {
             logger.debug("Closing connection to {}", host);
             try {
-                connection.close();
+                conn.close();
             } catch (ApiConnectionException e) {
                 logger.debug("Logout error", e);
             } finally {
-                connection = null;
+                this.connection = null;
             }
         }
     }
@@ -186,21 +190,26 @@ public class RouterosDevice {
 
     @SuppressWarnings("null")
     private void updateInterfaceData() throws MikrotikApiException {
-        if (connection == null) {
+        ApiConnection conn = this.connection;
+        if (conn == null) {
             return;
         }
 
-        List<Map<String, String>> ifaceResponse = connection.execute(CMD_PRINT_IFACES);
+        List<Map<String, String>> ifaceResponse = conn.execute(CMD_PRINT_IFACES);
 
         Set<String> interfaceTypesToPoll = new HashSet<>();
         this.wlanSsid.clear();
-        interfaceCache = ifaceResponse.stream().map(props -> {
+        this.interfaceCache.clear();
+        ifaceResponse.forEach(props -> {
             Optional<RouterosInterfaceBase> ifaceOpt = createTypedInterface(props);
-            if (ifaceOpt.isPresent() && ifaceOpt.get().hasDetailedReport()) {
-                interfaceTypesToPoll.add(ifaceOpt.get().getApiType());
+            if (ifaceOpt.isPresent()) {
+                RouterosInterfaceBase iface = ifaceOpt.get();
+                if (iface.hasDetailedReport()) {
+                    interfaceTypesToPoll.add(iface.getApiType());
+                }
+                this.interfaceCache.add(iface);
             }
-            return ifaceOpt;
-        }).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+        });
 
         Map<String, Map<String, String>> typedIfaceResponse = new HashMap<>();
         for (String ifaceApiType : interfaceTypesToPoll) {
@@ -243,39 +252,50 @@ public class RouterosDevice {
     }
 
     private void updateCapsmanRegistrations() throws MikrotikApiException {
-        List<Map<String, String>> response = connection.execute(CMD_PRINT_CAPSMAN_REGS);
+        ApiConnection conn = this.connection;
+        if (conn == null) {
+            return;
+        }
+        List<Map<String, String>> response = conn.execute(CMD_PRINT_CAPSMAN_REGS);
         if (response != null) {
-            capsmanRegistrationCache = response.stream().map(RouterosCapsmanRegistration::new)
-                    .collect(Collectors.toList());
+            capsmanRegistrationCache.clear();
+            response.forEach(reg -> capsmanRegistrationCache.add(new RouterosCapsmanRegistration(reg)));
         }
     }
 
     private void updateWirelessRegistrations() throws MikrotikApiException {
-        if (connection == null) {
+        ApiConnection conn = this.connection;
+        if (conn == null) {
             return;
         }
-        List<Map<String, String>> response = connection.execute(CMD_PRINT_WIRELESS_REGS);
-        wirelessRegistrationCache = response.stream().map(props -> {
+        List<Map<String, String>> response = conn.execute(CMD_PRINT_WIRELESS_REGS);
+        wirelessRegistrationCache.clear();
+        response.forEach(props -> {
             String wlanIfaceName = props.get("interface");
             String wlanSsidName = wlanSsid.get(wlanIfaceName);
 
             if (wlanSsidName != null && wlanIfaceName != null && !wlanIfaceName.isBlank() && !wlanSsidName.isBlank()) {
                 props.put(PROP_SSID_KEY, wlanSsidName);
             }
-            return new RouterosWirelessRegistration(props);
-        }).collect(Collectors.toList());
+            wirelessRegistrationCache.add(new RouterosWirelessRegistration(props));
+        });
     }
 
     private void updateResources() throws MikrotikApiException {
-        if (connection == null) {
+        ApiConnection conn = this.connection;
+        if (conn == null) {
             return;
         }
-        List<Map<String, String>> response = connection.execute(CMD_PRINT_RESOURCE);
+        List<Map<String, String>> response = conn.execute(CMD_PRINT_RESOURCE);
         this.resourcesCache = new RouterosSystemResources(response.get(0));
     }
 
     private void updateRouterboardInfo() throws MikrotikApiException {
-        List<Map<String, String>> response = connection.execute(CMD_PRINT_RB_INFO);
+        ApiConnection conn = this.connection;
+        if (conn == null) {
+            return;
+        }
+        List<Map<String, String>> response = conn.execute(CMD_PRINT_RB_INFO);
         this.rbInfo = new RouterosRouterboardInfo(response.get(0));
     }
 }

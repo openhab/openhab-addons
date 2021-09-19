@@ -68,23 +68,25 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
     }
 
     private boolean fetchModels() {
-        if (config != null) {
+        var cfg = this.config;
+        if (cfg != null) {
             RouterosDevice routeros = getRouterOs();
 
             RouterosWirelessRegistration wifiRegistration = null;
             if (routeros != null) {
-                wifiRegistration = routeros.findWirelessRegistration(config.mac);
+                wifiRegistration = routeros.findWirelessRegistration(cfg.mac);
             }
             this.wifiReg = wifiRegistration;
-            if (this.wifiReg != null && !config.ssid.isBlank() && !config.ssid.equalsIgnoreCase(wifiReg.getSSID())) {
+            if (wifiRegistration != null && !cfg.ssid.isBlank()
+                    && !cfg.ssid.equalsIgnoreCase(wifiRegistration.getSSID())) {
                 this.wifiReg = null;
             }
 
-            if (this.wifiReg == null && routeros != null) { // try looking in capsman when there is no
-                                                            // wirelessRegistration
-                RouterosCapsmanRegistration capsmanReg = routeros.findCapsmanRegistration(config.mac);
+            if (this.wifiReg == null && routeros != null) {
+                // try looking in capsman when there is no wirelessRegistration
+                RouterosCapsmanRegistration capsmanReg = routeros.findCapsmanRegistration(cfg.mac);
                 this.wifiReg = capsmanReg;
-                if (wifiReg != null && !config.ssid.isBlank() && !config.ssid.equalsIgnoreCase(wifiReg.getSSID())) {
+                if (capsmanReg != null && !cfg.ssid.isBlank() && !cfg.ssid.equalsIgnoreCase(capsmanReg.getSSID())) {
                     this.wifiReg = null;
                 }
             }
@@ -100,20 +102,28 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
         } else {
             continuousConnection = false;
         }
-        if (this.wifiReg != null) {
+        var wifiReg = this.wifiReg;
+        if (wifiReg != null) {
+            var cfg = this.config;
+            int considerContinuous = 180;
+            if (cfg != null) {
+                considerContinuous = cfg.considerContinuous;
+            }
             txByteRate.update(wifiReg.getTxBytes());
             rxByteRate.update(wifiReg.getRxBytes());
             txPacketRate.update(wifiReg.getTxPackets());
             rxPacketRate.update(wifiReg.getRxPackets());
             LocalDateTime uptimeStart = wifiReg.getUptimeStart();
             continuousConnection = (uptimeStart != null)
-                    && LocalDateTime.now().isAfter(uptimeStart.plusSeconds(this.config.considerContinuous));
+                    && LocalDateTime.now().isAfter(uptimeStart.plusSeconds(considerContinuous));
         }
     }
 
     @Override
     protected void refreshChannel(ChannelUID channelUID) {
+        var wifiReg = this.wifiReg;
         if (wifiReg == null) {
+            logger.warn("wifiReg is null in refreshChannel({})", channelUID);
             return;
         }
 

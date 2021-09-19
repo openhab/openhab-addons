@@ -72,11 +72,13 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         cancelRefreshJob();
-        config = getConfigAs(RouterosThingConfig.class);
-        logger.debug("Initializing MikrotikRouterosBridgeHandler with config = {}", config);
-        if (config != null && config.isValid()) {
-            this.routeros = new RouterosDevice(config.host, config.port, config.login, config.password);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, String.format("Connecting to %s", config.host));
+        var cfg = getConfigAs(RouterosThingConfig.class);
+        this.config = cfg;
+        logger.debug("Initializing MikrotikRouterosBridgeHandler with config = {}", cfg);
+        // Disagree: Redundant null check: comparing '@NonNull RouterosThingConfig' against null
+        if (this.config != null && cfg.isValid()) {
+            this.routeros = new RouterosDevice(cfg.host, cfg.port, cfg.login, cfg.password);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, String.format("Connecting to %s", cfg.host));
             scheduleRefreshJob();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration is not valid");
@@ -110,32 +112,46 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         cancelRefreshJob();
+        var routeros = this.routeros;
         if (routeros != null) {
             routeros.stop();
-            routeros = null;
+            this.routeros = null;
         }
     }
 
     private void scheduleRefreshJob() {
         synchronized (this) {
+            var cfg = this.config;
             if (refreshJob == null) {
-                logger.debug("Scheduling refresh job every {}s", config.refresh);
-                refreshJob = scheduler.scheduleWithFixedDelay(this::scheduledRun, 0, config.refresh, TimeUnit.SECONDS);
+                int refreshPeriod = 10;
+                if (cfg != null) {
+                    refreshPeriod = cfg.refresh;
+                } else {
+                    logger.warn("null config spotted in scheduleRefreshJob");
+                }
+                logger.debug("Scheduling refresh job every {}s", refreshPeriod);
+                refreshJob = scheduler.scheduleWithFixedDelay(this::scheduledRun, 0, refreshPeriod, TimeUnit.SECONDS);
             }
         }
     }
 
     private void cancelRefreshJob() {
         synchronized (this) {
-            if (refreshJob != null) {
+            var job = this.refreshJob;
+            if (job != null) {
                 logger.debug("Cancelling refresh job");
-                refreshJob.cancel(true);
-                refreshJob = null;
+                job.cancel(true);
+                this.refreshJob = null;
             }
         }
     }
 
     private void scheduledRun() {
+        var routeros = this.routeros;
+        if (routeros == null) {
+            logger.error("RouterOS device is null in scheduledRun");
+            return;
+        }
         if (!routeros.isConnected()) {
             // Perform connection
             try {
@@ -177,6 +193,11 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
     }
 
     private void performRefresh() {
+        var routeros = this.routeros;
+        if (routeros == null) {
+            logger.error("RouterOS device is null in performRefresh");
+            return;
+        }
         try {
             logger.debug("Refreshing RouterOS caches for {}", getThing().getUID());
             routeros.refresh();

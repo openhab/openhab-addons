@@ -104,6 +104,7 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void initialize() {
         cancelRefreshJob();
@@ -112,8 +113,13 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
             return;
         }
 
-        Class<?> klass = (Class<?>) (((ParameterizedType) getClass().getGenericSuperclass())
-                .getActualTypeArguments()[0]);
+        var superKlass = (ParameterizedType) getClass().getGenericSuperclass();
+        if (superKlass == null) {
+            updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "getGenericSuperclass failed for thing handler");
+            return;
+        }
+        Class<?> klass = (Class<?>) (superKlass.getActualTypeArguments()[0]);
 
         C localConfig = (C) getConfigAs(klass);
         this.config = localConfig;
@@ -147,16 +153,12 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
     private void scheduleRefreshJob() {
         synchronized (this) {
             if (refreshJob == null) {
-                MikrotikRouterosBridgeHandler bridgeHandler = getVerifiedBridgeHandler();
+                var bridgeHandler = getVerifiedBridgeHandler();
                 if (bridgeHandler == null) {
                     updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Cannot obtain bridge handler");
                     return;
                 }
                 RouterosThingConfig bridgeConfig = bridgeHandler.getBridgeConfig();
-                if (bridgeHandler == null) {
-                    updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Cannot obtain bridge config");
-                    return;
-                }
                 int refreshPeriod = bridgeConfig.refresh;
                 logger.debug("Scheduling refresh job every {}s", refreshPeriod);
 
@@ -169,10 +171,11 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
 
     private void cancelRefreshJob() {
         synchronized (this) {
-            if (refreshJob != null) {
+            var job = this.refreshJob;
+            if (job != null) {
                 logger.debug("Cancelling refresh job");
-                refreshJob.cancel(true);
-                refreshJob = null;
+                job.cancel(true);
+                this.refreshJob = null;
                 // Not setting to null as getValue() can potentially be called after
                 this.refreshCache = new ExpiringCache<>(Duration.ofDays(1), () -> false);
             }
@@ -180,11 +183,13 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
     }
 
     private void scheduledRun() {
-        if (getVerifiedBridgeHandler() == null) {
+        MikrotikRouterosBridgeHandler bridgeHandler = getVerifiedBridgeHandler();
+        if (bridgeHandler == null) {
             updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Failed reaching out to RouterOS bridge");
             return;
         }
-        if (getBridge() != null && getBridge().getStatus() == OFFLINE) {
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getStatus() == OFFLINE) {
             updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "The RouterOS bridge is currently offline");
             return;
         }
