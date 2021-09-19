@@ -13,16 +13,13 @@
 package org.openhab.binding.network.internal;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.net.NetUtil;
@@ -50,12 +47,28 @@ public class WakeOnLanPacketSender {
     private final Logger logger = LoggerFactory.getLogger(WakeOnLanPacketSender.class);
 
     private final String macAddress;
+
+    @Nullable
+    private final String hostname;
+
+    @Nullable
+    private final Integer port;
+
     private byte @Nullable [] magicPacket;
     private final Consumer<byte[]> magicPacketSender;
 
+    public WakeOnLanPacketSender(String macAddress, @Nullable String hostname, @Nullable Integer port) {
+        this.macAddress = macAddress;
+        this.hostname = hostname;
+        this.port = port;
+        this.magicPacketSender = this::sendMagicPacket;
+    }
+
     public WakeOnLanPacketSender(String macAddress) {
         this.macAddress = macAddress;
-        this.magicPacketSender = this::broadcastMagicPacket;
+        this.hostname = null;
+        this.port = null;
+        this.magicPacketSender = this::sendMagicPacket;
     }
 
     /**
@@ -63,6 +76,8 @@ public class WakeOnLanPacketSender {
      */
     WakeOnLanPacketSender(String macAddress, Consumer<byte[]> magicPacketSender) {
         this.macAddress = macAddress;
+        this.hostname = null;
+        this.port = null;
         this.magicPacketSender = magicPacketSender;
     }
 
@@ -96,24 +111,44 @@ public class WakeOnLanPacketSender {
         return bytes;
     }
 
-    private void broadcastMagicPacket(byte[] magicPacket) {
+    private void sendMagicPacket(byte[] magicPacket) {
         try (DatagramSocket socket = new DatagramSocket()) {
-            broadcastAddressStream().forEach(broadcastAddress -> {
-                try {
-                    DatagramPacket packet = new DatagramPacket(magicPacket, MAGIC_PACKET_BYTE_SIZE, broadcastAddress,
-                            WOL_UDP_PORT);
-                    socket.send(packet);
-                    logger.debug("Wake-on-LAN packet sent (MAC address: {}, broadcast address: {})", macAddress,
-                            broadcastAddress.getHostAddress());
-                } catch (IOException e) {
-                    logger.debug("Failed to send Wake-on-LAN packet (MAC address: {}, broadcast address: {})",
-                            macAddress, broadcastAddress.getHostAddress(), e);
-                }
-            });
-            logger.info("Wake-on-LAN packets sent (MAC address: {})", macAddress);
+            if (StringUtils.isEmpty(hostname)) {
+                broadcastMagicPacket(magicPacket, socket);
+            } else {
+                SocketAddress socketAddress = new InetSocketAddress(this.hostname,
+                        Objects.requireNonNullElse(this.port, WOL_UDP_PORT));
+                sendMagicPacketToIp(magicPacket, socket, socketAddress);
+            }
         } catch (SocketException e) {
             logger.error("Failed to open Wake-on-LAN datagram socket", e);
         }
+    }
+
+    private void broadcastMagicPacket(byte[] magicPacket, DatagramSocket socket) {
+        broadcastAddressStream().forEach(broadcastAddress -> {
+            try {
+                DatagramPacket packet = new DatagramPacket(magicPacket, MAGIC_PACKET_BYTE_SIZE, broadcastAddress,
+                        WOL_UDP_PORT);
+                socket.send(packet);
+                logger.debug("Wake-on-LAN packet sent (MAC address: {}, broadcast address: {})", macAddress,
+                        broadcastAddress.getHostAddress());
+            } catch (IOException e) {
+                logger.debug("Failed to send Wake-on-LAN packet (MAC address: {}, broadcast address: {})", macAddress,
+                        broadcastAddress.getHostAddress(), e);
+            }
+        });
+        logger.info("Wake-on-LAN packets sent (MAC address: {})", macAddress);
+    }
+
+    private void sendMagicPacketToIp(byte[] magicPacket, DatagramSocket socket, SocketAddress ip) {
+        DatagramPacket packet = new DatagramPacket(magicPacket, MAGIC_PACKET_BYTE_SIZE, ip);
+        try {
+            socket.send(packet);
+        } catch (IOException e) {
+            logger.debug("Failed to send Wake-on-LAN packet (MAC address: {}, address: {})", macAddress, ip, e);
+        }
+        logger.info("Wake-on-LAN packets sent (MAC address: {}, IP address: {})", macAddress, ip);
     }
 
     private Stream<InetAddress> broadcastAddressStream() {
