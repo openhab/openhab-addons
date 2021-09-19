@@ -170,6 +170,39 @@
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Charging\",\"2\"\u003d\"Not Charging\",\"4\"\u003d\"Charging\",\"5\"\u003d\"Go Charging\"]`"
 			},
 			{
+				"property": "water-mode",
+				"siid": 18,
+				"piid": 20,
+				"friendlyName": "Water Mode",
+				"channel": "water-mode",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "4",
+							"label": "High"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping [\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"4\"\u003d\"High\"]"
+			},
+			{
 				"property": "fault",
 				"siid": 3,
 				"piid": 1,
