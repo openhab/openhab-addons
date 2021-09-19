@@ -9,7 +9,7 @@ Supported thing types
 
 * melcloudaccount (bridge)
 * acdevice
-* heatpump
+* heatpumpdevice
 
 A bridge is required to connect to your MELCloud account.
 
@@ -116,8 +116,8 @@ Heatpump device channels
 
 ```
 Bridge melcloud:melcloudaccount:myaccount "My MELCloud account" [ username="user.name@example.com", password="xxxxxx", language="0" ] {
-    Thing acdevice livingroom "Livingroom A.C. device" [ deviceID=123456, pollingInterval=60 ]
-	Thing heatpump attic "Attic Heatpump device" [ deviceID=789012, pollingInterval=60 ]
+	Thing acdevice livingroom "Livingroom A.C. device" [ deviceID=123456, pollingInterval=60 ]
+	Thing heatpumpdevice attic "Attic Heatpump device" [ deviceID=789012, pollingInterval=60 ]
 }
 ```
 
