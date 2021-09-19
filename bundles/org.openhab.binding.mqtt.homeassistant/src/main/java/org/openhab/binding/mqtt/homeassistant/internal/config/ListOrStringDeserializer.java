@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.TypeAdapter;
@@ -33,6 +33,7 @@ import com.google.gson.stream.JsonWriter;
  *
  * @author Jochen Klein - Initial contribution
  */
+@NonNullByDefault
 public class ListOrStringDeserializer extends TypeAdapter<List<String>> {
 
     @Override
@@ -70,7 +71,7 @@ public class ListOrStringDeserializer extends TypeAdapter<List<String>> {
         }
     }
 
-    private @NonNull List<String> readList(@NonNull JsonReader in) throws IOException {
+    private List<String> readList(JsonReader in) throws IOException {
         in.beginArray();
 
         List<String> result = new ArrayList<>();

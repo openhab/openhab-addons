@@ -250,10 +250,7 @@ public class HaID {
         if (!nodeID.equals(other.nodeID)) {
             return false;
         }
-        if (!objectID.equals(other.objectID)) {
-            return false;
-        }
-        return true;
+        return objectID.equals(other.objectID);
     }
 
     @Override
