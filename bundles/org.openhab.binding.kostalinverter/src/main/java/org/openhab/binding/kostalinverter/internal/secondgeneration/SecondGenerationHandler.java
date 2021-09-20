@@ -50,10 +50,11 @@ import com.google.gson.GsonBuilder;
  * @author Christoph Weitkamp - Incorporated new QuantityType (Units of Measurement)
  * @author Örjan Backsell - Redesigned regarding Piko1020, Piko New Generation
  */
+
 @NonNullByDefault
 public class SecondGenerationHandler extends BaseThingHandler {
 
-    private static HttpClient httpClient = new HttpClient();
+    private final HttpClient httpClient;
 
     private final Logger logger = LoggerFactory.getLogger(SecondGenerationHandler.class);
 
@@ -75,10 +76,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
     public SecondGenerationHandler(Thing thing, HttpClient httpClient) {
         super(thing);
-        SecondGenerationHandler.httpClient = httpClient;
-        httpClient.setConnectTimeout(3000);
-        httpClient.setIdleTimeout(3000);
-        httpClient.setStopTimeout(3000);
+        this.httpClient = httpClient;
     }
 
     @Override
