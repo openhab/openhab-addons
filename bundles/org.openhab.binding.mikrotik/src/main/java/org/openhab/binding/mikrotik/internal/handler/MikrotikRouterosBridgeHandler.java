@@ -75,8 +75,7 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
         var cfg = getConfigAs(RouterosThingConfig.class);
         this.config = cfg;
         logger.debug("Initializing MikrotikRouterosBridgeHandler with config = {}", cfg);
-        // Disagree: Redundant null check: comparing '@NonNull RouterosThingConfig' against null
-        if (this.config != null && cfg.isValid()) {
+        if (cfg.isValid()) {
             this.routeros = new RouterosDevice(cfg.host, cfg.port, cfg.login, cfg.password);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, String.format("Connecting to %s", cfg.host));
             scheduleRefreshJob();
