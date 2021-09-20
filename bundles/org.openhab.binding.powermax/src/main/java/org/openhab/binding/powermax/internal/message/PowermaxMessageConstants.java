@@ -16,11 +16,14 @@ import static java.util.Map.entry;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Constants used in Powermax messages
  *
  * @author Ron Isaacson - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxMessageConstants {
 
     private PowermaxMessageConstants() {
