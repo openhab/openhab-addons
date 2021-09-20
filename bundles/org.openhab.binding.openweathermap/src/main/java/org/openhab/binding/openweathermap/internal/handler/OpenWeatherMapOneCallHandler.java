@@ -382,7 +382,8 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                     channelGroupId);
             return;
         }
-        if (localWeatherData != null && localWeatherData.getMinutely().size() > count) {
+        if (localWeatherData != null && localWeatherData.getMinutely() != null
+                && localWeatherData.getMinutely().size() > count) {
             org.openhab.binding.openweathermap.internal.dto.onecall.Minutely forecastData = localWeatherData
                     .getMinutely().get(count);
             State state = UnDefType.UNDEF;

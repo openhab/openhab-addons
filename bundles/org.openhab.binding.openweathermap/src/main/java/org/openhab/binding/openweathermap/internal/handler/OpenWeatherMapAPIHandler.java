@@ -80,7 +80,7 @@ public class OpenWeatherMapAPIHandler extends BaseBridgeHandler {
             configValid = false;
         }
         int refreshInterval = config.refreshInterval;
-        if (refreshInterval < 10) {
+        if (refreshInterval < 1) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-refreshInterval");
             configValid = false;
