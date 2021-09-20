@@ -14,7 +14,6 @@ package org.openhab.binding.ipcamera.internal.servlet;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.HLS_STARTUP_DELAY_MS;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletInputStream;
@@ -104,8 +103,7 @@ public class CameraServlet extends IpCameraServlet {
                     localFfmpeg.startConverting();
                 } else {
                     localFfmpeg.setKeepAlive(8);
-                    sendFile(resp, new File(handler.cameraConfig.getFfmpegOutput() + pathInfo),
-                            "application/x-mpegURL");
+                    sendFile(resp, pathInfo, "application/x-mpegURL");
                     return;
                 }
                 // Allow files to be created, or you get old m3u8 from the last time this ran.
@@ -114,13 +112,13 @@ public class CameraServlet extends IpCameraServlet {
                 } catch (InterruptedException e) {
                     return;
                 }
-                sendFile(resp, new File(handler.cameraConfig.getFfmpegOutput() + pathInfo), "application/x-mpegURL");
+                sendFile(resp, pathInfo, "application/x-mpegURL");
                 return;
             case "/ipcamera.mpd":
-                sendFile(resp, new File(handler.cameraConfig.getFfmpegOutput() + pathInfo), "application/dash+xml");
+                sendFile(resp, pathInfo, "application/dash+xml");
                 return;
             case "/ipcamera.gif":
-                sendFile(resp, new File(handler.cameraConfig.getFfmpegOutput() + pathInfo), "image/gif");
+                sendFile(resp, pathInfo, "image/gif");
                 return;
             case "/ipcamera.jpg":
                 sendSnapshotImage(resp, "image/jpg", handler.getSnapshot());
@@ -215,17 +213,24 @@ public class CameraServlet extends IpCameraServlet {
                 return;
             default:
                 if (pathInfo.endsWith(".ts")) {
-                    sendFile(resp, new File(handler.cameraConfig.getFfmpegOutput() + pathInfo), "video/MP2T");
+                    sendFile(resp, pathInfo, "video/MP2T");
                 } else if (pathInfo.endsWith(".gif")) {
-                    sendFile(resp, new File(handler.cameraConfig.getFfmpegOutput() + pathInfo), "image/gif");
+                    sendFile(resp, pathInfo, "image/gif");
                 } else if (pathInfo.endsWith(".jpg")) {
                     // Allow access to the preroll and postroll jpg files
-                    sendFile(resp, new File(handler.cameraConfig.getFfmpegOutput() + pathInfo), "image/jpg");
+                    sendFile(resp, pathInfo, "image/jpg");
                 } else if (pathInfo.endsWith(".mp4")) {
-                    sendFile(resp, new File(handler.cameraConfig.getFfmpegOutput() + pathInfo), "video/mp4");
+                    sendFile(resp, pathInfo, "video/mp4");
                 }
                 return;
         }
+    }
+
+    @Override
+    protected void sendFile(HttpServletResponse response, String filename, String contentType) throws IOException {
+        // Ensure no files can be sourced from parent or child folders
+        String truncated = filename.substring(filename.lastIndexOf("/"));
+        super.sendFile(response, handler.cameraConfig.getFfmpegOutput() + truncated, contentType);
     }
 
     @Override

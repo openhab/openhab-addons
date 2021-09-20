@@ -90,7 +90,8 @@ public abstract class IpCameraServlet extends HttpServlet {
         }
     }
 
-    protected void sendFile(HttpServletResponse response, File file, String contentType) throws IOException {
+    protected void sendFile(HttpServletResponse response, String filename, String contentType) throws IOException {
+        File file = new File(filename);
         if (!file.exists()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;

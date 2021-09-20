@@ -103,7 +103,7 @@ public class GroupServlet extends IpCameraServlet {
             default:
                 // example is "/1ipcameraxx.ts"
                 if (pathInfo.endsWith(".ts")) {
-                    sendFile(resp, new File(resolveIndexToPath(pathInfo) + pathInfo.substring(2)), "video/MP2T");
+                    sendFile(resp, pathInfo, "video/MP2T");
                 }
         }
     }
@@ -116,7 +116,11 @@ public class GroupServlet extends IpCameraServlet {
     }
 
     @Override
-    protected void sendFile(HttpServletResponse response, File file, String contentType) throws IOException {
+    protected void sendFile(HttpServletResponse response, String filename, String contentType) throws IOException {
+        // Ensure no files can be sourced from parent or child folders
+        String truncated = filename.substring(filename.lastIndexOf("/"));
+        truncated = resolveIndexToPath(truncated) + truncated.substring(2);
+        File file = new File(truncated);
         if (!file.exists()) {
             logger.warn(
                     "HLS File {} was not found. Try adding a larger -hls_delete_threshold to each cameras HLS out options.",
@@ -124,7 +128,7 @@ public class GroupServlet extends IpCameraServlet {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        super.sendFile(response, file, contentType);
+        super.sendFile(response, truncated, contentType);
     }
 
     @Override
