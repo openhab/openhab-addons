@@ -192,7 +192,8 @@ public class CameraServlet extends IpCameraServlet {
                     try {
                         if (handler.motionDetected) {
                             output.sendSnapshotBasedFrame(handler.getSnapshot());
-                        } else if (counter % 8 == 0) {// every 8 seconds if no motion
+                        } // every 8 seconds if no motion or the first three snapshots to fill any FIFO
+                        else if (counter % 8 == 0 || counter < 3) {
                             output.sendSnapshotBasedFrame(handler.getSnapshot());
                         }
                         counter++;
