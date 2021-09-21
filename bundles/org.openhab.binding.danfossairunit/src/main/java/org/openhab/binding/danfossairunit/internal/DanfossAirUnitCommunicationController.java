@@ -115,8 +115,11 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
             throw new IOException(
                     String.format("Input stream is null while sending request: %s", Arrays.toString(request)));
         }
-        // noinspection ResultOfMethodCallIgnored
-        localInputStream.read(result, 0, 63);
+
+        int bytesRead = localInputStream.read(result, 0, 63);
+        if (bytesRead < 63) {
+            throw new IOException(String.format("Error reading from stream, read returned %d", bytesRead));
+        }
 
         return result;
     }
