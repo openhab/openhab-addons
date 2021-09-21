@@ -25,7 +25,6 @@ public class CameraConfig {
     private String ffmpegInputOptions = "";
     private int port;
     private int onvifPort;
-    private int serverPort;
     private String username = "";
     private String password = "";
     private int onvifMediaProfile;
@@ -140,10 +139,6 @@ public class CameraConfig {
 
     public int getOnvifPort() {
         return onvifPort;
-    }
-
-    public int getServerPort() {
-        return serverPort;
     }
 
     public String getIp() {
