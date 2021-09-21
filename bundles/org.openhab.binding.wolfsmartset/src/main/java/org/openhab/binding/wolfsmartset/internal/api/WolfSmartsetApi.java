@@ -533,7 +533,7 @@ public class WolfSmartsetApi {
 
     void loginFailedCounterCheck() {
         if (loginFailedCounter > 10) {
-            logger.warn("Repeated errors logging on to Wolf Smartset");
+            logger.debug("Repeated errors logging on to Wolf Smartset");
             serviceToken = "";
             loginFailedCounter = 0;
         }

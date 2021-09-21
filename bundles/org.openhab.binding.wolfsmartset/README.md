@@ -5,13 +5,14 @@ Wolf systems are connected with official gateways (Wolf Link Home or Wolf Link P
 
 ## Supported Things
 
-- Account (bridge)
-- System (bridge)
-- Unit
+- Account (``thing-type:wolfsmartset:account``)
+    * holding the credentials to connect to the wolf-smartset online portal.
+- System (``thing-type:wolfsmartset:system``)
+    *  represents one wolf system connected to the wolf-smartset online portal.
+- Unit (``thing-type:wolfsmartset:unit``)
+    * unit is a part of the system with values and parameter
 
 ## Discovery
-
-The configuration via the interface is the recommended way:
 
 - System things (bridge) are discovered after Account thing (bridge) is set up
 - Unit things are discovered after System things are set up

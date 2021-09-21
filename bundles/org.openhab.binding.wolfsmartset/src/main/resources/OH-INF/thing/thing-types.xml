@@ -18,11 +18,9 @@
 		</supported-bridge-type-refs>
 		<label>WolfSmartset System</label>
 		<description>An WolfSmartset system</description>
-
 		<representation-property>systemId</representation-property>
 		<config-description-ref uri="thing-type:wolfsmartset:system"/>
 	</bridge-type>
-
 
 	<!-- THING TYPE UNIT -->
 	<thing-type id="unit">
@@ -35,7 +33,6 @@
 		<representation-property>unitId</representation-property>
 		<config-description-ref uri="thing-type:wolfsmartset:unit"/>
 	</thing-type>
-
 
 	<channel-type id="number">
 		<item-type>Number</item-type>
@@ -54,7 +51,6 @@
 		<label>Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-
 
 	<channel-type id="string">
 		<item-type>String</item-type>
