@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.ipcamera.internal;
 
-import java.util.ArrayList;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraGroupHandler;
@@ -27,7 +28,7 @@ import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 
 @NonNullByDefault
 public class GroupTracker {
-    public ArrayList<IpCameraHandler> listOfOnlineCameraHandlers = new ArrayList<>(1);
-    public ArrayList<IpCameraGroupHandler> listOfGroupHandlers = new ArrayList<>(0);
-    public ArrayList<String> listOfOnlineCameraUID = new ArrayList<>(1);
+    public Set<IpCameraHandler> listOfOnlineCameraHandlers = new CopyOnWriteArraySet<>();
+    public Set<IpCameraGroupHandler> listOfGroupHandlers = new CopyOnWriteArraySet<>();
+    public Set<String> listOfOnlineCameraUID = new CopyOnWriteArraySet<>();
 }
