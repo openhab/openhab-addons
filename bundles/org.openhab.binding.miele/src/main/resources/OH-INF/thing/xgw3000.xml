@@ -13,6 +13,8 @@
 			<property name="vendor">Miele</property>
 		</properties>
 
+		<representation-property>ipAddress</representation-property>
+
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>

@@ -371,12 +371,14 @@ public enum LifxProduct {
 
     public ThingTypeUID getThingTypeUID() {
         if (hasFeature(COLOR)) {
-            if (hasFeature(TILE_EFFECT)) {
-                return LifxBindingConstants.THING_TYPE_TILELIGHT;
+            if (hasFeature(HEV)) {
+                return LifxBindingConstants.THING_TYPE_COLORHEVLIGHT;
             } else if (hasFeature(INFRARED)) {
                 return LifxBindingConstants.THING_TYPE_COLORIRLIGHT;
             } else if (hasFeature(MULTIZONE)) {
                 return LifxBindingConstants.THING_TYPE_COLORMZLIGHT;
+            } else if (hasFeature(TILE_EFFECT)) {
+                return LifxBindingConstants.THING_TYPE_TILELIGHT;
             } else {
                 return LifxBindingConstants.THING_TYPE_COLORLIGHT;
             }

@@ -73,8 +73,9 @@
     <commons.net.version>3.7.2</commons.net.version>
     <eea.version>2.2.1</eea.version>
     <jackson.version>2.12.3</jackson.version>
-    <karaf.version>4.3.2</karaf.version>
+    <karaf.version>4.3.3</karaf.version>
     <netty.version>4.1.63.Final</netty.version>
+    <okhttp.version>3.14.9</okhttp.version>
     <sat.version>0.11.1</sat.version>
     <spotless.version>2.0.3</spotless.version>
 
