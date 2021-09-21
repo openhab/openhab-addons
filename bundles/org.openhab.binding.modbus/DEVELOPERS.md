@@ -20,8 +20,8 @@ When configuring dependencies in `openhab-distro/launch/app/pom.xml`, add all de
     <scope>runtime</scope>
 </dependency>
 <dependency>
-    <groupId>org.openhab.osgiify</groupId>
-    <artifactId>net.wimpi.jamod</artifactId>
+    <groupId>net.wimpi</groupId>
+    <artifactId>jamod</artifactId>
     <version>1.2.4.OH</version>
     <scope>runtime</scope>
 </dependency>
