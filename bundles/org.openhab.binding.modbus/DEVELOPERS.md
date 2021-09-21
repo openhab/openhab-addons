@@ -14,8 +14,8 @@ When configuring dependencies in `openhab-distro/launch/app/pom.xml`, add all de
     <scope>runtime</scope>
 </dependency>
 <dependency>
-    <groupId>org.openhab.addons.bundles</groupId>
-    <artifactId>org.openhab.io.transport.modbus</artifactId>
+    <groupId>org.openhab.core.bundles</groupId>
+    <artifactId>org.openhab.core.io.transport.modbus</artifactId>
     <version>${project.version}</version>
     <scope>runtime</scope>
 </dependency>
