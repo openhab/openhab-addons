@@ -24,11 +24,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface CommunicationController {
-    public void connect() throws IOException;
+    void connect() throws IOException;
 
-    public void disconnect();
+    void disconnect();
 
-    public byte[] sendRobustRequest(byte[] operation, byte[] register) throws IOException;
+    byte[] sendRobustRequest(byte[] operation, byte[] register) throws IOException;
 
-    public byte[] sendRobustRequest(byte[] operation, byte[] register, byte[] value) throws IOException;
+    byte[] sendRobustRequest(byte[] operation, byte[] register, byte[] value) throws IOException;
 }
