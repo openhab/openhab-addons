@@ -27,7 +27,6 @@ public class DBQueryBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_INFLUXDB2_BRIDGE = new ThingTypeUID(BINDING_ID, "influxdb2");
-    public static final ThingTypeUID THING_TYPE_JDBC_BRIDGE = new ThingTypeUID(BINDING_ID, "jdbc");
     public static final ThingTypeUID THING_TYPE_QUERY = new ThingTypeUID(BINDING_ID, "query");
 
     // List of all Channel ids

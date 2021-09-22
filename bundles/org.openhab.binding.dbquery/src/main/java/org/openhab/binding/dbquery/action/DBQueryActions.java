@@ -100,12 +100,13 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
 
     @Override
     public void setThingHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof QueryHandler)
+        if (thingHandler instanceof QueryHandler) {
             this.queryHandler = ((QueryHandler) thingHandler);
-        else if (thingHandler instanceof DatabaseBridgeHandler)
+        } else if (thingHandler instanceof DatabaseBridgeHandler) {
             this.databaseBridgeHandler = ((DatabaseBridgeHandler) thingHandler);
-        else
+        } else {
             throw new UnnexpectedCondition("Not expected thing handler " + thingHandler);
+        }
     }
 
     @Override

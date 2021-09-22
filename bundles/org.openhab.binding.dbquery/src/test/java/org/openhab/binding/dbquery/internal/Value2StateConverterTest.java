@@ -65,26 +65,26 @@ class Value2StateConverterTest {
     @ParameterizedTest
     @ValueSource(classes = { StringType.class, DecimalType.class, DateTimeType.class, OpenClosedType.class,
             OnOffType.class })
-    void given_null_value_return_undef(Class<State> classe) {
+    void givenNullValueReturnUndef(Class<State> classe) {
         assertThat(instance.convertValue(null, classe), is(UnDefType.NULL));
     }
 
     @ParameterizedTest
     @ValueSource(strings = { "", "stringValue" })
-    void given_string_value_and_string_target_return_stringtype(String value) {
+    void givenStringValueAndStringTargetReturnStringtype(String value) {
         var converted = instance.convertValue(value, StringType.class);
         assertThat(converted.toFullString(), is(value));
     }
 
     @ParameterizedTest
     @MethodSource("provideValuesOfAllSupportedResultRowTypesExceptBytes")
-    void given_valid_object_types_and_string_target_return_stringtype_with_string(Object value) {
+    void givenValidObjectTypesAndStringTargetReturnStringtypeWithString(Object value) {
         var converted = instance.convertValue(value, StringType.class);
         assertThat(converted.toFullString(), is(value.toString()));
     }
 
     @Test
-    void given_byte_array_and_string_target_return_encoded_base64() {
+    void givenByteArrayAndStringTargetReturnEncodedBase64() {
         var someBytes = "Hello world".getBytes(Charset.defaultCharset());
         var someBytesB64 = Base64.getEncoder().encodeToString(someBytes);
         var converted = instance.convertValue(someBytes, StringType.class);
@@ -93,7 +93,7 @@ class Value2StateConverterTest {
 
     @ParameterizedTest
     @MethodSource("provideNumericTypes")
-    void given_numeric_type_and_decimal_target_return_decimaltype(Number value) {
+    void givenNumericTypeAndDecimalTargetReturnDecimaltype(Number value) {
         var converted = instance.convertValue(value, DecimalType.class);
         assertThat(converted, instanceOf(DecimalType.class));
         assertThat(((DecimalType) converted).doubleValue(), closeTo(value.doubleValue(), 0.01d));
@@ -101,7 +101,7 @@ class Value2StateConverterTest {
 
     @ParameterizedTest
     @MethodSource("provideNumericTypes")
-    void given_numeric_string_and_decimal_target_return_decimaltype(Number value) {
+    void givenNumericStringAndDecimalTargetReturnDecimaltype(Number value) {
         var numberString = value.toString();
         var converted = instance.convertValue(numberString, DecimalType.class);
         assertThat(converted, instanceOf(DecimalType.class));
@@ -109,7 +109,7 @@ class Value2StateConverterTest {
     }
 
     @Test
-    void given_duration_and_decimal_target_return_decimaltype_with_milliseconds() {
+    void givenDurationAndDecimalTargetReturnDecimaltypeWithMilliseconds() {
         var duration = Duration.ofDays(1);
         var converted = instance.convertValue(duration, DecimalType.class);
         assertThat(converted, instanceOf(DecimalType.class));
@@ -117,7 +117,7 @@ class Value2StateConverterTest {
     }
 
     @Test
-    void given_instant_and_datetime_target_return_datetype() {
+    void givenInstantAndDatetimeTargetReturnDatetype() {
         var instant = Instant.now();
         var converted = instance.convertValue(instant, DateTimeType.class);
         assertThat(converted, instanceOf(DateTimeType.class));
@@ -126,7 +126,7 @@ class Value2StateConverterTest {
     }
 
     @Test
-    void given_date_and_datetime_target_return_datetype() {
+    void givenDateAndDatetimeTargetReturnDatetype() {
         var date = new Date();
         var converted = instance.convertValue(date, DateTimeType.class);
         assertThat(converted, instanceOf(DateTimeType.class));
@@ -136,7 +136,7 @@ class Value2StateConverterTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "2019-10-12T07:20:50.52Z", "2019-10-12" })
-    void given_valid_string_date_and_datetime_target_return_datetype(String date) {
+    void givenValidStringDateAndDatetimeTargetReturnDatetype(String date) {
         var converted = instance.convertValue(date, DateTimeType.class);
         assertThat(converted, instanceOf(DateTimeType.class));
         var convertedDateTime = ((DateTimeType) converted).getZonedDateTime();
@@ -148,7 +148,7 @@ class Value2StateConverterTest {
 
     @ParameterizedTest
     @MethodSource("trueValues")
-    void given_values_considerated_true_and_on_off_target_return_on(Object value) {
+    void givenValuesConsideratedTrueAndOnOffTargetReturnOn(Object value) {
         var converted = instance.convertValue(value, OnOffType.class);
         assertThat(converted, instanceOf(OnOffType.class));
         assertThat(converted, is(OnOffType.ON));
@@ -156,7 +156,7 @@ class Value2StateConverterTest {
 
     @ParameterizedTest
     @MethodSource("falseValues")
-    void given_values_considerated_false_and_on_off_target_return_off(Object value) {
+    void givenValuesConsideratedFalseAndOnOffTargetReturnOff(Object value) {
         var converted = instance.convertValue(value, OnOffType.class);
         assertThat(converted, instanceOf(OnOffType.class));
         assertThat(converted, is(OnOffType.OFF));
@@ -164,7 +164,7 @@ class Value2StateConverterTest {
 
     @ParameterizedTest
     @MethodSource("trueValues")
-    void given_values_considerated_true_and_open_closed_target_return_open(Object value) {
+    void givenValuesConsideratedTrueAndOpenClosedTargetReturnOpen(Object value) {
         var converted = instance.convertValue(value, OpenClosedType.class);
         assertThat(converted, instanceOf(OpenClosedType.class));
         assertThat(converted, is(OpenClosedType.OPEN));
@@ -172,7 +172,7 @@ class Value2StateConverterTest {
 
     @ParameterizedTest
     @MethodSource("falseValues")
-    void given_values_considerated_false_and_open_closed_target_return_closed(Object value) {
+    void givenValuesConsideratedFalseAndOpenClosedTargetReturnClosed(Object value) {
         var converted = instance.convertValue(value, OpenClosedType.class);
         assertThat(converted, instanceOf(OpenClosedType.class));
         assertThat(converted, is(OpenClosedType.CLOSED));

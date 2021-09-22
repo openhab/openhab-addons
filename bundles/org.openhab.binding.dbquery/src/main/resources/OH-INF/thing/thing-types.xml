@@ -7,7 +7,6 @@
 	<thing-type id="query">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="influxdb2"/>
-			<bridge-type-ref id="jdbc"/>
 		</supported-bridge-type-refs>
 		<label>Query Thing</label>
 		<description>Thing that represents a native query</description>

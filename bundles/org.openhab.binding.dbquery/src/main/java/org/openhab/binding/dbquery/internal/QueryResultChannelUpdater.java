@@ -24,8 +24,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Updates a query result to needed channels doing needed conversions
@@ -34,8 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class QueryResultChannelUpdater {
-    private final Logger logger = LoggerFactory.getLogger(QueryResultChannelUpdater.class);
-
     private final ChannelStateUpdater channelStateUpdater;
     private final ChannelsToUpdateQueryResult channels2Update;
     private final Value2StateConverter value2StateConverter;

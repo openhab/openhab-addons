@@ -39,40 +39,40 @@ class Influx2QueryResultExtractorTest {
             .of(new ResultRow(Map.of("valueName", "value1", "column2", "value2")));
     public static final QueryResult INCORRECT_RESULT = QueryResult.ofIncorrectResult("Incorrect result");
 
-    private static final QueryConfiguration scalarValueConfig = new QueryConfiguration("query", 10, 10, true, null,
+    private static final QueryConfiguration SCALAR_VALUE_CONFIG = new QueryConfiguration("query", 10, 10, true, null,
             false);
-    private static final QueryConfiguration nonScalarValueConfig = new QueryConfiguration("query", 10, 10, false, null,
-            false);
-    private static final QueryConfiguration scalarValueConfigWithScalarColumn = new QueryConfiguration("query", 10, 10,
-            true, "valueName", false);
+    private static final QueryConfiguration NON_SCALAR_VALUE_CONFIG = new QueryConfiguration("query", 10, 10, false,
+            null, false);
+    private static final QueryConfiguration SCALAR_VALUE_CONFIG_WITH_SCALAR_COLUMN = new QueryConfiguration("query", 10,
+            10, true, "valueName", false);
 
     @Test
-    void given_a_result_with_one_row_and_one_column_and_scalar_configuration_scalar_value_is_returned() {
-        var extracted = new QueryResultExtractor(scalarValueConfig).extractResult(ONE_ROW_ONE_COLUMN_RESULT);
+    void givenAResultWithOneRowAndOneColumnAndScalarConfigurationScalarValueIsReturned() {
+        var extracted = new QueryResultExtractor(SCALAR_VALUE_CONFIG).extractResult(ONE_ROW_ONE_COLUMN_RESULT);
 
         assertThat(extracted.isCorrect(), is(Boolean.TRUE));
         assertThat(extracted.getResult(), is("value"));
     }
 
     @Test
-    void given_a_result_with_several_rows_and_scalar_configuration_incorrect_value_is_returned() {
-        var extracted = new QueryResultExtractor(scalarValueConfig).extractResult(SEVERAL_ROWS_COLUMNS_RESULT);
+    void givenAResultWithSeveralRowsAndScalarConfigurationIncorrectValueIsReturned() {
+        var extracted = new QueryResultExtractor(SCALAR_VALUE_CONFIG).extractResult(SEVERAL_ROWS_COLUMNS_RESULT);
 
         assertThat(extracted.isCorrect(), is(false));
         assertThat(extracted.getResult(), nullValue());
     }
 
     @Test
-    void given_a_result_with_several_columns_and_scalar_configuration_incorrect_value_is_returned() {
-        var extracted = new QueryResultExtractor(scalarValueConfig).extractResult(ONE_ROW_SEVERAL_COLUMNS_RESULT);
+    void givenAResultWithSeveralColumnsAndScalarConfigurationIncorrectValueIsReturned() {
+        var extracted = new QueryResultExtractor(SCALAR_VALUE_CONFIG).extractResult(ONE_ROW_SEVERAL_COLUMNS_RESULT);
 
         assertThat(extracted.isCorrect(), is(false));
         assertThat(extracted.getResult(), nullValue());
     }
 
     @Test
-    void given_a_result_with_several_columns_and_scalar_configuration_and_scalar_column_defined_value_is_returned() {
-        var extracted = new QueryResultExtractor(scalarValueConfigWithScalarColumn)
+    void givenAResultWithSeveralColumnsAndScalarConfigurationAndScalarColumnDefinedValueIsReturned() {
+        var extracted = new QueryResultExtractor(SCALAR_VALUE_CONFIG_WITH_SCALAR_COLUMN)
                 .extractResult(ONE_ROW_SEVERAL_COLUMNS_RESULT);
 
         assertThat(extracted.isCorrect(), is(true));
@@ -80,16 +80,16 @@ class Influx2QueryResultExtractorTest {
     }
 
     @Test
-    void given_a_result_with_several_rows_and_non_scalar_config_query_result_is_returned() {
-        var extracted = new QueryResultExtractor(nonScalarValueConfig).extractResult(SEVERAL_ROWS_COLUMNS_RESULT);
+    void givenAResultWithSeveralRowsAndNonScalarConfigQueryResultIsReturned() {
+        var extracted = new QueryResultExtractor(NON_SCALAR_VALUE_CONFIG).extractResult(SEVERAL_ROWS_COLUMNS_RESULT);
 
         assertThat(extracted.isCorrect(), is(true));
         assertThat(extracted.getResult(), is(SEVERAL_ROWS_COLUMNS_RESULT));
     }
 
     @Test
-    void given_a_incorrect_result_incorrect_value_is_returned() {
-        var extracted = new QueryResultExtractor(nonScalarValueConfig).extractResult(INCORRECT_RESULT);
+    void givenAIncorrectResultIncorrectValueIsReturned() {
+        var extracted = new QueryResultExtractor(NON_SCALAR_VALUE_CONFIG).extractResult(INCORRECT_RESULT);
 
         assertThat(extracted.isCorrect(), is(false));
         assertThat(extracted.getResult(), nullValue());

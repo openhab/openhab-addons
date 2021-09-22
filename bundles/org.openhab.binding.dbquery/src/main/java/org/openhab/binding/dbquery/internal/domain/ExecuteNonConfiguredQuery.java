@@ -41,8 +41,9 @@ public class ExecuteNonConfiguredQuery {
 
     public CompletableFuture<QueryResult> execute(String queryString, Map<String, @Nullable Object> parameters,
             Duration timeout) {
-        if (!database.isConnected())
+        if (!database.isConnected()) {
             return CompletableFuture.completedFuture(QueryResult.ofIncorrectResult("Database not connected"));
+        }
 
         Query query = database.queryFactory().createQuery(queryString, new QueryParameters(parameters),
                 createConfiguration(queryString, timeout));
@@ -53,10 +54,11 @@ public class ExecuteNonConfiguredQuery {
             Duration timeout) {
         var completableFuture = execute(queryString, parameters, timeout);
         try {
-            if (timeout.isZero())
+            if (timeout.isZero()) {
                 return completableFuture.get();
-            else
+            } else {
                 return completableFuture.get(timeout.getSeconds(), TimeUnit.SECONDS);
+            }
         } catch (InterruptedException e) {
             logger.debug("Query was interrupted", e);
             Thread.currentThread().interrupt();

@@ -18,12 +18,10 @@ import static org.openhab.binding.dbquery.internal.DBQueryBindingConstants.TRIGG
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dbquery.action.DBQueryActions;
@@ -96,21 +94,20 @@ public class QueryHandler extends BaseThingHandler {
         int interval = config.getInterval();
         if (interval != QueryConfiguration.NO_INTERVAL && scheduledQueryExecutionInterval == null) {
             logger.trace("Scheduling query execution every {} seconds for {}", interval, getQueryIdentifier());
-            scheduledQueryExecutionInterval = Executors.newSingleThreadScheduledExecutor()
-                    .scheduleAtFixedRate(this::executeQuery, 0, interval, TimeUnit.SECONDS);
+            scheduledQueryExecutionInterval = scheduler.scheduleWithFixedDelay(this::executeQuery, 0, interval,
+                    TimeUnit.SECONDS);
         }
     }
 
-    @NonNull
     private ThingUID getQueryIdentifier() {
         return getThing().getUID();
     }
 
     private void cancelQueryExecutionIntervalIfNeeded() {
-        @Nullable
         ScheduledFuture<?> currentFuture = scheduledQueryExecutionInterval;
         if (currentFuture != null) {
             currentFuture.cancel(true);
+            scheduledQueryExecutionInterval = null;
         }
     }
 
@@ -136,7 +133,6 @@ public class QueryHandler extends BaseThingHandler {
 
     private synchronized void executeQuery() {
         if (getThing().getStatus() == ThingStatus.ONLINE) {
-            @Nullable
             QueryExecution queryExecution = currentQueryExecution;
             if (queryExecution != null) {
                 logger.debug("Previous query execution for {} discarded as a new one is requested",
@@ -161,7 +157,6 @@ public class QueryHandler extends BaseThingHandler {
     }
 
     private synchronized void cancelCurrentQueryExecution() {
-        @Nullable
         QueryExecution current = currentQueryExecution;
         if (current != null) {
             current.cancel();
@@ -222,8 +217,9 @@ public class QueryHandler extends BaseThingHandler {
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         super.updateStatus(status, statusDetail, description);
-        if (status == ThingStatus.ONLINE)
+        if (status == ThingStatus.ONLINE) {
             scheduleQueryExecutionIntervalIfNeeded();
+        }
     }
 
     @Override

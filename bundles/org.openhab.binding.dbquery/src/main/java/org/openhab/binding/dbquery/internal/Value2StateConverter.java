@@ -63,10 +63,11 @@ public class Value2StateConverter {
             } else if (targetType == OpenClosedType.class) {
                 @Nullable
                 Boolean bool = convert2Boolean(value);
-                if (bool != null)
+                if (bool != null) {
                     return bool ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
-                else
+                } else {
                     return UnDefType.NULL;
+                }
             } else {
                 throw new UnnexpectedCondition("Not expected targetType " + targetType);
             }
@@ -74,38 +75,38 @@ public class Value2StateConverter {
     }
 
     private State convert2DateTime(Object value) {
-        if (value instanceof Instant)
+        if (value instanceof Instant) {
             return new DateTimeType(ZonedDateTime.ofInstant((Instant) value, ZoneId.systemDefault()));
-        else if (value instanceof Date)
+        } else if (value instanceof Date) {
             return new DateTimeType(ZonedDateTime.ofInstant(((Date) value).toInstant(), ZoneId.systemDefault()));
-        else if (value instanceof String)
+        } else if (value instanceof String) {
             return new DateTimeType((String) value);
-        else {
+        } else {
             logger.warn("Can't convert {} to DateTimeType", value);
             return UnDefType.NULL;
         }
     }
 
     private State convert2Decimal(Object value) {
-        if (value instanceof Integer)
+        if (value instanceof Integer) {
             return new DecimalType((Integer) value);
-        else if (value instanceof Long)
+        } else if (value instanceof Long) {
             return new DecimalType((Long) value);
-        else if (value instanceof Float)
+        } else if (value instanceof Float) {
             return new DecimalType((Float) value);
-        else if (value instanceof Double)
+        } else if (value instanceof Double) {
             return new DecimalType((Double) value);
-        else if (value instanceof BigDecimal)
+        } else if (value instanceof BigDecimal) {
             return new DecimalType((BigDecimal) value);
-        else if (value instanceof BigInteger)
+        } else if (value instanceof BigInteger) {
             return new DecimalType(new BigDecimal((BigInteger) value));
-        else if (value instanceof Number)
+        } else if (value instanceof Number) {
             return new DecimalType(((Number) value).longValue());
-        else if (value instanceof String)
+        } else if (value instanceof String) {
             return DecimalType.valueOf((String) value);
-        else if (value instanceof Duration)
+        } else if (value instanceof Duration) {
             return new DecimalType(((Duration) value).toMillis());
-        else {
+        } else {
             logger.warn("Can't convert {} to DecimalType", value);
             return UnDefType.NULL;
         }
@@ -124,11 +125,11 @@ public class Value2StateConverter {
     }
 
     private @Nullable Boolean convert2Boolean(Object value) {
-        if (value instanceof Boolean)
+        if (value instanceof Boolean) {
             return (Boolean) value;
-        else if (value instanceof Number)
+        } else if (value instanceof Number) {
             return ((Number) value).doubleValue() != 0d;
-        else if (value instanceof String) {
+        } else if (value instanceof String) {
             var svalue = (String) value;
             return Boolean.parseBoolean(svalue) || (svalue.equalsIgnoreCase("on")) || svalue.equals("1");
         } else {

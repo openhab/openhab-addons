@@ -59,14 +59,14 @@ public class DBQueryJSONEncoder {
         public JsonElement serialize(QueryResult src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("correct", src.isCorrect());
-            if (src.getErrorMessage() != null)
+            if (src.getErrorMessage() != null) {
                 jsonObject.addProperty("errorMessage", src.getErrorMessage());
+            }
             jsonObject.add("data", context.serialize(src.getData()));
             return jsonObject;
         }
     }
 
-    @NonNullByDefault({})
     private static class ResultRowGSONSerializer implements JsonSerializer<ResultRow> {
         @Override
         public JsonElement serialize(ResultRow src, Type typeOfSrc, JsonSerializationContext context) {
@@ -78,7 +78,6 @@ public class DBQueryJSONEncoder {
         }
     }
 
-    @NonNullByDefault({})
     private static class QueryParametersGSONSerializer implements JsonSerializer<QueryParameters> {
         @Override
         public JsonElement serialize(QueryParameters src, Type typeOfSrc, JsonSerializationContext context) {
@@ -91,11 +90,11 @@ public class DBQueryJSONEncoder {
     }
 
     private static JsonElement convertValueToJsonPrimitive(@Nullable Object value) {
-        if (value instanceof Number)
+        if (value instanceof Number) {
             return new JsonPrimitive((Number) value);
-        else if (value instanceof Boolean)
+        } else if (value instanceof Boolean) {
             return new JsonPrimitive((Boolean) value);
-        else if (value instanceof Character) {
+        } else if (value instanceof Character) {
             return new JsonPrimitive((Character) value);
         } else if (value instanceof Date) {
             return new JsonPrimitive(DateTimeFormatter.ISO_INSTANT.format(((Date) value).toInstant()));

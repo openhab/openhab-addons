@@ -14,7 +14,6 @@ package org.openhab.binding.dbquery.internal;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -66,8 +65,7 @@ public abstract class DatabaseBridgeHandler extends BaseBridgeHandler {
                 logger.trace("Succesfully connected to database {}", getThing().getUID());
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                logger.trace("Connect to database {} failed", getThing().getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connect to database failed");
                 if (retryConnectionAttemptFuture == null) {
                     scheduleRetryConnectionAttempt();
                 }
@@ -77,9 +75,8 @@ public abstract class DatabaseBridgeHandler extends BaseBridgeHandler {
 
     protected void scheduleRetryConnectionAttempt() {
         logger.trace("Scheduled retry connection attempt every {}", RETRY_CONNECTION_ATTEMPT_TIME_SECONDS);
-        retryConnectionAttemptFuture = Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(
-                this::connectDatabase, RETRY_CONNECTION_ATTEMPT_TIME_SECONDS, RETRY_CONNECTION_ATTEMPT_TIME_SECONDS,
-                TimeUnit.SECONDS);
+        retryConnectionAttemptFuture = scheduler.scheduleWithFixedDelay(this::connectDatabase,
+                RETRY_CONNECTION_ATTEMPT_TIME_SECONDS, RETRY_CONNECTION_ATTEMPT_TIME_SECONDS, TimeUnit.SECONDS);
     }
 
     protected abstract void initConfig();
@@ -92,21 +89,20 @@ public abstract class DatabaseBridgeHandler extends BaseBridgeHandler {
 
     protected void cancelRetryConnectionAttemptIfPresent() {
         ScheduledFuture<?> currentFuture = retryConnectionAttemptFuture;
-        if (currentFuture != null)
+        if (currentFuture != null) {
             currentFuture.cancel(true);
+        }
     }
 
     private void disconnectDatabase() {
         var completable = database.disconnect();
         updateStatus(ThingStatus.UNKNOWN);
         completable.thenAccept(result -> {
-            Bridge bridge = getBridge();
             if (result) {
-                logger.trace("Successfully disconnected to database {}", bridge != null ? bridge.getUID() : "null");
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Successfully disconnected to database");
             } else {
-                logger.trace("Disconnect to database {} failed", bridge != null ? bridge.getUID() : "null");
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Disconnect to database failed");
             }
         });
     }

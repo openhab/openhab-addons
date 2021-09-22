@@ -36,7 +36,7 @@ import com.influxdb.query.FluxRecord;
  */
 @NonNullByDefault
 public class InfluxDBClientFacadeImpl implements InfluxDBClientFacade {
-    private static final Logger logger = LoggerFactory.getLogger(InfluxDBClientFacadeImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(InfluxDBClientFacadeImpl.class);
 
     private final InfluxDB2BridgeConfiguration config;
 
@@ -58,10 +58,11 @@ public class InfluxDBClientFacadeImpl implements InfluxDBClientFacade {
         this.queryAPI = currentQueryAPI;
 
         boolean connected = checkConnectionStatus();
-        if (connected)
+        if (connected) {
             logger.debug("Successfully connected to InfluxDB. Instance ready={}", createdClient.ready());
-        else
-            logger.info("Not able to connect to InfluxDB with config {}", config);
+        } else {
+            logger.warn("Not able to connect to InfluxDB with config {}", config);
+        }
 
         return connected;
     }
@@ -106,9 +107,10 @@ public class InfluxDBClientFacadeImpl implements InfluxDBClientFacade {
     public void query(String query, BiConsumer<Cancellable, FluxRecord> onNext, Consumer<? super Throwable> onError,
             Runnable onComplete) {
         var currentQueryAPI = queryAPI;
-        if (currentQueryAPI != null)
+        if (currentQueryAPI != null) {
             currentQueryAPI.query(query, onNext, onError, onComplete);
-        else
+        } else {
             logger.warn("Query ignored as current queryAPI is null");
+        }
     }
 }

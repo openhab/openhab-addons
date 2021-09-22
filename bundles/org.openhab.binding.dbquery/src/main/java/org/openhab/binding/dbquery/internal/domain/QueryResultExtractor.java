@@ -52,10 +52,11 @@ public class QueryResultExtractor {
             var row = queryResult.getData().get(0);
             @Nullable
             Object value;
-            if (config.isScalarColumnDefined())
+            if (config.isScalarColumnDefined()) {
                 value = row.getValue(Objects.requireNonNull(config.getScalarColumn()));
-            else
+            } else {
                 value = row.getValue(row.getColumnNames().iterator().next());
+            }
             return ResultValue.of(value);
         } else {
             return ResultValue.incorrect();

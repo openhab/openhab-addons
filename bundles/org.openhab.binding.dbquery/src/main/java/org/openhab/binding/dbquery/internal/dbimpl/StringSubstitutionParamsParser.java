@@ -44,17 +44,19 @@ public class StringSubstitutionParamsParser {
             substitutedQuery.append(parameterValue(parameterName, queryParameters));
             idx = matcher.end();
         }
-        if (idx < query.length())
+        if (idx < query.length()) {
             substitutedQuery.append(query.substring(idx));
+        }
 
         return substitutedQuery.toString();
     }
 
     private String parameterValue(String parameterName, QueryParameters queryParameters) {
         var parameter = queryParameters.getParameter(parameterName);
-        if (parameter != null)
+        if (parameter != null) {
             return parameter.toString();
-        else
+        } else {
             return "";
+        }
     }
 }

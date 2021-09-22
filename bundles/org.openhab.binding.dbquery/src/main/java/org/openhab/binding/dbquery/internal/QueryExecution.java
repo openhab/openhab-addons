@@ -52,10 +52,11 @@ public class QueryExecution {
 
     public void execute() {
         Query query;
-        if (queryConfiguration.isHasParameters())
+        if (queryConfiguration.isHasParameters()) {
             query = database.queryFactory().createQuery(queryString, queryParameters, queryConfiguration);
-        else
+        } else {
             query = database.queryFactory().createQuery(queryString, queryConfiguration);
+        }
 
         logger.trace("Execute query {}", query);
         database.executeQuery(query).thenAccept(this::notifyQueryResult).exceptionally(error -> {

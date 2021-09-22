@@ -31,8 +31,9 @@ public class ActionQueryResult {
 
     public ActionQueryResult(boolean correct, @Nullable List<Map<String, @Nullable Object>> data) {
         this.correct = correct;
-        if (data != null)
+        if (data != null) {
             this.data = data;
+        }
     }
 
     public boolean isCorrect() {

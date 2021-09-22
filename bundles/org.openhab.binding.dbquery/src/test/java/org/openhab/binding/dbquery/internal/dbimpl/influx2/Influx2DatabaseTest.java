@@ -46,7 +46,7 @@ class Influx2DatabaseTest {
     }
 
     @Test
-    public void given_query_that_returns_scalar_result_get_valid_scalar_result() throws Exception {
+    public void givenQueryThatReturnsScalarResultGetValidScalarResult() throws Exception {
         instance.connect().get();
         Query query = instance.queryFactory().createQuery(InfluxDBClientFacadeMock.SCALAR_QUERY, QueryParameters.EMPTY,
                 null);
@@ -60,7 +60,7 @@ class Influx2DatabaseTest {
     }
 
     @Test
-    public void given_query_that_returns_multiple_rows_get_valid_query_result() throws Exception {
+    public void givenQueryThatReturnsMultipleRowsGetValidQueryResult() throws Exception {
         instance.connect().get();
         Query query = instance.queryFactory().createQuery(InfluxDBClientFacadeMock.MULTIPLE_ROWS_QUERY,
                 QueryParameters.EMPTY, null);
@@ -78,7 +78,7 @@ class Influx2DatabaseTest {
     }
 
     @Test
-    public void given_query_that_returns_error_get_erroneus_result() throws Exception {
+    public void givenQueryThatReturnsErrorGetErroneusResult() throws Exception {
         instance.connect().get();
         Query query = instance.queryFactory().createQuery(InfluxDBClientFacadeMock.INVALID_QUERY, QueryParameters.EMPTY,
                 null);
@@ -91,7 +91,7 @@ class Influx2DatabaseTest {
     }
 
     @Test
-    public void given_query_that_returns_no_rows_get_empty_result() throws Exception {
+    public void givenQueryThatReturnsNoRowsGetEmptyResult() throws Exception {
         instance.connect().get();
         Query query = instance.queryFactory().createQuery(InfluxDBClientFacadeMock.EMPTY_QUERY, QueryParameters.EMPTY,
                 null);
@@ -104,7 +104,7 @@ class Influx2DatabaseTest {
     }
 
     @Test
-    public void given_not_connected_client_should_get_incorrect_query() {
+    public void givenNotConnectedClientShouldGetIncorrectQuery() {
         Query query = instance.queryFactory().createQuery(InfluxDBClientFacadeMock.SCALAR_QUERY, QueryParameters.EMPTY,
                 null);
         var future = instance.executeQuery(query);

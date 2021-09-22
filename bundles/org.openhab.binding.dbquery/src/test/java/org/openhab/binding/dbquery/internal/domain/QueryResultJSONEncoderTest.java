@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.hamcrest.Matchers;
@@ -49,7 +48,7 @@ class QueryResultJSONEncoderTest {
     private final JsonParser jsonParser = new JsonParser();
 
     @Test
-    void given_query_result_is_serialized_to_json() {
+    void givenQueryResultIsSerializedToJson() {
         String json = instance.encode(givenQueryResultWithResults());
 
         assertThat(jsonParser.parse(json), notNullValue());
@@ -57,7 +56,7 @@ class QueryResultJSONEncoderTest {
 
     @Test
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    void given_query_result_its_content_is_correctly_serialized_to_json() {
+    void givenQueryResultItsContentIsCorrectlySerializedToJson() {
         String json = instance.encode(givenQueryResultWithResults());
 
         Map<String, Object> map = gson.fromJson(json, Map.class);
@@ -101,7 +100,7 @@ class QueryResultJSONEncoderTest {
 
     @Test
     @SuppressWarnings({ "unchecked" })
-    void given_query_result_with_incorrect_result_its_content_is_correctly_serialized_to_json() {
+    void givenQueryResultWithIncorrectResultItsContentIsCorrectlySerializedToJson() {
         String json = instance.encode(QueryResult.ofIncorrectResult("Incorrect"));
 
         Map<String, Object> map = gson.fromJson(json, Map.class);
@@ -110,7 +109,7 @@ class QueryResultJSONEncoderTest {
     }
 
     @Test
-    void given_query_parameters_are_correctly_serialized_to_json() {
+    void givenQueryParametersAreCorrectlySerializedToJson() {
         QueryParameters queryParameters = new QueryParameters(givenRowValues());
 
         String json = instance.encode(queryParameters);
@@ -123,7 +122,6 @@ class QueryResultJSONEncoderTest {
         return QueryResult.of(new ResultRow(givenRowValues()), new ResultRow(givenRowValues()));
     }
 
-    @NonNull
     private Map<String, @Nullable Object> givenRowValues() {
         Map<String, @Nullable Object> values = new HashMap<>();
         values.put("strValue", "an string");

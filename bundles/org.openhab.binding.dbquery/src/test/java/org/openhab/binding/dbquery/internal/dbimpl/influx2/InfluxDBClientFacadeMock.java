@@ -63,8 +63,9 @@ public class InfluxDBClientFacadeMock implements InfluxDBClientFacade {
     @Override
     public void query(String queryString, BiConsumer<Cancellable, FluxRecord> onNext,
             Consumer<? super Throwable> onError, Runnable onComplete) {
-        if (!connected)
+        if (!connected) {
             throw new DatabaseException("Client not connected");
+        }
 
         if (INVALID_QUERY.equals(queryString)) {
             onError.accept(new RuntimeException("Invalid query"));

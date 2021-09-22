@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>DBQuery Binding</name>
-	<description>This is the binding for DBQuery.</description>
-	<author>Joan Pujol Espinar</author>
+	<description>This is the binding for DBQuery that allows to execute native database queries and bind their results to
+		items.</description>
 
 </binding:binding>
