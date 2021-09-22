@@ -70,7 +70,9 @@ public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
 
             flux = flux.filter(measurement().equal(measurementName));
             if (needsToUseItemTagName) {
-                flux = flux.filter(tag(TAG_ITEM_NAME).equal(itemName));
+                String itemTagName = InfluxDBMetadataUtils.calculateItemNameFromMetadataIfPresent(this.metadataRegistry,
+                        itemName, itemName);
+                flux = flux.filter(tag(TAG_ITEM_NAME).equal(itemTagName));
             }
 
             if (needsToUseItemTagName)

@@ -63,7 +63,9 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
         Where where = select.where();
 
         if (itemName != null && !tableName.equals(itemName)) {
-            where = where.and(BuiltQuery.QueryBuilder.eq(TAG_ITEM_NAME, itemName));
+            String itemTagName = InfluxDBMetadataUtils.calculateItemNameFromMetadataIfPresent(this.metadataRegistry,
+                    itemName, itemName);
+            where = where.and(BuiltQuery.QueryBuilder.eq(TAG_ITEM_NAME, itemTagName));
         }
 
         if (criteria.getBeginDate() != null) {

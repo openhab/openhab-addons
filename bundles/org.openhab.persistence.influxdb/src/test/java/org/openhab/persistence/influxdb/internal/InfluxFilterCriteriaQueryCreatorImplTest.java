@@ -234,12 +234,12 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                 .thenReturn(new Metadata(metadataKey, "", Map.of("item", "metadataItemName")));
 
         queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
-        assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM origin.metadataItemName;"));
+        assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM origin.sampleItem;"));
 
         queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2,
                 equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
-                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"metadataItemName\")\n\t"
+                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
                         + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])"));
     }
 }

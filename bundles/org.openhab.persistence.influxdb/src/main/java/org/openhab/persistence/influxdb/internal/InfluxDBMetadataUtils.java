@@ -48,4 +48,22 @@ public class InfluxDBMetadataUtils {
 
         return name;
     }
+
+    public static String calculateItemNameFromMetadataIfPresent(
+            final @Nullable MetadataRegistry currentMetadataRegistry, String name, @Nullable String itemName) {
+
+        if (itemName == null || currentMetadataRegistry == null) {
+            return name;
+        }
+
+        MetadataKey key = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, itemName);
+        Metadata metadata = currentMetadataRegistry.get(key);
+        if (metadata != null) {
+            if (metadata.getConfiguration().containsKey("item")) {
+                name = metadata.getConfiguration().get("item").toString();
+            }
+        }
+
+        return name;
+    }
 }
