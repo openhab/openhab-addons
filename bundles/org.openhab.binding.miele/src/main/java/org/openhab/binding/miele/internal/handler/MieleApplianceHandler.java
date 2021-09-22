@@ -88,7 +88,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
             }
         }
 
-        throw new IllegalArgumentException("Not valid value selector");
+        throw new IllegalArgumentException(String.format("Not valid value selector: %s", valueSelectorText));
     }
 
     public ApplianceChannelSelector getValueSelectorFromMieleID(String valueSelectorText)
@@ -99,7 +99,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
             }
         }
 
-        throw new IllegalArgumentException("Not valid value selector");
+        throw new IllegalArgumentException(String.format("Not valid value selector: %s", valueSelectorText));
     }
 
     @Override
