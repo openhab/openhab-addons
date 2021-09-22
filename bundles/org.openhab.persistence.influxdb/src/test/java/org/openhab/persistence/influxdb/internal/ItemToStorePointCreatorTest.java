@@ -167,4 +167,31 @@ public class ItemToStorePointCreatorTest {
         assertThat(point.getMeasurementName(), equalTo(item.getName()));
         assertThat(point.getTags(), hasEntry("item", item.getName()));
     }
+
+    @Test
+    public void shouldUseItemNameFromMetadataIfProvided() {
+        NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
+        MetadataKey metadataKey = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, item.getName());
+
+        InfluxPoint point = instance.convert(item, null);
+        assertThat(point.getMeasurementName(), equalTo(item.getName()));
+
+        point = instance.convert(item, null);
+        assertThat(point.getMeasurementName(), equalTo(item.getName()));
+        assertThat(point.getTags(), hasEntry("item", item.getName()));
+
+        when(metadataRegistry.get(metadataKey))
+                .thenReturn(new Metadata(metadataKey, "measurementName", Map.of("item", "metadataItemName")));
+
+        point = instance.convert(item, null);
+        assertThat(point.getMeasurementName(), equalTo("measurementName"));
+        assertThat(point.getTags(), hasEntry("item", "metadataItemName"));
+
+        when(metadataRegistry.get(metadataKey))
+                .thenReturn(new Metadata(metadataKey, "", Map.of("item", "metadataItemName")));
+
+        point = instance.convert(item, null);
+        assertThat(point.getMeasurementName(), equalTo(item.getName()));
+        assertThat(point.getTags(), hasEntry("item", "metadataItemName"));
+    }
 }
