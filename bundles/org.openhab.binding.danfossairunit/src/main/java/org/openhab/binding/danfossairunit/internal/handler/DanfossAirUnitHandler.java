@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ralf Duckstein - Initial contribution
  * @author Robert Bach - heavy refactorings
+ * @author Jacob Laursen - Refactoring, bugfixes and enhancements
  */
 @NonNullByDefault
 public class DanfossAirUnitHandler extends BaseThingHandler {

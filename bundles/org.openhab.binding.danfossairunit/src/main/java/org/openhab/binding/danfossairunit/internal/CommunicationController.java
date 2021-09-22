@@ -19,8 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * This interface defines a communication controller that can be used to send requests to the Danfoss Air Unit.
  * 
- * @author Ralf Duckstein - Initial contribution
- * @author Robert Bach - heavy refactorings
+ * @author Jacob Laursen - Refactoring, bugfixes and enhancements
  */
 @NonNullByDefault
 public interface CommunicationController {

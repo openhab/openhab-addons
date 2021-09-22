@@ -42,6 +42,7 @@ import org.openhab.core.types.Command;
  * 
  * @author Ralf Duckstein - Initial contribution
  * @author Robert Bach - heavy refactorings
+ * @author Jacob Laursen - Refactoring, bugfixes and enhancements
  */
 
 @NonNullByDefault

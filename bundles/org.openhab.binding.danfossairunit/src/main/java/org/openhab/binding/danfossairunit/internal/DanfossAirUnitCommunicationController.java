@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * The {@link DanfossAirUnitCommunicationController} class does the actual network communication with the air unit.
  *
  * @author Robert Bach - initial contribution
+ * @author Jacob Laursen - Refactoring, bugfixes and enhancements
  */
 
 @NonNullByDefault
