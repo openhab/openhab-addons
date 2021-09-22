@@ -1,9 +1,9 @@
 # Metrics service
 
-The metrics service provides 
+The metrics service provides:
 
 * an additional REST endpoint to retrieve openHAB core metrics from. This can be used as scrape target for pull-based monitoring systems like [Prometheus](https://prometheus.io/).
-* optionally configurable services to export openHAB core metrics to push-based monitoring systems like [InfluxDB](https://www.influxdata.com/). 
+* optionally configurable services to export openHAB core metrics to push-based monitoring systems like [InfluxDB](https://www.influxdata.com/).
 
 ## Precondition
 
@@ -38,7 +38,7 @@ The following configuration parameters can be set:
 | influxMetricsEnabled | Enable the Influx (www.influxdata.com) metrics. Further configuration of the InfluxDB instance necessary. | false         |
 | jmxMetricsEnabled    | Enable the Java Management Extensions (JMX) metrics.                                                      | false         |
 
-Refer to the corresponding monitoring system sections for monitoring system specific configuration parameters.  
+Refer to the corresponding monitoring system sections for monitoring system specific configuration parameters.
 
 ### Supported monitoring systems
 
@@ -90,16 +90,34 @@ You can monitor the JMX metrics using a tool like [JConsole](https://docs.oracle
 When the JMX exporter is enabled, the metrics will be available under the "metrics" MBean.
 JConsole and VisualVM will only be able to connect using JMX when openHAB is started in debug mode (use `start_debug.sh` or `start_debug.bat`).
 
+## Configuration file example
+
+The example below shows how to configure the Metrics service using a file.
+
+metrics.cfg:
+
+```java
+influxMetricsEnabled=true
+influxURL=https://influxdb
+influxDB=metrics
+influxUsername=openhab
+influxPassword=77QjHkoWZEdbvXe9FWsJ
+influxUpdateIntervalInSeconds=60
+
+jmxMetricsEnabled=false
+```
+
 ## Additional metric formats
 
 The metrics service was implemented using [Micrometer](https://micrometer.io), which supports a number of [monitoring systems](https://micrometer.io/docs) 
-It should be possible to add any of these, especially the ones using a pull mechanism ("scraping") like Prometheus does.     
+It should be possible to add any of these, especially the ones using a pull mechanism ("scraping") like Prometheus does.
 
 ## Grafana
 
 You can now visualize the results in Grafana. Micrometer provides a public [Grafana dashboard here](https://grafana.com/grafana/dashboards/4701). 
-I adapted it a little bit to include the openHAB metrics. You can download it here [Dashboard](doc/dashboard.json). 
-This has been tested with Prometheus - for other monitoring systems adaptions to the dashboard might be necessary.  
+I adapted it a little bit to include the openHAB metrics.
+You can download it here [Dashboard](doc/dashboard.json).
+This has been tested with Prometheus - for other monitoring systems adaptions to the dashboard might be necessary.
 
 Here are some screenshots: 
 

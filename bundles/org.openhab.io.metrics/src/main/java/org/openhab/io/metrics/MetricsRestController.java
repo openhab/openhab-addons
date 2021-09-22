@@ -56,7 +56,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  *
  * @author Robert Bach - Initial contribution
  */
-@Component(immediate = true, service = MetricsRestController.class)
+@Component(configurationPid = "org.openhab.metrics", immediate = true, service = MetricsRestController.class)
 @JaxrsResource
 @JaxrsApplicationSelect("(" + JaxrsWhiteboardConstants.JAX_RS_NAME + "=" + RESTConstants.JAX_RS_NAME + ")")
 @Path(MetricsRestController.PATH_METRICS)
