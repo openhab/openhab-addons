@@ -49,13 +49,14 @@ public class OpenAPIUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenAPIUtils.class);
     private static final Pattern FIRMWARE_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)");
     private static final Pattern FIRMWARE_VERSION_PATTERN_BETA = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)-(\\d+)");
+    private static final long CONNECT_TIMEOUT = 10L;
 
     public static Request requestBuilder(HttpClient httpClient, NanoleafControllerConfig controllerConfig,
             String apiOperation, HttpMethod method) throws NanoleafException {
         URI requestURI = getUri(controllerConfig, apiOperation, null);
         LOGGER.trace("RequestBuilder: Sending Request {}:{} {} \n op: {}  method: {}", new Object[] {
                 requestURI.getHost(), requestURI.getPort(), requestURI.getPath(), apiOperation, method.toString() });
-        return httpClient.newRequest(requestURI).method(method).timeout(10L, TimeUnit.SECONDS);
+        return httpClient.newRequest(requestURI).method(method).timeout(CONNECT_TIMEOUT, TimeUnit.SECONDS);
     }
 
     public static URI getUri(NanoleafControllerConfig controllerConfig, String apiOperation, @Nullable String query)

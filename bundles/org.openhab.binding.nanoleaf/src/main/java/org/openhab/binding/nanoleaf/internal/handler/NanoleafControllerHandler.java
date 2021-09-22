@@ -122,7 +122,6 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         super(bridge);
         this.httpClientFactory = httpClientFactory;
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.httpClient.setConnectTimeout(CONNECT_TIMEOUT * 1000L);
     }
 
     private void initializeTouchHttpClient() {
@@ -130,7 +129,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
 
         try {
             httpClientSSETouchEvent = httpClientFactory.createHttpClient(httpClientName);
-            HttpClient localHttpClientSSETouchEvent = this.httpClientSSETouchEvent;
+            final HttpClient localHttpClientSSETouchEvent = this.httpClientSSETouchEvent;
             if (localHttpClientSSETouchEvent != null) {
                 localHttpClientSSETouchEvent.setConnectTimeout(CONNECT_TIMEOUT * 1000L);
                 localHttpClientSSETouchEvent.start();
@@ -227,18 +226,19 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                     }
                 }
             } catch (NanoleafUnauthorizedException nue) {
-                logger.warn("Authorization for command {} to channelUID {} failed: {}", command, channelUID,
+                logger.debug("Authorization for command {} to channelUID {} failed: {}", command, channelUID,
                         nue.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/error.nanoleaf.controller.invalidToken");
             } catch (NanoleafException ne) {
-                logger.warn("Handling command {} to channelUID {} failed: {}", command, channelUID, ne.getMessage());
+                logger.debug("Handling command {} to channelUID {} failed: {}", command, channelUID, ne.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/error.nanoleaf.controller.communication");
             }
         }
     }
 
+    @Override
     public void handleRemoval() {
         scheduler.execute(() -> {
             try {
@@ -262,12 +262,14 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         });
     }
 
+    @Override
     public void dispose() {
         stopAllJobs();
         super.dispose();
         logger.debug("Disposing handler for Nanoleaf controller {}", getThing().getUID());
     }
 
+    @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return List.of(NanoleafPanelsDiscoveryService.class, NanoleafCommandDescriptionProvider.class);
     }
@@ -320,7 +322,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     private synchronized void startUpdateJob() {
-        String localAuthToken = getAuthToken();
+        final String localAuthToken = getAuthToken();
         if (localAuthToken != null && !localAuthToken.isEmpty()) {
             if (updateJob == null || updateJob.isCancelled()) {
                 logger.debug("Start controller status job, repeat every {} sec", getRefreshInterval());
@@ -350,7 +352,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                     this.getThing().getUID(), config.deviceType, DEVICE_TYPE_TOUCHSUPPORT);
         } else {
             logger.debug("Starting TouchJob for Controller {}", getThing().getUID());
-            String localAuthToken = getAuthToken();
+            final String localAuthToken = getAuthToken();
             if (localAuthToken != null && !localAuthToken.isEmpty()) {
                 if (touchJob != null && !touchJob.isDone()) {
                     logger.trace("tj: tj={} already running touchJobRunning = {}  cancelled={} done={}", touchJob,
@@ -374,7 +376,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         if (touchJob != null) {
             logger.trace("tj: touch job stopping for {} with client {}", thing.getUID(), httpClientSSETouchEvent);
 
-            Request localSSERequest = sseTouchjobRequest;
+            final Request localSSERequest = sseTouchjobRequest;
             if (localSSERequest != null) {
                 localSSERequest.abort(new NanoleafException("Touch detection stopped"));
             }
@@ -400,20 +402,20 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             startTouchJob();
             updateStatus(ThingStatus.ONLINE);
         } catch (NanoleafUnauthorizedException nae) {
-            logger.warn("Status update unauthorized for controller {}: {}", getThing().getUID(), nae.getMessage());
+            logger.debug("Status update unauthorized for controller {}: {}", getThing().getUID(), nae.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.nanoleaf.controller.invalidToken");
-            String localAuthToken = getAuthToken();
+            final String localAuthToken = getAuthToken();
             if (localAuthToken == null || localAuthToken.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                         "@text/error.nanoleaf.controller.noToken");
             }
         } catch (NanoleafException ne) {
-            logger.warn("Status update failed for controller {} : {}", getThing().getUID(), ne.getMessage());
+            logger.debug("Status update failed for controller {} : {}", getThing().getUID(), ne.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.nanoleaf.controller.communication");
         } catch (RuntimeException e) {
-            logger.warn("Update job failed", e);
+            logger.debug("Update job failed", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/error.nanoleaf.controller.runtime");
         }
     }
@@ -422,7 +424,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         logger.debug("Run pairing job");
 
         try {
-            String localAuthToken = getAuthToken();
+            final String localAuthToken = getAuthToken();
             if (localAuthToken != null && !localAuthToken.isEmpty()) {
                 if (pairingJob != null) {
                     pairingJob.cancel(false);
@@ -488,7 +490,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     private synchronized void runTouchDetection() {
-        HttpClient localhttpSSEClientTouchEvent = httpClientSSETouchEvent;
+        final HttpClient localhttpSSEClientTouchEvent = httpClientSSETouchEvent;
         int eventHashcode = -1;
         if (localhttpSSEClientTouchEvent != null) {
             eventHashcode = localhttpSSEClientTouchEvent.hashCode();
@@ -505,7 +507,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 if (localhttpSSEClientTouchEvent != null) {
                     localhttpSSEClientTouchEvent.setIdleTimeout(CONNECT_TIMEOUT * 1000L);
                     sseTouchjobRequest = localhttpSSEClientTouchEvent.newRequest(eventUri);
-                    Request localSSETouchjobRequest = sseTouchjobRequest;
+                    final Request localSSETouchjobRequest = sseTouchjobRequest;
                     int requestHashCode = -1;
                     if (localSSETouchjobRequest != null) {
                         requestHashCode = localSSETouchjobRequest.hashCode();
@@ -527,7 +529,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                                         TouchEvents touchEvents = gson.fromJson(json, TouchEvents.class);
                                         handleTouchEvents(Objects.requireNonNull(touchEvents));
                                     } catch (JsonSyntaxException e) {
-                                        logger.error("couldn't parse touch event json {}", json);
+                                        logger.error("Couldn't parse touch event json {}", json);
                                     }
                                 }
                             }
@@ -810,7 +812,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             Request setNewEffectRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_EFFECT,
                     HttpMethod.PUT);
             String content = gson.toJson(effects);
-            logger.info("sending effect command from controller {}: {}", getThing().getUID(), content);
+            logger.debug("sending effect command from controller {}: {}", getThing().getUID(), content);
             setNewEffectRequest.content(new StringContentProvider(content), "application/json");
             OpenAPIUtils.sendOpenAPIRequest(setNewEffectRequest);
         } else {

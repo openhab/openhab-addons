@@ -65,9 +65,9 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void deactivate() {
-        if (bridgeHandler != null) {
-            @SuppressWarnings("null")
-            Boolean result = bridgeHandler.unregisterControllerListener(this);
+        NanoleafControllerHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            Boolean result = localBridgeHandler.unregisterControllerListener(this);
             logger.debug("unregistration of controller was {}", result ? "successful" : "unsuccessful");
         }
         super.deactivate();

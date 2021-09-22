@@ -72,13 +72,7 @@ In this case:
 
 Unfortunately it is not easy to find out which panel gets which id, and this becomes pretty important if you have lots of them and want to assign rules. 
 
-For canvas that use square panels, you can request the layout through a console command:
-
-To be able to access that command you need to logon to your openhab server and issue the following command within the shell - for more information on that look up the [page about the openhab console](https://www.openhab.org/docs/administration/console.html]).
-
-```
-openhab-cli console
-```
+For canvas that use square panels, you can request the layout through a [console command](https://www.openhab.org/docs/administration/console.html):
 
 then issue the following command:
 
@@ -126,24 +120,25 @@ This discovers all connected panels with their IDs.
 
 The controller bridge has the following channels:
 
-| Channel             | Item Type | Description                                                            | Read Only |
-|---------------------|-----------|------------------------------------------------------------------------|-----------|
-| color               | Color     | Color, power and brightness of all light panels                        | No        |
-| colorTemperature    | Dimmer    | Color temperature (in percent) of all light panels                     | No        |
-| colorTemperatureAbs | Number    | Color temperature (in Kelvin, 1200 to 6500) of all light panels        | No        |
-| colorMode           | String    | Color mode of the light panels                                         | Yes       |
-| effect              | String    | Selected effect of the light panels                                    | No        |
-| rhythmState         | Switch    | Connection state of the rhythm module                                  | Yes       |
-| rhythmActive        | Switch    | Activity state of the rhythm module                                    | Yes       |
-| rhythmMode          | Number    | Sound source for the rhythm module. 0=Microphone, 1=Aux cable          | No        |
-| swipe               | Trigger   | [Canvas / Shapes Only] Detects Swipes over the panel. LEFT, RIGHT, UP, DOWN events are supported.          | YES        |
+| Channel             | Item Type | Description                                                                                               | Read Only |
+|---------------------|-----------|-----------------------------------------------------------------------------------------------------------|-----------|
+| color               | Color     | Color, power and brightness of all light panels                                                           | No        |
+| colorTemperature    | Dimmer    | Color temperature (in percent) of all light panels                                                        | No        |
+| colorTemperatureAbs | Number    | Color temperature (in Kelvin, 1200 to 6500) of all light panels                                           | No        |
+| colorMode           | String    | Color mode of the light panels                                                                            | Yes       |
+| effect              | String    | Selected effect of the light panels                                                                       | No        |
+| rhythmState         | Switch    | Connection state of the rhythm module                                                                     | Yes       |
+| rhythmActive        | Switch    | Activity state of the rhythm module                                                                       | Yes       |
+| rhythmMode          | Number    | Sound source for the rhythm module. 0=Microphone, 1=Aux cable                                             | No        |
+| swipe               | Trigger   | [Canvas / Shapes Only] Detects Swipes over the panel.LEFT, RIGHT, UP, DOWN events are supported.          | YES        |
+
 
 
 A lightpanel thing has the following channels:
 
-| Channel             | Type      | Description                                                            | Read Only |
-|---------------------|-----------|------------------------------------------------------------------------|-----------|
-| color               | Color     | Color of the individual light panel                                    | No        |
+| Channel             | Type      | Description                                                                                              | Read Only |
+|---------------------|-----------|----------------------------------------------------------------------------------------------------------|-----------|
+| color               | Color     | Color of the individual light panel                                                                      | No        |
 | tap                 | Trigger   | [Canvas / Shapes Only] Sends events of gestures. SHORT_PRESSED and DOUBLE_PRESSED events are supported.  | Yes       |
 
 The color channels support full color control with hue, saturation and brightness values.
@@ -161,14 +156,19 @@ The same applies to the color channel of an individual lightpanel.
 **Touch Support**
 
 Nanoleaf's Canvas introduces a whole new experience by supporting touch. This allows single and double taps on individual panels to be detected and processed via rules.
-Note that even gestures like up, down, left, right can be detected on the whole set of panels though not on an individual panel. The four swipe gestures are supported by the binding. See below for a complex example on how to use it.
+
+Note that even gestures like up, down, left, right can be detected on the whole set of panels though not on an individual panel.
+The four swipe gestures are supported by the binding.
+See below for an example on how to use it.
 
 To detect single and double taps the panel provides a *tap* channel while the controller provides a *swipe* channel to detect swipes.
 
-Keep in mind that the double tap is used as an already built-in functionality by default when you buy the nanoleaf: it switches all panels (hence the controller) to on or off like a light switch for all the panels at once. To circumvent that
+Keep in mind that the double tap is used as an already built-in functionality by default when you buy the nanoleaf: it switches all panels (hence the controller) to on or off like a light switch for all the panels at once.
+To circumvent that
 
 - Within the nanoleaf app go to the dashboard and choose your device. Enter the settings for that device by clicking the cog icon in the upper right corner.
-- Enable "Touch Gesture" (the first radio button) and make sure that none of the gestures you use with openhab are active. In general, it is recommended not to enable "touch sensitive gestures" (the second radio button). This prevents unexpected interference between openhab rules and nanoleaf settings.
+- Enable "Touch Gesture" (the first radio button) and make sure that none of the gestures you use with openHAB is active. In general, it is recommended not to enable "touch sensitive gestures" (the second radio button). This prevents unexpected interference between openhHAB rules and Nanoleaf settings.
+
 - To still have the possibility to switch on the whole canvas device with all its panels by double tapping a specific panel, you can easily write a rule that triggers on the tap channel of that panel and then sends an ON to the color channel of the controller. See the example below on Panel 1.
 
 More details can be found in the full example below.
@@ -332,7 +332,7 @@ var oldEffect = null
 
 /*
 
-The idea behind that rule is to use one panel to switch on / off brightness control for a specific openhab item.
+The idea behind that rule is to use one panel to switch on / off brightness control for a specific openHAB item.
  
  - In this case the panel with the id=36604 has been created as a thing. 
  - The controller color item is named SZNanoCanvas_Color
@@ -344,7 +344,7 @@ We indicate that mode by  setting the canvas to red. When switching it
 off we make sure we return the effect that was on before.
 Only if the brightness swipe mode is ON we then use this to control the brightness of 
 another thing which in this case is a lamp. Every swipe changes the brightness by 10.
-By extending it futher this would also allow to select different items to control by 
+By extending it further this would also allow to select different items to control by 
 tapping different panels before.
 
 */
@@ -356,10 +356,10 @@ then
     if (brightnessMode == OFF || brightnessMode === null) {
         brightnessMode = ON
         oldEffect = SZNanoCanvas_Effect.state.toString
-        SZNanoCanvas_Color.sendCommand(new HSBType(new DecimalType(0), new PercentType(100), new PercentType(100)))
+        SZNanoCanvas_Color.sendCommand("0,100,100")
     } else {
         brightnessMode = OFF
-        sendCommand("SZNanoCanvas_Effect",oldEffect)
+        sendCommand("SZNanoCanvas_Effect", oldEffect)
     }    
 end
 
@@ -390,7 +390,7 @@ then
 
             }
         }
-        sendCommand(dimItem,currentBrightness)
+        sendCommand(dimItem, currentBrightness)
     }
 end
 ```

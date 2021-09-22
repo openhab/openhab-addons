@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - made discovery a handler service
  */
 @NonNullByDefault
-@Component(configurationPid = { "binding.nanoleaf" }, service = { ThingHandlerFactory.class })
+@Component(configurationPid = "binding.nanoleaf", service = ThingHandlerFactory.class)
 public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
@@ -66,11 +66,11 @@ public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (NanoleafBindingConstants.THING_TYPE_CONTROLLER.equals(thingTypeUID)) {
             NanoleafControllerHandler handler = new NanoleafControllerHandler((Bridge) thing, this.httpClientFactory);
-            this.logger.debug("Nanoleaf controller handler created.");
+            logger.debug("Nanoleaf controller handler created.");
             return handler;
         } else if (NanoleafBindingConstants.THING_TYPE_LIGHT_PANEL.equals(thingTypeUID)) {
             NanoleafPanelHandler handler = new NanoleafPanelHandler(thing, this.httpClientFactory);
-            this.logger.debug("Nanoleaf panel handler created.");
+            logger.debug("Nanoleaf panel handler created.");
             return handler;
         } else {
             return null;

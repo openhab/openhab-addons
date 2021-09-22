@@ -80,26 +80,27 @@ public class Layout {
              */
             for (int index = 0; index < noofDefinedPanels; index++) {
                 if (positionData != null) {
+                    List<PositionDatum> localPositionDate = positionData;
+                    if (localPositionDate != null) {
+                        PositionDatum panel = localPositionDate.get(index);
+                        logger.debug("Layout: Panel position data x={} y={}", panel.getPosX(), panel.getPosY());
 
-                    PositionDatum panel = positionData.get(index);
-                    logger.debug("Layout: Panel position data x={} y={}", panel.getPosX(), panel.getPosY());
-
-                    if (panel.getPosX() < minx) {
-                        minx = panel.getPosX();
+                        if (panel.getPosX() < minx) {
+                            minx = panel.getPosX();
+                        }
+                        if (panel.getPosX() > maxx) {
+                            maxx = panel.getPosX();
+                        }
+                        if (panel.getPosY() < miny) {
+                            miny = panel.getPosY();
+                        }
+                        if (panel.getPosY() > maxy) {
+                            maxy = panel.getPosY();
+                        }
+                        if (panel.getPanelSize() > sideLength) {
+                            sideLength = panel.getPanelSize();
+                        }
                     }
-                    if (panel.getPosX() > maxx) {
-                        maxx = panel.getPosX();
-                    }
-                    if (panel.getPosY() < miny) {
-                        miny = panel.getPosY();
-                    }
-                    if (panel.getPosY() > maxy) {
-                        maxy = panel.getPosY();
-                    }
-                    if (panel.getPanelSize() > sideLength) {
-                        sideLength = panel.getPanelSize();
-                    }
-
                 }
             }
 
@@ -117,9 +118,9 @@ public class Layout {
                 map = new TreeMap<>();
                 for (int index = 0; index < noofDefinedPanels; index++) {
 
-                    if (positionData != null) {
-                        @SuppressWarnings("null")
-                        PositionDatum panel = positionData.get(index);
+                    List<PositionDatum> localPositionDate = positionData;
+                    if (localPositionDate != null) {
+                        PositionDatum panel = localPositionDate.get(index);
 
                         if (panel.getPosY() == lineY) {
                             map.put(panel.getPosX(), panel);
@@ -137,7 +138,7 @@ public class Layout {
                         view += "      ";
                     }
                 }
-                view += "\n";
+                view += System.lineSeparator();
             }
 
             return view;
