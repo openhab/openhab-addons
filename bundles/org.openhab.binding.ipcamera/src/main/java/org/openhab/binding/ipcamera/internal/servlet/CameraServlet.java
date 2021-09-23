@@ -124,7 +124,6 @@ public class CameraServlet extends IpCameraServlet {
                 sendSnapshotImage(resp, "image/jpg", handler.getSnapshot());
                 return;
             case "/snapshots.mjpeg":
-                req.getSession().setMaxInactiveInterval(0);
                 snapshotStreamsOpen++;
                 handler.streamingSnapshotMjpeg = true;
                 handler.startSnapshotPolling();
@@ -145,7 +144,6 @@ public class CameraServlet extends IpCameraServlet {
                     }
                 } while (true);
             case "/ipcamera.mjpeg":
-                req.getSession().setMaxInactiveInterval(0);
                 if (handler.mjpegUri.isEmpty() || "ffmpeg".equals(handler.mjpegUri)) {
                     if (openStreams.isEmpty()) {
                         handler.setupFfmpegFormat(FFmpegFormat.MJPEG);
@@ -158,7 +156,10 @@ public class CameraServlet extends IpCameraServlet {
                     output = new StreamOutput(resp, handler.mjpegContentType);
                     openStreams.addStream(output);
                 } else {
-                    logger.debug("Not the first stream requested. Stream from camera already open");
+                    if (handler.channelTrackingMap.get(handler.mjpegUri) == null) {
+                        logger.warn("Not the first stream requested but the stream from camera was closed");
+                        handler.openCamerasStream();
+                    }
                     output = new StreamOutput(resp, handler.mjpegContentType);
                     openStreams.addStream(output);
                 }
@@ -181,9 +182,8 @@ public class CameraServlet extends IpCameraServlet {
                         }
                         return;
                     }
-                } while (true);
+                } while (!openStreams.isEmpty());
             case "/autofps.mjpeg":
-                req.getSession().setMaxInactiveInterval(0);
                 autofpsStreamsOpen++;
                 handler.streamingAutoFps = true;
                 output = new StreamOutput(resp);

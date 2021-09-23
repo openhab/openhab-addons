@@ -696,7 +696,7 @@ public class IpCameraHandler extends BaseThingHandler {
         sendHttpGET(mjpegUri);
     }
 
-    void openChannel(Channel channel, String httpRequestURL) {
+    private void openChannel(Channel channel, String httpRequestURL) {
         ChannelTracking tracker = channelTrackingMap.get(httpRequestURL);
         if (tracker != null && !tracker.getReply().isEmpty()) {// We need to keep the stored reply
             tracker.setChannel(channel);
@@ -1478,13 +1478,7 @@ public class IpCameraHandler extends BaseThingHandler {
      *
      */
     void pollCameraRunnable() {
-        // Snapshot should be first to keep consistent time between shots
-        if (streamingAutoFps) {
-            if (!snapshotPolling && !ffmpegSnapshotGeneration) {
-                // Dont need to poll if creating from RTSP stream with FFmpeg or we are polling at full rate already.
-                sendHttpGET(snapshotUri);
-            }
-        } else if (!snapshotUri.isEmpty() && !snapshotPolling) {// we need to check camera is still online.
+        if (!snapshotUri.isEmpty() && !snapshotPolling) {// we need to check camera is still online.
             checkCameraConnection();
         }
         // NOTE: Use lowPriorityRequests if get request is not needed every poll.
