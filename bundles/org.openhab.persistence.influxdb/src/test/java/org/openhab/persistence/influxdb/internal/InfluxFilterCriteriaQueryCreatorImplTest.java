@@ -229,14 +229,20 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                         + "|> filter(fn: (r) => r[\"_measurement\"] == \"measurementName\")\n\t"
                         + "|> filter(fn: (r) => r[\"item\"] == \"metadataItemName\")\n\t"
                         + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\", \"item\"])"));
+    }
+
+    @Test
+    public void testMeasurementAsItemName() {
+        FilterCriteria criteria = createBaseCriteria();
+        MetadataKey metadataKey = new MetadataKey(InfluxDBPersistenceService.SERVICE_NAME, "sampleItem");
 
         when(metadataRegistry.get(metadataKey))
                 .thenReturn(new Metadata(metadataKey, "", Map.of("item", "metadataItemName")));
 
-        queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
+        String queryV1 = instanceV1.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV1, equalTo("SELECT \"value\"::field,\"item\"::tag FROM origin.sampleItem;"));
 
-        queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
+        String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
         assertThat(queryV2,
                 equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
                         + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
