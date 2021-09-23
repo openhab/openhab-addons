@@ -76,8 +76,6 @@ import org.slf4j.LoggerFactory;
 @Component(service = SagerWeatherCaster.class, scope = ServiceScope.SINGLETON)
 @NonNullByDefault
 public class SagerWeatherCaster {
-    private final Properties forecaster = new Properties();
-
     // Northern Polar Zone & Northern Tropical Zone
     private final static String[] NPZDIRECTIONS = { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
     // Northern Temperate Zone
@@ -88,9 +86,10 @@ public class SagerWeatherCaster {
     private final static String[] STZDIRECTIONS = { "S", "SE", "E", "NE", "N", "NW", "W", "SW" };
 
     private final Logger logger = LoggerFactory.getLogger(SagerWeatherCaster.class);
+    private final Properties forecaster = new Properties();
 
     private Optional<Prevision> prevision = Optional.empty();
-    private @NonNullByDefault({}) String[] usedDirections;
+    private String[] usedDirections = NTZDIRECTIONS; // Defaulted to Northern Zone
 
     private int currentBearing = -1;
     private int windEvolution = -1; // Whether the wind during the last 6 hours has changed its direction by

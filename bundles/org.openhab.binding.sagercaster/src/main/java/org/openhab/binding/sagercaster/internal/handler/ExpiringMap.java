@@ -38,10 +38,10 @@ class ExpiringMap<T> {
         long now = System.currentTimeMillis();
         values.put(now, newValue);
         Optional<Long> eldestKey = values.keySet().stream().filter(key -> key < now - eldestAge).findFirst();
-        if (eldestKey.isPresent()) {
-            agedValue = Optional.ofNullable(values.get(eldestKey.get()));
-            values.entrySet().removeIf(map -> map.getKey() <= eldestKey.get());
-        }
+        eldestKey.ifPresent(eldest -> {
+            agedValue = Optional.ofNullable(values.get(eldest));
+            values.entrySet().removeIf(map -> map.getKey() <= eldest);
+        });
     }
 
     public Optional<T> getAgedValue() {
