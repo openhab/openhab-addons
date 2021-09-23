@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Łukasz Dywicki - Initial contribution
  */
 @NonNullByDefault
-public class AirQualityValue {
+class AirQualityValue {
     private double v;
 
     public double getValue() {

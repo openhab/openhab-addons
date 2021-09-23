@@ -27,7 +27,7 @@ public class ConcentrationRange {
     private final double span;
     private final Index index;
 
-    public ConcentrationRange(double min, double max, Index index) {
+    ConcentrationRange(double min, double max, Index index) {
         this.min = min;
         this.span = max - min;
         this.index = index;
@@ -39,7 +39,7 @@ public class ConcentrationRange {
      *
      * @return : a physical concentration or -1 if not in range
      */
-    public double getConcentration(double idx) {
+    double getConcentration(double idx) {
         return index.contains(idx) ? span / index.getSpan() * (idx - index.getMin()) + min : -1;
     }
 }
