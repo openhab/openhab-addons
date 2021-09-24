@@ -90,7 +90,6 @@ public abstract class SoulissGenericHandler extends BaseThingHandler implements 
                         "N" + Integer.toString(iNode) + "S" + Integer.toString(iSlot));
             }
         } catch (Exception e) {
-            logger.warn("Error getting node/slot from souliss typical (thing config).");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "configuration error");
         }
     }
