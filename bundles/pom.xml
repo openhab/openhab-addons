@@ -360,6 +360,7 @@
     <module>org.openhab.binding.windcentrale</module>
     <module>org.openhab.binding.wlanthermo</module>
     <module>org.openhab.binding.wled</module>
+    <module>org.openhab.binding.wolfsmartset</module>
     <module>org.openhab.binding.xmltv</module>
     <module>org.openhab.binding.xmppclient</module>
     <module>org.openhab.binding.yamahareceiver</module>
