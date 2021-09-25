@@ -24,6 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author William Welliver - Initial contribution
  * @author Matthew Davies - added awayMode and awayModeRaw to include thermostat away mode in binding
+ * @author Matthew Davies - added more binding functionality to get close to the API functionality
  */
 @NonNullByDefault
 public class VenstarThermostatBindingConstants {
@@ -47,6 +48,24 @@ public class VenstarThermostatBindingConstants {
     public static final String CHANNEL_SYSTEM_MODE_RAW = "systemModeRaw";
     public static final String CHANNEL_AWAY_MODE = "awayMode";
     public static final String CHANNEL_AWAY_MODE_RAW = "awayModeRaw";
+    public static final String CHANNEL_FAN_MODE = "fanMode";
+    public static final String CHANNEL_FAN_MODE_RAW = "fanModeRaw";
+    public static final String CHANNEL_FAN_STATE = "fanState";
+    public static final String CHANNEL_FAN_STATE_RAW = "fanStateRaw";
+    public static final String CHANNEL_SCHEDULE_MODE = "scheduleMode";
+    public static final String CHANNEL_SCHEDULE_MODE_RAW = "scheduleModeRaw";
+    public static final String CHANNEL_SCHEDULE_PART = "schedulePart";
+    public static final String CHANNEL_SCHEDULE_PART_RAW = "schedulePartRaw";
+    public static final String CHANNEL_TIMESTAMP_RUNTIME = "timestampRuntime";
+    public static final String CHANNEL_HEAT1_RUNTIME = "heat1Runtime";
+    public static final String CHANNEL_HEAT2_RUNTIME = "heat2Runtime";
+    public static final String CHANNEL_COOL1_RUNTIME = "cool1Runtime";
+    public static final String CHANNEL_COOL2_RUNTIME = "cool2Runtime";
+    public static final String CHANNEL_AUX1_RUNTIME = "aux1Runtime";
+    public static final String CHANNEL_AUX2_RUNTIME = "aux2Runtime";
+    public static final String CHANNEL_FC_RUNTIME = "freecoolRuntime";
+
+    // add query/runtimes and query/alerts - these will need an additional class similar to Venstar.infodata - more work
 
     public static final String CONFIG_USERNAME = "username";
     public static final String CONFIG_PASSWORD = "password";

@@ -21,6 +21,21 @@
 			<channel id="systemStateRaw" typeId="systemStateRaw"/>
 			<channel id="awayMode" typeId="awayMode"/>
 			<channel id="awayModeRaw" typeId="awayModeRaw"/>
+			<channel id="fanMode" typeId="fanMode"/>
+			<channel id="fanModeRaw" typeId="fanModeRaw"/>
+			<channel id="fanState" typeId="fanState"/>
+			<channel id="fanStateRaw" typeId="fanStateRaw"/>
+			<channel id="scheduleMode" typeId="scheduleMode"/>
+			<channel id="scheduleModeRaw" typeId="scheduleModeRaw"/>
+			<channel id="schedulePart" typeId="schedulePart"/>
+			<channel id="timestampRuntime" typeId="timestampRuntime"/>
+			<channel id="heat1Runtime" typeId="heat1Runtime"/>
+			<channel id="heat2Runtime" typeId="heat2Runtime"/>
+			<channel id="cool1Runtime" typeId="cool1Runtime"/>
+			<channel id="cool2Runtime" typeId="cool2Runtime"/>
+			<channel id="aux1Runtime" typeId="aux1Runtime"/>
+			<channel id="aux2Runtime" typeId="aux2Runtime"/>
+			<channel id="freecoolRuntime" typeId="freecoolRuntime"/>
 		</channels>
 
 		<properties>
@@ -88,6 +103,141 @@
 		<description>Current Away Mode, as an integer number</description>
 		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="fanMode">
+		<item-type>String</item-type>
+		<label>Fan Mode</label>
+		<description>Current Fan Mode</description>
+		<state readOnly="false">
+			<options>
+				<option value="auto">Auto</option>
+				<option value="on">On</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fanModeRaw" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan Mode (Raw)</label>
+		<description>Current Fan Mode, as an integer number</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fanState">
+		<item-type>String</item-type>
+		<label>Fan State</label>
+		<description>Current Fan State</description>
+		<state readOnly="true">
+			<options>
+				<option value="off">Off</option>
+				<option value="on">On</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fanStateRaw" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan State (Raw)</label>
+		<description>Current Fan State, as an integer number</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="scheduleMode">
+		<item-type>String</item-type>
+		<label>Schedule Mode</label>
+		<description>Current Schedule Mode</description>
+		<state readOnly="false">
+			<options>
+				<option value="disabled">Disabled</option>
+				<option value="enabled">Enabled</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="scheduleModeRaw" advanced="true">
+		<item-type>Number</item-type>
+		<label>Schedule Mode (Raw)</label>
+		<description>Current Schedule Mode, as an integer number</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="schedulePart">
+		<item-type>String</item-type>
+		<label>Schedule Part</label>
+		<description>Current Schedule Part</description>
+		<state readOnly="true">
+			<options>
+				<option value="morning">Morning</option>
+				<option value="day">Day</option>
+				<option value="evening">Evening</option>
+				<option value="night">Night</option>
+				<option value="inactive">Inactive</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="schedulePartRaw" advanced="true">
+		<item-type>Number</item-type>
+		<label>Schedule Part (Raw)</label>
+		<description>Current Schedule Part, as an integer number</description>
+		<state readOnly="true"/>
+	</channel-type>
+	
+	<channel-type id="timestampRuntime" advanced="false">
+        <item-type>DateTime</item-type>
+        <label>Last Runtime Update Time</label>
+        <description>Time stamp of last Runtime Update</description>
+        <state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
+    </channel-type>
+
+    <channel-type id="heat1Runtime" advanced="false">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Heat1 Runtime Minutes</label>
+        <description>Run time in heat1 mode in minutes</description>
+        <state readOnly="true" pattern="%d mins" />
+    </channel-type>
+    
+    <channel-type id="heat2Runtime" advanced="false">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Heat2 Runtime Minutes</label>
+        <description>Run time in heat2 mode in minutes</description>
+        <state readOnly="true" pattern="%d mins" />
+    </channel-type>
+    
+    <channel-type id="cool1Runtime" advanced="false">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Cool1 Runtime Minutes</label>
+        <description>Run time in cool1 mode in minutes</description>
+        <state readOnly="true" pattern="%d mins"/>
+    </channel-type>
+    
+    <channel-type id="cool2Runtime" advanced="false">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Cool2 Runtime Minutes</label>
+        <description>Run time in cool2 mode in minutes</description>
+        <state readOnly="true" pattern="%d mins"/>
+    </channel-type>
+    
+    <channel-type id="aux1Runtime" advanced="false">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Aux1 Runtime Minutes</label>
+        <description>Run time in aux1 mode in minutes</description>
+        <state readOnly="true" pattern="%d mins"/>
+    </channel-type>
+    
+    <channel-type id="aux2Runtime" advanced="false">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Aux2 Runtime Minutes</label>
+        <description>Run time in aux2 mode in minutes</description>
+        <state readOnly="true" pattern="%d mins"/>
+    </channel-type>
+    
+    <channel-type id="freecoolRuntime" advanced="false">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Free Cool Runtime Minutes</label>
+        <description>Run time in Free Cool mode in minutes</description>
+        <state readOnly="true" pattern="%d mins"/>
+    </channel-type>
 
 	<channel-type id="systemState">
 		<item-type>String</item-type>

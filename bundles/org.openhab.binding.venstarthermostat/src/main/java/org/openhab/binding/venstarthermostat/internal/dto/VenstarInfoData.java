@@ -25,6 +25,10 @@ public class VenstarInfoData {
     VenstarSystemState state;
     VenstarSystemMode mode;
     VenstarAwayMode away;
+    VenstarFanMode fan;
+    VenstarFanState fanstate;
+    VenstarScheduleMode schedule;
+    VenstarSchedulePart schedulepart;
     int tempunits;
 
     public VenstarInfoData() {
@@ -32,13 +36,18 @@ public class VenstarInfoData {
     }
 
     public VenstarInfoData(double cooltemp, double heattemp, VenstarSystemState state, VenstarSystemMode mode,
-            VenstarAwayMode away) {
+            VenstarAwayMode away, VenstarFanMode fan, VenstarFanState fanstate, VenstarScheduleMode schedule,
+            VenstarSchedulePart schedulepart) {
         super();
         this.cooltemp = cooltemp;
         this.heattemp = heattemp;
         this.state = state;
         this.mode = mode;
         this.away = away;
+        this.fan = fan;
+        this.fanstate = fanstate;
+        this.schedule = schedule;
+        this.schedulepart = schedulepart;
     }
 
     public double getCooltemp() {
@@ -87,5 +96,37 @@ public class VenstarInfoData {
 
     public void setAwayMode(VenstarAwayMode away) {
         this.away = away;
+    }
+
+    public VenstarFanMode getFanMode() {
+        return fan;
+    }
+
+    public void setFanMode(VenstarFanMode fan) {
+        this.fan = fan;
+    }
+
+    public VenstarFanState getFanState() {
+        return fanstate;
+    }
+
+    public void setFanState(VenstarFanState fanstate) {
+        this.fanstate = fanstate;
+    }
+
+    public VenstarScheduleMode getScheduleMode() {
+        return schedule;
+    }
+
+    public void setScheduleMode(VenstarScheduleMode schedule) {
+        this.schedule = schedule;
+    }
+
+    public VenstarSchedulePart getSchedulePart() {
+        return schedulepart;
+    }
+
+    public void setSchedulePart(VenstarSchedulePart schedulepart) {
+        this.schedulepart = schedulepart;
     }
 }
