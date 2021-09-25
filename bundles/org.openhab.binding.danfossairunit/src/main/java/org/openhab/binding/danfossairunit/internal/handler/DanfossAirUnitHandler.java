@@ -128,21 +128,23 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
             try {
                 updateState(channel.getGroup().getGroupName(), channel.getChannelName(),
                         channel.getReadAccessor().access(localAirUnit));
+                if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
             } catch (UnexpectedResponseValueException e) {
                 updateState(channel.getGroup().getGroupName(), channel.getChannelName(), UnDefType.UNDEF);
                 logger.debug(
                         "Cannot update channel {}: an unexpected or invalid response has been received from the air unit: {}",
                         channel.getChannelName(), e.getMessage());
+                if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
             } catch (IOException e) {
                 updateState(channel.getGroup().getGroupName(), channel.getChannelName(), UnDefType.UNDEF);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                 logger.debug("Cannot update channel {}: an error occurred retrieving the value: {}",
                         channel.getChannelName(), e.getMessage());
             }
-        }
-
-        if (getThing().getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -158,6 +160,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
         if (localCommunicationController != null) {
             localCommunicationController.disconnect();
         }
+        this.communicationController = null;
     }
 
     private synchronized void startPolling() {
