@@ -13,10 +13,16 @@
 package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.POWER_CONSUMPTION_CHANNEL_ID;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.PROTOCOL_PROPERTY_NAME;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.WATER_CONSUMPTION_CHANNEL_ID;
+
+import java.math.BigDecimal;
 
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -33,9 +39,14 @@ import com.google.gson.JsonElement;
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - fixed handling of REFRESH commands
  * @author Martin Lepsy - fixed handling of empty JSON results
- * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
+ * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN), added power/water consumption channels
  **/
-public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineChannelSelector> {
+public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineChannelSelector>
+        implements ExtendedDeviceStateListener {
+
+    private static final int POWER_CONSUMPTION_BYTE_POSITION = 51;
+    private static final int WATER_CONSUMPTION_BYTE_POSITION = 53;
+    private static final int EXTENDED_STATE_SIZE_BYTES = 59;
 
     private final Logger logger = LoggerFactory.getLogger(WashingMachineHandler.class);
 
@@ -84,5 +95,21 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
                     "An error occurred while trying to set the read-only variable associated with channel '{}' to '{}'",
                     channelID, command.toString());
         }
+    }
+
+    public void onApplianceExtendedStateChanged(byte[] extendedDeviceState) {
+        if (extendedDeviceState.length != EXTENDED_STATE_SIZE_BYTES) {
+            logger.error("Unexpected size of extended state: {}", extendedDeviceState);
+            return;
+        }
+
+        BigDecimal kiloWattHoursTenths = BigDecimal
+                .valueOf(extendedDeviceState[POWER_CONSUMPTION_BYTE_POSITION] & 0xff);
+        var kiloWattHours = new QuantityType<>(kiloWattHoursTenths.divide(BigDecimal.valueOf(10)), Units.KILOWATT_HOUR);
+        updateExtendedState(POWER_CONSUMPTION_CHANNEL_ID, kiloWattHours);
+
+        var litres = new QuantityType<>(BigDecimal.valueOf(extendedDeviceState[WATER_CONSUMPTION_BYTE_POSITION] & 0xff),
+                Units.LITRE);
+        updateExtendedState(WATER_CONSUMPTION_CHANNEL_ID, litres);
     }
 }
