@@ -23,6 +23,7 @@ import org.openhab.core.types.Type;
  * returned by the appliance to a compatible State
  *
  * @author Karel Goderis - Initial contribution
+ * @author Jacob Laursen - Added power/water consumption channels
  */
 public interface ApplianceChannelSelector {
 
@@ -44,6 +45,12 @@ public interface ApplianceChannelSelector {
      * instead of a regular modifiable datapoint
      */
     boolean isProperty();
+
+    /**
+     * Returns true if the given channel is extracted from extended
+     * state information
+     */
+    boolean isExtendedState();
 
     /**
      *

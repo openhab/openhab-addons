@@ -130,6 +130,11 @@ public enum HobChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
+    public boolean isExtendedState() {
+        return false;
+    }
+
+    @Override
     public State getState(String s, DeviceMetaData dmd) {
         if (dmd != null) {
             String localizedValue = getMieleEnum(s, dmd);

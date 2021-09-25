@@ -31,6 +31,11 @@ public class MieleBindingConstants {
     public static final String DEVICE_CLASS = "dc";
     public static final String PROTOCOL_PROPERTY_NAME = "protocol";
     public static final String SERIAL_NUMBER_PROPERTY_NAME = "serialNumber";
+    public static final String EXTENDED_DEVICE_STATE_PROPERTY_NAME = "extendedDeviceState";
+
+    // Shared Channel ID's
+    public static final String POWER_CONSUMPTION_CHANNEL_ID = "powerConsumption";
+    public static final String WATER_CONSUMPTION_CHANNEL_ID = "waterConsumption";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_XGW3000 = new ThingTypeUID(BINDING_ID, "xgw3000");
