@@ -90,5 +90,4 @@ public class VenstarRuntime {
     public void setFC(int fc) {
         this.fc = fc;
     }
-
 }
