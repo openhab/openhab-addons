@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -139,7 +140,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public @Nullable Ffmpeg ffmpegSnapshot = null;
     public boolean streamingAutoFps = false;
     public boolean motionDetected = false;
-
+    public Instant currentSnapshotTime = Instant.now();
     private @Nullable ScheduledFuture<?> cameraConnectionJob = null;
     private @Nullable ScheduledFuture<?> pollCameraJob = null;
     private @Nullable ScheduledFuture<?> snapshotJob = null;
@@ -662,6 +663,7 @@ public class IpCameraHandler extends BaseThingHandler {
             }
         } finally {
             lockCurrentSnapshot.unlock();
+            currentSnapshotTime = Instant.now();
         }
 
         if (updateImageChannel) {

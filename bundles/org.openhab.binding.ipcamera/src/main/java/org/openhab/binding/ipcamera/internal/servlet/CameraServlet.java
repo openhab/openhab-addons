@@ -15,7 +15,10 @@ package org.openhab.binding.ipcamera.internal.servlet;
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.HLS_STARTUP_DELAY_MS;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -121,7 +124,34 @@ public class CameraServlet extends IpCameraServlet {
                 sendFile(resp, pathInfo, "image/gif");
                 return;
             case "/ipcamera.jpg":
-                sendSnapshotImage(resp, "image/jpg", handler.getSnapshot());
+                // Use cached image if recent. Cameras can take > 1sec to send back a reply.
+                // Example an Image item/widget may have a 1 second refresh.
+                if (Duration.between(handler.currentSnapshotTime, Instant.now()).toMillis() < 1200) {
+                    sendSnapshotImage(resp, "image/jpg", handler.getSnapshot());
+                } else {
+                    handler.getSnapshot();
+                    final AsyncContext acontext = req.startAsync(req, resp);
+                    acontext.start(new Runnable() {
+                        @Override
+                        public void run() {
+                            Instant startTime = Instant.now();
+                            do {
+                                try {
+                                    Thread.sleep(100);
+                                } catch (InterruptedException e) {
+                                    return;
+                                }
+                            } // 5 sec timeout OR a new snapshot comes back from camera
+                            while (Duration.between(startTime, Instant.now()).toMillis() < 5000
+                                    && Duration.between(handler.currentSnapshotTime, Instant.now()).toMillis() > 1200);
+                            logger.debug("GET:/ipcamera.jpg returned snapshot from {}ms ago. Camera took approx {}ms",
+                                    Duration.between(handler.currentSnapshotTime, Instant.now()).toMillis(),
+                                    Duration.between(startTime, Instant.now()).toMillis());
+                            sendSnapshotImage(resp, "image/jpg", handler.getSnapshot());
+                            acontext.complete();
+                        }
+                    });
+                }
                 return;
             case "/snapshots.mjpeg":
                 snapshotStreamsOpen++;

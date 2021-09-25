@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Matthew Skinner - Initial contribution
  */
 @NonNullByDefault
+@WebServlet(asyncSupported = true)
 public abstract class IpCameraServlet extends HttpServlet {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final long serialVersionUID = 1L;
