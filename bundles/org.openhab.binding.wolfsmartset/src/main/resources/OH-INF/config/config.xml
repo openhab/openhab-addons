@@ -1,0 +1,47 @@
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:wolfsmartset:account">
+		<parameter name="username" type="text" required="false">
+			<label>Username</label>
+		</parameter>
+		<parameter name="password" type="text" required="false">
+			<label>Password</label>
+			<context>password</context>
+		</parameter>
+		<parameter name="refreshIntervalStructure" type="integer" min="2" required="false" unit="m">
+			<label>Structure Refresh Interval</label>
+			<description>Specifies the refresh interval in minutes</description>
+			<default>10</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="refreshIntervalValues" type="integer" min="2" required="false" unit="s">
+			<label>States Refresh Interval</label>
+			<description>Specifies time in seconds to refresh states</description>
+			<default>15</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="discoveryEnabled" type="boolean" required="false">
+			<label>Background Discovery</label>
+			<description>Enable/disable automatic discovery</description>
+			<default>true</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:wolfsmartset:system">
+		<parameter name="systemId" type="text" required="true">
+			<label>System ID</label>
+			<description>System ID assigned to this system by WolfSmartset</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:wolfsmartset:unit">
+		<parameter name="unitId" type="text" required="true">
+			<label>Unit Id</label>
+			<description>Id assigned to this unit (e.g. rs:101)</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
