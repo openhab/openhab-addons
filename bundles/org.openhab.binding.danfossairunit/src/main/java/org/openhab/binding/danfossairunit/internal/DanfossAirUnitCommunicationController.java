@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DanfossAirUnitCommunicationController implements CommunicationController {
 
+    private static final int SOCKET_TIMEOUT_MILLISECONDS = 5_000;
+
     private final Logger logger = LoggerFactory.getLogger(DanfossAirUnitCommunicationController.class);
 
     private final InetAddress inetAddr;
@@ -55,6 +57,7 @@ public class DanfossAirUnitCommunicationController implements CommunicationContr
             return;
         }
         Socket localSocket = new Socket(inetAddr, port);
+        localSocket.setSoTimeout(SOCKET_TIMEOUT_MILLISECONDS);
         this.outputStream = localSocket.getOutputStream();
         this.inputStream = localSocket.getInputStream();
         this.socket = localSocket;
