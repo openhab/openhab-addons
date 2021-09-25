@@ -44,6 +44,9 @@ public class MieleBindingConstants {
     public static final ThingTypeUID THING_TYPE_WASHINGMACHINE = new ThingTypeUID(BINDING_ID, "washingmachine");
     public static final ThingTypeUID THING_TYPE_COFFEEMACHINE = new ThingTypeUID(BINDING_ID, "coffeemachine");
 
+    // Miele devices classes
+    public static final String MIELE_DEVICE_CLASS_COFFEE_SYSTEM = "CoffeeSystem";
+
     // Bridge config properties
     public static final String HOST = "ipAddress";
     public static final String INTERFACE = "interface";
