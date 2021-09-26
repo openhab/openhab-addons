@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ipcamera.internal.ChannelTracking;
 import org.openhab.binding.ipcamera.internal.Ffmpeg;
 import org.openhab.binding.ipcamera.internal.InstarHandler;
 import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
@@ -186,7 +187,8 @@ public class CameraServlet extends IpCameraServlet {
                     output = new StreamOutput(resp, handler.mjpegContentType);
                     openStreams.addStream(output);
                 } else {
-                    if (handler.channelTrackingMap.get(handler.mjpegUri) == null) {
+                    ChannelTracking tracker = handler.channelTrackingMap.get(handler.mjpegUri);
+                    if (tracker == null || !tracker.getChannel().isOpen()) {
                         logger.warn("Not the first stream requested but the stream from camera was closed");
                         handler.openCamerasStream();
                     }
