@@ -81,7 +81,7 @@
 
     <bnd.importpackage/>
     <bnd.exportpackage/>
-    <bnd.fixupmessages/>
+    <bnd.fixupmessages>"Classes found in the wrong directory"; is:=warning</bnd.fixupmessages>
     <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
