@@ -9,6 +9,7 @@
 		<channels>
 			<channel id="color" typeId="color"/>
 			<channel id="temperature" typeId="temperature"/>
+			<channel id="abstemperature" typeId="abstemperature"/>
 			<channel id="infrared" typeId="infrared"/>
 			<channel id="signalstrength" typeId="system.signal-strength"/>
 		</channels>

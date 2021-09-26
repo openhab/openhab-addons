@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingUID;
@@ -40,6 +41,9 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = LifxChannelFactory.class)
 public class LifxChannelFactoryImpl implements LifxChannelFactory {
 
+    private static final String ABS_TEMPERATURE_ZONE_LABEL_KEY = "channel-type.lifx.abstemperaturezone.label";
+    private static final String ABS_TEMPERATURE_ZONE_DESCRIPTION_KEY = "channel-type.lifx.abstemperaturezone.description";
+
     private static final String COLOR_ZONE_LABEL_KEY = "channel-type.lifx.colorzone.label";
     private static final String COLOR_ZONE_DESCRIPTION_KEY = "channel-type.lifx.colorzone.description";
 
@@ -51,10 +55,19 @@ public class LifxChannelFactoryImpl implements LifxChannelFactory {
     private @NonNullByDefault({}) LocaleProvider localeProvider;
 
     @Override
+    public Channel createAbsTemperatureZoneChannel(ThingUID thingUID, int index) {
+        String label = getText(ABS_TEMPERATURE_ZONE_LABEL_KEY, index);
+        String description = getText(ABS_TEMPERATURE_ZONE_DESCRIPTION_KEY, index);
+        return ChannelBuilder
+                .create(new ChannelUID(thingUID, CHANNEL_ABS_TEMPERATURE_ZONE + index), CoreItemFactory.NUMBER)
+                .withType(CHANNEL_TYPE_ABS_TEMPERATURE_ZONE).withLabel(label).withDescription(description).build();
+    }
+
+    @Override
     public Channel createColorZoneChannel(ThingUID thingUID, int index) {
         String label = getText(COLOR_ZONE_LABEL_KEY, index);
         String description = getText(COLOR_ZONE_DESCRIPTION_KEY, index);
-        return ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_COLOR_ZONE + index), "Color")
+        return ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_COLOR_ZONE + index), CoreItemFactory.COLOR)
                 .withType(CHANNEL_TYPE_COLOR_ZONE).withLabel(label).withDescription(description).build();
     }
 
@@ -62,7 +75,7 @@ public class LifxChannelFactoryImpl implements LifxChannelFactory {
     public Channel createTemperatureZoneChannel(ThingUID thingUID, int index) {
         String label = getText(TEMPERATURE_ZONE_LABEL_KEY, index);
         String description = getText(TEMPERATURE_ZONE_DESCRIPTION_KEY, index);
-        return ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_TEMPERATURE_ZONE + index), "Dimmer")
+        return ChannelBuilder.create(new ChannelUID(thingUID, CHANNEL_TEMPERATURE_ZONE + index), CoreItemFactory.DIMMER)
                 .withType(CHANNEL_TYPE_TEMPERATURE_ZONE).withLabel(label).withDescription(description).build();
     }
 
