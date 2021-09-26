@@ -136,8 +136,12 @@ public class DanfossAirUnit {
         return new StringType(Mode.values()[getByte(REGISTER_1_READ, MODE)].name());
     }
 
-    public PercentType getManualFanStep() throws IOException {
-        return new PercentType(BigDecimal.valueOf(getByte(REGISTER_1_READ, MANUAL_FAN_SPEED_STEP) * 10));
+    public PercentType getManualFanStep() throws IOException, UnexpectedResponseValueException {
+        byte value = getByte(REGISTER_1_READ, MANUAL_FAN_SPEED_STEP);
+        if (value < 0 || value > 10) {
+            throw new UnexpectedResponseValueException(String.format("Invalid fan step: %d", value));
+        }
+        return new PercentType(BigDecimal.valueOf(value * 10));
     }
 
     public DecimalType getSupplyFanSpeed() throws IOException {

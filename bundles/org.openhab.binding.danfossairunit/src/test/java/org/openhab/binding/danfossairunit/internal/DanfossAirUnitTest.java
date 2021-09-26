@@ -24,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.test.java.JavaTest;
 
@@ -110,7 +111,16 @@ public class DanfossAirUnitTest extends JavaTest {
     }
 
     @Test
-    public void getBootstWhenZeroIsOff() throws IOException {
+    public void getCurrentTimeWhenInvalidDateThrows() throws IOException {
+        byte[] response = new byte[] { (byte) 0x03, (byte) 0x02, (byte) 0x0f, (byte) 0x20, (byte) 0x08, (byte) 0x15 }; // 32.08.21
+                                                                                                                       // 15:02:03
+        when(this.communicationController.sendRobustRequest(REGISTER_1_READ, CURRENT_TIME)).thenReturn(response);
+        var airUnit = new DanfossAirUnit(communicationController);
+        assertThrows(UnexpectedResponseValueException.class, () -> airUnit.getCurrentTime());
+    }
+
+    @Test
+    public void getBoostWhenZeroIsOff() throws IOException {
         byte[] response = new byte[] { (byte) 0x00 };
         when(this.communicationController.sendRobustRequest(REGISTER_1_READ, BOOST)).thenReturn(response);
         var airUnit = new DanfossAirUnit(communicationController);
@@ -118,10 +128,29 @@ public class DanfossAirUnitTest extends JavaTest {
     }
 
     @Test
-    public void getBootstWhenNonZeroIsOn() throws IOException {
+    public void getBoostWhenNonZeroIsOn() throws IOException {
         byte[] response = new byte[] { (byte) 0x66 };
         when(this.communicationController.sendRobustRequest(REGISTER_1_READ, BOOST)).thenReturn(response);
         var airUnit = new DanfossAirUnit(communicationController);
         assertEquals(OnOffType.ON, airUnit.getBoost());
+    }
+
+    @Test
+    public void getManualFanStepWhenWithinValidRangeIsConvertedIntoPercent()
+            throws IOException, UnexpectedResponseValueException {
+        byte[] response = new byte[] { (byte) 0x05 };
+        when(this.communicationController.sendRobustRequest(REGISTER_1_READ, MANUAL_FAN_SPEED_STEP))
+                .thenReturn(response);
+        var airUnit = new DanfossAirUnit(communicationController);
+        assertEquals(new PercentType(50), airUnit.getManualFanStep());
+    }
+
+    @Test
+    public void getManualFanStepWhenOutOfRangeThrows() throws IOException {
+        byte[] response = new byte[] { (byte) 0x0b };
+        when(this.communicationController.sendRobustRequest(REGISTER_1_READ, MANUAL_FAN_SPEED_STEP))
+                .thenReturn(response);
+        var airUnit = new DanfossAirUnit(communicationController);
+        assertThrows(UnexpectedResponseValueException.class, () -> airUnit.getManualFanStep());
     }
 }
