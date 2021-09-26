@@ -93,7 +93,7 @@ public class SendMailActions implements ThingActions {
                 }
             }
 
-            headers.forEach((name, value) -> builder.addHeader(name, value));
+            headers.forEach((name, value) -> builder.withHeader(name, value));
 
             final SMTPHandler handler = this.handler;
             if (handler == null) {
@@ -172,7 +172,7 @@ public class SendMailActions implements ThingActions {
                 }
             }
 
-            headers.forEach((name, value) -> builder.addHeader(name, value));
+            headers.forEach((name, value) -> builder.withHeader(name, value));
 
             final SMTPHandler handler = this.handler;
             if (handler == null) {
@@ -230,5 +230,9 @@ public class SendMailActions implements ThingActions {
             return true;
         }
         return false;
+    }
+
+    public static boolean addHeader(ThingActions actions, @Nullable String name, @Nullable String value) {
+        return ((SendMailActions) actions).addHeader(name, value);
     }
 }

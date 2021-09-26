@@ -140,7 +140,7 @@ public class MailBuilder {
         return this;
     }
 
-    public MailBuilder addHeader(String name, String value) {
+    public MailBuilder withHeader(String name, String value) {
         headers.put(name, value);
         return this;
     }
