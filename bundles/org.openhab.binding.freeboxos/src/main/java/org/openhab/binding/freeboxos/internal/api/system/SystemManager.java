@@ -13,10 +13,10 @@
 package org.openhab.binding.freeboxos.internal.api.system;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.RestManager;
+import org.openhab.binding.freeboxos.internal.api.system.SystemConf.SystemConfigurationResponse;
 
 /**
  * The {@link SystemManager} is the Java class used to handle api requests
@@ -25,24 +25,14 @@ import org.openhab.binding.freeboxos.internal.api.RestManager;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class SystemManager extends RestManager {
-
-    private static final String REBOOT_SUB_PATH = "reboot";
+public class SystemManager extends ConfigurableRest<SystemConf, SystemConfigurationResponse> {
     private static final String SYSTEM_PATH = "system";
 
     public SystemManager(FreeboxOsSession session) {
-        super(SYSTEM_PATH, session);
-    }
-
-    public SystemConf getConfig() throws FreeboxException {
-        return get(null, SystemConfigurationResponse.class, true);
+        super(SYSTEM_PATH, null, session, SystemConfigurationResponse.class);
     }
 
     public void reboot() throws FreeboxException {
         post(REBOOT_SUB_PATH);
-    }
-
-    // Response classes and validity evaluations
-    private static class SystemConfigurationResponse extends Response<SystemConf> {
     }
 }

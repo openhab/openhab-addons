@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
-import org.openhab.binding.freeboxos.internal.config.ApiConfiguration;
+import org.openhab.binding.freeboxos.internal.config.FreeboxOsConfiguration;
 import org.openhab.binding.freeboxos.internal.discovery.FreeboxOsDiscoveryService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
@@ -35,18 +35,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link FreeboxOsBridgeHandler} handle common parts of Freebox bridges.
+ * The {@link FreeboxOsHandler} handle common parts of Freebox bridges.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class FreeboxOsBridgeHandler extends BaseBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(FreeboxOsBridgeHandler.class);
+public class FreeboxOsHandler extends BaseBridgeHandler {
+    private final Logger logger = LoggerFactory.getLogger(FreeboxOsHandler.class);
 
     private @Nullable Future<?> openConnectionJob;
     private final FreeboxOsSession session;
 
-    public FreeboxOsBridgeHandler(Bridge thing, FreeboxOsSession session) {
+    public FreeboxOsHandler(Bridge thing, FreeboxOsSession session) {
         super(thing);
         this.session = session;
     }
@@ -58,7 +58,7 @@ public class FreeboxOsBridgeHandler extends BaseBridgeHandler {
         if (job == null || job.isCancelled()) {
             openConnectionJob = scheduler.submit(() -> {
                 try {
-                    ApiConfiguration config = getConfiguration();
+                    FreeboxOsConfiguration config = getConfiguration();
 
                     updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                             "Please accept pairing request directly on your freebox");
@@ -67,7 +67,7 @@ public class FreeboxOsBridgeHandler extends BaseBridgeHandler {
 
                     if (!currentAppToken.equals(config.appToken)) {
                         Configuration thingConfig = editConfiguration();
-                        thingConfig.put(ApiConfiguration.APP_TOKEN, config.appToken);
+                        thingConfig.put(FreeboxOsConfiguration.APP_TOKEN, currentAppToken);
                         updateConfiguration(thingConfig);
                         logger.info(
                                 "App token updated in Configuration, please give needed permissions to openHAB app in your Freebox management console");
@@ -91,13 +91,9 @@ public class FreeboxOsBridgeHandler extends BaseBridgeHandler {
         Future<?> job = openConnectionJob;
         if (job != null && !job.isCancelled()) {
             job.cancel(true);
+            openConnectionJob = null;
         }
-        openConnectionJob = null;
-        try {
-            session.closeSession();
-        } catch (FreeboxException e) {
-            logger.info("Error closing session : {}", e);
-        }
+        session.closeSession();
         super.dispose();
     }
 
@@ -110,7 +106,7 @@ public class FreeboxOsBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    public ApiConfiguration getConfiguration() {
-        return getConfigAs(ApiConfiguration.class);
+    public FreeboxOsConfiguration getConfiguration() {
+        return getConfigAs(FreeboxOsConfiguration.class);
     }
 }

@@ -21,6 +21,7 @@
 		<channels>
 			<channel id="wifi-status" typeId="wifi-status"/>
 			<channel id="upnpav-status" typeId="upnpav-status"/>
+			<channel id="airmedia-status" typeId="airmedia-status"/>
 		</channels>
 	</channel-group-type>
 

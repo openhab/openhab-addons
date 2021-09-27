@@ -24,26 +24,22 @@ import org.eclipse.jdt.annotation.Nullable;
 public class FreeboxException extends Exception {
     private static final long serialVersionUID = 9197365222439228186L;
 
-    private @Nullable BaseResponse response;
+    private @Nullable Response<?> response;
 
     public FreeboxException(String msg) {
         this(msg, null, null);
     }
 
-    public FreeboxException(@Nullable String msg, Throwable cause) {
+    public FreeboxException(Throwable cause, @Nullable String msg) {
         this(msg, cause, null);
     }
 
-    FreeboxException(BaseResponse response, @Nullable String msg) {
-        this(msg, null, response);
-    }
-
-    public FreeboxException(@Nullable String msg, @Nullable Throwable cause, @Nullable BaseResponse response) {
+    public FreeboxException(@Nullable String msg, @Nullable Throwable cause, @Nullable Response<?> response) {
         super(msg, cause);
         this.response = response;
     }
 
-    public @Nullable BaseResponse getResponse() {
+    public @Nullable Response<?> getResponse() {
         return response;
     }
 }

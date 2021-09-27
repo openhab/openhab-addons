@@ -22,6 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class LandlineConfiguration extends ApiConsumerConfiguration {
+    public int id = 1;
+
     LandlineConfiguration() {
         refreshInterval = 2;
     }

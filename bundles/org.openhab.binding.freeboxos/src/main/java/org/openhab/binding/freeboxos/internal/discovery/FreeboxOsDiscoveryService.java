@@ -14,15 +14,18 @@ package org.openhab.binding.freeboxos.internal.discovery;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaManager;
+import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaReceiver;
 import org.openhab.binding.freeboxos.internal.api.lan.LanHost;
 import org.openhab.binding.freeboxos.internal.api.lan.LanManager;
 import org.openhab.binding.freeboxos.internal.api.phone.PhoneManager;
@@ -36,9 +39,8 @@ import org.openhab.binding.freeboxos.internal.api.system.SystemManager;
 import org.openhab.binding.freeboxos.internal.api.vm.VmManager;
 import org.openhab.binding.freeboxos.internal.api.wifi.AccessPointHost;
 import org.openhab.binding.freeboxos.internal.api.wifi.WifiManager;
-import org.openhab.binding.freeboxos.internal.config.ApiConfiguration;
 import org.openhab.binding.freeboxos.internal.config.ClientConfiguration;
-import org.openhab.binding.freeboxos.internal.handler.FreeboxOsBridgeHandler;
+import org.openhab.binding.freeboxos.internal.handler.FreeboxOsHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -63,10 +65,8 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
     private static final int DISCOVERY_TIME_SECONDS = 10;
     private static final int BACKGROUND_SCAN_REFRESH_MINUTES = 1;
 
-    private @NonNullByDefault({}) FreeboxOsBridgeHandler bridgeHandler;
+    private @NonNullByDefault({}) FreeboxOsHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> backgroundFuture;
-    private @NonNullByDefault({}) ThingUID bridgeUID;
-    private @NonNullByDefault({}) ApiConfiguration configuration;
 
     public FreeboxOsDiscoveryService() {
         super(THINGS_TYPES_UIDS, DISCOVERY_TIME_SECONDS);
@@ -79,10 +79,8 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof FreeboxOsBridgeHandler) {
-            bridgeHandler = (FreeboxOsBridgeHandler) handler;
-            bridgeUID = bridgeHandler.getThing().getUID();
-            configuration = bridgeHandler.getConfiguration();
+        if (handler instanceof FreeboxOsHandler) {
+            bridgeHandler = (FreeboxOsHandler) handler;
             activate(null);
         }
     }
@@ -113,14 +111,16 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
         logger.debug("Starting Freebox discovery scan");
         if (bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
-                discoverServer();
-                discoverPhone();
-                Map<String, @Nullable LanHost> lanHosts = bridgeHandler.getManager(LanManager.class).getHostsMap();
-                discoverRepeater(lanHosts);
-                discoverPlayer(lanHosts);
-                discoverVM(lanHosts);
-                if (configuration.discoverNetDevice) {
-                    discoverHosts(lanHosts);
+                ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+                Map<String, LanHost> lanHosts = bridgeHandler.getManager(LanManager.class).getHostsMap();
+                discoverServer(bridgeUID);
+                discoverPhone(bridgeUID);
+                discoverRepeater(bridgeUID, lanHosts);
+                discoverPlayer(bridgeUID, lanHosts);
+                discoverReceivers(bridgeUID, lanHosts);
+                discoverVM(bridgeUID, lanHosts);
+                if (bridgeHandler.getConfiguration().discoverNetDevice) {
+                    discoverHosts(bridgeUID, lanHosts);
                 }
             } catch (FreeboxException e) {
                 logger.warn("Error while requesting data for things discovery : {}", e.getMessage());
@@ -128,17 +128,19 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
         }
     }
 
-    private void discoverPhone() throws FreeboxException {
+    private void discoverPhone(ThingUID bridgeUID) throws FreeboxException {
         PhoneManager phoneManager = bridgeHandler.getManager(PhoneManager.class);
-        PhoneStatus config = phoneManager.getStatus();
-        ThingUID thingUID = new ThingUID(THING_TYPE_LANDLINE, bridgeUID, Long.toString(config.getId()));
-        logger.debug("Adding new Freebox Phone {} to inbox", thingUID);
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                .withLabel(config.getType().name()).build();
-        thingDiscovered(discoveryResult);
+        List<PhoneStatus> statuses = phoneManager.getPhoneStatuses();
+        statuses.forEach(config -> {
+            ThingUID thingUID = new ThingUID(THING_TYPE_LANDLINE, bridgeUID, Long.toString(config.getId()));
+            logger.debug("Adding new Freebox Phone {} to inbox", thingUID);
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
+                    .withProperty(ClientConfiguration.ID, config.getId()).withLabel(config.getType().name()).build();
+            thingDiscovered(discoveryResult);
+        });
     }
 
-    private void discoverVM(Map<String, @Nullable LanHost> lanHosts) throws FreeboxException {
+    private void discoverVM(ThingUID bridgeUID, Map<String, LanHost> lanHosts) throws FreeboxException {
         VmManager vmManager = bridgeHandler.getManager(VmManager.class);
         vmManager.getVms().forEach(vm -> {
             String mac = vm.getMac();
@@ -154,16 +156,15 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
         });
     }
 
-    private void discoverHosts(Map<String, @Nullable LanHost> lanHosts) throws FreeboxException {
+    private void discoverHosts(ThingUID bridgeUID, Map<String, LanHost> lanHosts) throws FreeboxException {
         Map<String, @Nullable AccessPointHost> apHosts = bridgeHandler.getManager(WifiManager.class).getHostsMap();
         Map<String, @Nullable LanHost> repHosts = bridgeHandler.getManager(RepeaterManager.class).getHostsMap();
-        List<String> wifiMacs = new ArrayList<>();
-        wifiMacs.addAll(apHosts.keySet());
-        wifiMacs.addAll(repHosts.keySet());
+        List<String> wifiMacs = Stream.concat(apHosts.keySet().stream(), repHosts.keySet().stream())
+                .collect(Collectors.toList());
 
         lanHosts.entrySet().forEach(entry -> {
             LanHost lanHost = entry.getValue();
-            if (lanHost != null && lanHost.isReachable()) {
+            if (lanHost.isReachable()) {
                 String mac = entry.getKey();
 
                 ThingUID thingUID = new ThingUID(wifiMacs.contains(mac) ? THING_TYPE_WIFI_HOST : THING_TYPE_HOST,
@@ -178,7 +179,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
         });
     }
 
-    private void discoverRepeater(Map<String, @Nullable LanHost> lanHosts) throws FreeboxException {
+    private void discoverRepeater(ThingUID bridgeUID, Map<String, LanHost> lanHosts) throws FreeboxException {
         List<Repeater> repeaters = bridgeHandler.getManager(RepeaterManager.class).getRepeaters();
         repeaters.forEach(repeater -> {
             String mac = repeater.getMac();
@@ -194,7 +195,25 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
         });
     }
 
-    private void discoverServer() throws FreeboxException {
+    private void discoverReceivers(ThingUID bridgeUID, Map<String, LanHost> lanHosts) throws FreeboxException {
+        List<AirMediaReceiver> receivers = bridgeHandler.getManager(AirMediaManager.class).getEquipments();
+        receivers.forEach(receiver -> {
+            /*
+             * String mac = receiver.getMac();
+             * lanHosts.remove(mac);
+             * 
+             * ThingUID thingUID = new ThingUID(THING_TYPE_REPEATER, bridgeUID, Integer.toString(repeater.getId()));
+             * DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
+             * .withLabel(String.format("Repeater %s", repeater.getName()))
+             * .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac)
+             * .withProperty(ClientConfiguration.ID, repeater.getId())
+             * .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
+             * thingDiscovered(discoveryResult);
+             */
+        });
+    }
+
+    private void discoverServer(ThingUID bridgeUID) throws FreeboxException {
         SystemConf config = bridgeHandler.getManager(SystemManager.class).getConfig();
 
         ThingTypeUID targetType = config.getBoardName().startsWith("fbxgw7") ? THING_TYPE_DELTA : THING_TYPE_REVOLUTION;
@@ -208,7 +227,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
         thingDiscovered(discoveryResult);
     }
 
-    private void discoverPlayer(Map<String, @Nullable LanHost> lanHosts) throws FreeboxException {
+    private void discoverPlayer(ThingUID bridgeUID, Map<String, LanHost> lanHosts) throws FreeboxException {
         PlayerManager playMgr = bridgeHandler.getManager(PlayerManager.class);
         for (Player player : playMgr.getPlayers()) {
             lanHosts.remove(player.getMac());

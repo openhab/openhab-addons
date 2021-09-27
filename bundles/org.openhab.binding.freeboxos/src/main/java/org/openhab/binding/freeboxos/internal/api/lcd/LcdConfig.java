@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.freeboxos.internal.api.lcd;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.Response;
+
 /**
  * The {@link LcdConfig} is the Java class used to map the "LcdConfig"
  * structure used by the LCD configuration API
@@ -19,7 +22,12 @@ package org.openhab.binding.freeboxos.internal.api.lcd;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class LcdConfig {
+    // Response classes
+    public static class LcdConfigResponse extends Response<LcdConfig> {
+    }
+
     private int brightness;
     private boolean orientationForced;
     private int orientation;

@@ -14,6 +14,8 @@ package org.openhab.binding.freeboxos.internal.api.login;
 
 import java.util.Map;
 
+import javax.validation.constraints.NotEmpty;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -60,9 +62,10 @@ public class Session {
     }
 
     private Map<Permission, @Nullable Boolean> permissions = Map.of();
-    private @Nullable String sessionToken;
+    @NotEmpty(message = "Session token can not be null or Empty")
+    private @NonNullByDefault({}) String sessionToken;
 
-    public @Nullable String getSessionToken() {
+    public String getSessionToken() {
         return sessionToken;
     }
 

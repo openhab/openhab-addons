@@ -12,17 +12,18 @@
  */
 package org.openhab.binding.freeboxos.internal.api.login;
 
+import static javax.xml.bind.DatatypeConverter.printHexBinary;
+
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.BaseResponse;
-import org.openhab.binding.freeboxos.internal.api.BaseResponse.ErrorCode;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.api.Response.ErrorCode;
 
 /**
  * The {@link OpenSessionData} holds and handle data needed to
@@ -40,20 +41,18 @@ public class OpenSessionData {
     public OpenSessionData(String appId, String appToken, String challenge) throws FreeboxException {
         this.appId = appId;
         try {
-            // Get an hmac_sha1 key from the raw key bytes
-            SecretKeySpec signingKey = new SecretKeySpec(appToken.getBytes(), ALGORITHM);
-
-            // Get an hmac_sha1 Mac instance and initialize with the signing key
             Mac mac = Mac.getInstance(ALGORITHM);
-            mac.init(signingKey);
+
+            // Initialize mac with the signing key
+            mac.init(new SecretKeySpec(appToken.getBytes(), mac.getAlgorithm()));
 
             // Compute the hmac on input data bytes
             byte[] rawHmac = mac.doFinal(challenge.getBytes());
 
             // Convert raw bytes to Hex
-            this.password = DatatypeConverter.printHexBinary(rawHmac).toLowerCase();
+            this.password = printHexBinary(rawHmac).toLowerCase();
         } catch (IllegalArgumentException | NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new FreeboxException("Error encoding session password", e, BaseResponse.of(ErrorCode.INVALID_TOKEN));
+            throw new FreeboxException("Error encoding session password", e, Response.of(ErrorCode.INVALID_TOKEN));
         }
     }
 

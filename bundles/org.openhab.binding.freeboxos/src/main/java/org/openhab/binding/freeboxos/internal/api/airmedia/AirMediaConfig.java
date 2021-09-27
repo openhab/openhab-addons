@@ -13,6 +13,7 @@
 package org.openhab.binding.freeboxos.internal.api.airmedia;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.Response;
 
 /**
  * The {@link AirMediaConfig} is the Java class used to map the "AirMediaConfig"
@@ -23,8 +24,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AirMediaConfig {
+    public static class AirMediaConfigResponse extends Response<AirMediaConfig> {
+    }
+
     private boolean enabled;
-    @SuppressWarnings("unused")
     private String password;
 
     private AirMediaConfig(boolean enabled, String password) {
@@ -38,5 +41,9 @@ public class AirMediaConfig {
 
     public void setEnable(boolean enable) {
         this.enabled = enable;
+    }
+
+    public String getPassword() {
+        return this.password;
     }
 }

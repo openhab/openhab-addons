@@ -18,13 +18,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link ApiConfiguration} is responsible for holding
+ * The {@link FreeboxOsConfiguration} is responsible for holding
  * configuration informations needed to access the Freebox API
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class ApiConfiguration {
+public class FreeboxOsConfiguration {
     public static final String API_DOMAIN = "api_domain";
     public static final String HTTPS_AVAILABLE = "https_available";
     public static final String HTTPS_PORT = "https_port";

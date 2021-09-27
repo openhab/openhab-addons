@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.freeboxos.internal.api.ftp;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.Response;
+
 /**
  * The {@link FtpConfig} is the Java class used to map the "FtpConfig"
  * structure used by the FTP configuration API
@@ -19,16 +22,21 @@ package org.openhab.binding.freeboxos.internal.api.ftp;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class FtpConfig {
+    // Response classes
+    public static class FtpConfigResponse extends Response<FtpConfig> {
+    }
+
     protected boolean enabled;
     protected boolean allowAnonymous;
     protected boolean allowAnonymousWrite;
-    protected String password;
+    protected String password = "";
     protected boolean allowRemoteAccess;
     protected boolean weakPassword;
     protected int portCtrl;
     protected int portData;
-    protected String remoteDomain;
+    protected String remoteDomain = "";
 
     public boolean isEnabled() {
         return enabled;

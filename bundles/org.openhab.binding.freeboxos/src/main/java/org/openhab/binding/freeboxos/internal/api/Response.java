@@ -12,7 +12,13 @@
  */
 package org.openhab.binding.freeboxos.internal.api;
 
+import javax.validation.Valid;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Defines an API result that returns a single object
@@ -20,17 +26,42 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public abstract class Response<T> extends BaseResponse {
+public class Response<T> {
+    public static enum ErrorCode {
+        NONE,
+        @SerializedName("auth_required")
+        AUTHORIZATION_REQUIRED,
+        @SerializedName("internal_error")
+        INTERNAL_ERROR,
+        @SerializedName("invalid_token")
+        INVALID_TOKEN;
+    }
 
-    private T result;
+    private boolean success;
+    private ErrorCode errorCode = ErrorCode.NONE;
+    private String msg = "";
+
+    private @Nullable Permission missingRight;
+
+    @Valid
+    private @NonNullByDefault({}) T result;
 
     public T getResult() {
         return result;
     }
 
-    // @Override
-    // protected @Nullable String internalEvaluate() {
-    // String base = super.internalEvaluate();
-    // return base != null ? base : ((result == null) ? "result should never be null" : null);
-    // }
+    public @Nullable Permission getMissingRight() {
+        return missingRight;
+    }
+
+    public ErrorCode getErrorCode() {
+        return errorCode;
+    }
+
+    public static Response<?> of(ErrorCode code) {
+        Response<?> response = new Response<Object>();
+        response.success = false;
+        response.errorCode = code;
+        return response;
+    }
 }

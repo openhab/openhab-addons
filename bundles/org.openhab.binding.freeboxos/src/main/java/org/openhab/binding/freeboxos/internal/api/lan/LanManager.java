@@ -16,14 +16,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 import org.openhab.binding.freeboxos.internal.api.lan.LanConfig.NetworkMode;
@@ -39,25 +38,27 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LanManager extends RestManager {
+    private static final String INTERFACES_SUB_PATH = "interfaces";
+    private static final String LAN_SUB_PATH = "lan";
+    private static final String BROWSER_SUB_PATH = "browser";
+
     private final Logger logger = LoggerFactory.getLogger(LanManager.class);
     private final List<LanInterface> interfaces = new ArrayList<>();
-    private @NonNullByDefault({}) NetworkMode networkMode;
-    private final UriBuilder browserBuilder;
+    private final NetworkMode networkMode;
+    private final UriBuilder browserUriBuilder;
 
-    public LanManager(FreeboxOsSession session) {
-        super("lan", session);
-        browserBuilder = getUriBuilder().path("browser");
+    public LanManager(FreeboxOsSession session) throws FreeboxException {
+        super(LAN_SUB_PATH, session);
+        browserUriBuilder = getUriBuilder().path(BROWSER_SUB_PATH);
+        this.networkMode = getLanConfig().getMode();
     }
 
     public NetworkMode getNetworkMode() throws FreeboxException {
-        if (networkMode == null) {
-            this.networkMode = getLanConfig().getMode();
-        }
         return networkMode;
     }
 
     public LanConfig getLanConfig() throws FreeboxException {
-        return get("config", LanConfigResponse.class, true);
+        return get(LanConfigResponse.class, CONFIG_SUB_PATH);
     }
 
     /*
@@ -65,15 +66,15 @@ public class LanManager extends RestManager {
      */
     private synchronized List<LanInterface> getLanInterfaces() throws FreeboxException {
         if (interfaces.isEmpty()) {
-            UriBuilder myBuilder = browserBuilder.clone().path("interfaces");
-            interfaces.addAll(getList(myBuilder.build(), LanInterfacesResponse.class, true));
+            UriBuilder myBuilder = browserUriBuilder.clone().path(INTERFACES_SUB_PATH);
+            interfaces.addAll(getList(LanInterfacesResponse.class, myBuilder.build()));
         }
         return interfaces;
     }
 
     private List<LanHost> getInterfaceHosts(String lanInterface) throws FreeboxException {
-        UriBuilder myBuilder = browserBuilder.clone().path(lanInterface);
-        return getList(myBuilder.build(), LanHostsConfigResponse.class, true);
+        UriBuilder myBuilder = browserUriBuilder.clone().path(lanInterface);
+        return getList(LanHostsConfigResponse.class, myBuilder.build());
     }
 
     private synchronized List<LanHost> getHosts() throws FreeboxException {
@@ -93,8 +94,8 @@ public class LanManager extends RestManager {
         return hosts;
     }
 
-    public Map<String, @Nullable LanHost> getHostsMap() throws FreeboxException {
-        Map<String, @Nullable LanHost> result = new HashMap<>();
+    public Map<String, LanHost> getHostsMap() throws FreeboxException {
+        Map<String, LanHost> result = new HashMap<>();
         getHosts().stream().forEach(host -> {
             String mac = host.getMac();
             if (mac != null) {
@@ -104,18 +105,22 @@ public class LanManager extends RestManager {
         return result;
     }
 
+    public Optional<LanHost> getHost(String mac) throws FreeboxException {
+        return Optional.ofNullable(getHostsMap().get(mac));
+    }
+
     public void wakeOnLan(String host) throws FreeboxException {
         WakeOnLineData wol = new WakeOnLineData(host);
         post("wol/" + host, wol);
     }
 
-    // Response classes and validity evaluations
+    // Response classes
     private static class LanConfigResponse extends Response<LanConfig> {
     }
 
-    private static class LanInterfacesResponse extends ListResponse<LanInterface> {
+    private static class LanInterfacesResponse extends Response<List<LanInterface>> {
     }
 
-    private static class LanHostsConfigResponse extends ListResponse<LanHost> {
+    private static class LanHostsConfigResponse extends Response<List<LanHost>> {
     }
 }

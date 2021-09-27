@@ -27,16 +27,17 @@ import org.openhab.binding.freeboxos.internal.api.RestManager;
  */
 @NonNullByDefault
 public class ConnectionManager extends RestManager {
+    private static final String CONNECTION_PATH = "connection";
 
     public ConnectionManager(FreeboxOsSession session) {
-        super("connection", session);
+        super(CONNECTION_PATH, session);
     }
 
     public ConnectionStatus getStatus() throws FreeboxException {
-        return get(null, ConnectionStatusResponse.class, true);
+        return get(ConnectionStatusResponse.class);
     }
 
-    // Response classes and validity evaluations
+    // Response classes
     private static class ConnectionStatusResponse extends Response<ConnectionStatus> {
     }
 }

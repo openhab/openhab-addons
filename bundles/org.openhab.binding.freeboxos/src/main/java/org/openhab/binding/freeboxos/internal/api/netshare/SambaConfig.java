@@ -14,6 +14,7 @@ package org.openhab.binding.freeboxos.internal.api.netshare;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.Response;
 
 /**
  * The {@link SambaConfig} is the Java class used to map answer
@@ -24,6 +25,10 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class SambaConfig {
+    // Response classes
+    public static class SambaConfigResponse extends Response<SambaConfig> {
+    }
+
     private boolean fileShareEnabled;
     private boolean printShareEnabled;
     protected boolean logonEnabled;

@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link PlayerConfiguration} is responsible for holding
- * configuration informations needed to access/poll the freebox server
+ * configuration informations needed to access/poll the freebox player
  *
  * @author Gaël L'hopital - Initial contribution
  */

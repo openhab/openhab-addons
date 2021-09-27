@@ -13,10 +13,10 @@
 package org.openhab.binding.freeboxos.internal.api.ftp;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.RestManager;
+import org.openhab.binding.freeboxos.internal.api.ftp.FtpConfig.FtpConfigResponse;
 
 /**
  * The {@link FtpManager} is the Java class used to handle api requests
@@ -26,29 +26,20 @@ import org.openhab.binding.freeboxos.internal.api.RestManager;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class FtpManager extends RestManager {
+public class FtpManager extends ConfigurableRest<FtpConfig, FtpConfigResponse> {
     private static final String FTP_PATH = "ftp";
-    private static final String CONFIG_SPATH = "config";
 
     public FtpManager(FreeboxOsSession session) {
-        super(FTP_PATH, session);
+        super(FTP_PATH, CONFIG_SUB_PATH, session, FtpConfigResponse.class);
     }
 
     public boolean getFtpStatus() throws FreeboxException {
-        return getFtpConfig().isEnabled();
+        return getConfig().isEnabled();
     }
 
-    public boolean changeFtpStatus(boolean enable) throws FreeboxException {
-        FtpConfig config = getFtpConfig();
+    public boolean setFtpStatus(boolean enable) throws FreeboxException {
+        FtpConfig config = getConfig();
         config.setEnabled(enable);
-        return put(FtpConfigResponse.class, CONFIG_SPATH, config).isEnabled();
-    }
-
-    private FtpConfig getFtpConfig() throws FreeboxException {
-        return get(CONFIG_SPATH, FtpConfigResponse.class, true);
-    }
-
-    // Response classes and validity evaluations
-    private static class FtpConfigResponse extends Response<FtpConfig> {
+        return setConfig(config).isEnabled();
     }
 }

@@ -13,7 +13,7 @@
 package org.openhab.binding.freeboxos.internal.discovery;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
-import static org.openhab.binding.freeboxos.internal.config.ApiConfiguration.*;
+import static org.openhab.binding.freeboxos.internal.config.FreeboxOsConfiguration.*;
 
 import java.util.Set;
 

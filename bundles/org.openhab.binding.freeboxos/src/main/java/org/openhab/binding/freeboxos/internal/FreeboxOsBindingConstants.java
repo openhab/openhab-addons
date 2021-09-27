@@ -17,7 +17,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.types.Command;
 
 /**
  * The {@link FreeboxBinding} class defines common constants, which are
@@ -62,7 +66,6 @@ public class FreeboxOsBindingConstants {
     public static final String SYS_INFO = "sysinfo";
     public static final String ACTIONS = "actions";
     public static final String FILE_SHARING = "file-sharing";
-    public static final String PLAYER_ACTIONS = "player-actions";
     public static final String CONNECTIVITY = "connectivity";
     public static final String STATE = "state";
     public static final String DISPLAY = "display";
@@ -124,4 +127,7 @@ public class FreeboxOsBindingConstants {
 
     // Defaults api strings
     public static final String DEFAULT_FREEBOX_NAME = "mafreebox.freebox.fr";
+
+    public static final Set<Command> TRUE_COMMANDS = Set.of(OnOffType.ON, UpDownType.UP, OpenClosedType.OPEN);
+    public static final Set<Class<?>> ON_OFF_CLASSES = Set.of(OnOffType.class, UpDownType.class, OpenClosedType.class);
 }

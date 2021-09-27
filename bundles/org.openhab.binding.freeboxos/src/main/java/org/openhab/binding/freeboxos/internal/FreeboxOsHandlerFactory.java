@@ -14,12 +14,17 @@ package org.openhab.binding.freeboxos.internal;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.handler.ActivePlayerHandler;
-import org.openhab.binding.freeboxos.internal.handler.FreeboxOsBridgeHandler;
+import org.openhab.binding.freeboxos.internal.handler.FreeboxOsHandler;
 import org.openhab.binding.freeboxos.internal.handler.HostHandler;
 import org.openhab.binding.freeboxos.internal.handler.LandlineHandler;
 import org.openhab.binding.freeboxos.internal.handler.PlayerHandler;
@@ -53,6 +58,7 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
     private final AudioHTTPServer audioHTTPServer;
     private final NetworkAddressService networkAddressService;
     private final ApiHandler apiHandler;
+    private final Validator validator;
 
     @Activate
     public FreeboxOsHandlerFactory(final @Reference AudioHTTPServer audioHTTPServer,
@@ -62,6 +68,9 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
         this.audioHTTPServer = audioHTTPServer;
         this.networkAddressService = networkAddressService;
         this.apiHandler = apiHandler;
+        ValidatorFactory validatorFactory = Validation.byDefaultProvider().providerResolver(new OsgiServiceDiscoverer())
+                .configure().messageInterpolator(new ParameterMessageInterpolator()).buildValidatorFactory();
+        validator = validatorFactory.getValidator();
     }
 
     @Override
@@ -71,13 +80,14 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
+        // Validate bean
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(BRIDGE_TYPE_API)) {
-            return new FreeboxOsBridgeHandler((Bridge) thing, new FreeboxOsSession(apiHandler));
+            return new FreeboxOsHandler((Bridge) thing, new FreeboxOsSession(apiHandler, validator));
         } else if (thingTypeUID.equals(THING_TYPE_REVOLUTION)) {
-            return new RevolutionHandler(thing);
+            return new RevolutionHandler(thing, audioHTTPServer, networkAddressService, bundleContext);
         } else if (thingTypeUID.equals(THING_TYPE_DELTA)) {
-            return new ServerHandler(thing);
+            return new ServerHandler(thing, audioHTTPServer, networkAddressService, bundleContext);
         } else if (thingTypeUID.equals(THING_TYPE_ACTIVE_PLAYER)) {
             return new ActivePlayerHandler(thing, audioHTTPServer, networkAddressService, bundleContext);
         } else if (thingTypeUID.equals(THING_TYPE_PLAYER)) {

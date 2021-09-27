@@ -22,11 +22,11 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.RestManager;
+import org.openhab.binding.freeboxos.internal.api.wifi.WifiConfig.WifiConfigResponse;
 
 /**
  * The {@link WifiManager} is the Java class used to handle api requests
@@ -35,34 +35,37 @@ import org.openhab.binding.freeboxos.internal.api.RestManager;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class WifiManager extends RestManager {
+public class WifiManager extends ConfigurableRest<WifiConfig, WifiConfigResponse> {
+    private static final String AP_SUB_PATH = "ap";
+    private static final String WIFI_SUB_PATH = "wifi";
+
     private List<AccessPoint> accessPoints = new ArrayList<>();
     private final UriBuilder apBuilder;
 
     public WifiManager(FreeboxOsSession session) {
-        super("wifi", session);
-        apBuilder = getUriBuilder().path("ap");
+        super(WIFI_SUB_PATH, CONFIG_SUB_PATH, session, WifiConfigResponse.class);
+        apBuilder = getUriBuilder().path(AP_SUB_PATH);
     }
 
     public boolean getStatus() throws FreeboxException {
-        return get("config", WifiGlobalConfigResponse.class, true).isEnabled();
+        return getConfig().isEnabled();
     }
 
     public boolean setStatus(boolean enable) throws FreeboxException {
         WifiConfig config = new WifiConfig();
-        return put(WifiGlobalConfigResponse.class, "config", config).isEnabled();
+        return setConfig(config).isEnabled();
     }
 
     private synchronized List<AccessPoint> getAccessPoints() throws FreeboxException {
         if (accessPoints.isEmpty()) {
-            accessPoints.addAll(getList(apBuilder.build(), AccessPointsResponse.class, true));
+            accessPoints.addAll(getList(AccessPointsResponse.class, apBuilder.build()));
         }
         return accessPoints;
     }
 
     private @Nullable List<AccessPointHost> getAccessPointHosts(int apId) throws FreeboxException {
         UriBuilder myBuilder = apBuilder.clone().path(Integer.toString(apId)).path("stations");
-        return getList(myBuilder.build(), AccessPointHostsResponse.class, true);
+        return getList(AccessPointHostsResponse.class, myBuilder.build());
     }
 
     public Map<String, @Nullable AccessPointHost> getHostsMap() throws FreeboxException {
@@ -89,13 +92,10 @@ public class WifiManager extends RestManager {
         return getHosts().stream().filter(host -> host.getMac().equalsIgnoreCase(mac)).findFirst();
     }
 
-    // Response classes and validity evaluations
-    private static class WifiGlobalConfigResponse extends Response<WifiConfig> {
+    // Response classes
+    private class AccessPointHostsResponse extends Response<List<AccessPointHost>> {
     }
 
-    private class AccessPointHostsResponse extends ListResponse<AccessPointHost> {
-    }
-
-    private class AccessPointsResponse extends ListResponse<AccessPoint> {
+    private class AccessPointsResponse extends Response<List<AccessPoint>> {
     }
 }

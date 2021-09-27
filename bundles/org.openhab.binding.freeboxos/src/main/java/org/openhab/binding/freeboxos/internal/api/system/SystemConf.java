@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.Response;
 
 /**
  * The {@link SystemConf} is the Java class used to map the "SystemConfig"
@@ -26,6 +27,10 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class SystemConf extends DeviceConfig {
+    // Response classes
+    public static class SystemConfigurationResponse extends Response<SystemConf> {
+    }
+
     private @NonNullByDefault({}) String mac;
     private @Nullable List<Sensor> fans;
     private @Nullable List<Sensor> sensors;

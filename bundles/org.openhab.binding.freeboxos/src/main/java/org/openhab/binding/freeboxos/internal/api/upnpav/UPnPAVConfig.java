@@ -13,6 +13,7 @@
 package org.openhab.binding.freeboxos.internal.api.upnpav;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.Response;
 
 /**
  * The {@link UPnPAVConfig} is the Java class used to map the "UPnPAVConfig"
@@ -23,6 +24,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class UPnPAVConfig {
+    // Response classes
+    public static class UPnPAVConfigResponse extends Response<UPnPAVConfig> {
+    }
+
     private boolean enabled;
 
     public boolean isEnabled() {

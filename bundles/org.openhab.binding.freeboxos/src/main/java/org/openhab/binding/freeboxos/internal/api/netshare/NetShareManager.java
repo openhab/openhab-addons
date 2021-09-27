@@ -13,10 +13,9 @@
 package org.openhab.binding.freeboxos.internal.api.netshare;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.RestManager;
+import org.openhab.binding.freeboxos.internal.api.netshare.SambaConfig.SambaConfigResponse;
 
 /**
  * The {@link NetShareManager} is the Java class used to handle api requests
@@ -25,21 +24,11 @@ import org.openhab.binding.freeboxos.internal.api.RestManager;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class NetShareManager extends RestManager {
+public class NetShareManager extends ConfigurableRest<SambaConfig, SambaConfigResponse> {
+    private static final String NETSHARE_SUB_PATH = "netshare";
+    private static final String SAMBA_SUB_PATH = "samba";
 
     public NetShareManager(FreeboxOsSession session) {
-        super("netshare/samba", session);
-    }
-
-    public SambaConfig getSambaConfig() throws FreeboxException {
-        return get(null, SambaConfigResponse.class, true);
-    }
-
-    public SambaConfig setSambaConfig(SambaConfig config) throws FreeboxException {
-        return put(SambaConfigResponse.class, null, config);
-    }
-
-    // Response classes and validity evaluations
-    private static class SambaConfigResponse extends Response<SambaConfig> {
+        super(NETSHARE_SUB_PATH, SAMBA_SUB_PATH, session, SambaConfigResponse.class);
     }
 }

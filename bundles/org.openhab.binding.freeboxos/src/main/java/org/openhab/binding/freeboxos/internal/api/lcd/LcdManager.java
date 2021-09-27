@@ -13,10 +13,9 @@
 package org.openhab.binding.freeboxos.internal.api.lcd;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.RestManager;
+import org.openhab.binding.freeboxos.internal.api.lcd.LcdConfig.LcdConfigResponse;
 
 /**
  * The {@link LcdManager} is the Java class used to handle api requests
@@ -26,21 +25,10 @@ import org.openhab.binding.freeboxos.internal.api.RestManager;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class LcdManager extends RestManager {
+public class LcdManager extends ConfigurableRest<LcdConfig, LcdConfigResponse> {
+    private static final String LCD_SUB_PATH = "lcd";
 
     public LcdManager(FreeboxOsSession session) {
-        super("lcd/config", session);
-    }
-
-    public LcdConfig getConfig() throws FreeboxException {
-        return get(null, LcdConfigResponse.class, true);
-    }
-
-    public LcdConfig setConfig(LcdConfig config) throws FreeboxException {
-        return put(LcdConfigResponse.class, null, config);
-    }
-
-    // Response classes and validity evaluations
-    private static class LcdConfigResponse extends Response<LcdConfig> {
+        super(LCD_SUB_PATH, CONFIG_SUB_PATH, session, LcdConfigResponse.class);
     }
 }

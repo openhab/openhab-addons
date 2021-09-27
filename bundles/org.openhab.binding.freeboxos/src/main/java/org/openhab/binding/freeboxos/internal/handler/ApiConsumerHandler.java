@@ -14,7 +14,6 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import java.time.ZonedDateTime;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -28,10 +27,8 @@ import org.openhab.binding.freeboxos.internal.config.ApiConsumerConfiguration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -54,21 +51,17 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 abstract class ApiConsumerHandler extends BaseThingHandler {
-    protected static final Set<Command> TRUE_COMMANDS = Set.of(OnOffType.ON, UpDownType.UP, OpenClosedType.OPEN);
-    protected static final Set<Class<?>> ON_OFF_CLASSES = Set.of(OnOffType.class, UpDownType.class,
-            OpenClosedType.class);
-
     private final Logger logger = LoggerFactory.getLogger(ApiConsumerHandler.class);
 
     private @Nullable ScheduledFuture<?> globalJob;
-    private @Nullable FreeboxOsBridgeHandler bridgeHandler;
+    private @Nullable FreeboxOsHandler bridgeHandler;
 
     ApiConsumerHandler(Thing thing) {
         super(thing);
     }
 
     public <T extends RestManager> T getManager(Class<T> classOfT) throws FreeboxException {
-        FreeboxOsBridgeHandler handler = bridgeHandler;
+        FreeboxOsHandler handler = bridgeHandler;
         if (handler == null) {
             throw new FreeboxException("bridge handler not yet defined");
         }
@@ -118,13 +111,13 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
         }
     }
 
-    protected boolean checkBridgeHandler() {
+    private boolean checkBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof FreeboxOsBridgeHandler) {
+            if (handler instanceof FreeboxOsHandler) {
                 if (bridge.getStatus() == ThingStatus.ONLINE) {
-                    bridgeHandler = (FreeboxOsBridgeHandler) handler;
+                    bridgeHandler = (FreeboxOsHandler) handler;
                     updateStatus(ThingStatus.ONLINE);
                     return true;
                 }
@@ -148,18 +141,17 @@ abstract class ApiConsumerHandler extends BaseThingHandler {
     private void startRefreshJob() {
         ScheduledFuture<?> job = globalJob;
         if (job == null || job.isCancelled()) {
-            ApiConsumerConfiguration configuration = getConfigAs(ApiConsumerConfiguration.class);
-            logger.debug("Scheduling state update every {} seconds for thing {}...", configuration.refreshInterval,
+            int refreshInterval = getConfigAs(ApiConsumerConfiguration.class).refreshInterval;
+            logger.debug("Scheduling state update every {} seconds for thing {}...", refreshInterval,
                     getThing().getUID());
             globalJob = scheduler.scheduleWithFixedDelay(() -> {
                 try {
-                    updateStatus(ThingStatus.ONLINE);
                     internalPoll();
                 } catch (FreeboxException e) {
                     logger.warn("Error polling thing {} : {}", getThing().getUID(), e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
-            }, 0, configuration.refreshInterval, TimeUnit.SECONDS);
+            }, 0, refreshInterval, TimeUnit.SECONDS);
         }
     }
 

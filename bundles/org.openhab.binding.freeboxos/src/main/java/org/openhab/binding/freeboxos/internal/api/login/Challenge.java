@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.freeboxos.internal.api.login;
 
+import javax.validation.constraints.NotEmpty;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -39,20 +40,20 @@ public class Challenge {
         DENIED;// the user denied the authorization request
     }
 
-    private @Nullable Status status;
-    private @Nullable String challenge;
+    private Status status = Status.UNKNOWN;
+    @NotEmpty(message = "Challenge can not be null")
+    private @NonNullByDefault({}) String challenge;
     private boolean loggedIn;
 
     public boolean isLoggedIn() {
         return loggedIn;
     }
 
-    public @Nullable String getChallenge() {
+    public String getChallenge() {
         return challenge;
     }
 
     public Status getStatus() {
-        Status localStatus = status;
-        return localStatus != null ? localStatus : Status.UNKNOWN;
+        return status;
     }
 }

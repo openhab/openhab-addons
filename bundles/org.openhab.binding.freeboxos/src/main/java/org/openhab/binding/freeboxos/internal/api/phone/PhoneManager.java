@@ -13,11 +13,11 @@
 package org.openhab.binding.freeboxos.internal.api.phone;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
@@ -30,21 +30,23 @@ import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
  */
 @NonNullByDefault
 public class PhoneManager extends RestManager {
+    private static final String PHONE_SUB_PATH = "phone";
 
     public PhoneManager(FreeboxOsSession session) throws FreeboxException {
-        super("phone", session, Permission.CALLS);
+        super(PHONE_SUB_PATH, session, Permission.CALLS);
     }
 
-    public PhoneStatus getStatus() throws FreeboxException {
-        List<PhoneStatus> statuses = getList(PhoneStatusResponse.class, true);
-        if (statuses.size() > 0) {
-            return statuses.get(0);
-        }
-        throw new FreeboxException("No phone status in response");
+    public List<PhoneStatus> getPhoneStatuses() throws FreeboxException {
+        return getList(PhoneStatusResponse.class, getUriBuilder().build());
+    }
+
+    public Optional<PhoneStatus> getStatus(int id) throws FreeboxException {
+        List<PhoneStatus> statuses = getPhoneStatuses();
+        return statuses.stream().filter(status -> status.getId() == id).findFirst();
     }
 
     public PhoneConfig getConfig() throws FreeboxException {
-        return get("config", PhoneConfigResponse.class, true);
+        return get(PhoneConfigResponse.class, CONFIG_SUB_PATH);
     }
 
     public void ring(boolean startIt) throws FreeboxException {
@@ -54,23 +56,18 @@ public class PhoneManager extends RestManager {
     public void activateDect(boolean status) throws FreeboxException {
         PhoneConfig config = getConfig();
         config.setDectEnabled(status);
-        put(PhoneConfigResponse.class, "config", config);
+        put(PhoneConfigResponse.class, CONFIG_SUB_PATH, config);
     }
 
     public void alternateRing(boolean status) throws FreeboxException {
         PhoneConfig config = getConfig();
         config.setDectRingOnOff(status);
-        put(PhoneConfigResponse.class, "config", config);
+        put(PhoneConfigResponse.class, CONFIG_SUB_PATH, config);
     }
 
     private class PhoneConfigResponse extends Response<PhoneConfig> {
     }
 
-    private static class PhoneStatusResponse extends ListResponse<PhoneStatus> {
-        // @Override
-        // protected @Nullable String internalEvaluate() {
-        // String error = super.internalEvaluate();
-        // return error != null ? error : getResult().size() == 0 ? "No phone status in response" : null;
-        // }
+    private static class PhoneStatusResponse extends Response<List<PhoneStatus>> {
     }
 }

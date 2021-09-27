@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,11 +29,13 @@ import org.openhab.binding.freeboxos.internal.api.call.CallManager;
 import org.openhab.binding.freeboxos.internal.api.phone.PhoneConfig;
 import org.openhab.binding.freeboxos.internal.api.phone.PhoneManager;
 import org.openhab.binding.freeboxos.internal.api.phone.PhoneStatus;
+import org.openhab.binding.freeboxos.internal.config.ClientConfiguration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,14 +63,16 @@ public class LandlineHandler extends ApiConsumerHandler {
     @Override
     void internalGetProperties(Map<String, String> properties) throws FreeboxException {
         PhoneManager phoneManager = getManager(PhoneManager.class);
-        PhoneStatus config = phoneManager.getStatus();
-        properties.put(PHONE_TYPE, config.getType().name());
+        List<PhoneStatus> phones = phoneManager.getPhoneStatuses();
+        phones.stream().filter(phone -> phone.getId() == getConfigAs(ClientConfiguration.class).id).findFirst()
+                .ifPresent(config -> properties.put(PHONE_TYPE, config.getType().name()));
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
         pollStatus();
         pollCalls();
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void pollCalls() throws FreeboxException {
@@ -95,9 +100,10 @@ public class LandlineHandler extends ApiConsumerHandler {
         logger.debug("Polling phone status...");
         PhoneManager phoneManager = getManager(PhoneManager.class);
 
-        PhoneStatus status = phoneManager.getStatus();
-        updateChannelOnOff(STATE, ONHOOK, status.isOnHook());
-        updateChannelOnOff(STATE, RINGING, status.isRinging());
+        phoneManager.getStatus(getConfigAs(ClientConfiguration.class).id).ifPresent(status -> {
+            updateChannelOnOff(STATE, ONHOOK, status.isOnHook());
+            updateChannelOnOff(STATE, RINGING, status.isRinging());
+        });
 
         PhoneConfig config = phoneManager.getConfig();
         updateChannelOnOff(PHONE_MISC, ALTERNATE_RING, config.isDectRingOnOff());

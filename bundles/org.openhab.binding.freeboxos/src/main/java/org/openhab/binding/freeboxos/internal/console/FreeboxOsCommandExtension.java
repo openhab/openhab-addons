@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.freeboxos.internal.console;
 
-import static org.openhab.binding.freeboxos.internal.config.ApiConfiguration.APP_TOKEN;
+import static org.openhab.binding.freeboxos.internal.config.FreeboxOsConfiguration.APP_TOKEN;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants;
-import org.openhab.binding.freeboxos.internal.handler.FreeboxOsBridgeHandler;
+import org.openhab.binding.freeboxos.internal.handler.FreeboxOsHandler;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
@@ -60,11 +60,11 @@ public class FreeboxOsCommandExtension extends AbstractConsoleCommandExtension {
                 thing = null;
             }
             ThingHandler thingHandler = null;
-            FreeboxOsBridgeHandler handler = null;
+            FreeboxOsHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof FreeboxOsBridgeHandler) {
-                    handler = (FreeboxOsBridgeHandler) thingHandler;
+                if (thingHandler instanceof FreeboxOsHandler) {
+                    handler = (FreeboxOsHandler) thingHandler;
                 }
             }
             if (thing == null) {

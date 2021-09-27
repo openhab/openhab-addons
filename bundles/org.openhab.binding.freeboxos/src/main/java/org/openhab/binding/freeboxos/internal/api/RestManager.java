@@ -20,7 +20,6 @@ import java.util.List;
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
 
 /**
@@ -30,8 +29,11 @@ import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
  */
 @NonNullByDefault
 public class RestManager {
+    protected static final String CONFIG_SUB_PATH = "config";
+    protected static final String REBOOT_SUB_PATH = "reboot";
+
     private final UriBuilder uriBuilder;
-    protected FreeboxOsSession session;
+    private FreeboxOsSession session;
 
     public RestManager(String path, FreeboxOsSession session) {
         this.uriBuilder = session.getUriBuilder().path(path);
@@ -49,45 +51,43 @@ public class RestManager {
         return uriBuilder.clone();
     }
 
-    private URI buildUri(@Nullable String path) {
-        UriBuilder builder = getUriBuilder();
-        if (path != null) {
-            builder.path(path);
-        }
-        return builder.build();
+    private URI buildUri(String path) {
+        return getUriBuilder().path(path).build();
     }
 
-    public <F, T extends ListResponse<F>> List<F> getList(URI uri, Class<T> classOfT, boolean retryAuth)
-            throws FreeboxException {
-        return session.executeList(uri, GET, retryAuth, 3, classOfT, null);
+    @SuppressWarnings("null")
+    public <F, T extends Response<List<F>>> List<F> getList(Class<T> classOfT, URI uri) throws FreeboxException {
+        // GetList may return null object because API does not return anything for empty lists
+        List<F> result = session.execute(uri, GET, classOfT, null);
+        return result != null ? result : List.of();
     }
 
-    public <F, T extends ListResponse<F>> List<F> getList(Class<T> classOfT, boolean retryAuth)
-            throws FreeboxException {
-        return getList(buildUri(null), classOfT, retryAuth);
+    public <F, T extends Response<F>> F get(Class<T> classOfT) throws FreeboxException {
+        return session.execute(getUriBuilder().build(), GET, classOfT, null);
     }
 
-    public <F, T extends Response<F>> F get(@Nullable String path, @Nullable Class<T> classOfT, boolean retryAuth)
-            throws FreeboxException {
-        return session.execute(buildUri(path), GET, retryAuth, 3, classOfT, null);
+    public <F, T extends Response<F>> F get(Class<T> classOfT, String path) throws FreeboxException {
+        return session.execute(buildUri(path), GET, classOfT, null);
     }
 
     public void post(String path, Object payload) throws FreeboxException {
-        session.execute(buildUri(path), POST, true, 3, GenericResponse.class, payload);
+        session.execute(buildUri(path), POST, GenericResponse.class, payload);
     }
 
     public void post(String path) throws FreeboxException {
-        session.execute(buildUri(path), POST, true, 3, GenericResponse.class, null);
+        session.execute(buildUri(path), POST, GenericResponse.class, null);
     }
 
-    public <F, T extends Response<F>> F post(Class<T> classOfT, @Nullable String path, @Nullable Object payload)
-            throws FreeboxException {
-        return session.execute(buildUri(path), POST, true, 3, classOfT, payload);
+    public <F, T extends Response<F>> F post(Class<T> classOfT, String path, Object payload) throws FreeboxException {
+        return session.execute(buildUri(path), POST, classOfT, payload);
     }
 
-    public <F, T extends Response<F>> F put(Class<T> classOfT, @Nullable String path, Object payload)
-            throws FreeboxException {
-        return session.execute(buildUri(path), PUT, true, 3, classOfT, payload);
+    public <F, T extends Response<F>> F put(Class<T> classOfT, F payload) throws FreeboxException {
+        return session.execute(getUriBuilder().build(), PUT, classOfT, payload);
+    }
+
+    public <F, T extends Response<F>> F put(Class<T> classOfT, String path, F payload) throws FreeboxException {
+        return session.execute(buildUri(path), PUT, classOfT, payload);
     }
 
     private class GenericResponse extends Response<Object> {

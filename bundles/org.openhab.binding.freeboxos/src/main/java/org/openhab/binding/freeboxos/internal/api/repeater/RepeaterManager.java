@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 import org.openhab.binding.freeboxos.internal.api.lan.LanHost;
@@ -36,24 +35,21 @@ import org.openhab.binding.freeboxos.internal.api.lan.LanHost;
  */
 @NonNullByDefault
 public class RepeaterManager extends RestManager {
-    private static String REPEATER_URL = "repeater";
-    private List<Repeater> repeaters = new ArrayList<>();
+    private static final String HOST_SUB_PATH = "host";
+    private final static String REPEATER_SUB_PATH = "repeater";
 
     public RepeaterManager(FreeboxOsSession session) throws FreeboxException {
-        super(REPEATER_URL, session);
+        super(REPEATER_SUB_PATH, session);
     }
 
-    public synchronized List<Repeater> getRepeaters() throws FreeboxException {
-        if (repeaters.isEmpty()) {
-            repeaters.addAll(getList(RepeatersResponse.class, true));
-        }
-        return repeaters;
+    public List<Repeater> getRepeaters() throws FreeboxException {
+        return get(RepeatersResponse.class);
     }
 
     public List<LanHost> getRepeaterHosts(int id) throws FreeboxException {
         UriBuilder myBuilder = getUriBuilder();
-        myBuilder.path(Integer.toString(id)).path("host");
-        return getList(myBuilder.build(), AccessPointHostsResponse.class, true);
+        myBuilder.path(Integer.toString(id)).path(HOST_SUB_PATH);
+        return getList(AccessPointHostsResponse.class, myBuilder.build());
     }
 
     private synchronized List<LanHost> getHosts() throws FreeboxException {
@@ -77,16 +73,16 @@ public class RepeaterManager extends RestManager {
     }
 
     public Repeater getRepeater(int id) throws FreeboxException {
-        return get(String.format("%d", id), RepeaterResponse.class, true);
+        return get(RepeaterResponse.class, String.format("%d", id));
     }
 
     // Response classes
-    private static class RepeatersResponse extends ListResponse<Repeater> {
+    private static class RepeatersResponse extends Response<List<Repeater>> {
     }
 
     private static class RepeaterResponse extends Response<Repeater> {
     }
 
-    private static class AccessPointHostsResponse extends ListResponse<LanHost> {
+    private static class AccessPointHostsResponse extends Response<List<LanHost>> {
     }
 }

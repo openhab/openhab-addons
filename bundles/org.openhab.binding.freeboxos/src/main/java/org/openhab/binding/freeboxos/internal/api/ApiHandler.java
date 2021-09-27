@@ -76,8 +76,8 @@ public class ApiHandler {
                 .create();
     }
 
-    public synchronized <T> T executeUri(URI uri, HttpMethod method, @Nullable String sessionToken,
-            @Nullable Object payload, @Nullable Type classOfT) throws FreeboxException {
+    synchronized <T> T executeUri(URI uri, HttpMethod method, Type classOfT, @Nullable String sessionToken,
+            @Nullable Object payload) throws FreeboxException {
         logger.debug("executeUrl {} - {} ", method, uri);
 
         Request request = httpClient.newRequest(uri).method(method).header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE);
@@ -96,9 +96,9 @@ public class ApiHandler {
 
             logger.trace("executeUrl {} - {} returned {}", method, uri, response);
 
-            return gson.fromJson(response, classOfT != null ? classOfT : BaseResponse.class);
+            return gson.fromJson(response, classOfT);
         } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
-            throw new FreeboxException("Exception while calling " + request.getURI(), e);
+            throw new FreeboxException(e, "Exception while calling " + request.getURI());
         }
     }
 }

@@ -13,8 +13,6 @@
 package org.openhab.binding.freeboxos.internal.api.login;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.BaseResponse;
-import org.openhab.binding.freeboxos.internal.api.BaseResponse.ErrorCode;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.Response;
@@ -43,12 +41,9 @@ public class LoginManager extends RestManager {
     }
 
     public Session openSession(String appToken) throws FreeboxException {
-        String challenge = get(null, ChallengeResponse.class, false).getChallenge();
-        if (challenge != null) {
-            OpenSessionData payload = new OpenSessionData(APP_ID, appToken, challenge);
-            return post(SessionResponse.class, SESSION_PATH, payload);
-        }
-        throw new FreeboxException("Empty challenge in response", null, BaseResponse.of(ErrorCode.INVALID_TOKEN));
+        String challenge = get(ChallengeResponse.class).getChallenge();
+        OpenSessionData payload = new OpenSessionData(APP_ID, appToken, challenge);
+        return post(SessionResponse.class, SESSION_PATH, payload);
     }
 
     public void closeSession() throws FreeboxException {
@@ -57,7 +52,7 @@ public class LoginManager extends RestManager {
 
     private Status trackAuthorize(int trackId) throws FreeboxException {
         if (trackId != 0) {
-            return get(String.format("%s/%d", AUTHORIZE_PATH, trackId), ChallengeResponse.class, false).getStatus();
+            return get(ChallengeResponse.class, String.format("%s/%d", AUTHORIZE_PATH, trackId)).getStatus();
         }
         throw new FreeboxException("no trackId");
     }
@@ -75,25 +70,15 @@ public class LoginManager extends RestManager {
             }
             throw new FreeboxException("Unable to grant session");
         } catch (InterruptedException e) {
-            throw new FreeboxException("Granting process interrupted", e);
+            throw new FreeboxException(e, "Granting process interrupted");
         }
     }
 
-    // Response classes and validity evaluations
+    // Response classes
     private static class ChallengeResponse extends Response<Challenge> {
-        // @Override
-        // protected @Nullable String internalEvaluate() {
-        // String error = super.internalEvaluate();
-        // return error != null ? error : getResult().getChallenge() == null ? "No challenge in response" : null;
-        // }
     }
 
     private static class SessionResponse extends Response<Session> {
-        // @Override
-        // protected @Nullable String internalEvaluate() {
-        // String error = super.internalEvaluate();
-        // return error != null ? error : getResult().getSessionToken() == null ? "No session token" : null;
-        // }
     }
 
     private static class AuthorizeResponse extends Response<Authorize> {

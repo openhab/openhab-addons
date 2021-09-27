@@ -17,7 +17,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.ListResponse;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.RestManager;
 import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
@@ -30,12 +29,14 @@ import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
  */
 @NonNullByDefault
 public class VmManager extends RestManager {
+    private static final String VM_SUB_PATH = "vm";
+
     public VmManager(FreeboxOsSession session) throws FreeboxException {
-        super("vm", session, Permission.VM);
+        super(VM_SUB_PATH, session, Permission.VM);
     }
 
     public VirtualMachine getVM(int vmId) throws FreeboxException {
-        return get(String.format("%d", vmId), VirtualMachineResponse.class, true);
+        return get(VirtualMachineResponse.class, String.format("%d", vmId));
     }
 
     public void power(int vmId, boolean startIt) throws FreeboxException {
@@ -43,13 +44,13 @@ public class VmManager extends RestManager {
     }
 
     public List<VirtualMachine> getVms() throws FreeboxException {
-        return getList(VirtualMachinesResponse.class, true);
+        return get(VirtualMachinesResponse.class);
     }
 
-    // Response classes and validity evaluations
+    // Response classes
     private class VirtualMachineResponse extends Response<VirtualMachine> {
     }
 
-    private class VirtualMachinesResponse extends ListResponse<VirtualMachine> {
+    private class VirtualMachinesResponse extends Response<List<VirtualMachine>> {
     }
 }
