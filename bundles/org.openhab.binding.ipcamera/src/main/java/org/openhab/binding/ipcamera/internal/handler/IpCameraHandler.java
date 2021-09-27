@@ -1634,6 +1634,10 @@ public class IpCameraHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         isOnline = false;
+        CameraServlet localServlet = servlet;
+        if (localServlet != null) {
+            localServlet.dispose();
+        }
         snapshotPolling = false;
         Future<?> localFuture = pollCameraJob;
         if (localFuture != null) {
