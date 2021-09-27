@@ -5,6 +5,10 @@
 	<feature name="openhab-binding-freeboxos" description="Freebox OS Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-mdns</feature>
+		<bundle dependency="true">mvn:com.fasterxml/classmate/1.5.1</bundle>
+		<bundle dependency="true">mvn:javax.money/money-api/1.0.1</bundle>
+		<bundle dependency="true">mvn:jakarta.persistence/jakarta.persistence-api/2.2.3</bundle>
+		<bundle dependency="true">mvn:joda-time/joda-time/2.9.7</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.freeboxos/${project.version}</bundle>
 	</feature>
 </features>
