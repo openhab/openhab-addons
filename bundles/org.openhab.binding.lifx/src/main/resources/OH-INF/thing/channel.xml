@@ -4,34 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="abstemperature" advanced="true">
-		<item-type>Number</item-type>
-		<label>Temperature</label>
-		<description>Sets the color temperature of the light in Kelvin</description>
-		<category>ColorLight</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
-		</tags>
-		<state min="1500" max="9000" step="1" pattern="%.0f K"/>
-	</channel-type>
-
-	<channel-type id="abstemperaturezone" advanced="true">
-		<item-type>Number</item-type>
-		<label>Temperature Zone</label>
-		<description>Sets the zone color temperature of the light in Kelvin</description>
-		<category>ColorLight</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
-		</tags>
-		<state min="1500" max="9000" step="1" pattern="%.0f K"/>
-	</channel-type>
-
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
-		<description>Sets the brightness of the light</description>
+		<description>Controls the brightness and switches the light on and off</description>
 		<category>DimmableLight</category>
 		<tags>
 			<tag>Control</tag>
@@ -43,24 +19,13 @@
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>
-		<description>Selects the color of the light</description>
+		<description>Controls the color of the light</description>
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
 			<tag>Light</tag>
 		</tags>
 		<config-description-ref uri="channel-type:lifx:color"/>
-	</channel-type>
-
-	<channel-type id="colorzone" advanced="true">
-		<item-type>Color</item-type>
-		<label>Color Zone</label>
-		<description>Selects the zone color of the light</description>
-		<category>ColorLight</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="hevcycle">
@@ -77,7 +42,7 @@
 	<channel-type id="infrared">
 		<item-type>Dimmer</item-type>
 		<label>Infrared</label>
-		<description>Sets the infrared of the light</description>
+		<description>Controls the infrared level of the light</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Light</tag>
@@ -86,8 +51,8 @@
 
 	<channel-type id="temperature">
 		<item-type>Dimmer</item-type>
-		<label>Temperature</label>
-		<description>Sets the color temperature of the light from 0 (cold) to 100 (warm)</description>
+		<label>Color Temperature</label>
+		<description>Controls the color temperature of the light from 0 (cold) to 100 (warm)</description>
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
@@ -96,21 +61,10 @@
 		<config-description-ref uri="channel-type:lifx:temperature"/>
 	</channel-type>
 
-	<channel-type id="temperaturezone" advanced="true">
-		<item-type>Dimmer</item-type>
-		<label>Temperature Zone</label>
-		<description>Sets the zone color temperature of the light from 0 (cold) to 100 (warm)</description>
-		<category>ColorLight</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
-		</tags>
-	</channel-type>
-
 	<channel-type id="effect">
 		<item-type>String</item-type>
 		<label>Effect</label>
-		<description>Sets the effect of the light</description>
+		<description>Controls the effect of the light</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Light</tag>
