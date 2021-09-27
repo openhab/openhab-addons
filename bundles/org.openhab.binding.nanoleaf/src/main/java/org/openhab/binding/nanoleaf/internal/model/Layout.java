@@ -60,7 +60,8 @@ public class Layout {
      * @return a String containing the layout
      */
     public String getLayoutView() {
-        if (positionData != null) {
+        List<PositionDatum> localPositionData = positionData;
+        if (localPositionData != null) {
             String view = "";
 
             int minx = Integer.MAX_VALUE;
@@ -69,8 +70,7 @@ public class Layout {
             int maxy = Integer.MIN_VALUE;
             int sideLength = Integer.MIN_VALUE;
 
-            @SuppressWarnings("null")
-            final int noofDefinedPanels = positionData.size();
+            final int noofDefinedPanels = localPositionData.size();
 
             /*
              * Since 5.0.0 sidelengths are panelspecific and not delivered per layout but only the individual panel.
@@ -79,28 +79,23 @@ public class Layout {
              * hardcoded way.
              */
             for (int index = 0; index < noofDefinedPanels; index++) {
-                if (positionData != null) {
-                    List<PositionDatum> localPositionDate = positionData;
-                    if (localPositionDate != null) {
-                        PositionDatum panel = localPositionDate.get(index);
-                        logger.debug("Layout: Panel position data x={} y={}", panel.getPosX(), panel.getPosY());
+                PositionDatum panel = localPositionData.get(index);
+                logger.debug("Layout: Panel position data x={} y={}", panel.getPosX(), panel.getPosY());
 
-                        if (panel.getPosX() < minx) {
-                            minx = panel.getPosX();
-                        }
-                        if (panel.getPosX() > maxx) {
-                            maxx = panel.getPosX();
-                        }
-                        if (panel.getPosY() < miny) {
-                            miny = panel.getPosY();
-                        }
-                        if (panel.getPosY() > maxy) {
-                            maxy = panel.getPosY();
-                        }
-                        if (panel.getPanelSize() > sideLength) {
-                            sideLength = panel.getPanelSize();
-                        }
-                    }
+                if (panel.getPosX() < minx) {
+                    minx = panel.getPosX();
+                }
+                if (panel.getPosX() > maxx) {
+                    maxx = panel.getPosX();
+                }
+                if (panel.getPosY() < miny) {
+                    miny = panel.getPosY();
+                }
+                if (panel.getPosY() > maxy) {
+                    maxy = panel.getPosY();
+                }
+                if (panel.getPanelSize() > sideLength) {
+                    sideLength = panel.getPanelSize();
                 }
             }
 
@@ -118,9 +113,8 @@ public class Layout {
                 map = new TreeMap<>();
                 for (int index = 0; index < noofDefinedPanels; index++) {
 
-                    List<PositionDatum> localPositionDate = positionData;
-                    if (localPositionDate != null) {
-                        PositionDatum panel = localPositionDate.get(index);
+                    if (localPositionData != null) {
+                        PositionDatum panel = localPositionData.get(index);
 
                         if (panel.getPosY() == lineY) {
                             map.put(panel.getPosX(), panel);
@@ -131,9 +125,12 @@ public class Layout {
                 for (int x = minx; x <= maxx; x += shiftWidth) {
                     if (map.containsKey(x)) {
                         PositionDatum panel = map.get(x);
-                        @SuppressWarnings("null")
-                        int panelId = panel.getPanelId();
-                        view += String.format("%5s ", panelId);
+                        if (panel != null) {
+                            int panelId = panel.getPanelId();
+                            view += String.format("%5s ", panelId);
+                        } else {
+                            view += "      ";
+                        }
                     } else {
                         view += "      ";
                     }

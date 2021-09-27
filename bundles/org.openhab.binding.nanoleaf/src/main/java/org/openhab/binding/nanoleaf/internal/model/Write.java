@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * Represents write command to set solid color effect
  *
  * @author Martin Raepple - Initial contribution
- * @author stefan.hoehn
+ * @author stefan.hoehn - Updates
  */
 @NonNullByDefault
 public class Write {

@@ -98,9 +98,10 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService
         } else {
             return;
         }
-        if (controllerInfo != null) {
-            @SuppressWarnings("null")
-            final PanelLayout panelLayout = controllerInfo.getPanelLayout();
+
+        ControllerInfo localControllerInfo = controllerInfo;
+        if (localControllerInfo != null) {
+            final PanelLayout panelLayout = localControllerInfo.getPanelLayout();
             @Nullable
             Layout layout = panelLayout.getLayout();
 
