@@ -108,9 +108,6 @@
 		<item-type>Switch</item-type>
 		<label>Clean</label>
 		<description>Start cleaning / return home.</description>
-		<tags>
-			<tag>Switchable</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="startType">
 		<item-type>Switch</item-type>
