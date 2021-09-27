@@ -28,4 +28,6 @@ public class KaleidescapeThingConfiguration {
     public @Nullable Integer updatePeriod;
     public boolean volumeEnabled;
     public Integer initialVolume = 0;
+    public boolean loadHighlightedDetails;
+    public boolean loadAlbumDetails;
 }

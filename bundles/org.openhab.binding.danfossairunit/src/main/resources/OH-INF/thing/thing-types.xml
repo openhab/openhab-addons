@@ -201,7 +201,8 @@
 		<label>Humidity</label>
 		<category>Humidity</category>
 		<tags>
-			<tag>CurrentHumidity</tag>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true" min="0" max="100">
 		</state>

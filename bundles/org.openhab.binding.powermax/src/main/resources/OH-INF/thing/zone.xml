@@ -21,6 +21,12 @@
 			<channel id="last_trip" typeId="last_trip"/>
 			<channel id="low_battery" typeId="system.low-battery"/>
 			<channel id="bypassed" typeId="bypassed"/>
+			<channel id="alarmed" typeId="alarmed"/>
+			<channel id="tamper_alarm" typeId="tamper_alarm"/>
+			<channel id="inactive" typeId="inactive"/>
+			<channel id="tampered" typeId="tampered"/>
+			<channel id="last_message" typeId="zone_last_message"/>
+			<channel id="last_message_time" typeId="zone_last_message_time"/>
 		</channels>
 
 		<config-description>

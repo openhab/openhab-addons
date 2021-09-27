@@ -45,6 +45,7 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -71,7 +72,8 @@ import com.google.gson.JsonParser;
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - Fixed lifecycle issues
  * @author Martin Lepsy - Added protocol information to support WiFi devices & some refactoring for HomeDevice
- */
+ * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
+ **/
 public class MieleBridgeHandler extends BaseBridgeHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_XGW3000);
@@ -103,8 +105,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     // Data structures to de-JSONify whatever Miele appliances are sending us
     public class HomeDevice {
 
-        private static final String PROTOCOL_LAN = "LAN";
-
         public String Name;
         public String Status;
         public String ParentUID;
@@ -121,17 +121,12 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         HomeDevice() {
         }
 
-        public String getId() {
-            return getApplianceId().replaceAll("[^a-zA-Z0-9_]", "_");
+        public FullyQualifiedApplianceIdentifier getApplianceIdentifier() {
+            return new FullyQualifiedApplianceIdentifier(this.UID);
         }
 
-        public String getProtocol() {
-            return ProtocolAdapterName.equals(PROTOCOL_LAN) ? HDM_LAN : HDM_ZIGBEE;
-        }
-
-        public String getApplianceId() {
-            return ProtocolAdapterName.equals(PROTOCOL_LAN) ? StringUtils.right(UID, UID.length() - HDM_LAN.length())
-                    : StringUtils.right(UID, UID.length() - HDM_ZIGBEE.length());
+        public String getSerialNumber() {
+            return Properties.get("serial.number").getAsString();
         }
     }
 
@@ -266,11 +261,14 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
                             for (Thing appliance : getThing().getThings()) {
                                 if (appliance.getStatus() == ThingStatus.ONLINE) {
-                                    String UID = appliance.getProperties().get(PROTOCOL_PROPERTY_NAME)
-                                            + (String) appliance.getConfiguration().getProperties().get(APPLIANCE_ID);
+                                    String applianceId = (String) appliance.getConfiguration().getProperties()
+                                            .get(APPLIANCE_ID);
+                                    String protocol = appliance.getProperties().get(PROTOCOL_PROPERTY_NAME);
+                                    var applianceIdentifier = new FullyQualifiedApplianceIdentifier(applianceId,
+                                            protocol);
 
                                     Object[] args = new Object[2];
-                                    args[0] = UID;
+                                    args[0] = applianceIdentifier.getUid();
                                     args[1] = true;
                                     JsonElement result = invokeRPC("HDAccess/getDeviceClassObjects", args);
 
@@ -280,7 +278,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                                 DeviceClassObject dco = gson.fromJson(obj, DeviceClassObject.class);
 
                                                 for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                                    listener.onApplianceStateChanged(UID, dco);
+                                                    listener.onApplianceStateChanged(applianceIdentifier, dco);
                                                 }
                                             } catch (Exception e) {
                                                 logger.debug("An exception occurred while quering an appliance : '{}'",
@@ -378,7 +376,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                         packet.getPort());
 
                                 DeviceProperty dp = new DeviceProperty();
-                                String uid = null;
+                                String id = null;
 
                                 String[] parts = StringUtils.split(event, "&");
                                 for (String p : parts) {
@@ -393,14 +391,27 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                             break;
                                         }
                                         case "id": {
-                                            uid = subparts[1];
+                                            id = subparts[1];
                                             break;
                                         }
                                     }
                                 }
 
-                                for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                    listener.onAppliancePropertyChanged(uid, dp);
+                                if (id == null) {
+                                    continue;
+                                }
+
+                                // In XGW 3000 firmware 2.03 this was changed from UID (hdm:ZigBee:0123456789abcdef#210)
+                                // to serial number (001234567890)
+                                if (id.startsWith("hdm:")) {
+                                    for (ApplianceStatusListener listener : applianceStatusListeners) {
+                                        listener.onAppliancePropertyChanged(new FullyQualifiedApplianceIdentifier(id),
+                                                dp);
+                                    }
+                                } else {
+                                    for (ApplianceStatusListener listener : applianceStatusListeners) {
+                                        listener.onAppliancePropertyChanged(id, dp);
+                                    }
                                 }
                             } catch (SocketTimeoutException e) {
                                 try {
@@ -434,14 +445,11 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
     };
 
-    public JsonElement invokeOperation(String UID, String modelID, String methodName) {
-        return invokeOperation(UID, modelID, methodName, HDM_ZIGBEE);
-    }
-
-    public JsonElement invokeOperation(String UID, String modelID, String methodName, String protocol) {
+    public JsonElement invokeOperation(FullyQualifiedApplianceIdentifier applianceIdentifier, String modelID,
+            String methodName) {
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             Object[] args = new Object[4];
-            args[0] = protocol + UID;
+            args[0] = applianceIdentifier.getUid();
             args[1] = "com.miele.xgw3000.gateway.hdm.deviceclasses.Miele" + modelID;
             args[2] = methodName;
             args[3] = null;

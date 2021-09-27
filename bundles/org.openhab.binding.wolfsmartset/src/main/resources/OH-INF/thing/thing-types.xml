@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wolfsmartset"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- THING TYPE ACCOUNT -->
+	<bridge-type id="account">
+		<label>WolfSmartset Account</label>
+		<description>Represents an account at WolfSmartset</description>
+		<config-description-ref uri="thing-type:wolfsmartset:account"/>
+	</bridge-type>
+
+	<!-- THING TYPE SYSTEM -->
+	<bridge-type id="system">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>WolfSmartset System</label>
+		<description>An WolfSmartset system</description>
+		<representation-property>systemId</representation-property>
+		<config-description-ref uri="thing-type:wolfsmartset:system"/>
+	</bridge-type>
+
+	<!-- THING TYPE UNIT -->
+	<thing-type id="unit">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="system"/>
+		</supported-bridge-type-refs>
+		<label>WolfSmartset Unit</label>
+		<description>An WolfSmartset remote unit</description>
+
+		<representation-property>unitId</representation-property>
+		<config-description-ref uri="thing-type:wolfsmartset:unit"/>
+	</thing-type>
+
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>String</label>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>Date Time</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="barometric-pressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

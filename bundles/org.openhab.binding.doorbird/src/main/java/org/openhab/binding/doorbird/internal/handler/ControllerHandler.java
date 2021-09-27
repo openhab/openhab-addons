@@ -68,7 +68,7 @@ public class ControllerHandler extends BaseThingHandler {
         api.setAuthorization(host, user, password);
 
         // Get the Id of the controller for use in the open door API
-        controllerId = getControllerId();
+        controllerId = getControllerId(config.controllerId);
         if (controllerId != null) {
             updateStatus(ThingStatus.ONLINE);
         } else {
@@ -105,8 +105,8 @@ public class ControllerHandler extends BaseThingHandler {
         }
     }
 
-    private @Nullable String getControllerId() {
+    private @Nullable String getControllerId(@Nullable String configId) {
         DoorbirdInfo info = api.getDoorbirdInfo();
-        return info == null ? null : info.getControllerId();
+        return info == null ? null : info.getControllerId(configId);
     }
 }

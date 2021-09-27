@@ -46,6 +46,7 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
     COMPANY_ID("companyId", "companyId", StringType.class, true),
     STATE("state", "state", StringType.class, false),
     PROGRAMID("programId", "program", StringType.class, false),
+    PROGRAMTYPE("programType", "type", StringType.class, false),
     PROGRAMPHASE("phase", "phase", StringType.class, false),
     START_TIME("startTime", "start", DateTimeType.class, false) {
         @Override
@@ -182,6 +183,11 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
     @Override
     public boolean isProperty() {
         return isProperty;
+    }
+
+    @Override
+    public boolean isExtendedState() {
+        return false;
     }
 
     @Override

@@ -685,6 +685,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 hueBridge = new HueBridge(ip, hueBridgeConfig.getPort(), hueBridgeConfig.getProtocol(), scheduler);
                 hueBridge.setTimeout(5000);
 
+                updateStatus(ThingStatus.UNKNOWN);
+
                 // Try a first connection that will fail, then try to authenticate,
                 // and finally change the bridge status to ONLINE
                 initJob = scheduler.submit(new PollingRunnable() {

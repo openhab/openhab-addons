@@ -76,7 +76,7 @@
 	<channel-type id="stop" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Stop</label>
-		<description>Stop the hood</description>
+		<description>Stop the appliance</description>
 	</channel-type>
 
 	<channel-type id="step" advanced="true">
@@ -210,6 +210,20 @@
 		<label>Spinning Speed</label>
 		<description>Spinning speed in the program running on the appliance</description>
 		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="powerConsumption" advanced="false">
+		<item-type>Number:Power</item-type>
+		<label>Power Consumption</label>
+		<description>Power consumption by the currently running program on the appliance</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="waterConsumption" advanced="false">
+		<item-type>Number:Volume</item-type>
+		<label>Water Consumption</label>
+		<description>Water consumption by the currently running program on the appliance</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -564,7 +564,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
             return;
         }
 
-        if (!PROCEDURE_NONE.equals(currentProcedure)) {
+        if (PROCEDURE_NONE.equals(currentProcedure)) {
             logger.debug("BlueGiga procedure completed but procedure is null with connection {}, address {}",
                     connection, address);
             return;
