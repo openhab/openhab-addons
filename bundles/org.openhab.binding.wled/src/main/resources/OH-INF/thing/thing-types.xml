@@ -57,7 +57,8 @@
 		<description>Allows you to exit FX mode and use the LEDS like a normal light</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 
