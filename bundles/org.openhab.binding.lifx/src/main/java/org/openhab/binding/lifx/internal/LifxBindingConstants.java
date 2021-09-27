@@ -49,6 +49,8 @@ public class LifxBindingConstants {
     public static final PercentType DEFAULT_BRIGHTNESS = PercentType.HUNDRED;
 
     // List of all Channel IDs
+    public static final String CHANNEL_ABS_TEMPERATURE = "abstemperature";
+    public static final String CHANNEL_ABS_TEMPERATURE_ZONE = "abstemperaturezone";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_COLOR_ZONE = "colorzone";
@@ -62,12 +64,10 @@ public class LifxBindingConstants {
     // List of all Channel Type UIDs
     public static final ChannelTypeUID CHANNEL_TYPE_BRIGHTNESS = new ChannelTypeUID(BINDING_ID, CHANNEL_BRIGHTNESS);
     public static final ChannelTypeUID CHANNEL_TYPE_COLOR = new ChannelTypeUID(BINDING_ID, CHANNEL_COLOR);
-    public static final ChannelTypeUID CHANNEL_TYPE_COLOR_ZONE = new ChannelTypeUID(BINDING_ID, CHANNEL_COLOR_ZONE);
     public static final ChannelTypeUID CHANNEL_TYPE_EFFECT = new ChannelTypeUID(BINDING_ID, CHANNEL_EFFECT);
+    public static final ChannelTypeUID CHANNEL_TYPE_HEV_CYCLE = new ChannelTypeUID(BINDING_ID, CHANNEL_HEV_CYCLE);
     public static final ChannelTypeUID CHANNEL_TYPE_INFRARED = new ChannelTypeUID(BINDING_ID, CHANNEL_INFRARED);
     public static final ChannelTypeUID CHANNEL_TYPE_TEMPERATURE = new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE);
-    public static final ChannelTypeUID CHANNEL_TYPE_TEMPERATURE_ZONE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_TEMPERATURE_ZONE);
 
     // List of options for effect channel
     public static final String CHANNEL_TYPE_EFFECT_OPTION_OFF = "off";
