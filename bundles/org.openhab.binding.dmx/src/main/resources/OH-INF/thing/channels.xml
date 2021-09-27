@@ -10,7 +10,8 @@
 			channel, the values is used for ALL DMX channels.</description>
 		<category>DimmableLight</category>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 	<!-- Color Temperature -->
@@ -20,7 +21,8 @@
 		<description>Relative intensity of two adjacent DMX channels</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 	<!-- Color Channel -->
@@ -31,7 +33,8 @@
 			color will be re-use in 3-channel groups.</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 	<!-- Switch Channel -->
