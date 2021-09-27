@@ -100,11 +100,6 @@ public enum FridgeChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
-    public Class<? extends Type> getTypeClass() {
-        return typeClass;
-    }
-
-    @Override
     public boolean isProperty() {
         return isProperty;
     }
