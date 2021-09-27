@@ -281,7 +281,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                                     listener.onApplianceStateChanged(applianceIdentifier, dco);
                                                 }
                                             } catch (Exception e) {
-                                                logger.debug("An exception occurred while quering an appliance : '{}'",
+                                                logger.debug("An exception occurred while querying an appliance : '{}'",
                                                         e.getMessage());
                                             }
                                         }
@@ -600,7 +600,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     /**
      * This method is called whenever the connection to the given {@link MieleBridge} is resumed.
      *
-     * @param bridge the hue bridge the connection is resumed to
+     * @param bridge the Miele bridge the connection is resumed to
      */
     public void onConnectionResumed() {
         updateStatus(ThingStatus.ONLINE);
