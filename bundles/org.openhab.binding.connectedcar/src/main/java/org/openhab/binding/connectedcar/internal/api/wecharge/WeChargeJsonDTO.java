@@ -328,8 +328,8 @@ public class WeChargeJsonDTO {
             this.id = r.transactionId;
             this.createdAt = r.createdAt;
             this.updatedAt = r.createdAt;
-            this.rfidCard = r.rfidCardLabel;
-            this.locationEvseId = r.stationId;
+            this.rfidCard = r.rfidCardLabel + "(" + r.rfidCardSerialNumber + ")";
+            this.locationEvseId = r.rfidCardSerialNumber;
             this.locationName = r.currentStationName;
             this.locationAddress = r.location.address.toString();
             this.sessionFaulted = r.sessionFaulted;
@@ -343,17 +343,11 @@ public class WeChargeJsonDTO {
                 this.locationCoordinatesLatitude = "";
                 this.locationCoordinatesLongitude = "";
             }
-            WeChargeRfidCard rfid = status.getRfidCard(r.rfidCardId);
+            WeChargeRfidCard rfid = status.getRfidCard(r.rfidCardLabel);
             this.subscriptionId = rfid != null ? rfid.subscriptionId : "";
             WeChargeSubscription sub = status.getSubscription(this.subscriptionId);
             this.currency = sub != null ? sub.currency : "";
             this.tariff = sub != null ? sub.tariffName : "";
-            /*
-             * public String locationConnectorPowerType;
-             * public Double totalEnergy;UNDEF
-             * public Double totalPrice;UNDEF
-             * public Double totalTime;stopDateTime-startDateTime
-             */
         }
 
         public WeChargeRecord(WeChargePayRecord r, WeChargeStatus status) {

@@ -19,8 +19,8 @@
 	</bridge-type>
 
 	<bridge-type id="vwid">
-		<label>Volkswagen ID. Account (We Connect)</label>
-		<description>This thing represents a We Connect ID Account.</description>
+		<label>Volkswagen ID. Account (WeConnect)</label>
+		<description>This thing represents a WeConnect Account.</description>
 		<config-description-ref uri="bridge-type:connectedcar:idaccount"/>
 	</bridge-type>
 

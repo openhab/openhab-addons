@@ -180,10 +180,6 @@ public class IdentityManager {
         headers.put(CNAPI_HEADER_VERS, config.api.xappVersion);
         headers.put(CNAPI_HEADER_APP, config.api.xappName);
         headers.put(HttpHeader.ACCEPT.toString(), CONTENT_TYPE_JSON);
-        // Build Hash: SHA512(SPIN+Challenge)
-        // https://mal-3a.prd.eu.dp.vwg-connect.com/api/rolesrights/operationlist/v3/vehicles/WAUZZZGE0MB027113
-
-        // "https://mal-3a.prd.eu.dp.vwg-connect.com/api/rolesrights/authorization/v2/vehicles/"
         String url = config.vstatus.rolesRightsUrl + "/rolesrights/authorization/v2/vehicles/"
                 + config.vehicle.vin.toUpperCase() + "/services/" + service + "/operations/" + action
                 + "/security-pin-auth-requested";
@@ -199,7 +195,7 @@ public class IdentityManager {
         pinAuth.securityPinAuthentication.securityToken = authInfo.securityPinAuthInfo.securityToken;
         pinAuth.securityPinAuthentication.securityPin.challenge = authInfo.securityPinAuthInfo.securityPinTransmission.challenge;
         pinAuth.securityPinAuthentication.securityPin.securityPinHash = pinHash;
-        // "https://mal-3a.prd.ece.vwg-connect.com/api/rolesrights/authorization/v2/security-pin-auth-completed",
+
         String data = gson.toJson(pinAuth);
         json = http.post(config.vstatus.rolesRightsUrl + "/rolesrights/authorization/v2/security-pin-auth-completed",
                 headers, data).response;
@@ -301,11 +297,9 @@ public class IdentityManager {
 
                 // OAuthToken newToken = authenticator.refreshToken(token).normalize();
                 OAuthToken newToken = authenticator.refreshToken(token);
-                // tokens.apiToken.accessToken = newToken.accessToken;
-                // tokens.apiToken.setValidity(getInteger(newToken.validity));
-                logger.debug("{}: Token refresh successful, valid for {} sec", config.getLogId(), newToken.validity);
-                logger.trace("{}: new token={}", config.getLogId(), newToken.accessToken);
                 token.updateToken(newToken.normalize());
+                logger.debug("{}: Token refresh successful, valid for {} sec", config.getLogId(), token.validity);
+                logger.trace("{}: new token={}", config.getLogId(), token.accessToken);
             } catch (ApiException e) {
                 logger.debug("{}: Unable to refresh token: {}", config.getLogId(), e.toString());
                 // Invalidate token (triggers a new login when accessToken is required)

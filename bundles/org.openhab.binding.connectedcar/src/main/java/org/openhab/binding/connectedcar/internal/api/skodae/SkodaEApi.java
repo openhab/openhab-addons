@@ -182,7 +182,7 @@ public class SkodaEApi extends ApiWithOAuth implements BrandAuthenticator {
 
     private String sendAction(String service, String action, String body) throws ApiException {
         ApiHttpMap headers = crerateParameters().header(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE_JSON);
-        String json = http.post("v1/" + service + "/operation-requests?vin={2)", headers.getHeaders(), body).response;
+        String json = http.post("v1/" + service + "/operation-requests?vin={2}", headers.getHeaders(), body).response;
         return API_REQUEST_STARTED;
     }
 

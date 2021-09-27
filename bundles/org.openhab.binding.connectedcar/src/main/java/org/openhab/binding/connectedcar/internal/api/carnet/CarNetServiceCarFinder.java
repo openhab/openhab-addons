@@ -61,12 +61,12 @@ public class CarNetServiceCarFinder extends ApiBaseService {
 
             String time = position.getCarSentTime();
             updated |= updateChannel(CHANNEL_LOCATTION_TIME, new DateTimeType(time));
-            updated |= updateAddress(position, CHANNEL_LOCATTION_ADDRESS);
+            updated |= updateLocationAddress(position.asPointType(), CHANNEL_LOCATTION_ADDRESS);
 
             position = api.getStoredPosition();
             updated |= updateChannel(CHANNEL_PARK_LOCATION, position.asPointType());
             updated |= updateChannel(CHANNEL_LOCATTION_TIME, new DateTimeType(time));
-            updated |= updateAddress(position, CHANNEL_PARK_ADDRESS);
+            updated |= updateLocationAddress(position.asPointType(), CHANNEL_PARK_ADDRESS);
             String parkingTime = getString(position.getParkingTime());
             updated |= updateChannel(CHANNEL_PARK_TIME,
                     !parkingTime.isEmpty() ? getDateTime(parkingTime) : UnDefType.UNDEF);
@@ -81,9 +81,5 @@ public class CarNetServiceCarFinder extends ApiBaseService {
             }
         }
         return updated;
-    }
-
-    private boolean updateAddress(GeoPosition position, String channel) {
-        return updateLocationAddress(position.asPointType(), channel);
     }
 }

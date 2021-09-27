@@ -75,9 +75,6 @@ public class CarChannelTypeProvider implements ChannelTypeProvider, ChannelGroup
     }
 
     public ChannelGroupType addChannelGroupType(String group) {
-        if (group.toLowerCase().contains("charger")) {
-            int i = 1;
-        }
         ChannelGroupType groupType = getChannelGroupType(group);
         if (groupType != null) {
             return groupType;
@@ -88,9 +85,6 @@ public class CarChannelTypeProvider implements ChannelTypeProvider, ChannelGroup
         char index = group.charAt(group.length() - 1);
         if (Character.isDigit(index)) {
             label = label + "[" + index + "]"; // add group index to label
-        }
-        if (label.contains("\"")) {
-            int j = 1;
         }
 
         // Generate channel definition for all channels belonging to the requested group
@@ -105,6 +99,9 @@ public class CarChannelTypeProvider implements ChannelTypeProvider, ChannelGroup
             }
         }
 
+        // groupType = ChannelGroupTypeBuilder.instance(channelGroupTypeUID, label)
+        // .withDescription(ChannelDefnitions.getGroupAttribute(resources, group, "description"))
+        // .withChannelDefinitions(channelDefinitions).build();
         groupType = ChannelGroupTypeBuilder.instance(channelGroupTypeUID, label)
                 .withDescription(ChannelDefinitions.getGroupAttribute(resources, group, "description")).build();
         channelGroupTypes.add(groupType);
@@ -112,6 +109,13 @@ public class CarChannelTypeProvider implements ChannelTypeProvider, ChannelGroup
     }
 
     public @Nullable ChannelGroupType getChannelGroupType(String group) {
+        /*
+         * for (ChannelGroupType gt : channelGroupTypes) {
+         * if (gt.getUID().getId().equals(group)) {
+         * return gt;
+         * }
+         * }
+         */
         return null;
     }
 

@@ -32,6 +32,7 @@ import org.openhab.binding.connectedcar.internal.handler.ThingBaseHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -86,7 +87,7 @@ public class WeConnectServiceStatus extends ApiBaseService {
         addChannels(channels, status.batteryStatus != null, CHANNEL_CHARGER_CHGLVL);
         addChannels(channels, status.chargingStatus != null, CHANNEL_CONTROL_CHARGER, CHANNEL_CHARGER_CHG_STATE,
                 CHANNEL_CHARGER_MODE, CHANNEL_CHARGER_REMAINING, CHANNEL_CHARGER_MAXCURRENT, CHANNEL_CONTROL_TARGETCHG,
-                CHANNEL_CHARGER_RATE);
+                CHANNEL_CHARGER_POWER, CHANNEL_CHARGER_RATE);
         addChannels(channels, status.plugStatus != null, CHANNEL_CHARGER_PLUG_STATE, CHANNEL_CHARGER_LOCK_STATE);
         addChannels(channels, status.climatisationStatus != null, CHANNEL_CLIMATER_GEN_STATE,
                 CHANNEL_CLIMATER_REMAINING);
@@ -97,8 +98,10 @@ public class WeConnectServiceStatus extends ApiBaseService {
         addChannels(channels, status.maintenanceStatus != null, CHANNEL_STATUS_ODOMETER, CHANNEL_MAINT_DISTINSP,
                 CHANNEL_MAINT_DISTTIME, CHANNEL_MAINT_OILDIST, CHANNEL_MAINT_OILINTV);
         addChannels(channels, status.lightStatus != null, CHANNEL_STATUS_LIGHTS);
-        addChannels(channels, data.vehicleLocation.isValid(), CHANNEL_LOCATTION_GEO, CHANNEL_LOCATTION_TIME);
-        addChannels(channels, data.parkingPosition.isValid(), CHANNEL_PARK_LOCATION, CHANNEL_PARK_TIME);
+        addChannels(channels, data.vehicleLocation.isValid(), CHANNEL_LOCATTION_GEO, CHANNEL_LOCATTION_ADDRESS,
+                CHANNEL_LOCATTION_TIME);
+        addChannels(channels, data.parkingPosition.isValid(), CHANNEL_PARK_LOCATION, CHANNEL_PARK_ADDRESS,
+                CHANNEL_PARK_TIME);
         if (status.accessStatus != null) {
             addChannels(channels, status.accessStatus.overallStatus != null, CHANNEL_STATUS_LOCKED);
             addChannels(channels, status.accessStatus.doors != null, CHANNEL_DOORS_FLSTATE, CHANNEL_DOORS_FLLOCKED,
@@ -160,6 +163,7 @@ public class WeConnectServiceStatus extends ApiBaseService {
             updated |= updateChannel(group, CHANNEL_CHARGER_MODE, getStringType(status.chargingStatus.chargeMode));
             updated |= updateChannel(group, CHANNEL_CHARGER_REMAINING, toQuantityType(
                     getInteger(status.chargingStatus.remainingChargingTimeToComplete_min), 0, Units.MINUTE));
+            updated |= updateChannel(group, CHANNEL_CHARGER_POWER, getDecimal(status.chargingStatus.chargePower_kW));
             updated |= updateChannel(group, CHANNEL_CHARGER_RATE, getDecimal(status.chargingStatus.chargeRate_kmph));
             updated |= updateChannel(group, CHANNEL_CONTROL_TARGETCHG,
                     toQuantityType(getInteger(status.chargingSettings.targetSOC_pct), 0, PERCENT));
@@ -201,8 +205,7 @@ public class WeConnectServiceStatus extends ApiBaseService {
                     toQuantityType(getDouble(status.climatisationSettings.targetTemperature_C), 0, SIUnits.CELSIUS));
         }
         if (status.climatisationTimer != null) {
-            updated |= updateChannel(CHANNEL_GROUP_GENERAL, CHANNEL_STATUS_TIMEINCAR,
-                    getDateTime(status.climatisationTimer.timeInCar));
+            updated |= updateChannel(CHANNEL_STATUS_TIMEINCAR, getDateTime(status.climatisationTimer.timeInCar));
         }
         return updated;
     }
@@ -249,11 +252,15 @@ public class WeConnectServiceStatus extends ApiBaseService {
     private boolean updatePosition(VehicleStatus status) {
         boolean updated = false;
         if (status.vehicleLocation.isValid()) {
-            updated |= updateChannel(CHANNEL_PARK_LOCATION, status.vehicleLocation.asPointType());
-            updated |= updateChannel(CHANNEL_PARK_TIME, getDateTime(status.vehicleLocation.parkingTimeUTC));
+            PointType point = status.vehicleLocation.asPointType();
+            updated |= updateChannel(CHANNEL_LOCATTION_GEO, point);
+            updated |= updateLocationAddress(point, CHANNEL_LOCATTION_ADDRESS);
+            updated |= updateChannel(CHANNEL_LOCATTION_TIME, getDateTime(status.vehicleLocation.parkingTimeUTC));
         }
         if (status.parkingPosition.isValid()) {
-            updated |= updateChannel(CHANNEL_PARK_LOCATION, status.parkingPosition.asPointType());
+            PointType point = status.parkingPosition.asPointType();
+            updated |= updateChannel(CHANNEL_PARK_LOCATION, point);
+            updated |= updateLocationAddress(point, CHANNEL_PARK_ADDRESS);
             updated |= updateChannel(CHANNEL_PARK_TIME, getDateTime(status.parkingPosition.parkingTimeUTC));
         }
         return updated;
