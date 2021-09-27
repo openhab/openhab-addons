@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.nanoleaf.internal.model.Layout;
+import org.openhab.binding.nanoleaf.internal.model.Write;
 
 import com.google.gson.Gson;
 
@@ -101,5 +102,20 @@ public class LayoutTest {
                         + "                        58086                               39755             \n"
                         + "                                                                              \n"
                         + "                                          41451                               \n")));
+    }
+
+    @Test
+    public void testEffects() {
+        Write write = new Write();
+        write.setCommand("display");
+        write.setAnimType("static");
+        write.setLoop(false);
+        int panelID = 123;
+        int quotient = Integer.divideUnsigned(Integer.valueOf(panelID), 256);
+        int remainder = Integer.remainderUnsigned(Integer.valueOf(panelID), 256);
+        write.setAnimData(String.format("0 1 %d %d %d %d %d 0 0 10", quotient, remainder, 20, 40, 60));
+        String content = gson.toJson(write);
+        assertThat(content, containsStringIgnoringCase("palette"));
+        assertThat(content, is(not(containsStringIgnoringCase("colorType"))));
     }
 }
