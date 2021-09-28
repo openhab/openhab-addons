@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tplinksmarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ep10">
+		<label>EP10</label>
+		<description>TP-Link EP10 Kasa Smart Wi-Fi Plug Mini</description>
+		<category>PowerOutlet</category>
+
+		<channels>
+			<channel id="switch" typeId="system.power"/>
+			<channel id="led" typeId="led"/>
+			<channel id="rssi" typeId="rssi"/>
+		</channels>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description-ref uri="thing-type:tplinksmarthome:device-plug"/>
+	</thing-type>
+</thing:thing-descriptions>
