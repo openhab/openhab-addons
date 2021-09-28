@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
  */
 
 @NonNullByDefault
-public class OpenAPUUtilsTest {
+public class OpenAPIUtilsTest {
 
     @Test
     public void testStateOn() {
