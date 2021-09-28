@@ -387,7 +387,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                             break;
                                         }
                                         case "value": {
-                                            dp.Value = subparts[1];
+                                            dp.Value = StringUtils.trim(StringUtils.strip(subparts[1]));
                                             break;
                                         }
                                         case "id": {

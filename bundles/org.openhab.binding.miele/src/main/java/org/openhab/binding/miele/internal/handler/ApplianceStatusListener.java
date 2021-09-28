@@ -52,14 +52,14 @@ public interface ApplianceStatusListener {
     void onAppliancePropertyChanged(String serialNumber, DeviceProperty dp);
 
     /**
-     * This method us called whenever an appliance is removed.
+     * This method is called whenever an appliance is removed.
      *
      * @param appliance The XGW homedevice definition of the appliance that was removed
      */
     void onApplianceRemoved(HomeDevice appliance);
 
     /**
-     * This method us called whenever an appliance is added.
+     * This method is called whenever an appliance is added.
      *
      * @param appliance The XGW homedevice definition of the appliance that was removed
      */

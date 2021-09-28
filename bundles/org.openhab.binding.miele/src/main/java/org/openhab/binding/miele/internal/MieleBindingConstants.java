@@ -32,8 +32,10 @@ public class MieleBindingConstants {
     public static final String PROTOCOL_PROPERTY_NAME = "protocol";
     public static final String SERIAL_NUMBER_PROPERTY_NAME = "serialNumber";
     public static final String EXTENDED_DEVICE_STATE_PROPERTY_NAME = "extendedDeviceState";
+    public static final String STATE_PROPERTY_NAME = "state";
 
     // Shared Channel ID's
+    public static final String SUPERCOOL_CHANNEL_ID = "supercool";
     public static final String POWER_CONSUMPTION_CHANNEL_ID = "powerConsumption";
     public static final String WATER_CONSUMPTION_CHANNEL_ID = "waterConsumption";
 
@@ -51,6 +53,7 @@ public class MieleBindingConstants {
 
     // Miele devices classes
     public static final String MIELE_DEVICE_CLASS_COFFEE_SYSTEM = "CoffeeSystem";
+    public static final String MIELE_DEVICE_CLASS_FRIDGE = "Fridge";
 
     // Bridge config properties
     public static final String HOST = "ipAddress";
