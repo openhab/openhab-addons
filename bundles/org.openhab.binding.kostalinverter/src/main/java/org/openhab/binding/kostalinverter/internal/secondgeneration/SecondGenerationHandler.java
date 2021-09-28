@@ -216,7 +216,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
                         handleCommandException.getClass().getName() + ":" + handleCommandException.getMessage());
 
             }
-        }, 0, SecondGenerationInverterConfig.REFRESHINTERVAL_SEC, TimeUnit.SECONDS);
+        }, 0, inverterConfig.refreshInterval, TimeUnit.SECONDS);
     }
 
     @Override
