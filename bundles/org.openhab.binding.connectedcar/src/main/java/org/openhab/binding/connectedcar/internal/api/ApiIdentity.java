@@ -168,8 +168,8 @@ public class ApiIdentity {
     public void setValidity(int expiresIn) {
         creationTime = new Date();
         int value = expiresIn <= 0 ? DEFAULT_TOKEN_VALIDITY_SEC : expiresIn;
-        double offset = value * 0.9;
-        this.validity = value - (int) offset; // reduce by 20% treshhold
+        double offset = value * 0.2; // reduce by 20% treshhold
+        this.validity = value - (int) offset;
     }
 
     public void setService(String service) {
