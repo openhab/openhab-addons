@@ -31,6 +31,9 @@ public class NikoHomeControlBindingConstants {
 
     public static final String BINDING_ID = "nikohomecontrol";
 
+    // Listener threadname prefix
+    public static final String THREAD_NAME_PREFIX = "OH-" + BINDING_ID + "-";
+
     // List of all Thing Type UIDs
 
     // bridge
