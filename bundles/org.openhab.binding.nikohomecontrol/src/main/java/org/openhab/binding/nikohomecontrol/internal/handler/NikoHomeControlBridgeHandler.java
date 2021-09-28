@@ -141,7 +141,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
      */
     protected void bridgeOffline() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                "Error with bridge connection");
+                "@text/offline.communication-error");
     }
 
     /**

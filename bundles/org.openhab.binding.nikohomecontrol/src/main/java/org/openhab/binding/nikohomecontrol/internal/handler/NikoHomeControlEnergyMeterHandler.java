@@ -64,7 +64,7 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
             return;
         }
 
-        if (command == REFRESH) {
+        if (REFRESH.equals(command)) {
             energyMeterEvent(nhcEnergyMeter.getPower());
         }
     }
@@ -77,8 +77,6 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
 
         NikoHomeControlCommunication nhcComm = getCommunication();
         if (nhcComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Connection with controller not started yet, could not initialize energy meter " + energyMeterId);
             return;
         }
 
@@ -87,14 +85,14 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
         scheduler.submit(() -> {
             if (!nhcComm.communicationActive()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "No connection with controller, could not initialize energy meter " + energyMeterId);
+                        "@text/offline.communication-error");
                 return;
             }
 
             NhcEnergyMeter nhcEnergyMeter = nhcComm.getEnergyMeters().get(energyMeterId);
             if (nhcEnergyMeter == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Energy meter " + energyMeterId + " does not match a energy meter in the controller");
+                        "@text/offline.configuration-error.energyMeterId");
                 return;
             }
 
@@ -163,7 +161,7 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
     @Override
     public void energyMeterRemoved() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "Energy meter " + energyMeterId + " has been removed from the controller");
+                "@text/offline.configuration-error.energyMeterRemoved");
     }
 
     @Override
@@ -172,8 +170,8 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
     public void channelLinked(ChannelUID channelUID) {
         NikoHomeControlCommunication nhcComm = getCommunication();
         if (nhcComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Bridge communication not initialized when trying to start energy meter " + energyMeterId);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.communication-error");
             return;
         }
 
@@ -194,8 +192,8 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
     public void channelUnlinked(ChannelUID channelUID) {
         NikoHomeControlCommunication nhcComm = getCommunication();
         if (nhcComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Bridge communication not initialized when trying to stop energy meter " + energyMeterId);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.communication-error");
             return;
         }
 
@@ -220,7 +218,8 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
         nhcComm.restartCommunication();
         // If still not active, take thing offline and return.
         if (!nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication error");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.communication-error");
             return;
         }
         // Also put the bridge back online
@@ -234,7 +233,7 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
         NikoHomeControlBridgeHandler nhcBridgeHandler = getBridgeHandler();
         if (nhcBridgeHandler == null) {
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "No bridge initialized for energy meter " + energyMeterId);
+                    "@text/offline.bridge-unitialized");
             return null;
         }
         NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
@@ -245,7 +244,7 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
         Bridge nhcBridge = getBridge();
         if (nhcBridge == null) {
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "No bridge initialized for energy meter " + energyMeterId);
+                    "@text/offline.bridge-unitialized");
             return null;
         }
         NikoHomeControlBridgeHandler nhcBridgeHandler = (NikoHomeControlBridgeHandler) nhcBridge.getHandler();

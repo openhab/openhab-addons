@@ -66,8 +66,8 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     public void handleCommand(ChannelUID channelUID, Command command) {
         NikoHomeControlCommunication nhcComm = getCommunication();
         if (nhcComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Bridge communication not initialized when trying to execute action command " + actionId);
+            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "@text/offline.bridge-unitialized");
             return;
         }
 
@@ -107,15 +107,10 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
                 handleBrightnessCommand(command);
                 updateStatus(ThingStatus.ONLINE);
                 break;
-
             case CHANNEL_ROLLERSHUTTER:
                 handleRollershutterCommand(command);
                 updateStatus(ThingStatus.ONLINE);
                 break;
-
-            default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Channel unknown " + channelUID.getId());
         }
     }
 
@@ -217,8 +212,6 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
         NikoHomeControlCommunication nhcComm = getCommunication();
         if (nhcComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Connection with controller not started yet, could not initialize action " + actionId);
             return;
         }
 
@@ -226,14 +219,14 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         scheduler.submit(() -> {
             if (!nhcComm.communicationActive()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "No connection with controller, could not initialize action " + actionId);
+                        "@text/offline.communication-error");
                 return;
             }
 
             NhcAction nhcAction = nhcComm.getActions().get(actionId);
             if (nhcAction == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Action " + actionId + " does not match an action in the controller");
+                        "@text/offline.configuration-error.actionId");
                 return;
             }
 
@@ -313,7 +306,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
                 break;
             default:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Unknown action type " + actionType);
+                        "@text/offline.configuration-error.actionType " + actionType);
         }
     }
 
@@ -328,7 +321,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     @Override
     public void actionRemoved() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "Action " + actionId + " has been removed from the controller");
+                "@text/offline.configuration-error.actionRemoved");
     }
 
     private void restartCommunication(NikoHomeControlCommunication nhcComm) {
@@ -337,7 +330,8 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         nhcComm.restartCommunication();
         // If still not active, take thing offline and return.
         if (!nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication error");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.communication-error");
             return;
         }
         // Also put the bridge back online
@@ -351,7 +345,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         NikoHomeControlBridgeHandler nhcBridgeHandler = getBridgeHandler();
         if (nhcBridgeHandler == null) {
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "No bridge initialized for action " + actionId);
+                    "@text/offline.bridge-unitialized");
             return null;
         }
         NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
@@ -362,7 +356,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         Bridge nhcBridge = getBridge();
         if (nhcBridge == null) {
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "No bridge initialized for action " + actionId);
+                    "@text/offline.bridge-unitialized");
             return null;
         }
         NikoHomeControlBridgeHandler nhcBridgeHandler = (NikoHomeControlBridgeHandler) nhcBridge.getHandler();

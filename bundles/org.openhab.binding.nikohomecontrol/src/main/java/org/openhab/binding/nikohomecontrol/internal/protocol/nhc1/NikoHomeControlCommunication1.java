@@ -117,7 +117,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
 
         } catch (IOException | InterruptedException e) {
             stopCommunication();
-            handler.controllerOffline("Error initializing communication");
+            handler.controllerOffline("@text/offline.communication-error");
         }
     }
 
@@ -227,7 +227,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
             logger.debug("resend json {}", json);
             nhcOut.println(json);
             if (nhcOut.checkError()) {
-                handler.controllerOffline("Error resending message");
+                handler.controllerOffline("@text/offline.communication-error");
             }
         }
     }
