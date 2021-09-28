@@ -59,6 +59,10 @@ public class NanoleafCommandExtension extends AbstractConsoleCommandExtension {
                                 ThingHandler handler = thing.getHandler();
                                 if (handler instanceof NanoleafControllerHandler) {
                                     NanoleafControllerHandler nanoleafControllerHandler = (NanoleafControllerHandler) handler;
+                                    if (!handler.getThing().isEnabled()) {
+                                        console.println(
+                                                "The following Nanoleaf is NOT enabled as a Thing. Enable it first to view its layout.");
+                                    }
                                     String layout = nanoleafControllerHandler.getLayout();
                                     console.println("Layout of Nanoleaf controller '" + thing.getUID().getAsString()
                                             + "' with label '" + thing.getLabel() + "':" + System.lineSeparator());
