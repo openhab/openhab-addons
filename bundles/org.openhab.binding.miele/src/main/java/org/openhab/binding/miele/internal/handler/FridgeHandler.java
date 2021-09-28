@@ -37,8 +37,6 @@ import com.google.gson.JsonElement;
  */
 public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> {
 
-    private static final int STATE_SUPER_COOLING = 14;
-
     private final Logger logger = LoggerFactory.getLogger(FridgeHandler.class);
 
     public FridgeHandler(Thing thing) {
