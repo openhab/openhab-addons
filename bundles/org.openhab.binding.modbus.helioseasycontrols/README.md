@@ -3,6 +3,8 @@
 Helios Heat-Recovery Ventilation devices use a Modbus protocol to communicate with different sensors, switches, etc. Some devices come with an integrated web interface (easyControls) as well as a Modbus TCP/IP Gateway.
 See the corresponding [specification](https://www.easycontrols.net/de/service/downloads/send/4-software/16-modbus-dokumentation-f%C3%BCr-kwl-easycontrols-ger%C3%A4te).
 
+For Helios ventilation devices supporting integration only via RS485, a separate binding can be used: https://www.openhab.org/addons/bindings/heliosventilation/
+
 ## Supported Things
 
 | Thing               | Description                                                |
