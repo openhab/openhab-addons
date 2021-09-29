@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeboxos.internal.api.ap;
+package org.openhab.binding.freeboxos.internal.api.wifi;
 
 import java.util.List;
 

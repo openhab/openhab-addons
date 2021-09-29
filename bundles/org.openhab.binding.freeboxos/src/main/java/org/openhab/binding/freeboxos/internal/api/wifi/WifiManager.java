@@ -28,6 +28,7 @@ public class WifiManager extends ActivableRest<WifiConfig, WifiConfigResponse> {
     public static final String WIFI_SUB_PATH = "wifi";
 
     public WifiManager(FreeboxOsSession session) {
-        super(WIFI_SUB_PATH, CONFIG_SUB_PATH, session, WifiConfigResponse.class);
+        super(session, WifiConfigResponse.class, WIFI_SUB_PATH, CONFIG_SUB_PATH);
+        session.addManager(APManager.class, new APManager(session, getUriBuilder()));
     }
 }

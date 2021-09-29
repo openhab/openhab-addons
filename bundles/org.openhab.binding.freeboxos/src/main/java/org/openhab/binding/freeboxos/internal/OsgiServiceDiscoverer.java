@@ -29,6 +29,6 @@ class OsgiServiceDiscoverer implements ValidationProviderResolver {
 
     @Override
     public List<ValidationProvider<?>> getValidationProviders() {
-        return Collections.<ValidationProvider<?>>singletonList(new HibernateValidator());
+        return Collections.<ValidationProvider<?>> singletonList(new HibernateValidator());
     }
 }

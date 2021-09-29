@@ -17,8 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
@@ -41,13 +39,11 @@ public class RepeaterManager extends ListableRest<Repeater, RepeaterResponse, Re
     private final static String REPEATER_SUB_PATH = "repeater";
 
     public RepeaterManager(FreeboxOsSession session) throws FreeboxException {
-        super(REPEATER_SUB_PATH, session, RepeaterResponse.class, RepeatersResponse.class);
+        super(session, RepeaterResponse.class, RepeatersResponse.class, REPEATER_SUB_PATH);
     }
 
     public List<LanHost> getRepeaterHosts(int id) throws FreeboxException {
-        UriBuilder myBuilder = getUriBuilder();
-        myBuilder.path(Integer.toString(id)).path(HOST_SUB_PATH);
-        return getList(LanHostsResponse.class, myBuilder.build());
+        return getList(LanHostsResponse.class, Integer.toString(id), HOST_SUB_PATH);
     }
 
     private synchronized List<LanHost> getHosts() throws FreeboxException {

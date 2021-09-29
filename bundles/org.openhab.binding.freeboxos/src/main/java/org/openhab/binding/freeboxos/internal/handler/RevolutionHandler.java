@@ -18,6 +18,7 @@ import static org.openhab.core.library.unit.Units.PERCENT;
 import java.util.concurrent.Callable;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.lcd.LcdConfig;
 import org.openhab.binding.freeboxos.internal.api.lcd.LcdManager;
@@ -27,7 +28,6 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -45,9 +45,9 @@ import org.slf4j.LoggerFactory;
 public class RevolutionHandler extends ServerHandler {
     private final Logger logger = LoggerFactory.getLogger(RevolutionHandler.class);
 
-    public RevolutionHandler(Thing thing, AudioHTTPServer audioHTTPServer, NetworkAddressService networkAddressService,
+    public RevolutionHandler(Thing thing, AudioHTTPServer audioHTTPServer, @Nullable String ipAddress,
             BundleContext bundleContext) {
-        super(thing, audioHTTPServer, networkAddressService, bundleContext);
+        super(thing, audioHTTPServer, ipAddress, bundleContext);
     }
 
     @Override

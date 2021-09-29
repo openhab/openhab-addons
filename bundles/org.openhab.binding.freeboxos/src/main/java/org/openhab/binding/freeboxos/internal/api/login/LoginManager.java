@@ -14,8 +14,10 @@ package org.openhab.binding.freeboxos.internal.api.login;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.api.login.Authorize.AuthorizeResponse;
+import org.openhab.binding.freeboxos.internal.api.login.Challenge.ChallengeResponse;
 import org.openhab.binding.freeboxos.internal.api.login.Challenge.Status;
+import org.openhab.binding.freeboxos.internal.api.login.Session.SessionResponse;
 import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.rest.RestManager;
 import org.osgi.framework.Bundle;
@@ -37,13 +39,13 @@ public class LoginManager extends RestManager {
     private static final String APP_ID = BUNDLE.getSymbolicName();
 
     public LoginManager(FreeboxOsSession session) {
-        super(LOGIN_PATH, session);
+        super(session, LOGIN_PATH);
     }
 
     public Session openSession(String appToken) throws FreeboxException {
         String challenge = get(ChallengeResponse.class).getChallenge();
         OpenSessionData payload = new OpenSessionData(APP_ID, appToken, challenge);
-        return post(SessionResponse.class, SESSION_PATH, payload);
+        return post(SessionResponse.class, payload, SESSION_PATH);
     }
 
     public void closeSession() throws FreeboxException {
@@ -51,14 +53,11 @@ public class LoginManager extends RestManager {
     }
 
     private Status trackAuthorize(int trackId) throws FreeboxException {
-        if (trackId != 0) {
-            return get(ChallengeResponse.class, String.format("%s/%d", AUTHORIZE_PATH, trackId)).getStatus();
-        }
-        throw new FreeboxException("no trackId");
+        return get(ChallengeResponse.class, AUTHORIZE_PATH, Integer.toString(trackId)).getStatus();
     }
 
     public String grant() throws FreeboxException {
-        Authorize authorize = post(AuthorizeResponse.class, AUTHORIZE_PATH, new AuthorizeData(APP_ID, BUNDLE));
+        Authorize authorize = post(AuthorizeResponse.class, new AuthorizeData(APP_ID, BUNDLE), AUTHORIZE_PATH);
         Status track = Status.PENDING;
         try {
             while (track == Status.PENDING) {
@@ -72,15 +71,5 @@ public class LoginManager extends RestManager {
         } catch (InterruptedException e) {
             throw new FreeboxException(e, "Granting process interrupted");
         }
-    }
-
-    // Response classes
-    private static class ChallengeResponse extends Response<Challenge> {
-    }
-
-    private static class SessionResponse extends Response<Session> {
-    }
-
-    private static class AuthorizeResponse extends Response<Authorize> {
     }
 }

@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.freeboxos.internal.api.call;
 
-import java.time.ZonedDateTime;
 import java.util.List;
-
-import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
@@ -26,7 +23,7 @@ import org.openhab.binding.freeboxos.internal.api.rest.RestManager;
 
 /**
  * The {@link CallManager} is the Java class used to handle api requests
- * related to phone and calls
+ * related to calls
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -34,15 +31,12 @@ import org.openhab.binding.freeboxos.internal.api.rest.RestManager;
 public class CallManager extends RestManager {
     public final static String CALL_PATH = "call";
     public final static String LOG_SUB_PATH = "log/";
-    private final UriBuilder logUriBuilder;
 
     public CallManager(FreeboxOsSession session) throws FreeboxException {
-        super(CALL_PATH, session, Permission.CALLS);
-        logUriBuilder = getUriBuilder().path(LOG_SUB_PATH);
+        super(session, Permission.CALLS, CALL_PATH);
     }
 
-    public List<CallEntry> getCallEntries(ZonedDateTime startTime) throws FreeboxException {
-        UriBuilder localBuilder = logUriBuilder.clone().queryParam("_dc", startTime.toInstant().toEpochMilli());
-        return getList(CallEntriesResponse.class, localBuilder.build());
+    public List<CallEntry> getCallEntries() throws FreeboxException {
+        return getList(CallEntriesResponse.class, LOG_SUB_PATH);
     }
 }

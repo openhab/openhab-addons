@@ -39,7 +39,11 @@ public class AirMediaActionData {
         @SerializedName("video")
         VIDEO,
         @SerializedName("photo")
-        PHOTO;
+        PHOTO,
+        @SerializedName("audio")
+        AUDIO,
+        @SerializedName("screen")
+        SCREEN;
     }
 
     @SuppressWarnings("unused")

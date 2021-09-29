@@ -15,6 +15,7 @@ package org.openhab.binding.freeboxos.internal.api.login;
 import javax.validation.constraints.NotEmpty;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.Response;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -27,6 +28,9 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Challenge {
+    public static class ChallengeResponse extends Response<Challenge> {
+    }
+
     public static enum Status {
         @SerializedName("unknown")
         UNKNOWN, // the app_token is invalid or has been revoked
@@ -41,7 +45,8 @@ public class Challenge {
     }
 
     private Status status = Status.UNKNOWN;
-    @NotEmpty(message = "Challenge can not be null")
+
+    @NotEmpty(message = "Challenge value should not be null")
     private @NonNullByDefault({}) String challenge;
     private boolean loggedIn;
 

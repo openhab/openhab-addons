@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeboxos.internal.api.ap;
+package org.openhab.binding.freeboxos.internal.api.wifi;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,12 +23,11 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.ap.AccessPoint.AccessPointResponse;
-import org.openhab.binding.freeboxos.internal.api.ap.AccessPoint.AccessPointsResponse;
-import org.openhab.binding.freeboxos.internal.api.ap.AccessPointHost.AccessPointHostsResponse;
 import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.rest.ListableRest;
-import org.openhab.binding.freeboxos.internal.api.wifi.WifiManager;
+import org.openhab.binding.freeboxos.internal.api.wifi.AccessPoint.AccessPointResponse;
+import org.openhab.binding.freeboxos.internal.api.wifi.AccessPoint.AccessPointsResponse;
+import org.openhab.binding.freeboxos.internal.api.wifi.AccessPointHost.AccessPointHostsResponse;
 
 /**
  * The {@link APManager} is the Java class used to handle api requests
@@ -41,14 +40,12 @@ public class APManager extends ListableRest<AccessPoint, AccessPointResponse, Ac
     private static final String STATIONS_SUB_PATH = "stations";
     private static final String AP_SUB_PATH = "ap";
 
-    public APManager(FreeboxOsSession session) {
-        super(WifiManager.WIFI_SUB_PATH + "/" + AP_SUB_PATH, session, AccessPointResponse.class,
-                AccessPointsResponse.class);
+    public APManager(FreeboxOsSession session, UriBuilder uriBuilder) {
+        super(session, AccessPointResponse.class, AccessPointsResponse.class, uriBuilder, AP_SUB_PATH);
     }
 
     private @Nullable List<AccessPointHost> getAccessPointHosts(int apId) throws FreeboxException {
-        UriBuilder myBuilder = getUriBuilder().path(Integer.toString(apId)).path(STATIONS_SUB_PATH);
-        return getList(AccessPointHostsResponse.class, myBuilder.build());
+        return getList(AccessPointHostsResponse.class, Integer.toString(apId), STATIONS_SUB_PATH);
     }
 
     public Map<String, AccessPointHost> getHostsMap() throws FreeboxException {
@@ -60,7 +57,7 @@ public class APManager extends ListableRest<AccessPoint, AccessPointResponse, Ac
         return result;
     }
 
-    public List<AccessPointHost> getHosts() throws FreeboxException {
+    private List<AccessPointHost> getHosts() throws FreeboxException {
         List<AccessPointHost> hosts = new ArrayList<>();
         for (AccessPoint ap : getDevices()) {
             List<AccessPointHost> apHosts = getAccessPointHosts(ap.getId());

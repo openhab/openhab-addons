@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freeboxos.internal.api.rest;
 
+import javax.ws.rs.core.UriBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
@@ -27,13 +29,18 @@ import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
 @NonNullByDefault
 public class ActivableRest<T extends ActivableConfig, Y extends Response<T>> extends ConfigurableRest<T, Y> {
 
-    public ActivableRest(String path, @Nullable String configPath, FreeboxOsSession session, Class<Y> classOfResponse) {
-        super(path, configPath, session, classOfResponse);
+    public ActivableRest(FreeboxOsSession session, Class<Y> classOfResponse, String path, String configPath) {
+        super(session, classOfResponse, path, configPath);
     }
 
-    public ActivableRest(String path, @Nullable String configPath, FreeboxOsSession session, Permission required,
-            Class<Y> classOfResponse) throws FreeboxException {
-        super(path, configPath, session, required, classOfResponse);
+    public ActivableRest(FreeboxOsSession session, Class<Y> classOfResponse, UriBuilder parentUri, String path,
+            @Nullable String configPath) {
+        super(session, classOfResponse, parentUri, path, configPath);
+    }
+
+    public ActivableRest(FreeboxOsSession session, Permission required, Class<Y> classOfResponse, String path,
+            @Nullable String configPath) throws FreeboxException {
+        super(session, classOfResponse, required, path, configPath);
     }
 
     public boolean getStatus() throws FreeboxException {

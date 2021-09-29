@@ -31,10 +31,10 @@ public class VmManager extends ListableRest<VirtualMachine, VirtualMachineRespon
     private static final String VM_SUB_PATH = "vm";
 
     public VmManager(FreeboxOsSession session) throws FreeboxException {
-        super(VM_SUB_PATH, session, Permission.VM, VirtualMachineResponse.class, VirtualMachinesResponse.class);
+        super(session, Permission.VM, VirtualMachineResponse.class, VirtualMachinesResponse.class, VM_SUB_PATH);
     }
 
     public void power(int vmId, boolean startIt) throws FreeboxException {
-        post(String.format("%s/%s", deviceSubPath(vmId), startIt ? "start" : "powerbutton"));
+        post(deviceSubPath(vmId), startIt ? "start" : "powerbutton");
     }
 }

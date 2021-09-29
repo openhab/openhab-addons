@@ -32,16 +32,12 @@ public class LanManager extends ConfigurableRest<LanConfig, LanConfigResponse> {
     private final NetworkMode networkMode;
 
     public LanManager(FreeboxOsSession session) throws FreeboxException {
-        super(LAN_SUB_PATH, CONFIG_SUB_PATH, session, LanConfigResponse.class);
+        super(session, LanConfigResponse.class, LAN_SUB_PATH, CONFIG_SUB_PATH);
         this.networkMode = getConfig().getMode();
+        session.addManager(LanBrowserManager.class, new LanBrowserManager(session, getUriBuilder()));
     }
 
     public NetworkMode getNetworkMode() throws FreeboxException {
         return networkMode;
-    }
-
-    public void wakeOnLan(String host) throws FreeboxException {
-        WakeOnLineData wol = new WakeOnLineData(host);
-        post("wol/" + host, wol);
     }
 }

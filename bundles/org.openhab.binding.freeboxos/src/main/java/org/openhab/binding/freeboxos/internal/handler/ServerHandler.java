@@ -18,11 +18,11 @@ import static org.openhab.core.library.unit.Units.*;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.action.ServerActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaManager;
@@ -30,11 +30,11 @@ import org.openhab.binding.freeboxos.internal.api.connection.ConnectionManager;
 import org.openhab.binding.freeboxos.internal.api.connection.ConnectionStatus;
 import org.openhab.binding.freeboxos.internal.api.ftp.FtpManager;
 import org.openhab.binding.freeboxos.internal.api.lan.ConnectivityData;
-import org.openhab.binding.freeboxos.internal.api.lan.LanBrowserManager;
+import org.openhab.binding.freeboxos.internal.api.lan.LanConfig;
 import org.openhab.binding.freeboxos.internal.api.lan.LanConfig.NetworkMode;
 import org.openhab.binding.freeboxos.internal.api.lan.LanManager;
 import org.openhab.binding.freeboxos.internal.api.lan.NameSource;
-import org.openhab.binding.freeboxos.internal.api.netshare.NetShareManager;
+import org.openhab.binding.freeboxos.internal.api.netshare.NetShareManager.SambaManager;
 import org.openhab.binding.freeboxos.internal.api.netshare.SambaConfig;
 import org.openhab.binding.freeboxos.internal.api.system.DeviceConfig;
 import org.openhab.binding.freeboxos.internal.api.system.SystemConf;
@@ -42,17 +42,14 @@ import org.openhab.binding.freeboxos.internal.api.system.SystemManager;
 import org.openhab.binding.freeboxos.internal.api.upnpav.UPnPAVManager;
 import org.openhab.binding.freeboxos.internal.api.wifi.WifiManager;
 import org.openhab.core.audio.AudioHTTPServer;
-import org.openhab.core.audio.AudioSink;
 import org.openhab.core.library.dimension.DataTransferRate;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,28 +62,15 @@ import org.slf4j.LoggerFactory;
 public class ServerHandler extends FreeDeviceHandler {
     private final static BigDecimal HUNDRED = BigDecimal.valueOf(100);
     private final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
-    private final AirMediaSink audioSink;
-    private final ServiceRegistration<AudioSink> reg;
 
-    @SuppressWarnings("unchecked")
-    public ServerHandler(Thing thing, AudioHTTPServer audioHTTPServer, NetworkAddressService networkAddressService,
+    public ServerHandler(Thing thing, AudioHTTPServer audioHTTPServer, @Nullable String ipAddress,
             BundleContext bundleContext) {
-        super(thing);
-        this.audioSink = new AirMediaSink(this, audioHTTPServer, networkAddressService, bundleContext);
-        reg = (ServiceRegistration<AudioSink>) bundleContext.registerService(AudioSink.class.getName(), audioSink,
-                new Hashtable<>());
+        super(thing, audioHTTPServer, ipAddress, bundleContext);
     }
 
     @Override
     public void dispose() {
-        reg.unregister();
         super.dispose();
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-        audioSink.initialize("", editProperties().get(NameSource.UPNP.name()));
     }
 
     @Override
@@ -96,8 +80,8 @@ public class ServerHandler extends FreeDeviceHandler {
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.getSerial());
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion());
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, config.getPrettyName().orElse("Unknown"));
-        getManager(LanBrowserManager.class).getHost(getMac()).ifPresent(
-                host -> properties.put(NameSource.UPNP.name(), host.getPrimaryName().orElse("Freebox Server")));
+        LanConfig lanConfig = getManager(LanManager.class).getConfig();
+        properties.put(NameSource.UPNP.name(), lanConfig.getName());
     }
 
     @Override
@@ -159,7 +143,7 @@ public class ServerHandler extends FreeDeviceHandler {
                     return true;
                 case SAMBA_FILE_STATUS:
                     updateChannelOnOff(FILE_SHARING, SAMBA_FILE_STATUS,
-                            getManager(NetShareManager.class).setStatus(enable));
+                            getManager(SambaManager.class).setStatus(enable));
                     return true;
                 case SAMBA_PRINTER_STATUS:
                     updateChannelOnOff(FILE_SHARING, SAMBA_PRINTER_STATUS, enableSambaPrintShare(enable));
@@ -178,15 +162,15 @@ public class ServerHandler extends FreeDeviceHandler {
     }
 
     private void fetchSambaConfig() throws FreeboxException {
-        SambaConfig response = getManager(NetShareManager.class).getConfig();
+        SambaConfig response = getManager(SambaManager.class).getConfig();
         updateChannelOnOff(FILE_SHARING, SAMBA_FILE_STATUS, response.isEnabled());
         updateChannelOnOff(FILE_SHARING, SAMBA_PRINTER_STATUS, response.isPrintShareEnabled());
     }
 
     private boolean enableSambaPrintShare(boolean enable) throws FreeboxException {
-        SambaConfig config = getManager(NetShareManager.class).getConfig();
+        SambaConfig config = getManager(SambaManager.class).getConfig();
         config.setPrintShareEnabled(enable);
-        config = getManager(NetShareManager.class).setConfig(config);
+        config = getManager(SambaManager.class).setConfig(config);
         return config.isPrintShareEnabled();
     }
 

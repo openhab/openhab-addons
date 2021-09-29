@@ -15,16 +15,22 @@ package org.openhab.binding.freeboxos.internal.handler;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaActionData.MediaType;
+import org.openhab.binding.freeboxos.internal.api.lan.NameSource;
 import org.openhab.binding.freeboxos.internal.api.system.DeviceConfig;
 import org.openhab.binding.freeboxos.internal.api.system.Sensor;
 import org.openhab.binding.freeboxos.internal.api.system.Sensor.SensorKind;
+import org.openhab.core.audio.AudioHTTPServer;
+import org.openhab.core.audio.AudioSink;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -35,6 +41,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,10 +53,20 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class FreeDeviceHandler extends HostHandler {
     private final Logger logger = LoggerFactory.getLogger(FreeDeviceHandler.class);
+    private final AudioHTTPServer audioHTTPServer;
+    private final BundleContext bundleContext;
+
     private long uptime = -1;
 
-    public FreeDeviceHandler(Thing thing) {
+    private @Nullable ServiceRegistration<AudioSink> reg;
+    private @Nullable String ohIP;
+
+    public FreeDeviceHandler(Thing thing, AudioHTTPServer audioHTTPServer, @Nullable String ipAddress,
+            BundleContext bundleContext) {
         super(thing);
+        this.audioHTTPServer = audioHTTPServer;
+        this.ohIP = ipAddress;
+        this.bundleContext = bundleContext;
     }
 
     @Override
@@ -74,6 +92,26 @@ public abstract class FreeDeviceHandler extends HostHandler {
             });
             updateThing(editThing().withChannels(channels).build());
         });
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void initialize() {
+        super.initialize();
+        Map<String, String> properties = editProperties();
+        String upnpName = properties.get(NameSource.UPNP.name());
+        if (upnpName != null && Boolean.parseBoolean(properties.get(MediaType.AUDIO.name()))) {
+            reg = (ServiceRegistration<AudioSink>) bundleContext.registerService(AudioSink.class.getName(),
+                    new AirMediaSink(this, audioHTTPServer, ohIP, bundleContext, "", upnpName), new Hashtable<>());
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (reg != null) {
+            reg.unregister();
+        }
+        super.dispose();
     }
 
     @Override

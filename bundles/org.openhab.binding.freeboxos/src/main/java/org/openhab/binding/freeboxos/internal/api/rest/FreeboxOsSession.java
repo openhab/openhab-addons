@@ -30,9 +30,12 @@ import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.Response.ErrorCode;
+import org.openhab.binding.freeboxos.internal.api.lan.LanManager;
 import org.openhab.binding.freeboxos.internal.api.login.LoginManager;
 import org.openhab.binding.freeboxos.internal.api.login.Session;
 import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
+import org.openhab.binding.freeboxos.internal.api.netshare.NetShareManager;
+import org.openhab.binding.freeboxos.internal.api.wifi.WifiManager;
 import org.openhab.binding.freeboxos.internal.config.FreeboxOsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +83,9 @@ public class FreeboxOsSession {
             String localToken = appToken;
             if (localToken != null) {
                 session = getManager(LoginManager.class).openSession(localToken);
+                getManager(NetShareManager.class);
+                getManager(LanManager.class);
+                getManager(WifiManager.class);
                 return localToken;
             }
             throw new FreeboxException(null, null, Response.of(ErrorCode.INVALID_TOKEN));
@@ -147,10 +153,14 @@ public class FreeboxOsSession {
                 restManagers.put(classOfT, manager);
             } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                     | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-                throw new FreeboxException(e, "Unable to call RestManager constructor");
+                throw new FreeboxException(e, "Unable to call RestManager constructor for " + classOfT.getName());
             }
         }
         return (T) manager;
+    }
+
+    public <T extends RestManager> void addManager(Class<T> classOfT, RestManager manager) {
+        restManagers.put(classOfT, manager);
     }
 
     boolean hasPermission(Permission required) {

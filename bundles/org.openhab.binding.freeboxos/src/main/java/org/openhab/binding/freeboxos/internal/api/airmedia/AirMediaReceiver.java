@@ -13,9 +13,11 @@
 package org.openhab.binding.freeboxos.internal.api.airmedia;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaActionData.MediaType;
 import org.openhab.binding.freeboxos.internal.api.rest.FbxDevice;
 
 /**
@@ -33,15 +35,14 @@ public class AirMediaReceiver extends FbxDevice {
     public static class AirMediaReceiverResponse extends Response<AirMediaReceiver> {
     }
 
-    // @NotBlank
-    // private @NonNullByDefault({}) String name;
     private boolean passwordProtected;
-
-    // public String getName() {
-    // return name;
-    // }
+    private Map<MediaType, Boolean> capabilities = Map.of();
 
     public boolean isPasswordProtected() {
         return passwordProtected;
+    }
+
+    public Map<MediaType, Boolean> getCapabilities() {
+        return capabilities;
     }
 }

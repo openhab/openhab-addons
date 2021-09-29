@@ -29,6 +29,6 @@ public class ConnectionManager extends ConfigurableRest<ConnectionStatus, Connec
     private static final String CONNECTION_PATH = "connection";
 
     public ConnectionManager(FreeboxOsSession session) {
-        super(CONNECTION_PATH, null, session, ConnectionStatusResponse.class);
+        super(session, ConnectionStatusResponse.class, CONNECTION_PATH, null);
     }
 }

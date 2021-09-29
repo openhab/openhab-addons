@@ -26,10 +26,8 @@ import org.openhab.binding.freeboxos.internal.api.system.SystemConf.SystemConfig
  */
 @NonNullByDefault
 public class SystemManager extends ConfigurableRest<SystemConf, SystemConfigurationResponse> {
-    private static final String SYSTEM_PATH = "system";
-
     public SystemManager(FreeboxOsSession session) {
-        super(SYSTEM_PATH, null, session, SystemConfigurationResponse.class);
+        super(session, SystemConfigurationResponse.class, SYSTEM_SUB_PATH, null);
     }
 
     public void reboot() throws FreeboxException {

@@ -34,11 +34,11 @@ public class PhoneManager extends ActivableRest<PhoneConfig, PhoneConfigResponse
     private static final String PHONE_SUB_PATH = "phone";
 
     public PhoneManager(FreeboxOsSession session) throws FreeboxException {
-        super(PHONE_SUB_PATH, CONFIG_SUB_PATH, session, Permission.CALLS, PhoneConfigResponse.class);
+        super(session, Permission.CALLS, PhoneConfigResponse.class, PHONE_SUB_PATH, CONFIG_SUB_PATH);
     }
 
     public List<PhoneStatus> getPhoneStatuses() throws FreeboxException {
-        return getList(PhoneStatusResponse.class, getUriBuilder().build());
+        return getList(PhoneStatusResponse.class, "");
     }
 
     public Optional<PhoneStatus> getStatus(int id) throws FreeboxException {
@@ -53,6 +53,6 @@ public class PhoneManager extends ActivableRest<PhoneConfig, PhoneConfigResponse
     public void alternateRing(boolean status) throws FreeboxException {
         PhoneConfig config = getConfig();
         config.setDectRingOnOff(status);
-        put(PhoneConfigResponse.class, CONFIG_SUB_PATH, config);
+        put(PhoneConfigResponse.class, config, CONFIG_SUB_PATH);
     }
 }

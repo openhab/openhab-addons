@@ -29,6 +29,6 @@ public class FtpManager extends ActivableRest<FtpConfig, FtpConfigResponse> {
     private static final String FTP_PATH = "ftp";
 
     public FtpManager(FreeboxOsSession session) {
-        super(FTP_PATH, CONFIG_SUB_PATH, session, FtpConfigResponse.class);
+        super(session, FtpConfigResponse.class, FTP_PATH, CONFIG_SUB_PATH);
     }
 }

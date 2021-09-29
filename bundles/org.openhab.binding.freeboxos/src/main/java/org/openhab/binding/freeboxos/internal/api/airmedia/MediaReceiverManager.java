@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.freeboxos.internal.api.airmedia;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
@@ -35,9 +34,8 @@ public class MediaReceiverManager
         extends ListableRest<AirMediaReceiver, AirMediaReceiverResponse, AirMediaReceiversResponse> {
     private static final String RECEIVERS_SUB_PATH = "receivers";
 
-    public MediaReceiverManager(FreeboxOsSession session) {
-        super(AirMediaManager.AIR_MEDIA_PATH + "/" + RECEIVERS_SUB_PATH, session, AirMediaReceiverResponse.class,
-                AirMediaReceiversResponse.class);
+    public MediaReceiverManager(FreeboxOsSession session, UriBuilder uriBuilder) {
+        super(session, AirMediaReceiverResponse.class, AirMediaReceiversResponse.class, uriBuilder, RECEIVERS_SUB_PATH);
     }
 
     public void sendToReceiver(String receiver, String password, MediaAction action, MediaType type)
@@ -51,7 +49,6 @@ public class MediaReceiverManager
     }
 
     private void sendToReceiver(String receiver, AirMediaActionData payload) throws FreeboxException {
-        String encodedReceiver = URLEncoder.encode(receiver, StandardCharsets.UTF_8);
-        post(String.format("%s/%s/", RECEIVERS_SUB_PATH, encodedReceiver), payload);
+        post(payload, receiver);
     }
 }

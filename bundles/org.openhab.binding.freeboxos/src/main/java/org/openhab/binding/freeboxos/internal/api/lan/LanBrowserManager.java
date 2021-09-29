@@ -37,18 +37,18 @@ import org.openhab.binding.freeboxos.internal.api.rest.ListableRest;
  */
 @NonNullByDefault
 public class LanBrowserManager extends ListableRest<LanInterface, LanInterfaceResponse, LanInterfacesResponse> {
+    private static final String WOL_SUB_PATH = "wol";
+    private static final String DEFAULT_INTF = "pub";
     private static final String INTERFACES_SUB_PATH = "interfaces";
     private static final String BROWSER_SUB_PATH = "browser";
 
-    public LanBrowserManager(FreeboxOsSession session) throws FreeboxException {
-        super(LanManager.LAN_SUB_PATH + "/" + BROWSER_SUB_PATH, session, LanInterfaceResponse.class,
-                LanInterfacesResponse.class);
+    public LanBrowserManager(FreeboxOsSession session, UriBuilder uriBuilder) {
+        super(session, LanInterfaceResponse.class, LanInterfacesResponse.class, uriBuilder, BROWSER_SUB_PATH);
         listSubPath = INTERFACES_SUB_PATH;
     }
 
     private List<LanHost> getInterfaceHosts(String lanInterface) throws FreeboxException {
-        UriBuilder myBuilder = getUriBuilder().path(lanInterface);
-        return getList(LanHostsResponse.class, myBuilder.build());
+        return getList(LanHostsResponse.class, lanInterface);
     }
 
     private synchronized List<LanHost> getHosts() throws FreeboxException {
@@ -81,6 +81,7 @@ public class LanBrowserManager extends ListableRest<LanInterface, LanInterfaceRe
 
     public void wakeOnLan(String host) throws FreeboxException {
         WakeOnLineData wol = new WakeOnLineData(host);
-        post("wol/" + host, wol);
+        // TODO: default interface should be dynamically resolved
+        post(wol, WOL_SUB_PATH, DEFAULT_INTF, host);
     }
 }

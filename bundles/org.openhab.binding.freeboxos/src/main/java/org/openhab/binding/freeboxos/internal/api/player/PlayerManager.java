@@ -35,28 +35,26 @@ import org.openhab.binding.freeboxos.internal.api.system.DeviceConfig.DeviceConf
 @NonNullByDefault
 public class PlayerManager extends ListableRest<Player, PlayerResponse, PlayersResponse> {
     private static final String STATUS_SUB_PATH = "status";
-    private static final String SYSTEM_SUB_PATH = "system";
     private static final String PLAYER_SUB_PATH = "player";
-    private static final String REBOOT_ACTION = SYSTEM_SUB_PATH + "/" + REBOOT_SUB_PATH;
 
     private final Map<Integer, String> subPaths = new HashMap<>();
 
     public PlayerManager(FreeboxOsSession session) throws FreeboxException {
-        super(PLAYER_SUB_PATH, session, Permission.PLAYER, PlayerResponse.class, PlayersResponse.class);
+        super(session, Permission.PLAYER, PlayerResponse.class, PlayersResponse.class, PLAYER_SUB_PATH);
         getDevices().forEach(player -> {
             subPaths.put(player.getId(), player.baseUrl());
         });
     }
 
     public PlayerStatus getPlayerStatus(int id) throws FreeboxException {
-        return get(PlayerStatusResponse.class, subPaths.get(id) + STATUS_SUB_PATH);
+        return get(PlayerStatusResponse.class, subPaths.get(id), STATUS_SUB_PATH);
     }
 
     public DeviceConfig getConfig(int id) throws FreeboxException {
-        return get(DeviceConfigurationResponse.class, subPaths.get(id) + SYSTEM_SUB_PATH);
+        return get(DeviceConfigurationResponse.class, subPaths.get(id), SYSTEM_SUB_PATH);
     }
 
     public void reboot(int id) throws FreeboxException {
-        post(subPaths.get(id) + REBOOT_ACTION);
+        post(subPaths.get(id), SYSTEM_SUB_PATH, REBOOT_SUB_PATH);
     }
 }

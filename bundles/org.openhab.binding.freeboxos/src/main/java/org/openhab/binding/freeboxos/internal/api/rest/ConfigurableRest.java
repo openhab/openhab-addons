@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.freeboxos.internal.api.rest;
 
+import javax.ws.rs.core.UriBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
@@ -29,16 +31,23 @@ public class ConfigurableRest<T, Y extends Response<T>> extends RestManager {
     private final Class<Y> responseClass;
     private final @Nullable String configPath;
 
-    public ConfigurableRest(String path, @Nullable String configPath, FreeboxOsSession session,
-            Class<Y> classOfResponse) {
-        super(path, session);
+    public ConfigurableRest(FreeboxOsSession session, Class<Y> classOfResponse, String path,
+            @Nullable String configPath) {
+        super(session, path);
         this.responseClass = classOfResponse;
         this.configPath = configPath;
     }
 
-    public ConfigurableRest(String path, @Nullable String configPath, FreeboxOsSession session, Permission required,
-            Class<Y> classOfResponse) throws FreeboxException {
-        super(path, session, required);
+    public ConfigurableRest(FreeboxOsSession session, Class<Y> classOfResponse, UriBuilder parentUri, String path,
+            @Nullable String configPath) {
+        super(session, parentUri, path);
+        this.responseClass = classOfResponse;
+        this.configPath = configPath;
+    }
+
+    public ConfigurableRest(FreeboxOsSession session, Class<Y> classOfResponse, Permission required, String path,
+            @Nullable String configPath) throws FreeboxException {
+        super(session, required, path);
         this.responseClass = classOfResponse;
         this.configPath = configPath;
     }
@@ -50,6 +59,6 @@ public class ConfigurableRest<T, Y extends Response<T>> extends RestManager {
 
     public T setConfig(T config) throws FreeboxException {
         String path = configPath;
-        return path != null ? put(responseClass, path, config) : put(responseClass, config);
+        return path != null ? put(responseClass, config, path) : put(responseClass, config);
     }
 }

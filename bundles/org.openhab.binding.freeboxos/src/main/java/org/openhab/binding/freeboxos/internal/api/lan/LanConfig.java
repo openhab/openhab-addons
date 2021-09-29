@@ -40,12 +40,17 @@ public class LanConfig implements ConnectivityData {
         BRIDGE;
     }
 
+    private @NonNullByDefault({}) String name;
     private @Nullable String ip;
     private @Nullable NetworkMode mode;
 
     public NetworkMode getMode() {
         NetworkMode localMode = mode;
         return localMode != null ? localMode : NetworkMode.UNKNOWN;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override

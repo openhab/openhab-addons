@@ -28,6 +28,6 @@ public class UPnPAVManager extends ActivableRest<UPnPAVConfig, UPnPAVConfigRespo
     private final static String UPNPAV_URL = "upnpav";
 
     public UPnPAVManager(FreeboxOsSession session) {
-        super(UPNPAV_URL, CONFIG_SUB_PATH, session, UPnPAVConfigResponse.class);
+        super(session, UPnPAVConfigResponse.class, UPNPAV_URL, CONFIG_SUB_PATH);
     }
 }

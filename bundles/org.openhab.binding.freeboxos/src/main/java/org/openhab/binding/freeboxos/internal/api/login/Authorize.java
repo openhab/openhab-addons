@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.freeboxos.internal.api.login;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.Response;
 
 /**
  * The {@link Authorize} is the Java class used to map the
@@ -23,7 +27,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 class Authorize {
+    public static class AuthorizeResponse extends Response<Authorize> {
+    }
+
+    @NotEmpty(message = "No app token provided")
     private @NonNullByDefault({}) String appToken;
+
+    @Min(value = 1, message = "Missing or invalid trackId")
     private int trackId;
 
     public String getAppToken() {

@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.ap.APManager;
 import org.openhab.binding.freeboxos.internal.api.lan.LanBrowserManager;
 import org.openhab.binding.freeboxos.internal.api.lan.LanHost;
 import org.openhab.binding.freeboxos.internal.api.phone.PhoneManager;
@@ -36,6 +35,8 @@ import org.openhab.binding.freeboxos.internal.api.repeater.RepeaterManager;
 import org.openhab.binding.freeboxos.internal.api.system.SystemConf;
 import org.openhab.binding.freeboxos.internal.api.system.SystemManager;
 import org.openhab.binding.freeboxos.internal.api.vm.VmManager;
+import org.openhab.binding.freeboxos.internal.api.wifi.APManager;
+import org.openhab.binding.freeboxos.internal.api.wifi.AccessPointHost;
 import org.openhab.binding.freeboxos.internal.config.ClientConfiguration;
 import org.openhab.binding.freeboxos.internal.handler.FreeboxOsHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -153,8 +154,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
     }
 
     private void discoverHosts(ThingUID bridgeUID, Map<String, LanHost> lanHosts) throws FreeboxException {
-        Map<String, org.openhab.binding.freeboxos.internal.api.ap.AccessPointHost> apHosts = bridgeHandler
-                .getManager(APManager.class).getHostsMap();
+        Map<String, AccessPointHost> apHosts = bridgeHandler.getManager(APManager.class).getHostsMap();
         Map<String, @Nullable LanHost> repHosts = bridgeHandler.getManager(RepeaterManager.class).getHostsMap();
         List<String> wifiMacs = Stream.concat(apHosts.keySet().stream(), repHosts.keySet().stream())
                 .collect(Collectors.toList());

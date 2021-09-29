@@ -79,7 +79,7 @@ public class LandlineHandler extends ApiConsumerHandler {
         logger.debug("Polling phone calls since last...");
         CallManager callManager = getManager(CallManager.class);
 
-        callManager.getCallEntries(lastCallTimestamp).stream().filter(entry -> entry.getDatetime() != null)
+        callManager.getCallEntries().stream().filter(entry -> entry.getDatetime() != null)
                 .sorted(Comparator.comparing(CallEntry::getDatetime))
                 .filter(c -> lastCallTimestamp.isBefore(c.getDatetime())).forEach(call -> {
                     if (call.getType() == CallType.INCOMING) {

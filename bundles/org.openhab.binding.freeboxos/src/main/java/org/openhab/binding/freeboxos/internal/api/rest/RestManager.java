@@ -33,17 +33,23 @@ import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
 public class RestManager {
     protected static final String CONFIG_SUB_PATH = "config";
     protected static final String REBOOT_SUB_PATH = "reboot";
+    protected static final String SYSTEM_SUB_PATH = "system";
 
     private final UriBuilder uriBuilder;
     protected FreeboxOsSession session;
 
-    public RestManager(String path, FreeboxOsSession session) {
-        this.uriBuilder = session.getUriBuilder().path(path);
+    public RestManager(FreeboxOsSession session, String... pathElements) {
+        this.uriBuilder = assemblePath(session.getUriBuilder(), pathElements);
         this.session = session;
     }
 
-    public RestManager(String path, FreeboxOsSession session, Permission required) throws FreeboxException {
-        this(path, session);
+    public RestManager(FreeboxOsSession session, UriBuilder parentUri, String... pathElements) {
+        this.uriBuilder = assemblePath(parentUri, pathElements);
+        this.session = session;
+    }
+
+    public RestManager(FreeboxOsSession session, Permission required, String... pathElements) throws FreeboxException {
+        this(session, pathElements);
         if (!session.hasPermission(required)) {
             throw new FreeboxException("Permission missing : " + required.toString());
         }
@@ -53,46 +59,55 @@ public class RestManager {
         return uriBuilder.clone();
     }
 
-    private URI buildUri(String path) {
-        return getUriBuilder().path(path).build();
+    private UriBuilder assemblePath(UriBuilder uriBuilder, String... pathElements) {
+        for (String path : pathElements) {
+            uriBuilder.path(path);
+        }
+        return uriBuilder;
+    }
+
+    private URI buildUri(String... pathElements) {
+        return assemblePath(getUriBuilder(), pathElements).build();
     }
 
     @SuppressWarnings("null")
-    public <F, T extends Response<List<F>>> List<F> getList(Class<T> classOfT, URI uri) throws FreeboxException {
+    protected <F, T extends Response<List<F>>> List<F> getList(Class<T> classOfT, String... pathElements)
+            throws FreeboxException {
         // GetList may return null object because API does not return anything for empty lists
-        List<F> result = session.execute(uri, GET, classOfT, null);
+        List<F> result = session.execute(buildUri(pathElements), GET, classOfT, null);
         return result != null ? result : List.of();
     }
 
-    public <F, T extends Response<F>> F get(Class<T> classOfT) throws FreeboxException {
+    protected <F, T extends Response<F>> F get(Class<T> classOfT) throws FreeboxException {
         return session.execute(getUriBuilder().build(), GET, classOfT, null);
     }
 
-    public <F, T extends Response<F>> F get(Class<T> classOfT, String path) throws FreeboxException {
-        return session.execute(buildUri(path), GET, classOfT, null);
+    protected <F, T extends Response<F>> F get(Class<T> classOfT, String... pathElements) throws FreeboxException {
+        return session.execute(buildUri(pathElements), GET, classOfT, null);
     }
 
-    public void post(String path, Object payload) throws FreeboxException {
-        session.execute(buildUri(path), POST, GenericResponse.class, payload);
+    protected void post(Object payload, String... pathElements) throws FreeboxException {
+        session.execute(buildUri(pathElements), POST, GenericResponse.class, payload);
     }
 
-    public void post(String path) throws FreeboxException {
-        session.execute(buildUri(path), POST, GenericResponse.class, null);
+    protected void post(String... pathElements) throws FreeboxException {
+        session.execute(buildUri(pathElements), POST, GenericResponse.class, null);
     }
 
-    public <F, T extends Response<F>> F post(Class<T> classOfT, String path, Object payload) throws FreeboxException {
-        return session.execute(buildUri(path), POST, classOfT, payload);
+    protected <F, T extends Response<F>> F post(Class<T> classOfT, Object payload, String... pathElements)
+            throws FreeboxException {
+        return session.execute(buildUri(pathElements), POST, classOfT, payload);
     }
 
-    public <F, T extends Response<F>> F put(Class<T> classOfT, F payload) throws FreeboxException {
+    protected <F, T extends Response<F>> F put(Class<T> classOfT, F payload) throws FreeboxException {
         return session.execute(getUriBuilder().build(), PUT, classOfT, payload);
     }
 
-    public <F, T extends Response<F>> F put(Class<T> classOfT, String path, F payload) throws FreeboxException {
-        return session.execute(buildUri(path), PUT, classOfT, payload);
+    protected <F, T extends Response<F>> F put(Class<T> classOfT, F payload, String... pathElements)
+            throws FreeboxException {
+        return session.execute(buildUri(pathElements), PUT, classOfT, payload);
     }
 
     private class GenericResponse extends Response<Object> {
-
     }
 }

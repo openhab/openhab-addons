@@ -35,15 +35,23 @@ public class ListableRest<T extends FbxDevice, Z extends Response<T>, Y extends 
     @Nullable
     protected String listSubPath = null;
 
-    public ListableRest(String path, FreeboxOsSession session, Class<Z> devRespClass, Class<Y> listRespClass) {
-        super(path, session);
+    public ListableRest(FreeboxOsSession session, Class<Z> devRespClass, Class<Y> listRespClass,
+            String... pathElements) {
+        super(session, pathElements);
         this.listRespClass = listRespClass;
         this.devRespClass = devRespClass;
     }
 
-    public ListableRest(String path, FreeboxOsSession session, Permission required, Class<Z> devRespClass,
-            Class<Y> listRespClass) throws FreeboxException {
-        super(path, session, required);
+    public ListableRest(FreeboxOsSession session, Class<Z> devRespClass, Class<Y> listRespClass, UriBuilder parentUri,
+            String... pathElements) {
+        super(session, parentUri, pathElements);
+        this.listRespClass = listRespClass;
+        this.devRespClass = devRespClass;
+    }
+
+    public ListableRest(FreeboxOsSession session, Permission required, Class<Z> devRespClass, Class<Y> listRespClass,
+            String... pathElements) throws FreeboxException {
+        super(session, required, pathElements);
         this.listRespClass = listRespClass;
         this.devRespClass = devRespClass;
     }
@@ -52,8 +60,7 @@ public class ListableRest<T extends FbxDevice, Z extends Response<T>, Y extends 
         if (listSubPath == null) {
             return get(listRespClass);
         } else {
-            UriBuilder localUri = getUriBuilder().path(listSubPath);
-            return getList(listRespClass, localUri.build());
+            return getList(listRespClass, listSubPath);
         }
     }
 

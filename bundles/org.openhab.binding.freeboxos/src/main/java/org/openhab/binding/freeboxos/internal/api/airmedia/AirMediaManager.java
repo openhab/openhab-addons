@@ -28,6 +28,7 @@ public class AirMediaManager extends ActivableRest<AirMediaConfig, AirMediaConfi
     public static final String AIR_MEDIA_PATH = "airmedia";
 
     public AirMediaManager(FreeboxOsSession session) {
-        super(AIR_MEDIA_PATH, CONFIG_SUB_PATH, session, AirMediaConfigResponse.class);
+        super(session, AirMediaConfigResponse.class, AIR_MEDIA_PATH, CONFIG_SUB_PATH);
+        session.addManager(MediaReceiverManager.class, new MediaReceiverManager(session, getUriBuilder()));
     }
 }

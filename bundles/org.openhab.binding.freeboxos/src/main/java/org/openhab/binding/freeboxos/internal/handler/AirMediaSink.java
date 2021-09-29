@@ -37,7 +37,6 @@ import org.openhab.core.audio.UnsupportedAudioFormatException;
 import org.openhab.core.audio.UnsupportedAudioStreamException;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.net.HttpServiceUtil;
-import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ThingStatus;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -66,33 +65,25 @@ public class AirMediaSink implements AudioSink {
     private final Logger logger = LoggerFactory.getLogger(AirMediaSink.class);
     private final ApiConsumerHandler thingHandler;
     private final Set<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
-    private final NetworkAddressService networkAddressService;
     private final AudioHTTPServer audioHTTPServer;
-    private final BundleContext bundleContext;
+    private final String callbackUrl;
+    private final String playerName;
 
-    private @Nullable String callbackUrl;
-    private @Nullable String playerName;
-
-    public AirMediaSink(ApiConsumerHandler thingHandler, AudioHTTPServer audioHTTPServer,
-            NetworkAddressService networkAddressService, BundleContext bundleContext) {
+    public AirMediaSink(ApiConsumerHandler thingHandler, AudioHTTPServer audioHTTPServer, @Nullable String ipAddress,
+            BundleContext bundleContext, @Nullable String callbackUrl, String playerName) {
         this.thingHandler = thingHandler;
-        this.networkAddressService = networkAddressService;
         this.audioHTTPServer = audioHTTPServer;
-        this.bundleContext = bundleContext;
-    }
-
-    public void initialize(String callbackUrl, @Nullable String playerName) {
         this.playerName = playerName;
-        if (!callbackUrl.isEmpty()) {
+        if (callbackUrl != null && !callbackUrl.isEmpty()) {
             this.callbackUrl = callbackUrl;
         } else {
-            String ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
             int port = HttpServiceUtil.getHttpServicePort(bundleContext);
             if (port != -1 && ipAddress != null) {
                 // we do not use SSL as it can cause certificate validation issues.
                 this.callbackUrl = String.format("http://%s:%d", ipAddress, port);
             } else {
-                logger.warn("No network interface could be found or cannot find port of the http service.");
+                throw new IllegalArgumentException(
+                        "No network interface could be found or cannot find port of the http service.");
             }
         }
     }
@@ -130,7 +121,7 @@ public class AirMediaSink implements AudioSink {
         try {
             AirMediaManager manager = thingHandler.getManager(AirMediaManager.class);
             MediaReceiverManager receiver = thingHandler.getManager(MediaReceiverManager.class);
-            if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE && name != null) {
+            if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
                 String password = manager.getConfig().getPassword();
                 if (audioStream == null) {
                     receiver.sendToReceiver(name, password, MediaAction.STOP, MediaType.VIDEO);
@@ -147,6 +138,7 @@ public class AirMediaSink implements AudioSink {
                                 : audioHTTPServer.serve(audioStream));
                     }
                     logger.debug("AirPlay audio sink: process url {}", url);
+                    receiver.sendToReceiver(name, password, MediaAction.STOP, MediaType.VIDEO);
                     receiver.sendToReceiver(name, password, MediaAction.START, MediaType.VIDEO, url);
                 }
             }

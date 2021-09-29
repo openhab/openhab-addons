@@ -29,6 +29,6 @@ public class LcdManager extends ConfigurableRest<LcdConfig, LcdConfigResponse> {
     private static final String LCD_SUB_PATH = "lcd";
 
     public LcdManager(FreeboxOsSession session) {
-        super(LCD_SUB_PATH, CONFIG_SUB_PATH, session, LcdConfigResponse.class);
+        super(session, LcdConfigResponse.class, LCD_SUB_PATH, CONFIG_SUB_PATH);
     }
 }

@@ -37,7 +37,7 @@ public class AirMediaConfig implements ActivableConfig {
     }
 
     public String getPassword() {
-        return this.password;
+        return password;
     }
 
     @Override

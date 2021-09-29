@@ -17,7 +17,6 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.K
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,24 +24,20 @@ import java.util.Optional;
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.action.PlayerActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.lan.LanBrowserManager;
-import org.openhab.binding.freeboxos.internal.api.lan.NameSource;
 import org.openhab.binding.freeboxos.internal.api.player.Player;
 import org.openhab.binding.freeboxos.internal.api.player.PlayerManager;
 import org.openhab.binding.freeboxos.internal.api.system.DeviceConfig;
 import org.openhab.binding.freeboxos.internal.config.PlayerConfiguration;
 import org.openhab.core.audio.AudioHTTPServer;
-import org.openhab.core.audio.AudioSink;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,17 +59,10 @@ public class PlayerHandler extends FreeDeviceHandler {
             "info", "epg", "mail", "media", "help", "options", "pip", "ok", "home");
 
     private final Logger logger = LoggerFactory.getLogger(PlayerHandler.class);
-    private final ServiceRegistration<AudioSink> reg;
 
-    private final AirMediaSink audioSink;
-
-    @SuppressWarnings("unchecked")
-    public PlayerHandler(Thing thing, AudioHTTPServer audioHTTPServer, NetworkAddressService networkAddressService,
+    public PlayerHandler(Thing thing, AudioHTTPServer audioHTTPServer, @Nullable String ipAddress,
             BundleContext bundleContext) {
-        super(thing);
-        this.audioSink = new AirMediaSink(this, audioHTTPServer, networkAddressService, bundleContext);
-        reg = (ServiceRegistration<AudioSink>) bundleContext.registerService(AudioSink.class.getName(), audioSink,
-                new Hashtable<>());
+        super(thing, audioHTTPServer, ipAddress, bundleContext);
     }
 
     @Override
@@ -88,28 +76,13 @@ public class PlayerHandler extends FreeDeviceHandler {
                     properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.getSerial());
                     properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion());
                 }
-                getManager(LanBrowserManager.class).getHost(getMac()).ifPresent(
-                        host -> properties.put(NameSource.UPNP.name(), host.getPrimaryName().orElse("Freebox Player")));
             }
         }
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-        PlayerConfiguration config = getConfigAs(PlayerConfiguration.class);
-        audioSink.initialize(config.callBackUrl, editProperties().get(NameSource.UPNP.name()));
     }
 
     // private String getPassword() {
     // return (String) getConfig().get(PlayerConfiguration.PASSWORD);
     // }
-
-    @Override
-    public void dispose() {
-        reg.unregister();
-        super.dispose();
-    }
 
     @Override
     protected boolean internalHandleCommand(ChannelUID channelUID, Command command) throws FreeboxException {

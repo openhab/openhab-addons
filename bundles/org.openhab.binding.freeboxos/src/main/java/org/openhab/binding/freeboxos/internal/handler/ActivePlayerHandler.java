@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.action.ActivePlayerActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.player.PlayerManager;
@@ -26,7 +27,6 @@ import org.openhab.binding.freeboxos.internal.api.player.PlayerStatus;
 import org.openhab.binding.freeboxos.internal.api.system.DeviceConfig;
 import org.openhab.binding.freeboxos.internal.config.PlayerConfiguration;
 import org.openhab.core.audio.AudioHTTPServer;
-import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.framework.BundleContext;
@@ -40,9 +40,9 @@ import org.osgi.framework.BundleContext;
 @NonNullByDefault
 public class ActivePlayerHandler extends PlayerHandler {
 
-    public ActivePlayerHandler(Thing thing, AudioHTTPServer audioHTTPServer,
-            NetworkAddressService networkAddressService, BundleContext bundleContext) {
-        super(thing, audioHTTPServer, networkAddressService, bundleContext);
+    public ActivePlayerHandler(Thing thing, AudioHTTPServer audioHTTPServer, @Nullable String ipAddress,
+            BundleContext bundleContext) {
+        super(thing, audioHTTPServer, ipAddress, bundleContext);
     }
 
     @Override

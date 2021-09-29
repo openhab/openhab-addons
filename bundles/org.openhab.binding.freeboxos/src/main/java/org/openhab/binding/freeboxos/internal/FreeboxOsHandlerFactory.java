@@ -56,9 +56,9 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.freeboxos")
 public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
     private final AudioHTTPServer audioHTTPServer;
-    private final NetworkAddressService networkAddressService;
     private final ApiHandler apiHandler;
     private final Validator validator;
+    private final @Nullable String ipAddress;
 
     @Activate
     public FreeboxOsHandlerFactory(final @Reference AudioHTTPServer audioHTTPServer,
@@ -66,8 +66,10 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
             ComponentContext componentContext) {
         super.activate(componentContext);
         this.audioHTTPServer = audioHTTPServer;
-        this.networkAddressService = networkAddressService;
         this.apiHandler = apiHandler;
+
+        ipAddress = networkAddressService.getPrimaryIpv4HostAddress();
+
         ValidatorFactory validatorFactory = Validation.byDefaultProvider().providerResolver(new OsgiServiceDiscoverer())
                 .configure().messageInterpolator(new ParameterMessageInterpolator()).buildValidatorFactory();
         validator = validatorFactory.getValidator();
@@ -85,13 +87,13 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(BRIDGE_TYPE_API)) {
             return new FreeboxOsHandler((Bridge) thing, new FreeboxOsSession(apiHandler, validator));
         } else if (thingTypeUID.equals(THING_TYPE_REVOLUTION)) {
-            return new RevolutionHandler(thing, audioHTTPServer, networkAddressService, bundleContext);
+            return new RevolutionHandler(thing, audioHTTPServer, ipAddress, bundleContext);
         } else if (thingTypeUID.equals(THING_TYPE_DELTA)) {
-            return new ServerHandler(thing, audioHTTPServer, networkAddressService, bundleContext);
+            return new ServerHandler(thing, audioHTTPServer, ipAddress, bundleContext);
         } else if (thingTypeUID.equals(THING_TYPE_ACTIVE_PLAYER)) {
-            return new ActivePlayerHandler(thing, audioHTTPServer, networkAddressService, bundleContext);
+            return new ActivePlayerHandler(thing, audioHTTPServer, ipAddress, bundleContext);
         } else if (thingTypeUID.equals(THING_TYPE_PLAYER)) {
-            return new PlayerHandler(thing, audioHTTPServer, networkAddressService, bundleContext);
+            return new PlayerHandler(thing, audioHTTPServer, ipAddress, bundleContext);
         } else if (thingTypeUID.equals(THING_TYPE_HOST)) {
             return new HostHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_WIFI_HOST)) {

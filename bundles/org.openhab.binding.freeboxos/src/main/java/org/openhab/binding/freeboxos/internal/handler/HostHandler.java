@@ -22,9 +22,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.action.HostActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.airmedia.MediaReceiverManager;
 import org.openhab.binding.freeboxos.internal.api.lan.ConnectivityData;
 import org.openhab.binding.freeboxos.internal.api.lan.LanBrowserManager;
-import org.openhab.binding.freeboxos.internal.api.lan.LanManager;
+import org.openhab.binding.freeboxos.internal.api.lan.NameSource;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -48,8 +49,18 @@ public class HostHandler extends ApiConsumerHandler {
 
     @Override
     void internalGetProperties(Map<String, String> properties) throws FreeboxException {
-        getManager(LanBrowserManager.class).getHost(getMac())
-                .ifPresent(host -> properties.put(Thing.PROPERTY_VENDOR, host.getVendorName().orElse("Unknown")));
+        getManager(LanBrowserManager.class).getHost(getMac()).ifPresent(host -> {
+            host.getPrimaryName().ifPresent(name -> properties.put(NameSource.UPNP.name(), name));
+            properties.put(Thing.PROPERTY_VENDOR, host.getVendorName().orElse("Unknown"));
+        });
+        String name = properties.get(NameSource.UPNP.name());
+        if (name != null) {
+            getManager(MediaReceiverManager.class).getDevices().stream().filter(r -> name.equals(r.getName()))
+                    .findFirst().ifPresent(receiver -> {
+                        receiver.getCapabilities().entrySet()
+                                .forEach(entry -> properties.put(entry.getKey().name(), entry.getValue().toString()));
+                    });
+        }
     }
 
     @Override
@@ -73,7 +84,7 @@ public class HostHandler extends ApiConsumerHandler {
 
     public void wol() {
         try {
-            getManager(LanManager.class).wakeOnLan(getMac());
+            getManager(LanBrowserManager.class).wakeOnLan(getMac());
         } catch (FreeboxException e) {
             logger.warn("Error waking up host : {}", e.getMessage());
         }
