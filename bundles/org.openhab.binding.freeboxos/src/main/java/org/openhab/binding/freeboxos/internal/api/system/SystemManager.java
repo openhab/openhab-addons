@@ -13,9 +13,9 @@
 package org.openhab.binding.freeboxos.internal.api.system;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ConfigurableRest;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
+import org.openhab.binding.freeboxos.internal.api.rest.ConfigurableRest;
+import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.system.SystemConf.SystemConfigurationResponse;
 
 /**

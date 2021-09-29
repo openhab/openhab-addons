@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeboxos.internal.api;
+package org.openhab.binding.freeboxos.internal.api.rest;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

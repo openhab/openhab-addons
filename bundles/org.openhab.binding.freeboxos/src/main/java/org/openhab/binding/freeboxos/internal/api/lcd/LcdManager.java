@@ -13,9 +13,9 @@
 package org.openhab.binding.freeboxos.internal.api.lcd;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ConfigurableRest;
-import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.lcd.LcdConfig.LcdConfigResponse;
+import org.openhab.binding.freeboxos.internal.api.rest.ConfigurableRest;
+import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
 
 /**
  * The {@link LcdManager} is the Java class used to handle api requests

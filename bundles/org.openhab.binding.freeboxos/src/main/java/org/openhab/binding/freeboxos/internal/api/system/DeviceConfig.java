@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.Response;
 
 /**
  * The {@link DeviceConfig} is the Java class used to map minimal common
@@ -28,6 +29,9 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class DeviceConfig {
+    public static class DeviceConfigurationResponse extends Response<DeviceConfig> {
+    }
+
     private class ModelInfo {
         private @NonNullByDefault({}) String prettyName;
     }

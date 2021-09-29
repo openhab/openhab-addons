@@ -13,6 +13,8 @@
 package org.openhab.binding.freeboxos.internal.api.phone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.api.rest.ActivableConfig;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -21,7 +23,10 @@ import com.google.gson.annotations.SerializedName;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class PhoneConfig {
+public class PhoneConfig implements ActivableConfig {
+    public class PhoneConfigResponse extends Response<PhoneConfig> {
+    }
+
     protected @NonNullByDefault({}) String network;
     @SerializedName("dect_eco_mode")
     protected boolean dectEcoMode;
@@ -38,19 +43,21 @@ public class PhoneConfig {
     @SerializedName("dect_ring_on_off")
     protected boolean dectRingOnOff;
 
-    public boolean isDectEnabled() {
-        return dectEnabled;
-    }
-
-    public void setDectEnabled(boolean dectEnabled) {
-        this.dectEnabled = dectEnabled;
-    }
-
     public boolean isDectRingOnOff() {
         return dectRingOnOff;
     }
 
     public void setDectRingOnOff(boolean dectRingOnOff) {
         this.dectRingOnOff = dectRingOnOff;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return dectEnabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.dectEnabled = enabled;
     }
 }

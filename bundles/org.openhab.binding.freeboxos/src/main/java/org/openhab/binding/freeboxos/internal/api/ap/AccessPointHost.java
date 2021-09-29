@@ -10,10 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeboxos.internal.api.wifi;
+package org.openhab.binding.freeboxos.internal.api.ap;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.lan.LanAccessPoint;
 import org.openhab.binding.freeboxos.internal.api.lan.LanHost;
 
@@ -26,6 +29,9 @@ import org.openhab.binding.freeboxos.internal.api.lan.LanHost;
  */
 @NonNullByDefault
 public class AccessPointHost {
+    public class AccessPointHostsResponse extends Response<List<AccessPointHost>> {
+    }
+
     private @NonNullByDefault({}) String bssid;
     private @Nullable LanHost host;
     private @NonNullByDefault({}) String mac;

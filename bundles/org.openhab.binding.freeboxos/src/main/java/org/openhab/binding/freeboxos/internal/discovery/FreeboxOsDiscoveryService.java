@@ -24,10 +24,9 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaManager;
-import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaReceiver;
+import org.openhab.binding.freeboxos.internal.api.ap.APManager;
+import org.openhab.binding.freeboxos.internal.api.lan.LanBrowserManager;
 import org.openhab.binding.freeboxos.internal.api.lan.LanHost;
-import org.openhab.binding.freeboxos.internal.api.lan.LanManager;
 import org.openhab.binding.freeboxos.internal.api.phone.PhoneManager;
 import org.openhab.binding.freeboxos.internal.api.phone.PhoneStatus;
 import org.openhab.binding.freeboxos.internal.api.player.Player;
@@ -37,8 +36,6 @@ import org.openhab.binding.freeboxos.internal.api.repeater.RepeaterManager;
 import org.openhab.binding.freeboxos.internal.api.system.SystemConf;
 import org.openhab.binding.freeboxos.internal.api.system.SystemManager;
 import org.openhab.binding.freeboxos.internal.api.vm.VmManager;
-import org.openhab.binding.freeboxos.internal.api.wifi.AccessPointHost;
-import org.openhab.binding.freeboxos.internal.api.wifi.WifiManager;
 import org.openhab.binding.freeboxos.internal.config.ClientConfiguration;
 import org.openhab.binding.freeboxos.internal.handler.FreeboxOsHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -112,12 +109,11 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
         if (bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
                 ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-                Map<String, LanHost> lanHosts = bridgeHandler.getManager(LanManager.class).getHostsMap();
+                Map<String, LanHost> lanHosts = bridgeHandler.getManager(LanBrowserManager.class).getHostsMap();
                 discoverServer(bridgeUID);
                 discoverPhone(bridgeUID);
                 discoverRepeater(bridgeUID, lanHosts);
                 discoverPlayer(bridgeUID, lanHosts);
-                discoverReceivers(bridgeUID, lanHosts);
                 discoverVM(bridgeUID, lanHosts);
                 if (bridgeHandler.getConfiguration().discoverNetDevice) {
                     discoverHosts(bridgeUID, lanHosts);
@@ -142,7 +138,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
 
     private void discoverVM(ThingUID bridgeUID, Map<String, LanHost> lanHosts) throws FreeboxException {
         VmManager vmManager = bridgeHandler.getManager(VmManager.class);
-        vmManager.getVms().forEach(vm -> {
+        vmManager.getDevices().forEach(vm -> {
             String mac = vm.getMac();
             lanHosts.remove(mac);
 
@@ -157,7 +153,8 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
     }
 
     private void discoverHosts(ThingUID bridgeUID, Map<String, LanHost> lanHosts) throws FreeboxException {
-        Map<String, @Nullable AccessPointHost> apHosts = bridgeHandler.getManager(WifiManager.class).getHostsMap();
+        Map<String, org.openhab.binding.freeboxos.internal.api.ap.AccessPointHost> apHosts = bridgeHandler
+                .getManager(APManager.class).getHostsMap();
         Map<String, @Nullable LanHost> repHosts = bridgeHandler.getManager(RepeaterManager.class).getHostsMap();
         List<String> wifiMacs = Stream.concat(apHosts.keySet().stream(), repHosts.keySet().stream())
                 .collect(Collectors.toList());
@@ -180,7 +177,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
     }
 
     private void discoverRepeater(ThingUID bridgeUID, Map<String, LanHost> lanHosts) throws FreeboxException {
-        List<Repeater> repeaters = bridgeHandler.getManager(RepeaterManager.class).getRepeaters();
+        List<Repeater> repeaters = bridgeHandler.getManager(RepeaterManager.class).getDevices();
         repeaters.forEach(repeater -> {
             String mac = repeater.getMac();
             lanHosts.remove(mac);
@@ -192,24 +189,6 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
                     .withProperty(ClientConfiguration.ID, repeater.getId())
                     .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
             thingDiscovered(discoveryResult);
-        });
-    }
-
-    private void discoverReceivers(ThingUID bridgeUID, Map<String, LanHost> lanHosts) throws FreeboxException {
-        List<AirMediaReceiver> receivers = bridgeHandler.getManager(AirMediaManager.class).getEquipments();
-        receivers.forEach(receiver -> {
-            /*
-             * String mac = receiver.getMac();
-             * lanHosts.remove(mac);
-             * 
-             * ThingUID thingUID = new ThingUID(THING_TYPE_REPEATER, bridgeUID, Integer.toString(repeater.getId()));
-             * DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-             * .withLabel(String.format("Repeater %s", repeater.getName()))
-             * .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac)
-             * .withProperty(ClientConfiguration.ID, repeater.getId())
-             * .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
-             * thingDiscovered(discoveryResult);
-             */
         });
     }
 
@@ -229,7 +208,7 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
 
     private void discoverPlayer(ThingUID bridgeUID, Map<String, LanHost> lanHosts) throws FreeboxException {
         PlayerManager playMgr = bridgeHandler.getManager(PlayerManager.class);
-        for (Player player : playMgr.getPlayers()) {
+        for (Player player : playMgr.getDevices()) {
             lanHosts.remove(player.getMac());
             ThingUID thingUID = new ThingUID(player.isApiAvailable() ? THING_TYPE_ACTIVE_PLAYER : THING_TYPE_PLAYER,
                     bridgeUID, Integer.toString(player.getId()));

@@ -17,10 +17,11 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.RestManager;
 import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
+import org.openhab.binding.freeboxos.internal.api.phone.PhoneConfig.PhoneConfigResponse;
+import org.openhab.binding.freeboxos.internal.api.phone.PhoneStatus.PhoneStatusResponse;
+import org.openhab.binding.freeboxos.internal.api.rest.ActivableRest;
+import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
 
 /**
  * The {@link PhoneManager} is the Java class used to handle api requests
@@ -29,11 +30,11 @@ import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class PhoneManager extends RestManager {
+public class PhoneManager extends ActivableRest<PhoneConfig, PhoneConfigResponse> {
     private static final String PHONE_SUB_PATH = "phone";
 
     public PhoneManager(FreeboxOsSession session) throws FreeboxException {
-        super(PHONE_SUB_PATH, session, Permission.CALLS);
+        super(PHONE_SUB_PATH, CONFIG_SUB_PATH, session, Permission.CALLS, PhoneConfigResponse.class);
     }
 
     public List<PhoneStatus> getPhoneStatuses() throws FreeboxException {
@@ -45,29 +46,13 @@ public class PhoneManager extends RestManager {
         return statuses.stream().filter(status -> status.getId() == id).findFirst();
     }
 
-    public PhoneConfig getConfig() throws FreeboxException {
-        return get(PhoneConfigResponse.class, CONFIG_SUB_PATH);
-    }
-
     public void ring(boolean startIt) throws FreeboxException {
         post(String.format("fxs_ring_%s", (startIt ? "start" : "stop")));
-    }
-
-    public void activateDect(boolean status) throws FreeboxException {
-        PhoneConfig config = getConfig();
-        config.setDectEnabled(status);
-        put(PhoneConfigResponse.class, CONFIG_SUB_PATH, config);
     }
 
     public void alternateRing(boolean status) throws FreeboxException {
         PhoneConfig config = getConfig();
         config.setDectRingOnOff(status);
         put(PhoneConfigResponse.class, CONFIG_SUB_PATH, config);
-    }
-
-    private class PhoneConfigResponse extends Response<PhoneConfig> {
-    }
-
-    private static class PhoneStatusResponse extends Response<List<PhoneStatus>> {
     }
 }

@@ -46,7 +46,7 @@ public class VmHandler extends HostHandler {
         super.internalPoll();
         logger.debug("Polling Virtual machine status");
         VmManager vmManager = getManager(VmManager.class);
-        VirtualMachine vm = vmManager.getVM(getConfigAs(ClientConfiguration.class).id);
+        VirtualMachine vm = vmManager.getDevice(getConfigAs(ClientConfiguration.class).id);
         updateChannelOnOff(VM_STATUS, STATUS, vm.getStatus() == Status.RUNNING);
     }
 

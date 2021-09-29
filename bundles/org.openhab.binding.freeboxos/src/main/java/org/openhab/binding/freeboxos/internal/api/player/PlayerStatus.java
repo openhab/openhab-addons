@@ -14,6 +14,7 @@ package org.openhab.binding.freeboxos.internal.api.player;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.Response;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -26,6 +27,8 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class PlayerStatus {
+    public static class PlayerStatusResponse extends Response<PlayerStatus> {
+    }
 
     public static enum PowerState {
         UNKNOWN,

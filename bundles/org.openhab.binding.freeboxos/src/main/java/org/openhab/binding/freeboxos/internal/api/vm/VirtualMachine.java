@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.freeboxos.internal.api.vm;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.FbxDevice;
+import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.api.rest.FbxDevice;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -26,6 +29,12 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class VirtualMachine extends FbxDevice {
+    public class VirtualMachineResponse extends Response<VirtualMachine> {
+    }
+
+    public class VirtualMachinesResponse extends Response<List<VirtualMachine>> {
+    }
+
     public static enum Status {
         UNKNOWN,
         @SerializedName("stopped")

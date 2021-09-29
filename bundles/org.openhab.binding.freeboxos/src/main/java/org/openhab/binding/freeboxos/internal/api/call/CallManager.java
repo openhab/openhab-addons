@@ -19,10 +19,10 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.RestManager;
+import org.openhab.binding.freeboxos.internal.api.call.CallEntry.CallEntriesResponse;
 import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
+import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
+import org.openhab.binding.freeboxos.internal.api.rest.RestManager;
 
 /**
  * The {@link CallManager} is the Java class used to handle api requests
@@ -33,7 +33,7 @@ import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
 @NonNullByDefault
 public class CallManager extends RestManager {
     public final static String CALL_PATH = "call";
-    public final static String LOG_SUB_PATH = "log";
+    public final static String LOG_SUB_PATH = "log/";
     private final UriBuilder logUriBuilder;
 
     public CallManager(FreeboxOsSession session) throws FreeboxException {
@@ -44,9 +44,5 @@ public class CallManager extends RestManager {
     public List<CallEntry> getCallEntries(ZonedDateTime startTime) throws FreeboxException {
         UriBuilder localBuilder = logUriBuilder.clone().queryParam("_dc", startTime.toInstant().toEpochMilli());
         return getList(CallEntriesResponse.class, localBuilder.build());
-    }
-
-    // Response classes
-    private class CallEntriesResponse extends Response<List<CallEntry>> {
     }
 }

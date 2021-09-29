@@ -20,13 +20,13 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaActionData.MediaAction;
 import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaActionData.MediaType;
 import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaManager;
+import org.openhab.binding.freeboxos.internal.api.airmedia.MediaReceiverManager;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.audio.AudioSink;
@@ -38,7 +38,6 @@ import org.openhab.core.audio.UnsupportedAudioStreamException;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -65,27 +64,25 @@ public class AirMediaSink implements AudioSink {
             new AudioFormat(CONTAINER_NONE, CODEC_MP3, null, null, 320000, null));
 
     private final Logger logger = LoggerFactory.getLogger(AirMediaSink.class);
-    private final Thing thing;
+    private final ApiConsumerHandler thingHandler;
     private final Set<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
     private final NetworkAddressService networkAddressService;
     private final AudioHTTPServer audioHTTPServer;
     private final BundleContext bundleContext;
 
-    private @Nullable AirMediaManager airMediaManager;
     private @Nullable String callbackUrl;
     private @Nullable String playerName;
 
-    public AirMediaSink(Thing thing, AudioHTTPServer audioHTTPServer, NetworkAddressService networkAddressService,
-            BundleContext bundleContext) {
-        this.thing = thing;
+    public AirMediaSink(ApiConsumerHandler thingHandler, AudioHTTPServer audioHTTPServer,
+            NetworkAddressService networkAddressService, BundleContext bundleContext) {
+        this.thingHandler = thingHandler;
         this.networkAddressService = networkAddressService;
         this.audioHTTPServer = audioHTTPServer;
         this.bundleContext = bundleContext;
     }
 
-    public void initialize(String callbackUrl, @Nullable String playerName, AirMediaManager airMediaManager) {
+    public void initialize(String callbackUrl, @Nullable String playerName) {
         this.playerName = playerName;
-        this.airMediaManager = airMediaManager;
         if (!callbackUrl.isEmpty()) {
             this.callbackUrl = callbackUrl;
         } else {
@@ -101,7 +98,7 @@ public class AirMediaSink implements AudioSink {
     }
 
     @Override
-    public Set<@NonNull Class<? extends AudioStream>> getSupportedStreams() {
+    public Set<Class<? extends AudioStream>> getSupportedStreams() {
         return SUPPORTED_STREAMS;
     }
 
@@ -118,24 +115,25 @@ public class AirMediaSink implements AudioSink {
 
     @Override
     public String getId() {
-        return thing.getUID().toString();
+        return thingHandler.getThing().getUID().toString();
     }
 
     @Override
     public @Nullable String getLabel(@Nullable Locale locale) {
-        return thing.getLabel();
+        return thingHandler.getThing().getLabel();
     }
 
     @Override
     public void process(@Nullable AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
         String name = this.playerName;
-        AirMediaManager manager = airMediaManager;
-        if (thing.getStatus() == ThingStatus.ONLINE && name != null && manager != null) {
-            try {
+        try {
+            AirMediaManager manager = thingHandler.getManager(AirMediaManager.class);
+            MediaReceiverManager receiver = thingHandler.getManager(MediaReceiverManager.class);
+            if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE && name != null) {
                 String password = manager.getConfig().getPassword();
                 if (audioStream == null) {
-                    manager.sendToReceiver(name, password, MediaAction.STOP, MediaType.VIDEO);
+                    receiver.sendToReceiver(name, password, MediaAction.STOP, MediaType.VIDEO);
                 } else {
                     String url = null;
                     if (audioStream instanceof URLAudioStream) {
@@ -149,11 +147,11 @@ public class AirMediaSink implements AudioSink {
                                 : audioHTTPServer.serve(audioStream));
                     }
                     logger.debug("AirPlay audio sink: process url {}", url);
-                    manager.sendToReceiver(name, password, MediaAction.START, MediaType.VIDEO, url);
+                    receiver.sendToReceiver(name, password, MediaAction.START, MediaType.VIDEO, url);
                 }
-            } catch (FreeboxException e) {
-                logger.warn("Audio stream playback failed: {}", e.getMessage());
             }
+        } catch (FreeboxException e) {
+            logger.warn("Audio stream playback failed: {}", e.getMessage());
         }
     }
 

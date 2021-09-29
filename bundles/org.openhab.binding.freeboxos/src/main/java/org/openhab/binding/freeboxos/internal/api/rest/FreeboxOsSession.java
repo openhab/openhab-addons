@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeboxos.internal.api;
+package org.openhab.binding.freeboxos.internal.api.rest;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -26,6 +26,9 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.freeboxos.internal.api.ApiHandler;
+import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.Response.ErrorCode;
 import org.openhab.binding.freeboxos.internal.api.login.LoginManager;
 import org.openhab.binding.freeboxos.internal.api.login.Session;
@@ -116,11 +119,14 @@ public class FreeboxOsSession {
             initiateConnection();
             return execute(uri, method, classOfT, false, retryCount, aPayload);
         }
-
-        Set<ConstraintViolation<Response<?>>> constraintViolations = validator.validate(response);
-        if (constraintViolations.size() > 0) {
-            ConstraintViolation<Response<?>> violation = constraintViolations.iterator().next();
-            throw new FreeboxException(violation.getMessage() + " on request : " + uri.toString(), null, response);
+        if (!response.isSuccess()) {
+            throw new FreeboxException("Api request failed : " + response.getMsg());
+        } else {
+            Set<ConstraintViolation<Response<?>>> constraintViolations = validator.validate(response);
+            if (!constraintViolations.isEmpty()) {
+                ConstraintViolation<Response<?>> violation = constraintViolations.iterator().next();
+                throw new FreeboxException(violation.getMessage() + " on request : " + uri.toString(), null, response);
+            }
         }
         return response.getResult();
     }

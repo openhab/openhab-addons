@@ -10,10 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeboxos.internal.api;
+package org.openhab.binding.freeboxos.internal.api.rest;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
 
 /**
  * The {@link ConfigurableRest} is the Java class used to handle portions of the
@@ -29,6 +32,13 @@ public class ConfigurableRest<T, Y extends Response<T>> extends RestManager {
     public ConfigurableRest(String path, @Nullable String configPath, FreeboxOsSession session,
             Class<Y> classOfResponse) {
         super(path, session);
+        this.responseClass = classOfResponse;
+        this.configPath = configPath;
+    }
+
+    public ConfigurableRest(String path, @Nullable String configPath, FreeboxOsSession session, Permission required,
+            Class<Y> classOfResponse) throws FreeboxException {
+        super(path, session, required);
         this.responseClass = classOfResponse;
         this.configPath = configPath;
     }

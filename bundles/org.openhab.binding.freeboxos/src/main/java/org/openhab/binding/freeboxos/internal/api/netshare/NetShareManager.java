@@ -13,9 +13,9 @@
 package org.openhab.binding.freeboxos.internal.api.netshare;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.ConfigurableRest;
-import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.netshare.SambaConfig.SambaConfigResponse;
+import org.openhab.binding.freeboxos.internal.api.rest.ActivableRest;
+import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
 
 /**
  * The {@link NetShareManager} is the Java class used to handle api requests
@@ -24,7 +24,7 @@ import org.openhab.binding.freeboxos.internal.api.netshare.SambaConfig.SambaConf
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class NetShareManager extends ConfigurableRest<SambaConfig, SambaConfigResponse> {
+public class NetShareManager extends ActivableRest<SambaConfig, SambaConfigResponse> {
     private static final String NETSHARE_SUB_PATH = "netshare";
     private static final String SAMBA_SUB_PATH = "samba";
 

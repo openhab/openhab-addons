@@ -13,10 +13,9 @@
 package org.openhab.binding.freeboxos.internal.api.connection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.RestManager;
+import org.openhab.binding.freeboxos.internal.api.connection.ConnectionStatus.ConnectionStatusResponse;
+import org.openhab.binding.freeboxos.internal.api.rest.ConfigurableRest;
+import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
 
 /**
  * The {@link ConnectionManager} is the Java class used to handle api requests
@@ -26,18 +25,10 @@ import org.openhab.binding.freeboxos.internal.api.RestManager;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class ConnectionManager extends RestManager {
+public class ConnectionManager extends ConfigurableRest<ConnectionStatus, ConnectionStatusResponse> {
     private static final String CONNECTION_PATH = "connection";
 
     public ConnectionManager(FreeboxOsSession session) {
-        super(CONNECTION_PATH, session);
-    }
-
-    public ConnectionStatus getStatus() throws FreeboxException {
-        return get(ConnectionStatusResponse.class);
-    }
-
-    // Response classes
-    private static class ConnectionStatusResponse extends Response<ConnectionStatus> {
+        super(CONNECTION_PATH, null, session, ConnectionStatusResponse.class);
     }
 }

@@ -10,9 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeboxos.internal.api;
-
-import javax.validation.constraints.NotEmpty;
+package org.openhab.binding.freeboxos.internal.api.rest;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,7 +28,6 @@ public class FbxDevice extends ApiVersion {
 
     private int id;
 
-    @NotEmpty
     @SerializedName(value = "mac", alternate = { "main_mac" })
     private @NonNullByDefault({}) String mac;
 

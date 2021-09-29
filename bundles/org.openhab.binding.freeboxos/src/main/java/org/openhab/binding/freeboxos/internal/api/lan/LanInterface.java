@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.freeboxos.internal.api.lan;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.api.rest.FbxDevice;
 
 /**
  * The {@link LanInterface} is the Java class used to map the
@@ -22,10 +26,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-class LanInterface {
-    private @NonNullByDefault({}) String name;
-
-    public String getName() {
-        return name;
+class LanInterface extends FbxDevice {
+    public static class LanInterfacesResponse extends Response<List<LanInterface>> {
     }
+
+    public static class LanInterfaceResponse extends Response<LanInterface> {
+    }
+
+    // private @NonNullByDefault({}) String name;
+
+    // public String getName() {
+    // return name;
+    // }
 }

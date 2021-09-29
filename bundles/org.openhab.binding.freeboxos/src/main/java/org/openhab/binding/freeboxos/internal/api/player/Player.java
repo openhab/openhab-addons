@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.freeboxos.internal.api.player;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.FbxDevice;
+import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.api.rest.FbxDevice;
 
 /**
  *
@@ -21,6 +24,12 @@ import org.openhab.binding.freeboxos.internal.api.FbxDevice;
  */
 @NonNullByDefault
 public class Player extends FbxDevice {
+    public static class PlayersResponse extends Response<List<Player>> {
+    }
+
+    public static class PlayerResponse extends Response<Player> {
+    }
+
     private boolean apiAvailable;
     private boolean reachable;
 

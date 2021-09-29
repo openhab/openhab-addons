@@ -27,8 +27,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.action.PlayerActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaManager;
-import org.openhab.binding.freeboxos.internal.api.lan.LanManager;
+import org.openhab.binding.freeboxos.internal.api.lan.LanBrowserManager;
 import org.openhab.binding.freeboxos.internal.api.lan.NameSource;
 import org.openhab.binding.freeboxos.internal.api.player.Player;
 import org.openhab.binding.freeboxos.internal.api.player.PlayerManager;
@@ -73,7 +72,7 @@ public class PlayerHandler extends FreeDeviceHandler {
     public PlayerHandler(Thing thing, AudioHTTPServer audioHTTPServer, NetworkAddressService networkAddressService,
             BundleContext bundleContext) {
         super(thing);
-        this.audioSink = new AirMediaSink(thing, audioHTTPServer, networkAddressService, bundleContext);
+        this.audioSink = new AirMediaSink(this, audioHTTPServer, networkAddressService, bundleContext);
         reg = (ServiceRegistration<AudioSink>) bundleContext.registerService(AudioSink.class.getName(), audioSink,
                 new Hashtable<>());
     }
@@ -81,7 +80,7 @@ public class PlayerHandler extends FreeDeviceHandler {
     @Override
     void internalGetProperties(Map<String, String> properties) throws FreeboxException {
         super.internalGetProperties(properties);
-        for (Player player : getManager(PlayerManager.class).getPlayers()) {
+        for (Player player : getManager(PlayerManager.class).getDevices()) {
             if (player.getMac().equals(getMac())) {
                 properties.put(Thing.PROPERTY_MODEL_ID, player.getModel());
                 if (player.isApiAvailable() && player.isReachable()) {
@@ -89,7 +88,7 @@ public class PlayerHandler extends FreeDeviceHandler {
                     properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.getSerial());
                     properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion());
                 }
-                getManager(LanManager.class).getHost(getMac()).ifPresent(
+                getManager(LanBrowserManager.class).getHost(getMac()).ifPresent(
                         host -> properties.put(NameSource.UPNP.name(), host.getPrimaryName().orElse("Freebox Player")));
             }
         }
@@ -99,12 +98,7 @@ public class PlayerHandler extends FreeDeviceHandler {
     public void initialize() {
         super.initialize();
         PlayerConfiguration config = getConfigAs(PlayerConfiguration.class);
-        try {
-            audioSink.initialize(config.callBackUrl, editProperties().get(NameSource.UPNP.name()),
-                    getManager(AirMediaManager.class));
-        } catch (FreeboxException e) {
-            logger.warn("Error.");
-        }
+        audioSink.initialize(config.callBackUrl, editProperties().get(NameSource.UPNP.name()));
     }
 
     // private String getPassword() {

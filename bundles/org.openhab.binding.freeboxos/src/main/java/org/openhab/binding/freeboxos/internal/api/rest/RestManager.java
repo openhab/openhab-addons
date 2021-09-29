@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeboxos.internal.api;
+package org.openhab.binding.freeboxos.internal.api.rest;
 
 import static org.eclipse.jetty.http.HttpMethod.*;
 
@@ -20,6 +20,8 @@ import java.util.List;
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
 
 /**
@@ -33,7 +35,7 @@ public class RestManager {
     protected static final String REBOOT_SUB_PATH = "reboot";
 
     private final UriBuilder uriBuilder;
-    private FreeboxOsSession session;
+    protected FreeboxOsSession session;
 
     public RestManager(String path, FreeboxOsSession session) {
         this.uriBuilder = session.getUriBuilder().path(path);

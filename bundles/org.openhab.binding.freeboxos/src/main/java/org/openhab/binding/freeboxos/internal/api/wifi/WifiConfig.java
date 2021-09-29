@@ -14,6 +14,7 @@ package org.openhab.binding.freeboxos.internal.api.wifi;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.api.rest.ActivableConfig;
 
 /**
  * The {@link WifiConfig} is the Java class used to map the "WifiGlobalConfig"
@@ -23,17 +24,19 @@ import org.openhab.binding.freeboxos.internal.api.Response;
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class WifiConfig {
+public class WifiConfig implements ActivableConfig {
     // Response classes
     public static class WifiConfigResponse extends Response<WifiConfig> {
     }
 
     private boolean enabled;
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }

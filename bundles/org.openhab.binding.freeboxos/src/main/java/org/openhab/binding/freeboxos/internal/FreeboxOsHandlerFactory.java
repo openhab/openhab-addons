@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.openhab.binding.freeboxos.internal.api.ApiHandler;
-import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
+import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.handler.ActivePlayerHandler;
 import org.openhab.binding.freeboxos.internal.handler.FreeboxOsHandler;
 import org.openhab.binding.freeboxos.internal.handler.HostHandler;

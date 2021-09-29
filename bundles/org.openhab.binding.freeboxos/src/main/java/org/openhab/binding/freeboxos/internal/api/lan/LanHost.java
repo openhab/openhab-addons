@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.Response;
 
 /**
  * The {@link LanHost} is the Java class used to map the "LanHost"
@@ -28,6 +29,9 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class LanHost implements ConnectivityData {
+    public static class LanHostsResponse extends Response<List<LanHost>> {
+    }
+
     private @Nullable String primaryName;
     private @Nullable L2Ident l2ident;
     private @Nullable String vendorName;

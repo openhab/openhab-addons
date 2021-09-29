@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.action.HostActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.lan.ConnectivityData;
+import org.openhab.binding.freeboxos.internal.api.lan.LanBrowserManager;
 import org.openhab.binding.freeboxos.internal.api.lan.LanManager;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -47,7 +48,7 @@ public class HostHandler extends ApiConsumerHandler {
 
     @Override
     void internalGetProperties(Map<String, String> properties) throws FreeboxException {
-        getManager(LanManager.class).getHost(getMac())
+        getManager(LanBrowserManager.class).getHost(getMac())
                 .ifPresent(host -> properties.put(Thing.PROPERTY_VENDOR, host.getVendorName().orElse("Unknown")));
     }
 
@@ -62,7 +63,7 @@ public class HostHandler extends ApiConsumerHandler {
     }
 
     protected ConnectivityData fetchConnectivity() throws FreeboxException {
-        return getManager(LanManager.class).getHost(getMac())
+        return getManager(LanBrowserManager.class).getHost(getMac())
                 .orElseThrow(() -> new FreeboxException("Host data not found"));
     }
 

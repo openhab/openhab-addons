@@ -16,6 +16,7 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.Response;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -28,6 +29,9 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class LanConfig implements ConnectivityData {
+    public static class LanConfigResponse extends Response<LanConfig> {
+    }
+
     public static enum NetworkMode {
         UNKNOWN,
         @SerializedName("router")

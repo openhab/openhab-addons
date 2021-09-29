@@ -13,16 +13,18 @@
 package org.openhab.binding.freeboxos.internal.api.player;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.RestManager;
 import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
+import org.openhab.binding.freeboxos.internal.api.player.Player.PlayerResponse;
+import org.openhab.binding.freeboxos.internal.api.player.Player.PlayersResponse;
+import org.openhab.binding.freeboxos.internal.api.player.PlayerStatus.PlayerStatusResponse;
+import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
+import org.openhab.binding.freeboxos.internal.api.rest.ListableRest;
 import org.openhab.binding.freeboxos.internal.api.system.DeviceConfig;
+import org.openhab.binding.freeboxos.internal.api.system.DeviceConfig.DeviceConfigurationResponse;
 
 /**
  * The {@link PlayerManager} is the Java class used to handle api requests
@@ -31,7 +33,7 @@ import org.openhab.binding.freeboxos.internal.api.system.DeviceConfig;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class PlayerManager extends RestManager {
+public class PlayerManager extends ListableRest<Player, PlayerResponse, PlayersResponse> {
     private static final String STATUS_SUB_PATH = "status";
     private static final String SYSTEM_SUB_PATH = "system";
     private static final String PLAYER_SUB_PATH = "player";
@@ -40,35 +42,21 @@ public class PlayerManager extends RestManager {
     private final Map<Integer, String> subPaths = new HashMap<>();
 
     public PlayerManager(FreeboxOsSession session) throws FreeboxException {
-        super(PLAYER_SUB_PATH, session, Permission.PLAYER);
-        getPlayers().forEach(player -> {
+        super(PLAYER_SUB_PATH, session, Permission.PLAYER, PlayerResponse.class, PlayersResponse.class);
+        getDevices().forEach(player -> {
             subPaths.put(player.getId(), player.baseUrl());
         });
     }
 
-    public List<Player> getPlayers() throws FreeboxException {
-        return get(PlayersResponse.class);
-    }
-
     public PlayerStatus getPlayerStatus(int id) throws FreeboxException {
-        return get(PlayerResponse.class, subPaths.get(id) + STATUS_SUB_PATH);
+        return get(PlayerStatusResponse.class, subPaths.get(id) + STATUS_SUB_PATH);
     }
 
     public DeviceConfig getConfig(int id) throws FreeboxException {
-        return get(PlayerConfigurationResponse.class, subPaths.get(id) + SYSTEM_SUB_PATH);
+        return get(DeviceConfigurationResponse.class, subPaths.get(id) + SYSTEM_SUB_PATH);
     }
 
     public void reboot(int id) throws FreeboxException {
         post(subPaths.get(id) + REBOOT_ACTION);
-    }
-
-    // Response classes
-    private static class PlayersResponse extends Response<List<Player>> {
-    }
-
-    private static class PlayerResponse extends Response<PlayerStatus> {
-    }
-
-    private static class PlayerConfigurationResponse extends Response<DeviceConfig> {
     }
 }

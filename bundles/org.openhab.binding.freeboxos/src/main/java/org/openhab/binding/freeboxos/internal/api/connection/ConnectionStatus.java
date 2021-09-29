@@ -13,6 +13,7 @@
 package org.openhab.binding.freeboxos.internal.api.connection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.Response;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -25,6 +26,8 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class ConnectionStatus {
+    public static class ConnectionStatusResponse extends Response<ConnectionStatus> {
+    }
 
     public static enum State {
         @SerializedName("going_up")

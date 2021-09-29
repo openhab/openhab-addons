@@ -15,6 +15,7 @@ package org.openhab.binding.freeboxos.internal.api.netshare;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.api.rest.ActivableConfig;
 
 /**
  * The {@link SambaConfig} is the Java class used to map answer
@@ -24,7 +25,7 @@ import org.openhab.binding.freeboxos.internal.api.Response;
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class SambaConfig {
+public class SambaConfig implements ActivableConfig {
     // Response classes
     public static class SambaConfigResponse extends Response<SambaConfig> {
     }
@@ -36,11 +37,13 @@ public class SambaConfig {
     protected @Nullable String logonPassword;
     protected @Nullable String workgroup;
 
-    public boolean isFileShareEnabled() {
+    @Override
+    public boolean isEnabled() {
         return fileShareEnabled;
     }
 
-    public void setFileShareEnabled(boolean fileShareEnabled) {
+    @Override
+    public void setEnabled(boolean fileShareEnabled) {
         this.fileShareEnabled = fileShareEnabled;
     }
 

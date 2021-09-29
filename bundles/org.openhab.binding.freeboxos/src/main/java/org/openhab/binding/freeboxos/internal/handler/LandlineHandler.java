@@ -107,7 +107,7 @@ public class LandlineHandler extends ApiConsumerHandler {
 
         PhoneConfig config = phoneManager.getConfig();
         updateChannelOnOff(PHONE_MISC, ALTERNATE_RING, config.isDectRingOnOff());
-        updateChannelOnOff(PHONE_MISC, DECT_ACTIVE, config.isDectEnabled());
+        updateChannelOnOff(PHONE_MISC, DECT_ACTIVE, config.isEnabled());
     }
 
     private void updateCallChannels(CallEntry call) {
@@ -135,7 +135,7 @@ public class LandlineHandler extends ApiConsumerHandler {
                 phoneManager.ring(status);
                 return true;
             } else if (DECT_ACTIVE.equals(target)) {
-                phoneManager.activateDect(status);
+                phoneManager.setStatus(status);
                 return true;
             } else if (ALTERNATE_RING.equals(target)) {
                 phoneManager.alternateRing(status);

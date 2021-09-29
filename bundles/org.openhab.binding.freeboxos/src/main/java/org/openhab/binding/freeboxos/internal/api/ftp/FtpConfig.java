@@ -14,6 +14,7 @@ package org.openhab.binding.freeboxos.internal.api.ftp;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.api.rest.ActivableConfig;
 
 /**
  * The {@link FtpConfig} is the Java class used to map the "FtpConfig"
@@ -23,8 +24,7 @@ import org.openhab.binding.freeboxos.internal.api.Response;
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class FtpConfig {
-    // Response classes
+public class FtpConfig implements ActivableConfig {
     public static class FtpConfigResponse extends Response<FtpConfig> {
     }
 
@@ -38,10 +38,12 @@ public class FtpConfig {
     protected int portData;
     protected String remoteDomain = "";
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }

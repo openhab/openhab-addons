@@ -20,11 +20,11 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.ap.APManager;
+import org.openhab.binding.freeboxos.internal.api.ap.AccessPointHost;
 import org.openhab.binding.freeboxos.internal.api.lan.LanAccessPoint;
 import org.openhab.binding.freeboxos.internal.api.lan.LanHost;
 import org.openhab.binding.freeboxos.internal.api.repeater.RepeaterManager;
-import org.openhab.binding.freeboxos.internal.api.wifi.AccessPointHost;
-import org.openhab.binding.freeboxos.internal.api.wifi.WifiManager;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -48,7 +48,7 @@ public class WifiHostHandler extends HostHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
-        Optional<AccessPointHost> host = getManager(WifiManager.class).getHost(getMac());
+        Optional<AccessPointHost> host = getManager(APManager.class).getHost(getMac());
         if (host.isPresent()) {
             AccessPointHost wifiHost = host.get();
             updateChannels(wifiHost.getSignal(), SERVEUR_HOST, wifiHost.getSsid());

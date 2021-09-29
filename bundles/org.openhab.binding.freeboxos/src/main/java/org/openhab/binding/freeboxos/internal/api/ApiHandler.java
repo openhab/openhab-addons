@@ -76,7 +76,7 @@ public class ApiHandler {
                 .create();
     }
 
-    synchronized <T> T executeUri(URI uri, HttpMethod method, Type classOfT, @Nullable String sessionToken,
+    public synchronized <T> T executeUri(URI uri, HttpMethod method, Type classOfT, @Nullable String sessionToken,
             @Nullable Object payload) throws FreeboxException {
         logger.debug("executeUrl {} - {} ", method, uri);
 

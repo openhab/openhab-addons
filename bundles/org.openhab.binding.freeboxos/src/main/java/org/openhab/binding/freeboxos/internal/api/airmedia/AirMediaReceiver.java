@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.freeboxos.internal.api.airmedia;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.api.rest.FbxDevice;
 
 /**
  * The {@link AirMediaReceiver} is the Java class used to map the "AirMediaReceiver"
@@ -22,13 +26,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public class AirMediaReceiver {
-    private @NonNullByDefault({}) String name;
+public class AirMediaReceiver extends FbxDevice {
+    public static class AirMediaReceiversResponse extends Response<List<AirMediaReceiver>> {
+    }
+
+    public static class AirMediaReceiverResponse extends Response<AirMediaReceiver> {
+    }
+
+    // @NotBlank
+    // private @NonNullByDefault({}) String name;
     private boolean passwordProtected;
 
-    public String getName() {
-        return name;
-    }
+    // public String getName() {
+    // return name;
+    // }
 
     public boolean isPasswordProtected() {
         return passwordProtected;

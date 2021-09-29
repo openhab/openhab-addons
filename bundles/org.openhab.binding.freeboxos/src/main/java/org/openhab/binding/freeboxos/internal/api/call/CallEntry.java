@@ -13,9 +13,11 @@
 package org.openhab.binding.freeboxos.internal.api.call;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeboxos.internal.api.Response;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -28,6 +30,9 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class CallEntry {
+    public class CallEntriesResponse extends Response<List<CallEntry>> {
+    }
+
     public static enum CallType {
         UNKNOWN,
         @SerializedName("accepted")
@@ -39,17 +44,11 @@ public class CallEntry {
         INCOMING;
     }
 
-    private int id;
     private CallType type = CallType.UNKNOWN;
     private @Nullable ZonedDateTime datetime; // Call creation timestamp.
     private @Nullable String number;
     private @Nullable String name;
     private int duration; // Call duration in seconds.
-    // private int contactId;
-
-    public int getId() {
-        return id;
-    }
 
     public CallType getType() {
         if (type == CallType.MISSED && duration == 0) {

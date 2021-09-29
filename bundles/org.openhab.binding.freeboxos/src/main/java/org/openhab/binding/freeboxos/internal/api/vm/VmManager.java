@@ -12,14 +12,13 @@
  */
 package org.openhab.binding.freeboxos.internal.api.vm;
 
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.FreeboxOsSession;
-import org.openhab.binding.freeboxos.internal.api.Response;
-import org.openhab.binding.freeboxos.internal.api.RestManager;
 import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
+import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
+import org.openhab.binding.freeboxos.internal.api.rest.ListableRest;
+import org.openhab.binding.freeboxos.internal.api.vm.VirtualMachine.VirtualMachineResponse;
+import org.openhab.binding.freeboxos.internal.api.vm.VirtualMachine.VirtualMachinesResponse;
 
 /**
  * The {@link VmManager} is the Java class used to handle api requests
@@ -28,29 +27,14 @@ import org.openhab.binding.freeboxos.internal.api.login.Session.Permission;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class VmManager extends RestManager {
+public class VmManager extends ListableRest<VirtualMachine, VirtualMachineResponse, VirtualMachinesResponse> {
     private static final String VM_SUB_PATH = "vm";
 
     public VmManager(FreeboxOsSession session) throws FreeboxException {
-        super(VM_SUB_PATH, session, Permission.VM);
-    }
-
-    public VirtualMachine getVM(int vmId) throws FreeboxException {
-        return get(VirtualMachineResponse.class, String.format("%d", vmId));
+        super(VM_SUB_PATH, session, Permission.VM, VirtualMachineResponse.class, VirtualMachinesResponse.class);
     }
 
     public void power(int vmId, boolean startIt) throws FreeboxException {
-        post(String.format("%d/%s", vmId, startIt ? "start" : "powerbutton"));
-    }
-
-    public List<VirtualMachine> getVms() throws FreeboxException {
-        return get(VirtualMachinesResponse.class);
-    }
-
-    // Response classes
-    private class VirtualMachineResponse extends Response<VirtualMachine> {
-    }
-
-    private class VirtualMachinesResponse extends Response<List<VirtualMachine>> {
+        post(String.format("%s/%s", deviceSubPath(vmId), startIt ? "start" : "powerbutton"));
     }
 }

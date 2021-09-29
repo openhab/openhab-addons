@@ -13,10 +13,12 @@
 package org.openhab.binding.freeboxos.internal.api.repeater;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeboxos.internal.api.FbxDevice;
+import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.api.rest.FbxDevice;
 
 /**
  *
@@ -24,6 +26,12 @@ import org.openhab.binding.freeboxos.internal.api.FbxDevice;
  */
 @NonNullByDefault
 public class Repeater extends FbxDevice {
+    public static class RepeatersResponse extends Response<List<Repeater>> {
+    }
+
+    public static class RepeaterResponse extends Response<Repeater> {
+    }
+
     private @Nullable String connection;
     private @Nullable ZonedDateTime bootTime;
     private boolean ledActivated;

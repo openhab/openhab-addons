@@ -44,7 +44,7 @@ public class RepeaterHandler extends HostHandler {
     @Override
     void internalGetProperties(Map<String, String> properties) throws FreeboxException {
         super.internalGetProperties(properties);
-        getManager(RepeaterManager.class).getRepeaters().stream().filter(rep -> rep.getMac().equals(getMac()))
+        getManager(RepeaterManager.class).getDevices().stream().filter(rep -> rep.getMac().equals(getMac()))
                 .forEach(repeater -> {
                     properties.put(Thing.PROPERTY_SERIAL_NUMBER, repeater.getSerial());
                     properties.put(Thing.PROPERTY_FIRMWARE_VERSION, repeater.getFirmwareVersion());
@@ -62,7 +62,7 @@ public class RepeaterHandler extends HostHandler {
         List<LanHost> hosts = repeaterManager.getRepeaterHosts(config.id);
         updateChannelDecimal(REPEATER_MISC, HOST_COUNT, hosts.size());
 
-        Repeater repeater = repeaterManager.getRepeater(config.id);
+        Repeater repeater = repeaterManager.getDevice(config.id);
         updateChannelDateTimeState(REPEATER_MISC, RPT_TIMESTAMP, repeater.getBootTime());
         updateChannelOnOff(REPEATER_MISC, LED, repeater.getLedActivated());
         updateChannelString(REPEATER_MISC, CONNECTION_STATUS, repeater.getConnection());

@@ -10,9 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeboxos.internal.api.wifi;
+package org.openhab.binding.freeboxos.internal.api.ap;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeboxos.internal.api.Response;
+import org.openhab.binding.freeboxos.internal.api.rest.FbxDevice;
 
 /**
  * The {@link AccessPoint} is the Java class used to map the "SwitchStatus"
@@ -22,15 +26,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class AccessPoint {
-    private int id;
-    private @NonNullByDefault({}) String name;
-
-    public String getName() {
-        return name;
+public class AccessPoint extends FbxDevice {
+    public class AccessPointsResponse extends Response<List<AccessPoint>> {
     }
 
-    public int getId() {
-        return id;
+    public class AccessPointResponse extends Response<AccessPoint> {
     }
+
+    // private int id;
+    // private @NonNullByDefault({}) String name;
+
+    // public String getName() {
+    // return name;
+    // }
+
+    // public int getId() {
+    // return id;
+    // }
 }

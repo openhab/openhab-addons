@@ -25,12 +25,12 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.action.ServerActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaConfig;
 import org.openhab.binding.freeboxos.internal.api.airmedia.AirMediaManager;
 import org.openhab.binding.freeboxos.internal.api.connection.ConnectionManager;
 import org.openhab.binding.freeboxos.internal.api.connection.ConnectionStatus;
 import org.openhab.binding.freeboxos.internal.api.ftp.FtpManager;
 import org.openhab.binding.freeboxos.internal.api.lan.ConnectivityData;
+import org.openhab.binding.freeboxos.internal.api.lan.LanBrowserManager;
 import org.openhab.binding.freeboxos.internal.api.lan.LanConfig.NetworkMode;
 import org.openhab.binding.freeboxos.internal.api.lan.LanManager;
 import org.openhab.binding.freeboxos.internal.api.lan.NameSource;
@@ -72,7 +72,7 @@ public class ServerHandler extends FreeDeviceHandler {
     public ServerHandler(Thing thing, AudioHTTPServer audioHTTPServer, NetworkAddressService networkAddressService,
             BundleContext bundleContext) {
         super(thing);
-        this.audioSink = new AirMediaSink(thing, audioHTTPServer, networkAddressService, bundleContext);
+        this.audioSink = new AirMediaSink(this, audioHTTPServer, networkAddressService, bundleContext);
         reg = (ServiceRegistration<AudioSink>) bundleContext.registerService(AudioSink.class.getName(), audioSink,
                 new Hashtable<>());
     }
@@ -86,11 +86,7 @@ public class ServerHandler extends FreeDeviceHandler {
     @Override
     public void initialize() {
         super.initialize();
-        try {
-            audioSink.initialize("", editProperties().get(NameSource.UPNP.name()), getManager(AirMediaManager.class));
-        } catch (FreeboxException e) {
-            logger.warn("Error.");
-        }
+        audioSink.initialize("", editProperties().get(NameSource.UPNP.name()));
     }
 
     @Override
@@ -100,7 +96,7 @@ public class ServerHandler extends FreeDeviceHandler {
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.getSerial());
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion());
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, config.getPrettyName().orElse("Unknown"));
-        getManager(LanManager.class).getHost(getMac()).ifPresent(
+        getManager(LanBrowserManager.class).getHost(getMac()).ifPresent(
                 host -> properties.put(NameSource.UPNP.name(), host.getPrimaryName().orElse("Freebox Server")));
     }
 
@@ -111,17 +107,17 @@ public class ServerHandler extends FreeDeviceHandler {
         fetchConnectionStatus();
         fetchMediaServerConfig();
         fetchSambaConfig();
-        updateChannelOnOff(FILE_SHARING, FTP_STATUS, getManager(FtpManager.class).getFtpStatus());
+        updateChannelOnOff(FILE_SHARING, FTP_STATUS, getManager(FtpManager.class).getStatus());
         updateChannelOnOff(ACTIONS, WIFI_STATUS, getManager(WifiManager.class).getStatus());
     }
 
     @Override
     protected ConnectivityData fetchConnectivity() throws FreeboxException {
-        return getManager(LanManager.class).getLanConfig();
+        return getManager(LanManager.class).getConfig();
     }
 
     private void fetchConnectionStatus() throws FreeboxException {
-        ConnectionStatus connectionStatus = getManager(ConnectionManager.class).getStatus();
+        ConnectionStatus connectionStatus = getManager(ConnectionManager.class).getConfig();
         QuantityType<?> bandwidthUp = new QuantityType<>(connectionStatus.getBandwidthUp(), BIT_PER_SECOND);
         QuantityType<?> bandwidthDown = new QuantityType<>(connectionStatus.getBandwidthDown(), BIT_PER_SECOND);
         updateChannelString(CONNECTION_STATUS, LINE_STATUS, connectionStatus.getState().name());
@@ -159,19 +155,20 @@ public class ServerHandler extends FreeDeviceHandler {
                     updateChannelOnOff(ACTIONS, WIFI_STATUS, getManager(WifiManager.class).setStatus(enable));
                     return true;
                 case FTP_STATUS:
-                    updateChannelOnOff(FILE_SHARING, FTP_STATUS, getManager(FtpManager.class).setFtpStatus(enable));
+                    updateChannelOnOff(FILE_SHARING, FTP_STATUS, getManager(FtpManager.class).setStatus(enable));
                     return true;
                 case SAMBA_FILE_STATUS:
-                    updateChannelOnOff(FILE_SHARING, SAMBA_FILE_STATUS, enableSambaFileShare(enable));
+                    updateChannelOnOff(FILE_SHARING, SAMBA_FILE_STATUS,
+                            getManager(NetShareManager.class).setStatus(enable));
                     return true;
                 case SAMBA_PRINTER_STATUS:
                     updateChannelOnOff(FILE_SHARING, SAMBA_PRINTER_STATUS, enableSambaPrintShare(enable));
                     return true;
                 case UPNPAV_STATUS:
-                    updateChannelOnOff(ACTIONS, UPNPAV_STATUS, getManager(UPnPAVManager.class).changeStatus(enable));
+                    updateChannelOnOff(ACTIONS, UPNPAV_STATUS, getManager(UPnPAVManager.class).setStatus(enable));
                     return true;
                 case AIRMEDIA_STATUS:
-                    updateChannelOnOff(ACTIONS, AIRMEDIA_STATUS, enableAirMedia(enable));
+                    updateChannelOnOff(ACTIONS, AIRMEDIA_STATUS, getManager(AirMediaManager.class).setStatus(enable));
                     return true;
                 default:
                     break;
@@ -182,15 +179,8 @@ public class ServerHandler extends FreeDeviceHandler {
 
     private void fetchSambaConfig() throws FreeboxException {
         SambaConfig response = getManager(NetShareManager.class).getConfig();
-        updateChannelOnOff(FILE_SHARING, SAMBA_FILE_STATUS, response.isFileShareEnabled());
+        updateChannelOnOff(FILE_SHARING, SAMBA_FILE_STATUS, response.isEnabled());
         updateChannelOnOff(FILE_SHARING, SAMBA_PRINTER_STATUS, response.isPrintShareEnabled());
-    }
-
-    private boolean enableSambaFileShare(boolean enable) throws FreeboxException {
-        SambaConfig config = getManager(NetShareManager.class).getConfig();
-        config.setFileShareEnabled(enable);
-        config = getManager(NetShareManager.class).setConfig(config);
-        return config.isFileShareEnabled();
     }
 
     private boolean enableSambaPrintShare(boolean enable) throws FreeboxException {
@@ -198,13 +188,6 @@ public class ServerHandler extends FreeDeviceHandler {
         config.setPrintShareEnabled(enable);
         config = getManager(NetShareManager.class).setConfig(config);
         return config.isPrintShareEnabled();
-    }
-
-    private boolean enableAirMedia(boolean enable) throws FreeboxException {
-        AirMediaConfig config = getManager(AirMediaManager.class).getConfig();
-        config.setEnable(enable);
-        config = getManager(AirMediaManager.class).setConfig(config);
-        return config.isEnabled();
     }
 
     private void fetchMediaServerConfig() throws FreeboxException {

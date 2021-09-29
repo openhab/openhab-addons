@@ -50,12 +50,20 @@ public class Response<T> {
         return result;
     }
 
+    public boolean isSuccess() {
+        return success;
+    }
+
     public @Nullable Permission getMissingRight() {
         return missingRight;
     }
 
     public ErrorCode getErrorCode() {
         return errorCode;
+    }
+
+    public String getMsg() {
+        return msg;
     }
 
     public static Response<?> of(ErrorCode code) {
