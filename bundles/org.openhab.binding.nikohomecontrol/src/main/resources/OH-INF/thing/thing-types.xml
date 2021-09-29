@@ -102,8 +102,8 @@
 		</channels>
 		<config-description>
 			<parameter name="actionId" type="text" required="true">
-                <label>@text/actionConfigActionIdLabel</label>
-                <description>@text/actionConfigActionIdDescription</description>
+				<label>@text/actionConfigActionIdLabel</label>
+				<description>@text/actionConfigActionIdDescription</description>
 				<advanced>false</advanced>
 			</parameter>
 		</config-description>
@@ -120,8 +120,8 @@
 		</channels>
 		<config-description>
 			<parameter name="actionId" type="text" required="true">
-                <label>@text/actionConfigActionIdLabel</label>
-                <description>@text/actionConfigActionIdDescription</description>
+				<label>@text/actionConfigActionIdLabel</label>
+				<description>@text/actionConfigActionIdDescription</description>
 				<advanced>false</advanced>
 			</parameter>
 			<parameter name="step" type="integer">
@@ -144,8 +144,8 @@
 		</channels>
 		<config-description>
 			<parameter name="actionId" type="text" required="true">
-                <label>@text/actionConfigActionIdLabel</label>
-                <description>@text/actionConfigActionIdDescription</description>
+				<label>@text/actionConfigActionIdLabel</label>
+				<description>@text/actionConfigActionIdDescription</description>
 				<advanced>false</advanced>
 			</parameter>
 			<parameter name="invert" type="boolean">
