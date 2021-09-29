@@ -127,7 +127,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="availableHeap">
+	<channel-type id="availableHeap" advanced="true">
 		<item-type>Number:DataAmount</item-type>
 		<label>Available Heap</label>
 		<description>How much data is available in the Java heap.</description>
