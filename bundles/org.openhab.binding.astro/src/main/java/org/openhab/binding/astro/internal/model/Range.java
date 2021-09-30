@@ -16,8 +16,6 @@ import static org.openhab.core.library.unit.MetricPrefix.MILLI;
 
 import java.util.Calendar;
 
-import javax.measure.quantity.Time;
-
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -58,7 +56,7 @@ public class Range {
     /**
      * Returns the duration in minutes.
      */
-    public QuantityType<Time> getDuration() {
+    public QuantityType<?> getDuration() {
         if (start == null || end == null) {
             return null;
         }

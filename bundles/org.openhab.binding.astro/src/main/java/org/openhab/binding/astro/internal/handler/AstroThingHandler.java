@@ -17,6 +17,7 @@ import static org.openhab.core.thing.type.ChannelKind.TRIGGER;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.lang.invoke.MethodHandles;
+import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -32,9 +33,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.measure.quantity.Angle;
-
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.action.AstroActions;
@@ -67,11 +65,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class AstroThingHandler extends BaseThingHandler {
-
     private static final String DAILY_MIDNIGHT = "30 0 0 * * ? *";
 
     /** Logger Instance */
-    protected final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final SimpleDateFormat isoFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     /** Scheduler to schedule jobs */
     private final CronScheduler cronScheduler;
@@ -310,7 +308,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
             monitor.unlock();
         }
         if (logger.isDebugEnabled()) {
-            String formattedDate = DateFormatUtils.ISO_DATETIME_FORMAT.format(eventAt);
+            String formattedDate = this.isoFormatter.format(eventAt);
             logger.debug("Scheduled {} in {}ms (at {})", job, sleepTime, formattedDate);
         }
     }
@@ -354,12 +352,12 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
     public abstract @Nullable Position getPositionAt(ZonedDateTime date);
 
-    public @Nullable QuantityType<Angle> getAzimuth(ZonedDateTime date) {
+    public @Nullable QuantityType<?> getAzimuth(ZonedDateTime date) {
         Position position = getPositionAt(date);
         return position != null ? position.getAzimuth() : null;
     }
 
-    public @Nullable QuantityType<Angle> getElevation(ZonedDateTime date) {
+    public @Nullable QuantityType<?> getElevation(ZonedDateTime date) {
         Position position = getPositionAt(date);
         return position != null ? position.getElevation() : null;
     }

@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.astro.internal.model;
 
-import javax.measure.quantity.Angle;
-
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
@@ -42,7 +40,7 @@ public class Position {
     /**
      * Returns the azimuth.
      */
-    public QuantityType<Angle> getAzimuth() {
+    public QuantityType<?> getAzimuth() {
         return new QuantityType<>(azimuth, Units.DEGREE_ANGLE);
     }
 
@@ -56,7 +54,7 @@ public class Position {
     /**
      * Returns the elevation.
      */
-    public QuantityType<Angle> getElevation() {
+    public QuantityType<?> getElevation() {
         return new QuantityType<>(elevation, Units.DEGREE_ANGLE);
     }
 

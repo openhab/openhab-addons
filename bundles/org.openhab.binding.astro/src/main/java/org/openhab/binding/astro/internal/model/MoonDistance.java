@@ -17,8 +17,6 @@ import static org.openhab.core.library.unit.SIUnits.METRE;
 
 import java.util.Calendar;
 
-import javax.measure.quantity.Length;
-
 import org.openhab.core.library.types.QuantityType;
 
 /**
@@ -49,7 +47,7 @@ public class MoonDistance {
     /**
      * Returns the distance in kilometers.
      */
-    public QuantityType<Length> getDistance() {
+    public QuantityType<?> getDistance() {
         return new QuantityType<>(distance, KILO(METRE));
     }
 
