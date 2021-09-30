@@ -338,39 +338,39 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
 
     private void setCoolingSetpoint(double cool) {
         double heat = getHeatingSetpoint().doubleValue();
-        VenstarSystemMode mode = getSystemMode();
-        VenstarFanMode fanmode = getFanMode();
+        VenstarSystemMode mode = infoData.getSystemMode();
+        VenstarFanMode fanmode = infoData.getFanMode();
         updateControls(heat, cool, mode, fanmode);
     }
 
     private void setSystemMode(VenstarSystemMode mode) {
         double cool = getCoolingSetpoint().doubleValue();
         double heat = getHeatingSetpoint().doubleValue();
-        VenstarFanMode fanmode = getFanMode();
+        VenstarFanMode fanmode = infoData.getFanMode();
         updateControls(heat, cool, mode, fanmode);
     }
 
     private void setHeatingSetpoint(double heat) {
         double cool = getCoolingSetpoint().doubleValue();
-        VenstarSystemMode mode = getSystemMode();
-        VenstarFanMode fanmode = getFanMode();
+        VenstarSystemMode mode = infoData.getSystemMode();
+        VenstarFanMode fanmode = infoData.getFanMode();
         updateControls(heat, cool, mode, fanmode);
     }
 
     private void setFanMode(VenstarFanMode fanmode) {
         double cool = getCoolingSetpoint().doubleValue();
         double heat = getHeatingSetpoint().doubleValue();
-        VenstarSystemMode mode = getSystemMode();
+        VenstarSystemMode mode = infoData.getSystemMode();
         updateControls(heat, cool, mode, fanmode);
     }
 
     private void setAwayMode(VenstarAwayMode away) {
-        VenstarScheduleMode schedule = getScheduleMode();
+        VenstarScheduleMode schedule = infoData.getScheduleMode();
         updateSettings(away, schedule);
     }
 
     private void setScheduleMode(VenstarScheduleMode schedule) {
-        VenstarAwayMode away = getAwayMode();
+        VenstarAwayMode away = infoData.getAwayMode();
         updateSettings(away, schedule);
     }
 
@@ -382,66 +382,10 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         return new QuantityType<Temperature>(infoData.getHeattemp(), unitSystem);
     }
 
-    private VenstarSystemState getSystemState() {
-        return infoData.getState();
-    }
-
-    private VenstarSystemMode getSystemMode() {
-        return infoData.getMode();
-    }
-
-    private VenstarAwayMode getAwayMode() {
-        return infoData.getAway();
-    }
-
-    private VenstarFanMode getFanMode() {
-        return infoData.getFanMode();
-    }
-
-    private VenstarFanState getFanState() {
-        return infoData.getFanState();
-    }
-
-    private VenstarScheduleMode getScheduleMode() {
-        return infoData.getScheduleMode();
-    }
-
-    private VenstarSchedulePart getSchedulePart() {
-        return infoData.getSchedulePart();
-    }
-
     private ZonedDateTime getTimestampRuntime(VenstarRuntime runtime) {
         ZonedDateTime z = ZonedDateTime.ofInstant(Instant.ofEpochSecond(runtime.getTimeStamp()),
                 ZoneId.systemDefault());
         return z;
-    }
-
-    private int getHeat1Runtime(VenstarRuntime runtime) {
-        return runtime.getHeat1();
-    }
-
-    private int getHeat2Runtime(VenstarRuntime runtime) {
-        return runtime.getHeat2();
-    }
-
-    private int getCool1Runtime(VenstarRuntime runtime) {
-        return runtime.getCool1();
-    }
-
-    private int getCool2Runtime(VenstarRuntime runtime) {
-        return runtime.getCool2();
-    }
-
-    private int getAux1Runtime(VenstarRuntime runtime) {
-        return runtime.getAux1();
-    }
-
-    private int getAux2Runtime(VenstarRuntime runtime) {
-        return runtime.getAux2();
-    }
-
-    private int getFCRuntime(VenstarRuntime runtime) {
-        return runtime.getFC();
     }
 
     private void updateSettings(VenstarAwayMode away, VenstarScheduleMode schedule) {
@@ -483,7 +427,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             // update our local copy until the next refresh occurs
             infoData.setCooltemp(cool);
             infoData.setHeattemp(heat);
-            infoData.setMode(mode);
+            infoData.setSystemMode(mode);
             infoData.setFanMode(fanmode);
             // add other parameters here in the same way
         }
@@ -537,15 +481,43 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
 
             runtimeData = Objects.requireNonNull(gson.fromJson(response, VenstarRuntimeData.class));
             List<VenstarRuntime> runtimes = runtimeData.getRuntimes();
-            VenstarRuntime lastRuntime = runtimes.get(runtimes.size() - 1);// get the last run time update in the list
-            updateIfChanged(CHANNEL_TIMESTAMP_RUNTIME, new DateTimeType(getTimestampRuntime(lastRuntime)));
-            updateIfChanged(CHANNEL_HEAT1_RUNTIME, new DecimalType(getHeat1Runtime(lastRuntime)));
-            updateIfChanged(CHANNEL_HEAT2_RUNTIME, new DecimalType(getHeat2Runtime(lastRuntime)));
-            updateIfChanged(CHANNEL_COOL1_RUNTIME, new DecimalType(getCool1Runtime(lastRuntime)));
-            updateIfChanged(CHANNEL_COOL2_RUNTIME, new DecimalType(getCool2Runtime(lastRuntime)));
-            updateIfChanged(CHANNEL_AUX1_RUNTIME, new DecimalType(getAux1Runtime(lastRuntime)));
-            updateIfChanged(CHANNEL_AUX2_RUNTIME, new DecimalType(getAux2Runtime(lastRuntime)));
-            updateIfChanged(CHANNEL_FC_RUNTIME, new DecimalType(getFCRuntime(lastRuntime)));
+            String[] timestamps = { CHANNEL_TIMESTAMP_RUNTIME_DAY0, CHANNEL_TIMESTAMP_RUNTIME_DAY1,
+                    CHANNEL_TIMESTAMP_RUNTIME_DAY2, CHANNEL_TIMESTAMP_RUNTIME_DAY3, CHANNEL_TIMESTAMP_RUNTIME_DAY4,
+                    CHANNEL_TIMESTAMP_RUNTIME_DAY5, CHANNEL_TIMESTAMP_RUNTIME_DAY6 };
+            String[] heat1Runtimes = { CHANNEL_HEAT1_RUNTIME_DAY0, CHANNEL_HEAT1_RUNTIME_DAY1,
+                    CHANNEL_HEAT1_RUNTIME_DAY2, CHANNEL_HEAT1_RUNTIME_DAY3, CHANNEL_HEAT1_RUNTIME_DAY4,
+                    CHANNEL_HEAT1_RUNTIME_DAY5, CHANNEL_HEAT1_RUNTIME_DAY6 };
+            String[] heat2Runtimes = { CHANNEL_HEAT2_RUNTIME_DAY0, CHANNEL_HEAT2_RUNTIME_DAY1,
+                    CHANNEL_HEAT2_RUNTIME_DAY2, CHANNEL_HEAT2_RUNTIME_DAY3, CHANNEL_HEAT2_RUNTIME_DAY4,
+                    CHANNEL_HEAT2_RUNTIME_DAY5, CHANNEL_HEAT2_RUNTIME_DAY6 };
+            String[] cool1Runtimes = { CHANNEL_COOL1_RUNTIME_DAY0, CHANNEL_COOL1_RUNTIME_DAY1,
+                    CHANNEL_COOL1_RUNTIME_DAY2, CHANNEL_COOL1_RUNTIME_DAY3, CHANNEL_COOL1_RUNTIME_DAY4,
+                    CHANNEL_COOL1_RUNTIME_DAY5, CHANNEL_COOL1_RUNTIME_DAY6 };
+            String[] cool2Runtimes = { CHANNEL_COOL2_RUNTIME_DAY0, CHANNEL_COOL2_RUNTIME_DAY1,
+                    CHANNEL_COOL2_RUNTIME_DAY2, CHANNEL_COOL2_RUNTIME_DAY3, CHANNEL_COOL2_RUNTIME_DAY4,
+                    CHANNEL_COOL2_RUNTIME_DAY5, CHANNEL_COOL2_RUNTIME_DAY6 };
+            String[] aux1Runtimes = { CHANNEL_AUX1_RUNTIME_DAY0, CHANNEL_AUX1_RUNTIME_DAY1, CHANNEL_AUX1_RUNTIME_DAY2,
+                    CHANNEL_AUX1_RUNTIME_DAY3, CHANNEL_AUX1_RUNTIME_DAY4, CHANNEL_AUX1_RUNTIME_DAY5,
+                    CHANNEL_AUX1_RUNTIME_DAY6 };
+            String[] aux2Runtimes = { CHANNEL_AUX2_RUNTIME_DAY0, CHANNEL_AUX2_RUNTIME_DAY1, CHANNEL_AUX2_RUNTIME_DAY2,
+                    CHANNEL_AUX2_RUNTIME_DAY3, CHANNEL_AUX2_RUNTIME_DAY4, CHANNEL_AUX2_RUNTIME_DAY5,
+                    CHANNEL_AUX2_RUNTIME_DAY6 };
+            String[] fCRuntimes = { CHANNEL_FC_RUNTIME_DAY0, CHANNEL_FC_RUNTIME_DAY1, CHANNEL_FC_RUNTIME_DAY2,
+                    CHANNEL_FC_RUNTIME_DAY3, CHANNEL_FC_RUNTIME_DAY4, CHANNEL_FC_RUNTIME_DAY5,
+                    CHANNEL_FC_RUNTIME_DAY6 };
+            int nRuntimes = runtimes.size();// check how many runtimes are available, might not be seven if equipment
+                                            // was reset
+            for (int i = 0; i < nRuntimes; i++) {
+                VenstarRuntime rt = runtimes.get(i);
+                updateIfChanged(timestamps[i], new DateTimeType(getTimestampRuntime(rt)));
+                updateIfChanged(heat1Runtimes[i], new DecimalType(rt.getHeat1Runtime()));
+                updateIfChanged(heat2Runtimes[i], new DecimalType(rt.getHeat2Runtime()));
+                updateIfChanged(cool1Runtimes[i], new DecimalType(rt.getCool1Runtime()));
+                updateIfChanged(cool2Runtimes[i], new DecimalType(rt.getCool2Runtime()));
+                updateIfChanged(aux1Runtimes[i], new DecimalType(rt.getAux1Runtime()));
+                updateIfChanged(aux2Runtimes[i], new DecimalType(rt.getAux2Runtime()));
+                updateIfChanged(fCRuntimes[i], new DecimalType(rt.getFreecoolRuntime()));
+            }
 
             response = getData("/query/info");
             if (!isFutureValid(localUpdatesTask)) {
@@ -555,20 +527,20 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             updateUnits(infoData);
             updateIfChanged(CHANNEL_HEATING_SETPOINT, getHeatingSetpoint());
             updateIfChanged(CHANNEL_COOLING_SETPOINT, getCoolingSetpoint());
-            updateIfChanged(CHANNEL_SYSTEM_STATE, new StringType(getSystemState().stateName()));
-            updateIfChanged(CHANNEL_SYSTEM_MODE, new StringType(getSystemMode().modeName()));
-            updateIfChanged(CHANNEL_SYSTEM_STATE_RAW, new DecimalType(getSystemState().state()));
-            updateIfChanged(CHANNEL_SYSTEM_MODE_RAW, new DecimalType(getSystemMode().mode()));
-            updateIfChanged(CHANNEL_AWAY_MODE, new StringType(getAwayMode().modeName()));
-            updateIfChanged(CHANNEL_AWAY_MODE_RAW, new DecimalType(getAwayMode().mode()));
-            updateIfChanged(CHANNEL_FAN_MODE, new StringType(getFanMode().modeName()));
-            updateIfChanged(CHANNEL_FAN_MODE_RAW, new DecimalType(getFanMode().mode()));
-            updateIfChanged(CHANNEL_FAN_STATE, new StringType(getFanState().stateName()));
-            updateIfChanged(CHANNEL_FAN_STATE_RAW, new DecimalType(getFanState().state()));
-            updateIfChanged(CHANNEL_SCHEDULE_MODE, new StringType(getScheduleMode().modeName()));
-            updateIfChanged(CHANNEL_SCHEDULE_MODE_RAW, new DecimalType(getScheduleMode().mode()));
-            updateIfChanged(CHANNEL_SCHEDULE_PART, new StringType(getSchedulePart().partName()));
-            updateIfChanged(CHANNEL_SCHEDULE_PART_RAW, new DecimalType(getSchedulePart().part()));
+            updateIfChanged(CHANNEL_SYSTEM_STATE, new StringType(infoData.getSystemState().stateName()));
+            updateIfChanged(CHANNEL_SYSTEM_MODE, new StringType(infoData.getSystemMode().modeName()));
+            updateIfChanged(CHANNEL_SYSTEM_STATE_RAW, new DecimalType(infoData.getSystemState().state()));
+            updateIfChanged(CHANNEL_SYSTEM_MODE_RAW, new DecimalType(infoData.getSystemMode().mode()));
+            updateIfChanged(CHANNEL_AWAY_MODE, new StringType(infoData.getAwayMode().modeName()));
+            updateIfChanged(CHANNEL_AWAY_MODE_RAW, new DecimalType(infoData.getAwayMode().mode()));
+            updateIfChanged(CHANNEL_FAN_MODE, new StringType(infoData.getFanMode().modeName()));
+            updateIfChanged(CHANNEL_FAN_MODE_RAW, new DecimalType(infoData.getFanMode().mode()));
+            updateIfChanged(CHANNEL_FAN_STATE, new StringType(infoData.getFanState().stateName()));
+            updateIfChanged(CHANNEL_FAN_STATE_RAW, new DecimalType(infoData.getFanState().state()));
+            updateIfChanged(CHANNEL_SCHEDULE_MODE, new StringType(infoData.getScheduleMode().modeName()));
+            updateIfChanged(CHANNEL_SCHEDULE_MODE_RAW, new DecimalType(infoData.getScheduleMode().mode()));
+            updateIfChanged(CHANNEL_SCHEDULE_PART, new StringType(infoData.getSchedulePart().partName()));
+            updateIfChanged(CHANNEL_SCHEDULE_PART_RAW, new DecimalType(infoData.getSchedulePart().part()));
 
             goOnline();
         } catch (VenstarCommunicationException | JsonSyntaxException e) {

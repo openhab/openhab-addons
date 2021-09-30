@@ -66,19 +66,19 @@ public class VenstarInfoData {
         this.heattemp = heattemp;
     }
 
-    public VenstarSystemState getState() {
+    public VenstarSystemState getSystemState() {
         return state;
     }
 
-    public void setState(VenstarSystemState state) {
+    public void setSystemState(VenstarSystemState state) {
         this.state = state;
     }
 
-    public VenstarSystemMode getMode() {
+    public VenstarSystemMode getSystemMode() {
         return mode;
     }
 
-    public void setMode(VenstarSystemMode mode) {
+    public void setSystemMode(VenstarSystemMode mode) {
         this.mode = mode;
     }
 
@@ -90,7 +90,7 @@ public class VenstarInfoData {
         this.tempunits = tempunits;
     }
 
-    public VenstarAwayMode getAway() {
+    public VenstarAwayMode getAwayMode() {
         return away;
     }
 
