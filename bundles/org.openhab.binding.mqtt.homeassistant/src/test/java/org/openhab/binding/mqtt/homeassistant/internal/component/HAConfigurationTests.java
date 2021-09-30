@@ -242,7 +242,7 @@ public class HAConfigurationTests {
         assertThat(config.initial, is(10));
         assertThat(config.maxTemp, is(40f));
         assertThat(config.minTemp, is(0f));
-        assertThat(config.temperatureUnit, is("F"));
+        assertThat(config.temperatureUnit, is("°F"));
         assertThat(config.tempStep, is(1f));
         assertThat(config.precision, is(0.5f));
         assertThat(config.sendIfOff, is(false));
