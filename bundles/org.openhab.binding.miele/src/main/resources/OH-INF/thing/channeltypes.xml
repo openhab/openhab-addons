@@ -86,25 +86,12 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="target" advanced="true">
-		<item-type>Number</item-type>
-		<label>Target Temperature</label>
-		<description>Target temperature to be reached by the oven</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="measured" advanced="true">
-		<item-type>Number</item-type>
-		<label>Measured Temperature</label>
-		<description>Actual measured temperature in the oven</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="temp" advanced="true">
-		<item-type>Number</item-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Program temperature in the oven</description>
-		<state readOnly="true"></state>
+		<description>Temperature reported by the appliance</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="supercool" advanced="false">
@@ -112,13 +99,6 @@
 		<label>Super Cool</label>
 		<description>Start Super Cooling</description>
 		<state readOnly="false"></state>
-	</channel-type>
-
-	<channel-type id="current" advanced="false">
-		<item-type>Number</item-type>
-		<label>Current Temperature</label>
-		<description>Current temperature in the fridge</description>
-		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="freezerstate" advanced="false">
@@ -140,34 +120,6 @@
 		<label>Super Freeze</label>
 		<description>Start Super Freezing</description>
 		<state readOnly="false"></state>
-	</channel-type>
-
-	<channel-type id="freezercurrent" advanced="false">
-		<item-type>Number</item-type>
-		<label>Current Temperature</label>
-		<description>Current temperature in the freezer compartment</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="freezertarget" advanced="true">
-		<item-type>Number</item-type>
-		<label>Target Temperature</label>
-		<description>Target temperature to be reached by the freezer compartment</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="fridgecurrent" advanced="false">
-		<item-type>Number</item-type>
-		<label>Current Temperature</label>
-		<description>Current temperature in the fridge compartment</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="fridgetarget" advanced="true">
-		<item-type>Number</item-type>
-		<label>Target Temperature</label>
-		<description>Target temperature to be reached by the fridge compartment</description>
-		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="plates" advanced="false">

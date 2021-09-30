@@ -15,6 +15,8 @@ package org.openhab.binding.miele.internal;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.test.java.JavaTest;
 
 /**
@@ -44,5 +46,10 @@ public class ExtendedDeviceStateUtilTest extends JavaTest {
         byte[] expected = new byte[] { (byte) 0x00, (byte) 0x80, (byte) 0x00 };
         byte[] actual = ExtendedDeviceStateUtil.stringToBytes("\u0000\u0080\u0000");
         assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    public void getTemperatureStateWellFormedValueReturnsQuantityType() throws NumberFormatException {
+        assertEquals(new QuantityType<>(42, SIUnits.CELSIUS), ExtendedDeviceStateUtil.getTemperatureState("42"));
     }
 }
