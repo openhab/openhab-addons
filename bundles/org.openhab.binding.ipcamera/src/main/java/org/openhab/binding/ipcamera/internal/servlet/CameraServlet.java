@@ -42,9 +42,9 @@ import org.osgi.service.http.HttpService;
 public class CameraServlet extends IpCameraServlet {
     private static final long serialVersionUID = -134658667574L;
     private final IpCameraHandler handler;
-    private int autofpsStreamsOpen = 0;
-    private int snapshotStreamsOpen = 0;
     public OpenStreams openStreams = new OpenStreams();
+    private OpenStreams openSnapshotStreams = new OpenStreams();
+    private OpenStreams openAutoFpsStreams = new OpenStreams();
 
     public CameraServlet(IpCameraHandler handler, HttpService httpService) {
         super(handler, httpService);
@@ -155,18 +155,18 @@ public class CameraServlet extends IpCameraServlet {
                 }
                 return;
             case "/snapshots.mjpeg":
-                snapshotStreamsOpen++;
                 handler.streamingSnapshotMjpeg = true;
                 handler.startSnapshotPolling();
                 StreamOutput output = new StreamOutput(resp);
+                openSnapshotStreams.addStream(output);
                 do {
                     try {
                         output.sendSnapshotBasedFrame(handler.getSnapshot());
                         Thread.sleep(1005);
                     } catch (InterruptedException | IOException e) {
                         // Never stop streaming until IOException. Occurs when browser stops the stream.
-                        snapshotStreamsOpen--;
-                        if (snapshotStreamsOpen == 0) {
+                        openSnapshotStreams.removeStream(output);
+                        if (openSnapshotStreams.isEmpty()) {
                             handler.streamingSnapshotMjpeg = false;
                             handler.stopSnapshotPolling();
                             logger.debug("All snapshots.mjpeg streams have stopped.");
@@ -216,9 +216,9 @@ public class CameraServlet extends IpCameraServlet {
                     }
                 } while (!openStreams.isEmpty());
             case "/autofps.mjpeg":
-                autofpsStreamsOpen++;
                 handler.streamingAutoFps = true;
                 output = new StreamOutput(resp);
+                openAutoFpsStreams.addStream(output);
                 int counter = 0;
                 do {
                     try {
@@ -232,8 +232,8 @@ public class CameraServlet extends IpCameraServlet {
                         Thread.sleep(1000);
                     } catch (InterruptedException | IOException e) {
                         // Never stop streaming until IOException. Occurs when browser stops the stream.
-                        autofpsStreamsOpen--;
-                        if (autofpsStreamsOpen == 0) {
+                        openAutoFpsStreams.removeStream(output);
+                        if (openAutoFpsStreams.isEmpty()) {
                             handler.streamingAutoFps = false;
                             logger.debug("All autofps.mjpeg streams have stopped.");
                         }
@@ -269,6 +269,8 @@ public class CameraServlet extends IpCameraServlet {
     @Override
     public void dispose() {
         openStreams.closeAllStreams();
+        openSnapshotStreams.closeAllStreams();
+        openAutoFpsStreams.closeAllStreams();
         super.dispose();
     }
 }

@@ -678,10 +678,7 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void startStreamServer() {
-        if (servlet == null) {
-            servlet = new CameraServlet(this, httpService);
-        }
-
+        servlet = new CameraServlet(this, httpService);
         updateState(CHANNEL_HLS_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
                 + getThing().getUID().getId() + "/ipcamera.m3u8"));
         updateState(CHANNEL_IMAGE_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
@@ -1549,6 +1546,7 @@ public class IpCameraHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         cameraConfig = getConfigAs(CameraConfig.class);
+        threadPool = Executors.newScheduledThreadPool(4);
         snapshotUri = getCorrectUrlFormat(cameraConfig.getSnapshotUrl());
         mjpegUri = getCorrectUrlFormat(cameraConfig.getMjpegUrl());
         rtspUri = cameraConfig.getFfmpegInput();
@@ -1651,18 +1649,16 @@ public class IpCameraHandler extends BaseThingHandler {
         if (localFuture != null) {
             localFuture.cancel(true);
         }
+        onvifCamera.disconnect();
         threadPool.shutdown();
-        threadPool = Executors.newScheduledThreadPool(4);
-
+        // inform all group handlers that this camera has gone offline
         groupTracker.listOfOnlineCameraHandlers.remove(this);
         groupTracker.listOfOnlineCameraUID.remove(getThing().getUID().getId());
-        // inform all group handlers that this camera has gone offline
         for (IpCameraGroupHandler handle : groupTracker.listOfGroupHandlers) {
             handle.cameraOffline(this);
         }
         basicAuth = ""; // clear out stored Password hash
         useDigestAuth = false;
-        openChannels.close();
 
         Ffmpeg localFfmpeg = ffmpegHLS;
         if (localFfmpeg != null) {
@@ -1689,8 +1685,9 @@ public class IpCameraHandler extends BaseThingHandler {
         if (localFfmpeg != null) {
             localFfmpeg.stopConverting();
         }
+        openChannels.close();
+        mainEventLoopGroup.shutdownGracefully();
         channelTrackingMap.clear();
-        onvifCamera.disconnect();
     }
 
     public String getWhiteList() {
