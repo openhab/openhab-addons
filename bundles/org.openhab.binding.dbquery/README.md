@@ -184,7 +184,8 @@ Example (using Jython script):
 
 ### The Simplest case 
 
-Define a InfluxDB2 database thing and a query with an interval execution. That executes the query every 15 seconds and punts the result in `myItem`
+Define a InfluxDB2 database thing and a query with an interval execution.
+That executes the query every 15 seconds and punts the result in `myItem`.
 
     # Bridge Thing definition
     Bridge dbquery:influxdb2:mydatabase "InfluxDB2 Bridge" [ bucket="default", user="admin", url="http://localhost:8086", organization="openhab", token="*******" ]
