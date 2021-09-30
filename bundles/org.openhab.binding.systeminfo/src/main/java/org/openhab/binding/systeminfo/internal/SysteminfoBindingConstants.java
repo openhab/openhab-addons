@@ -82,6 +82,16 @@ public class SysteminfoBindingConstants {
     public static final String CHANNEL_MEMORY_USED_PERCENT = "memory#usedPercent";
 
     /**
+     * Percents of the used heap
+     */
+    public static final String CHANNEL_MEMORY_USED_HEAP_PERCENT = "memory#usedHeapPercent";
+
+    /**
+     * Bytes used in the heap
+     */
+    public static final String CHANNEL_MEMORY_HEAP_AVAILABLE = "memory#availableHeap";
+
+    /**
      * Total size of swap memory
      */
     public static final String CHANNEL_SWAP_TOTAL = "swap#total";
