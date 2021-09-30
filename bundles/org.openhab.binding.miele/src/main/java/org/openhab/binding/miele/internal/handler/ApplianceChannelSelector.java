@@ -14,7 +14,6 @@ package org.openhab.binding.miele.internal.handler;
 
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.core.types.State;
-import org.openhab.core.types.Type;
 
 /**
  * The {@link ApplianceChannelSelector} class defines a common interface for
@@ -62,9 +61,4 @@ public interface ApplianceChannelSelector {
      * @param dmd - the device meta data
      */
     State getState(String s, DeviceMetaData dmd);
-
-    /**
-     * Returns "compatible" Type for this datapoint
-     */
-    Class<? extends Type> getTypeClass();
 }

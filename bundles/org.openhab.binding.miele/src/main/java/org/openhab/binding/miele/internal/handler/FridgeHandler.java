@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
-import static org.openhab.binding.miele.internal.MieleBindingConstants.PROTOCOL_PROPERTY_NAME;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceProperty;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
     private final Logger logger = LoggerFactory.getLogger(FridgeHandler.class);
 
     public FridgeHandler(Thing thing) {
-        super(thing, FridgeChannelSelector.class, "Fridge");
+        super(thing, FridgeChannelSelector.class, MIELE_DEVICE_CLASS_FRIDGE);
     }
 
     @Override
@@ -88,5 +89,20 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
                     "An error occurred while trying to set the read-only variable associated with channel '{}' to '{}'",
                     channelID, command.toString());
         }
+    }
+
+    @Override
+    protected void onAppliancePropertyChanged(DeviceProperty dp) {
+        super.onAppliancePropertyChanged(dp);
+
+        if (!dp.Name.equals(STATE_PROPERTY_NAME)) {
+            return;
+        }
+
+        // Supercool is not exposed directly as property, but can be deduced from state.
+        ChannelUID channelUid = new ChannelUID(getThing().getUID(), SUPERCOOL_CHANNEL_ID);
+        State state = dp.Value.equals(String.valueOf(STATE_SUPER_COOLING)) ? OnOffType.ON : OnOffType.OFF;
+        logger.trace("Update state of {} to {} through '{}'", channelUid, state, dp.Name);
+        updateState(channelUid, state);
     }
 }
