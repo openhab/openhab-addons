@@ -192,7 +192,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
         this.onAppliancePropertyChanged(dp);
     }
 
-    private void onAppliancePropertyChanged(DeviceProperty dp) {
+    protected void onAppliancePropertyChanged(DeviceProperty dp) {
         try {
             DeviceMetaData dmd = null;
             if (dp.Metadata == null) {

@@ -108,10 +108,10 @@
 	</channel-type>
 
 	<channel-type id="supercool" advanced="false">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>Super Cool</label>
 		<description>Start Super Cooling</description>
-		<state readOnly="true"></state>
+		<state readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="current" advanced="false">
@@ -136,10 +136,10 @@
 	</channel-type>
 
 	<channel-type id="superfreeze" advanced="false">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>Super Freeze</label>
 		<description>Start Super Freezing</description>
-		<state readOnly="true"></state>
+		<state readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="freezercurrent" advanced="false">

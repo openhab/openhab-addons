@@ -39,7 +39,7 @@ public class ExtendedDeviceStateUtil {
 
     /**
      * Convert string consisting of 8 bit characters to byte array.
-     * Note: This simple operation has been extracted and pure here to document
+     * Note: This simple operation has been extracted and put here to document
      * and ensure correct behavior for 8 bit characters that should be turned
      * into single bytes without any UTF-8 encoding.
      */

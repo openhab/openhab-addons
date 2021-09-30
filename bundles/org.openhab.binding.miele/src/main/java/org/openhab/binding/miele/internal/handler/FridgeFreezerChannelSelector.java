@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
+import static org.openhab.binding.miele.internal.MieleBindingConstants.SUPERCOOL_CHANNEL_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.SUPERFREEZE_CHANNEL_ID;
+
 import java.lang.reflect.Method;
 import java.util.Map.Entry;
 
@@ -43,8 +46,8 @@ public enum FridgeFreezerChannelSelector implements ApplianceChannelSelector {
     STATE("state", "state", StringType.class, false),
     FREEZERSTATE("freezerState", "freezerstate", StringType.class, false),
     FRIDGESTATE("fridgeState", "fridgestate", StringType.class, false),
-    SUPERCOOL(null, "supercool", OnOffType.class, false),
-    SUPERFREEZE(null, "superfreeze", OnOffType.class, false),
+    SUPERCOOL(null, SUPERCOOL_CHANNEL_ID, OnOffType.class, false),
+    SUPERFREEZE(null, SUPERFREEZE_CHANNEL_ID, OnOffType.class, false),
     FREEZERCURRENTTEMP("freezerCurrentTemperature", "freezercurrent", DecimalType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
@@ -114,11 +117,6 @@ public enum FridgeFreezerChannelSelector implements ApplianceChannelSelector {
     @Override
     public String getChannelID() {
         return channelID;
-    }
-
-    @Override
-    public Class<? extends Type> getTypeClass() {
-        return typeClass;
     }
 
     @Override
