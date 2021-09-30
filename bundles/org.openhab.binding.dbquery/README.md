@@ -29,8 +29,8 @@ Defines a connection to an Influx2 database and allows creating queries on it.
 |--------------|----------|-----------------------------------------  |
 | url          | Yes      | database url                              |
 | user         | Yes      | name of the database user                 |
-| token        | Yes      | token to authenticate to the database  ([Intructions about how to create one](https://v2.docs.influxdata.com/v2.0/security/tokens/create-token/))   |
-| organization | Yes      | database organization name               |
+| token        | Yes      | token to authenticate to the database  ([Intructions about how to create one](https://v2.docs.influxdata.com/v2.0/security/tokens/create-token/)) |
+| organization | Yes      | database organization name                |
 | bucket       | Yes      | database bucket name                      |
 
 ### query
@@ -45,7 +45,7 @@ The query items support the following parameters:
 |--------------|----------|----------|-----------------------------------------------------------------------|
 | query        | true     |          | Query string in native syntax                                         |
 | interval     | false    | 0        | Interval in seconds in which the query is automatically executed      |
-| hasParameters| false    | false    | True if the query has parameters, false otherwise                         | 
+| hasParameters| false    | false    | True if the query has parameters, false otherwise                     | 
 | timeout      | false    | 0        | Query execution timeout in seconds                                    |
 | scalarResult | false    | true     | If query always returns a single value or not                         |
 | scalarColumn | false    |          | In case of multiple columns, it indicates which to use for scalarResult|
@@ -93,7 +93,7 @@ Query items offer the following channels to be able to query / bind them to item
 | resultContact   | Contact   | Result of last executed query as Contact, query must have `scalarResult=true` |
 | resultSwitch    | Switch    | Result of last executed query as Switch, query must have `scalarResult=true` |
 | parameters      | String    | Contains parameters of last executed query as JSON|
-| correct         | Switch    | `ON` if the result of last executed query was correct |
+| correct         | Switch    | `ON` if the last executed query completed successfully, `OFF` if the query failed.|
 
 All the channels, except `execute`, are updated when the query execution finishes, and while there is a query in execution they have the values from
 last previous executed query.
