@@ -8,7 +8,7 @@ Setup the device as described in https://www.openhab.org/docs/administration/ser
 
 The binding will use the remote control address 15 for communication, so make sure that this is not assigned to a physically present remote control.
 
-For Helios ventilation devices supporting the easyControls web interface, a separate binding can be used: https://www.openhab.org/addons/bindings/modbus.helioseasycontrols/
+For Helios ventilation devices supporting the easyControls web interface, the separate binding [Helios easyControls binding](https://www.openhab.org/addons/bindings/modbus.helioseasycontrols/) can be used.
 
 ## Supported Things
 
