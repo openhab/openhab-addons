@@ -34,5 +34,4 @@ public class Position {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
-
 }
