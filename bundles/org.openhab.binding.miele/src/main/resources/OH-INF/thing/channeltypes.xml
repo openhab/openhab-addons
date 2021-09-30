@@ -36,6 +36,7 @@
 		<item-type>DateTime</item-type>
 		<label>Start Time</label>
 		<description>Programmed start time of the program</description>
+		<category>Time</category>
 		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
 	</channel-type>
 
@@ -43,6 +44,7 @@
 		<item-type>DateTime</item-type>
 		<label>Duration</label>
 		<description>Duration of the program running on the appliance</description>
+		<category>Time</category>
 		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
 	</channel-type>
 
@@ -50,6 +52,7 @@
 		<item-type>DateTime</item-type>
 		<label>Elapsed Time</label>
 		<description>Time elapsed in the program running on the appliance</description>
+		<category>Time</category>
 		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
 	</channel-type>
 
@@ -57,6 +60,7 @@
 		<item-type>DateTime</item-type>
 		<label>Finish Time</label>
 		<description>Time to finish the program running on the appliance</description>
+		<category>Time</category>
 		<state readOnly="true" pattern="%1$tH:%1$tM"></state>
 	</channel-type>
 
