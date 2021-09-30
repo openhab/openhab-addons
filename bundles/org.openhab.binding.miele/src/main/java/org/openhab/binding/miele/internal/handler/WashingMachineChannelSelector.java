@@ -126,7 +126,7 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             if ("256".equals(s)) {
                 return getState("Rinsing");
             }
-            return getState(Integer.toString((Integer.valueOf(s) * 10)));
+            return getState(Integer.toString((Integer.valueOf(s))));
         }
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false, false) {
