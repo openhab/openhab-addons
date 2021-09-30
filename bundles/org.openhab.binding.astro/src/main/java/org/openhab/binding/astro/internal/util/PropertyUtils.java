@@ -77,7 +77,7 @@ public class PropertyUtils {
      * Returns the property value from the object instance, nested properties are possible. If the propertyName is for
      * example rise.start, the methods getRise().getStart() are called.
      */
-    public static @Nullable Object getPropertyValue(ChannelUID channelUID, Object instance) throws Exception {
+    private static @Nullable Object getPropertyValue(ChannelUID channelUID, Object instance) throws Exception {
         String[] properties = channelUID.getId().split("#");
         return getPropertyValue(instance, properties, 0);
     }

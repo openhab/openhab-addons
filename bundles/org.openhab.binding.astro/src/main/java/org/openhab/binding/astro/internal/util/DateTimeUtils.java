@@ -49,7 +49,7 @@ public class DateTimeUtils {
     /**
      * Truncates the time from the calendar object.
      */
-    public static Calendar truncateToMinute(Calendar calendar) {
+    private static Calendar truncateToMinute(Calendar calendar) {
         Calendar cal = truncateToSecond(calendar);
         cal.set(Calendar.SECOND, 0);
         return cal;
