@@ -93,7 +93,7 @@ temperature,item=tempBath,floor=firstfloor
 
 You can now easily select all temperatures of the firstfloor or the average temperature of the groundfloor.
 
-*Warning: Do **not** override the tag `item` within the metadata. This tag is used internally by OpenHAB and changing it will lead to problems querying the persisted datapoints.*
+*Warning: Do **not** override the tag `item` within the metadata. This tag is used internally by openHAB and changing it will lead to problems querying the persisted datapoints.*
 
 #### Extended automatic tagging
 
