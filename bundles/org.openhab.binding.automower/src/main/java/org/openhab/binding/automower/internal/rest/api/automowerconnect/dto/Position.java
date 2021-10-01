@@ -13,7 +13,7 @@
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
 /**
- * @author Bernhard Bauer - Adding support for positions
+ * @author Bernhard Bauer - Initial contribution
  */
 public class Position {
     private double latitude;
