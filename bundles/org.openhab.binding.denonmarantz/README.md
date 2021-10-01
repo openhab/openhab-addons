@@ -12,6 +12,9 @@ Tested models: Marantz SR5008, Denon AVR-X2000 / X3000 / X1200W / X2100W / X2200
 Denon models with HEOS support (`AVR-X..00H`) do not support the HTTP API. They do support Telnet.
 During Discovery this is auto-detected and configured.
 
+For devices without ethernet interface you can use a serial-to-TCP-Bridge (e.g. ESP8266 with [Tasmota and TCP Serial Bridge](https://tasmota.github.io/docs/Serial-to-TCP-Bridge/)).
+Tested models: AVR-2308
+
 ## Discovery
 
 This binding can discover Denon and Marantz receivers using mDNS.
