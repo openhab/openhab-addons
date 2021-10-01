@@ -3,12 +3,11 @@
 openHAB binding for using [Flic Buttons](https://flic.io/)
 with a [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci) bridge.
 
-Currently, although Flic Buttons are BLE devices, this binding only supports fliclib-linux-hci (flicd)
-as a bridge. The openHAB Bluetooth Bindings are not supported. Flicd requires a seperate Bluetooth adapter to work, so
-if you use this binding together with e.g. the [Bluez Binding](https://www.openhab.org/addons/bindings/bluetooth.bluez/),
-two physical Bluetooth adapters are required (one for Bluez and one for flicd). Be aware that flicd requires an initial
-internet connection for the verification of the buttons. After buttons are initially added to flicd, internet connection
-is not required anymore.
+Currently, although Flic Buttons are BLE devices, this binding only supports fliclib-linux-hci (flicd) as a bridge.
+The openHAB Bluetooth Bindings are not supported.
+Flicd requires a seperate Bluetooth adapter to work, so if you use this binding together with e.g. the [Bluez Binding](https://www.openhab.org/addons/bindings/bluetooth.bluez/), two physical Bluetooth adapters are required (one for Bluez and one for flicd).
+Be aware that flicd requires an initial internet connection for the verification of the buttons.
+After buttons are initially added to flicd, an internet connection is not required anymore.
 
 ## Supported Things
 
@@ -21,9 +20,8 @@ is not required anymore.
 
 * There is no automatic discovery for flicd-bridge available.
   
-* After flicd-bridge is (manually) configured, buttons will be automatically discovered via background discovery as soon
-  as they're addded with [simpleclient](https://github.com/50ButtonsEach/fliclib-linux-hci). If they're already
-  attached to the flicd-bridge before configuring this binding, they can be discovered by triggering an active scan.
+* After flicd-bridge is (manually) configured, buttons will be automatically discovered via background discovery as soon as they're added with [simpleclient](https://github.com/50ButtonsEach/fliclib-linux-hci).
+If they're already attached to the flicd-bridge before configuring this binding, they can be discovered by triggering an active scan.
 
 ## Thing Configuration
 
@@ -35,8 +33,8 @@ Example for textual configuration:
 Bridge flicbutton:flicd-bridge:mybridge
 ```
 
-The default host is localhost:5551 (this should be sufficient if flicd is running with default settings on the same
-server as openHAB). If your flicd service is running somewhere else, specify it like this:
+The default host is localhost:5551 (this should be sufficient if flicd is running with default settings on the same server as openHAB).
+If your flicd service is running somewhere else, specify it like this:
 
 ```
 Bridge flicbutton:flicd-bridge:mybridge [ hostname="<YOUR_HOSTNAME>",  port=<YOUR_PORT>]
@@ -46,7 +44,9 @@ If flicd is running on a remote host, please do not forget to start it with the 
 
 ### button
 
-For the button, the only config parameter is the MAC address. Normally, no textual configuration is necessary as buttons are autodiscovered as soon as the bridge is configured. If you want to use textual configuration anyway, you can do it like this:
+For the button, the only config parameter is the MAC address.
+Normally, no textual configuration is necessary as buttons are auto discovered as soon as the bridge is configured.
+If you want to use textual configuration anyway, you can do it like this:
 
 ```
 Bridge flicbutton:flicd-bridge:mybridge [ hostname="<YOUR_HOSTNAME>",  port=<YOUR_PORT>] {
@@ -56,7 +56,8 @@ Bridge flicbutton:flicd-bridge:mybridge [ hostname="<YOUR_HOSTNAME>",  port=<YOU
 }
 ```
 
-You can lookup the MAC addresses of your buttons within the inbox of the UI. You're free to choose any label you like for your button.
+You can lookup the MAC addresses of your buttons within the inbox of the UI.
+You're free to choose any label you like for your button.
 
 ## Channels
 
@@ -65,8 +66,6 @@ You can lookup the MAC addresses of your buttons within the inbox of the UI. You
 | rawbutton                | [System Trigger Channel](https://www.openhab.org/docs/developer/bindings/thing-xml.html#system-trigger-channel-types) `system.rawbutton`  | Depends on the  [Trigger Profile](https://www.openhab.org/docs/configuration/items.html#profiles) used | Raw Button channel that triggers `PRESSED` and `RELEASED` events, allows to use openHAB profiles or own implementations via rules to detect e.g. double clicks, long presses etc.  |
 | button                   | [System Trigger Channel](https://www.openhab.org/docs/developer/bindings/thing-xml.html#system-trigger-channel-types) `system.button`    | Depends on the [Trigger Profile](https://www.openhab.org/docs/configuration/items.html#profiles) used | Button channel that is using Flic's implementation for detecting long, short or double clicks. Triggers `SHORT_PRESSED`,`DOUBLE_PRESSED` and `LONG_PRESSED` events.   |
 | battery-level            | [System State Channel](https://www.openhab.org/docs/developer/bindings/thing-xml.html#system-state-channel-types) `system.battery-level`     | Number | Represents the battery level as a percentage (0-100%).
-
-
 ## Example
 
 ### Initial setup
