@@ -98,6 +98,10 @@ public class DateTimeUtils {
         long millis = (long) ((julianDate + 0.5 - J1970) * MILLISECONDS_PER_DAY);
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(millis);
+        int second = cal.get(Calendar.SECOND);
+        if (second > 30) {
+            cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + 1);
+        }
         return truncateToMinute(cal);
     }
 
