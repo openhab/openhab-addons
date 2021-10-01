@@ -44,6 +44,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Lighting             | `1`          | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
 | Automation           | `2`          | `bus_automation`                    | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
 | Temperature Control  | `4`          | `bus_thermo_zone`, `bus_thermo_sensor` | Thermo zones management and temperature sensors (probes). NOTE Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details. | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455 |
+| CEN & CEN+ Scenarios  | `15` & `25`  | `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | CEN/CEN+ scenarios events and virtual activation | Successfully tested: scenario buttons: HC/HD/HS/L/N/NT4680 |
 | Energy Management    | `18`         | `bus_energy_meter`                  | Energy Management                                                | Successfully tested: F520, F521 |
 
 ### For ZigBee (Radio)
@@ -66,6 +67,7 @@ For other gateways you can add them manually, see [Thing Configuration](#thing-c
 - Once the gateway is online, a second Inbox Scan will discover BUS devices
 - BUS/SCS Dimmers must be ON and dimmed (30%-100%) during a Scan, otherwise they will be discovered as simple On/Off switches
     - *KNOWN ISSUE*: In some cases dimmers connected to a F429 Dali-interface are not automatically discovered
+- CEN/CEN+ Scenario Control devices will be discovered by activation only. See [discovery by activation](#discovery-by-activation) for details. After confirming a discovered CEN/CEN+ device from Inbox, activate again its scenario buttons to add button channels
 
 #### Discovery by Activation
 
@@ -123,7 +125,9 @@ For any manually added device, you must configure:
 - the `where` config parameter (`OpenWebNet Device Address`):
   - example for BUS/SCS device with WHERE address Point to Point `A=2 PL=4` --> `where="24"`
   - example for BUS/SCS device with WHERE address Point to Point `A=03 PL=11` on local bus --> `where="0311#4#01"`
+  - example for BUS/SCS CEN+ scenario: add `2` before the configured scenario `5` --> `where="25"`
   - example for ZigBee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
+ 
 
 #### Configuring Thermo
 
@@ -155,6 +159,7 @@ Systems with Central Units (4 or 99 zones) are not fully supported yet.
 | `switch` or `switch_01`/`02` for ZigBee  | `bus_on_off_switch`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device `ON` and `OFF`                   |    R/W     |
 | `brightness`                             | `bus_dimmer`, `zb_dimmer`                                     | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`) |    R/W     |
 | `shutter`                                | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
+| `button#X`         | `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#button-scenario)  |     TRIGGER      |
 | `power`                                  | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter      |     R      |
 
 ### Thermo channels
@@ -183,6 +188,16 @@ It's possible to enter a value manually or set `shutterRun=AUTO` (default) to ca
 - if OH is restarted the binding does not know if a shutter position has changed in the meantime, so its position will be `UNDEF`. Move the shutter all `UP`/`DOWN` to synchronize again its position with the binding
 - the shutter position is estimated based on UP/DOWN timing: an error of ±2% is normal
 
+#### `button` scenario
+
+- In CEN/CEN+ channels are named `button#X` where `X` is the button number on the Scenario Control device
+- In the .thing file configuration you must specify the `buttons` parameter to define a comma-separated list of buttons numbers [0-31] configured for the scenario device, example: `buttons=1,2,4`. See [openwebnet.things](#openwebnet-things) for an example
+- **===TODO===** - channel possible values are:
+    - `PRESSED` and then just after `RELEASED` when a CEN/CEN+ button is short-pressed (<0.5sec)
+    - `PRESSED_EXT` (updated again every 0.5sec) and then `RELEASED_EXT` when a CEN/CEN+ button is long pressed (>=0.5sec)
+- **===TODO===** - Sending on channels `button_X` the commands: `PRESSED`, `RELEASED`, etc. will simulate a *virtual short/long pressure* of the corresponding CEN/CEN+ button, enabling the activation of MH202 scenarios on the BUS from openHAB. See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-rules) sections for an example
+
+
 ## Full Example
 
 ### openwebnet.things:
@@ -191,13 +206,15 @@ BUS gateway and things configuration:
 
 ```
 Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", passwd="abcde", port=20000, discoveryByActivation=false ] {
-      bus_on_off_switch        LR_switch        "Living Room Light"      [ where="51" ]
-      bus_dimmer               LR_dimmer        "Living Room Dimmer"     [ where="0311#4#01" ]
-      bus_automation           LR_shutter       "Living Room Shutter"    [ where="93", shutterRun="10050"]      
-      bus_energy_meter         CENTRAL_Ta       "Energy Meter Ta"        [ where="51" ]	
-      bus_energy_meter         CENTRAL_Tb       "Energy Meter Tb"        [ where="52" ]	   
-      bus_thermo_zone          LR_zone          "Living Room Zone"       [ where="2"]
-      bus_thermo_sensor        EXT_tempsensor   "External Temperature"   [ where="500"]
+      bus_on_off_switch             LR_switch            "Living Room Light"        [ where="51" ]
+      bus_dimmer                    LR_dimmer            "Living Room Dimmer"       [ where="0311#4#01" ]
+      bus_automation                LR_shutter           "Living Room Shutter"      [ where="93", shutterRun="10050"]      
+      bus_energy_meter              CENTRAL_Ta           "Energy Meter Ta"           [ where="51" ]	
+      bus_energy_meter              CENTRAL_Tb           "Energy Meter Tb"           [ where="52" ]	   
+      bus_thermo_zone               LR_zone              "Living Room Zone"         [ where="2"]
+      bus_thermo_sensor             EXT_tempsensor       "External Temperature"  [ where="500"]
+      bus_cen_scenario_control      LR_CEN_scenario      "Living Room CEN"          [ where="51", buttons="4,3,8"]
+      bus_cenplus_scenario_control  LR_CENplus_scenario  "Living Room CEN+"            [ where="212", buttons="1,5,18" ]
 }
 ```
 
@@ -240,6 +257,8 @@ String              iLR_zone_cv                 "Conditioning valves"         (g
 
 Number:Temperature  iEXT_temp                   "Temperature [%.1f %unit%]"   (gExternal) { channel="openwebnet:bus_thermo_sensor:mybridge:EXT_tempsensor:temperature" }
 
+String			iLR_scenario_btn4	"Scenario Button 4"					<network>           { channel="openwebnet:bus_cen_scenario_control:mybridge:LR_CEN_scenario:button#4" }  
+String			iLR_scenario_btn1	"Scenario Button 1"					<network>           { channel="openwebnet:bus_cenplus_scenario_control:mybridge:LR_CENplus_scenario:button#1" }  
 
 ```
 
@@ -284,6 +303,25 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
 }
 ```
 
+### openwebnet.rules
+===TODO RIVEDERE ====
+```xtend
+// SCENARIO-A: short pressure on CEN+ button 1 will increase dimmer%
+rule "CEN+ dimmer increase"
+when
+    Item iLR_scenario_btn1 received update "RELEASED"
+then
+        sendCommand(iLR_dimmer, INCREASE)  
+end
+
+// SCENARIO-B: long pressure on CEN+ button 1 will switch off dimmer
+rule "CEN+ dimmer off"
+when
+    Item iLR_scenario_btn1 received update "RELEASED_EXT"
+then
+        sendCommand(iLR_dimmer, OFF)  
+end
+```
 ## Notes
 
 - The OpenWebNet protocol is maintained and Copyright by BTicino/Legrand. The documentation of the protocol if freely accessible for developers on the [Legrand developer web site](https://developer.legrand.com/documentation/open-web-net-for-myhome/)

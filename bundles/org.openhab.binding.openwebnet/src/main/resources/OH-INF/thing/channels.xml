@@ -178,4 +178,19 @@
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
+
+	<!-- CEN/CEN+ trigger channels -->
+	<channel-type id="cenButtonEvent">
+		<kind>trigger</kind>
+		<label>CEN Button Event</label>
+		<event>
+			<options>
+				<option value="START_PRESSURE">start pressure</option>
+				<option value="SHORT_PRESSURE">release after short pressure</option>
+				<option value="EXTENDED_PRESSURE">extended pressure (repeated until release)</option>
+				<option value="RELEASE_EXTENDED_PRESSURE">release after extended pressure</option>
+			</options>
+		</event>
+	</channel-type>
+
 </thing:thing-descriptions>
