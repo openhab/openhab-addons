@@ -152,7 +152,7 @@ public enum DSMRMeterType {
                     CosemObjectType.EMETER_PRODUCTION_TARIFF2, CosemObjectType.EMETER_TARIFF_INDICATOR,
                     CosemObjectType.EMETER_ACTUAL_DELIVERY, CosemObjectType.EMETER_ACTUAL_PRODUCTION},
             new CosemObjectType[] {
-                    CosemObjectType.EMETER_TRESHOLD_A, CosemObjectType.EMETER_TRESHOLD_KWH,
+                    CosemObjectType.EMETER_TRESHOLD_A, CosemObjectType.EMETER_TRESHOLD_KW,
                     CosemObjectType.EMETER_SWITCH_POSITION}),
 
     /** DSMR V3.0 Gas meter */
@@ -184,7 +184,7 @@ public enum DSMRMeterType {
                     CosemObjectType.EMETER_EQUIPMENT_IDENTIFIER, CosemObjectType.EMETER_DELIVERY_TARIFF1,
                     CosemObjectType.EMETER_DELIVERY_TARIFF2, CosemObjectType.EMETER_PRODUCTION_TARIFF1,
                     CosemObjectType.EMETER_PRODUCTION_TARIFF2, CosemObjectType.EMETER_TARIFF_INDICATOR,
-                    CosemObjectType.EMETER_TRESHOLD_KWH, CosemObjectType.EMETER_SWITCH_POSITION,
+                    CosemObjectType.EMETER_TRESHOLD_KW, CosemObjectType.EMETER_SWITCH_POSITION,
                     CosemObjectType.EMETER_ACTUAL_DELIVERY, CosemObjectType.EMETER_ACTUAL_PRODUCTION,
                     CosemObjectType.EMETER_POWER_FAILURES, CosemObjectType.EMETER_LONG_POWER_FAILURES,
                     CosemObjectType.EMETER_VOLTAGE_SAGS_L1, CosemObjectType.EMETER_VOLTAGE_SWELLS_L1 },
@@ -214,7 +214,7 @@ public enum DSMRMeterType {
                     CosemObjectType.EMETER_EQUIPMENT_IDENTIFIER, CosemObjectType.EMETER_DELIVERY_TARIFF1,
                     CosemObjectType.EMETER_DELIVERY_TARIFF2, CosemObjectType.EMETER_PRODUCTION_TARIFF1,
                     CosemObjectType.EMETER_PRODUCTION_TARIFF2, CosemObjectType.EMETER_TARIFF_INDICATOR,
-                    CosemObjectType.EMETER_TRESHOLD_KWH, CosemObjectType.EMETER_SWITCH_POSITION,
+                    CosemObjectType.EMETER_TRESHOLD_KW, CosemObjectType.EMETER_SWITCH_POSITION,
                     CosemObjectType.EMETER_ACTUAL_DELIVERY, CosemObjectType.EMETER_ACTUAL_PRODUCTION,
                     CosemObjectType.EMETER_POWER_FAILURES, CosemObjectType.EMETER_LONG_POWER_FAILURES,
                     CosemObjectType.EMETER_VOLTAGE_SAGS_L1, CosemObjectType.EMETER_VOLTAGE_SWELLS_L1,
@@ -289,9 +289,10 @@ public enum DSMRMeterType {
                     CosemObjectType.EMETER_PRODUCTION_TARIFF0, CosemObjectType.EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_Q,
                     CosemObjectType.EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_Q, CosemObjectType.EMETER_ACTUAL_DELIVERY,
                     CosemObjectType.EMETER_ACTUAL_PRODUCTION, CosemObjectType.EMETER_ACTUAL_REACTIVE_DELIVERY,
-                    CosemObjectType.EMETER_ACTUAL_REACTIVE_PRODUCTION, CosemObjectType.EMETER_ACTIVE_THRESHOLD_SMAX,
+                    CosemObjectType.EMETER_ACTUAL_REACTIVE_PRODUCTION,
                     CosemObjectType.EMETER_SWITCH_POSITION },
             new CosemObjectType[] {
+                    CosemObjectType.EMETER_TRESHOLD_KW, CosemObjectType.EMETER_ACTIVE_THRESHOLD_SMAX,
                     CosemObjectType.EMETER_POWER_FAILURES, CosemObjectType.EMETER_VOLTAGE_SAGS_L1,
                     CosemObjectType.EMETER_VOLTAGE_SAGS_L2, CosemObjectType.EMETER_VOLTAGE_SAGS_L3,
                     CosemObjectType.EMETER_VOLTAGE_SWELLS_L1, CosemObjectType.EMETER_VOLTAGE_SWELLS_L2,
@@ -303,7 +304,23 @@ public enum DSMRMeterType {
                     CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L1, CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L2,
                     CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L3, CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L1,
                     CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L2, CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L3,
-                    }),
+    }),
+    /** Austrian "Smarty" meter */
+    ELECTRICITY_SMARTY_V1_0_AUSTRIA(DSMRMeterKind.MAIN_ELECTRICITY, CosemObjectType.UNKNOWN,
+            new CosemObjectType[] {
+                    CosemObjectType.EMETER_DELIVERY_TARIFF0, CosemObjectType.EMETER_DELIVERY_TARIFF1,
+                    CosemObjectType.EMETER_DELIVERY_TARIFF2, CosemObjectType.EMETER_PRODUCTION_TARIFF0,
+                    CosemObjectType.EMETER_PRODUCTION_TARIFF1, CosemObjectType.EMETER_PRODUCTION_TARIFF2,
+                    CosemObjectType.EMETER_ACTUAL_DELIVERY, CosemObjectType.EMETER_ACTUAL_PRODUCTION,
+                    CosemObjectType.EMETER_ACTUAL_REACTIVE_DELIVERY, CosemObjectType.EMETER_ACTUAL_REACTIVE_PRODUCTION,
+                    CosemObjectType.EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_Q, CosemObjectType.EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_Q,
+                    CosemObjectType.EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_R_RATE1, CosemObjectType.EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_R_RATE2,
+                    CosemObjectType.EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_R_RATE1, CosemObjectType.EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_R_RATE2,
+    },
+            new CosemObjectType[] {
+                    CosemObjectType.P1_VERSION_OUTPUT, CosemObjectType.P1_TIMESTAMP,
+    }),
+
     /** Belgium Smart Meter for the e-MUCS specification */
     DEVICE_EMUCS_V1_0(DSMRMeterKind.DEVICE, CosemObjectType.UNKNOWN,
             CosemObjectType.P1_TEXT_STRING, CosemObjectType.P1_TEXT_STRING, CosemObjectType.P1_EMUCS_VERSION_OUTPUT,
@@ -316,7 +333,7 @@ public enum DSMRMeterType {
                     CosemObjectType.EMETER_DELIVERY_TARIFF2, CosemObjectType.EMETER_PRODUCTION_TARIFF1,
                     CosemObjectType.EMETER_PRODUCTION_TARIFF2, CosemObjectType.EMETER_TARIFF_INDICATOR,
                     CosemObjectType.EMETER_ACTUAL_DELIVERY, CosemObjectType.EMETER_ACTUAL_PRODUCTION,
-                    CosemObjectType.EMETER_TRESHOLD_KWH, CosemObjectType.EMETER_FUSE_THRESHOLD_A,
+                    CosemObjectType.EMETER_TRESHOLD_KW, CosemObjectType.EMETER_FUSE_THRESHOLD_A,
                     CosemObjectType.EMETER_SWITCH_POSITION},
             new CosemObjectType[] {
                     CosemObjectType.EMETER_INSTANT_POWER_DELIVERY_L1, CosemObjectType.EMETER_INSTANT_POWER_DELIVERY_L2,
@@ -325,7 +342,7 @@ public enum DSMRMeterType {
                     CosemObjectType.EMETER_INSTANT_CURRENT_L1, CosemObjectType.EMETER_INSTANT_CURRENT_L2,
                     CosemObjectType.EMETER_INSTANT_CURRENT_L3, CosemObjectType.EMETER_INSTANT_VOLTAGE_L1,
                     CosemObjectType.EMETER_INSTANT_VOLTAGE_L2, CosemObjectType.EMETER_INSTANT_VOLTAGE_L3
-                    }),
+    }),
 
     /** Belgium Smart Gas Meter for the e-MUCS specification */
     GAS_EMUCS_V1_0(DSMRMeterKind.GAS, CosemObjectType.EMETER_EQUIPMENT_IDENTIFIER,
@@ -413,8 +430,8 @@ public enum DSMRMeterType {
     public @Nullable DSMRMeterDescriptor findCompatible(List<CosemObject> availableCosemObjects) {
         final Map<@Nullable Integer, AtomicInteger> channelCounter = new HashMap<>(3);
 
-        for (CosemObjectType objectType : requiredCosemObjects) {
-            AtomicBoolean match = new AtomicBoolean();
+        for (final CosemObjectType objectType : requiredCosemObjects) {
+            final AtomicBoolean match = new AtomicBoolean();
             availableCosemObjects.stream().filter(a -> a.getType() == objectType).forEach(b -> {
                 match.set(true);
                 channelCounter.computeIfAbsent(b.getObisIdentifier().getChannel(), t -> new AtomicInteger())
@@ -428,7 +445,7 @@ public enum DSMRMeterType {
         DSMRMeterDescriptor meterDescriptor = null;
 
         if (meterKind.isChannelRelevant()) {
-            Optional<Entry<@Nullable Integer, AtomicInteger>> max = channelCounter.entrySet().stream()
+            final Optional<Entry<@Nullable Integer, AtomicInteger>> max = channelCounter.entrySet().stream()
                     .max((e1, e2) -> Integer.compare(e1.getValue().get(), e2.getValue().get()));
 
             if (max.isPresent()) {

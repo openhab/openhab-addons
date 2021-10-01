@@ -14,7 +14,6 @@ package org.openhab.binding.dsmr.internal.device.cosem;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -74,7 +73,7 @@ public enum CosemObjectType {
     EMETER_TRESHOLD_A_V2_1(new OBISIdentifier(1, 17, 0, 0), CosemQuantity.AMPERE),
     EMETER_TRESHOLD_A(new OBISIdentifier(0, 17, 0, 0, true), CosemQuantity.AMPERE),
     EMETER_FUSE_THRESHOLD_A(new OBISIdentifier(1, 31, 4, 0), CosemQuantity.AMPERE),
-    EMETER_TRESHOLD_KWH(new OBISIdentifier(0, 17, 0, 0, true), CosemQuantity.KILO_WATT),
+    EMETER_TRESHOLD_KW(new OBISIdentifier(0, 17, 0, 0, true), CosemQuantity.KILO_WATT),
     EMETER_SWITCH_POSITION_V2_1(new OBISIdentifier(1, 96, 3, 10), CosemDecimal.INSTANCE),
     EMETER_SWITCH_POSITION(new OBISIdentifier(0, 96, 3, 10), CosemDecimal.INSTANCE),
     EMETER_POWER_FAILURES(new OBISIdentifier(0, 96, 7, 21), CosemDecimal.INSTANCE),
@@ -142,7 +141,11 @@ public enum CosemObjectType {
 
     /* Additional Luxembourgish Smarty Electricity */
     EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_Q(new OBISIdentifier(1, 3, 8, 0), CosemQuantity.KILO_VAR_HOUR),
+    EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_R_RATE1(new OBISIdentifier(1, 3, 8, 1), CosemQuantity.KILO_VAR_HOUR),
+    EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_R_RATE2(new OBISIdentifier(1, 3, 8, 2), CosemQuantity.KILO_VAR_HOUR),
     EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_Q(new OBISIdentifier(1, 4, 8, 0), CosemQuantity.KILO_VAR_HOUR),
+    EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_R_RATE1(new OBISIdentifier(1, 4, 8, 1), CosemQuantity.KILO_VAR_HOUR),
+    EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_R_RATE2(new OBISIdentifier(1, 4, 8, 2), CosemQuantity.KILO_VAR_HOUR),
     // The actual reactive's and threshold have no unit in the data and therefore are not quantity types.
     EMETER_ACTUAL_REACTIVE_DELIVERY(new OBISIdentifier(1, 3, 7, 0), CosemDecimal.INSTANCE_WITH_UNITS),
     EMETER_ACTUAL_REACTIVE_PRODUCTION(new OBISIdentifier(1, 4, 7, 0), CosemDecimal.INSTANCE_WITH_UNITS),
@@ -183,9 +186,9 @@ public enum CosemObjectType {
         this.obisId = obisId;
         if (nrOfRepeatingDescriptors == 0) {
             this.descriptors = Arrays.asList(descriptors);
-            this.repeatingDescriptors = Collections.emptyList();
+            this.repeatingDescriptors = List.of();
         } else {
-            List<CosemValueDescriptor<?>> allDescriptors = Arrays.asList(descriptors);
+            final List<CosemValueDescriptor<?>> allDescriptors = List.of(descriptors);
 
             /*
              * The last nrOfRepeatingDescriptors CosemValueDescriptor will go into the repeatingDescriptor list.
@@ -211,16 +214,16 @@ public enum CosemObjectType {
     public @Nullable Entry<String, CosemValueDescriptor<?>> getDescriptor(int idx) {
         if (idx >= descriptors.size() && !repeatingDescriptors.isEmpty()) {
             /* We have a repeating list, find the correct repeating descriptor */
-            int repeatingIdx = (idx - descriptors.size()) % repeatingDescriptors.size();
+            final int repeatingIdx = (idx - descriptors.size()) % repeatingDescriptors.size();
 
-            CosemValueDescriptor<?> descriptor = repeatingDescriptors.get(repeatingIdx);
+            final CosemValueDescriptor<?> descriptor = repeatingDescriptors.get(repeatingIdx);
 
             /* The repeating descriptor must have a specific channel */
-            int repeatCount = (idx - descriptors.size()) / repeatingDescriptors.size();
+            final int repeatCount = (idx - descriptors.size()) / repeatingDescriptors.size();
 
             return new SimpleEntry<>(descriptor.getChannelId() + repeatCount, descriptor);
         } else if (idx < descriptors.size()) {
-            CosemValueDescriptor<?> descriptor = descriptors.get(idx);
+            final CosemValueDescriptor<?> descriptor = descriptors.get(idx);
 
             return new SimpleEntry<>(descriptor.getChannelId(), descriptor);
         } else {
