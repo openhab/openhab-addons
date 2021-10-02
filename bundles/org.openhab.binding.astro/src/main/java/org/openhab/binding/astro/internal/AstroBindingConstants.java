@@ -32,8 +32,8 @@ public final class AstroBindingConstants {
 
     public static final String BINDING_ID = "astro";
 
-    public static final String SUN = "sun";
-    public static final String MOON = "moon";
+    private static final String SUN = "sun";
+    private static final String MOON = "moon";
     public static final String LOCAL = "local";
 
     // things
