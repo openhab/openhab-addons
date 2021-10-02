@@ -58,8 +58,24 @@ public class MieleBindingConstants {
     public static final String MIELE_DEVICE_CLASS_FRIDGE_FREEZER = "FridgeFreezer";
 
     // Miele appliance states
+    public static final int STATE_UNKNOWN = 0;
+    public static final int STATE_OFF = 1;
+    public static final int STATE_STAND_BY = 2;
+    public static final int STATE_PROGRAMMED = 3;
+    public static final int STATE_WAITING_TO_START = 4;
+    public static final int STATE_RUNNING = 5;
+    public static final int STATE_PAUSED = 6;
+    public static final int STATE_END = 7;
+    public static final int STATE_FAILURE = 8;
+    public static final int STATE_ABORT = 9;
+    public static final int STATE_IDLE = 10;
+    public static final int STATE_RINSE_HOLD = 11;
+    public static final int STATE_SERVICE = 12;
     public static final int STATE_SUPER_FREEZING = 13;
     public static final int STATE_SUPER_COOLING = 14;
+    public static final int STATE_SUPER_HEATING = 15;
+    public static final int STATE_LOCKED = 145;
+    public static final int STATE_NOT_CONNECTED = 255;
 
     // Bridge config properties
     public static final String HOST = "ipAddress";

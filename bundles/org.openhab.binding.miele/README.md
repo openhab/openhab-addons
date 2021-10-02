@@ -64,8 +64,8 @@ demo.items:
 ```
 String MieleFridgeState  (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fridge:state"}
 Switch MieleFridgeSuperCool (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fridge:supercool"}
-Number MieleFridgeCurrent (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fridge:current"}
-Number MieleFridgeTarget (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fridge:target"}
+Number:Temperature MieleFridgeCurrent (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fridge:current"}
+Number:Temperature MieleFridgeTarget (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fridge:target"}
 Contact MieleFridgeDoor (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fridge:door"}
 Switch MieleFridgeStart (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fridge:start"}
 ```
