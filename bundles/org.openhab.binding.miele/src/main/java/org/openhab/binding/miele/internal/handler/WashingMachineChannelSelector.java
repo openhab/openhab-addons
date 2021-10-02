@@ -23,9 +23,9 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openhab.binding.miele.internal.ExtendedDeviceStateUtil;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
@@ -111,10 +111,10 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             return getState(dateFormatter.format(date));
         }
     },
-    TARGET_TEMP("targetTemperature", "target", DecimalType.class, false, false) {
+    TARGET_TEMP("targetTemperature", "target", QuantityType.class, false, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+            return getTemperatureState(s);
         }
     },
     SPINNING_SPEED("spinningSpeed", "spinningspeed", StringType.class, false, false) {
@@ -126,7 +126,7 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             if ("256".equals(s)) {
                 return getState("Rinsing");
             }
-            return getState(Integer.toString((Integer.valueOf(s) * 10)));
+            return getState(Integer.toString((Integer.valueOf(s))));
         }
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false, false) {
@@ -221,6 +221,15 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
         }
 
         return null;
+    }
+
+    public State getTemperatureState(String s) {
+        try {
+            return ExtendedDeviceStateUtil.getTemperatureState(s);
+        } catch (NumberFormatException e) {
+            logger.warn("An exception occurred while converting '{}' into a State", s);
+            return UnDefType.UNDEF;
+        }
     }
 
     public String getMieleEnum(String s, DeviceMetaData dmd) {
