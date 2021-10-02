@@ -22,11 +22,10 @@
 			<channel id="duration" typeId="duration"/>
 			<channel id="elapsed" typeId="elapsed"/>
 			<channel id="finish" typeId="finish"/>
-			<channel id="target" typeId="temperature">
-				<label>Target Temperature</label>
+			<channel id="target" typeId="targetTemperature">
 				<description>Target temperature to be reached by the oven</description>
 			</channel>
-			<channel id="measured" typeId="temperature">
+			<channel id="measured" typeId="currentTemperature">
 				<label>Measured Temperature</label>
 				<description>Actual measured temperature in the oven</description>
 			</channel>

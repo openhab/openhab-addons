@@ -98,6 +98,22 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
+	<channel-type id="currentTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Temperature</label>
+		<description>Current temperature of the appliance</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="targetTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>Target temperature to be reached by the appliance</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
 	<channel-type id="supercool">
 		<item-type>Switch</item-type>
 		<label>Super Cool</label>
