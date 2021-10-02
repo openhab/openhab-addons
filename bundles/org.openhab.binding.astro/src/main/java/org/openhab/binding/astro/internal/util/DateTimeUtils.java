@@ -100,7 +100,7 @@ public class DateTimeUtils {
         cal.setTimeInMillis(millis);
         int second = cal.get(Calendar.SECOND);
         if (second > 30) {
-            cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + 1);
+            cal.add(Calendar.MINUTE, 1);
         }
         return truncateToMinute(cal);
     }

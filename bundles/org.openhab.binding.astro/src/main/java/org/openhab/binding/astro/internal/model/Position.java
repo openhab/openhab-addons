@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import javax.measure.quantity.Angle;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
@@ -22,6 +25,7 @@ import org.openhab.core.library.unit.Units;
  * @author Gaël L'hopital - Added shade length
  * @author Christoph Weitkamp - Introduced UoM
  */
+@NonNullByDefault
 public class Position {
 
     private double azimuth;
@@ -40,7 +44,7 @@ public class Position {
     /**
      * Returns the azimuth.
      */
-    public QuantityType<?> getAzimuth() {
+    public QuantityType<Angle> getAzimuth() {
         return new QuantityType<>(azimuth, Units.DEGREE_ANGLE);
     }
 
@@ -54,7 +58,7 @@ public class Position {
     /**
      * Returns the elevation.
      */
-    public QuantityType<?> getElevation() {
+    public QuantityType<Angle> getElevation() {
         return new QuantityType<>(elevation, Units.DEGREE_ANGLE);
     }
 

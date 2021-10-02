@@ -14,6 +14,10 @@ package org.openhab.binding.astro.internal.model;
 
 import java.util.Calendar;
 
+import javax.measure.quantity.Angle;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Time;
+
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
@@ -94,7 +98,7 @@ public class MoonPhase {
     /**
      * Returns the age in days.
      */
-    public QuantityType<?> getAge() {
+    public QuantityType<Time> getAge() {
         return new QuantityType<>(age, Units.DAY);
     }
 
@@ -108,7 +112,7 @@ public class MoonPhase {
     /**
      * Returns the illumination.
      */
-    public QuantityType<?> getIllumination() {
+    public QuantityType<Dimensionless> getIllumination() {
         return new QuantityType<>(illumination, Units.PERCENT);
     }
 
@@ -136,7 +140,7 @@ public class MoonPhase {
     /**
      * Returns the age in degree.
      */
-    public QuantityType<?> getAgeDegree() {
+    public QuantityType<Angle> getAgeDegree() {
         return new QuantityType<>(ageDegree, Units.DEGREE_ANGLE);
     }
 
@@ -150,7 +154,7 @@ public class MoonPhase {
     /**
      * Returns the age in percent.
      */
-    public QuantityType<?> getAgePercent() {
+    public QuantityType<Dimensionless> getAgePercent() {
         return new QuantityType<>(agePercent, Units.PERCENT);
     }
 

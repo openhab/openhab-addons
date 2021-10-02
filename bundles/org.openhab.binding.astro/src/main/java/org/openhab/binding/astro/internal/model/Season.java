@@ -16,6 +16,8 @@ import static org.openhab.core.library.unit.MetricPrefix.MILLI;
 
 import java.util.Calendar;
 
+import javax.measure.quantity.Time;
+
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -124,7 +126,7 @@ public class Season {
     /**
      * Returns the time left for current season
      */
-    public QuantityType<?> getTimeLeft() {
+    public QuantityType<Time> getTimeLeft() {
         Calendar now = Calendar.getInstance();
         Calendar next = getNextSeason();
         return new QuantityType<>(next.getTimeInMillis() - now.getTimeInMillis(), MILLI(Units.SECOND))

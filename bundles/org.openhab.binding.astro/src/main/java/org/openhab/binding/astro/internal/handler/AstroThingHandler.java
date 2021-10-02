@@ -33,6 +33,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.measure.quantity.Angle;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.action.AstroActions;
@@ -352,12 +354,12 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
     public abstract @Nullable Position getPositionAt(ZonedDateTime date);
 
-    public @Nullable QuantityType<?> getAzimuth(ZonedDateTime date) {
+    public @Nullable QuantityType<Angle> getAzimuth(ZonedDateTime date) {
         Position position = getPositionAt(date);
         return position != null ? position.getAzimuth() : null;
     }
 
-    public @Nullable QuantityType<?> getElevation(ZonedDateTime date) {
+    public @Nullable QuantityType<Angle> getElevation(ZonedDateTime date) {
         Position position = getPositionAt(date);
         return position != null ? position.getElevation() : null;
     }
