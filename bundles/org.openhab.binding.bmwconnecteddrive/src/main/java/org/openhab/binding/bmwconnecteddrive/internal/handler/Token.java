@@ -47,19 +47,13 @@ public class Token {
         this.expiration = System.currentTimeMillis() / 1000 + expiration;
     }
 
-    /**
-     * @return true if Token expires in less than 1 second
-     */
-    public boolean isExpired() {
-        return (expiration - System.currentTimeMillis() / 1000) < 1;
-    }
-
     public void setType(String type) {
         tokenType = type;
     }
 
     public boolean isValid() {
-        return (!token.equals(Constants.EMPTY) && !tokenType.equals(Constants.EMPTY) && expiration > 0);
+        return (!token.equals(Constants.EMPTY) && !tokenType.equals(Constants.EMPTY)
+                && (this.expiration - System.currentTimeMillis() / 1000) > 1);
     }
 
     @Override

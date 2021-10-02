@@ -68,9 +68,8 @@ public class BimmerConstants {
     public static final String LEGACY_CREDENTIAL_VALUES = "nQv6CqtxJuXWP74xf3CJwUEP:1zDHx6un4cDjybLENN3kyfumX2kEYigWPcQpdvDRpIBk7rOJ";
     public static final String LEGACY_REDIRECT_URI_VALUE = "https://www.bmw-connecteddrive.com/app/static/external-dispatch.html";
     public static final String LEGACY_SCOPE_VALUES = "authenticate_user vehicle_data remote_services";
+    public static final String LEGACY_CLIENT_ID = "dbf0a542-ebd1-4ff0-a9a7-55172fbfce35";
 
-    // public static final String LEGACY_CREDENTIAL_VALUES =
-    // "nQv6CqtxJuXWP74xf3CJwUEP:1zDHx6un4cDjybLENN3kyfumX2kEYigWPcQpdvDRpIBk7rOJ";
     public static final String LEGACY_REFERER_URL = "https://www.bmw-connecteddrive.de/app/index.html";
 
     public static final String AUTH_SERVER_NORTH_AMERICA = "login.bmwusa.com/gcdm";

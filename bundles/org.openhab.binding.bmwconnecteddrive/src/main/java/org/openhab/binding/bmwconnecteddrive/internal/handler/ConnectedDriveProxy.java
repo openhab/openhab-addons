@@ -71,7 +71,6 @@ public class ConnectedDriveProxy {
     private final HttpClient httpClient;
     private final HttpClient authHttpClient;
     private final ConnectedDriveConfiguration configuration;
-    private String clientId = "dbf0a542-ebd1-4ff0-a9a7-55172fbfce35";
 
     /**
      * URLs taken from https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/const.py
@@ -91,20 +90,13 @@ public class ConnectedDriveProxy {
     final String rangeMapAPI = "/rangemap";
     final String serviceExecutionAPI = "/executeService";
     final String serviceExecutionStateAPI = "/serviceExecutionStatus";
-    public final static String REMOTE_SERVICE_EADRAX_BASE_URL = "/eadrax-vrccs/v2/presentation/remote-commands/"; // '/{vin}/{service_type}'
-    final String REMOTE_SERVICE_EADRAX_STATUS_URL = REMOTE_SERVICE_EADRAX_BASE_URL + "eventStatus?eventId={event_id}";
-    final String VEHICLE_EADRAX_POI_URL = "/eadrax-dcs/v1/send-to-car/send-to-car";
+    public static final String REMOTE_SERVICE_EADRAX_BASE_URL = "/eadrax-vrccs/v2/presentation/remote-commands/"; // '/{vin}/{service_type}'
+    final String remoteServiceEADRXstatusUrl = REMOTE_SERVICE_EADRAX_BASE_URL + "eventStatus?eventId={event_id}";
+    final String vehicleEADRXPoiUrl = "/eadrax-dcs/v1/send-to-car/send-to-car";
 
     public ConnectedDriveProxy(HttpClientFactory httpClientFactory, ConnectedDriveConfiguration config) {
         httpClient = httpClientFactory.getCommonHttpClient();
         authHttpClient = httpClientFactory.createHttpClient(AUTH_HTTP_CLIENT_NAME);
-        if (!authHttpClient.isStarted()) {
-            try {
-                authHttpClient.start();
-            } catch (Exception e) {
-                logger.debug("Auth client start failed");
-            }
-        }
         configuration = config;
 
         vehicleUrl = "https://" + BimmerConstants.API_SERVER_MAP.get(configuration.region) + "/webapi/v1/user/vehicles";
@@ -255,16 +247,16 @@ public class ConnectedDriveProxy {
      * @return token
      */
     public Token getToken() {
-        if (token.isExpired() || !token.isValid()) {
+        if (!token.isValid()) {
             if (configuration.preferMyBmw) {
-                if (!updateToken(authHttpClient)) {
+                if (!updateToken()) {
                     if (!updateLegacyToken()) {
                         logger.debug("Authorization failed!");
                     }
                 }
             } else {
                 if (!updateLegacyToken()) {
-                    if (!updateToken(authHttpClient)) {
+                    if (!updateToken()) {
                         logger.debug("Authorization failed!");
                     }
                 }
@@ -276,26 +268,80 @@ public class ConnectedDriveProxy {
         return token;
     }
 
-    public synchronized boolean updateToken(HttpClient client) {
-        if (!client.isStarted()) {
-            try {
-                client.start();
-            } catch (Exception e) {
-                logger.debug("Authorization client cannot be started");
-                return false;
-            }
-        }
+    public synchronized boolean updateToken() {
         if (BimmerConstants.REGION_CHINA.equals(configuration.region)) {
-            // region China stays on fallback solution
+            // region China currently not supported for MyBMW API
             logger.debug("Region {} not supported yet for MyBMW Login", BimmerConstants.REGION_CHINA);
             return false;
         }
+        if (!startAuthClient()) {
+            return false;
+        } // else continue
         String authUri = "https://" + BimmerConstants.AUTH_SERVER_MAP.get(configuration.region)
                 + BimmerConstants.OAUTH_ENDPOINT;
 
-        Request authRequest = client.POST(authUri);
+        Request authRequest = authHttpClient.POST(authUri);
         authRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
 
+        MultiMap<String> authChallenge = getTokenBaseValues();
+        authChallenge.addAllValues(getTokenAuthValues());
+        String authEncoded = UrlEncoded.encode(authChallenge, Charset.defaultCharset(), false);
+        authRequest.content(new StringContentProvider(authEncoded));
+        try {
+            ContentResponse authResponse = authRequest.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
+            String authResponseString = URLDecoder.decode(authResponse.getContentAsString(), Charset.defaultCharset());
+            String authCode = getAuthCode(authResponseString);
+            if (authCode != Constants.EMPTY) {
+                MultiMap<String> codeChallenge = getTokenBaseValues();
+                codeChallenge.put(AUTHORIZATION, authCode);
+
+                Request codeRequest = authHttpClient.POST(authUri).followRedirects(false);
+                codeRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
+                String codeEncoded = UrlEncoded.encode(codeChallenge, Charset.defaultCharset(), false);
+                codeRequest.content(new StringContentProvider(codeEncoded));
+                ContentResponse codeResponse = codeRequest.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
+                String code = ConnectedDriveProxy.codeFromUrl(codeResponse.getHeaders().get(HttpHeader.LOCATION));
+
+                // Get Token
+                String tokenUrl = "https://" + BimmerConstants.AUTH_SERVER_MAP.get(configuration.region)
+                        + BimmerConstants.TOKEN_ENDPOINT;
+
+                Request tokenRequest = authHttpClient.POST(tokenUrl).followRedirects(false);
+                tokenRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
+                tokenRequest.header(HttpHeader.AUTHORIZATION,
+                        BimmerConstants.AUTHORIZATION_VALUE_MAP.get(configuration.region));
+                String tokenEncoded = UrlEncoded.encode(getTokenValues(code), Charset.defaultCharset(), false);
+                tokenRequest.content(new StringContentProvider(tokenEncoded));
+                ContentResponse tokenResponse = tokenRequest.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
+                AuthResponse authResponseJson = Converter.getGson().fromJson(tokenResponse.getContentAsString(),
+                        AuthResponse.class);
+                token.setToken(authResponseJson.accessToken);
+                token.setType(authResponseJson.tokenType);
+                token.setExpiration(authResponseJson.expiresIn);
+                token.setMyBmwApiUsage(true);
+                return true;
+            }
+        } catch (InterruptedException | ExecutionException |
+
+                TimeoutException e) {
+            logger.debug("Authorization exception: {}", e.getMessage());
+        }
+        return false;
+    }
+
+    private boolean startAuthClient() {
+        if (!authHttpClient.isStarted()) {
+            try {
+                authHttpClient.start();
+            } catch (Exception e) {
+                logger.error("Auth HttpClient start failed!");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private MultiMap<String> getTokenBaseValues() {
         MultiMap<String> baseValues = new MultiMap<String>();
         baseValues.add(CLIENT_ID, Constants.EMPTY + BimmerConstants.CLIENT_ID.get(configuration.region));
         baseValues.add(RESPONSE_TYPE, CODE);
@@ -303,69 +349,36 @@ public class ConnectedDriveProxy {
         baseValues.add("state", Constants.EMPTY + BimmerConstants.STATE.get(configuration.region));
         baseValues.add("nonce", "login_nonce");
         baseValues.add(SCOPE, BimmerConstants.SCOPE_VALUES);
+        return baseValues;
+    }
 
+    private MultiMap<String> getTokenAuthValues() {
         MultiMap<String> authValues = new MultiMap<String>();
         authValues.add(GRANT_TYPE, "authorization_code");
         authValues.add(USERNAME, configuration.userName);
         authValues.add(PASSWORD, configuration.password);
+        return authValues;
+    }
 
-        MultiMap<String> authChallenge = new MultiMap<String>();
-        authChallenge.addAllValues(baseValues);
-        authChallenge.addAllValues(authValues);
+    private MultiMap<String> getTokenValues(String code) {
+        MultiMap<String> tokenValues = new MultiMap<String>();
+        tokenValues.put(CODE, code);
+        tokenValues.put("code_verifier", Constants.EMPTY + BimmerConstants.CODE_VERIFIER.get(configuration.region));
+        tokenValues.put(REDIRECT_URI, BimmerConstants.REDIRECT_URI_VALUE);
+        tokenValues.put(GRANT_TYPE, "authorization_code");
+        return tokenValues;
+    }
 
-        String authEncoded = UrlEncoded.encode(authChallenge, Charset.defaultCharset(), false);
-        authRequest.content(new StringContentProvider(authEncoded));
-        try {
-            ContentResponse authResponse = authRequest.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
-            String authResponseString = URLDecoder.decode(authResponse.getContentAsString(), Charset.defaultCharset());
-            String[] keys = authResponseString.split("&");
-            for (int i = 0; i < keys.length; i++) {
-                if (keys[i].startsWith(AUTHORIZATION)) {
-                    String authCode = keys[i].split("=")[1];
-                    authCode = authCode.split("\"")[0];
-                    MultiMap<String> codeChallenge = new MultiMap<String>();
-                    codeChallenge.addAllValues(baseValues);
-                    codeChallenge.put(AUTHORIZATION, authCode);
-
-                    Request codeRequest = client.POST(authUri).followRedirects(false);
-                    codeRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
-                    // codeRequest.header("User-Agent", "okhttp/3.12.2");
-                    String codeEncoded = UrlEncoded.encode(codeChallenge, Charset.defaultCharset(), false);
-                    // codeEncoded += "&authorization=" + UrlEncoded.encodeString(authCode);
-                    codeRequest.content(new StringContentProvider(codeEncoded));
-                    ContentResponse codeResponse = codeRequest.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
-                    String code = ConnectedDriveProxy.codeFromUrl(codeResponse.getHeaders().get(HttpHeader.LOCATION));
-
-                    // Get Token
-                    String tokenUrl = "https://" + BimmerConstants.AUTH_SERVER_MAP.get(configuration.region)
-                            + BimmerConstants.TOKEN_ENDPOINT;
-
-                    Request tokenRequest = client.POST(tokenUrl).followRedirects(false);
-                    tokenRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
-                    tokenRequest.header(HttpHeader.AUTHORIZATION,
-                            BimmerConstants.AUTHORIZATION_VALUE_MAP.get(configuration.region));
-                    MultiMap<String> tokenValues = new MultiMap<String>();
-                    tokenValues.put(CODE, code);
-                    tokenValues.put("code_verifier",
-                            Constants.EMPTY + BimmerConstants.CODE_VERIFIER.get(configuration.region));
-                    tokenValues.put(REDIRECT_URI, BimmerConstants.REDIRECT_URI_VALUE);
-                    tokenValues.put(GRANT_TYPE, "authorization_code");
-                    String tokenEncoded = UrlEncoded.encode(tokenValues, Charset.defaultCharset(), false);
-                    tokenRequest.content(new StringContentProvider(tokenEncoded));
-                    ContentResponse tokenResponse = tokenRequest.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
-                    AuthResponse authResponseJson = Converter.getGson().fromJson(tokenResponse.getContentAsString(),
-                            AuthResponse.class);
-                    token.setToken(authResponseJson.accessToken);
-                    token.setType(authResponseJson.tokenType);
-                    token.setExpiration(authResponseJson.expiresIn);
-                    token.setMyBmwApiUsage(true);
-                    return true;
-                }
+    private String getAuthCode(String response) {
+        String[] keys = response.split("&");
+        for (int i = 0; i < keys.length; i++) {
+            if (keys[i].startsWith(AUTHORIZATION)) {
+                String authCode = keys[i].split("=")[1];
+                authCode = authCode.split("\"")[0];
+                return authCode;
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.debug("Authorization exception: {}", e.getMessage());
         }
-        return false;
+        return Constants.EMPTY;
     }
 
     public synchronized boolean updateLegacyToken() {
@@ -410,7 +423,6 @@ public class ConnectedDriveProxy {
     }
 
     public boolean tokenFromUrl(String encodedUrl) {
-        final StringBuilder result = new StringBuilder();
         final MultiMap<String> tokenMap = new MultiMap<String>();
         UrlEncoded.decodeTo(encodedUrl, tokenMap, StandardCharsets.US_ASCII);
         tokenMap.forEach((key, value) -> {
@@ -418,7 +430,6 @@ public class ConnectedDriveProxy {
                 String val = value.get(0);
                 if (key.endsWith(ACCESS_TOKEN)) {
                     token.setToken(val.toString());
-                    result.append(true);
                 } else if (key.equals(EXPIRES_IN)) {
                     token.setExpiration(Integer.parseInt(val.toString()));
                 } else if (key.equals(TOKEN_TYPE)) {
@@ -426,7 +437,8 @@ public class ConnectedDriveProxy {
                 }
             }
         });
-        return Boolean.valueOf(result.toString());
+        logger.info("Token valid? {}", token.isValid());
+        return token.isValid();
     }
 
     public static String codeFromUrl(String encodedUrl) {
@@ -446,13 +458,12 @@ public class ConnectedDriveProxy {
 
     private String getAuthEncodedData() {
         MultiMap<String> dataMap = new MultiMap<String>();
-        dataMap.add(CLIENT_ID, clientId);
+        dataMap.add(CLIENT_ID, BimmerConstants.LEGACY_CLIENT_ID);
         dataMap.add(RESPONSE_TYPE, TOKEN);
         dataMap.add(REDIRECT_URI, BimmerConstants.LEGACY_REDIRECT_URI_VALUE);
         dataMap.add(SCOPE, BimmerConstants.LEGACY_SCOPE_VALUES);
         dataMap.add(USERNAME, configuration.userName);
         dataMap.add(PASSWORD, configuration.password);
-        // return UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false);
         return UrlEncoded.encode(dataMap, Charset.defaultCharset(), false);
     }
 }
