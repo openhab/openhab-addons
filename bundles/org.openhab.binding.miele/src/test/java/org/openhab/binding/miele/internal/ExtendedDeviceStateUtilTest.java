@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.test.java.JavaTest;
+import org.openhab.core.types.UnDefType;
 
 /**
  * This class provides test cases for {@link
@@ -54,7 +55,17 @@ public class ExtendedDeviceStateUtilTest extends JavaTest {
     }
 
     @Test
+    public void getTemperatureStateMagicValueReturnsUndefined() throws NumberFormatException {
+        assertEquals(UnDefType.UNDEF, ExtendedDeviceStateUtil.getTemperatureState("32768"));
+    }
+
+    @Test
     public void getTemperatureStateNonNumericValueThrowsNumberFormatException() {
         assertThrows(NumberFormatException.class, () -> ExtendedDeviceStateUtil.getTemperatureState("A"));
+    }
+
+    @Test
+    public void getTemperatureStateNullValueThrowsNumberFormatException() {
+        assertThrows(NumberFormatException.class, () -> ExtendedDeviceStateUtil.getTemperatureState(null));
     }
 }

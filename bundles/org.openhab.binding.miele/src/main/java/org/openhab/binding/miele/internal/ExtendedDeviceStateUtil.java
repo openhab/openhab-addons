@@ -57,7 +57,7 @@ public class ExtendedDeviceStateUtil {
      * Convert string to Number:Temperature state with unit Celcius
      */
     public static State getTemperatureState(String s) throws NumberFormatException {
-        if (s.equals(TEMPERATURE_UNDEFINED)) {
+        if (TEMPERATURE_UNDEFINED.equals(s)) {
             return UnDefType.UNDEF;
         }
         int temperature = Integer.parseInt(s);
