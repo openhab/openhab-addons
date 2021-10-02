@@ -26,8 +26,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
-
-import tech.units.indriya.unit.Units;
+import org.openhab.core.library.unit.SIUnits;
 
 /**
  * Tests for {@link Climate}
@@ -86,10 +85,10 @@ public class ClimateTests extends AbstractComponentTests {
                         + "\"current_heating_setpoint\": \"24\"}");
         assertState(component, Climate.ACTION_CH_ID, new StringType("off"));
         assertState(component, Climate.AWAY_MODE_CH_ID, OnOffType.ON);
-        assertState(component, Climate.CURRENT_TEMPERATURE_CH_ID, new QuantityType<>(22.2, Units.CELSIUS));
+        assertState(component, Climate.CURRENT_TEMPERATURE_CH_ID, new QuantityType<>(22.2, SIUnits.CELSIUS));
         assertState(component, Climate.HOLD_CH_ID, new StringType("schedule"));
         assertState(component, Climate.MODE_CH_ID, new StringType("heat"));
-        assertState(component, Climate.TEMPERATURE_CH_ID, new QuantityType<>(24, Units.CELSIUS));
+        assertState(component, Climate.TEMPERATURE_CH_ID, new QuantityType<>(24, SIUnits.CELSIUS));
 
         component.getChannel(Climate.AWAY_MODE_CH_ID).getState().publishValue(OnOffType.OFF);
         assertPublished("zigbee2mqtt/th1/set/away_mode", "OFF");
@@ -150,10 +149,10 @@ public class ClimateTests extends AbstractComponentTests {
                         + "\"current_heating_setpoint\": \"24\"}");
         assertState(component, Climate.ACTION_CH_ID, new StringType("off"));
         assertState(component, Climate.AWAY_MODE_CH_ID, OnOffType.ON);
-        assertState(component, Climate.CURRENT_TEMPERATURE_CH_ID, new QuantityType<>(22.2, Units.CELSIUS));
+        assertState(component, Climate.CURRENT_TEMPERATURE_CH_ID, new QuantityType<>(22.2, SIUnits.CELSIUS));
         assertState(component, Climate.HOLD_CH_ID, new StringType("schedule"));
         assertState(component, Climate.MODE_CH_ID, new StringType("heat"));
-        assertState(component, Climate.TEMPERATURE_CH_ID, new QuantityType<>(24, Units.CELSIUS));
+        assertState(component, Climate.TEMPERATURE_CH_ID, new QuantityType<>(24, SIUnits.CELSIUS));
 
         // Climate is in OFF state
         component.getChannel(Climate.AWAY_MODE_CH_ID).getState().publishValue(OnOffType.OFF);
