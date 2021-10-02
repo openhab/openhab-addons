@@ -201,6 +201,20 @@ public class SOAPValueConverter {
     }
 
     /**
+     * post processor for decibel values (which are served as deca decibel)
+     *
+     * @param state the channel value in deca decibel
+     * @param channelConfig channel config of the channel
+     * @return the state converted to decibel
+     */
+    @SuppressWarnings("unused")
+    private State processDecaDecibel(State state, Tr064ChannelConfig channelConfig) {
+        Float value = state.as(DecimalType.class).floatValue() / 10;
+
+        return new QuantityType(value.toString() + " dB");
+    }
+
+    /**
      * post processor for answering machine new messages channel
      *
      * @param state the message list URL
