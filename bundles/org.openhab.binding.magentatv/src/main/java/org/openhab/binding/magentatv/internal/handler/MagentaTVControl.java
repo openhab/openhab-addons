@@ -57,7 +57,7 @@ public class MagentaTVControl {
     }
 
     public MagentaTVControl(MagentaTVDynamicConfig config, MagentaTVNetwork network, HttpClient httpClient) {
-        thingId = config.getFriendlyName();
+        this.thingId = config.getFriendlyName();
         this.network = network;
         this.oauth = new MagentaTVOAuth(httpClient);
         this.config = config;
@@ -69,6 +69,10 @@ public class MagentaTVControl {
 
     public boolean isInitialized() {
         return initialized;
+    }
+
+    public void setThingId(String thingId) {
+        this.thingId = thingId;
     }
 
     /**
