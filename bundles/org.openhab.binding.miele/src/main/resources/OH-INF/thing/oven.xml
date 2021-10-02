@@ -30,11 +30,11 @@
 				<description>Actual measured temperature in the oven</description>
 			</channel>
 			<channel id="temp1" typeId="temperature">
-				<label>Temperature</label>
+				<label>Program Temperature 1</label>
 				<description>Program temperature in the oven</description>
 			</channel>
 			<channel id="temp2" typeId="temperature">
-				<label>Temperature</label>
+				<label>Program Temperature 2</label>
 				<description>Program temperature in the oven</description>
 			</channel>
 			<channel id="door" typeId="door"/>
