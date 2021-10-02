@@ -90,7 +90,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="temperature">
+	<channel-type id="temperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Temperature reported by the appliance</description>
