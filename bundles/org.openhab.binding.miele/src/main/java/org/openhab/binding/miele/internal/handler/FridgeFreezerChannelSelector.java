@@ -164,9 +164,9 @@ public enum FridgeFreezerChannelSelector implements ApplianceChannelSelector {
     public State getTemperatureState(String s) {
         try {
             return ExtendedDeviceStateUtil.getTemperatureState(s);
-        } catch (Exception e) {
-            logger.error("An exception occurred while converting '{}' into a State", s);
-            return null;
+        } catch (NumberFormatException e) {
+            logger.warn("An exception occurred while converting '{}' into a State", s);
+            return UnDefType.UNDEF;
         }
     }
 

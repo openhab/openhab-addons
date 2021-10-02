@@ -52,4 +52,9 @@ public class ExtendedDeviceStateUtilTest extends JavaTest {
     public void getTemperatureStateWellFormedValueReturnsQuantityType() throws NumberFormatException {
         assertEquals(new QuantityType<>(42, SIUnits.CELSIUS), ExtendedDeviceStateUtil.getTemperatureState("42"));
     }
+
+    @Test
+    public void getTemperatureStateNonNumericValueThrowsNumberFormatException() {
+        assertThrows(NumberFormatException.class, () -> ExtendedDeviceStateUtil.getTemperatureState("A"));
+    }
 }
