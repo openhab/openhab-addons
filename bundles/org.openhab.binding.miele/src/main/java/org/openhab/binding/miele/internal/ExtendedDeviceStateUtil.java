@@ -14,6 +14,11 @@ package org.openhab.binding.miele.internal;
 
 import java.nio.charset.StandardCharsets;
 
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
+
 /**
  * The {@link ExtendedDeviceStateUtil} class contains utility methods for parsing
  * ExtendedDeviceState information
@@ -22,6 +27,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class ExtendedDeviceStateUtil {
     private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
+    private static final String TEMPERATURE_UNDEFINED = "32768";
 
     /**
      * Convert byte array to hex representation.
@@ -45,5 +51,16 @@ public class ExtendedDeviceStateUtil {
      */
     public static byte[] stringToBytes(String input) {
         return input.getBytes(StandardCharsets.ISO_8859_1);
+    }
+
+    /**
+     * Convert string to Number:Temperature state with unit Celcius
+     */
+    public static State getTemperatureState(String s) throws NumberFormatException {
+        if (TEMPERATURE_UNDEFINED.equals(s)) {
+            return UnDefType.UNDEF;
+        }
+        int temperature = Integer.parseInt(s);
+        return new QuantityType<>(temperature, SIUnits.CELSIUS);
     }
 }
