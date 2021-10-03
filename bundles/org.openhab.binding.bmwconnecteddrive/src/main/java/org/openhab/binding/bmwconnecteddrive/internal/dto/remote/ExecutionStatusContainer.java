@@ -19,4 +19,7 @@ package org.openhab.binding.bmwconnecteddrive.internal.dto.remote;
  */
 public class ExecutionStatusContainer {
     public ExecutionStatus executionStatus;
+    public String eventId;
+    public String creationTime;
+    public String eventStatus;
 }

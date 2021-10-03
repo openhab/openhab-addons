@@ -13,6 +13,11 @@
 		<label>Electric Range</label>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="range-electric-max-channel">
+		<item-type>Number:Length</item-type>
+		<label>Electric Range if Fully Charged</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="range-fuel-channel">
 		<item-type>Number:Length</item-type>
 		<label>Fuel Range</label>
@@ -23,10 +28,20 @@
 		<label>Hybrid Range</label>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="range-hybrid-max-channel">
+		<item-type>Number:Length</item-type>
+		<label>Hybrid Range if Fully Charged</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="soc-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Charge Level</label>
 		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="soc-max-channel">
+		<item-type>Number:Power</item-type>
+		<label>Max Battery Capacity</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="remaining-fuel-channel">
 		<item-type>Number:Volume</item-type>
@@ -34,6 +49,11 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="range-radius-electric-channel">
+		<item-type>Number:Length</item-type>
+		<label>Electric Range Radius if Fully Charged</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="range-radius-electric-max-channel">
 		<item-type>Number:Length</item-type>
 		<label>Electric Range Radius</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
@@ -46,6 +66,11 @@
 	<channel-type id="range-radius-hybrid-channel">
 		<item-type>Number:Length</item-type>
 		<label>Hybrid Range Radius</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="range-radius-hybrid-max-channel">
+		<item-type>Number:Length</item-type>
+		<label>Hybrid Range Radius if Fully Charged</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
