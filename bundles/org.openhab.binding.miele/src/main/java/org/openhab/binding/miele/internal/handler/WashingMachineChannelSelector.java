@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.internal.MieleBindingConstants.EXTENDED_DEVICE_STATE_PROPERTY_NAME;
-import static org.openhab.binding.miele.internal.MieleBindingConstants.POWER_CONSUMPTION_CHANNEL_ID;
-import static org.openhab.binding.miele.internal.MieleBindingConstants.WATER_CONSUMPTION_CHANNEL_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
@@ -26,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.miele.internal.ExtendedDeviceStateUtil;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
@@ -43,7 +42,7 @@ import com.google.gson.JsonElement;
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - Changed START_TIME to DateTimeType
- * @author Jacob Laursen - Added power/water consumption channels
+ * @author Jacob Laursen - Added power/water consumption channels, UoM for temperatures, raw channels
  */
 public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
 
@@ -51,10 +50,13 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true, false),
     BRAND_ID("brandId", "brandId", StringType.class, true, false),
     COMPANY_ID("companyId", "companyId", StringType.class, true, false),
-    STATE("state", "state", StringType.class, false, false),
-    PROGRAMID("programId", "program", StringType.class, false, false),
+    STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false, false),
+    STATE(null, STATE_CHANNEL_ID, DecimalType.class, false, false),
+    PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false, false),
+    PROGRAM(null, PROGRAM_CHANNEL_ID, DecimalType.class, false, false),
     PROGRAMTYPE("programType", "type", StringType.class, false, false),
-    PROGRAMPHASE("phase", "phase", StringType.class, false, false),
+    PROGRAM_PHASE_TEXT(PHASE_PROPERTY_NAME, PHASE_TEXT_CHANNEL_ID, StringType.class, false, false),
+    PROGRAM_PHASE(RAW_PHASE_PROPERTY_NAME, PHASE_CHANNEL_ID, DecimalType.class, false, false),
     START_TIME("startTime", "start", DateTimeType.class, false, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {

@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
+
 import java.lang.reflect.Method;
 import java.util.Map.Entry;
 
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
@@ -31,6 +34,7 @@ import com.google.gson.JsonElement;
  * The {@link ApplianceChannelSelector} for coffee machines
  *
  * @author Stephan Esch - Initial contribution
+ * @author Jacob Laursen - Added raw channels
  */
 public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
 
@@ -38,10 +42,13 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
     BRAND_ID("brandId", "brandId", StringType.class, true),
     COMPANY_ID("companyId", "companyId", StringType.class, true),
-    STATE("state", "state", StringType.class, false),
-    PROGRAMID("programId", "program", StringType.class, false),
+    STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false),
+    STATE(null, STATE_CHANNEL_ID, DecimalType.class, false),
+    PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false),
+    PROGRAM(null, PROGRAM_CHANNEL_ID, DecimalType.class, false),
     PROGRAMTYPE("programType", "type", StringType.class, false),
-    PROGRAMPHASE("phase", "phase", StringType.class, false),
+    PROGRAM_PHASE_TEXT(PHASE_PROPERTY_NAME, PHASE_TEXT_CHANNEL_ID, StringType.class, false),
+    PROGRAM_PHASE(RAW_PHASE_PROPERTY_NAME, PHASE_CHANNEL_ID, DecimalType.class, false),
     // lightingStatus signalFailure signalInfo
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
         @Override
