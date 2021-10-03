@@ -29,34 +29,34 @@
 				<description>Path to log file. Empty will default to ${OPENHAB_LOGDIR}/openhab.log</description>
 				<default>${OPENHAB_LOGDIR}/openhab.log</default>
 			</parameter>
-			<parameter name="refreshRate" type="integer" required="false">
+			<parameter name="refreshRate" type="integer" unit="ms">
 				<label>Refresh Rate</label>
 				<description>Refresh rate in milliseconds for reading logs</description>
 				<default>1000</default>
 			</parameter>
-			<parameter name="errorPatterns" type="text" required="false">
+			<parameter name="errorPatterns" type="text">
 				<label>Error Patterns</label>
 				<description>Search patterns separated by | character for error events. Empty will default to ERROR+</description>
 				<default>ERROR+</default>
 			</parameter>
-			<parameter name="errorBlacklistingPatterns" type="text" required="false">
+			<parameter name="errorBlacklistingPatterns" type="text">
 				<label>Error Blacklisting Patterns</label>
 				<description>Search patterns for blacklisting unwanted error events separated by | character. </description>
 			</parameter>
-			<parameter name="warningPatterns" type="text" required="false">
+			<parameter name="warningPatterns" type="text">
 				<label>Warning Patterns</label>
 				<description>Search patterns separated by | character for warning events. Empty will default to WARN+</description>
 				<default>WARN+</default>
 			</parameter>
-			<parameter name="warningBlacklistingPatterns" type="text" required="false">
+			<parameter name="warningBlacklistingPatterns" type="text">
 				<label>Warning Blacklisting Patterns</label>
 				<description>Search patterns for blacklisting unwanted warning events separated by | character.</description>
 			</parameter>
-			<parameter name="customPatterns" type="text" required="false">
+			<parameter name="customPatterns" type="text">
 				<label>Custom Patterns</label>
 				<description>Search patterns separated by | character for custom events.</description>
 			</parameter>
-			<parameter name="customBlacklistingPatterns" type="text" required="false">
+			<parameter name="customBlacklistingPatterns" type="text">
 				<label>Custom Blacklisting Patterns</label>
 				<description>Search patterns for blacklisting unwanted custom events separated by | character.</description>
 			</parameter>

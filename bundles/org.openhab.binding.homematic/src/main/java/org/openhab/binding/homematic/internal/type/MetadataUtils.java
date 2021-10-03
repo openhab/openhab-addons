@@ -310,6 +310,7 @@ public class MetadataUtils {
                         return ITEM_TYPE_NUMBER + ":Temperature";
                     case "V":
                         return ITEM_TYPE_NUMBER + ":ElectricPotential";
+                    case "100%":
                     case "%":
                         return ITEM_TYPE_NUMBER + ":Dimensionless";
                     case "mHz":
@@ -331,14 +332,16 @@ public class MetadataUtils {
                         return ITEM_TYPE_NUMBER + ":Energy";
                     case "m3":
                         return ITEM_TYPE_NUMBER + ":Volume";
+                    case "":
+                        if (dpName.startsWith(DATAPOINT_NAME_OPERATING_VOLTAGE)) {
+                            return ITEM_TYPE_NUMBER + ":ElectricPotential";
+                        }
                     case "s":
                     case "min":
                     case "minutes":
                     case "day":
                     case "month":
                     case "year":
-                    case "100%":
-                    case "":
                     default:
                         return ITEM_TYPE_NUMBER;
                 }

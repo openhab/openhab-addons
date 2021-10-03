@@ -63,7 +63,7 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Auto\",\"1\"\u003d\"Silent\",\"2\"\u003d\"Normal\",\"3\"\u003d\"Maximum\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Silent\",\"2\"\u003d\"Normal\",\"3\"\u003d\"Maximum\"]`"
 			},
 			{
 				"property": "fault",
@@ -178,7 +178,7 @@
 					"Control",
 					"Light"
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Dark\",\"1\"\u003d\"Dimmed\",\"2\"\u003d\"Brightest\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Dark\",\"1\"\u003d\"Dimmed\",\"2\"\u003d\"Brightest\"]`"
 			},
 			{
 				"property": "buzzer",
@@ -282,7 +282,7 @@
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"stateDescription": {
 					"minimum": -40,
 					"maximum": 125,
@@ -340,7 +340,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"none\",\"1\"\u003d\"led\",\"2\"\u003d\"power\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"none\",\"1\"\u003d\"led\",\"2\"\u003d\"power\"]`"
 			},
 			{
 				"property": "clean",

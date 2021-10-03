@@ -80,6 +80,7 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
             ScheduledFuture<?> prevFuture = updateChannelsFutureRef.get();
@@ -94,6 +95,7 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
                     logger.trace("REFRESH received. Delaying by {} ms to avoid throttle excessive REFRESH",
                             delayRemainingMillis);
                 }
+                // Compare by reference to check if the future changed
                 if (prevFuture == newFuture) {
                     logger.trace("REFRESH received. Previous refresh ongoing, will wait for it to complete in {} ms",
                             lastRefreshMillis + REFRESH_THROTTLE_MILLIS - System.currentTimeMillis());
@@ -163,18 +165,13 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
         if (data.values.length < 2) {
             throw new IllegalStateException("Excepted at least two data items");
         }
-        if (data.values[0] == null) {
-            return -1;
-        }
-        for (int i = 1; i < data.values.length; i++) {
-            if (data.values[i] == null) {
-                return i - 1;
+        for (int i = data.values.length - 1; i >= 0; i--) {
+            if (data.values[i] != null) {
+                return i;
             }
         }
-        if (data.values[data.values.length - 1] == null) {
-            return -1;
-        }
-        return data.values.length - 1;
+        // if we have reached here, it means that array was full of nulls
+        return -1;
     }
 
     protected static long floorToEvenMinutes(long epochSeconds, int roundMinutes) {

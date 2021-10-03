@@ -19,8 +19,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureDoorWindowsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureDoorWindowsDTO.DoorWindow;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -64,7 +66,7 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler<Verisur
             getThing().getChannels().stream().map(Channel::getUID)
                     .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
                     .forEach(channelUID -> {
-                        State state = getValue(channelUID.getId(), doorWindow);
+                        State state = getValue(channelUID.getId(), doorWindow, doorWindowJSON);
                         updateState(channelUID, state);
 
                     });
@@ -75,13 +77,22 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler<Verisur
         }
     }
 
-    public State getValue(String channelId, DoorWindow doorWindow) {
+    public State getValue(String channelId, DoorWindow doorWindow, VerisureDoorWindowsDTO doorWindowJSON) {
         switch (channelId) {
             case CHANNEL_STATE:
                 return "OPEN".equals(doorWindow.getState()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             case CHANNEL_LOCATION:
                 String location = doorWindow.getDevice().getArea();
                 return location != null ? new StringType(location) : UnDefType.UNDEF;
+            case CHANNEL_BATTERY_STATUS:
+                VerisureBatteryStatusDTO batteryStatus = doorWindowJSON.getBatteryStatus();
+                if (batteryStatus != null) {
+                    String status = batteryStatus.getStatus();
+                    if (status != null && status.equals("CRITICAL")) {
+                        return OnOffType.from(true);
+                    }
+                }
+                return OnOffType.from(false);
         }
         return UnDefType.UNDEF;
     }

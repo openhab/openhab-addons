@@ -76,7 +76,7 @@ public class LeapMessageParser {
         logger.trace("Received message: {}", msg);
 
         try {
-            JsonObject message = (JsonObject) new JsonParser().parse(msg);
+            JsonObject message = (JsonObject) JsonParser.parseString(msg);
 
             if (!message.has("CommuniqueType")) {
                 logger.debug("No CommuniqueType found in message: {}", msg);

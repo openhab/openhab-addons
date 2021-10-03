@@ -1,0 +1,38 @@
+{
+  "eventId": "053a5f98-8c9d-426e-acf1-6b8660558832",
+  "timestamp": "2019-01-01T00:00:01Z",
+  "resourceUpdate": {
+    "name": "enterprises/project-id/devices/device-id",
+    "events": {
+      "sdm.devices.events.CameraMotion.Motion": {
+        "eventSessionId": "ESI1",
+        "eventId": "EID1"
+      },
+      "sdm.devices.events.CameraPerson.Person": {
+        "eventSessionId": "ESI2",
+        "eventId": "EID2"
+      },
+      "sdm.devices.events.CameraSound.Sound" : {
+        "eventSessionId" : "ESI3",
+        "eventId" : "EID3"
+      },
+      "sdm.devices.events.DoorbellChime.Chime" : {
+        "eventSessionId" : "ESI4",
+        "eventId" : "EID4"
+      }
+    },
+    "traits": {
+      "sdm.devices.traits.Temperature": {
+        "ambientTemperatureCelsius": 19.73
+      },
+      "sdm.devices.traits.ThermostatHvac": {
+        "status": "OFF"
+      },
+      "sdm.devices.traits.ThermostatTemperatureSetpoint": {
+        "heatCelsius": 14.92249
+      }
+    }
+  },
+  "userId": "AVPHwEuBfnPOnTqzVFT4IONX2Qqhu9EJ4ubO-bNnQ-yi",
+  "resourceGroup": ["enterprises/project-id/devices/device-id"]
+}

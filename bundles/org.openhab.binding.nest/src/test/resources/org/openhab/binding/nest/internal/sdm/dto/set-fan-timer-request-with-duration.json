@@ -1,0 +1,7 @@
+{
+  "command": "sdm.devices.commands.Fan.SetTimer",
+  "params": {
+    "timerMode": "ON",
+    "duration": "3600s"
+  }
+}

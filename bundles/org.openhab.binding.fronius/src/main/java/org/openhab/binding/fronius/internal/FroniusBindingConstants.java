@@ -21,6 +21,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Thomas Rokohl - Initial contribution
  * @author Peter Schraffl - Added device status and error status channels
+ * @author Thomas Kordelle - Added inverter power, battery state of charge and PV solar yield
  */
 @NonNullByDefault
 public class FroniusBindingConstants {
@@ -33,38 +34,53 @@ public class FroniusBindingConstants {
     public static final ThingTypeUID THING_TYPE_METER = new ThingTypeUID(BINDING_ID, "meter");
 
     // List of all Channel ids
-    public static final String InverterDataChannelDayEnergy = "inverterdatachanneldayenergy";
-    public static final String InverterDataChannelPac = "inverterdatachannelpac";
-    public static final String InverterDataChannelTotal = "inverterdatachanneltotal";
-    public static final String InverterDataChannelYear = "inverterdatachannelyear";
-    public static final String InverterDataChannelFac = "inverterdatachannelfac";
-    public static final String InverterDataChannelIac = "inverterdatachanneliac";
-    public static final String InverterDataChannelIdc = "inverterdatachannelidc";
-    public static final String InverterDataChannelUac = "inverterdatachanneluac";
-    public static final String InverterDataChannelUdc = "inverterdatachanneludc";
-    public static final String InverterDataChannelDeviceStatusErrorCode = "inverterdatadevicestatuserrorcode";
-    public static final String InverterDataChannelDeviceStatusStatusCode = "inverterdatadevicestatusstatuscode";
-    public static final String PowerFlowpGrid = "powerflowchannelpgrid";
-    public static final String PowerFlowpLoad = "powerflowchannelpload";
-    public static final String PowerFlowpAkku = "powerflowchannelpakku";
-    public static final String MeterModel = "model";
-    public static final String MeterSerial = "serial";
-    public static final String MeterEnable = "enable";
-    public static final String MeterLocation = "location";
-    public static final String MeterCurrentAcPhase1 = "currentacphase1";
-    public static final String MeterCurrentAcPhase2 = "currentacphase2";
-    public static final String MeterCurrentAcPhase3 = "currentacphase3";
-    public static final String MeterVoltageAcPhase1 = "voltageacphase1";
-    public static final String MeterVoltageAcPhase2 = "voltageacphase2";
-    public static final String MeterVoltageAcPhase3 = "voltageacphase3";
-    public static final String MeterPowerPhase1 = "powerrealphase1";
-    public static final String MeterPowerPhase2 = "powerrealphase2";
-    public static final String MeterPowerPhase3 = "powerrealphase3";
-    public static final String MeterPowerFactorPhase1 = "powerfactorphase1";
-    public static final String MeterPowerFactorPhase2 = "powerfactorphase2";
-    public static final String MeterPowerFactorPhase3 = "powerfactorphase3";
-    public static final String MeterEnergyRealSumConsumed = "energyrealsumconsumed";
-    public static final String MeterEnergyRealSumProduced = "energyrealsumproduced";
+    public static final String INVERTER_DATA_CHANNEL_DAY_ENERGY = "inverterdatachanneldayenergy";
+    public static final String INVERTER_DATA_CHANNEL_PAC = "inverterdatachannelpac";
+    public static final String INVERTER_DATA_CHANNEL_TOTAL = "inverterdatachanneltotal";
+    public static final String INVERTER_DATA_CHANNEL_YEAR = "inverterdatachannelyear";
+    public static final String INVERTER_DATA_CHANNEL_FAC = "inverterdatachannelfac";
+    public static final String INVERTER_DATA_CHANNEL_IAC = "inverterdatachanneliac";
+    public static final String INVERTER_DATA_CHANNEL_IDC = "inverterdatachannelidc";
+    public static final String INVERTER_DATA_CHANNEL_UAC = "inverterdatachanneluac";
+    public static final String INVERTER_DATA_CHANNEL_UDC = "inverterdatachanneludc";
+    public static final String INVERTER_DATA_CHANNEL_DEVICE_STATUS_ERROR_CODE = "inverterdatadevicestatuserrorcode";
+    public static final String INVERTER_DATA_CHANNEL_DEVICE_STATUS_STATUS_CODE = "inverterdatadevicestatusstatuscode";
+    public static final String POWER_FLOW_P_GRID = "powerflowchannelpgrid";
+    public static final String POWER_FLOW_P_LOAD = "powerflowchannelpload";
+    public static final String POWER_FLOW_P_AKKU = "powerflowchannelpakku";
+    public static final String POWER_FLOW_P_PV = "powerflowchannelppv";
+    public static final String METER_MODEL = "model";
+    public static final String METER_SERIAL = "serial";
+    public static final String METER_ENABLE = "enable";
+    public static final String METER_LOCATION = "location";
+    public static final String METER_CURRENT_AC_PHASE_1 = "currentacphase1";
+    public static final String METER_CURRENT_AC_PHASE_2 = "currentacphase2";
+    public static final String METER_CURRENT_AC_PHASE_3 = "currentacphase3";
+    public static final String METER_VOLTAGE_AC_PHASE_1 = "voltageacphase1";
+    public static final String METER_VOLTAGE_AC_PHASE_2 = "voltageacphase2";
+    public static final String METER_VOLTAGE_AC_PHASE_3 = "voltageacphase3";
+    public static final String METER_POWER_PHASE_1 = "powerrealphase1";
+    public static final String METER_POWER_PHASE_2 = "powerrealphase2";
+    public static final String METER_POWER_PHASE_3 = "powerrealphase3";
+    public static final String METER_POWER_FACTOR_PHASE_1 = "powerfactorphase1";
+    public static final String METER_POWER_FACTOR_PHASE_2 = "powerfactorphase2";
+    public static final String METER_POWER_FACTOR_PHASE_3 = "powerfactorphase3";
+    public static final String METER_ENERGY_REAL_SUM_CONSUMED = "energyrealsumconsumed";
+    public static final String METER_ENERGY_REAL_SUM_PRODUCED = "energyrealsumproduced";
+
+    /*
+     * part of POWERFLOW_REALTIME_DATA using Symo Gen24
+     * "Inverters" : {
+     * "1" : {
+     * "Battery_Mode" : "normal",
+     * "DT" : 1,
+     * "P" : 356,
+     * "SOC" : 95.199996948242188
+     * }
+     * },
+     */
+    public static final String POWER_FLOW_INVERTER_1_POWER = "powerflowinverter1power";
+    public static final String POWER_FLOW_INVERTER_1_SOC = "powerflowinverter1soc";
 
     // List of all Urls
     public static final String INVERTER_REALTIME_DATA_URL = "http://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CommonInverterData";

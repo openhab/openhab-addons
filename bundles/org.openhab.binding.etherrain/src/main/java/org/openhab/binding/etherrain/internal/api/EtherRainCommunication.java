@@ -191,8 +191,12 @@ public class EtherRainCommunication {
                 logger.warn("Etherrain return status other than HTTP_OK : {}", response.getStatus());
                 return Collections.emptyList();
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException e) {
             logger.warn("Could not connect to Etherrain with exception: {}", e.getMessage());
+            return Collections.emptyList();
+        } catch (InterruptedException e) {
+            logger.warn("Connect to Etherrain interrupted: {}", e.getMessage());
+            Thread.currentThread().interrupt();
             return Collections.emptyList();
         }
 

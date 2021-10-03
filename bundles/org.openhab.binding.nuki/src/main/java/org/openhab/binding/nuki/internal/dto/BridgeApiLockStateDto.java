@@ -19,45 +19,8 @@ package org.openhab.binding.nuki.internal.dto;
  * @author Markus Katter - Initial contribution
  * @contributer Christian Hoefler - Door sensor integration
  */
-public class BridgeApiLockStateDto {
-
-    private int state;
-    private String stateName;
-    private boolean batteryCritical;
-    private int doorsensorState;
+public class BridgeApiLockStateDto extends BridgeApiDeviceStateDto {
     private boolean success;
-
-    public int getState() {
-        return state;
-    }
-
-    public void setState(int state) {
-        this.state = state;
-    }
-
-    public String getStateName() {
-        return stateName;
-    }
-
-    public void setStateName(String stateName) {
-        this.stateName = stateName;
-    }
-
-    public boolean isBatteryCritical() {
-        return batteryCritical;
-    }
-
-    public void setBatteryCritical(boolean batteryCritical) {
-        this.batteryCritical = batteryCritical;
-    }
-
-    public int getDoorsensorState() {
-        return doorsensorState;
-    }
-
-    public void setDoorsensorState(int doorsensorState) {
-        this.doorsensorState = doorsensorState;
-    }
 
     public boolean isSuccess() {
         return success;

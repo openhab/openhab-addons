@@ -35,11 +35,12 @@
 			<channel id="plate6time" typeId="time"/>
 		</channels>
 
+		<representation-property>uid</representation-property>
+
 		<config-description>
-			<parameter name="uid" type="text">
+			<parameter name="uid" type="text" required="true">
 				<label>ID</label>
 				<description>The identifier identifies one certain appliance on the ZigBee network.</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 

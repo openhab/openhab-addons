@@ -37,6 +37,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDevDescrTypeAdapter;
@@ -80,7 +81,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private @Nullable CoapClient statusClient;
     private Request reqDescription = new Request(Code.GET, Type.CON);
     private Request reqStatus = new Request(Code.GET, Type.CON);
-    private boolean discovering = false;
+    private boolean updatesRequested = false;
     private int coiotPort = COIOT_PORT;
 
     private long coiotMessages = 0;
@@ -90,11 +91,13 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private Map<String, CoIotDescrBlk> blkMap = new LinkedHashMap<>();
     private Map<String, CoIotDescrSen> sensorMap = new LinkedHashMap<>();
     private ShellyDeviceProfile profile;
+    private ShellyHttpApi api;
 
     public ShellyCoapHandler(ShellyBaseHandler thingHandler, ShellyCoapServer coapServer) {
         this.thingHandler = thingHandler;
         this.thingName = thingHandler.thingName;
         this.profile = thingHandler.getProfile();
+        this.api = thingHandler.getApi();
         this.coapServer = coapServer;
         this.coiot = new ShellyCoIoTVersion2(thingName, thingHandler, blkMap, sensorMap); // Default: V2
 
@@ -130,13 +133,15 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                     .setTimeout((long) SHELLY_API_TIMEOUT_MS).useNONs().setEndpoint(coapServer.getEndpoint());
             @Nullable
             Endpoint endpoint = null;
-            if (statusClient != null) {
-                endpoint = statusClient.getEndpoint();
+            CoapClient client = statusClient;
+            if (client != null) {
+                endpoint = client.getEndpoint();
             }
             if ((endpoint == null) || !endpoint.isStarted()) {
                 logger.warn("{}: Unable to initialize CoAP access (network error)", thingName);
                 throw new ShellyApiException("Network initialization failed");
             }
+
             discover();
         } catch (SocketException e) {
             logger.warn("{}: Unable to initialize CoAP access (socket exception) - {}", thingName, e.getMessage());
@@ -283,10 +288,10 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 coiotErrors++;
             }
 
-            if (!discovering) {
+            if (!updatesRequested) {
                 // Observe Status Updates
                 reqStatus = sendRequest(reqStatus, config.deviceIp, COLOIT_URI_DEVSTATUS, Type.NON);
-                discovering = true;
+                updatesRequested = true;
             }
         } catch (JsonSyntaxException | IllegalArgumentException | NullPointerException e) {
             logger.debug("{}: Unable to process CoIoT Message for payload={}", thingName, payload, e);
@@ -538,6 +543,21 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     }
 
     private void discover() {
+        if (coiot.getVersion() >= 2) {
+            {
+                try {
+                    // Try to device description using http request (FW 1.10+)
+                    String payload = api.getCoIoTDescription();
+                    if (!payload.isEmpty()) {
+                        logger.debug("{}: Using CoAP device description from successful HTTP /cit/d", thingName);
+                        handleDeviceDescription(thingName, payload);
+                        return;
+                    }
+                } catch (ShellyApiException e) {
+                    // ignore if not supported by device
+                }
+            }
+        }
         reqDescription = sendRequest(reqDescription, config.deviceIp, COLOIT_URI_DEVDESC, Type.CON);
     }
 

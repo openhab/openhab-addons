@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.kaleidescape.internal.communication;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import static org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants.*;
+
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -23,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class KaleidescapeFormatter {
     public static String formatString(String input) {
-        if (!input.equals("")) {
+        if (!EMPTY.equals(input)) {
             // convert || back to :
             input = input.replace("||", ":");
 
@@ -48,8 +50,8 @@ public class KaleidescapeFormatter {
                 // I.e. characters with accent, umlaut, etc., they need to be restored to the correct character
                 // example: Noel (with umlaut 'o') comes in as N\d246el
                 input = input.replaceAll("(?i)\\\\d([0-9]{3})", "\\&#$1;"); // first convert to html escaped codes
-                // then convert with unescapeHtml, not sure how to do this without the Apache libraries :(
-                return StringEscapeUtils.unescapeHtml(input);
+                // then convert with unescapeHtml4, not sure how to do this without the Apache libraries :(
+                return StringEscapeUtils.unescapeHtml4(input);
             }
         }
         return input;

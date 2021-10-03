@@ -17,9 +17,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.openhab.binding.network.internal.WakeOnLanPacketSender.*;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.openhab.core.util.HexUtils;
@@ -29,7 +32,7 @@ import org.openhab.core.util.HexUtils;
  *
  * @author Wouter Born - Initial contribution
  */
-@Timeout(value = 10, unit = TimeUnit.SECONDS)
+@Timeout(value = 10)
 public class WakeOnLanPacketSenderTest {
 
     private void assertValidMagicPacket(byte[] macBytes, byte[] packet) {
@@ -77,6 +80,49 @@ public class WakeOnLanPacketSenderTest {
         sender.sendPacket();
 
         assertValidMagicPacket(HexUtils.hexToBytes("6f70656e4841"), actualPacket);
+    }
+
+    @Test
+    public void sendWithHostnameAndPort() throws IOException, InterruptedException {
+        sendWOLTest("127.0.0.1", 4444);
+    }
+
+    @Test
+    public void sendWithHostnameAndPortNull() throws IOException, InterruptedException {
+        sendWOLTest("127.0.0.1", null);
+    }
+
+    @Test
+    public void sendWithHostnameNullAndPortNull() throws IOException, InterruptedException {
+        sendWOLTest(null, null);
+    }
+
+    @Test
+    public void sendWithHostnameNull() throws IOException, InterruptedException {
+        sendWOLTest(null, 4444);
+    }
+
+    private void sendWOLTest(String hostname, Integer port) throws InterruptedException, IOException {
+        DatagramSocket socket = new DatagramSocket(4444);
+
+        byte[] buf = new byte[256];
+        DatagramPacket datagramPacket = new DatagramPacket(buf, buf.length);
+
+        while (socket.isClosed()) {
+            Thread.sleep(100);
+        }
+
+        WakeOnLanPacketSender sender = new WakeOnLanPacketSender("6f70656e4841", hostname, port);
+        sender.sendPacket();
+
+        // This Test is only applicable for IP Requests
+        if (hostname != null && port != null) {
+            socket.receive(datagramPacket);
+        }
+
+        socket.close();
+
+        Assertions.assertTrue(datagramPacket.getData().length > 0);
     }
 
     @Test

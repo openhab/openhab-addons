@@ -1,6 +1,7 @@
 # Shelly Binding
 
 This Binding integrates [Shelly devices](https://shelly.cloud) devloped by Allterco.
+
 ![](https://shop.shelly.cloud/image/cache/catalog/shelly_1/s1_x1-80x80.jpg)  ![](https://shop.shelly.cloud/image/cache/catalog/shelly_dimmer2/shelly_dimmer2_x1-80x80.jpg)  ![](https://shop.shelly.cloud/image/cache/catalog/shelly_vintage/shelly_vintage_A60-80x80.jpg)   ![](https://shop.shelly.cloud/image/cache/catalog/shelly_plug_s/s_plug_s_x1-80x80.jpg)   ![](https://shop.shelly.cloud/image/cache/catalog/shelly_button1/shelly_button1_x1-80x80.jpg)   ![](https://shop.shelly.cloud/image/cache/catalog/shelly_gas/shelly_gas_eu-80x80.jpg)   ![](https://shop.shelly.cloud/image/cache/catalog/shelly_ht/s_ht_x1-80x80.jpg)
 
 Allterco provides a rich set of smart home devices. All of them are WiFi enabled (2,4GHz, IPv4 only) and provide a documented API. 
@@ -14,6 +15,15 @@ Initial setup and device configuration has to be performed using the Shelly Apps
 The binding gets in sync with the next status refresh.
 
 Refer to [Advanced Users](doc/AdvancedUsers.md) for more information on openHAB Shelly integration, e.g. firmware update, network communication or log filtering.
+
+Also check out the [Shelly Manager](doc/ShellyManager.md), which
+
+- provides detailed information on your Shellys
+- helps to diagnose WiFi issues or device instabilities
+- includes some common actions and 
+- simplifies firmware updates.
+
+[Shelly Manager](doc/ShellyManager.md) could also act as a firmware upgrade proxy - the device doesn't need to connect directly to the Internet, instead openHAB services as a download proxy, which improves device security.
 
 ## Supported Devices
 
@@ -197,6 +207,7 @@ Every device has a channel group `device` with the following channels:
 |          |internalTemp       |Number  |yes      |Internal device temperature (when provided by the device)                        |
 |          |selfTest           |String  |yes      |Result from device self-test (pending/not_completed/running/completed/unknown)   |
 |          |alarm              |Trigger |yes      |Self-Test result not_completed/completed/running/pending                         |
+|          |supplyVoltage      |Number  |yes      |Shelly 1PM, 1L, 2.5: Supply voltage (fixed or measured depending on device)      |
 |          |accumulatedWatts   |Number  |yes      |Accumulated power in W of the device (including all meters)                      |
 |          |accumulatedTotal   |Number  |yes      |Accumulated total power in kwh of the device (including all meters)              |
 |          |accumulatedReturned|Number  |yes      |Accumulated returned power in kwh of the device (including all meters)           |
@@ -256,15 +267,20 @@ The following trigger types are sent:
 
 |Event Type         |Description                                                                                                    |
 |-------------------|---------------------------------------------------------------------------------------------------------------|
-|SHORT_PRESSED      |The button was pressed once for a short time                                                                   |
-|DOUBLE_PRESSED     |The button was pressed twice with short delay                                                                  |
-|TRIPLE_PRESSED     |The button was pressed three times with short delay                                                            |
-|LONG_PRESSED       |The button was pressed for a longer time                                                                       |
-|SHORT_LONG_PRESSED |A short followed by a long button push                                                                         |
-|LONG_SHORT_PRESSED |A long followed by a short button push                                                                         |
+|SHORT_PRESSED      |The button was pressed once for a short time (lastEvent=S)                                                     |
+|DOUBLE_PRESSED     |The button was pressed twice with short delay (lastEvent=SS)                                                   |
+|TRIPLE_PRESSED     |The button was pressed three times with short delay (lastEvent=SSS)                                            |
+|LONG_PRESSED       |The button was pressed for a longer time (lastEvent=L)                                                         |
+|SHORT_LONG_PRESSED |A short followed by a long button push (lastEvent=SL)                                                          |
+|LONG_SHORT_PRESSED |A long followed by a short button push (lastEvent=LS)                                                          |
  
 Check the channel definitions for the various devices to see if the device supports those events.
 You could use the Shelly App to set the timing for those events. 
+
+If you want to use those events triggering a rule:
+
+- If a physical switch is connected to the Shelly use the input channel(`input` or `input1`/`input2`) to trigger a rule
+- For a momentary button use the `button` trigger channel as trigger, channels `lastEvent` and `eventCount` will provide details on the event 
 
 ### Alarms
 
@@ -296,7 +312,7 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 |BATTERY     |Device reported an update to the battery status.                                                                 |
 |TEMP_UNDER  |Below "temperature under" threshold                                                                              |
 |TEMP_OVER   |Above "temperature over" threshold                                                                               |
-
+|VIBRATION   |A vibration/tamper was detected (DW2 only)                                                                       |
 
 Refer to section [Full Example:shelly.rules](#shelly-rules) for examples how to catch alarm triggers in openHAB rules
 
@@ -386,12 +402,14 @@ In this case the is no real measurement based on power consumption, but the Shel
 |          |returnedKWH  |Number   |yes      |Total returned energy, kwh                                                       |
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
+|          |powerFactor  |Number   |yes      |Power Factor in percent                                                          |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 |meter2    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |returnedKWH  |Number   |yes      |Total returned energy, kwh                                                       |
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
+|          |powerFactor  |Number   |yes      |Power Factor in percent                                                          |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 ### Shelly 3EM (thing-type: shellyem3)
@@ -416,7 +434,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |current      |Number   |yes      |Current in A                                                                     |
-|          |powerFactor  |Number   |yes      |Power Factor                                                                     |
+|          |powerFactor  |Number   |yes      |Power Factor in percent                                                          |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 |meter2    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
@@ -424,7 +442,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |current      |Number   |yes      |Current in A                                                                     |
-|          |powerFactor  |Number   |yes      |Power Factor                                                                     |
+|          |powerFactor  |Number   |yes      |Power Factor in percent                                                          |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 |meter3    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
@@ -432,7 +450,7 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |current      |Number   |yes      |Current in A                                                                     |
-|          |powerFactor  |Number   |yes      |Power Factor                                                                     |
+|          |powerFactor  |Number   |yes      |Power Factor in percent                                                          |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 
@@ -790,8 +808,14 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 |          |lastError    |String   |yes      |Last device error.                                                     |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
+|device    |alarm        |Trigger  |yes      |Will receive trigger VIBRATION if DW2 detects vibration                |
 
 ### Shelly Motion (thing-type: shellymotion)
+
+Important: The Shelly Motion does only support CoIoT Unicast, which means you need to set the CoIoT peer address.
+
+- Use device WebUI, open COIOT settings, make sure CoIoT is enabled and enter the openHAB IP address or
+- Use [Shelly Manager](doc/ShellyManager.md, select Action 'Set CoIoT peer' and the Manager will sets the openHAB IP address as peer address
 
 |Group     |Channel        |Type     |read-only|Description                                                          |
 |----------|---------------|---------|---------|---------------------------------------------------------------------|
@@ -801,9 +825,16 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 |          |illumination   |String   |yes      |Current illumination: dark/twilight/bright                           |
 |          |vibration      |Switch   |yes      |ON: Vibration detected                                               |
 |          |charger        |Switch   |yes      |ON: USB charging cable is connected external power supply activated. |
+|          |motionActive   |Switch   |yes      |ON: Motion detection is currently active                             |
+|          |sensorSleepTime|Number   |no       |Specifies the number of sec the sensor should not report events      ]
 |          |lastUpdate     |DateTime |yes      |Timestamp of the last update (any sensor value changed)              |
 |battery   |batteryLevel   |Number   |yes      |Battery Level in %                                                   |
 |          |lowBattery     |Switch   |yes      |Low battery alert (< 20%)                                            |
+
+Use case for the 'sensorSleepTime': 
+You have a Motion controlling your light. 
+You switch off the light and want to leave the room, but the motion sensor immediately switches light back on.
+Using 'sensorSleepTime' you could suppress motion events while leaving the room, e.g. for 5sec and the light doesn's switch on. 
 
 ### Shelly Button 1 (thing-type: shellybutton1)
 
@@ -1065,8 +1096,8 @@ when
     Channel "shelly:shelly25-roller:XXXXXX:device#alarm"    triggered
 then
     if (receivedEvent !== null) { // A (channel) event triggered the rule
-        eventSource = receivedEvent.getChannel().asString 
-        eventType = receivedEvent.getEvent()
+        eventSource = triggeredChannel
+        eventType = receivedEvent
         ...
     } 
 end

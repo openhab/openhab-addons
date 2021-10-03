@@ -64,6 +64,9 @@ public class ShellyComponents {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
                     toQuantityType(getDouble(status.temperature), DIGITS_NONE, SIUnits.CELSIUS));
         }
+        thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SLEEPTIME,
+                toQuantityType(getInteger(status.sleepTime), Units.SECOND));
+
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE, getOnOff(status.hasUpdate));
 
         return false; // device status never triggers update
@@ -157,14 +160,10 @@ public class ShellyComponents {
                                     toQuantityType(getDouble(emeter.reactive), DIGITS_WATT, Units.WATT));
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_VOLTAGE,
                                     toQuantityType(getDouble(emeter.voltage), DIGITS_VOLT, Units.VOLT));
-
-                            if (emeter.current != null) {
-                                // Shelly
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_CURRENT,
-                                        toQuantityType(getDouble(emeter.current), DIGITS_VOLT, Units.AMPERE));
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
-                                        getDecimal(emeter.pf));
-                            }
+                            updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_CURRENT,
+                                    toQuantityType(getDouble(emeter.current), DIGITS_VOLT, Units.AMPERE));
+                            updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
+                                    toQuantityType(computePF(emeter), Units.PERCENT));
 
                             accumulatedWatts += getDouble(emeter.power);
                             accumulatedTotal += getDouble(emeter.total) / 1000;
@@ -212,7 +211,7 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
                         toQuantityType(getDouble(totalWatts), DIGITS_KWH, Units.KILOWATT_HOUR));
 
-                if (updated) {
+                if (updated && timestamp > 0) {
                     thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE,
                             getTimestamp(getString(profile.settings.timezone), timestamp));
                 }
@@ -231,6 +230,19 @@ public class ShellyComponents {
         return updated;
     }
 
+    private static Double computePF(ShellySettingsEMeter emeter) {
+        if (emeter.pf != null) { // EM3
+            return emeter.pf; // take device value
+        }
+
+        // EM: compute from provided values
+        if (Math.abs(emeter.power) + Math.abs(emeter.reactive) > 1.5) {
+            double pf = emeter.power / Math.sqrt(emeter.power * emeter.power + emeter.reactive * emeter.reactive);
+            return pf;
+        }
+        return 0.0;
+    }
+
     /**
      * Update Sensor channel
      *
@@ -247,7 +259,6 @@ public class ShellyComponents {
         boolean updated = false;
         if (profile.isSensor || profile.hasBattery) {
             ShellyStatusSensor sdata = thingHandler.api.getSensorStatus();
-
             if (!thingHandler.areChannelsCreated()) {
                 thingHandler.logger.trace("{}: Create missing sensor channel(s)", thingHandler.thingName);
                 thingHandler.updateChannelDefinitions(
@@ -261,7 +272,6 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
                         getString(sdata.sensor.state).equalsIgnoreCase(SHELLY_API_DWSTATE_OPEN) ? OpenClosedType.OPEN
                                 : OpenClosedType.CLOSED);
-                String sensorError = getString(sdata.sensorError);
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR,
                         getStringType(sdata.sensorError));
                 if (changed) {
@@ -299,8 +309,6 @@ public class ShellyComponents {
             if (sdata.accel != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT,
                         toQuantityType(getDouble(sdata.accel.tilt.doubleValue()), DIGITS_NONE, Units.DEGREE_ANGLE));
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
-                        getInteger(sdata.accel.vibration) == 1 ? OnOffType.ON : OnOffType.OFF);
             }
             if (sdata.flood != null) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
@@ -325,7 +333,7 @@ public class ShellyComponents {
             if ((sdata.adcs != null) && (sdata.adcs.size() > 0)) {
                 ShellyADC adc = sdata.adcs.get(0);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE,
-                        getDecimal(adc.voltage));
+                        toQuantityType(getDouble(adc.voltage), 2, Units.VOLT));
             }
 
             boolean charger = (getInteger(profile.settings.externalPower) == 1) || getBool(sdata.charger);
@@ -355,6 +363,8 @@ public class ShellyComponents {
                         getOnOff(sdata.motion));
             }
             if (sdata.sensor != null) { // Shelly Motion
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_ACT,
+                        getOnOff(sdata.sensor.motionActive));
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
                         getOnOff(sdata.sensor.motion));
                 long timestamp = getLong(sdata.sensor.motionTimestamp);
@@ -362,8 +372,6 @@ public class ShellyComponents {
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION_TS,
                             getTimestamp(getString(profile.settings.timezone), timestamp));
                 }
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
-                        getOnOff(sdata.sensor.vibration));
             }
 
             updated |= thingHandler.updateInputs(status);

@@ -168,7 +168,7 @@ public class HDPowerViewJUnitTests {
                 @Nullable
                 List<ShadeData> shadesData = shadesX.shadeData;
                 assertNotNull(shadesData);
-                assertTrue(shadesData.size() > 0);
+                assertTrue(!shadesData.isEmpty());
                 @Nullable
                 ShadeData shadeData;
                 shadeData = shadesData.get(0);
@@ -198,7 +198,7 @@ public class HDPowerViewJUnitTests {
                 @Nullable
                 List<Scene> scenesData = scenes.sceneData;
                 assertNotNull(scenesData);
-                assertTrue(scenesData.size() > 0);
+                assertTrue(!scenesData.isEmpty());
                 @Nullable
                 Scene sceneZero = scenesData.get(0);
                 assertNotNull(sceneZero);
@@ -218,7 +218,7 @@ public class HDPowerViewJUnitTests {
             Shade shade = null;
             try {
                 assertNotEquals(0, shadeId);
-                shade = webTargets.refreshShade(shadeId);
+                shade = webTargets.refreshShadePosition(shadeId);
                 assertNotNull(shade);
             } catch (HubProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
@@ -355,6 +355,10 @@ public class HDPowerViewJUnitTests {
 
             pos = shadePos.getState(PRIMARY_ACTUATOR, VANE_COORDS);
             assertEquals(UnDefType.class, pos.getClass());
+
+            assertEquals(3, shadeData.batteryStatus);
+
+            assertEquals(4, shadeData.signalStrength);
         } catch (JsonParseException e) {
             fail(e.getMessage());
         }

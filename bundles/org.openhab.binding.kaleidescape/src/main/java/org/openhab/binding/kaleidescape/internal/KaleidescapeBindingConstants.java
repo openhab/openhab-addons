@@ -166,6 +166,7 @@ public class KaleidescapeBindingConstants {
     public static final String GET_CONTENT_COLOR = "GET_CONTENT_COLOR";
     public static final String SET_STATUS_CUE_PERIOD_1 = "SET_STATUS_CUE_PERIOD:1";
     public static final String GET_TIME = "GET_TIME";
+    public static final String GET_CONTENT_DETAILS = "GET_CONTENT_DETAILS:";
 
     public static final String LEAVE_STANDBY = "LEAVE_STANDBY";
     public static final String ENTER_STANDBY = "ENTER_STANDBY";

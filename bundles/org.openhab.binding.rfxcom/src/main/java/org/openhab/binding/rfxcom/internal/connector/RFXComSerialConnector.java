@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.rfxcom.internal.connector;
 
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.MAX_RFXCOM_MESSAGE_LEN;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.TooManyListenersException;
@@ -63,7 +65,7 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
 
         serialPort = commPort;
         serialPort.setSerialPortParams(38400, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-        serialPort.enableReceiveThreshold(1);
+        serialPort.enableReceiveThreshold(MAX_RFXCOM_MESSAGE_LEN);
         serialPort.enableReceiveTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
 
         in = serialPort.getInputStream();

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.miio.internal.basic;
 
+import java.awt.Color;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -67,6 +68,23 @@ public class ActionConditions {
             LOGGER.debug("Could not parse brightness. Value '{}' is not an int", value);
         }
         return value;
+    }
+
+    /**
+     * Convert HSV value to RGB+Brightness
+     *
+     * @param value
+     * @return RGB value + brightness as first byte
+     */
+    private static @Nullable JsonElement hsvToBRGB(@Nullable Command command, @Nullable JsonElement value) {
+        if (command != null && command instanceof HSBType) {
+            HSBType hsb = (HSBType) command;
+            Color color = Color.getHSBColor(hsb.getHue().floatValue() / 360, hsb.getSaturation().floatValue() / 100,
+                    hsb.getBrightness().floatValue() / 100);
+            return new JsonPrimitive((hsb.getBrightness().byteValue() << 24) + (color.getRed() << 16)
+                    + (color.getGreen() << 8) + color.getBlue());
+        }
+        return null;
     }
 
     /**
@@ -152,6 +170,8 @@ public class ActionConditions {
                 return firmwareCheck(condition, deviceVariables, value);
             case "BRIGHTNESSEXISTING":
                 return brightnessExists(value);
+            case "HSVTOBRGB":
+                return hsvToBRGB(command, value);
             case "BRIGHTNESSONOFF":
                 return brightness(value);
             case "HSBONLY":

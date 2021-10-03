@@ -10,6 +10,7 @@ As described in the Telegram Bot API (https://core.telegram.org/bots#6-botfather
 
 - On a Telegram client open a chat with BotFather.
 - Send `/newbot` to BotFather and fill in all the needed information. The authentication token that is given will be needed in the next steps.
+- The token is a combination with double point separated parts of numbers and letters e.g.: 158642643:ABCHL_O-MUovQ1NzrDF5R_nqLbFhPPrg9Jps
 
 2. Create the destination chat
 
@@ -17,7 +18,7 @@ As described in the Telegram Bot API (https://core.telegram.org/bots#6-botfather
 
 3. Get the chatID
 
-- Open a browser and invoke `https://api.telegram.org/bot<token>/getUpdates` (where `<token>` is the authentication token previously obtained)
+- Open a browser and invoke `https://api.telegram.org/bot<token>/getUpdates` (where `<token>` is the authentication token previously obtained e.g.:  `https://api.telegram.org/bot158642643:ABCHL_O-MUovQ1NzrDF5R_nqLbFhPPrg9Jps/getUpdates`)
 - Look at the JSON result to find the value of `id`: that's the chatID.
 
 Note that if using a Telegram group chat, the group chatIDs are prefixed with a dash that must be included in the config (e.g. `-22334455`).
@@ -32,15 +33,15 @@ Note bots may work or not at any time so eventually you need to try another one.
 - `https://api.telegram.org/bot<token>/sendMessage?chat_id=<chatId>&text=testing`
 - Your Telegram-bot should send you a message with the text: `testing`
 
-**Notice:** By default your bot will only receive messages that either start with the '/' symbol or mention the bot by username (or if you talk to it directly). 
-However, if you add your bot to a group you must either talk to BotFather and send the command "/setprivacy" and then disable it or you give admin rights to your bot in that group. 
+**Notice:** By default your bot will only receive messages that either start with the '/' symbol or mention the bot by username (or if you talk to it directly).
+However, if you add your bot to a group you must either talk to BotFather and send the command "/setprivacy" and then disable it or you give admin rights to your bot in that group.
 Otherwise you will not be able to receive those messages.
 
 ## Supported Things
 
 **telegramBot** - A Telegram Bot that can send and receive messages.
 
-The Telegram binding supports the following things which originate from the last message sent to the Telegram bot:
+The Telegram binding supports the following state channels which originate from the last message sent to the Telegram bot:
 
 * message text or URL
 * message date
@@ -48,6 +49,8 @@ The Telegram binding supports the following things which originate from the last
 * username of sender
 * chat id (used to identify the chat of the last message)
 * reply id (used to identify an answer from a user of a previously sent message by the binding)
+
+There are also event channels that provide received messages or query callback responses as JSON payloads for easier handling in rules.
 
 Please note that the binding channels cannot be used to send messages.
 In order to send a message, an action must be used instead.
@@ -70,7 +73,7 @@ By default chat ids are bi-directionally, i.e. they can send and receive message
 They can be prefixed with an access modifier:
 
 - `<` restricts the chat to send only, i.e. this chat id can send messages to openHAB, but will never receive a notification.
-- `>` restricts the chat to receive only, i.e. this chat id will receive all notifications, but messages from this chat id will be discarded. 
+- `>` restricts the chat to receive only, i.e. this chat id will receive all notifications, but messages from this chat id will be discarded.
 
 To use the reply function, chat ids need to be bi-directional.
 
@@ -92,7 +95,7 @@ telegram.thing (markdown format):
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", parseMode ="Markdown" ]
 ```
 
-telegram.thing (SOCKS5 proxy server is used): 
+telegram.thing (SOCKS5 proxy server is used):
 
 ```
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyHost="HOST", proxyPort="PORT", proxyType="TYPE" ]
@@ -104,7 +107,7 @@ or HTTP proxy server
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyHost="localhost", proxyPort="8123", proxyType="HTTP" ]
 ```
 
-## Channels
+## State Channels
 
 | Channel Type ID                      | Item Type | Description                                                     |
 |--------------------------------------|-----------|-----------------------------------------------------------------|
@@ -119,7 +122,53 @@ Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyH
 All channels are read-only.
 Either `lastMessageText` or `lastMessageURL` are populated for a given message.
 If the message did contain text, the content is written to `lastMessageText`.
-If the message did contain an audio, photo, video or voice, the URL to retrieve that content can be found in `lastMessageURL`. 
+If the message did contain an audio, photo, video or voice, the URL to retrieve that content can be found in `lastMessageURL`.
+
+## Event Channels
+
+### messageEvent
+
+When a message is received this channel will be triggered with a simplified version of the message data as the `event`, payload encoded as a JSON string.
+The following table shows the possible fields, any `null` values will be missing from the JSON payload.
+
+| Field            | Type   | Description                           |
+|------------------|--------|---------------------------------------|
+| `message_id`     | Long   | Unique message ID in this chat        |
+| `from`           | String | First and/or last name of sender      |
+| `chat_id`        | Long   | Unique chat ID                        |
+| `text`           | String | Message text                          |
+| `animation_url`  | String | URL to download animation from        |
+| `audio_url`      | String | URL to download audio from            |
+| `document_url`   | String | URL to download file from             |
+| `photo_url`      | Array  | Array of URLs to download photos from |
+| `sticker_url`    | String | URL to download sticker from          |
+| `video_url`      | String | URL to download video from            |
+| `video_note_url` | String | URL to download video note from       |
+| `voice_url`      | String | URL to download voice clip from       |
+
+### messageRawEvent
+
+When a message is received this channel will be triggered with the raw message data as the `event` payload, encoded as a JSON string.
+See the [`Message` class for details](https://github.com/pengrad/java-telegram-bot-api/blob/4.9.0/library/src/main/java/com/pengrad/telegrambot/model/Message.java)
+
+### callbackEvent
+
+When a Callback Query response is received this channel will be triggered with a simplified version of the callback data as the `event`, payload encoded as a JSON string.
+The following table shows the possible fields, any `null` values will be missing from the JSON payload.
+
+| Field         | Type   | Description                                                |
+|---------------|--------|------------------------------------------------------------|
+| `message_id`  | Long   | Unique message ID of the original Query message            |
+| `from`        | String | First and/or last name of sender                           |
+| `chat_id`     | Long   | Unique chat ID                                             |
+| `callback_id` | String | Unique callback ID to send receipt confirmation to         |
+| `reply_id`    | String | Plain text name of original Query                          |
+| `text`        | String | Selected response text from options give in original Query |
+
+### callbackRawEvent
+
+When a Callback Query response is received this channel will be triggered with the raw callback data as the `event` payload, encoded as a JSON string.
+See the [`CallbackQuery` class for details](https://github.com/pengrad/java-telegram-bot-api/blob/4.9.0/library/src/main/java/com/pengrad/telegrambot/model/CallbackQuery.java)
 
 ## Rule Actions
 
@@ -171,6 +220,15 @@ Just put the chat id (must be a long value!) followed by an "L" as the first arg
 telegramAction.sendTelegram(1234567L, "Hello world!")
 ```
 
+### Advanced Callback Query Response
+
+This binding stores the `callbackId` and recalls it using the `replyId`, but this information is lost if openHAB restarts.
+If you store the `callbackId`, `chatId`, and optionally `messageId` somewhere that will be persisted when openHAB shuts down, you can use the following overload of `sendTelegramAnswer` to respond to any Callback Query.
+
+```
+telegramAction.sendTelegramAnswer(chatId, callbackId, messageId, message)
+```
+
 ## Full Example
 
 ### Send a text message to telegram chat
@@ -213,7 +271,7 @@ when
     Item Light_GF_Living_Table changed
 then
     val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
-    telegramAction.sendTelegramPhoto("http://www.openhab.org/assets/images/openhab-logo-top.png",
+    telegramAction.sendTelegramPhoto("https://www.openhab.org/openhab-logo-top.png",
         "sent from openHAB")
 end
 ```
@@ -226,7 +284,7 @@ when
     Item Light_GF_Living_Table changed
 then
     val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
-    telegramAction.sendTelegramPhoto("http://www.openhab.org/assets/images/openhab-logo-top.png",
+    telegramAction.sendTelegramPhoto("https://www.openhab.org/openhab-logo-top.png",
         null)
 end
 ```
@@ -256,10 +314,10 @@ then
     // image as base64 string
     var String base64Image = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAS1BMVEUAAABAQEA9QUc7P0Y0OD88QEY+QUhmaW7c3N3w8PBlaG0+QUjb29w5PUU3O0G+vsigoas6P0WfoKo4O0I9QUdkZ2w9Qkg+QkkkSUnT3FKbAAAAGXRSTlMACJbx//CV9v//9pT/7Ur//+z/SfD2kpMHrnfDaAAAAGhJREFUeAHt1bUBAzAMRFGZmcL7LxpOalN5r/evLIlgGwBgXMhxSjP64sa6cdYH+hLWzYiKvqSbI4kQeEt5PlBealsMFIkAAgi8HNriOLcjduLTafWwBB9n3p8v/+Ma1Mxxvd4IAGCzB4xDPuBRkEZiAAAAAElFTkSuQmCC"
     telegramAction.sendTelegramPhoto(base64Image, "battery of motion sensor is empty")
-    
+
     // image as base64 string in data URI scheme
     var String base64ImageDataURI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAS1BMVEUAAABAQEA9QUc7P0Y0OD88QEY+QUhmaW7c3N3w8PBlaG0+QUjb29w5PUU3O0G+vsigoas6P0WfoKo4O0I9QUdkZ2w9Qkg+QkkkSUnT3FKbAAAAGXRSTlMACJbx//CV9v//9pT/7Ur//+z/SfD2kpMHrnfDaAAAAGhJREFUeAHt1bUBAzAMRFGZmcL7LxpOalN5r/evLIlgGwBgXMhxSjP64sa6cdYH+hLWzYiKvqSbI4kQeEt5PlBealsMFIkAAgi8HNriOLcjduLTafWwBB9n3p8v/+Ma1Mxxvd4IAGCzB4xDPuBRkEZiAAAAAElFTkSuQmCC"
-    telegramAction.sendTelegramPhoto(base64ImageDataURI, "battery of motion sensor is empty")    
+    telegramAction.sendTelegramPhoto(base64ImageDataURI, "battery of motion sensor is empty")
 end
 ```
 
@@ -339,7 +397,7 @@ then
     if (telegramMessage.state.toString == "Yes")
     {
         gLights.sendCommand(OFF)
-        telegramAction.sendTelegramAnswer(telegramReplyId.state.toString, "Ok, lights are *off* now.") 
+        telegramAction.sendTelegramAnswer(telegramReplyId.state.toString, "Ok, lights are *off* now.")
     }
     else
     {

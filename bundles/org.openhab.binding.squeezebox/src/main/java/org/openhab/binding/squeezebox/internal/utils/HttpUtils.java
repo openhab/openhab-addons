@@ -104,7 +104,7 @@ public class HttpUtils {
         String url = "http://" + ip + ":" + webPort + "/jsonrpc.js";
         String json = HttpUtils.post(url, JSON_REQ);
         logger.trace("Recieved json from server {}", json);
-        JsonElement resp = new JsonParser().parse(json);
+        JsonElement resp = JsonParser.parseString(json);
         String cliPort = resp.getAsJsonObject().get("result").getAsJsonObject().get("_p2").getAsString();
         return Integer.parseInt(cliPort);
     }

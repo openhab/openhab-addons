@@ -14,7 +14,6 @@ package org.openhab.binding.unifi.internal.api.model;
 
 import java.util.Collection;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -95,6 +94,10 @@ public class UniFiController {
     // Public API
 
     public void start() throws UniFiException {
+        if (unifios) {
+            obtainCsrfToken();
+        }
+
         login();
     }
 
@@ -102,9 +105,15 @@ public class UniFiController {
         logout();
     }
 
-    public void login() throws UniFiException {
+    public void obtainCsrfToken() throws UniFiException {
         csrfToken = "";
 
+        UniFiControllerRequest<Void> req = newRequest(Void.class);
+        req.setPath("/");
+        executeRequest(req);
+    }
+
+    public void login() throws UniFiException {
         UniFiControllerRequest<Void> req = newRequest(Void.class);
         req.setPath(unifios ? "/api/auth/login" : "/api/login");
         req.setBodyParameter("username", username);
@@ -135,7 +144,7 @@ public class UniFiController {
 
     public @Nullable UniFiSite getSite(@Nullable String id) {
         UniFiSite site = null;
-        if (StringUtils.isNotBlank(id)) {
+        if (id != null && !id.isBlank()) {
             synchronized (this) {
                 site = sitesCache.get(id);
             }
@@ -150,7 +159,7 @@ public class UniFiController {
 
     public @Nullable UniFiDevice getDevice(@Nullable String id) {
         UniFiDevice device = null;
-        if (StringUtils.isNotBlank(id)) {
+        if (id != null && !id.isBlank()) {
             synchronized (this) {
                 device = devicesCache.get(id);
             }
@@ -165,7 +174,7 @@ public class UniFiController {
 
     public @Nullable UniFiClient getClient(@Nullable String id) {
         UniFiClient client = null;
-        if (StringUtils.isNotBlank(id)) {
+        if (id != null && !id.isBlank()) {
             synchronized (this) {
                 // mgb: first check active clients and fallback to insights if not found
                 client = clientsCache.get(id);

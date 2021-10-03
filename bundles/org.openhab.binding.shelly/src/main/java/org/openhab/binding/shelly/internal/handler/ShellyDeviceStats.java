@@ -26,7 +26,7 @@ import org.openhab.binding.shelly.internal.util.ShellyUtils;
 @NonNullByDefault
 public class ShellyDeviceStats {
     public long lastUptime = 0;
-    public long unexpectedRestarts = 0;
+    public long restarts = 0;
     public long timeoutErrors = 0;
     public long timeoutsRecorvered = 0;
     public long remainingWatchdog = 0;
@@ -35,20 +35,22 @@ public class ShellyDeviceStats {
     public long lastAlarmTs = 0;
     public long coiotMessages = 0;
     public long coiotErrors = 0;
+    public int wifiRssi = 0;
+    public int maxInternalTemp = 0;
 
-    public Map<String, String> asProperties(String timeZone) {
+    public Map<String, String> asProperties() {
         Map<String, String> prop = new HashMap<>();
         prop.put("lastUptime", String.valueOf(lastUptime));
-        prop.put("unexpectedRestarts", String.valueOf(unexpectedRestarts));
+        prop.put("deviceRestarts", String.valueOf(restarts));
         prop.put("timeoutErrors", String.valueOf(timeoutErrors));
         prop.put("timeoutsRecovered", String.valueOf(timeoutsRecorvered));
         prop.put("remainingWatchdog", String.valueOf(remainingWatchdog));
         prop.put("alarmCount", String.valueOf(alarms));
         prop.put("lastAlarm", lastAlarm);
-        prop.put("lastAlarmTs",
-                lastAlarmTs != 0 ? ShellyUtils.getTimestamp(timeZone, lastAlarmTs).format(null).replace('T', ' ') : "");
+        prop.put("lastAlarmTs", ShellyUtils.convertTimestamp(lastAlarmTs));
         prop.put("coiotMessages", String.valueOf(coiotMessages));
         prop.put("coiotErrors", String.valueOf(coiotErrors));
+        prop.put("wifiRssi", String.valueOf(wifiRssi));
         return prop;
     }
 }

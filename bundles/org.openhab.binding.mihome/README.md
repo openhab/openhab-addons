@@ -8,7 +8,7 @@ The sensors run on a coin cell battery for over a year.
 
 After setup, you can disconnect the gateway from the internet to keep your sensor information private. 
 
-Please note that using the Xiaomi gateway with OpenHAB requires enabling the developer mode and that multiple user reports suggest that it is no longer posible.
+Please note that using the Xiaomi gateway with openHAB requires enabling the developer mode and that multiple user reports suggest that it is no longer possible.
 Zigbee2Mqtt provides an alternative method to integrate Xiaomi devices.
 
 ## Supported devices
@@ -102,7 +102,7 @@ __Hints:__
 
 ## Removing devices from the gateway
 
-If you remove a Thing in PapaerUI it will also trigger the gateway to unpair the device.
+If you remove a Thing it will also trigger the gateway to unpair the device.
 It will only reappear in your Inbox, if you connect it to the gateway again.
 Just follow the instructions in ["Connecting devices to the gateway"](#connecting-devices-to-the-gateway).
 
@@ -110,13 +110,17 @@ Just follow the instructions in ["Connecting devices to the gateway"](#connectin
 
 - The binding requires port `9898` to not be used by any other service on the system.
 - Make sure multicast traffic is correctly routed between the gateway and your openHAB instance
+- To correctly receive multicast traffic, when your openHAB machine is using multiple network interfaces, you might need to configure the optional `interface` property on the `Bridge` Thing, like so:
+```
+Bridge mihome:bridge:f0b429XXXXXX "Xiaomi Gateway" [ ..., interface="eth0", ... ] {
+```
 
 ## Configuration examples
 
 ### xiaomi.things:
 
 ```
-Bridge mihome:bridge:f0b429XXXXXX "Xiaomi Gateway" [ serialNumber="f0b429XXXXXX", ipAddress="192.168.0.3", port=9898, key="XXXXXXXXXXXXXXXX", pollingInterval=6000 ] {
+Bridge mihome:bridge:f0b429XXXXXX "Xiaomi Gateway" [ serialNumber="f0b429XXXXXX", ipAddress="192.168.0.3", port=9898, key="XXXXXXXXXXXXXXXX" ] {
   Things:
     gateway f0b429XXXXXX "Xiaomi Mi Smart Home Gateway" [itemId="f0b429XXXXXX"]
     sensor_ht 158d0001XXXXXX "Xiaomi Temperature Sensor" [itemId="158d0001XXXXXX"]
@@ -452,10 +456,10 @@ Make sure you have connected your gateway to openHAB and the communication is wo
 The devices send different types of messages to the gateway.
 You have to capture as many of them as possible, so that the device is fully supported in the end.
 
-1. Heartbeat (transmitted usually every 60 minutes)
+1. Heartbeat (usually transmitted every 60 minutes)
 2. Report (device reports new sensor or status values)
 3. Read ACK (binding refreshes all sensor values after a restart of openHAB)
-4. Write ACK (device has received a command) __not avaiable for sensor-only devices__
+4. Write ACK (device has received a command) __not available for sensor-only devices__
 
 ### Open a new issue or get your hands dirty
 
@@ -465,7 +469,7 @@ Post an issue in the GitHub repository with as much information as possible abou
 - model name
 - content of all the different message types
 
-Or implement the support by youself and submit a pull request.
+Or implement the support by yourself and submit a pull request.
 
 ### Handle the message contents of a basic device thing with items
 
@@ -484,7 +488,7 @@ _Example for the same message from the heartbeat channel - only the data is retu
 
 These messages are in JSON format, which also gives you the ability to parse single values.
 
-_Example for the retrieved IP from the heartbeat message and transformed with JSONPATH transfomration: ```String Gateway_IP {channel="mihome:basic:xxx:heartbeatMessage"[profile="transform:JSONPATH", function="$.ip"]}```_
+_Example for the retrieved IP from the heartbeat message and transformed with JSONPATH transformation: ```String Gateway_IP {channel="mihome:basic:xxx:heartbeatMessage"[profile="transform:JSONPATH", function="$.ip"]}```_
 
  The item will get the value `192.168.0.124`.
 
@@ -545,7 +549,18 @@ In case you want to check if the communication between the machine and the gatew
 - make sure you have __netcat__ installed
 - Enter ```netcat -ukl 9898```
 - At least every 10 seconds you should see a message coming in from the gateway which looks like
-    ```{"cmd":"heartbeat","model":"gateway","sid":"`xxx","short_id":"0","token":"xxx","data":"{\"ip\":\"`xxx\"}"}```
+```{"cmd":"heartbeat","model":"gateway","sid":"`xxx","short_id":"0","token":"xxx","data":"{\"ip\":\"`xxx\"}"}```
+
+#### Multiple network interfaces
+
+When the computer running openHAB has more than one network interface configured (typically, a VLAN for your segregated IoT devices, and the other for your regular traffic like internet, openHAB panel access, etc), it could be that openHAB will attempt to listen for Multicast traffic of the Gateway on the wrong network interface.  That will prevent openHAB and `netcat` from receiving the messages from the Xiaomi Gateway. Within openHAB this manifests by seeing the Gateway and its devices online for a brief period after openHAB startup, after which they timeout and are shown Offline. No channel triggers from the Gateway work in this case.
+
+In order to verify that traffic is actually received by the machine use `tcpdump` on each interface:
+- List your network interfaces `ifconfig | grep MULTICAST` or `ip link | grep MULTICAST`
+- Use `tcpdump -i <interface> port 9898` for each interface to verify if you receive traffic
+  
+If you already know the correct interface, or you found the correct one through tcpdump:
+- Configure the `interface` property of the `Bridge` Thing with the correct name (for example `eth0`, etc)
 
 ### Check if your Windows/Mac machine receives multicast traffic
 
@@ -562,6 +577,7 @@ __My gateway shows up in openHAB and I have added all devices, but I don't get a
     - Make sure the gateway and the machine are in the same subnet
     - Try to connect your machine via Ethernet instead of Wifi
     - Make sure you don't have any firewall rules blocking multicast
+    - If you have multiple network interfaces, try to configure the `interface` property of the `Bridge` Thing
 
 __I have connected my gateway to the network but it doesn't show up in openHAB:__
 - Make sure to have the developer mode enabled in the MiHome app

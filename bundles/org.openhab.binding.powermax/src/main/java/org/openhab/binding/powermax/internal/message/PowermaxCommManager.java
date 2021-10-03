@@ -259,7 +259,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
             updateState = createNewState();
         }
 
-        updateState.lastMessageReceived.setValue(System.currentTimeMillis());
+        updateState.lastMessageTime.setValue(System.currentTimeMillis());
 
         if (updateState.getUpdateSettings() != null) {
             panelSettings.updateRawSettings(updateState.getUpdateSettings());
@@ -621,6 +621,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      *
      * @return true if the message was sent or the sending is delayed; false in other cases
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     private synchronized boolean sendMessage(PowermaxBaseMessage msg, boolean immediate, int waitTime,
             boolean doNotLog) {
         if ((waitTime > 0) && (msg != null)) {

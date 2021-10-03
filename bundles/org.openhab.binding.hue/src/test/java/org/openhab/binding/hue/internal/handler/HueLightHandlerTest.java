@@ -38,7 +38,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.Command;
 
 import com.google.gson.Gson;
@@ -384,6 +384,7 @@ public class HueLightHandlerTest {
         assertSendCommand(channel, command, currentState, expectedReply, "LCT001", "Philips");
     }
 
+    @SuppressWarnings("null")
     private void assertSendCommand(String channel, Command command, HueLightState currentState, String expectedReply,
             String expectedModel, String expectedVendor) {
         FullLight light = gson.fromJson(currentState.toString(), FullConfig.class).getLights().get(0);
@@ -399,8 +400,7 @@ public class HueLightHandlerTest {
 
         long fadeTime = 400;
 
-        HueLightHandler hueLightHandler = new HueLightHandler(mockThing,
-                new HueStateDescriptionOptionProvider(mock(ChannelTypeI18nLocalizationService.class))) {
+        HueLightHandler hueLightHandler = new HueLightHandler(mockThing, mock(HueStateDescriptionProvider.class)) {
             @Override
             protected synchronized HueClient getHueClient() {
                 return mockClient;
@@ -411,6 +411,7 @@ public class HueLightHandlerTest {
                 return mockBridge;
             }
         };
+        hueLightHandler.setCallback(mock(ThingHandlerCallback.class));
         hueLightHandler.initialize();
 
         verify(mockThing).setProperty(eq(Thing.PROPERTY_MODEL_ID), eq(expectedModel));
@@ -425,9 +426,8 @@ public class HueLightHandlerTest {
     }
 
     private void assertJson(String expected, String actual) {
-        JsonParser parser = new JsonParser();
-        JsonElement jsonExpected = parser.parse(expected);
-        JsonElement jsonActual = parser.parse(actual);
+        JsonElement jsonExpected = JsonParser.parseString(expected);
+        JsonElement jsonActual = JsonParser.parseString(actual);
         assertEquals(jsonExpected, jsonActual);
     }
 }

@@ -73,6 +73,7 @@ public class OnkyoBindingConstants {
     public static final String CHANNEL_ALBUM_ART = "player#albumArt";
     public static final String CHANNEL_ALBUM_ART_URL = "player#albumArtUrl";
     public static final String CHANNEL_LISTENMODE = "player#listenmode";
+    public static final String CHANNEL_AUDIOINFO = "player#audioinfo";
     public static final String CHANNEL_PLAY_URI = "player#playuri";
 
     public static final String CHANNEL_NET_MENU_TITLE = "netmenu#title";

@@ -145,7 +145,8 @@ public class HomekitImpl implements Homekit {
             HomekitSettings oldSettings = settings;
             settings = processConfig(config);
             changeListener.updateSettings(settings);
-            if (!oldSettings.networkInterface.equals(settings.networkInterface) || oldSettings.port != settings.port) {
+            if (!oldSettings.networkInterface.equals(settings.networkInterface) || oldSettings.port != settings.port
+                    || oldSettings.useOHmDNS != settings.useOHmDNS) {
                 // the HomeKit server settings changed. we do a complete re-init
                 stopHomekitServer();
                 startHomekitServer();
@@ -205,23 +206,28 @@ public class HomekitImpl implements Homekit {
 
     private void startHomekitServer() throws IOException {
         if (homekitServer == null) {
-            if ((settings.networkInterface == null) || (settings.networkInterface.isEmpty())) {
-                logger.trace(
-                        "No IP address configured in homekit settings. HomeKit will use the first configured address of openHAB");
-                homekitServer = new HomekitServer(mdnsClient.getClientInstances().iterator().next(), settings.port);
-            } else {
-                networkInterface = InetAddress.getByName(settings.networkInterface);
-                for (JmDNS mdns : mdnsClient.getClientInstances()) {
-                    if (mdns.getInetAddress().equals(networkInterface)) {
-                        logger.trace("suitable mDNS client for IP {} found. Reusing it.", networkInterface);
-                        homekitServer = new HomekitServer(mdns, settings.port);
+            if (settings.useOHmDNS) {
+                if ((settings.networkInterface == null) || (settings.networkInterface.isEmpty())) {
+                    logger.trace(
+                            "No IP address configured in HomeKit settings. HomeKit will use the first configured address of openHAB");
+                    homekitServer = new HomekitServer(mdnsClient.getClientInstances().iterator().next(), settings.port);
+                } else {
+                    networkInterface = InetAddress.getByName(settings.networkInterface);
+                    for (JmDNS mdns : mdnsClient.getClientInstances()) {
+                        if (mdns.getInetAddress().equals(networkInterface)) {
+                            logger.trace("Suitable mDNS client for IP {} found and will be used for HomeKit",
+                                    networkInterface);
+                            homekitServer = new HomekitServer(mdns, settings.port);
+                        }
                     }
                 }
-                if (homekitServer == null) {
-                    logger.trace("Not suitable mDNS client fpr IP {} found. Create new mDNS instance.",
-                            networkInterface);
-                    homekitServer = new HomekitServer(networkInterface, settings.port);
+            }
+            if (homekitServer == null) {
+                if (settings.useOHmDNS) {
+                    logger.trace("Not suitable mDNS server for IP {} found", networkInterface);
                 }
+                logger.trace("Create HomeKit server with dedicated mDNS server");
+                homekitServer = new HomekitServer(networkInterface, settings.port);
             }
             startBridge();
         } else {

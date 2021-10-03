@@ -32,6 +32,7 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class NumberItemIntegrationTest extends AbstractTwoItemIntegrationTest {
 
+    public static final boolean LEGACY_MODE = false;
     private static final String NAME = "number";
     // On purpose we have super accurate number here (testing limits of aws)
     private static final DecimalType STATE1 = new DecimalType(new BigDecimal(
@@ -39,6 +40,7 @@ public class NumberItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     private static final DecimalType STATE2 = new DecimalType(600.9123);
     private static final DecimalType STATE_BETWEEN = new DecimalType(500);
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         NumberItem item = (NumberItem) ITEMS.get(NAME);

@@ -16,13 +16,14 @@ import static org.openhab.binding.innogysmarthome.internal.client.Constants.*;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -180,7 +181,8 @@ public class InnogyClient {
         } catch (OAuthException | OAuthResponseException e) {
             throw new AuthenticationException("Error fetching access token: " + e.getMessage());
         }
-        if (accessTokenResponse == null || StringUtils.isBlank(accessTokenResponse.getAccessToken())) {
+        if (accessTokenResponse == null || accessTokenResponse.getAccessToken() == null
+                || accessTokenResponse.getAccessToken().isBlank()) {
             throw new AuthenticationException("No innogy accesstoken. Is this thing authorized?");
         }
         return accessTokenResponse;

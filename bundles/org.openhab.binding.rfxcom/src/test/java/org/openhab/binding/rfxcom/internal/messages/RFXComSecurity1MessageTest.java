@@ -37,7 +37,7 @@ public class RFXComSecurity1MessageTest {
             @Nullable String deviceId, int batteryLevel, @Nullable Contact contact, @Nullable Motion motion,
             @Nullable Status status, int signalLevel) throws RFXComException {
         byte[] message = HexUtils.hexToBytes(hexMessage);
-        RFXComSecurity1Message msg = (RFXComSecurity1Message) RFXComMessageFactory.createMessage(message);
+        RFXComSecurity1Message msg = (RFXComSecurity1Message) RFXComMessageFactoryImpl.INSTANCE.createMessage(message);
         assertEquals(subType, msg.subType, "SubType");
         assertEquals(sequenceNumber, (short) (msg.seqNbr & 0xFF), "Seq Number");
         assertEquals(deviceId, msg.getDeviceId(), "Sensor Id");

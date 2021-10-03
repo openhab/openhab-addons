@@ -158,13 +158,13 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
-    public Class<? extends Type> getTypeClass() {
-        return typeClass;
+    public boolean isProperty() {
+        return isProperty;
     }
 
     @Override
-    public boolean isProperty() {
-        return isProperty;
+    public boolean isExtendedState() {
+        return false;
     }
 
     @Override

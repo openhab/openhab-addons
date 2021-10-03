@@ -7,7 +7,7 @@ The Netatmo binding integrates the following Netatmo products:
 - *Indoor Camera / Welcome*. Reports last event and persons at home, consult picture and video from event/camera.
 - *Outdoor Camera / Presence*. Reports last event, consult picture and video from event/camera.
 
-See http://www.netatmo.com/ for details on their product.
+See https://www.netatmo.com/ for details on their product.
 
 Please note, recent Netatmo thermostats are not supported because they require the Energy API which is not yet implemented in the binding.
 Only older Netatmo thermostats compatible with the Thermostat API are supported.
@@ -69,7 +69,7 @@ You will define here public way to access your openHAB server:
 http(s)://xx.yy.zz.ww:8080
 ```
 
-Your Netatmo App will be configured automatically by the bridge to the endpoint : 
+Your Netatmo App will be configured automatically by the bridge to the endpoint :
 
 ```
 http(s)://xx.yy.zz.ww:8080/netatmo/%id%/camera
@@ -87,7 +87,7 @@ First login with your user.
 Then some examples of the documentation contain the **real results** of your weather station.
 In order to try the examples, you need the `device_id` of your Netatmo station.
 You can find it in the configuration menu of the app (android or apple).
-Get the IDs of your devices (indoor, outdoor, rain gauge) 
+Get the IDs of your devices (indoor, outdoor, rain gauge)
 [here](https://dev.netatmo.com/resources/technical/reference/weather/getstationsdata).
 
 `main_device` is the ID of the "main device", the indoor sensor.
@@ -216,7 +216,7 @@ All these channels are read only.
 
 ### Weather Station Outdoor module
 
-Example item for the **outdoor module** 
+Example item for the **outdoor module**
 
 ```
 Number Netatmo_Outdoor_Temperature "Temperature" { channel = "netatmo:NAModule1:home:outside:Temperature" }
@@ -268,7 +268,7 @@ All these channels are read only.
 
 ### Weather Station Additional Indoor module
 
-Example item for the **indoor module** 
+Example item for the **indoor module**
 
 ```
 Number Netatmo_Indoor2_Temperature "Temperature" { channel = "netatmo:NAModule4:home:insidesupp:Temperature" }
@@ -768,7 +768,7 @@ sitemap netatmo label="Netatmo" {
         Text item=Indoor_Location
         Text item=Indoor_LastStatusStore
     }
-    Frame label="Outdoor" { 
+    Frame label="Outdoor" {
         Text item=Outdoor_Temperature
         Text item=Outdoor_TempTrend
         Text item=Outdoor_Humidity
@@ -798,7 +798,7 @@ sitemap netatmo label="Netatmo" {
 If you want to evaluate this binding but have not got a Netatmo station yourself
 yet, you can add the Netatmo office in Paris to your account:
 
-http://www.netatmo.com/en-US/addguest/index/TIQ3797dtfOmgpqUcct3/70:ee:50:00:02:20
+https://www.netatmo.com/en-US/addguest/index/TIQ3797dtfOmgpqUcct3/70:ee:50:00:02:20
 
 
 # Icons

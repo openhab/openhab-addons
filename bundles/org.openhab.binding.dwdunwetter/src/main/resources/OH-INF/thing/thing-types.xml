@@ -6,9 +6,9 @@
 
 	<thing-type id="dwdwarnings">
 		<label>Weather Warnings</label>
-		<description>Weather Warnings for an area</description>
+		<description>Weather Warnings for an area.</description>
 		<channels>
-			<channel typeId="lastUpdated" id="lastUpdated"></channel>
+			<channel typeId="lastUpdated" id="lastUpdated"/>
 		</channels>
 		<config-description>
 			<parameter name="cellId" type="text" required="true">
@@ -35,7 +35,8 @@ The warnings are sorted by severity first and begin second so the first warning 
 	<channel-type id="lastUpdated">
 		<item-type>DateTime</item-type>
 		<label>Last Updated</label>
-		<description>Timestamp of the last update from the endpoint</description>
+		<description>Timestamp of the last update from the endpoint.</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="warning">
@@ -43,14 +44,14 @@ The warnings are sorted by severity first and begin second so the first warning 
 		<label>Warning</label>
 		<description><![CDATA[ON if a warning is present, OFF else.
 While be switched to ON only after all other channels - except the trigger channel - are updated.
-Will be switched to OFF before all other channels are updated to NULL]]></description>
+Will be switched to OFF before all other channels are updated to UNDEF.]]></description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="updated">
 		<kind>trigger</kind>
 		<label>Updated</label>
 		<description><![CDATA[Triggers NEW if a warning is send the first time.
-This happens after all other channels are populated]]></description>
+This happens after all other channels are populated.]]></description>
 		<event>
 			<options>
 				<option value="NEW">New</option>
@@ -79,49 +80,52 @@ This happens after all other channels are populated]]></description>
 	<channel-type id="effective">
 		<item-type>DateTime</item-type>
 		<label>Issued</label>
-		<description>Issued Date and Time</description>
+		<description>Issued Date and Time.</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="onset">
 		<item-type>DateTime</item-type>
 		<label>Valid From</label>
-		<description>Start Date and Time for which the warning is valid</description>
+		<description>Start Date and Time for which the warning is valid.</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="expires">
 		<item-type>DateTime</item-type>
 		<label>Valid To</label>
-		<description>End Date and Time for which the warning is valid</description>
+		<description>End Date and Time for which the warning is valid.</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="headline">
 		<item-type>String</item-type>
 		<label>Headline</label>
-		<description>Headline of the warning like "Amtliche Warnung vor FROST"</description>
+		<description>Headline of the warning like "Amtliche Warnung vor FROST".</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="event">
 		<item-type>String</item-type>
 		<label>Type</label>
-		<description>Type of the warning, e.g. FROST</description>
+		<description>Type of the warning, e.g. FROST.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="altitude">
 		<item-type>Number:Length</item-type>
 		<label>Height (from)</label>
-		<description>Lower Height above sea level for which the warning is valid</description>
-		<state readOnly="true" pattern="%d m"/>
+		<description>Lower Height above sea level for which the warning is valid.</description>
+		<state readOnly="true" pattern="%.0f m"/>
 	</channel-type>
 	<channel-type id="ceiling">
 		<item-type>Number:Length</item-type>
 		<label>Height (to)</label>
-		<description>Upper Height above sea level for which the warning is valid</description>
-		<state readOnly="true" pattern="%d m"/>
+		<description>Upper Height above sea level for which the warning is valid.</description>
+		<state readOnly="true" pattern="%.0f m"/>
 	</channel-type>
 	<channel-type id="instruction">
 		<item-type>String</item-type>
 		<label>Instruction</label>
-		<description>Instructions and safety information</description>
+		<description>Instructions and safety information.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="urgency">

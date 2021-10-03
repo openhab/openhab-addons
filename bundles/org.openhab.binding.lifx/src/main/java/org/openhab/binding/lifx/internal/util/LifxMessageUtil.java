@@ -17,8 +17,8 @@ import java.math.RoundingMode;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.lifx.internal.LifxProduct.TemperatureRange;
 import org.openhab.binding.lifx.internal.fields.HSBK;
-import org.openhab.binding.lifx.internal.protocol.Product.TemperatureRange;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.PercentType;
@@ -26,7 +26,7 @@ import org.openhab.core.library.types.PercentType;
 /**
  * Utility class for sharing message utility methods between objects.
  *
- * @author Wouter Born - Extracted methods from LifxLightHandler
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public final class LifxMessageUtil {
@@ -100,6 +100,16 @@ public final class LifxMessageUtil {
         value = value.min(HUNDRED);
         value = value.max(ZERO);
         return new PercentType(value);
+    }
+
+    public static int commandToKelvin(DecimalType temperature, TemperatureRange temperatureRange) {
+        return temperature instanceof PercentType ? percentTypeToKelvin((PercentType) temperature, temperatureRange)
+                : decimalTypeToKelvin(temperature, temperatureRange);
+    }
+
+    public static int decimalTypeToKelvin(DecimalType temperature, TemperatureRange temperatureRange) {
+        return Math.round(Math.min(Math.max(temperature.intValue(), temperatureRange.getMinimum()),
+                temperatureRange.getMaximum()));
     }
 
     public static int percentTypeToKelvin(PercentType temperature, TemperatureRange temperatureRange) {

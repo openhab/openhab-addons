@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.heos.internal.json.dto.HeosResponseObject;
 import org.openhab.binding.heos.internal.json.payload.BrowseResult;
 import org.openhab.binding.heos.internal.json.payload.Group;
@@ -69,7 +68,6 @@ public class HeosFacade {
         return getBrowseResults(PLAYLISTS_SID);
     }
 
-    @NotNull
     private List<BrowseResult> getBrowseResults(String sourceIdentifier) throws IOException, ReadException {
         HeosResponseObject<BrowseResult[]> response = browseSource(sourceIdentifier);
         logger.debug("Response: {}", response);
@@ -353,7 +351,7 @@ public class HeosFacade {
 
     /**
      * Get all the players known by HEOS
-     * 
+     *
      * @return
      */
     public HeosResponseObject<Player[]> getPlayers() throws IOException, ReadException {
@@ -362,7 +360,7 @@ public class HeosFacade {
 
     /**
      * Get all the groups known by HEOS
-     * 
+     *
      * @return
      */
     public HeosResponseObject<Group[]> getGroups() throws IOException, ReadException {

@@ -40,7 +40,7 @@ HomeKit integration supports following accessory types:
   
 - add metadata to an existing item (see [UI based configuration](#UI-based-Configuration))
   
-- go to scan QR code from UI->Setting-HomeKit Integration
+- scan QR code from UI->Settings->HomeKit Integration
   
   ![settings_qrcode.png](doc/settings_qrcode.png)
   
@@ -70,18 +70,16 @@ Add metadata to more item or fine-tune your configuration using further settings
 
 ## Global Configuration
 
-Your first step will be to create the `homekit.cfg` in your `$OPENHAB_CONF/services` folder.
-At the very least, you will need to define a pin number for the bridge.
-This will be used in iOS when pairing. The pin code is in the form "###-##-###".
+You can define HomeKit settings either via mainUI or via `$OPENHAB_CONF/services/homekit.cfg`.
+HomeKit works with default settings, but we recommend changing the pin for the bridge.
+This will be used in iOS when pairing without QR Code. The pin code is in the form "###-##-###".
 Requirements beyond this are not clear, and Apple enforces limitations on eligible pins within iOS.
 At the very least, you cannot use repeating (111-11-111) or sequential (123-45-678) pin codes.
-If your home network is secure, a good starting point is the pin code used in most sample applications: 031-45-154.
-Check for typos in the pin-code if you encounter "Bad Client Credential" errors during pairing.
 
-Other settings, such as using Fahrenheit temperatures, customizing the thermostat heat/cool/auto modes, and specifying the interface to advertise the HomeKit bridge (which can be edited in Paper UI standard mode) are also illustrated in the following sample:
+Other settings, such as using Fahrenheit temperatures, customizing the thermostat heat/cool/auto modes, and specifying the interface to advertise the HomeKit bridge are also illustrated in the following sample:
 
 ```
-org.openhab.homekit:port=9124
+org.openhab.homekit:port=9123
 org.openhab.homekit:pin=031-45-154
 org.openhab.homekit:useFahrenheitTemperature=true
 org.openhab.homekit:thermostatTargetModeCool=CoolOn
@@ -89,14 +87,8 @@ org.openhab.homekit:thermostatTargetModeHeat=HeatOn
 org.openhab.homekit:thermostatTargetModeAuto=Auto
 org.openhab.homekit:thermostatTargetModeOff=Off
 org.openhab.homekit:networkInterface=192.168.0.6
-```
-
-The following additional settings can be added or edited in Paper UI after switching to expert mode:
-
-```
+org.openhab.homekit:useOHmDNS=false
 org.openhab.homekit:name=openHAB
-org.openhab.homekit:minimumTemperature=-100
-org.openhab.homekit:maximumTemperature=100
 ```
 
 ### Overview of all settings
@@ -105,6 +97,7 @@ org.openhab.homekit:maximumTemperature=100
 |:-------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------|
 | networkInterface         | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the add-on uses the first network adapter address configured for openHAB.                                                                                  | (none)        |
 | port                     | Port under which the HomeKit bridge can be reached.                                                                                                                                                                                     | 9123          |
+| useOHmDNS                | mDNS service is used to advertise openHAB as HomeKit bridge in the network so that HomeKit clients can find it. openHAB has already mDNS service running. This option defines whether the mDNS service of openHAB or a separate service should be used.   | false  |
 | pin                      | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work. | 031-45-154    |
 | startDelay               | HomeKit start delay in seconds in case the number of accessories is lower than last time. This helps to avoid resetting home app in case not all items have been initialised properly before HomeKit integration start.                 | 30            |
 | useFahrenheitTemperature | Set to true to use Fahrenheit degrees, or false to use Celsius degrees.                                                                                                                                                                 | false         |
@@ -112,8 +105,6 @@ org.openhab.homekit:maximumTemperature=100
 | thermostatTargetModeHeat | Word used for activating the heating mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                                | HeatOn        |
 | thermostatTargetModeAuto | Word used for activating the automatic mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                               | Auto          |
 | thermostatTargetModeOff  | Word used to set the thermostat mode of the device to off (if applicable).  It can be overwritten at item level.                                                                                                                                                             | Off           |
-| minimumTemperature       | Lower bound of possible temperatures, used in the user interface of the iOS device to display the allowed temperature range. Note that this setting applies to all devices in HomeKit.                                                  | -100          |
-| maximumTemperature       | Upper bound of possible temperatures, used in the user interface of the iOS device to display the allowed temperature range. Note that this setting applies to all devices in HomeKit.                                                  | 100           |
 | name                     | Name under which this HomeKit bridge is announced on the network. This is also the name displayed on the iOS device when searching for available bridges.                                                                               | openHAB       |
 
 ## Item Configuration
@@ -586,7 +577,7 @@ or using UI
 |                      |                             | Name                         | String                   | Name of the switch                                                                                                                                                                                                                                                                                        |
 | Outlet               |                             |                              |                          | An accessory that can be turned off and on. While similar to a lightbulb, this will be presented differently in the Siri grammar and iOS apps                                                                                                                                                             |
 |                      | OnState                     |                              | Switch                   | State of the outlet - ON/OFF                                                                                                                                                                                                                                                                              |
-|                      | InUseStatus                 |                              | Switch                   | indicates whether current flowing through the outlet                                                                                                                                                                                                                                                      |
+|                      | InUseStatus                 |                              | Switch                   | Indicates whether the outlet has an appliance e.g., a floor lamp, physically plugged in. This characteristic is set to True even if the plugged-in appliance is off.                                                                                                                                                                                                                                                     |
 |                      |                             | Name                         | String                   | Name of the switch                                                                                                                                                                                                                                                                                        |
 | Lighting             |                             |                              |                          | A lightbulb, can have further optional parameters for brightness, hue, etc                                                                                                                                                                                                                                |
 |                      | OnState                     |                              | Switch                   | State of the light - ON/OFF                                                                                                                                                                                                                                                                               |
@@ -727,6 +718,7 @@ String 			cooler_target_mode  	    "Cooler Target Mode" 				(gCooler)           
 Number 			cooler_cool_thrs 	        "Cooler Cool Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="CoolingThresholdTemperature" [minValue=10.5, maxValue=50]}
 Number 			cooler_heat_thrs 	        "Cooler Heat Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="HeatingThresholdTemperature" [minValue=0.5, maxValue=20]}
 ```
+
 ## Additional Notes
 
 HomeKit allows only a single pairing to be established with the bridge.
@@ -762,6 +754,7 @@ openhab> log:tail io.github.hapjava
 ## Troubleshooting 
 
 ### openHAB is not listed in home app
+
 if you don't see openHAB in the home app, probably multicast DNS (mDNS) traffic is not routed correctly from openHAB to home app device or openHAB is already in paired state. 
 You can verify this with [Discovery DNS iOS app](https://apps.apple.com/us/app/discovery-dns-sd-browser/id305441017) as follow: 
 
@@ -783,4 +776,4 @@ You can verify this with [Discovery DNS iOS app](https://apps.apple.com/us/app/d
 - verify the flag "sf". 
   - if sf is equal 1, openHAB is accepting pairing from new iOS device. 
   - if sf is equal 0 (as on screenshot), openHAB is already paired and does not accept any new pairing request. you can reset pairing using `openhab:homekit clearPairings` command in karaf console.
-- if you see openHAB bridge and sf is equal 1 but you dont see openHAB in home app, probably you home app still think it is already paired with openHAB. remove your home from home app and restart iOS device. 
+- if you see openHAB bridge and sf is equal 1 but you dont see openHAB in home app, probably you home app still think it is already paired with openHAB. remove your home from home app and restart iOS device.

@@ -15,7 +15,6 @@ package org.openhab.binding.mqtt.homeassistant.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.Configuration;
@@ -90,10 +89,10 @@ public class HaID {
         this.topic = createTopic(this);
     }
 
-    private static final String createTopic(HaID id) {
+    private static String createTopic(HaID id) {
         StringBuilder str = new StringBuilder();
         str.append(id.baseTopic).append('/').append(id.component).append('/');
-        if (StringUtils.isNotBlank(id.nodeID)) {
+        if (!id.nodeID.isBlank()) {
             str.append(id.nodeID).append('/');
         }
         str.append(id.objectID).append('/');
@@ -105,8 +104,8 @@ public class HaID {
      * <p>
      * <code>objectid</code>, <code>nodeid</code>, and <code>component</code> values are fetched from the configuration.
      *
-     * @param baseTopic
-     * @param config
+     * @param baseTopic base topic
+     * @param config config
      * @return newly created HaID
      */
     public static HaID fromConfig(String baseTopic, Configuration config) {
@@ -121,7 +120,7 @@ public class HaID {
      * <p>
      * <code>objectid</code>, <code>nodeid</code>, and <code>component</code> values are added to the configuration.
      *
-     * @param config
+     * @param config config
      * @return the modified configuration
      */
     public Configuration toConfig(Configuration config) {
@@ -140,7 +139,7 @@ public class HaID {
      * The <code>component</code> component in the resulting HaID will be set to <code>+</code>.
      * This enables the HaID to be used as an mqtt subscription topic.
      *
-     * @param config
+     * @param config config
      * @return newly created HaID
      */
     public static Collection<HaID> fromConfig(HandlerConfiguration config) {
@@ -175,7 +174,7 @@ public class HaID {
      */
     public String toShortTopic() {
         String objectID = this.objectID;
-        if (StringUtils.isNotBlank(nodeID)) {
+        if (!nodeID.isBlank()) {
             objectID = nodeID + "/" + objectID;
         }
 
@@ -192,10 +191,10 @@ public class HaID {
         String result = uniqueId;
 
         // the null test is only here so the compile knows, result is not null afterwards
-        if (result == null || StringUtils.isBlank(result)) {
+        if (result == null || result.isBlank()) {
             StringBuilder str = new StringBuilder();
 
-            if (StringUtils.isNotBlank(nodeID)) {
+            if (!nodeID.isBlank()) {
                 str.append(nodeID).append('_');
             }
             str.append(objectID).append('_').append(component);
@@ -251,10 +250,7 @@ public class HaID {
         if (!nodeID.equals(other.nodeID)) {
             return false;
         }
-        if (!objectID.equals(other.objectID)) {
-            return false;
-        }
-        return true;
+        return objectID.equals(other.objectID);
     }
 
     @Override

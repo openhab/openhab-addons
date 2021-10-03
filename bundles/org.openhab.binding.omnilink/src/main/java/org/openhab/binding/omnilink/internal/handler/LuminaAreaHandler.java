@@ -23,6 +23,8 @@ import org.openhab.binding.omnilink.internal.AreaAlarm;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 
+import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
+
 /**
  * The {@link LuminaAreaHandler} defines some methods that are used to
  * interface with an OmniLink Lumina Area. This by extension also defines the
@@ -44,17 +46,17 @@ public class LuminaAreaHandler extends AbstractAreaHandler {
     protected int getMode(ChannelUID channelUID) {
         switch (channelUID.getId()) {
             case CHANNEL_AREA_SECURITY_MODE_HOME:
-                return OmniLinkCmd.CMD_SECURITY_LUMINA_HOME_MODE.getNumber();
+                return CommandMessage.CMD_SECURITY_LUMINA_HOME_MODE;
             case CHANNEL_AREA_SECURITY_MODE_SLEEP:
-                return OmniLinkCmd.CMD_SECURITY_LUMINA_SLEEP_MODE.getNumber();
+                return CommandMessage.CMD_SECURITY_LUMINA_SLEEP_MODE;
             case CHANNEL_AREA_SECURITY_MODE_AWAY:
-                return OmniLinkCmd.CMD_SECURITY_LUMINA_AWAY_MODE.getNumber();
+                return CommandMessage.CMD_SECURITY_LUMINA_AWAY_MODE;
             case CHANNEL_AREA_SECURITY_MODE_VACATION:
-                return OmniLinkCmd.CMD_SECURITY_LUMINA_VACATION_MODE.getNumber();
+                return CommandMessage.CMD_SECURITY_LUMINA_VACATION_MODE;
             case CHANNEL_AREA_SECURITY_MODE_PARTY:
-                return OmniLinkCmd.CMD_SECURITY_LUMINA_PARTY_MODE.getNumber();
+                return CommandMessage.CMD_SECURITY_LUMINA_PARTY_MODE;
             case CHANNEL_AREA_SECURITY_MODE_SPECIAL:
-                return OmniLinkCmd.CMD_SECURITY_LUMINA_SPECIAL_MODE.getNumber();
+                return CommandMessage.CMD_SECURITY_LUMINA_SPECIAL_MODE;
             default:
                 throw new IllegalStateException("Unknown channel for area thing " + channelUID);
         }

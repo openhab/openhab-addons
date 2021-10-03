@@ -56,7 +56,7 @@ Thing chromecast:audiogroup:bathroom  [ ipAddress="192.168.0.23", port=42139]
 | playuri         | String      | Can be used to tell the Chromecast to play media from a given url                                                                                                                     |
 | appName         | String      | Name of currently running application                                                                                                                                                 |
 | appId           | String      | ID of currently running application                                                                                                                                                   |
-| idling          | Switch      | Read-only indication on weather Chromecast is on idle screen                                                                                                                          |
+| idling          | Switch      | Read-only indication on whether Chromecast is on idle screen                                                                                                                          |
 | statustext      | String      |                                                                                                                                                                                       |
 | currentTime     | Number:Time | Current time of currently playing media                                                                                                                                               |
 | duration        | Number:Time | Duration of current track (null if between tracks)                                                                                                                                    |
@@ -143,4 +143,20 @@ sitemap chromecast label="Chromecasts" {
         Text item=chromecast_chromecast_38e621581281c7675a777e7b474811ed_albumName label="Album [%s]"
     }
 }
+```
+
+## Rule Action
+
+This binding includes rule actions for casting media.
+
+* `playURL(String url)`
+* `playURL(String url, String mimeType)`
+
+Examples:
+
+```
+val castActions = getActions("chromecast","chromecast:chromecast:29fcf535da")
+val success  = castActions.playURL("http://192.168.1.160:81/mjpg/front1/video.mjpg")
+val success2 = castActions.playURL("http://192.168.1.160:81/mjpg/front1/video.mjpg", "image/jpeg")
+
 ```

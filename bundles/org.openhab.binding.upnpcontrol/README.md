@@ -77,8 +77,8 @@ A `upnprenderer` has the following optional configuration parameters:
 The full syntax for manual configuration is:
 
 ```
-Thing upnpcontrol:upnpserver:<serverId> [udn="<udn of media server>", refresh=<polling interval>, seekStep=<step>]
-Thing upnpcontrol:upnprenderer:<rendererId> [udn="<udn of media renderer>", refresh=<polling interval>, filter=<true/false>, sortCriteria="<sort criteria string>", browseDown=<true/false>, searchfromroot=<true/false>]
+Thing upnpcontrol:upnpserver:<serverId> [udn="<udn of media server>", refresh=<polling interval>, filter=<true/false>, sortCriteria="<sort criteria string>", browseDown=<true/false>, searchFromRoot=<true/false>, responseTimeout=<UPnP timeout in milliseconds>]
+Thing upnpcontrol:upnprenderer:<rendererId> [udn="<udn of media renderer>", refresh=<polling interval>, notificationVolumeAdjustment=<signed percent>, maxNotificationDuration=<duration in seconds>, seekStep=<step>, responseTimeout=<UPnP timeout in milliseconds>]
 ```
 
 

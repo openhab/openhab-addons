@@ -5,19 +5,19 @@ It creates a REST service at _/imperihome/iss_ that implements the [ImperiHome S
 
 ## Installation
 
-The ImperiHome integration service can be installed through the Paper UI. Navigate to Add-ons &gt; Misc and click Install.
-
-<a name="configuration"></a>
+The ImperiHome integration service can be installed through the "Misc" add-ons category in the UI.
 
 ## Configuration
 
 ### openHAB Add-on
 
-To configure the ImperiHome integration add-on in openHAB, create a _imperihome.cfg_ file in the _conf/services_ directory. The following configuration options can be used:
+To configure the ImperiHome integration add-on in openHAB, create a _imperihome.cfg_ file in the _conf/services_ directory.
+The following configuration options can be used:
 
 **System ID**
 
-The ImperiHome integration service identifies itself to ImperiHome using a system ID. By default the unique identifier of your openHAB installation is used. To override the ID, use the _system.id_ configuration option.
+The ImperiHome integration service identifies itself to ImperiHome using a system ID.
+By default the unique identifier of your openHAB installation is used. To override the ID, use the _system.id_ configuration option.
 
 ```
 system.id=my-openhab-123
@@ -44,7 +44,8 @@ Add a new system (+) and choose 'ImperiHome Standard System' as the object type.
 Now enter the URL to your openHAB instance as Local URL, followed by _/imperihome/iss_.
 For example, if your openHAB instance is running at _<http://192.168.1.10:8080/>_, the Local URL would be _<http://192.168.1.10:8080/imperihome/iss>_.
 
-If you have port forwarding or similar set up to access your openHAB from the internet, you can also fill the Remote URL in the same way. For example: _<http://my-openhab-url.dyndns.org:8080/imperihome/iss>_.
+If you have port forwarding or similar set up to access your openHAB from the internet, you can also fill the Remote URL in the same way.
+For example: _<http://my-openhab-url.dyndns.org:8080/imperihome/iss>_.
 _Warning_: this service provides no authentication mechanism, so anyone could use the API to control your system when accessible from the internet.
 Add a secure proxy or use the openHAB Cloud proxy to protect your system ([more information](https://www.openhab.org/docs/installation/security.html)).
 
@@ -73,7 +74,6 @@ If you have defined your Items in _.items_ files, tags can be added using:
 ```
 
 syntax (after the _(Groups)_ and before the _{channel}_).
-If you created your items another way, e.g. using the Paper UI, [HABmin](/docs/configuration/ui/habmin/) allows you to modify the tags.
 
 ### Tag: _type_
 

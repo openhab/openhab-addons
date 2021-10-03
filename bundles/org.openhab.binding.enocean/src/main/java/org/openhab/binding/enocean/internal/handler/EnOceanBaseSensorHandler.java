@@ -23,7 +23,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.openhab.binding.enocean.internal.config.EnOceanBaseConfig;
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.eep.EEPFactory;
@@ -56,7 +55,8 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
             THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT, THING_TYPE_TEMPERATURESENSOR,
             THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_ROCKERSWITCH, THING_TYPE_OCCUPANCYSENSOR,
             THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR, THING_TYPE_PUSHBUTTON,
-            THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_ENVIRONMENTALSENSOR, THING_TYPE_MULTFUNCTIONSMOKEDETECTOR);
+            THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_ENVIRONMENTALSENSOR, THING_TYPE_MULTFUNCTIONSMOKEDETECTOR,
+            THING_TYPE_WINDOWSASHHANDLESENSOR);
 
     protected final Hashtable<RORG, EEPType> receivingEEPTypes = new Hashtable<>();
 
@@ -135,7 +135,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
     }
 
     protected void sendRequestResponse() {
-        throw new NotImplementedException("Sensor cannot send responses");
+        throw new UnsupportedOperationException("Sensor cannot send responses");
     }
 
     @Override

@@ -19,6 +19,8 @@ import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.NotSupportedException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
@@ -30,10 +32,13 @@ import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -54,10 +59,16 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
+    private enum RefreshKind {
+        POSITION,
+        BATTERY_LEVEL
+    }
+
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
 
     private static final int REFRESH_DELAY_SEC = 10;
-    private @Nullable ScheduledFuture<?> refreshFuture = null;
+    private @Nullable ScheduledFuture<?> refreshPositionFuture = null;
+    private @Nullable ScheduledFuture<?> refreshBatteryLevelFuture = null;
 
     public HDPowerViewShadeHandler(Thing thing) {
         super(thing);
@@ -82,7 +93,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH.equals(command)) {
-            requestRefreshShade();
+            requestRefreshShadePosition();
             return;
         }
 
@@ -134,7 +145,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (shadeData != null) {
             updateStatus(ThingStatus.ONLINE);
             updateBindingStates(shadeData.positions);
-            updateState(CHANNEL_SHADE_LOW_BATTERY, shadeData.batteryStatus < 2 ? OnOffType.ON : OnOffType.OFF);
+            updateBatteryLevel(shadeData.batteryStatus);
+            updateState(CHANNEL_SHADE_BATTERY_VOLTAGE,
+                    shadeData.batteryStrength > 0 ? new QuantityType<>(shadeData.batteryStrength / 10, Units.VOLT)
+                            : UnDefType.UNDEF);
+            updateState(CHANNEL_SHADE_SIGNAL_STRENGTH, new DecimalType(shadeData.signalStrength));
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
@@ -150,6 +165,28 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             updateState(CHANNEL_SHADE_VANE, UnDefType.UNDEF);
             updateState(CHANNEL_SHADE_SECONDARY_POSITION, UnDefType.UNDEF);
         }
+    }
+
+    private void updateBatteryLevel(int batteryStatus) {
+        int mappedValue;
+        switch (batteryStatus) {
+            case 1: // Low
+                mappedValue = 10;
+                break;
+            case 2: // Medium
+                mappedValue = 50;
+                break;
+            case 3: // High
+            case 4: // Plugged in
+                mappedValue = 100;
+                break;
+            default: // No status available (0) or invalid
+                updateState(CHANNEL_SHADE_LOW_BATTERY, UnDefType.UNDEF);
+                updateState(CHANNEL_SHADE_BATTERY_LEVEL, UnDefType.UNDEF);
+                return;
+        }
+        updateState(CHANNEL_SHADE_LOW_BATTERY, batteryStatus == 1 ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_SHADE_BATTERY_LEVEL, new DecimalType(mappedValue));
     }
 
     private void moveShade(ActuatorClass actuatorClass, CoordinateSystem coordSys, int newPercent) {
@@ -218,7 +255,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             }
             int shadeId = getShadeId();
             webTargets.stopShade(shadeId);
-            requestRefreshShade();
+            requestRefreshShadePosition();
         } catch (HubProcessingException | NumberFormatException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
             return;
@@ -229,15 +266,36 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     /**
-     * Request that the shade shall undergo a 'hard' refresh
+     * Request that the shade shall undergo a 'hard' refresh for querying its current position
      */
-    protected synchronized void requestRefreshShade() {
-        if (refreshFuture == null) {
-            refreshFuture = scheduler.schedule(this::doRefreshShade, REFRESH_DELAY_SEC, TimeUnit.SECONDS);
+    protected synchronized void requestRefreshShadePosition() {
+        if (refreshPositionFuture == null) {
+            refreshPositionFuture = scheduler.schedule(this::doRefreshShadePosition, REFRESH_DELAY_SEC,
+                    TimeUnit.SECONDS);
         }
     }
 
-    private void doRefreshShade() {
+    /**
+     * Request that the shade shall undergo a 'hard' refresh for querying its battery level state
+     */
+    protected synchronized void requestRefreshShadeBatteryLevel() {
+        if (refreshBatteryLevelFuture == null) {
+            refreshBatteryLevelFuture = scheduler.schedule(this::doRefreshShadeBatteryLevel, REFRESH_DELAY_SEC,
+                    TimeUnit.SECONDS);
+        }
+    }
+
+    private void doRefreshShadePosition() {
+        this.doRefreshShade(RefreshKind.POSITION);
+        refreshPositionFuture = null;
+    }
+
+    private void doRefreshShadeBatteryLevel() {
+        this.doRefreshShade(RefreshKind.BATTERY_LEVEL);
+        refreshBatteryLevelFuture = null;
+    }
+
+    private void doRefreshShade(RefreshKind kind) {
         try {
             HDPowerViewHubHandler bridge;
             if ((bridge = getBridgeHandler()) == null) {
@@ -248,7 +306,17 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 throw new HubProcessingException("Web targets not initialized");
             }
             int shadeId = getShadeId();
-            Shade shade = webTargets.refreshShade(shadeId);
+            Shade shade;
+            switch (kind) {
+                case POSITION:
+                    shade = webTargets.refreshShadePosition(shadeId);
+                    break;
+                case BATTERY_LEVEL:
+                    shade = webTargets.refreshShadeBatteryLevel(shadeId);
+                    break;
+                default:
+                    throw new NotSupportedException("Unsupported refresh kind " + kind.toString());
+            }
             if (shade != null) {
                 ShadeData shadeData = shade.shade;
                 if (shadeData != null) {
@@ -262,6 +330,5 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
         }
-        refreshFuture = null;
     }
 }
