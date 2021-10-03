@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 [ $# -lt 3 ] && { echo "Usage: $0 <BindingIdInCamelCase> <Author> <GitHub Username>"; exit 1; }
 
