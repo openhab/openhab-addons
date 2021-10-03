@@ -2,14 +2,16 @@
 
 This is the binding for the Proteus EcoMeter S, which is able to report the level of a cistern or tank.
 
-Note that this binding currently supports no write channels. This means you have to configure your sensor by
-considering the manual of the product (using wireless display). After doing that the binding comes into play
-and helps you to get your measured values into openHAB. Please be patient while waiting for the first received
-data. The sensor reports at an interval of approx. 1h, except when the water level changes relatively fast.
+Note that this binding currently supports no write channels.
+This means you have to configure your sensor by considering the manual of the product (using wireless display).
+After doing that the binding comes into play and helps you to get your measured values into openHAB.
+Please be patient while waiting for the first received data.
+The sensor reports at an interval of approx. 1h, except when the water level changes relatively fast.
 
 ## Supported Things
 
-Proteus EcoMeter S. The binding has been tested with this EcoMeter sensor only.
+Proteus EcoMeter S.
+The binding has been tested with this EcoMeter sensor only.
 
 ## Discovery
 
@@ -17,7 +19,9 @@ No auto discovery implemented yet.
 
 ## Thing Configuration
 
-Plug the wireless display into an USB port. Note [openHAB Serial Port documentation](https://www.openhab.org/docs/administration/serial.html) for general serial port configuration. After that you can add the device as thing and configure the usbPort your OS generated for the display.
+Plug the wireless display into an USB port.
+Note [openHAB Serial Port documentation](https://www.openhab.org/docs/administration/serial.html) for general serial port configuration.
+After that you can add the device as thing and configure the usbPort your OS generated for the display.
 
 ```
 UID: proteusecometer:EcoMeterS:e90705eaa4

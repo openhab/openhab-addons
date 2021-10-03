@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.proteusecometer.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ProteusEcoMeterConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Matthias Herrmann - Initial contribution
  */
+@NonNullByDefault
 public class ProteusEcoMeterConfiguration {
-    public String usbPort;
+    public String usbPort = "";
 }

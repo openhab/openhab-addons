@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.proteusecometer.internal.ecometers.handler;
 
+import static org.openhab.binding.proteusecometer.internal.ProteusEcoMeterBindingConstants.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
@@ -21,7 +23,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.proteusecometer.internal.ProteusEcoMeterBindingConstants;
 import org.openhab.binding.proteusecometer.internal.ProteusEcoMeterConfiguration;
 import org.openhab.binding.proteusecometer.internal.WrappedException;
 import org.openhab.binding.proteusecometer.internal.ecometers.ProteusEcoMeterSReply;
@@ -52,7 +53,7 @@ public class ProteusEcoMeterSHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ProteusEcoMeterSHandler.class);
     private @Nullable SerialPort serialPort;
-    private @Nullable ProteusEcoMeterConfiguration config;
+    private ProteusEcoMeterConfiguration config = new ProteusEcoMeterConfiguration();
     private @Nullable ScheduledFuture<?> job;
 
     public ProteusEcoMeterSHandler(final Thing thing) {
@@ -62,32 +63,23 @@ public class ProteusEcoMeterSHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(ProteusEcoMeterConfiguration.class);
-        final ProteusEcoMeterConfiguration localConfig = config;
-        if (localConfig == null) {
-            final String msg = "Expected initialize to be called ONLY when config is not null";
-            logger.error(msg);
-            throw new IllegalStateException(msg);
-        }
         updateStatus(ThingStatus.UNKNOWN);
         job = scheduler.schedule(() -> {
 
             try {
                 final ProteusEcoMeterSService ecoMeterSService = new ProteusEcoMeterSService();
-                final Stream<ProteusEcoMeterSReply> replyStream = ecoMeterSService.read(localConfig.usbPort,
+                final Stream<ProteusEcoMeterSReply> replyStream = ecoMeterSService.read(config.usbPort,
                         serialPortService);
                 updateStatus(ThingStatus.ONLINE);
 
                 replyStream.forEach(reply -> {
-                    updateState(ProteusEcoMeterBindingConstants.SENSOR_LEVEL,
+                    updateState(SENSOR_LEVEL,
                             new QuantityType<>(reply.sensorLevelInCm, MetricPrefix.CENTI(SIUnits.METRE)));
-                    updateState(ProteusEcoMeterBindingConstants.USABLE_LEVEL_IN_LITRE,
-                            new QuantityType<>(reply.usableLevelInLiter, Units.LITRE));
-                    updateState(ProteusEcoMeterBindingConstants.USABLE_LEVEL_IN_PERCENT, new QuantityType<>(
+                    updateState(USABLE_LEVEL_IN_LITRE, new QuantityType<>(reply.usableLevelInLiter, Units.LITRE));
+                    updateState(USABLE_LEVEL_IN_PERCENT, new QuantityType<>(
                             100d / reply.totalCapacityInLiter * reply.usableLevelInLiter, Units.PERCENT));
-                    updateState(ProteusEcoMeterBindingConstants.TEMPERATURE,
-                            new QuantityType<>(reply.tempInCelsius, SIUnits.CELSIUS));
-                    updateState(ProteusEcoMeterBindingConstants.TOTAL_CAPACITY,
-                            new QuantityType<>(reply.totalCapacityInLiter, Units.LITRE));
+                    updateState(TEMPERATURE, new QuantityType<>(reply.tempInCelsius, SIUnits.CELSIUS));
+                    updateState(TOTAL_CAPACITY, new QuantityType<>(reply.totalCapacityInLiter, Units.LITRE));
                 });
                 closeSerialPort();
             } catch (final Exception e) {
