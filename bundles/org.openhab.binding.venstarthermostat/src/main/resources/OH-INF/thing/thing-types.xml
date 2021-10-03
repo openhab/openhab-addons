@@ -71,13 +71,13 @@
 			<channel id="aux2RuntimeDay4" typeId="aux2Runtime"/>
 			<channel id="aux2RuntimeDay5" typeId="aux2Runtime"/>
 			<channel id="aux2RuntimeDay6" typeId="aux2Runtime"/>
-			<channel id="freeCoolRuntimeDay0" typeId="freeCoolRuntime"/>
-			<channel id="freeCoolRuntimeDay1" typeId="freeCoolRuntime"/>
-			<channel id="freeCoolRuntimeDay2" typeId="freeCoolRuntime"/>
-			<channel id="freeCoolRuntimeDay3" typeId="freeCoolRuntime"/>
-			<channel id="freeCoolRuntimeDay4" typeId="freeCoolRuntime"/>
-			<channel id="freeCoolRuntimeDay5" typeId="freeCoolRuntime"/>
-			<channel id="freeCoolRuntimeDay6" typeId="freeCoolRuntime"/>
+			<channel id="freecoolRuntimeDay0" typeId="freecoolRuntime"/>
+			<channel id="freecoolRuntimeDay1" typeId="freecoolRuntime"/>
+			<channel id="freecoolRuntimeDay2" typeId="freecoolRuntime"/>
+			<channel id="freecoolRuntimeDay3" typeId="freecoolRuntime"/>
+			<channel id="freecoolRuntimeDay4" typeId="freecoolRuntime"/>
+			<channel id="freecoolRuntimeDay5" typeId="freecoolRuntime"/>
+			<channel id="freecoolRuntimeDay6" typeId="freecoolRuntime"/>
 		</channels>
 
 		<properties>
@@ -274,7 +274,7 @@
 		<state readOnly="true" pattern="%d mins"/>
 	</channel-type>
 
-	<channel-type id="freeCoolRuntime" advanced="false">
+	<channel-type id="freecoolRuntime" advanced="false">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Free Cool Runtime Minutes</label>
 		<description>Run time in Free Cool mode in minutes (Day 0 = TODAY, Day 6 = 6 days ago)</description>

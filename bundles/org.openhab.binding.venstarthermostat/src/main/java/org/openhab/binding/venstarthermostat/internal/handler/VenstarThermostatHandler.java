@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -107,6 +108,14 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
 
     private static final int TIMEOUT_SECONDS = 30;
     private static final int UPDATE_AFTER_COMMAND_SECONDS = 2;
+    private static final String CHANNEL_TIMESTAMP_RUNTIME_DAY = "timestampDay";
+    private static final String CHANNEL_HEAT1_RUNTIME_DAY = "heat1RuntimeDay";
+    private static final String CHANNEL_HEAT2_RUNTIME_DAY = "heat2RuntimeDay";
+    private static final String CHANNEL_COOL1_RUNTIME_DAY = "cool1RuntimeDay";
+    private static final String CHANNEL_COOL2_RUNTIME_DAY = "cool2RuntimeDay";
+    private static final String CHANNEL_AUX1_RUNTIME_DAY = "aux1RuntimeDay";
+    private static final String CHANNEL_AUX2_RUNTIME_DAY = "aux2RuntimeDay";
+    private static final String CHANNEL_FC_RUNTIME_DAY = "freecoolRuntimeDay";
 
     private Logger log = LoggerFactory.getLogger(VenstarThermostatHandler.class);
     private List<VenstarSensor> sensorData = new ArrayList<>();
@@ -383,8 +392,12 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
     }
 
     private ZonedDateTime getTimestampRuntime(VenstarRuntime runtime) {
-        ZonedDateTime z = ZonedDateTime.ofInstant(Instant.ofEpochSecond(runtime.getTimeStamp()),
-                ZoneId.systemDefault());
+        ZoneId zoneId = ZoneId.systemDefault();
+        ZonedDateTime now = LocalDateTime.now().atZone(zoneId);
+        int diff = now.getOffset().getTotalSeconds();
+        ZonedDateTime z = ZonedDateTime.ofInstant(Instant.ofEpochSecond(runtime.getTimeStamp() - diff), zoneId);
+        // ZonedDateTime z = ZonedDateTime.ofInstant(Instant.ofEpochSecond(runtime.getTimeStamp()),
+        // ZoneId.systemDefault());
         return z;
     }
 
@@ -481,42 +494,20 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
 
             runtimeData = Objects.requireNonNull(gson.fromJson(response, VenstarRuntimeData.class));
             List<VenstarRuntime> runtimes = runtimeData.getRuntimes();
-            String[] timestamps = { CHANNEL_TIMESTAMP_RUNTIME_DAY0, CHANNEL_TIMESTAMP_RUNTIME_DAY1,
-                    CHANNEL_TIMESTAMP_RUNTIME_DAY2, CHANNEL_TIMESTAMP_RUNTIME_DAY3, CHANNEL_TIMESTAMP_RUNTIME_DAY4,
-                    CHANNEL_TIMESTAMP_RUNTIME_DAY5, CHANNEL_TIMESTAMP_RUNTIME_DAY6 };
-            String[] heat1Runtimes = { CHANNEL_HEAT1_RUNTIME_DAY0, CHANNEL_HEAT1_RUNTIME_DAY1,
-                    CHANNEL_HEAT1_RUNTIME_DAY2, CHANNEL_HEAT1_RUNTIME_DAY3, CHANNEL_HEAT1_RUNTIME_DAY4,
-                    CHANNEL_HEAT1_RUNTIME_DAY5, CHANNEL_HEAT1_RUNTIME_DAY6 };
-            String[] heat2Runtimes = { CHANNEL_HEAT2_RUNTIME_DAY0, CHANNEL_HEAT2_RUNTIME_DAY1,
-                    CHANNEL_HEAT2_RUNTIME_DAY2, CHANNEL_HEAT2_RUNTIME_DAY3, CHANNEL_HEAT2_RUNTIME_DAY4,
-                    CHANNEL_HEAT2_RUNTIME_DAY5, CHANNEL_HEAT2_RUNTIME_DAY6 };
-            String[] cool1Runtimes = { CHANNEL_COOL1_RUNTIME_DAY0, CHANNEL_COOL1_RUNTIME_DAY1,
-                    CHANNEL_COOL1_RUNTIME_DAY2, CHANNEL_COOL1_RUNTIME_DAY3, CHANNEL_COOL1_RUNTIME_DAY4,
-                    CHANNEL_COOL1_RUNTIME_DAY5, CHANNEL_COOL1_RUNTIME_DAY6 };
-            String[] cool2Runtimes = { CHANNEL_COOL2_RUNTIME_DAY0, CHANNEL_COOL2_RUNTIME_DAY1,
-                    CHANNEL_COOL2_RUNTIME_DAY2, CHANNEL_COOL2_RUNTIME_DAY3, CHANNEL_COOL2_RUNTIME_DAY4,
-                    CHANNEL_COOL2_RUNTIME_DAY5, CHANNEL_COOL2_RUNTIME_DAY6 };
-            String[] aux1Runtimes = { CHANNEL_AUX1_RUNTIME_DAY0, CHANNEL_AUX1_RUNTIME_DAY1, CHANNEL_AUX1_RUNTIME_DAY2,
-                    CHANNEL_AUX1_RUNTIME_DAY3, CHANNEL_AUX1_RUNTIME_DAY4, CHANNEL_AUX1_RUNTIME_DAY5,
-                    CHANNEL_AUX1_RUNTIME_DAY6 };
-            String[] aux2Runtimes = { CHANNEL_AUX2_RUNTIME_DAY0, CHANNEL_AUX2_RUNTIME_DAY1, CHANNEL_AUX2_RUNTIME_DAY2,
-                    CHANNEL_AUX2_RUNTIME_DAY3, CHANNEL_AUX2_RUNTIME_DAY4, CHANNEL_AUX2_RUNTIME_DAY5,
-                    CHANNEL_AUX2_RUNTIME_DAY6 };
-            String[] fCRuntimes = { CHANNEL_FC_RUNTIME_DAY0, CHANNEL_FC_RUNTIME_DAY1, CHANNEL_FC_RUNTIME_DAY2,
-                    CHANNEL_FC_RUNTIME_DAY3, CHANNEL_FC_RUNTIME_DAY4, CHANNEL_FC_RUNTIME_DAY5,
-                    CHANNEL_FC_RUNTIME_DAY6 };
-            int nRuntimes = runtimes.size();// check how many runtimes are available, might not be seven if equipment
-                                            // was reset
+            Collections.reverse(runtimes);// reverse the list so that the most recent runtime data is first in the list
+            int nRuntimes = Math.min(7, runtimes.size());// check how many runtimes are available, might be less than
+                                                         // seven if equipment
+                                                         // was reset, and also might be more than 7, so limit to 7
             for (int i = 0; i < nRuntimes; i++) {
                 VenstarRuntime rt = runtimes.get(i);
-                updateIfChanged(timestamps[i], new DateTimeType(getTimestampRuntime(rt)));
-                updateIfChanged(heat1Runtimes[i], new DecimalType(rt.getHeat1Runtime()));
-                updateIfChanged(heat2Runtimes[i], new DecimalType(rt.getHeat2Runtime()));
-                updateIfChanged(cool1Runtimes[i], new DecimalType(rt.getCool1Runtime()));
-                updateIfChanged(cool2Runtimes[i], new DecimalType(rt.getCool2Runtime()));
-                updateIfChanged(aux1Runtimes[i], new DecimalType(rt.getAux1Runtime()));
-                updateIfChanged(aux2Runtimes[i], new DecimalType(rt.getAux2Runtime()));
-                updateIfChanged(fCRuntimes[i], new DecimalType(rt.getFreecoolRuntime()));
+                updateIfChanged(CHANNEL_TIMESTAMP_RUNTIME_DAY + i, new DateTimeType(getTimestampRuntime(rt)));
+                updateIfChanged(CHANNEL_HEAT1_RUNTIME_DAY + i, new DecimalType(rt.getHeat1Runtime()));
+                updateIfChanged(CHANNEL_HEAT2_RUNTIME_DAY + i, new DecimalType(rt.getHeat2Runtime()));
+                updateIfChanged(CHANNEL_COOL1_RUNTIME_DAY + i, new DecimalType(rt.getCool1Runtime()));
+                updateIfChanged(CHANNEL_COOL2_RUNTIME_DAY + i, new DecimalType(rt.getCool2Runtime()));
+                updateIfChanged(CHANNEL_AUX1_RUNTIME_DAY + i, new DecimalType(rt.getAux1Runtime()));
+                updateIfChanged(CHANNEL_AUX2_RUNTIME_DAY + i, new DecimalType(rt.getAux2Runtime()));
+                updateIfChanged(CHANNEL_FC_RUNTIME_DAY + i, new DecimalType(rt.getFreecoolRuntime()));
             }
 
             response = getData("/query/info");

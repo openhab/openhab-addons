@@ -105,13 +105,13 @@ public class VenstarThermostatBindingConstants {
     public static final String CHANNEL_AUX2_RUNTIME_DAY4 = "aux2RuntimeDay4";
     public static final String CHANNEL_AUX2_RUNTIME_DAY5 = "aux2RuntimeDay5";
     public static final String CHANNEL_AUX2_RUNTIME_DAY6 = "aux2RuntimeDay6";
-    public static final String CHANNEL_FC_RUNTIME_DAY0 = "freeCoolRuntimeDay0";
-    public static final String CHANNEL_FC_RUNTIME_DAY1 = "freeCoolRuntimeDay1";
-    public static final String CHANNEL_FC_RUNTIME_DAY2 = "freeCoolRuntimeDay2";
-    public static final String CHANNEL_FC_RUNTIME_DAY3 = "freeCoolRuntimeDay3";
-    public static final String CHANNEL_FC_RUNTIME_DAY4 = "freeCoolRuntimeDay4";
-    public static final String CHANNEL_FC_RUNTIME_DAY5 = "freeCoolRuntimeDay5";
-    public static final String CHANNEL_FC_RUNTIME_DAY6 = "freeCoolRuntimeDay6";
+    public static final String CHANNEL_FC_RUNTIME_DAY0 = "freecoolRuntimeDay0";
+    public static final String CHANNEL_FC_RUNTIME_DAY1 = "freecoolRuntimeDay1";
+    public static final String CHANNEL_FC_RUNTIME_DAY2 = "freecoolRuntimeDay2";
+    public static final String CHANNEL_FC_RUNTIME_DAY3 = "freecoolRuntimeDay3";
+    public static final String CHANNEL_FC_RUNTIME_DAY4 = "freecoolRuntimeDay4";
+    public static final String CHANNEL_FC_RUNTIME_DAY5 = "freecoolRuntimeDay5";
+    public static final String CHANNEL_FC_RUNTIME_DAY6 = "freecoolRuntimeDay6";
 
     // add query/runtimes and query/alerts - these will need an additional class similar to Venstar.infodata - more work
 
