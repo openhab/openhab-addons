@@ -14,6 +14,7 @@
 			<channel id="service-mileage" typeId="next-service-mileage-channel"/>
 			<channel id="check-control" typeId="check-control-channel"/>
 			<channel id="last-update" typeId="last-update-channel"/>
+			<channel id="last-update-reason" typeId="last-update-reason-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

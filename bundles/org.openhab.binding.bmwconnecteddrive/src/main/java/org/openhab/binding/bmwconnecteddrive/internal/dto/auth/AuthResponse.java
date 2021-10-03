@@ -26,4 +26,9 @@ public class AuthResponse {
     public String tokenType;
     @SerializedName("expires_in")
     public int expiresIn;
+
+    @Override
+    public String toString() {
+        return "Token " + accessToken + " type " + tokenType + " expires in " + expiresIn;
+    }
 }

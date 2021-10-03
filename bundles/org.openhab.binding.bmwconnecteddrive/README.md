@@ -95,6 +95,14 @@ The region Configuration has 3 different options
 * _CHINA_
 * _ROW_  (Rest of World)
 
+
+#### Advanced Configuration
+
+| Parameter       | Type    | Description                                                        |           
+|-----------------|---------|--------------------------------------------------------------------|
+| preferMyBmw     | boolean | Prefer *MyBMW* API instead of *BMW Connected Drive*                |
+
+
 ### Thing Configuration
 
 Same configuration is needed for all things
@@ -147,8 +155,10 @@ Reflects overall status of the vehicle.
 | Next Service Date         | service-date        | DateTime      | Date of upcoming service                       |
 | Mileage till Next Service | service-mileage     | Number:Length | Mileage till upcoming service                  |
 | Check Control             | check-control       | String        | Presence of active warning messages            |
+| Plug Connection Status    | plug-connection     | String        | Only available for phev, bev_rex and bev       |
 | Charging Status           | charge              | String        | Only available for phev, bev_rex and bev       |
 | Last Status Timestamp     | last-update         | DateTime      | Date and time of last status update            |
+| Last Status Update Reason | last-update-reason  | DateTime      | Date and time of last status update            |
 
 Overall Door Status values
 
@@ -179,6 +189,27 @@ Charging Status values
 * _Not Charging_
 * _Charging Goal reached_
 * _Waiting For Charging_
+
+Last update reasons
+
+* _CHARGING_DONE_
+* _CHARGING_INTERRUPED_
+* _CHARGING_PAUSED
+* _CHARGING_STARTED_
+* _CYCLIC_RECHARGING_
+* _DISCONNECTED_
+* _DOOR_STATE_CHANGED_
+* _NO_CYCLIC_RECHARGING_
+* _NO_LSC_TRIGGER_
+* _ON_DEMAND_
+* _PREDICTION_UPDATE_
+* _TEMPORARY_POWER_SUPPLY_FAILURE_
+* _UNKNOWN_
+* _VEHICLE_MOVING_
+* _VEHICLE_SECURED_
+* _VEHICLE_SHUTDOWN_
+* _VEHICLE_SHUTDOWN_SECURED_
+* _VEHICLE_UNSECURED_
 
 #### Services
 
@@ -253,17 +284,20 @@ See description [Range vs Range Radius](#range-vs-range-radius) to get more info
 * Availability according to table
 * Read-only values
 
-| Channel Label         | Channel ID            | Type                 | conv | phev | bev_rex | bev |
-|-----------------------|-----------------------|----------------------|------|------|---------|-----|
-| Mileage               | mileage               | Number:Length        |  X   |  X   |    X    |  X  |
-| Fuel Range            | range-fuel            | Number:Length        |  X   |  X   |    X    |     |
-| Battery Range         | range-electric        | Number:Length        |      |  X   |    X    |  X  | 
-| Hybrid Range          | range-hybrid          | Number:Length        |      |  X   |    X    |     | 
-| Battery Charge Level  | soc                   | Number:Dimensionless |      |  X   |    X    |  X  |
-| Remaining Fuel        | remaining-fuel        | Number:Volume        |  X   |  X   |    X    |     | 
-| Fuel Range Radius     | range-radius-fuel     | Number:Length        |  X   |  X   |    X    |     | 
-| Electric Range Radius | range-radius-electric | Number:Length        |      |  X   |    X    |  X  | 
-| Hybrid Range Radius   | range-radius-hybrid   | Number:Length        |      |  X   |    X    |     | 
+| Channel Label             | Channel ID              | Type                 | conv | phev | bev_rex | bev |
+|---------------------------|-------------------------|----------------------|------|------|---------|-----|
+| Mileage                   | mileage                 | Number:Length        |  X   |  X   |    X    |  X  |
+| Fuel Range                | range-fuel              | Number:Length        |  X   |  X   |    X    |     |
+| Battery Range             | range-electric          | Number:Length        |      |  X   |    X    |  X  | 
+| Max Battery Range         | range-electric-max      | Number:Length        |      |  X   |    X    |  X  | 
+| Hybrid Range              | range-hybrid            | Number:Length        |      |  X   |    X    |     | 
+| Battery Charge Level      | soc                     | Number:Dimensionless |      |  X   |    X    |  X  |
+| Max Battery Capacity      | soc-max                 | Number:Power  |      |      |  X   |    X    |  X  |
+| Remaining Fuel            | remaining-fuel          | Number:Volume        |  X   |  X   |    X    |     | 
+| Fuel Range Radius         | range-radius-fuel       | Number:Length        |  X   |  X   |    X    |     | 
+| Electric Range Radius     | range-radius-electric   | Number:Length        |      |  X   |    X    |  X  | 
+| Hybrid Range Radius       | range-radius-hybrid     | Number:Length        |      |  X   |    X    |     | 
+| Max Hybrid Range Radius   | range-radius-hybrid-max | Number:Length        |      |  X   |    X    |     | 
 
 
 #### Charge Profile
