@@ -14,16 +14,23 @@ package org.openhab.binding.openwebnet.internal.handler;
 
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
+import org.openhab.binding.openwebnet.internal.actions.OpenWebNetCENActions;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
@@ -56,7 +63,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
         public String toString();
     }
 
-    private enum CENPressureEvent implements PressureEvent {
+    public enum CENPressureEvent implements PressureEvent {
         START_PRESSURE("START_PRESSURE"),
         SHORT_PRESSURE("SHORT_PRESSURE"),
         EXTENDED_PRESSURE("EXTENDED_PRESSURE"),
@@ -66,6 +73,12 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
 
         CENPressureEvent(final String pr) {
             this.pressure = pr;
+        }
+
+        public static @Nullable CENPressureEvent fromValue(String s) {
+            Optional<CENPressureEvent> event = Arrays.stream(values()).filter(val -> s.equals(val.pressure))
+                    .findFirst();
+            return event.orElse(null);
         }
 
         @Override
@@ -110,6 +123,11 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
                         thing.getUID());
             }
         }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(OpenWebNetCENActions.class);
     }
 
     @Override
@@ -199,6 +217,42 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
                 .withType(channelTypeUID).withKind(ChannelKind.TRIGGER).withLabel("Button " + buttonNumber).build();
     }
 
+    /**
+     * Construct a CEN/CEN+ virtual pressure message for this device given a pressureString and button number
+     *
+     * @param pressureString one START_PRESSURE, SHORT_PRESSURE etc.
+     * @param button number [0-31]
+     * @return CEN message
+     * @throws IllegalArgumentException if button number or pressureString are invalid
+     */
+    public CEN pressureStrToMessage(String pressureString, int button) throws IllegalArgumentException {
+        Where w = deviceWhere;
+        if (w == null) {
+            throw new IllegalArgumentException("pressureStrToMessage: deviceWhere is null");
+        }
+        if (isCENPlus) {
+            throw new IllegalArgumentException("CEN+ unsupported");
+        } else {
+            CENPressureEvent prEvent = CENPressureEvent.fromValue(pressureString);
+            if (prEvent != null) {
+                switch (prEvent) {
+                    case START_PRESSURE:
+                        return CENScenario.virtualStartPressure(w.value(), button);
+                    case SHORT_PRESSURE:
+                        return CENScenario.virtualReleaseShortPressure(w.value(), button);
+                    case EXTENDED_PRESSURE:
+                        return CENScenario.virtualExtendedPressure(w.value(), button);
+                    case RELEASE_EXTENDED_PRESSURE:
+                        return CENScenario.virtualReleaseExtendedPressure(w.value(), button);
+                    default:
+                        throw new IllegalArgumentException("unsupported pressure type: " + pressureString);
+                }
+            } else {
+                throw new IllegalArgumentException("unsupported pressure type: " + pressureString);
+            }
+        }
+    }
+
     /*
      * private Integer channelToButton(ChannelUID channel) {
      * try {
@@ -211,15 +265,13 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
      */
     private static Set<Integer> csvStringToSetInt(String s) {
         TreeSet<Integer> intSet = new TreeSet<Integer>();
-        if (s != null) {
-            String sNorm = s.replaceAll("\\s", "");
-            Scanner sc = new Scanner(sNorm);
-            sc.useDelimiter(",");
-            while (sc.hasNextInt()) {
-                intSet.add(sc.nextInt());
-            }
-            sc.close();
+        String sNorm = s.replaceAll("\\s", "");
+        Scanner sc = new Scanner(sNorm);
+        sc.useDelimiter(",");
+        while (sc.hasNextInt()) {
+            intSet.add(sc.nextInt());
         }
+        sc.close();
         return intSet;
     }
 
