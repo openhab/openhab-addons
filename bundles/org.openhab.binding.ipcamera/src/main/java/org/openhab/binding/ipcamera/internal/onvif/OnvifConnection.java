@@ -114,7 +114,7 @@ public class OnvifConnection {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(2);
     private @Nullable Bootstrap bootstrap;
-    private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup();
+    private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup(2);
     private String ipAddress = "";
     private String user = "";
     private String password = "";

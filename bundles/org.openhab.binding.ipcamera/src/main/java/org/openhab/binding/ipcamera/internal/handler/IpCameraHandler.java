@@ -145,7 +145,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> pollCameraJob = null;
     private @Nullable ScheduledFuture<?> snapshotJob = null;
     private @Nullable Bootstrap mainBootstrap;
-    private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup();
+    private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup(1);
     private FullHttpRequest putRequestWithBody = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("PUT"),
             "");
     private String gifFilename = "ipcamera";
@@ -1547,6 +1547,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public void initialize() {
         cameraConfig = getConfigAs(CameraConfig.class);
         threadPool = Executors.newScheduledThreadPool(4);
+        mainEventLoopGroup = new NioEventLoopGroup(3);
         snapshotUri = getCorrectUrlFormat(cameraConfig.getSnapshotUrl());
         mjpegUri = getCorrectUrlFormat(cameraConfig.getMjpegUrl());
         rtspUri = cameraConfig.getFfmpegInput();
@@ -1635,19 +1636,23 @@ public class IpCameraHandler extends BaseThingHandler {
         CameraServlet localServlet = servlet;
         if (localServlet != null) {
             localServlet.dispose();
+            localServlet = null;
         }
         snapshotPolling = false;
         Future<?> localFuture = pollCameraJob;
         if (localFuture != null) {
             localFuture.cancel(true);
+            localFuture = null;
         }
         localFuture = snapshotJob;
         if (localFuture != null) {
             localFuture.cancel(true);
+            localFuture = null;
         }
         localFuture = cameraConnectionJob;
         if (localFuture != null) {
             localFuture.cancel(true);
+            localFuture = null;
         }
         onvifCamera.disconnect();
         threadPool.shutdown();
@@ -1668,25 +1673,31 @@ public class IpCameraHandler extends BaseThingHandler {
         localFfmpeg = ffmpegRecord;
         if (localFfmpeg != null) {
             localFfmpeg.stopConverting();
+            localFfmpeg = null;
         }
         localFfmpeg = ffmpegGIF;
         if (localFfmpeg != null) {
             localFfmpeg.stopConverting();
+            localFfmpeg = null;
         }
         localFfmpeg = ffmpegRtspHelper;
         if (localFfmpeg != null) {
             localFfmpeg.stopConverting();
+            localFfmpeg = null;
         }
         localFfmpeg = ffmpegMjpeg;
         if (localFfmpeg != null) {
             localFfmpeg.stopConverting();
+            localFfmpeg = null;
         }
         localFfmpeg = ffmpegSnapshot;
         if (localFfmpeg != null) {
             localFfmpeg.stopConverting();
+            localFfmpeg = null;
         }
         openChannels.close();
         mainEventLoopGroup.shutdownGracefully();
+        mainBootstrap = null;
         channelTrackingMap.clear();
     }
 
