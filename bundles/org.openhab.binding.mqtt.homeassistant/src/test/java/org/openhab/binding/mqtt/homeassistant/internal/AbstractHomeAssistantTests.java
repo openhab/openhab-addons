@@ -25,12 +25,11 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Assertions;
@@ -94,7 +93,7 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
     protected final Bridge bridgeThing = BridgeBuilder.create(BRIDGE_TYPE_UID, BRIDGE_UID).build();
     protected final BrokerHandler bridgeHandler = spy(new BrokerHandler(bridgeThing));
     protected final Thing haThing = ThingBuilder.create(HA_TYPE_UID, HA_UID).withBridge(BRIDGE_UID).build();
-    protected final Map<String, Set<MqttMessageSubscriber>> subscriptions = new HashMap<>();
+    protected final ConcurrentMap<String, Set<MqttMessageSubscriber>> subscriptions = new ConcurrentHashMap<>();
 
     private final JinjaTransformationService jinjaTransformationService = new JinjaTransformationService();
 
@@ -125,10 +124,9 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
         doAnswer(invocation -> {
             final var topic = (String) invocation.getArgument(0);
             final var subscriber = (MqttMessageSubscriber) invocation.getArgument(1);
-            final var topicSubscriptions = subscriptions.getOrDefault(topic, new HashSet<>());
 
-            topicSubscriptions.add(subscriber);
-            subscriptions.put(topic, topicSubscriptions);
+            subscriptions.putIfAbsent(topic, ConcurrentHashMap.newKeySet());
+            subscriptions.get(topic).add(subscriber);
             return CompletableFuture.completedFuture(true);
         }).when(bridgeConnection).subscribe(any(), any());
 

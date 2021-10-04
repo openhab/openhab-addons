@@ -65,6 +65,7 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_VACUUM = "actions#vacuum";
     public static final String CHANNEL_FAN_CONTROL = "actions#fan";
     public static final String CHANNEL_TESTCOMMANDS = "actions#testcommands";
+    public static final String CHANNEL_TESTMIOT = "actions#testmiot";
     public static final String CHANNEL_POWER = "actions#power";
 
     public static final String CHANNEL_SSID = "network#ssid";

@@ -2061,6 +2061,13 @@
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 
+	<channel-type id="temperatureHeatingLimit">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Heating Limit</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+
 	<channel-type id="comfortCoolingATExcess">
 		<item-type>Number:Time</item-type>
 		<label>AT Excess</label>

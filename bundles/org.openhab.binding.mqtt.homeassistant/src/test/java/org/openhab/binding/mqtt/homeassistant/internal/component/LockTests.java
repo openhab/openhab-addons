@@ -65,21 +65,21 @@ public class LockTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("lock"));
 
-        assertChannel(component, Lock.switchChannelID, "zigbee2mqtt/lock/state", "zigbee2mqtt/lock/set/state", "lock",
+        assertChannel(component, Lock.SWITCH_CHANNEL_ID, "zigbee2mqtt/lock/state", "zigbee2mqtt/lock/set/state", "lock",
                 OnOffValue.class);
 
         publishMessage("zigbee2mqtt/lock/state", "LOCK_");
-        assertState(component, Lock.switchChannelID, OnOffType.ON);
+        assertState(component, Lock.SWITCH_CHANNEL_ID, OnOffType.ON);
         publishMessage("zigbee2mqtt/lock/state", "LOCK_");
-        assertState(component, Lock.switchChannelID, OnOffType.ON);
+        assertState(component, Lock.SWITCH_CHANNEL_ID, OnOffType.ON);
         publishMessage("zigbee2mqtt/lock/state", "UNLOCK_");
-        assertState(component, Lock.switchChannelID, OnOffType.OFF);
+        assertState(component, Lock.SWITCH_CHANNEL_ID, OnOffType.OFF);
         publishMessage("zigbee2mqtt/lock/state", "LOCK_");
-        assertState(component, Lock.switchChannelID, OnOffType.ON);
+        assertState(component, Lock.SWITCH_CHANNEL_ID, OnOffType.ON);
 
-        component.getChannel(Lock.switchChannelID).getState().publishValue(OnOffType.OFF);
+        component.getChannel(Lock.SWITCH_CHANNEL_ID).getState().publishValue(OnOffType.OFF);
         assertPublished("zigbee2mqtt/lock/set/state", "UNLOCK_");
-        component.getChannel(Lock.switchChannelID).getState().publishValue(OnOffType.ON);
+        component.getChannel(Lock.SWITCH_CHANNEL_ID).getState().publishValue(OnOffType.ON);
         assertPublished("zigbee2mqtt/lock/set/state", "LOCK_");
     }
 

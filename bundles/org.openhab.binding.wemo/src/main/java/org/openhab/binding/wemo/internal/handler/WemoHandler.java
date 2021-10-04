@@ -39,6 +39,8 @@ import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -245,13 +247,16 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                 logger.trace("New InsightParam timespan '{}' for device '{}' received", timespan, getThing().getUID());
                 updateState(CHANNEL_TIMESPAN, timespan);
 
-                State averagePower = DecimalType.valueOf(splitInsightParams[6]); // natively given in W
+                State averagePower = new QuantityType<>(DecimalType.valueOf(splitInsightParams[6]), Units.WATT); // natively
+                                                                                                                 // given
+                                                                                                                 // in W
                 logger.trace("New InsightParam averagePower '{}' for device '{}' received", averagePower,
                         getThing().getUID());
                 updateState(CHANNEL_AVERAGEPOWER, averagePower);
 
                 BigDecimal currentMW = new BigDecimal(splitInsightParams[7]);
-                State currentPower = new DecimalType(currentMW.divide(new BigDecimal(1000), RoundingMode.HALF_UP)); // recalculate
+                State currentPower = new QuantityType<>(currentMW.divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP),
+                        Units.WATT); // recalculate
                 // mW to W
                 logger.trace("New InsightParam currentPower '{}' for device '{}' received", currentPower,
                         getThing().getUID());
@@ -259,29 +264,30 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
 
                 BigDecimal energyTodayMWMin = new BigDecimal(splitInsightParams[8]);
                 // recalculate mW-mins to Wh
-                State energyToday = new DecimalType(
-                        energyTodayMWMin.divide(new BigDecimal(60000), RoundingMode.HALF_UP));
+                State energyToday = new QuantityType<>(
+                        energyTodayMWMin.divide(new BigDecimal(60000), 0, RoundingMode.HALF_UP), Units.WATT_HOUR);
                 logger.trace("New InsightParam energyToday '{}' for device '{}' received", energyToday,
                         getThing().getUID());
                 updateState(CHANNEL_ENERGYTODAY, energyToday);
 
                 BigDecimal energyTotalMWMin = new BigDecimal(splitInsightParams[9]);
                 // recalculate mW-mins to Wh
-                State energyTotal = new DecimalType(
-                        energyTotalMWMin.divide(new BigDecimal(60000), RoundingMode.HALF_UP));
+                State energyTotal = new QuantityType<>(
+                        energyTotalMWMin.divide(new BigDecimal(60000), 0, RoundingMode.HALF_UP), Units.WATT_HOUR);
                 logger.trace("New InsightParam energyTotal '{}' for device '{}' received", energyTotal,
                         getThing().getUID());
                 updateState(CHANNEL_ENERGYTOTAL, energyTotal);
 
                 BigDecimal standByLimitMW = new BigDecimal(splitInsightParams[10]);
-                State standByLimit = new DecimalType(standByLimitMW.divide(new BigDecimal(1000), RoundingMode.HALF_UP)); // recalculate
+                State standByLimit = new QuantityType<>(
+                        standByLimitMW.divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP), Units.WATT); // recalculate
                 // mW to W
                 logger.trace("New InsightParam standByLimit '{}' for device '{}' received", standByLimit,
                         getThing().getUID());
                 updateState(CHANNEL_STANDBYLIMIT, standByLimit);
 
-                if (currentMW.divide(new BigDecimal(1000), RoundingMode.HALF_UP).intValue() > standByLimitMW
-                        .divide(new BigDecimal(1000), RoundingMode.HALF_UP).intValue()) {
+                if (currentMW.divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP).intValue() > standByLimitMW
+                        .divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP).intValue()) {
                     updateState(CHANNEL_ONSTANDBY, OnOffType.OFF);
                 } else {
                     updateState(CHANNEL_ONSTANDBY, OnOffType.ON);

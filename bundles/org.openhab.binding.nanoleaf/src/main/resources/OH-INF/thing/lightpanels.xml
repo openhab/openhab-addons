@@ -17,6 +17,7 @@
 			<channel id="rhythmState" typeId="rhythmState"/>
 			<channel id="rhythmActive" typeId="rhythmActive"/>
 			<channel id="rhythmMode" typeId="rhythmMode"/>
+			<channel id="swipe" typeId="swipe"/>
 		</channels>
 
 		<properties>
@@ -90,6 +91,20 @@
 				<option value="1">Aux Cable</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="swipe">
+		<kind>trigger</kind>
+		<label>@text/channel-type.nanoleaf.swipe.label</label>
+		<description>@text/channel-type.nanoleaf.swipe.description</description>
+		<event>
+			<options>
+				<option value="UP">Up</option>
+				<option value="DOWN">Down</option>
+				<option value="LEFT">Left</option>
+				<option value="RIGHT">Right</option>
+			</options>
+		</event>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -71,7 +71,7 @@ public class HeatpumpConnector {
             // the thermal energies can be unreasonably high in some cases, probably due to a sign bug in the firmware
             // trying to correct this issue here
             for (int i = 151; i <= 154; i++) {
-                if (heatpumpValues[i] >= 214748364) {
+                if (heatpumpValues.length > i && heatpumpValues[i] >= 214748364) {
                     heatpumpValues[i] -= 214748364;
                 }
             }

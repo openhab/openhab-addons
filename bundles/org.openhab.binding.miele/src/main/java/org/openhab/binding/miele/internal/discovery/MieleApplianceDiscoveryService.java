@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.binding.miele.internal.handler.ApplianceStatusListener;
 import org.openhab.binding.miele.internal.handler.MieleApplianceHandler;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler;
@@ -42,6 +43,7 @@ import com.google.gson.JsonElement;
  *
  * @author Karel Goderis - Initial contribution
  * @author Martin Lepsy - Added protocol information in order so support WiFi devices
+ * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
 public class MieleApplianceDiscoveryService extends AbstractDiscoveryService implements ApplianceStatusListener {
 
@@ -101,8 +103,10 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
             ThingUID bridgeUID = mieleBridgeHandler.getThing().getUID();
             Map<String, Object> properties = new HashMap<>(2);
 
-            properties.put(PROTOCOL_PROPERTY_NAME, appliance.getProtocol());
-            properties.put(APPLIANCE_ID, appliance.getApplianceId());
+            FullyQualifiedApplianceIdentifier applianceIdentifier = appliance.getApplianceIdentifier();
+            properties.put(PROTOCOL_PROPERTY_NAME, applianceIdentifier.getProtocol());
+            properties.put(APPLIANCE_ID, applianceIdentifier.getApplianceId());
+            properties.put(SERIAL_NUMBER_PROPERTY_NAME, appliance.getSerialNumber());
 
             for (JsonElement dc : appliance.DeviceClasses) {
                 String dcStr = dc.getAsString();
@@ -113,7 +117,8 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
             }
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withBridge(bridgeUID).withLabel((String) properties.get(DEVICE_CLASS)).build();
+                    .withBridge(bridgeUID).withLabel((String) properties.get(DEVICE_CLASS))
+                    .withRepresentationProperty(APPLIANCE_ID).build();
 
             thingDiscovered(discoveryResult);
         } else {
@@ -132,33 +137,37 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
     }
 
     @Override
-    public void onApplianceStateChanged(String uid, DeviceClassObject dco) {
+    public void onApplianceStateChanged(FullyQualifiedApplianceIdentifier applianceIdentifier, DeviceClassObject dco) {
         // nothing to do
     }
 
     @Override
-    public void onAppliancePropertyChanged(String uid, DeviceProperty dp) {
+    public void onAppliancePropertyChanged(FullyQualifiedApplianceIdentifier applianceIdentifier, DeviceProperty dp) {
+        // nothing to do
+    }
+
+    @Override
+    public void onAppliancePropertyChanged(String serialNumber, DeviceProperty dp) {
         // nothing to do
     }
 
     private ThingUID getThingUID(HomeDevice appliance) {
         ThingUID bridgeUID = mieleBridgeHandler.getThing().getUID();
-        String modelID = null;
+        String modelId = null;
 
         for (JsonElement dc : appliance.DeviceClasses) {
             String dcStr = dc.getAsString();
             if (dcStr.contains(MIELE_CLASS) && !dcStr.equals(MIELE_APPLIANCE_CLASS)) {
-                modelID = dcStr.substring(MIELE_CLASS.length());
+                modelId = dcStr.substring(MIELE_CLASS.length());
                 break;
             }
         }
 
-        if (modelID != null) {
-            ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID,
-                    modelID.replaceAll("[^a-zA-Z0-9_]", "_").toLowerCase());
+        if (modelId != null) {
+            ThingTypeUID thingTypeUID = getThingTypeUidFromModelId(modelId);
 
             if (getSupportedThingTypes().contains(thingTypeUID)) {
-                ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, appliance.getId());
+                ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, appliance.getApplianceIdentifier().getId());
                 return thingUID;
             } else {
                 return null;
@@ -166,5 +175,20 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
         } else {
             return null;
         }
+    }
+
+    private ThingTypeUID getThingTypeUidFromModelId(String modelId) {
+        /*
+         * Coffee machine CVA 6805 is reported as CoffeeSystem, but thing type is
+         * coffeemachine. At least until it is known if any models are actually reported
+         * as CoffeeMachine, we need this special mapping.
+         */
+        if (modelId.equals(MIELE_DEVICE_CLASS_COFFEE_SYSTEM)) {
+            return THING_TYPE_COFFEEMACHINE;
+        }
+
+        String thingTypeId = modelId.replaceAll("[^a-zA-Z0-9_]", "_").toLowerCase();
+
+        return new ThingTypeUID(BINDING_ID, thingTypeId);
     }
 }

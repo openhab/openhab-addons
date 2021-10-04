@@ -8,6 +8,8 @@ Setup the device as described in https://www.openhab.org/docs/administration/ser
 
 The binding will use the remote control address 15 for communication, so make sure that this is not assigned to a physically present remote control.
 
+For Helios ventilation devices supporting the easyControls web interface, the separate binding [Helios easyControls binding](https://www.openhab.org/addons/bindings/modbus.helioseasycontrols/) can be used.
+
 ## Supported Things
 
 There is only one thing type supported by this binding: a Helios Ventilation System KWL EC 200/300/500 Pro from Helios.

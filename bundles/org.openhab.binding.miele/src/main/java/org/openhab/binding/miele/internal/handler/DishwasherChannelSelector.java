@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
+import static org.openhab.binding.miele.internal.MieleBindingConstants.EXTENDED_DEVICE_STATE_PROPERTY_NAME;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.POWER_CONSUMPTION_CHANNEL_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.WATER_CONSUMPTION_CHANNEL_ID;
+
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,6 +26,7 @@ import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaD
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
@@ -36,17 +41,18 @@ import com.google.gson.JsonElement;
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - Changed START_TIME to DateTimeType
+ * @author Jacob Laursen - Added power/water consumption channels
  */
 public enum DishwasherChannelSelector implements ApplianceChannelSelector {
 
-    PRODUCT_TYPE("productTypeId", "productType", StringType.class, true),
-    DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
-    BRAND_ID("brandId", "brandId", StringType.class, true),
-    COMPANY_ID("companyId", "companyId", StringType.class, true),
-    STATE("state", "state", StringType.class, false),
-    PROGRAMID("programId", "program", StringType.class, false),
-    PROGRAMPHASE("phase", "phase", StringType.class, false),
-    START_TIME("startTime", "start", DateTimeType.class, false) {
+    PRODUCT_TYPE("productTypeId", "productType", StringType.class, true, false),
+    DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true, false),
+    BRAND_ID("brandId", "brandId", StringType.class, true, false),
+    COMPANY_ID("companyId", "companyId", StringType.class, true, false),
+    STATE("state", "state", StringType.class, false, false),
+    PROGRAMID("programId", "program", StringType.class, false, false),
+    PROGRAMPHASE("phase", "phase", StringType.class, false, false),
+    START_TIME("startTime", "start", DateTimeType.class, false, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             Date date = new Date();
@@ -60,7 +66,7 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
             return getState(dateFormatter.format(date));
         }
     },
-    DURATION("duration", "duration", DateTimeType.class, false) {
+    DURATION("duration", "duration", DateTimeType.class, false, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             Date date = new Date();
@@ -74,7 +80,7 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
             return getState(dateFormatter.format(date));
         }
     },
-    ELAPSED_TIME("elapsedTime", "elapsed", DateTimeType.class, false) {
+    ELAPSED_TIME("elapsedTime", "elapsed", DateTimeType.class, false, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             Date date = new Date();
@@ -88,7 +94,7 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
             return getState(dateFormatter.format(date));
         }
     },
-    FINISH_TIME("finishTime", "finish", DateTimeType.class, false) {
+    FINISH_TIME("finishTime", "finish", DateTimeType.class, false, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             Date date = new Date();
@@ -102,7 +108,7 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
             return getState(dateFormatter.format(date));
         }
     },
-    DOOR("signalDoor", "door", OpenClosedType.class, false) {
+    DOOR("signalDoor", "door", OpenClosedType.class, false, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             if ("true".equals(s)) {
@@ -116,7 +122,11 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
             return UnDefType.UNDEF;
         }
     },
-    SWITCH(null, "switch", OnOffType.class, false);
+    SWITCH(null, "switch", OnOffType.class, false, false),
+    POWER_CONSUMPTION(EXTENDED_DEVICE_STATE_PROPERTY_NAME, POWER_CONSUMPTION_CHANNEL_ID, QuantityType.class, false,
+            true),
+    WATER_CONSUMPTION(EXTENDED_DEVICE_STATE_PROPERTY_NAME, WATER_CONSUMPTION_CHANNEL_ID, QuantityType.class, false,
+            true);
 
     private final Logger logger = LoggerFactory.getLogger(DishwasherChannelSelector.class);
 
@@ -124,13 +134,15 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
     private final String channelID;
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
+    private final boolean isExtendedState;
 
-    DishwasherChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
-            boolean isProperty) {
+    DishwasherChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass, boolean isProperty,
+            boolean isExtendedState) {
         this.mieleID = propertyID;
         this.channelID = channelID;
         this.typeClass = typeClass;
         this.isProperty = isProperty;
+        this.isExtendedState = isExtendedState;
     }
 
     @Override
@@ -149,13 +161,13 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
-    public Class<? extends Type> getTypeClass() {
-        return typeClass;
+    public boolean isProperty() {
+        return isProperty;
     }
 
     @Override
-    public boolean isProperty() {
-        return isProperty;
+    public boolean isExtendedState() {
+        return isExtendedState;
     }
 
     @Override

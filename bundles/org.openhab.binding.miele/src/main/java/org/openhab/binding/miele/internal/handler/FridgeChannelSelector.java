@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
+import static org.openhab.binding.miele.internal.MieleBindingConstants.SUPERCOOL_CHANNEL_ID;
+
 import java.lang.reflect.Method;
 import java.util.Map.Entry;
 
+import org.openhab.binding.miele.internal.ExtendedDeviceStateUtil;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
@@ -40,17 +43,17 @@ public enum FridgeChannelSelector implements ApplianceChannelSelector {
     BRAND_ID("brandId", "brandId", StringType.class, true),
     COMPANY_ID("companyId", "companyId", StringType.class, true),
     STATE("state", "state", StringType.class, false),
-    SUPERCOOL(null, "supercool", OnOffType.class, false),
-    FRIDGECURRENTTEMP("currentTemperature", "current", DecimalType.class, false) {
+    SUPERCOOL(null, SUPERCOOL_CHANNEL_ID, OnOffType.class, false),
+    FRIDGECURRENTTEMP("currentTemperature", "current", QuantityType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+            return getTemperatureState(s);
         }
     },
-    FRIDGETARGETTEMP("targetTemperature", "target", DecimalType.class, false) {
+    FRIDGETARGETTEMP("targetTemperature", "target", QuantityType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+            return getTemperatureState(s);
         }
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
@@ -100,13 +103,13 @@ public enum FridgeChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
-    public Class<? extends Type> getTypeClass() {
-        return typeClass;
+    public boolean isProperty() {
+        return isProperty;
     }
 
     @Override
-    public boolean isProperty() {
-        return isProperty;
+    public boolean isExtendedState() {
+        return false;
     }
 
     @Override
@@ -138,6 +141,15 @@ public enum FridgeChannelSelector implements ApplianceChannelSelector {
         }
 
         return null;
+    }
+
+    public State getTemperatureState(String s) {
+        try {
+            return ExtendedDeviceStateUtil.getTemperatureState(s);
+        } catch (NumberFormatException e) {
+            logger.warn("An exception occurred while converting '{}' into a State", s);
+            return UnDefType.UNDEF;
+        }
     }
 
     public String getMieleEnum(String s, DeviceMetaData dmd) {
