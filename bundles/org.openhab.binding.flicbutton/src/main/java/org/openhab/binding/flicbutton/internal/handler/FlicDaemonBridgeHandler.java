@@ -127,6 +127,14 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
         }
         startedTasks = new ArrayList<>(2);
         buttonDiscoveryService.deactivate();
+        if(flicClient != null) {
+            try {
+                flicClient.close();
+                flicClient = null;
+            } catch (IOException e) {
+                logger.debug("Error closing connection to flicd: ", e.getMessage());
+            }
+        }
     }
 
     private void scheduleReinitialize() {
