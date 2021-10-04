@@ -96,7 +96,7 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
                 }
             }
         } catch (IOException | InterruptedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection setup failed. " + e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection setup failed: " + e.getMessage());
         }
     }
 
