@@ -5,7 +5,9 @@ with a [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci) b
 
 Currently, although Flic Buttons are BLE devices, this binding only supports fliclib-linux-hci (flicd) as a bridge.
 The openHAB Bluetooth Bindings are not supported.
-Flicd requires a seperate Bluetooth adapter to work, so if you use this binding together with e.g. the [Bluez Binding](https://www.openhab.org/addons/bindings/bluetooth.bluez/), two physical Bluetooth adapters are required (one for Bluez and one for flicd).
+Flicd requires a seperate Bluetooth adapter to work, so if you use this binding together with e.g. the
+[Bluez Binding](https://www.openhab.org/addons/bindings/bluetooth.bluez/),
+two physical Bluetooth adapters are required (one for Bluez and one for flicd).
 Be aware that flicd requires an initial internet connection for the verification of the buttons.
 After buttons are initially added to flicd, an internet connection is not required anymore.
 
@@ -19,9 +21,11 @@ After buttons are initially added to flicd, an internet connection is not requir
 ## Discovery
 
 * There is no automatic discovery for flicd-bridge available.
-  
-* After flicd-bridge is (manually) configured, buttons will be automatically discovered via background discovery as soon as they're added with [simpleclient](https://github.com/50ButtonsEach/fliclib-linux-hci).
-If they're already attached to the flicd-bridge before configuring this binding, they can be discovered by triggering an active scan.
+* After flicd-bridge is (manually) configured, buttons will be automatically discovered via background discovery as soon
+  as they're added with [simpleclient](https://github.com/50ButtonsEach/fliclib-linux-hci).
+
+If they're already attached to the flicd-bridge before configuring this binding, they can be discovered by triggering an
+active scan.
 
 ## Thing Configuration
 
@@ -70,10 +74,17 @@ You're free to choose any label you like for your button.
 
 ### Initial setup
 
-1. Setup and run flicd as described in [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci). Please consider that you need a seperate Bluetooth adapter. Shared usage with other Bluetooth services (e.g. Bluez) is not possible.
-1. Connect your buttons to flicd using the simpleclient as described in [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci). Flicd has to run in background the whole time, simpleclient can be killed after you successfully tested the button connection.
-1. Add a flicd-bridge via UI or Textual Configuration. Please consider that flicd does only accept connections from localhost by default, to enable remote connections from openHAB you have to use the `--server-addr` parameter as described in [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci).
-1. When the bridge is online, buttons newly added via simpleclient will automatically get discovered via background Discovery. To discover buttons that were set up before the Binding setup, please run an active scan.
+1. Setup and run flicd as described in [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci). 
+   Please consider that you need a seperate Bluetooth adapter. Shared usage with other Bluetooth services (e.g. Bluez)
+   is not possible.
+1. Connect your buttons to flicd using the simpleclient as described in
+   [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci). Flicd has to run in background the whole
+   time, simpleclient can be killed after you successfully tested the button connection.
+1. Add a flicd-bridge via UI or Textual Configuration. Please consider that flicd does only accept connections from
+   localhost by default, to enable remote connections from openHAB you have to use the `--server-addr` parameter as
+   described in [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci).
+1. When the bridge is online, buttons newly added via simpleclient will automatically get discovered via background
+   discovery. To discover buttons that were set up before the Binding setup, please run an active scan.
 
 ### Configuration Example using Profiles
 
@@ -99,6 +110,7 @@ Switch Light_Kitchen    { channel="hue:group:1:kitchen-bulbs:switch", channel="f
 
 It's also possible to setup [Rules](https://www.openhab.org/docs/configuration/rules-dsl.html).
 The following rules help to initially test your setup as they'll trigger log messages on incoming events.
+
 ```
 rule "Button rule using the button channel"
 
