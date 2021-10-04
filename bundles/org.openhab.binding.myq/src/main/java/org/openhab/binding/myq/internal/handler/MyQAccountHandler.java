@@ -16,6 +16,7 @@ import static org.openhab.binding.myq.internal.MyQBindingConstants.*;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -291,10 +292,14 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
      */
     private AccessTokenResponse login()
             throws InterruptedException, MyQCommunicationException, MyQAuthenticationException {
-        // make sure we have a fresh session
-        httpClient.getCookieStore().removeAll();
-
         try {
+            // make sure we have a fresh session
+            URI authUri = new URI(LOGIN_BASE_URL);
+            CookieStore store = httpClient.getCookieStore();
+            store.get(authUri).forEach(cookie -> {
+                store.remove(authUri, cookie);
+            });
+
             String codeVerifier = generateCodeVerifier();
 
             ContentResponse loginPageResponse = getLoginPage(codeVerifier);
@@ -328,7 +333,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             }
             getOAuthService().importAccessTokenResponse(accessTokenResponse);
             return accessTokenResponse;
-        } catch (IOException | ExecutionException | TimeoutException | OAuthException e) {
+        } catch (IOException | ExecutionException | TimeoutException | OAuthException | URISyntaxException e) {
             throw new MyQCommunicationException(e.getMessage());
         }
     }
