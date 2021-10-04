@@ -216,7 +216,7 @@
 		<description>Is triggered 10 times in 5 seconds when the sensor detects a break-in attempt.</description>
 		<event>
 			<options>
-				<option value="ALARM">alarm</option>
+				<option value="ALARM">Alarm</option>
 			</options>
 		</event>
 	</channel-type>
@@ -227,7 +227,7 @@
 		<description>Triggered when a Protection Plus capable device detects a break-in attempt.</description>
 		<event>
 			<options>
-				<option value="ALARM">alarm</option>
+				<option value="ALARM">Alarm</option>
 			</options>
 		</event>
 	</channel-type>
@@ -238,8 +238,8 @@
 		<description>Triggered when the vacation mode has been toggled on the device.</description>
 		<event>
 			<options>
-				<option value="ACTIVATED">activated</option>
-				<option value="DEACTIVATED">deactivated</option>
+				<option value="ACTIVATED">Activated</option>
+				<option value="DEACTIVATED">Deactivated</option>
 			</options>
 		</event>
 	</channel-type>

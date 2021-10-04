@@ -30,7 +30,11 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- *
+ * Implementation of the D2_06_01 EEP as used by window handles manufactured by Soda GmbH. All channels except the
+ * battery channels may be not supported by the physical device (depending on the actual model). If a channel is not
+ * supported by a device it will transmit a 'not supported' message which is ignored by this implementation.
+ * Consequently channels that are not supported by the physical device will never send updates to linked items.
+ * 
  * @author Thomas Lauterbach - Initial contribution
  */
 public class D2_06_01 extends _VLDMessage {

@@ -100,7 +100,10 @@ Hence if your device supports one of the following EEPs the chances are good tha
 
 ² These are just examples of supported devices
 
-³ Note that the soda handles potentially contain a wide range of different sensors and buttons. However the amount of built-in sensors and buttons may vary between different models. In case your particular device does not contain one of the potentially supported features the corresponding channel will never trigger an update. Please see the manual of your particular model to check which channels should be supported before opening an issue.  
+³ Note that the soda handles potentially contain a wide range of different sensors and buttons.
+However the amount of built-in sensors and buttons may vary between different models.
+In case your particular device does not contain one of the potentially supported features the corresponding channel will never trigger an update.
+Please see the manual of your particular model to check which channels should be supported before opening an issue.  
 
 Furthermore following supporting EEP family is available too: A5-11, types 0x03 (rollershutter position status), 0x04 (extended light status) and D0-06 (battery level indication).
 
@@ -262,8 +265,8 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | doublePress         | Trigger            | Channel type system:rawbutton, emits PRESSED |
 | longPress           | Trigger            | Channel type system:rawbutton, emits PRESSED and RELEASED events |
 | rockerswitchA/B     | Trigger            | Channel type system:rawrocker, emits DIR1_PRESSED, DIR1_RELEASED, DIR2_PRESSED, DIR2_RELEASED events |
-| windowHandleState   | String             | Textual representation of handle position (OPEN, CLOSED, TILTED or UP, DOWN, LEFT, RIGHT for the D2_06_01 EEP) |
-| windowSashState     | String             | Textual representation of sash position (OPEN, CLOSED, TILTED or TILTED, NOT TILTED for the D2_06_01 EEP) |
+| windowHandleState   | String             | Textual representation of handle position (UP, DOWN, LEFT, RIGHT for the D2_06_01 EEP and OPEN, CLOSED, TILTED for all others) |
+| windowSashState     | String             | Textual representation of sash position (TILTED or NOT TILTED for the D2_06_01 EEP and OPEN, CLOSED, TILTED for all others) |
 | windowCalibrationState | String             | Textual representation of the calibration state (OK, ERROR, INVALID) |
 | windowCalibrationStep | String             | Textual representation of the next step that must be performed for calibrating the device (e.g. NONE, SASH CLOSED HANDLE CLOSED, SASH CLOSED HANDLE OPEN, SASH OPEN HANDLE TILTED, and so on) |
 | contact             | Contact            | State OPEN/CLOSED (tilted handle => OPEN) |
