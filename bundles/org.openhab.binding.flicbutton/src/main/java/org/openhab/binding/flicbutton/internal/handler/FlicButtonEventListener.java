@@ -55,7 +55,7 @@ public class FlicButtonEventListener extends ButtonConnectionChannel.Callbacks {
     @Override
     public void onConnectionStatusChanged(ButtonConnectionChannel channel, ConnectionStatus connectionStatus,
             DisconnectReason disconnectReason) {
-        logger.debug("New status for {}: {}", channel.getBdaddr(),
+        logger.trace("New status for {}: {}", channel.getBdaddr(),
                 connectionStatus + (connectionStatus == ConnectionStatus.Disconnected ? ", " + disconnectReason : ""));
 
         thingHandler.connectionStatusChanged(connectionStatus, disconnectReason);
@@ -65,7 +65,7 @@ public class FlicButtonEventListener extends ButtonConnectionChannel.Callbacks {
     public void onButtonUpOrDown(ButtonConnectionChannel channel, ClickType clickType, boolean wasQueued, int timeDiff)
             throws IOException {
 
-        logger.debug("{} {}", channel.getBdaddr(), clickType.name());
+        logger.trace("{} {}", channel.getBdaddr(), clickType.name());
 
         String commonTriggerEvent = FlicButtonUtils.flicOpenhabTriggerEventMap.get(clickType.name());
 
