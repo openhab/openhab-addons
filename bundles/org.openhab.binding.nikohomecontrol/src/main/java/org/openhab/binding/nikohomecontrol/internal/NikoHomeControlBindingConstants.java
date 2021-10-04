@@ -32,7 +32,7 @@ public class NikoHomeControlBindingConstants {
     public static final String BINDING_ID = "nikohomecontrol";
 
     // Listener threadname prefix
-    public static final String THREAD_NAME_PREFIX = "OH-" + BINDING_ID + "-";
+    public static final String THREAD_NAME_PREFIX = "OH-binding-";
 
     // List of all Thing Type UIDs
 
