@@ -28,8 +28,8 @@ public class SecondGenerationInverterConfig {
     public String url = "";
     public String username = "";
     public String password = "";
-    public int refreshInterval;
+    public int refreshInterval = 60;
     public String dxsIdConf = "";
     public String valueConf = "";
-    public boolean hasBattery;
+    public boolean hasBattery = false;
 }
