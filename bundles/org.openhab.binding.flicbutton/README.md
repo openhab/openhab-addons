@@ -1,4 +1,4 @@
-# openHAB Flic Button Binding 
+# Flic Button Binding 
 
 openHAB binding for using [Flic Buttons](https://flic.io/)
 with a [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci) bridge.
