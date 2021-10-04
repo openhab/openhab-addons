@@ -71,7 +71,7 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
                     "Configuration (hostname, port) is invalid and cannot be parsed.");
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error connecting to flicd!\n" + e);
+                    "Error connecting to flicd: " + e.getMessage());
             dispose();
             scheduleReinitialize();
         }
