@@ -75,16 +75,16 @@ You're free to choose any label you like for your button.
 ### Initial setup
 
 1. Setup and run flicd as described in [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci). 
-   Please consider that you need a seperate Bluetooth adapter. Shared usage with other Bluetooth services (e.g. Bluez)
+   Please consider that you need a separate Bluetooth adapter. Shared usage with other Bluetooth services (e.g. Bluez)
    is not possible.
 1. Connect your buttons to flicd using the simpleclient as described in
    [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci). Flicd has to run in background the whole
-   time, simpleclient can be killed after you successfully tested the button connection.
-1. Add a flicd-bridge via UI or Textual Configuration. Please consider that flicd does only accept connections from
+   time, simpleclient can be killed after you successfully test the button connects.
+1. Add a flicd-bridge via the UI or textual configuration. Please consider that flicd only accepts connections from
    localhost by default, to enable remote connections from openHAB you have to use the `--server-addr` parameter as
    described in [fliclib-linux-hci](https://github.com/50ButtonsEach/fliclib-linux-hci).
 1. When the bridge is online, buttons newly added via simpleclient will automatically get discovered via background
-   discovery. To discover buttons that were set up before the Binding setup, please run an active scan.
+   discovery. To discover buttons that were set up before the binding was setup, please run an active scan.
 
 ### Configuration Example using Profiles
 
