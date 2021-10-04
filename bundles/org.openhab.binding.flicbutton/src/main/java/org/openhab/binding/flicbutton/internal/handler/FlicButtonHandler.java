@@ -68,6 +68,14 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
         }
     }
 
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+        if (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE && bridgeValid) {
+            initializeThing();
+        }
+    }
+
     public void initializeThing() {
         try {
             FlicButtonBatteryLevelListener batteryListener = new FlicButtonBatteryLevelListener(this);

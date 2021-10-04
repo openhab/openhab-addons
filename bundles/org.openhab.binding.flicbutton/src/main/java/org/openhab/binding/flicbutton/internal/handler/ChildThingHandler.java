@@ -19,6 +19,7 @@ import java.util.Collections;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 
@@ -39,7 +40,7 @@ public abstract class ChildThingHandler<BridgeHandlerType extends BridgeHandler>
     @Override
     public void initialize() {
         setStatusBasedOnBridge();
-        if (bridgeValid) {
+        if (getBridge() != null) {
             linkBridge();
         }
     }
@@ -57,15 +58,22 @@ public abstract class ChildThingHandler<BridgeHandlerType extends BridgeHandler>
         setStatusBasedOnBridge(defaultToleratedBridgeStatuses);
     }
 
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        this.setStatusBasedOnBridge();
+    }
+
     protected void setStatusBasedOnBridge(Collection<ThingStatus> toleratedBridgeStatuses) {
         if (getBridge() != null) {
             if (toleratedBridgeStatuses.contains(getBridge().getStatus())) {
                 bridgeValid = true;
             } else {
+                bridgeValid = false;
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                         "Bridge in unsupported status: " + getBridge().getStatus());
             }
         } else {
+            bridgeValid = false;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge missing.");
         }
     }

@@ -72,6 +72,8 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error connecting to flicd!\n" + e);
+            dispose();
+            scheduleReinitialize();
         }
     }
 
@@ -103,7 +105,7 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
 
     private void onClientFailure() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                "flicd client terminated, probably flicd is not reachable.");
+                "flicd client terminated, probably flicd is not reachable anymore.");
         dispose();
         scheduleReinitialize();
     }
