@@ -131,6 +131,6 @@ public class PulseaudioHandlerFactory extends BaseThingHandlerFactory {
     @Modified
     protected void modified(Map<String, Object> config) {
         configuration.update(new Configuration(config).as(PulseAudioBindingConfiguration.class));
-        logger.info("pulseaudio configuration update received ({})", config);
+        logger.debug("pulseaudio configuration update received ({})", config);
     }
 }

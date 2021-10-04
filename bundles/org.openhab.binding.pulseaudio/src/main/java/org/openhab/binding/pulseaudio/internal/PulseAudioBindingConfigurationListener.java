@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.pulseaudio.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface for listening to configuration change
  *
  * @author Gwendal Roulleau - Initial contribution
  *
  */
+@NonNullByDefault
 public interface PulseAudioBindingConfigurationListener {
 
     public void bindingConfigurationChanged();

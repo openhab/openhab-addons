@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseAudioBindingConfigurationListener {
     private final Logger logger = LoggerFactory.getLogger(PulseaudioBridgeHandler.class);
 
-    @SuppressWarnings("null")
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(PulseaudioBindingConstants.BRIDGE_THING_TYPE);
 

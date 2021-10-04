@@ -15,12 +15,15 @@ package org.openhab.binding.pulseaudio.internal;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Contains the binding configuration
  *
  * @author Gwendal Roulleau - Initial contribution
  *
  */
+@NonNullByDefault
 public class PulseAudioBindingConfiguration {
 
     public boolean sink = true;
