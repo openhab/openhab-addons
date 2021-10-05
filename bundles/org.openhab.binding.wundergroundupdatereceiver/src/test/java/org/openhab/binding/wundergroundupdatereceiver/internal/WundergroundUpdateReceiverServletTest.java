@@ -53,6 +53,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -199,6 +200,14 @@ class WundergroundUpdateReceiverServletTest {
         when(thing.getUID()).thenReturn(testThindUid);
         when(thing.getConfiguration()).thenReturn(new Configuration(Map.of("stationId", stationId1)));
         when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
+        when(this.channelTypeRegistry.getChannelType(LAST_RECEIVED_DATETIME_CHANNELTYPEUID))
+                .thenReturn(ChannelTypeBuilder.state(LAST_RECEIVED_DATETIME_CHANNELTYPEUID, "Label", "String").build());
+        when(this.channelTypeRegistry.getChannelType(DATEUTC_DATETIME_CHANNELTYPEUID))
+                .thenReturn(ChannelTypeBuilder.state(DATEUTC_DATETIME_CHANNELTYPEUID, "Label", "DateTime").build());
+        when(this.channelTypeRegistry.getChannelType(LAST_QUERY_STATE_CHANNELTYPEUID))
+                .thenReturn(ChannelTypeBuilder.state(LAST_QUERY_STATE_CHANNELTYPEUID, "Label", "String").build());
+        when(this.channelTypeRegistry.getChannelType(LAST_QUERY_TRIGGER_CHANNELTYPEUID))
+                .thenReturn(ChannelTypeBuilder.trigger(LAST_QUERY_TRIGGER_CHANNELTYPEUID, "Label").build());
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(httpService, discoveryService);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
                 new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry);
@@ -300,7 +309,7 @@ class WundergroundUpdateReceiverServletTest {
 
         HttpChannel httpChannel = mock(HttpChannel.class);
         MetaData.Request request = new MetaData.Request("GET",
-                new HttpURI("http://localhost/" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + queryString),
+                new HttpURI("http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + queryString),
                 HttpVersion.HTTP_1_1, new HttpFields());
         Request req = new Request(httpChannel, null);
         req.setMetaData(request);
@@ -380,7 +389,7 @@ class WundergroundUpdateReceiverServletTest {
 
         HttpChannel httpChannel = mock(HttpChannel.class);
         MetaData.Request request = new MetaData.Request("GET",
-                new HttpURI("http://localhost/" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + queryString),
+                new HttpURI("http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + queryString),
                 HttpVersion.HTTP_1_1, new HttpFields());
         Request req = new Request(httpChannel, null);
         req.setMetaData(request);

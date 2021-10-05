@@ -8,5 +8,4 @@
 		This binding enables acting as a receiver of updates from weather stations that post measurements to
 		https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php.
 	</description>
-	<author>Daniel Demus</author>
 </binding:binding>

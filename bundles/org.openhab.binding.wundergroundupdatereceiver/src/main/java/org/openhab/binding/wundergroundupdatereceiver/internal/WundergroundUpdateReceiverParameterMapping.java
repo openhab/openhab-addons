@@ -35,8 +35,8 @@ public class WundergroundUpdateReceiverParameterMapping {
     public final String parameterName;
     public final ChannelTypeUID channelTypeId;
     public final String channelGroup;
-    @Nullable
-    public final Unit<? extends Quantity<?>> unit;
+
+    public final @Nullable Unit<? extends Quantity<?>> unit;
 
     private WundergroundUpdateReceiverParameterMapping(String parameterName, ChannelTypeUID channelTypeId,
             String channelGroup, @Nullable Unit<? extends Quantity<?>> unit) {
@@ -52,6 +52,8 @@ public class WundergroundUpdateReceiverParameterMapping {
             new WundergroundUpdateReceiverParameterMapping(LAST_QUERY_STATE, LAST_QUERY_STATE_CHANNELTYPEUID,
                     METADATA_GROUP, null),
             new WundergroundUpdateReceiverParameterMapping(LAST_QUERY_TRIGGER, LAST_QUERY_TRIGGER_CHANNELTYPEUID,
+                    METADATA_GROUP, null),
+            new WundergroundUpdateReceiverParameterMapping(DATEUTC_DATETIME, DATEUTC_DATETIME_CHANNELTYPEUID,
                     METADATA_GROUP, null),
             new WundergroundUpdateReceiverParameterMapping(DATEUTC, DATEUTC_CHANNELTYPEUID, METADATA_GROUP, null),
             new WundergroundUpdateReceiverParameterMapping(SOFTWARE_TYPE, SOFTWARETYPE_CHANNELTYPEUID, METADATA_GROUP,

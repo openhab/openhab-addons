@@ -8,12 +8,6 @@
 		<label>Metadata</label>
 		<description>Metadata regarding the last submission</description>
 		<category>Text</category>
-		<channels>
-			<channel id="last-received" typeId="last-received-datetime"/>
-			<channel id="last-query-state" typeId="last-query-state"/>
-			<channel id="last-query-trigger" typeId="last-query-trigger"/>
-			<channel id="dateutc-datetime" typeId="dateutc-datetime"/>
-		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="wind-group">

@@ -35,9 +35,9 @@ import org.osgi.service.component.annotations.Modified;
 public class WundergroundUpdateReceiverDiscoveryService extends AbstractDiscoveryService {
 
     @Nullable
-    public WundergroundUpdateReceiverServletControls servletControls;
+    WundergroundUpdateReceiverServletControls servletControls;
 
-    private static final int TIMEOUT = 1;
+    private static final int TIMEOUT_SEC = 1;
     private final HashMap<String, Map<String, String[]>> thinglessStationIds = new HashMap<>();
     private boolean servletWasInactive = false;
 
@@ -47,7 +47,8 @@ public class WundergroundUpdateReceiverDiscoveryService extends AbstractDiscover
     }
 
     public WundergroundUpdateReceiverDiscoveryService(boolean useBackgroundDiscovery) throws IllegalArgumentException {
-        super(WundergroundUpdateReceiverBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT, useBackgroundDiscovery);
+        super(WundergroundUpdateReceiverBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT_SEC,
+                useBackgroundDiscovery);
     }
 
     public void removeUnhandledStationId(String stationId) {

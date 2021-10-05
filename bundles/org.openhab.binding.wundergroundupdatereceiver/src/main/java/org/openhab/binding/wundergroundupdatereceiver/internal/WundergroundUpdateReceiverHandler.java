@@ -15,6 +15,7 @@ package org.openhab.binding.wundergroundupdatereceiver.internal;
 import static org.openhab.binding.wundergroundupdatereceiver.internal.WundergroundUpdateReceiverBindingConstants.*;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -102,27 +103,17 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        this.config = Objects.requireNonNull(getConfigAs(WundergroundUpdateReceiverConfiguration.class));
+        this.config = getConfigAs(WundergroundUpdateReceiverConfiguration.class);
         wundergroundUpdateReceiverServlet.addHandler(this);
         @Nullable
         Map<String, String[]> requestParameters = discoveryService.getUnhandledStationRequest(config.stationId);
-        if (requestParameters != null && thing.getChannels().size() == 4) {
+        if (requestParameters != null && thing.getChannels().isEmpty()) {
+            final String[] noValues = new String[0];
             ThingBuilder thingBuilder = editThing();
-            requestParameters.forEach((String parameter, String[] query) -> {
-                @Nullable
-                WundergroundUpdateReceiverParameterMapping channelTypeMapping = WundergroundUpdateReceiverParameterMapping
-                        .getOrCreateMapping(parameter, String.join("", query), channelTypeProvider);
-                if (channelTypeMapping == null) {
-                    return;
-                }
-                ChannelBuilder channelBuilder = ChannelBuilder
-                        .create(new ChannelUID(thing.getUID(), channelTypeMapping.channelGroup, parameter))
-                        .withType(channelTypeMapping.channelTypeId)
-                        .withAcceptedItemType(
-                                channelTypeRegistry.getChannelType(channelTypeMapping.channelTypeId).getItemType())
-                        .withConfiguration(thing.getConfiguration());
-                thingBuilder.withChannel(channelBuilder.build());
-            });
+            List.of(LAST_RECEIVED, LAST_QUERY_TRIGGER, DATEUTC_DATETIME, LAST_QUERY_STATE)
+                    .forEach((String channelId) -> buildChannel(thingBuilder, channelId, noValues));
+            requestParameters
+                    .forEach((String parameter, String[] query) -> buildChannel(thingBuilder, parameter, query));
             updateThing(thingBuilder.build());
         }
         discoveryService.removeUnhandledStationId(config.stationId);
@@ -152,6 +143,22 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
         }
         updateState(queryStateChannel, StringType.valueOf(lastQuery));
         triggerChannel(queryTriggerChannel, lastQuery);
+    }
+
+    private void buildChannel(ThingBuilder thingBuilder, String parameter, String[] query) {
+        @Nullable
+        WundergroundUpdateReceiverParameterMapping channelTypeMapping = WundergroundUpdateReceiverParameterMapping
+                .getOrCreateMapping(parameter, String.join("", query), channelTypeProvider);
+        if (channelTypeMapping == null) {
+            return;
+        }
+        ChannelBuilder channelBuilder = ChannelBuilder
+                .create(new ChannelUID(thing.getUID(), channelTypeMapping.channelGroup, parameter))
+                .withType(channelTypeMapping.channelTypeId)
+                .withAcceptedItemType(
+                        channelTypeRegistry.getChannelType(channelTypeMapping.channelTypeId).getItemType())
+                .withConfiguration(thing.getConfiguration());
+        thingBuilder.withChannel(channelBuilder.build());
     }
 
     private DateTimeType safeResolvUtcDateTime(String dateUtc) {
