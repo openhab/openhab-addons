@@ -14,6 +14,8 @@ package org.openhab.binding.enocean.internal.eep.D2_06;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.openhab.binding.enocean.internal.eep.Base._VLDMessage;
@@ -39,6 +41,97 @@ import org.openhab.core.types.UnDefType;
  */
 public class D2_06_01 extends _VLDMessage {
 
+    private enum MessageType {
+
+        SENSORVALUES(0x00),
+        CONFIGURATIONREPORT(0x10),
+        LOGDATA01(0x20),
+        LOGDATA02(0x21),
+        LOGDATA03(0x22),
+        LOGDATA04(0x23),
+        CONTROLANDSETTINGS(0x80);
+
+        int intValue;
+
+        private MessageType(int intValue) {
+            this.intValue = intValue;
+        }
+
+        int getIntValue() {
+            return this.intValue;
+        }
+    }
+
+    private enum SashState {
+
+        // WINDOWSTATE UNDEFINED(0x00, "UNDEFINED"),
+        NOTTILTED(0x01, "NOT TILTED"),
+        TILTED(0x02, "TILTED");
+
+        int intValue;
+        String textValue;
+
+        private SashState(int intValue, String textValue) {
+            this.intValue = intValue;
+            this.textValue = textValue;
+        }
+
+        String getTextValue() {
+            return this.textValue;
+        }
+
+        static Optional<SashState> valueOf(int intValue) {
+            return Arrays.stream(values()).filter(sashState -> sashState.intValue == intValue).findFirst();
+        }
+    }
+
+    private enum HandleState {
+
+        // HANDLEPOSITIONUNDEFINED(0x00, "UNDEFINED"),
+        HANDLEUP(0x01, "UP"),
+        HANDLEDOWN(0x02, "DOWN"),
+        HANDLELEFT(0x03, "LEFT"),
+        HANDLERIGHT(0x04, "RIGHT");
+
+        private int intValue;
+        private String textValue;
+
+        private HandleState(int intValue, String textValue) {
+            this.intValue = intValue;
+            this.textValue = textValue;
+        }
+
+        String getTextValue() {
+            return this.textValue;
+        }
+
+        static Optional<HandleState> valueOf(int intValue) {
+            return Arrays.stream(values()).filter(handleState -> handleState.intValue == intValue).findFirst();
+        }
+    }
+
+    private enum MotionState {
+
+        MOTIONNOTTRIGGERED(0x00, "OFF"),
+        MOTIONTRIGGERED(0x01, "ON");
+
+        private int intValue;
+        private String textValue;
+
+        private MotionState(int intValue, String textValue) {
+            this.intValue = intValue;
+            this.textValue = textValue;
+        }
+
+        String getTextValue() {
+            return this.textValue;
+        }
+
+        static Optional<MotionState> valueOf(int intValue) {
+            return Arrays.stream(values()).filter(motionState -> motionState.intValue == intValue).findFirst();
+        }
+    }
+
     public D2_06_01() {
         super();
     }
@@ -48,40 +141,25 @@ public class D2_06_01 extends _VLDMessage {
     }
 
     protected State getWindowSashState() {
-        int sashState = bytes[2] & 0x0F;
-        switch (sashState) {
-            case 0x01:
-                return new StringType("NOT TILTED");
-            case 0x02:
-                return new StringType("TILTED");
+        Optional<SashState> sashState = SashState.valueOf(bytes[2] & 0x0F);
+        if (sashState.isPresent()) {
+            return new StringType(sashState.get().getTextValue());
         }
-
         return UnDefType.UNDEF;
     }
 
     protected State getWindowHandleState() {
-        int handleState = bytes[2] >>> 4;
-        switch (handleState) {
-            case 0x01:
-                return new StringType("UP");
-            case 0x02:
-                return new StringType("DOWN");
-            case 0x03:
-                return new StringType("LEFT");
-            case 0x04:
-                return new StringType("RIGHT");
+        Optional<HandleState> handleState = HandleState.valueOf(bytes[2] >>> 4);
+        if (handleState.isPresent()) {
+            return new StringType(handleState.get().getTextValue());
         }
-
         return UnDefType.UNDEF;
     }
 
     protected State getMotionState() {
-        int motionState = bytes[4] >>> 4;
-        switch (motionState) {
-            case 0x00:
-                return OnOffType.OFF;
-            case 0x01:
-                return OnOffType.ON;
+        Optional<MotionState> motionState = MotionState.valueOf(bytes[4] >>> 4);
+        if (motionState.isPresent()) {
+            return OnOffType.from(motionState.get().getTextValue());
         }
         return UnDefType.UNDEF;
     }
@@ -125,7 +203,7 @@ public class D2_06_01 extends _VLDMessage {
             Configuration config) {
 
         // Sensor values
-        if (bytes[0] == 0x00) {
+        if (bytes[0] == MessageType.SENSORVALUES.getIntValue()) {
             switch (channelId) {
                 case CHANNEL_WINDOWBREACHEVENT:
                     if ((bytes[1] >>> 4) == 0x01) {
@@ -174,7 +252,7 @@ public class D2_06_01 extends _VLDMessage {
             Configuration config) {
 
         // Sensor values
-        if (bytes[0] == 0x00) {
+        if (bytes[0] == MessageType.SENSORVALUES.getIntValue()) {
             switch (channelId) {
                 case CHANNEL_WINDOWSASHSTATE:
                     return getWindowSashState();
@@ -192,7 +270,6 @@ public class D2_06_01 extends _VLDMessage {
                     return getBatteryLevel();
             }
         }
-
         return UnDefType.UNDEF;
     }
 }
