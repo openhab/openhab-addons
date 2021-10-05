@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
+import static java.util.Map.entry;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
@@ -50,9 +52,27 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
     COMPANY_ID("companyId", "companyId", StringType.class, true, false),
     STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false, false),
     STATE(null, STATE_CHANNEL_ID, DecimalType.class, false, false),
-    PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false, false),
+    PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            State state = getTextState(s, dmd, programs, MISSING_PROGRAM_TEXT_PREFIX);
+            if (state != null) {
+                return state;
+            }
+            return super.getState(s, dmd);
+        }
+    },
     PROGRAM(null, PROGRAM_CHANNEL_ID, DecimalType.class, false, false),
-    PROGRAM_PHASE_TEXT(PHASE_PROPERTY_NAME, PHASE_TEXT_CHANNEL_ID, StringType.class, false, false),
+    PROGRAM_PHASE_TEXT(PHASE_PROPERTY_NAME, PHASE_TEXT_CHANNEL_ID, StringType.class, false, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            State state = getTextState(s, dmd, phases, MISSING_PHASE_TEXT_PREFIX);
+            if (state != null) {
+                return state;
+            }
+            return super.getState(s, dmd);
+        }
+    },
     PROGRAM_PHASE(RAW_PHASE_PROPERTY_NAME, PHASE_CHANNEL_ID, DecimalType.class, false, false),
     START_TIME("startTime", "start", DateTimeType.class, false, false) {
         @Override
@@ -132,6 +152,14 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
 
     private final Logger logger = LoggerFactory.getLogger(DishwasherChannelSelector.class);
 
+    private final static Map<String, String> programs = Map.ofEntries(entry("26", "Pots & Pans"),
+            entry("27", "Clean Machine"), entry("28", "Economy"), entry("30", "Normal"), entry("32", "Sensor Wash"),
+            entry("34", "Energy Saver"), entry("35", "China & Crystal"), entry("36", "Extra Quiet"),
+            entry("37", "SaniWash"), entry("38", "QuickPowerWash"), entry("42", "Tall items"));
+
+    private final static Map<String, String> phases = Map.ofEntries(entry("2", "Pre-Wash"), entry("3", "Main Wash"),
+            entry("4", "Rinses"), entry("6", "Final rinse"), entry("7", "Drying"));
+
     private final String mieleID;
     private final String channelID;
     private final Class<? extends Type> typeClass;
@@ -198,6 +226,24 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
             }
         } catch (Exception e) {
             logger.error("An exception occurred while converting '{}' into a State", s);
+        }
+
+        return null;
+    }
+
+    public State getTextState(String s, DeviceMetaData dmd, Map<String, String> valueMap, String prefix) {
+        if ("0".equals(s)) {
+            return UnDefType.UNDEF;
+        }
+
+        if (dmd == null || dmd.LocalizedValue == null || dmd.LocalizedValue.startsWith(prefix)) {
+            String text = valueMap.get(s);
+            if (text != null) {
+                return getState(text);
+            }
+            if (dmd == null || dmd.LocalizedValue == null) {
+                return getState(prefix + s);
+            }
         }
 
         return null;

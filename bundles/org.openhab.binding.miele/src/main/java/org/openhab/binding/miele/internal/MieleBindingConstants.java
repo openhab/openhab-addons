@@ -88,6 +88,10 @@ public class MieleBindingConstants {
     public static final int STATE_LOCKED = 145;
     public static final int STATE_NOT_CONNECTED = 255;
 
+    // Miele missing string prefixes
+    public static final String MISSING_PROGRAM_TEXT_PREFIX = "program.";
+    public static final String MISSING_PHASE_TEXT_PREFIX = "phase.";
+
     // Bridge config properties
     public static final String HOST = "ipAddress";
     public static final String INTERFACE = "interface";

@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
+import static java.util.Map.entry;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
@@ -54,7 +56,16 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
     PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false),
     PROGRAM(null, PROGRAM_CHANNEL_ID, DecimalType.class, false),
     PROGRAMTYPE("programType", "type", StringType.class, false),
-    PROGRAM_PHASE_TEXT(PHASE_PROPERTY_NAME, PHASE_TEXT_CHANNEL_ID, StringType.class, false),
+    PROGRAM_PHASE_TEXT(PHASE_PROPERTY_NAME, PHASE_TEXT_CHANNEL_ID, StringType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            State state = getTextState(s, dmd, phases, MISSING_PHASE_TEXT_PREFIX);
+            if (state != null) {
+                return state;
+            }
+            return super.getState(s, dmd);
+        }
+    },
     PROGRAM_PHASE(RAW_PHASE_PROPERTY_NAME, PHASE_CHANNEL_ID, DecimalType.class, false),
     START_TIME("startTime", "start", DateTimeType.class, false) {
         @Override
@@ -156,6 +167,10 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
 
     private final Logger logger = LoggerFactory.getLogger(OvenChannelSelector.class);
 
+    private final static Map<String, String> phases = Map.ofEntries(entry("1", "Heating"), entry("2", "Temp. hold"),
+            entry("3", "Door Open"), entry("4", "Pyrolysis"), entry("7", "Lighting"), entry("8", "Searing phase"),
+            entry("10", "Defrost"), entry("11", "Cooling down"), entry("12", "Energy save phase"));
+
     private final String mieleID;
     private final String channelID;
     private final Class<? extends Type> typeClass;
@@ -231,6 +246,24 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
             logger.warn("An exception occurred while converting '{}' into a State", s);
             return UnDefType.UNDEF;
         }
+    }
+
+    public State getTextState(String s, DeviceMetaData dmd, Map<String, String> valueMap, String prefix) {
+        if ("0".equals(s)) {
+            return UnDefType.UNDEF;
+        }
+
+        if (dmd == null || dmd.LocalizedValue == null || dmd.LocalizedValue.startsWith(prefix)) {
+            String text = valueMap.get(s);
+            if (text != null) {
+                return getState(text);
+            }
+            if (dmd == null || dmd.LocalizedValue == null) {
+                return getState(prefix + s);
+            }
+        }
+
+        return null;
     }
 
     public String getMieleEnum(String s, DeviceMetaData dmd) {
