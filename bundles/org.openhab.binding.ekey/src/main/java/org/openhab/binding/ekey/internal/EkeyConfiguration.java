@@ -22,9 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class EkeyConfiguration {
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
     public String ipAddress = "";
     public int port;
     public String protocol = "";

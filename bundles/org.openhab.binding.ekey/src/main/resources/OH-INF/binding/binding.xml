@@ -4,6 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Ekey Binding</name>
-	<description>This is the binding for Ekey.</description>
+	<description>This is the binding for connecting openHAB to Ekey fingerprint scanners.</description>
 
 </binding:binding>
