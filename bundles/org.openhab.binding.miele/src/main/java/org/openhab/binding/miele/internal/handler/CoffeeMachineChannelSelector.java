@@ -15,6 +15,8 @@ package org.openhab.binding.miele.internal.handler;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
@@ -44,10 +46,28 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
     COMPANY_ID("companyId", "companyId", StringType.class, true),
     STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false),
     STATE(null, STATE_CHANNEL_ID, DecimalType.class, false),
-    PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false),
+    PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            State state = getTextState(s, dmd, programs, MISSING_PROGRAM_TEXT_PREFIX);
+            if (state != null) {
+                return state;
+            }
+            return super.getState(s, dmd);
+        }
+    },
     PROGRAM(null, PROGRAM_CHANNEL_ID, DecimalType.class, false),
     PROGRAMTYPE("programType", "type", StringType.class, false),
-    PROGRAM_PHASE_TEXT(PHASE_PROPERTY_NAME, PHASE_TEXT_CHANNEL_ID, StringType.class, false),
+    PROGRAM_PHASE_TEXT(PHASE_PROPERTY_NAME, PHASE_TEXT_CHANNEL_ID, StringType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            State state = getTextState(s, dmd, phases, MISSING_PHASE_TEXT_PREFIX);
+            if (state != null) {
+                return state;
+            }
+            return super.getState(s, dmd);
+        }
+    },
     PROGRAM_PHASE(RAW_PHASE_PROPERTY_NAME, PHASE_CHANNEL_ID, DecimalType.class, false),
     // lightingStatus signalFailure signalInfo
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
@@ -67,6 +87,10 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
     SWITCH(null, "switch", OnOffType.class, false);
 
     private final Logger logger = LoggerFactory.getLogger(CoffeeMachineChannelSelector.class);
+
+    private final static Map<String, String> programs = Collections.<String, String> emptyMap();
+
+    private final static Map<String, String> phases = Collections.<String, String> emptyMap();
 
     private final String mieleID;
     private final String channelID;
@@ -132,6 +156,24 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
             }
         } catch (Exception e) {
             logger.error("An exception occurred while converting '{}' into a State", s);
+        }
+
+        return null;
+    }
+
+    public State getTextState(String s, DeviceMetaData dmd, Map<String, String> valueMap, String prefix) {
+        if ("0".equals(s)) {
+            return UnDefType.UNDEF;
+        }
+
+        if (dmd == null || dmd.LocalizedValue == null || dmd.LocalizedValue.startsWith(prefix)) {
+            String text = valueMap.get(s);
+            if (text != null) {
+                return getState(text);
+            }
+            if (dmd == null || dmd.LocalizedValue == null) {
+                return getState(prefix + s);
+            }
         }
 
         return null;
