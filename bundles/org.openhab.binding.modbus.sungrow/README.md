@@ -22,7 +22,7 @@ Bridge modbus:tcp:bridge [ host="10.0.0.2", port=502, id=1, enableDiscovery=true
 
 ## Thing Configuration
 
-You need first to set up either a TCP Modbus bridge according to the Modbus documentation.
+You need first to set up a TCP Modbus bridge according to the Modbus documentation.
 Things in this extension will use the selected bridge to connect to the device.
 
 The thing supports the following parameters:
