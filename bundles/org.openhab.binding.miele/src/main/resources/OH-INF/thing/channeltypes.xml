@@ -138,7 +138,7 @@
 	<channel-type id="supercool">
 		<item-type>Switch</item-type>
 		<label>Super Cool</label>
-		<description>Start Super Cooling</description>
+		<description>Start or stop Super Cooling</description>
 		<state readOnly="false"></state>
 	</channel-type>
 

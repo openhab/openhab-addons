@@ -32,7 +32,7 @@ When an XGW3000 gateway is discovered, all appliances can be subsequently discov
 
 ## Thing Configuration
 
-Each appliances needs the device UID as a configuration parameter.
+Each appliance needs the device UID as a configuration parameter.
 The UID is nowhere to be found on the appliances, but since the discovery works quite reliably, a manual configuration is not needed.
 
 Once you got hold of the IDs, a manual configuration looks like this:
@@ -55,7 +55,196 @@ Thing coffeemachine coffeemachine [uid="001d63fffe020505#190"]
 
 ## Channels
 
-The definition of the channels in use can best be checked in the [source repository](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.miele/src/main/resources/OH-INF/thing).
+See below which channels are available for each appliance type. Raw program and phase values are individual for each appliance type,
+while these raw state values are unique across all appliance types:
+
+| State | Description                  | Appliances                                                      |
+|-------|------------------------------|-----------------------------------------------------------------|
+| 0     | Unknown                      | All                                                             |
+| 1     | Off                          | All                                                             |
+| 2     | Stand-By                     | All                                                             |
+| 3     | Programmed                   | Coffee Machine, Dishwasher, Oven, Tumble Dryer, Washing Machine |
+| 4     | Waiting to Start             | Coffee Machine, Dishwasher, Oven, Tumble Dryer, Washing Machine |
+| 5     | Running                      | All                                                             |
+| 6     | Paused                       | Coffee Machine, Dishwasher, Oven, Tumble Dryer, Washing Machine |
+| 7     | End                          | Coffee Machine, Dishwasher, Oven, Tumble Dryer, Washing Machine |
+| 8     | Failure                      | All                                                             |
+| 9     | Abort                        | Coffee Machine, Dishwasher, Oven, Tumble Dryer, Washing Machine |
+| 10    | Idle                         | All                                                             |
+| 11    | Rinse Hold                   | Washing Machine, Tumble Dryer                                   |
+| 12    | Service                      | All                                                             |
+| 13    | Super Freezing               | Fridge/Freezer combination                                      |
+| 14    | Super Cooling                | Fridge, Fridge/Freezer combination                              |
+| 15    | Super Heating                | Hob                                                             |
+| 144   | Default                      | All                                                             |
+| 145   | Locked                       | All                                                             |
+| 146   | Super Cooling/Super Freezing | Fridge/Freezer combination                                      |
+| 255   | Not Connected                | All                                                             |
+
+### Coffee Machine
+
+| Channel             | Type                 | Read/write | Description                                                         |
+|---------------------|----------------------|------------|---------------------------------------------------------------------|
+| state               | String               | Read       | Current status of the appliance                                     |
+| rawState            | Number               | Read       | Current status of the appliance as raw number                       |
+| program             | String               | Read       | Current program or function running on the appliance                |
+| rawProgram          | Number               | Read       | Current program or function running on the appliance as raw number  |
+| type                | String               | Read       | Type of the program running on the appliance                        |
+| phase               | String               | Read       | Current phase of the program running on the appliance               |
+| rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number |
+| door                | Contact              | Read       | Current state of the door of the appliance                          |
+| switch              | Switch               | Write      | Switch the appliance on or off                                      |
+
+### Dishwasher
+
+| Channel             | Type                 | Read/write | Description                                                         |
+|---------------------|----------------------|------------|---------------------------------------------------------------------|
+| state               | String               | Read       | Current status of the appliance                                     |
+| rawState            | Number               | Read       | Current status of the appliance as raw number                       |
+| program             | String               | Read       | Current program or function running on the appliance                |
+| rawProgram          | Number               | Read       | Current program or function running on the appliance as raw number  |
+| phase               | String               | Read       | Current phase of the program running on the appliance               |
+| rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number |
+| start               | DateTime             | Read       | Programmed start time of the program                                |
+| duration            | DateTime             | Read       | Duration of the program running on the appliance                    |
+| elapsed             | DateTime             | Read       | Time elapsed in the program running on the appliance                |
+| finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
+| door                | Contact              | Read       | Current state of the door of the appliance                          |
+| switch              | Switch               | Write      | Switch the appliance on or off                                      |
+| powerConsumption    | Number:Power         | Read       | Power consumption by the currently running program on the appliance |
+| waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance |
+
+### Fridge
+
+| Channel             | Type                 | Read/write | Description                                                         |
+|---------------------|----------------------|------------|---------------------------------------------------------------------|
+| state               | String               | Read       | Current status of the appliance                                     |
+| rawState            | Number               | Read       | Current status of the appliance as raw number                       |
+| supercool           | Switch               | Read/Write | Start or stop Super Cooling                                         |
+| current             | Number:Temperature   | Read       | Current temperature in the fridge                                   |
+| target              | Number:Temperature   | Read       | Target temperature to be reached by the fridge                      |
+| door                | Contact              | Read       | Current state of the door of the appliance                          |
+| switch              | Switch               | Write      | Switch the appliance on or off                                      |
+
+### Fridge/Freezer combination
+
+| Channel             | Type                 | Read/write | Description                                                         |
+|---------------------|----------------------|------------|---------------------------------------------------------------------|
+| state               | String               | Read       | Current status of the appliance                                     |
+| rawState            | Number               | Read       | Current status of the appliance as raw number                       |
+| freezerstate        | String               | Read       | Current status of the freezer compartment                           |
+| fridgestate         | String               | Read       | Current status of the fridge compartment                            |
+| supercool           | Switch               | Read/Write | Start or stop Super Cooling                                         |
+| superfreeze         | Switch               | Read/Write | Start or stop Super Freezing                                        |
+| freezercurrent      | Number:Temperature   | Read       | Current temperature in the freezer compartment                      |
+| freezertarget       | Number:Temperature   | Read       | Target temperature to be reached by the freezer compartment         |
+| fridgecurrent       | Number:Temperature   | Read       | Current temperature in the fridge compartment                       |
+| fridgetarget        | Number:Temperature   | Read       | Target temperature to be reached by the fridge compartment          |
+| door                | Contact              | Read       | Current state of the door of the appliance                          |
+| start               | Switch               | Write      | Switch the appliance on or off                                      |
+
+### Hob
+
+| Channel             | Type                 | Read/write | Description                                                         |
+|---------------------|----------------------|------------|---------------------------------------------------------------------|
+| state               | String               | Read       | Current status of the appliance                                     |
+| rawState            | Number               | Read       | Current status of the appliance as raw number                       |
+| plate1power         | Number               | Read       | Power level of heating zone/plate 1                                 |
+| plate1heat          | Number               | Read       | Remaining heat level of heating zone/plate 1                        |
+| plate1time          | String               | Read       | Remaining time of heating zone/plate 1                              |
+| plate2power         | Number               | Read       | Power level of heating zone/plate 2                                 |
+| plate2heat          | Number               | Read       | Remaining heat level of heating zone/plate 2                        |
+| plate2time          | String               | Read       | Remaining time of heating zone/plate 2                              |
+| plate3power         | Number               | Read       | Power level of heating zone/plate 3                                 |
+| plate3heat          | Number               | Read       | Remaining heat level of heating zone/plate 3                        |
+| plate3time          | String               | Read       | Remaining time of heating zone/plate 3                              |
+| plate4power         | Number               | Read       | Power level of heating zone/plate 4                                 |
+| plate4heat          | Number               | Read       | Remaining heat level of heating zone/plate 4                        |
+| plate4time          | String               | Read       | Remaining time of heating zone/plate 4                              |
+| plate5power         | Number               | Read       | Power level of heating zone/plate 5                                 |
+| plate5heat          | Number               | Read       | Remaining heat level of heating zone/plate 5                        |
+| plate5time          | String               | Read       | Remaining time of heating zone/plate 5                              |
+| plate6power         | Number               | Read       | Power level of heating zone/plate 6                                 |
+| plate6heat          | Number               | Read       | Remaining heat level of heating zone/plate 6                        |
+| plate6time          | String               | Read       | Remaining time of heating zone/plate 6                              |
+
+### Hood
+
+| Channel             | Type                 | Read/write | Description                                                         |
+|---------------------|----------------------|------------|---------------------------------------------------------------------|
+| state               | String               | Read       | Current status of the appliance                                     |
+| rawState            | Number               | Read       | Current status of the appliance as raw number                       |
+| light               | Switch               | Write      | Switch the appliance on or off                                      |
+| ventilation         | Number               | Read       | Current ventilation power                                           |
+| stop                | Switch               | Write      | Stop the appliance                                                  |
+
+### Oven
+
+| Channel             | Type                 | Read/write | Description                                                         |
+|---------------------|----------------------|------------|---------------------------------------------------------------------|
+| state               | String               | Read       | Current status of the appliance                                     |
+| rawState            | Number               | Read       | Current status of the appliance as raw number                       |
+| program             | String               | Read       | Current program or function running on the appliance                |
+| rawProgram          | Number               | Read       | Current program or function running on the appliance as raw number  |
+| type                | String               | Read       | Type of the program running on the appliance                        |
+| phase               | String               | Read       | Current phase of the program running on the appliance               |
+| rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number |
+| start               | DateTime             | Read       | Programmed start time of the program                                |
+| duration            | DateTime             | Read       | Duration of the program running on the appliance                    |
+| elapsed             | DateTime             | Read       | Time elapsed in the program running on the appliance                |
+| finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
+| target              | Number:Temperature   | Read       | Target temperature to be reached by the oven                        |
+| measured            | Number:Temperature   | Read       | Actual measured temperature in the oven                             |
+| temp1               | Number:Temperature   | Read       | Program temperature in the oven 1                                   |
+| temp2               | Number:Temperature   | Read       | Program temperature in the oven 2                                   |
+| door                | Contact              | Read       | Current state of the door of the appliance                          |
+| switch              | Switch               | Write      | Switch the appliance on or off                                      |
+| stop                | Switch               | Write      | Stop the appliance                                                  |
+
+### Microwave/Oven combination
+
+See oven.
+
+### Tumble Dryer
+
+| Channel             | Type                 | Read/write | Description                                                         |
+|---------------------|----------------------|------------|---------------------------------------------------------------------|
+| state               | String               | Read       | Current status of the appliance                                     |
+| rawState            | Number               | Read       | Current status of the appliance as raw number                       |
+| program             | String               | Read       | Current program or function running on the appliance                |
+| rawProgram          | Number               | Read       | Current program or function running on the appliance as raw number  |
+| type                | String               | Read       | Type of the program running on the appliance                        |
+| phase               | String               | Read       | Current phase of the program running on the appliance               |
+| rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number |
+| start               | DateTime             | Read       | Programmed start time of the program                                |
+| duration            | DateTime             | Read       | Duration of the program running on the appliance                    |
+| elapsed             | DateTime             | Read       | Time elapsed in the program running on the appliance                |
+| finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
+| door                | Contact              | Read       | Current state of the door of the appliance                          |
+| switch              | Switch               | Write      | Switch the appliance on or off                                      |
+| step                | Number               | Read       | Current step in the program running on the appliance                |
+
+### Washing Machine
+
+| Channel             | Type                 | Read/write | Description                                                         |
+|---------------------|----------------------|------------|---------------------------------------------------------------------|
+| state               | String               | Read       | Current status of the appliance                                     |
+| rawState            | Number               | Read       | Current status of the appliance as raw number                       |
+| program             | String               | Read       | Current program or function running on the appliance                |
+| rawProgram          | Number               | Read       | Current program or function running on the appliance as raw number  |
+| type                | String               | Read       | Type of the program running on the appliance                        |
+| phase               | String               | Read       | Current phase of the program running on the appliance               |
+| rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number |
+| start               | DateTime             | Read       | Programmed start time of the program                                |
+| duration            | DateTime             | Read       | Duration of the program running on the appliance                    |
+| elapsed             | DateTime             | Read       | Time elapsed in the program running on the appliance                |
+| finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
+| door                | Contact              | Read       | Current state of the door of the appliance                          |
+| switch              | Switch               | Write      | Switch the appliance on or off                                      |
+| target              | Number:Temperature   | Read       | Temperature of the selected program                                 |
+| spinningspeed       | String               | Read       | Spinning speed in the program running on the appliance              |
+| powerConsumption    | Number:Power         | Read       | Power consumption by the currently running program on the appliance |
+| waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance |
 
 ## Example
 
