@@ -230,8 +230,6 @@ public class SungrowDiscoveryProcess {
                 readCommonBlock(block); // This is an asynchronous task
                 return;
             } else {
-                // createDiscoveryResult(block);
-                // lookForSunSpecBlock();
                 parsingFinished();
             }
 
@@ -274,7 +272,6 @@ public class SungrowDiscoveryProcess {
             readDeviceType();
         }
         parsingFinished();
-        // lookForSunSpecBlock(); // Continue parsing
     }
 
     /**
@@ -308,7 +305,6 @@ public class SungrowDiscoveryProcess {
             logger.debug("Device Type {} is not supported", registers.getRegister(0));
         }
         parsingFinished();
-        // lookForSunSpecBlock(); // Continue parsing
     }
 
     /**
