@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Sungrow Hybrid Inverter</label>
-		<description>Sungrow Hybrid Inverter over tcp modbus connection</description>
+		<description>Sungrow Hybrid Inverter over modbus connection</description>
 		<category>Inverter</category>
 
 		<channel-groups>
