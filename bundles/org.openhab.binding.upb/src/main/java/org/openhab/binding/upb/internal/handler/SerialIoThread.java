@@ -247,13 +247,6 @@ public class SerialIoThread extends Thread {
 
         // called by reader thread on ACK or NAK
         public void ackReceived(final boolean ack) {
-            if (logger.isDebugEnabled()) {
-                if (ack) {
-                    logger.debug("ACK received");
-                } else {
-                    logger.debug("NAK received");
-                }
-            }
             this.ack = ack;
             ackLatch.countDown();
         }
