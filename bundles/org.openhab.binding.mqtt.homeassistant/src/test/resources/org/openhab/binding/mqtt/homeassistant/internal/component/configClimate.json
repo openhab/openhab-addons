@@ -59,7 +59,7 @@
   "initial": "10",
   "max_temp": "40",
   "min_temp": "0",
-  "temperature_unit": "°F",
+  "temperature_unit": "F",
   "temp_step": "1",
   "precision": "0.5",
   "send_if_off": "false"

@@ -182,7 +182,7 @@ public class HAConfigurationTests {
         assertThat(config.temperatureCommandTopic, is("zigbee2mqtt/th1/set/current_heating_setpoint"));
         assertThat(config.temperatureStateTemplate, is("{{ value_json.current_heating_setpoint }}"));
         assertThat(config.temperatureStateTopic, is("zigbee2mqtt/th1"));
-        assertThat(config.temperatureUnit, is("C"));
+        assertThat(config.temperatureUnit, is(Climate.TemperatureUnit.CELSIUS));
         assertThat(config.getUniqueId(), is("0x847127fffe11dd6a_climate_zigbee2mqtt"));
 
         assertThat(config.initial, is(21));
@@ -242,7 +242,7 @@ public class HAConfigurationTests {
         assertThat(config.initial, is(10));
         assertThat(config.maxTemp, is(40f));
         assertThat(config.minTemp, is(0f));
-        assertThat(config.temperatureUnit, is("°F"));
+        assertThat(config.temperatureUnit, is(Climate.TemperatureUnit.FAHRENHEIT));
         assertThat(config.tempStep, is(1f));
         assertThat(config.precision, is(0.5f));
         assertThat(config.sendIfOff, is(false));

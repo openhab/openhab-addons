@@ -62,7 +62,7 @@ public class ClimateTests extends AbstractComponentTests {
                 + " \"auto\", \"off\" ], \"name\": \"th1\", \"temp_step\": 0.5,"
                 + " \"temperature_command_topic\": \"zigbee2mqtt/th1/set/current_heating_setpoint\","
                 + " \"temperature_state_template\": \"{{ value_json.current_heating_setpoint }}\","
-                + " \"temperature_state_topic\": \"zigbee2mqtt/th1\", \"temperature_unit\": \"°C\","
+                + " \"temperature_state_topic\": \"zigbee2mqtt/th1\", \"temperature_unit\": \"C\","
                 + " \"unique_id\": \"0x847127fffe11dd6a_climate_zigbee2mqtt\"}");
 
         assertThat(component.channels.size(), is(6));
@@ -125,7 +125,7 @@ public class ClimateTests extends AbstractComponentTests {
                 + " \"auto\", \"off\" ], \"name\": \"th1\", \"temp_step\": 0.5,"
                 + " \"temperature_command_topic\": \"zigbee2mqtt/th1/set/current_heating_setpoint\","
                 + " \"temperature_state_template\": \"{{ value_json.current_heating_setpoint }}\","
-                + " \"temperature_state_topic\": \"zigbee2mqtt/th1\", \"temperature_unit\": \"°C\","
+                + " \"temperature_state_topic\": \"zigbee2mqtt/th1\", \"temperature_unit\": \"C\","
                 + " \"power_command_topic\": \"zigbee2mqtt/th1/power\","
                 + " \"unique_id\": \"0x847127fffe11dd6a_climate_zigbee2mqtt\", \"send_if_off\": \"false\"}");
 
@@ -225,7 +225,7 @@ public class ClimateTests extends AbstractComponentTests {
                         + " \"temperature_low_state_template\": \"{{ value_json.temperature_low }}\","
                         + " \"temperature_low_state_topic\": \"zigbee2mqtt/th1\","
                         + " \"power_command_topic\": \"zigbee2mqtt/th1/power\", \"initial\": \"10\","
-                        + " \"max_temp\": \"40\", \"min_temp\": \"0\", \"temperature_unit\": \"°F\","
+                        + " \"max_temp\": \"40\", \"min_temp\": \"0\", \"temperature_unit\": \"F\","
                         + " \"temp_step\": \"1\", \"precision\": \"0.5\", \"send_if_off\": \"false\" }");
 
         assertThat(component.channels.size(), is(12));
