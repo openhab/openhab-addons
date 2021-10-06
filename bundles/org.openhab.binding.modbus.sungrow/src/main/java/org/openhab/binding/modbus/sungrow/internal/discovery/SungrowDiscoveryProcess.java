@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
  * discovery service about the discovered devices
  *
  * @author Nagy Attila Gabor - Initial contribution
+ * @author Ferdinand Schwenk - reused for sungrow bundle
  */
 @NonNullByDefault
 public class SungrowDiscoveryProcess {

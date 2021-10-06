@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Nagy Attila Gábor - Initial contribution
+ * @author Ferdinand Schwenk - reused for sungrow bundle
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.sungrow", service = ThingHandlerFactory.class)

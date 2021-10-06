@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * Discovery service for sungrow
  *
  * @author Nagy Attila Gabor - initial contribution
+ * @author Ferdinand Schwenk - reused for sungrow bundle
  *
  */
 @Component

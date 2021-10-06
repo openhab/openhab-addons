@@ -29,6 +29,7 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
  * workarounds. These should be done in the handler.
  *
  * @author Nagy Attila Gabor - Initial contribution
+ * @author Ferdinand Schwenk - reused for sungrow bundle
  *
  */
 @NonNullByDefault

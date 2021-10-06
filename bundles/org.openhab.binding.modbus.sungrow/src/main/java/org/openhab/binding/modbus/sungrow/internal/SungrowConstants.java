@@ -24,6 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Nagy Attila Gábor - Initial contribution
+ * @author Ferdinand Schwenk - reused for sungrow bundle
  */
 @NonNullByDefault
 public class SungrowConstants {

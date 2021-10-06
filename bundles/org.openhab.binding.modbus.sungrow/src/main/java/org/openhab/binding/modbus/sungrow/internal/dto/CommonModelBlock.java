@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * This class contains information parsed from the Common Model block
  *
  * @author Nagy Attila Gabor - Initial contribution
+ * @author Ferdinand Schwenk - reused for sungrow bundle
  *
  */
 @NonNullByDefault

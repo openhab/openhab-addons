@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * sent to an inverter and publishing the received values to OpenHAB.
  *
  * @author Nagy Attila Gabor - Initial contribution
+ * @author Ferdinand Schwenk - reused for sungrow bundle
  */
 @NonNullByDefault
 public class InverterHandler extends AbstractSungrowHandler {

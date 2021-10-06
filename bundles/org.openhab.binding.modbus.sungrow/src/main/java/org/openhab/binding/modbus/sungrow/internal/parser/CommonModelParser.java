@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
  * Parser for the Common Message block
  *
  * @author Nagy Attila Gabor - Initial contribution
+ * @author Ferdinand Schwenk - reused for sungrow bundle
  *
  */
 @NonNullByDefault

@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
  * - implements some tool methods
  *
  * @author Nagy Attila Gabor - Initial contribution
+ * @author Ferdinand Schwenk - reused for sungrow bundle
  */
 @NonNullByDefault
 public abstract class AbstractSungrowHandler extends BaseThingHandler {

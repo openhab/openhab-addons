@@ -18,6 +18,7 @@ package org.openhab.binding.modbus.sungrow.internal.dto;
  * address the block at the modbus register space
  *
  * @author Nagy Attila Gabor - Initial contribution
+ * @author Ferdinand Schwenk - reused for sungrow bundle
  */
 public class ModelBlock {
 

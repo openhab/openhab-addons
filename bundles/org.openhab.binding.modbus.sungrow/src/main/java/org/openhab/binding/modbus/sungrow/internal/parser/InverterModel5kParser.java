@@ -22,6 +22,7 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
  * Parses inverter modbus data into an InverterModelBlock5k
  *
  * @author Nagy Attila Gabor - Initial contribution
+ * @author Ferdinand Schwenk - reused for sungrow bundle
  *
  */
 @NonNullByDefault

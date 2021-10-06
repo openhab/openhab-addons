@@ -24,6 +24,7 @@ import org.openhab.core.library.types.DecimalType;
  * Base class for parsers with some helper methods
  *
  * @author Nagy Attila Gabor - Initial contribution
+ * @author Ferdinand Schwenk - reused for sungrow bundle
  *
  */
 @NonNullByDefault

@@ -15,7 +15,7 @@ package org.openhab.binding.modbus.sungrow.internal;
 /**
  * Possible values for an inverter's system state field
  *
- * @author Ferdinand Schwenk - reused for sungrow bundle
+ * @author Ferdinand Schwenk - initial contribution
  */
 public enum SungrowSystemState {
 

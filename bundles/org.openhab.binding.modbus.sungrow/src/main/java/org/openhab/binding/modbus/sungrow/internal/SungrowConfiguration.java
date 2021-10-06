@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link SungrowConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Nagy Attila Gábor - Initial contribution
+ * @author Ferdinand Schwenk - reused for sungrow bundle
  */
 @NonNullByDefault
 public class SungrowConfiguration {

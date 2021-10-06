@@ -18,6 +18,7 @@ import java.util.Optional;
  * Model for Sungrow compatible inverter data
  *
  * @author Nagy Attila Gabor - Initial contribution
+ * @author Ferdinand Schwenk - reused for sungrow bundle
  *
  */
 public class InverterModelBlock {
