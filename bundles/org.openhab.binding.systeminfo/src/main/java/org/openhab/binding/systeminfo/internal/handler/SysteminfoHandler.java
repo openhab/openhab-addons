@@ -294,7 +294,7 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = new QuantityType<>(Runtime.getRuntime().freeMemory(), Units.BYTE);
                     break;
                 case CHANNEL_MEMORY_USED_HEAP_PERCENT:
-                    state = new DecimalType((Runtime.getRuntime().maxMemory() - Runtime.getRuntime().freeMemory()) * 100
+                    state = new DecimalType((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) * 100
                             / Runtime.getRuntime().maxMemory());
                     break;
                 case CHANNEL_DISPLAY_INFORMATION:
