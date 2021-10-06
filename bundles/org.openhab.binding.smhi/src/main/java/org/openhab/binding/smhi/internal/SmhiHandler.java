@@ -218,7 +218,7 @@ public class SmhiHandler extends BaseThingHandler {
                     newState = new QuantityType<>(value.get(), MetricPrefix.MILLI(SIUnits.METRE));
                     break;
                 default:
-                    newState = new DecimalType(value.get());
+                    newState = new DecimalType(value.get().stripTrailingZeros());
             }
         }
 

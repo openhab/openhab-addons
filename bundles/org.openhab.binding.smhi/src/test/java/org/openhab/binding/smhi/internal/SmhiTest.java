@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.library.types.DecimalType;
 
 /**
  * @author Anders Alfredsson - Initial contribution
@@ -102,6 +103,7 @@ public class SmhiTest {
         assertEquals(0, pmean0.compareTo(BigDecimal.valueOf(0)));
         assertEquals(0, pmedian0.compareTo(BigDecimal.valueOf(0)));
         assertEquals(0, wsymb0.compareTo(BigDecimal.valueOf(2)));
+        assertEquals("2", new DecimalType(wsymb0.stripTrailingZeros()).toString());
 
         Forecast forecast1 = timeSeries1.getForecast(TIME.plusHours(1), 0).orElseThrow(AssertionError::new);
 
