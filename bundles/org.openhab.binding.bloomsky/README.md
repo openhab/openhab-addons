@@ -2,13 +2,17 @@
 
 ![Bloomsky](./doc/bloomsky_sky_weather_station.svg)
 
-This is a "read-only" binding that uses the [BloomSky API](http://weatherlution.com/bloomsky-api/?doing_wp_cron=1615241711.4678061008453369140625) to retrieve the sensor data from the **SKY1, SKY2** and **STORM** personal weather stations.  If you are not familiar with these weather stations, you can find out more at the [BloomSky Home Page](https://www.bloomsky.com/).
+This is a "read-only" binding that uses the [BloomSky API](http://weatherlution.com/bloomsky-api/?doing_wp_cron=1615241711.4678061008453369140625) to retrieve the sensor data from the **SKY1, SKY2** and **STORM** personal weather stations.
+
+For those not familiar with these weather stations, you can find out more at the [BloomSky Home Page](https://www.bloomsky.com/).
 
 If you already have this weather station, you will need to obtain an API authorization key at the [BloomSky Device Owners Portal](https://dashboard.bloomsky.com/) using the [Developers Link](https://dashboard.bloomsky.com/user#api) found on the left side of the screen after you log in.
 
-The BloomSky weather station posts updates every 5 minutes (this is not configurable and a drawback if you want real-time updates).  Subsequently, this binding's refresh rate cannot be set for less than 5 minutes (300 seconds). 
+ This binding's refresh rate cannot be set for less than 5 minutes (300 seconds); BloomSky posts updates every 5 minutes (this is not configurable and a drawback if you want real-time updates). 
 
-The [API Documentation](./doc/v1.6BloomskyDeviceOwnerAPIDocumentationforBusinessOwners.pdf) is bare-bones; it was last updated in 2017 along with the addition of the STORM weather station.  While the WeatherUnderground/WeatherCompany does have an integration with personal weather stations including BloomSky, it is limited in the observations it provides and does not provide a way to retrieve the images or videos that are captured by the BloomSky weather station.  
+The [API Documentation](./doc/v1.6BloomskyDeviceOwnerAPIDocumentationforBusinessOwners.pdf) is bare-bones; it was last updated in 2017 along with the addition of the STORM weather station.  
+
+While the WeatherUnderground/WeatherCompany does have an integration with personal weather stations including BloomSky, it is limited in the observations it provides and does not provide a way to retrieve the images or videos that are captured by the BloomSky weather station.  
 
 
 ## Supported Things
@@ -25,7 +29,9 @@ The following thing types are supported:
 
 ## Discovery
 
-Once a Bridge thing is configured with a valid API key, the binding will auto-discover the _SKY1/SKY2_ and optionally (if you have one installed), a _STORM_ weather station thing associated with that account.  The binding will use the openHAB locale setting to determine if readings are to be returned in imperial or metric units.
+Once a Bridge thing is configured with a valid API key, the binding will auto-discover the _SKY1/SKY2_ and optionally (if you have one installed), a _STORM_ weather station thing associated with that account.  
+
+The binding will use the openHAB locale setting to determine if readings are to be returned in imperial or metric units.
 
 If the system location (locale) is changed, the background discovery updates the configuration of the device sensor data automatically.
 
