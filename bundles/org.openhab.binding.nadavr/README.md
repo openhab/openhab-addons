@@ -2,7 +2,7 @@
 
 ![NAD Electronics](./doc/NAD_logo_red.png)
 
-This binding integrates NAD A/V Receivers by using Telnet over either an Ethernet or serial RS-323 interface.
+This binding integrates NAD A/V Receivers by using Telnet over either an Ethernet or serial RS-232 interface and is based on NAD Electronics documentation found here: [Protocol Integration Documentation](https://nadelectronics.com/software/#Protocol)
 
 _If possible, provide some resources like pictures, a video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
 

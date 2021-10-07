@@ -4,6 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>NADAvr Binding</name>
-	<description>This is the binding for NADAvr.</description>
-
+	<description>A binding for controlling network enabled NAD A/V Receivers.</description>
+    <author>Dave J. Schoepel @TheSchoepel's</author>
 </binding:binding>

@@ -5,42 +5,154 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="NADAvrBridge" />
-			</supported-bridge-type-refs>
-		-->
+	<thing-type id="avr">
 
-		<label>NADAvr Binding Thing</label>
-		<description>Sample thing for NADAvr Binding</description>
+		<label>NAD A/V Receiver</label>
+		<description>Control an NAD A/V Receiver</description>
 
-		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
-		</channels>
+		<channel-groups>
+
+			<channel-group id="main" typeId="main" />
+
+			<channel-group id="zone2" typeId="zone">
+				<label>Zone 2 Control</label>
+				<description>Channels for Zone2 of this AVR.</description>
+			</channel-group>
+			<channel-group id="zone3" typeId="zone">
+				<label>Zone 3 Control</label>
+				<description>Channels for Zone3 of this AVR.</description>
+			</channel-group>
+			<channel-group id="zone4" typeId="zone">
+				<label>Zone 4 Control</label>
+				<description>Channels for Zone4 of this AVR.</description>
+			</channel-group>
+		</channel-groups>
 
 		<config-description>
-			<parameter name="hostname" type="text" required="true">
+			<parameter-group name="receiverProperties">
+				<label>Receiver Properties</label>
+			</parameter-group>
+			<parameter-group name="connectionSettings">
+				<label>General Connection Settings</label>
+			</parameter-group>
+
+			<parameter-group name="telnetSettings">
+				<label>Telnet Settings</label>
+				<description>Settings for the Telnet port of the AVR</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="hostname" type="text" required="true" groupName="connectionSettings">
 				<context>network-address</context>
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Passwort to access the device</description>
+
+			<parameter name="zoneCount" type="integer" required="true" groupName="receiverProperties">
+				<label>Zone Count of the Receiver</label>
+				<description>Number of zones (including main zone), values 1-4 are supported.</description>
+				<default>2</default>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
-				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
+
+			<parameter name="telnetEnabled" type="boolean" required="true" groupName="connectionSettings">
+				<label>Use Telnet Port</label>
+				<description>By using telnet the AVR updates are received immediately. Also, some devices only support telnet.
+                    </description>
+				<default>true</default>
+			</parameter>
+			<parameter name="ipAddress" type="text" required="true" groupName="connectionSettings">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>IPV4 address of the NAD A/V receiver</description>
+			</parameter>
+			<parameter name="telnetPort" type="integer" required="true" groupName="telnetSettings">
+				<default>23</default>
+				<label>Port</label>
+				<description>Telnet port used for AVR communication. Normally shouldn't be changed.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
 
+	<channel-group-type id="main">
+		<label>Main Zone Control</label>
+		<description>Main zone channels for this AVR.</description>
+		<channels>
+			<channel id="power" typeId="mainPower" />
+			<channel id="listeningMode" typeId="listeningMode" />
+			<channel id="mute" typeId="mute" />
+			<channel id="volume" typeId="volume"/>
+            <channel id="volumeDB" typeId="volumeDB"/>
+
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone">
+		<label>Zone Control</label>
+		<description>Channels for a zone of this AVR.</description>
+		<channels>
+			<channel id="power" typeId="zonePower" />
+			
+		</channels>
+	</channel-group-type>
+
 	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for NADAvr Binding</description>
+	<channel-type id="mainPower">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power ON/OFF the AVR</description>
 	</channel-type>
+
+	<channel-type id="listeningMode">
+		<item-type>String</item-type>
+		<label>Main Listening Mode</label>
+		<description>Select the main listening mode for this AVR</description>
+		<state>
+			<options>
+				<option value="None">Direct</option>
+				<option value="PLIIMusic">Dolby Pro Logic IIx Music</option>
+				<option value="PLIIMovie">Dolby Pro Logic IIx Movie</option>
+				<option value="EnhancedStereo">Enhanced Stereo</option>
+				<option value="AnalogBypass">Analog Bypass</option>
+				<option value="ProLogic">Dolby Pro Logic IIx</option>
+				<option value="NEO6Cinema">DTS NEO:6 Cinema</option>
+				<option value="NEO6Music">DTS NEO:6 Music</option>
+				<option value="EARS">EARS</option>
+				<option value="SurroundEX">Surround EX</option>
+				<option value="StereoDownmix">Stereo Downmix</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="zonePower">
+		<item-type>Switch</item-type>
+		<label>Power (zone)</label>
+		<description>Power ON/OFF this zone of the AVR</description>
+	</channel-type>
+	
+	<channel-type id="volume">
+        <item-type>Dimmer</item-type>
+        <label>Volume</label>
+        <description>Set the volume level of this zone</description>
+        <category>SoundVolume</category>
+    </channel-type>
+	
+	
+    <channel-type id="volumeDB">
+        <item-type>Number</item-type>
+        <label>Volume (dB)</label>
+        <description>Set the volume level (dB).</description>
+        <category>SoundVolume</category>
+        <state min="-99" max="19" step="1.0" pattern="%.1f dB"/>
+    </channel-type>
+	
+	
+	<channel-type id="mute">
+        <item-type>Switch</item-type>
+        <label>Mute</label>
+        <description>Enable/Disable Mute on this zone of the AVR</description>
+    </channel-type>
 </thing:thing-descriptions>
+
+
+
+
