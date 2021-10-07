@@ -99,15 +99,10 @@ public class InverterHandler extends AbstractSungrowHandler {
                 getScaled(block.acFrequency, block.acFrequencySF, HERTZ));
 
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_APPARENT_POWER),
-                getScaled(block.acApparentPower, block.acApparentPowerSF, WATT)); // TODO: VA currently not supported,
-                                                                                  // see:
-                                                                                  // https://github.com/openhab/openhab-core/pull/1347
+                getScaled(block.acApparentPower, block.acApparentPowerSF, VAR));
 
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_REACTIVE_POWER),
-                getScaled(block.acReactivePower, block.acReactivePowerSF, WATT)); // TODO: var currently not supported,
-                                                                                  // see:
-                                                                                  // https://github.com/openhab/openhab-core/pull/1347
-
+                getScaled(block.acReactivePower, block.acReactivePowerSF, VAR));
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_POWER_FACTOR),
                 getScaled(block.acPowerFactor, block.acPowerFactorSF, PERCENT));
 
@@ -186,9 +181,7 @@ public class InverterHandler extends AbstractSungrowHandler {
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_FREQUENCY), getScaled(block.acFrequency, scaleBy10, HERTZ));
 
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_REACTIVE_POWER),
-                getScaled(block.acReactivePower, scaleBy1, WATT)); // TODO: var currently not supported,
-                                                                   // see:
-                                                                   // https://github.com/openhab/openhab-core/pull/1347
+                getScaled(block.acReactivePower, scaleBy1, VAR));
 
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_POWER_FACTOR),
                 getScaled(block.acPowerFactor, scaleBy10, PERCENT));
