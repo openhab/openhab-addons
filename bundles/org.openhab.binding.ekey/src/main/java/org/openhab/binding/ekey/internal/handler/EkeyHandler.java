@@ -140,33 +140,35 @@ public class EkeyHandler extends BaseThingHandler implements EkeyPacketListener 
         if (message.length >= 72) {
             byte[] newMessage = Arrays.copyOf(message, 72);
             String messageString = new String(newMessage);
-            logger.trace("messageString received() : {}", messageString);
             long action = getIntValueFrom(newMessage, 4, 4);
-            logger.trace("AKTION           : {}", action);
-            updateState(CHANNEL_TYPE_ACTION, new DecimalType(action));
             long terminalid = getIntValueFrom(newMessage, 8, 4);
             String terminalSerial = getStringValueFrom(newMessage, 12, 14);
-            logger.trace("TERMINAL SERIAL  : {}", terminalSerial);
+            long relayid = getIntValueFrom(newMessage, 26, 1);
+            long userid = getIntValueFrom(newMessage, 28, 4);
+            long fingerid = getIntValueFrom(newMessage, 32, 4);
+            int serial = reconstructFsSerial(terminalid);
+            if (logger.isTraceEnabled()) {
+                logger.trace("messageString received() : {}", messageString);
+                logger.trace("AKTION           : {}", action);
+                logger.trace("TERMINAL SERIAL  : {}", terminalSerial);
+                logger.trace("RESERVED         : {}", getStringValueFrom(newMessage, 27, 1));
+                logger.trace("RELAY ID         : {}", relayid);
+                logger.trace("USER ID          : {}", userid);
+                logger.trace("FINGER ID        : {}", fingerid);
+                logger.trace("EVENT            : {}", getStringValueFrom(newMessage, 36, 16));
+                logger.trace("FS SERIAL        : {}", serial);
+            }
+            updateState(CHANNEL_TYPE_ACTION, new DecimalType(action));
             if (!terminalSerial.isEmpty()) {
                 updateState(CHANNEL_TYPE_TERMID, DecimalType.valueOf(terminalSerial));
             } else {
                 updateState(CHANNEL_TYPE_TERMID, DecimalType.valueOf("-1"));
             }
-            logger.trace("RESERVED         : {}", getStringValueFrom(newMessage, 27, 1));
             updateState(CHANNEL_TYPE_RESERVED, StringType.valueOf(getStringValueFrom(newMessage, 27, 1)));
-            long relayid = getIntValueFrom(newMessage, 26, 1);
-            logger.trace("RELAY ID         : {}", relayid);
             updateState(CHANNEL_TYPE_RELAYID, new DecimalType(relayid));
-            long userid = getIntValueFrom(newMessage, 28, 4);
-            logger.trace("USER ID          : {}", userid);
             updateState(CHANNEL_TYPE_USERID, new DecimalType(userid));
-            long fingerid = getIntValueFrom(newMessage, 32, 4);
-            logger.trace("FINGER ID        : {}", fingerid);
             updateState(CHANNEL_TYPE_FINGERID, new DecimalType(fingerid));
-            logger.trace("EVENT            : {}", getStringValueFrom(newMessage, 36, 16));
             updateState(CHANNEL_TYPE_EVENT, StringType.valueOf(getStringValueFrom(newMessage, 36, 16)));
-            int serial = reconstructFsSerial(terminalid);
-            logger.trace("FS SERIAL        : {}", serial);
             updateState(CHANNEL_TYPE_FSSERIAL, new DecimalType(serial));
 
         }
@@ -177,54 +179,53 @@ public class EkeyHandler extends BaseThingHandler implements EkeyPacketListener 
         if (message.length >= 46) {
             byte[] newMessage = Arrays.copyOf(message, 46);
             String messageString = new String(newMessage);
-            logger.trace("messageString received() : {}", messageString);
             String[] array = messageString.split(delimiter);
+            if (logger.isTraceEnabled()) {
+                logger.trace("messageString received() : {}", messageString);
+                logger.trace("USER ID     : {}", array[1]);
+                logger.trace("USER ID     : {}", array[1]);
+                logger.trace("USER NAME   : {}", array[2]);
+                logger.trace("USER STATUS : {}", array[3]);
+                logger.trace("FINGER ID   : {}", array[4]);
+                logger.trace("KEY ID      : {}", array[5]);
+                logger.trace("SERIENNR FS : {}", array[6]);
+                logger.trace("NAME FS     : {}", new String(array[7]).replace("-", ""));
+                logger.trace("AKTION      : {}", array[8]);
+                logger.trace("INPUT ID    : {}", array[9]);
+
+            }
             if (!"-".equals(array[1])) {
-                logger.trace("USER ID : {}", array[1]);
                 updateState(CHANNEL_TYPE_USERID, DecimalType.valueOf((array[1])));
             } else {
-                logger.trace("USER ID : {}", array[1]);
                 updateState(CHANNEL_TYPE_USERID, DecimalType.valueOf("-1"));
             }
             String userName = (array[2]).toString();
             if (!userName.isEmpty()) {
                 userName = userName.replace("-", "");
                 userName = userName.replace(" ", "");
-                logger.trace("USER NAME   : {}", userName);
                 updateState(CHANNEL_TYPE_USERNAME, StringType.valueOf(userName));
             }
             if (!"-".equals(array[3])) {
-                logger.trace("USER STATUS : {}", array[3]);
                 updateState(CHANNEL_TYPE_USERSTATUS, DecimalType.valueOf((array[3])));
             } else {
-                logger.trace("UNKNOWN USER STATUS   : {}", array[3]);
                 updateState(CHANNEL_TYPE_USERSTATUS, DecimalType.valueOf("-1"));
             }
             if (!"-".equals(array[4])) {
-                logger.trace("FINGER ID   : {}", array[4]);
                 updateState(CHANNEL_TYPE_FINGERID, DecimalType.valueOf((array[4])));
             } else {
-                logger.trace("UNKNOWN FINGER ID   : {}", array[4]);
                 updateState(CHANNEL_TYPE_FINGERID, DecimalType.valueOf("-1"));
             }
             if (!"-".equals(array[5])) {
-                logger.trace("KEY ID   : {}", array[5]);
                 updateState(CHANNEL_TYPE_KEYID, DecimalType.valueOf((array[5])));
             } else {
-                logger.trace("UNKNOWN KEY ID   : {}", array[5]);
                 updateState(CHANNEL_TYPE_KEYID, DecimalType.valueOf("-1"));
             }
-            logger.trace("SERIENNR FS : {}", array[6]);
             updateState(CHANNEL_TYPE_FSSERIAL, DecimalType.valueOf((array[6])));
-            logger.trace("NAME FS     : {}", new String(array[7]).replace("-", ""));
             updateState(CHANNEL_TYPE_FSNAME, new StringType(new String(array[7]).replace("-", "")));
-            logger.trace("AKTION      : {}", array[8]);
             updateState(CHANNEL_TYPE_ACTION, DecimalType.valueOf((array[8])));
             if (!"-".equals(array[9])) {
-                logger.trace("INPUT ID    : {}", array[9]);
                 updateState(CHANNEL_TYPE_INPUTID, DecimalType.valueOf((array[9])));
             } else {
-                logger.trace("UNKNOWN INPUT ID    : {}", array[9]);
                 updateState(CHANNEL_TYPE_INPUTID, DecimalType.valueOf("-1"));
             }
         } else {
@@ -237,36 +238,35 @@ public class EkeyHandler extends BaseThingHandler implements EkeyPacketListener 
         if (message.length >= 27) {
             byte[] newMessage = Arrays.copyOf(message, 27);
             String messageString = new String(newMessage);
-            logger.trace("messageString received() : {}", messageString);
             String[] array = messageString.split(delimiter);
+            if (logger.isTraceEnabled()) {
+                logger.trace("messageString received() : {}", messageString);
+                logger.trace("USER ID     : {}", array[1]);
+                logger.trace("FINGER ID   : {}", array[2]);
+                logger.trace("SERIENNR FS : {}", array[3]);
+                logger.trace("AKTION      : {}", array[4]);
+                logger.trace("RELAY ID    : {}", array[5]);
+            }
             if (!"-".equals(array[1])) {
-                logger.trace("USER ID : {}", array[1]);
                 updateState(CHANNEL_TYPE_USERID, DecimalType.valueOf((array[1])));
             } else {
-                logger.trace("USER ID : {}", array[1]);
                 updateState(CHANNEL_TYPE_USERID, DecimalType.valueOf("-1"));
             }
             if (!"-".equals(array[2])) {
-                logger.trace("FINGER ID   : {}", array[2]);
                 updateState(CHANNEL_TYPE_FINGERID, DecimalType.valueOf((array[2])));
             } else {
-                logger.trace("UNKNOWN FINGER ID   : {}", array[4]);
                 updateState(CHANNEL_TYPE_FINGERID, DecimalType.valueOf("-1"));
             }
-            logger.trace("SERIENNR FS : {}", array[3]);
             updateState(CHANNEL_TYPE_FSSERIAL, DecimalType.valueOf((array[3])));
-            logger.trace("AKTION      : {}", array[4]);
             updateState(CHANNEL_TYPE_ACTION, DecimalType.valueOf((array[4])));
             if (!"-".equals(array[5])) {
-                logger.trace("RELAY ID   : {}", array[5]);
                 State relayId = DecimalType.valueOf((array[5]));
                 updateState(CHANNEL_TYPE_RELAYID, relayId);
             } else {
-                logger.trace("UNKNOWN RELAY ID   : {}", array[4]);
                 updateState(CHANNEL_TYPE_RELAYID, DecimalType.valueOf("-1"));
             }
         } else {
-            logger.debug("received packet is to short : {}", message);
+            logger.trace("received packet is to short : {}", message);
         }
     }
 
