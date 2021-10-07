@@ -138,31 +138,33 @@ public class EkeyHandler extends BaseThingHandler implements EkeyPacketListener 
     public void parseRare(byte[] message, String delimiter) {
         logger.debug("parse RARE packet");
         if (message.length >= 72) {
-            byte[] newMmessage = Arrays.copyOf(message, 72);
-            long action = getIntValueFrom(newMmessage, 4, 4);
+            byte[] newMessage = Arrays.copyOf(message, 72);
+            String messageString = new String(newMessage);
+            logger.trace("messageString received() : {}", messageString);
+            long action = getIntValueFrom(newMessage, 4, 4);
             logger.trace("AKTION           : {}", action);
             updateState(CHANNEL_TYPE_ACTION, new DecimalType(action));
-            long terminalid = getIntValueFrom(newMmessage, 8, 4);
-            String terminalSerial = getStringValueFrom(newMmessage, 12, 14);
+            long terminalid = getIntValueFrom(newMessage, 8, 4);
+            String terminalSerial = getStringValueFrom(newMessage, 12, 14);
             logger.trace("TERMINAL SERIAL  : {}", terminalSerial);
             if (!terminalSerial.isEmpty()) {
                 updateState(CHANNEL_TYPE_TERMID, DecimalType.valueOf(terminalSerial));
             } else {
                 updateState(CHANNEL_TYPE_TERMID, DecimalType.valueOf("-1"));
             }
-            logger.trace("RESERVED         : {}", getStringValueFrom(newMmessage, 27, 1));
-            updateState(CHANNEL_TYPE_RESERVED, StringType.valueOf(getStringValueFrom(newMmessage, 27, 1)));
-            long relayid = getIntValueFrom(newMmessage, 26, 1);
+            logger.trace("RESERVED         : {}", getStringValueFrom(newMessage, 27, 1));
+            updateState(CHANNEL_TYPE_RESERVED, StringType.valueOf(getStringValueFrom(newMessage, 27, 1)));
+            long relayid = getIntValueFrom(newMessage, 26, 1);
             logger.trace("RELAY ID         : {}", relayid);
             updateState(CHANNEL_TYPE_RELAYID, new DecimalType(relayid));
-            long userid = getIntValueFrom(newMmessage, 28, 4);
+            long userid = getIntValueFrom(newMessage, 28, 4);
             logger.trace("USER ID          : {}", userid);
             updateState(CHANNEL_TYPE_USERID, new DecimalType(userid));
-            long fingerid = getIntValueFrom(newMmessage, 32, 4);
+            long fingerid = getIntValueFrom(newMessage, 32, 4);
             logger.trace("FINGER ID        : {}", fingerid);
             updateState(CHANNEL_TYPE_FINGERID, new DecimalType(fingerid));
-            logger.trace("EVENT            : {}", getStringValueFrom(newMmessage, 36, 16));
-            updateState(CHANNEL_TYPE_EVENT, StringType.valueOf(getStringValueFrom(newMmessage, 36, 16)));
+            logger.trace("EVENT            : {}", getStringValueFrom(newMessage, 36, 16));
+            updateState(CHANNEL_TYPE_EVENT, StringType.valueOf(getStringValueFrom(newMessage, 36, 16)));
             int serial = reconstructFsSerial(terminalid);
             logger.trace("FS SERIAL        : {}", serial);
             updateState(CHANNEL_TYPE_FSSERIAL, new DecimalType(serial));
@@ -174,10 +176,8 @@ public class EkeyHandler extends BaseThingHandler implements EkeyPacketListener 
         logger.debug("parse MULTI packet");
         if (message.length >= 46) {
             byte[] newMessage = Arrays.copyOf(message, 46);
-            logger.trace("resized message : {}", newMessage);
             String messageString = new String(newMessage);
-            logger.debug("messageString received() : {}", messageString);
-            logger.trace("DELIMITER   : {}", delimiter);
+            logger.trace("messageString received() : {}", messageString);
             String[] array = messageString.split(delimiter);
             if (!"-".equals(array[1])) {
                 logger.trace("USER ID : {}", array[1]);
@@ -236,10 +236,8 @@ public class EkeyHandler extends BaseThingHandler implements EkeyPacketListener 
         logger.debug("parse HOME packet");
         if (message.length >= 27) {
             byte[] newMessage = Arrays.copyOf(message, 27);
-            logger.trace("resized message : {}", newMessage);
             String messageString = new String(newMessage);
             logger.trace("messageString received() : {}", messageString);
-            logger.trace("DELIMITER   : {}", delimiter);
             String[] array = messageString.split(delimiter);
             if (!"-".equals(array[1])) {
                 logger.trace("USER ID : {}", array[1]);
