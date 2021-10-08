@@ -184,7 +184,8 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             entry("133", "Cottons Eco"), entry("146", "QuickPowerWash"), entry("65532", "Mix"));
 
     private final static Map<String, String> phases = Map.ofEntries(entry("1", "Pre-wash"), entry("4", "Washing"),
-            entry("5", "Rinses"), entry("7", "Clean"), entry("9", "Drain"), entry("10", "Spin"), entry("11", "Finish"));
+            entry("5", "Rinses"), entry("7", "Clean"), entry("9", "Drain"), entry("10", "Spin"),
+            entry("11", "Anti-crease"), entry("12", "Finished"));
 
     private final String mieleID;
     private final String channelID;
