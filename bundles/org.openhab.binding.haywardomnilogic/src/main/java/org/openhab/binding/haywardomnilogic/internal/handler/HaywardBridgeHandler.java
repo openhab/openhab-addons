@@ -39,6 +39,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpVersion;
 import org.openhab.binding.haywardomnilogic.internal.HaywardAccount;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
+import org.openhab.binding.haywardomnilogic.internal.HaywardDynamicStateDescriptionProvider;
 import org.openhab.binding.haywardomnilogic.internal.HaywardException;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
 import org.openhab.binding.haywardomnilogic.internal.HaywardTypeToRequest;
@@ -46,6 +47,7 @@ import org.openhab.binding.haywardomnilogic.internal.config.HaywardConfig;
 import org.openhab.binding.haywardomnilogic.internal.discovery.HaywardDiscoveryService;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -53,6 +55,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.StateDescriptionFragment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.NodeList;
@@ -68,6 +71,7 @@ import org.xml.sax.InputSource;
 @NonNullByDefault
 public class HaywardBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(HaywardBridgeHandler.class);
+    private final HaywardDynamicStateDescriptionProvider stateDescriptionProvider;
     private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> initializeFuture;
     private @Nullable ScheduledFuture<?> pollTelemetryFuture;
@@ -81,9 +85,11 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         return Collections.singleton(HaywardDiscoveryService.class);
     }
 
-    public HaywardBridgeHandler(Bridge bridge, HttpClient httpClient) {
+    public HaywardBridgeHandler(HaywardDynamicStateDescriptionProvider stateDescriptionProvider, Bridge bridge,
+            HttpClient httpClient) {
         super(bridge);
         this.httpClient = httpClient;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -491,6 +497,11 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
         StackTraceElement e = stacktrace[3];
         return e.getMethodName();
+    }
+
+    void updateChannelStateDescriptionFragment(Channel channel, StateDescriptionFragment descriptionFragment) {
+        ChannelUID channelId = channel.getUID();
+        stateDescriptionProvider.setStateDescriptionFragment(channelId, descriptionFragment);
     }
 
     public int convertCommand(Command command) {

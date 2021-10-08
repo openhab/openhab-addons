@@ -53,10 +53,10 @@
 	</channel-type>
 
 	<channel-type id="filterSpeed">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Dimmer</item-type>
 		<label>Filter Speed</label>
 		<description>Filter Speed (%)</description>
-		<state min="0" max="100" step="1.0" pattern="%d %unit%" readOnly="false"/>
+		<state min="15" max="90" step="5" pattern="%1.0f%%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="filterState">

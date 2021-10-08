@@ -37,10 +37,10 @@
 	</thing-type>
 
 	<channel-type id="pumpSpeed">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Dimmer</item-type>
 		<label>Pump Speed</label>
 		<description>Pump Speed (%)</description>
-		<state min="0" max="100" step="1.0" pattern="%d %unit%" readOnly="false"/>
+		<state min="0" max="100" step="1.0" pattern="%1.0f%%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="pumpState">

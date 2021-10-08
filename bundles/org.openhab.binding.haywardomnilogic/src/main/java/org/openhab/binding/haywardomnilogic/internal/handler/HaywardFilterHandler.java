@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.haywardomnilogic.internal.handler;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,12 +22,15 @@ import org.openhab.binding.haywardomnilogic.internal.HaywardException;
 import org.openhab.binding.haywardomnilogic.internal.HaywardThingHandler;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.StateDescriptionFragment;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +61,17 @@ public class HaywardFilterHandler extends HaywardThingHandler {
         if (bridge != null) {
             HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
             if (bridgehandler != null) {
+                // Set Filter min and max speeds
+                Channel ch = thing.getChannel(HaywardBindingConstants.CHANNEL_FILTER_SPEED);
+                if (ch != null) {
+                    StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
+                            .withMinimum(new BigDecimal(
+                                    getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MINSPEED)))
+                            .withMaximum(new BigDecimal(
+                                    getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MAXSPEED)))
+                            .build();
+                    bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
+                }
                 systemIDs = bridgehandler.evaluateXPath("//Filter/@systemId", xmlResponse);
                 String thingSystemID = getThing().getUID().getId();
                 for (int i = 0; i < systemIDs.size(); i++) {

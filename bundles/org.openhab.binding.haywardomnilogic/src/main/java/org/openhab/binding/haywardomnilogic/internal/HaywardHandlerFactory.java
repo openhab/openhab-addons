@@ -56,6 +56,7 @@ public class HaywardHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.concat(BRIDGE_THING_TYPES_UIDS.stream(), THING_TYPES_UIDS.stream()).collect(Collectors.toSet()));
+    private final HaywardDynamicStateDescriptionProvider stateDescriptionProvider;
     private final HttpClient httpClient;
 
     @Override
@@ -64,7 +65,9 @@ public class HaywardHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Activate
-    public HaywardHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public HaywardHandlerFactory(final @Reference HaywardDynamicStateDescriptionProvider stateDescriptionProvider,
+            @Reference HttpClientFactory httpClientFactory) {
+        this.stateDescriptionProvider = stateDescriptionProvider;
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
@@ -76,7 +79,7 @@ public class HaywardHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_BRIDGE)) {
-            return new HaywardBridgeHandler((Bridge) thing, httpClient);
+            return new HaywardBridgeHandler(stateDescriptionProvider, (Bridge) thing, httpClient);
         }
         if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_BACKYARD)) {
             return new HaywardBackyardHandler(thing);
