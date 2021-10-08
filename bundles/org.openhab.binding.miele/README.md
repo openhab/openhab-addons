@@ -246,15 +246,115 @@ See oven.
 | powerConsumption    | Number:Power         | Read       | Power consumption by the currently running program on the appliance |
 | waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance |
 
-## Example
+# Configuration Examples
 
-demo.items:
+## things/miele.things
 
 ```
-String MieleFridgeState  (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fridge:state"}
-Switch MieleFridgeSuperCool (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fridge:supercool"}
-Number:Temperature MieleFridgeCurrent (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fridge:current"}
-Number:Temperature MieleFridgeTarget (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fridge:target"}
-Contact MieleFridgeDoor (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fridge:door"}
-Switch MieleFridgeStart (gMiele,gMieleFridge) {channel="miele:fridge:dilbeek:fridge:start"}
+Bridge miele:xgw3000:home [ipAddress="192.168.0.18", interface="192.168.0.5"] {
+    Things:
+        Thing fridgefreezer freezer [uid="00124b000424be44#2"]
+        Thing hood hood [uid="001d63fffe020685#210"]
+        Thing fridge fridge [uid="00124b000424bdc0#2"]
+        Thing oven oven [uid="001d63fffe020390#210"]
+        Thing oven microwave [uid="001d63fffe0206eb#210"]
+        Thing hob hob [uid="00124b000424bed7#2"]
+        Thing dishwasher dishwasher [uid="001d63fffe020683#210"]
+        Thing tumbledryer dryer [uid="001d63fffe0200ba#210"]
+        Thing washingmachine washingmachine [uid="001d63fffe020505#210"]
+        Thing coffeemachine coffeemachine [uid="001d63fffe020505#190"]
+}
+```
+
+## items/miele.items
+
+```
+String Dishwasher_State                                     {channel="miele:dishwasher:home:dishwasher:state"}
+Number Dishwasher_RawState                                  {channel="miele:dishwasher:home:dishwasher:rawState"}
+String Dishwasher_Program "Program [%s]"                    {channel="miele:dishwasher:home:dishwasher:program"}
+String Dishwasher_Phase "Phase [%s]"                        {channel="miele:dishwasher:home:dishwasher:phase"}
+DateTime Dishwasher_ElapsedTime "Elapsed time" <time>       {channel="miele:dishwasher:home:dishwasher:elapsed"}
+DateTime Dishwasher_FinishTime "Remaining time" <time>      {channel="miele:dishwasher:home:dishwasher:finish"}
+Number:Power Dishwasher_PowerConsumption                    {channel="miele:dishwasher:home:dishwasher:powerConsumption"}
+Number:Volume Dishwasher_WaterConsumption                   {channel="miele:dishwasher:home:dishwasher:waterConsumption"}
+
+String Fridge_State                                         {channel="miele:fridge:home:fridge:state"}
+Contact Fridge_Door                                         {channel="miele:fridge:home:fridge:door"}
+Switch Fridge_SuperCool                                     {channel="miele:fridge:home:fridge:supercool"}
+Number:Temperature Fridge_CurrentTemperature <temperature>  {channel="miele:fridge:home:fridge:current"}
+Number:Temperature Fridge_TargetTemperature  <temperature>  {channel="miele:fridge:home:fridge:target"}
+Switch Fridge_Start                                         {channel="miele:fridge:home:fridge:start"}
+
+String Oven_State                                           {channel="miele:oven:home:oven:state"}
+Number Oven_RawState                                        {channel="miele:oven:home:oven:rawState"}
+String Oven_Program "Program [%s]"                          {channel="miele:oven:home:oven:program"}
+String Oven_Phase "Phase [%s]"                              {channel="miele:oven:home:oven:phase"}
+DateTime Oven_ElapsedTime "Elapsed time" <time>             {channel="miele:oven:home:oven:elapsed"}
+DateTime Oven_FinishTime "Remaining time" <time>            {channel="miele:oven:home:oven:finish"}
+Number:Temperature Oven_CurrentTemperature <temperature>    {channel="miele:oven:home:oven:measured"}
+Number:Temperature Oven_TargetTemperature <temperature>     {channel="miele:oven:home:oven:target"}
+Switch Oven_Stop                                            {channel="miele:oven:home:oven:stop", autoupdate="false"}
+
+String WashingMachine_State                                 {channel="miele:washingmachine:home:washingmachine:state"}
+Number WashingMachine_RawState                              {channel="miele:washingmachine:home:washingmachine:rawState"}
+String WashingMachine_Program "Program [%s]"                {channel="miele:washingmachine:home:washingmachine:program"}
+String WashingMachine_Phase "Phase [%s]"                    {channel="miele:washingmachine:home:washingmachine:phase"}
+Number:Temperature WashingMachine_Temperature <temperature> {channel="miele:washingmachine:home:washingmachine:target"}
+String WashingMachine_SpinningSpeed                         {channel="miele:washingmachine:home:washingmachine:spinningspeed"}
+DateTime WashingMachine_ElapsedTime "Elapsed time" <time>   {channel="miele:washingmachine:home:washingmachine:elapsed"}
+DateTime WashingMachine_FinishTime "Remaining time" <time>  {channel="miele:washingmachine:home:washingmachine:finish"}
+Number:Power WashingMachine_PowerConsumption                {channel="miele:washingmachine:home:washingmachine:powerConsumption"}
+Number:Volume WashingMachine_WaterConsumption               {channel="miele:washingmachine:home:washingmachine:waterConsumption"}
+
+String TumbleDryer_State                                    {channel="miele:tumbledryer:home:tumbledryer:state"}
+Number TumbleDryer_RawState                                 {channel="miele:tumbledryer:home:tumbledryer:rawState"}
+String TumbleDryer_Program "Program [%s]"                   {channel="miele:tumbledryer:home:tumbledryer:program"}
+String TumbleDryer_Phase "Phase [%s]"                       {channel="miele:tumbledryer:home:tumbledryer:phase"}
+DateTime TumbleDryer_ElapsedTime "Elapsed time" <time>      {channel="miele:tumbledryer:home:tumbledryer:elapsed"}
+DateTime TumbleDryer_FinishTime "Remaining time" <time>     {channel="miele:tumbledryer:home:tumbledryer:finish"}
+```
+
+## sitemaps/miele.sitemap
+
+```
+sitemap miele label="Miele" {
+    Frame label="Miele" {
+        Text item=Oven_State label="Oven [%s]" icon="kitchen" {
+            Text item=Oven_Program visibility=[Oven_RawState>1]
+            Text item=Oven_Phase visibility=[Oven_Phase!=UNDEF]
+            Text item=Oven_ElapsedTime
+            Text item=Oven_FinishTime
+            Switch item=Oven_Stop
+        }
+        Text item=WashingMachine_State label="Washing Machine [%s]" icon="washingmachine" {
+            Text item=WashingMachine_Program visibility=[WashingMachine_RawState>1]
+            Text item=WashingMachine_Temperature visibility=[WashingMachine_Program!=UNDEF]
+            Text item=WashingMachine_SpinningSpeed visibility=[WashingMachine_Program!=UNDEF]
+            Text item=WashingMachine_Phase visibility=[WashingMachine_Phase!=UNDEF]
+            Text item=WashingMachine_ElapsedTime
+            Text item=WashingMachine_FinishTime
+            Text item=WashingMachine_PowerConsumption
+            Text item=WashingMachine_WaterConsumption
+        }
+        Text item=TumbleDryer_State label="Tumble Dryer [%s]" icon="dryer" {
+            Text item=TumbleDryer_Program visibility=[TumbleDryer_RawState>1]
+            Text item=TumbleDryer_Phase visibility=[TumbleDryer_Phase!=UNDEF]
+            Text item=TumbleDryer_ElapsedTime
+            Text item=TumbleDryer_FinishTime
+        }
+        Text item=Dishwasher_State label="Dishwasher [%s]" icon="dryer" {
+            Text item=Dishwasher_Program visibility=[Dishwasher_RawState>1]
+            Text itemDishwasher_Phase visibility=[Dishwasher_Phase!=UNDEF]
+            Text item=Dishwasher_ElapsedTime
+            Text item=Dishwasher_FinishTime
+            Text item=Dishwasher_PowerConsumption
+            Text item=Dishwasher_WaterConsumption
+        }
+        Text item=Fridge_CurrentTemperature label="Fridge" icon="climate" {
+            Text item=Fridge_CurrentTemperature
+            Text item=Fridge_TargetTemperature
+            Switch item=Fridge_SuperCool icon="snow"
+        }
+    }
+}
 ```
