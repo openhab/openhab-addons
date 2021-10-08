@@ -168,7 +168,7 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
     private final static Map<String, String> phases = Map.ofEntries(entry("1", "Programme running"),
             entry("2", "Drying"), entry("3", "Drying Machine iron"), entry("4", "Drying Hand iron"),
             entry("5", "Drying Normal"), entry("6", "Drying Normal+"), entry("7", "Cooling down"),
-            entry("8", "Drying Hand iron"), entry("10", "Finish"));
+            entry("8", "Drying Hand iron"), entry("10", "Finished"));
 
     private final String mieleID;
     private final String channelID;
