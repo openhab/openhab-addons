@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import javazoom.spi.mpeg.sampled.convert.MpegFormatConversionProvider;
 import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
@@ -65,6 +66,8 @@ public class PulseAudioAudioSink implements AudioSink {
     private @Nullable Socket clientSocket;
 
     private boolean isIdle = true;
+
+    private @Nullable ScheduledFuture<?> scheduledDisconnection;
 
     static {
         SUPPORTED_FORMATS.add(AudioFormat.WAV);
@@ -254,8 +257,14 @@ public class PulseAudioAudioSink implements AudioSink {
     }
 
     public void scheduleDisconnect() {
-        logger.debug("Scheduling disconnect");
-        scheduler.schedule(this::disconnect, pulseaudioHandler.getIdleTimeout(), TimeUnit.MILLISECONDS);
+        if (scheduledDisconnection != null) {
+            scheduledDisconnection.cancel(true);
+        }
+        int idleTimeout = pulseaudioHandler.getIdleTimeout();
+        if (idleTimeout > -1) {
+            logger.debug("Scheduling disconnect");
+            scheduledDisconnection = scheduler.schedule(this::disconnect, idleTimeout, TimeUnit.MILLISECONDS);
+        }
     }
 
     @Override
