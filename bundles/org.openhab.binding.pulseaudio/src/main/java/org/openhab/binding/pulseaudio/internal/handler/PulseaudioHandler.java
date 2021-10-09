@@ -146,8 +146,10 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
             refreshJob = null;
         }
         updateStatus(ThingStatus.OFFLINE);
-        bridgeHandler.unregisterDeviceStatusListener(this);
-        bridgeHandler = null;
+        if (bridgeHandler != null) {
+            bridgeHandler.unregisterDeviceStatusListener(this);
+            bridgeHandler = null;
+        }
         logger.trace("Thing {} {} disposed.", getThing().getUID(), name);
         super.dispose();
 
