@@ -15,7 +15,7 @@ package org.openhab.binding.venstarthermostat.internal.dto;
 /**
  * The {@link VenstarSensor} represents a sensor returned from the REST API.
  *
- * @author Matthew Davies - Class added to add more functionality to binding
+ * @author Matthew Davies - Initial contribution
  */
 public class VenstarRuntime {
     long ts;
@@ -83,11 +83,11 @@ public class VenstarRuntime {
         this.aux2 = aux2;
     }
 
-    public int getFreecoolRuntime() {
+    public int getFreeCoolRuntime() {
         return fc;
     }
 
-    public void setFreecoolRuntime(int fc) {
+    public void setFreeCoolRuntime(int fc) {
         this.fc = fc;
     }
 }

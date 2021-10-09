@@ -108,15 +108,6 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
 
     private static final int TIMEOUT_SECONDS = 30;
     private static final int UPDATE_AFTER_COMMAND_SECONDS = 2;
-    private static final String CHANNEL_TIMESTAMP_RUNTIME_DAY = "timestampDay";
-    private static final String CHANNEL_HEAT1_RUNTIME_DAY = "heat1RuntimeDay";
-    private static final String CHANNEL_HEAT2_RUNTIME_DAY = "heat2RuntimeDay";
-    private static final String CHANNEL_COOL1_RUNTIME_DAY = "cool1RuntimeDay";
-    private static final String CHANNEL_COOL2_RUNTIME_DAY = "cool2RuntimeDay";
-    private static final String CHANNEL_AUX1_RUNTIME_DAY = "aux1RuntimeDay";
-    private static final String CHANNEL_AUX2_RUNTIME_DAY = "aux2RuntimeDay";
-    private static final String CHANNEL_FC_RUNTIME_DAY = "freecoolRuntimeDay";
-
     private Logger log = LoggerFactory.getLogger(VenstarThermostatHandler.class);
     private List<VenstarSensor> sensorData = new ArrayList<>();
     private VenstarInfoData infoData = new VenstarInfoData();
@@ -396,8 +387,6 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         ZonedDateTime now = LocalDateTime.now().atZone(zoneId);
         int diff = now.getOffset().getTotalSeconds();
         ZonedDateTime z = ZonedDateTime.ofInstant(Instant.ofEpochSecond(runtime.getTimeStamp() - diff), zoneId);
-        // ZonedDateTime z = ZonedDateTime.ofInstant(Instant.ofEpochSecond(runtime.getTimeStamp()),
-        // ZoneId.systemDefault());
         return z;
     }
 
@@ -507,7 +496,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
                 updateIfChanged(CHANNEL_COOL2_RUNTIME_DAY + i, new DecimalType(rt.getCool2Runtime()));
                 updateIfChanged(CHANNEL_AUX1_RUNTIME_DAY + i, new DecimalType(rt.getAux1Runtime()));
                 updateIfChanged(CHANNEL_AUX2_RUNTIME_DAY + i, new DecimalType(rt.getAux2Runtime()));
-                updateIfChanged(CHANNEL_FC_RUNTIME_DAY + i, new DecimalType(rt.getFreecoolRuntime()));
+                updateIfChanged(CHANNEL_FC_RUNTIME_DAY + i, new DecimalType(rt.getFreeCoolRuntime()));
             }
 
             response = getData("/query/info");

@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * The {@link VenstarSensorData} represents sensor data returned from the REST API.
  *
- * @author Matthew Davies - class added to add more functionality to binding
+ * @author Matthew Davies - Initial contribution
  */
 public class VenstarRuntimeData {
     List<VenstarRuntime> runtimes;
