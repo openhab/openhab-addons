@@ -29,7 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetBridgeActions} defines the thing actions for the openwebnet binding.
+ * The {@link OpenWebNetBridgeActions} defines the Bridge actions for the
+ * openwebnet binding.
  *
  * @author Massimo Valla - Initial contribution
  */
@@ -56,33 +57,34 @@ public class OpenWebNetBridgeActions implements ThingActions {
             @ActionInput(name = "message", label = "message", description = "The message to send") @Nullable String message) {
         OpenWebNetBridgeHandler handler = bridgeHandler;
         if (handler == null) {
-            logger.warn("openwebnet Action service ThingHandler is null!");
+            logger.warn("openwebnet sendMessage: cannot send message, bridgeHandler is null");
             return false;
         }
         OpenMessage msg;
         try {
             msg = org.openwebnet4j.message.BaseOpenMessage.parse(message);
         } catch (FrameException e) {
-            logger.warn("Skipping openwebnet sendMessage: message '{}' is invalid.", message);
+            logger.warn("openwebnet skipping sending message '{}': {}", message, e.getMessage());
             return false;
         }
         OpenGateway gw = handler.getGateway();
         if (gw != null && gw.isConnected()) {
             try {
                 Response res = gw.send(msg);
-                logger.debug("Sent message '{}' to gateway. Response: {}", msg, res.getResponseMessages());
+                logger.debug("sent message '{}' to gateway. Response: {}", msg, res.getResponseMessages());
                 return res.isSuccess();
             } catch (OWNException e) {
-                logger.warn("Exception while sending message '{}' to gateway: {}", msg, e.getMessage());
+                logger.warn("exception while sending message '{}' to gateway: {}", msg, e.getMessage());
                 return false;
             }
         } else {
-            logger.warn("Skipping openwebnet sendMessage for bridge {}: gateway is not connected.",
+            logger.warn("openwebnet skipping sendMessage for bridge {}: gateway is not connected.",
                     handler.getThing().getUID());
             return false;
         }
 
-        // If you return values, you do so by returning a Map<String,Object> and annotate the method itself with as many
+        // If you return values, you do so by returning a Map<String,Object> and
+        // annotate the method itself with as many
         // @ActionOutputs as you will return map entries.
     }
 
