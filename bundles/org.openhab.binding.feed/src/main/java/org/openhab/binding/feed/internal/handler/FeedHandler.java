@@ -57,6 +57,7 @@ import com.rometools.rome.io.SyndFeedInput;
  * sent to one of the channels and for the regular updates of the feed data.
  *
  * @author Svilen Valkanov - Initial contribution
+ * @author Juergen Pabel - Added enclosure channel
  */
 @NonNullByDefault
 public class FeedHandler extends BaseThingHandler {
@@ -167,6 +168,13 @@ public class FeedHandler extends BaseThingHandler {
                     state = UnDefType.UNDEF;
                 } else {
                     state = new StringType(getValueSafely(latestEntry.getLink()));
+                }
+                break;
+            case CHANNEL_LATEST_ENCLOSURE:
+                if (latestEntry == null || latestEntry.getEnclosures().isEmpty()) {
+                    state = UnDefType.UNDEF;
+                } else {
+                    state = new StringType(getValueSafely(latestEntry.getEnclosures().get(0).getUrl()));
                 }
                 break;
             case CHANNEL_LATEST_PUBLISHED_DATE:
