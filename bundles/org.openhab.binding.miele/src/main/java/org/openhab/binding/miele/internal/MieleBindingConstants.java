@@ -30,11 +30,22 @@ public class MieleBindingConstants {
     public static final String APPLIANCE_ID = "uid";
     public static final String DEVICE_CLASS = "dc";
     public static final String PROTOCOL_PROPERTY_NAME = "protocol";
+
+    // JSON-RPC property names
     public static final String SERIAL_NUMBER_PROPERTY_NAME = "serialNumber";
     public static final String EXTENDED_DEVICE_STATE_PROPERTY_NAME = "extendedDeviceState";
     public static final String STATE_PROPERTY_NAME = "state";
+    public static final String PROGRAM_ID_PROPERTY_NAME = "programId";
+    public static final String PHASE_PROPERTY_NAME = "phase";
+    public static final String RAW_PHASE_PROPERTY_NAME = "rawPhase";
 
     // Shared Channel ID's
+    public static final String STATE_TEXT_CHANNEL_ID = "state";
+    public static final String STATE_CHANNEL_ID = "rawState";
+    public static final String PROGRAM_TEXT_CHANNEL_ID = "program";
+    public static final String PROGRAM_CHANNEL_ID = "rawProgram";
+    public static final String PHASE_TEXT_CHANNEL_ID = "phase";
+    public static final String PHASE_CHANNEL_ID = "rawPhase";
     public static final String SUPERCOOL_CHANNEL_ID = "supercool";
     public static final String SUPERFREEZE_CHANNEL_ID = "superfreeze";
     public static final String POWER_CONSUMPTION_CHANNEL_ID = "powerConsumption";
@@ -76,6 +87,10 @@ public class MieleBindingConstants {
     public static final int STATE_SUPER_HEATING = 15;
     public static final int STATE_LOCKED = 145;
     public static final int STATE_NOT_CONNECTED = 255;
+
+    // Miele missing string prefixes
+    public static final String MISSING_PROGRAM_TEXT_PREFIX = "program.";
+    public static final String MISSING_PHASE_TEXT_PREFIX = "phase.";
 
     // Bridge config properties
     public static final String HOST = "ipAddress";
