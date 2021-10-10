@@ -146,9 +146,11 @@ public class CameraServlet extends IpCameraServlet {
                             } // 5 sec timeout OR a new snapshot comes back from camera
                             while (Duration.between(startTime, Instant.now()).toMillis() < 5000
                                     && Duration.between(handler.currentSnapshotTime, Instant.now()).toMillis() > 1200);
-                            logger.debug("GET:/ipcamera.jpg returned snapshot from {}ms ago. Camera took approx {}ms",
-                                    Duration.between(handler.currentSnapshotTime, Instant.now()).toMillis(),
-                                    Duration.between(startTime, Instant.now()).toMillis());
+                            if (logger.isDebugEnabled()) {
+                                logger.debug("GET:/ipcamera.jpg returned snapshot from {}ms ago. Camera took approx {}ms",
+                                        Duration.between(handler.currentSnapshotTime, Instant.now()).toMillis(),
+                                        Duration.between(startTime, Instant.now()).toMillis());
+                            }
                             sendSnapshotImage(resp, "image/jpg", handler.getSnapshot());
                             acontext.complete();
                         }
