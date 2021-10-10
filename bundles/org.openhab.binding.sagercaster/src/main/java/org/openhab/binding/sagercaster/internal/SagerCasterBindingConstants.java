@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.sagercaster.internal;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -62,6 +59,5 @@ public class SagerCasterBindingConstants {
 
     // Some algorythms constants
     public final static String FORECAST_PENDING = "0";
-    public final static Set<String> SHOWERS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList("G", "K", "L", "R", "S", "T", "U", "W")));
+    public final static Set<String> SHOWERS = Set.of("G", "K", "L", "R", "S", "T", "U", "W");
 }

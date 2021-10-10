@@ -154,15 +154,15 @@ public class SagerWeatherCaster {
     }
 
     public int getBeaufort() {
-        return this.currentBeaufort;
+        return currentBeaufort;
     }
 
     public int getWindEvolution() {
-        return this.windEvolution;
+        return windEvolution;
     }
 
     public int getPressureEvolution() {
-        return this.pressureEvolution;
+        return pressureEvolution;
     }
 
     private void sagerNubesUpdate() {
