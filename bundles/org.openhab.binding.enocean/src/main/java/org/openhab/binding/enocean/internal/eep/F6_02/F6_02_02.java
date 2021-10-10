@@ -17,13 +17,11 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 import java.util.function.Function;
 
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchConfigBase.Channel;
-import org.openhab.binding.enocean.internal.config.EnOceanChannelVirtualRockerSwitchConfig;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchListenerConfig;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -98,89 +96,15 @@ public class F6_02_02 extends F6_02 {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-        // this method is used by the classic device listener channels to convert an rocker switch message into an
+        // this method is used by the classic device listener channels to convert a rocker switch message into an
         // appropriate item update
         State currentState = getCurrentStateFunc.apply(channelId);
         if (t21 && nu) {
-            if (CHANNEL_ROCKERSWITCH_SECONDACTIONPRESSED.equals(channelTypeId)) {
-                return ((bytes[0] & PRESSED_SEC) != 0) ? OnOffType.ON : OnOffType.OFF;
-            } else {
-                EnOceanChannelVirtualRockerSwitchConfig c = config.as(EnOceanChannelVirtualRockerSwitchConfig.class);
-                byte dir1 = c.getChannel() == Channel.ChannelA ? AI : BI;
-                byte dir2 = c.getChannel() == Channel.ChannelA ? A0 : B0;
+            EnOceanChannelRockerSwitchListenerConfig c = config.as(EnOceanChannelRockerSwitchListenerConfig.class);
+            byte dir1 = c.getChannel() == Channel.ChannelA ? AI : BI;
+            byte dir2 = c.getChannel() == Channel.ChannelA ? A0 : B0;
 
-                // We are just listening on the pressed event here
-                switch (c.getSwitchMode()) {
-                    case RockerSwitch:
-                        if ((bytes[0] >>> 5) == dir1) {
-                            if (((bytes[0] & PRESSED) != 0)) {
-                                return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.ON
-                                        : UpDownType.UP;
-                            }
-                        } else if ((bytes[0] >>> 5) == dir2) {
-                            if (((bytes[0] & PRESSED) != 0)) {
-                                return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.OFF
-                                        : UpDownType.DOWN;
-                            }
-                        } else if (((bytes[0] & 0xf) >>> 1) == dir1) {
-                            if (((bytes[0] & PRESSED_SEC) != 0)) {
-                                return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.ON
-                                        : UpDownType.UP;
-                            }
-                        } else if (((bytes[0] & 0xf) >>> 1) == dir2) {
-                            if (((bytes[0] & PRESSED_SEC) != 0)) {
-                                return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.OFF
-                                        : UpDownType.DOWN;
-                            }
-                        }
-                        break;
-                    case ToggleDir1:
-                        if ((bytes[0] >>> 5) == dir1) {
-                            if (((bytes[0] & PRESSED) != 0)) {
-                                return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
-                                        ? (currentState == UnDefType.UNDEF ? OnOffType.ON
-                                                : inverse((OnOffType) currentState))
-                                        : (currentState == UnDefType.UNDEF ? UpDownType.UP
-                                                : inverse((UpDownType) currentState));
-                            }
-                        } else if (((bytes[0] & 0xf) >>> 1) == dir1) {
-                            if (((bytes[0] & PRESSED_SEC) != 0)) {
-                                return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
-                                        ? (currentState == UnDefType.UNDEF ? OnOffType.ON
-                                                : inverse((OnOffType) currentState))
-                                        : (currentState == UnDefType.UNDEF ? UpDownType.UP
-                                                : inverse((UpDownType) currentState));
-                            }
-                        }
-                        break;
-                    case ToggleDir2:
-                        if ((bytes[0] >>> 5) == dir2) {
-                            if (((bytes[0] & PRESSED) != 0)) {
-                                return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
-                                        ? (currentState == UnDefType.UNDEF ? OnOffType.ON
-                                                : inverse((OnOffType) currentState))
-                                        : (currentState == UnDefType.UNDEF ? UpDownType.UP
-                                                : inverse((UpDownType) currentState));
-                            }
-                        } else if (((bytes[0] & 0xf) >>> 1) == dir2) {
-                            if (((bytes[0] & PRESSED_SEC) != 0)) {
-                                return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
-                                        ? (currentState == UnDefType.UNDEF ? OnOffType.ON
-                                                : inverse((OnOffType) currentState))
-                                        : (currentState == UnDefType.UNDEF ? UpDownType.UP
-                                                : inverse((UpDownType) currentState));
-                            }
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-        } else if (t21 && !nu) {
-            // always unset SecondActionPressed if any rocker switch action is released
-            if (CHANNEL_ROCKERSWITCH_SECONDACTIONPRESSED.equals(channelTypeId)) {
-                return OnOffType.OFF;
-            }
+            return getState(dir1, dir2, c.handleSecondAction, c.getSwitchMode(), channelTypeId, currentState);
         }
 
         return UnDefType.UNDEF;

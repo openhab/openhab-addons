@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.enocean.internal.eep.F6_02;
 
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
+
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchActionConfig;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchConfigBase.SwitchMode;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -20,6 +23,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  *
@@ -65,10 +69,6 @@ public abstract class F6_02 extends _RPSMessage {
             return DIR1;
         } else if ((bytes[0] >>> 5) == BI && (bytes[0] & PRESSED) != 0) {
             return DIR2;
-        } else if (((bytes[0] & 0xf) >>> 1) == B0 && (bytes[0] & PRESSED_SEC) != 0) {
-            return DIR1;
-        } else if (((bytes[0] & 0xf) >>> 1) == BI && (bytes[0] & PRESSED_SEC) != 0) {
-            return DIR2;
         } else {
             return NODIR;
         }
@@ -89,19 +89,83 @@ public abstract class F6_02 extends _RPSMessage {
     }
 
     protected String getChannelEvent(byte dir1, byte dir2) {
-        if ((bytes[0] >>> 5) == dir1) {
+        if ((bytes[0] & PRESSED_SEC) != 0) {
+            // Do not emit an event if channelA is pressed together with channelB as it is undetermined which one gets
+            // fired first
+            return null;
+        } else if ((bytes[0] >>> 5) == dir1) {
             return ((bytes[0] & PRESSED) != 0) ? CommonTriggerEvents.DIR1_PRESSED : CommonTriggerEvents.DIR1_RELEASED;
         } else if ((bytes[0] >>> 5) == dir2) {
             return ((bytes[0] & PRESSED) != 0) ? CommonTriggerEvents.DIR2_PRESSED : CommonTriggerEvents.DIR2_RELEASED;
-        } else if (((bytes[0] & 0xf) >>> 1) == dir1) {
-            return ((bytes[0] & PRESSED_SEC) != 0) ? CommonTriggerEvents.DIR1_PRESSED
-                    : CommonTriggerEvents.DIR1_RELEASED;
-        } else if (((bytes[0] & 0xf) >>> 1) == dir2) {
-            return ((bytes[0] & PRESSED_SEC) != 0) ? CommonTriggerEvents.DIR2_PRESSED
-                    : CommonTriggerEvents.DIR2_RELEASED;
         } else {
             return null;
         }
+    }
+
+    protected State getState(byte dir1, byte dir2, boolean handleSecondAction, SwitchMode switchMode,
+            String channelTypeId, State currentState) {
+        // We are just listening on the pressed event here
+        switch (switchMode) {
+            case RockerSwitch:
+                if ((bytes[0] >>> 5) == dir1) {
+                    if (((bytes[0] & PRESSED) != 0)) {
+                        return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.ON : UpDownType.UP;
+                    }
+                } else if ((bytes[0] >>> 5) == dir2) {
+                    if (((bytes[0] & PRESSED) != 0)) {
+                        return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.OFF
+                                : UpDownType.DOWN;
+                    }
+                } else if (handleSecondAction && ((bytes[0] & 0xf) >>> 1) == dir1) {
+                    if (((bytes[0] & PRESSED_SEC) != 0)) {
+                        return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.ON : UpDownType.UP;
+                    }
+                } else if (handleSecondAction && ((bytes[0] & 0xf) >>> 1) == dir2) {
+                    if (((bytes[0] & PRESSED_SEC) != 0)) {
+                        return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH) ? OnOffType.OFF
+                                : UpDownType.DOWN;
+                    }
+                }
+                break;
+            case ToggleDir1:
+                if ((bytes[0] >>> 5) == dir1) {
+                    if (((bytes[0] & PRESSED) != 0)) {
+                        return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
+                                ? (currentState == UnDefType.UNDEF ? OnOffType.ON : inverse((OnOffType) currentState))
+                                : (currentState == UnDefType.UNDEF ? UpDownType.UP
+                                        : inverse((UpDownType) currentState));
+                    }
+                } else if (handleSecondAction && ((bytes[0] & 0xf) >>> 1) == dir1) {
+                    if (((bytes[0] & PRESSED_SEC) != 0)) {
+                        return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
+                                ? (currentState == UnDefType.UNDEF ? OnOffType.ON : inverse((OnOffType) currentState))
+                                : (currentState == UnDefType.UNDEF ? UpDownType.UP
+                                        : inverse((UpDownType) currentState));
+                    }
+                }
+                break;
+            case ToggleDir2:
+                if ((bytes[0] >>> 5) == dir2) {
+                    if (((bytes[0] & PRESSED) != 0)) {
+                        return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
+                                ? (currentState == UnDefType.UNDEF ? OnOffType.ON : inverse((OnOffType) currentState))
+                                : (currentState == UnDefType.UNDEF ? UpDownType.UP
+                                        : inverse((UpDownType) currentState));
+                    }
+                } else if (handleSecondAction && ((bytes[0] & 0xf) >>> 1) == dir2) {
+                    if (((bytes[0] & PRESSED_SEC) != 0)) {
+                        return channelTypeId.equals(CHANNEL_ROCKERSWITCHLISTENERSWITCH)
+                                ? (currentState == UnDefType.UNDEF ? OnOffType.ON : inverse((OnOffType) currentState))
+                                : (currentState == UnDefType.UNDEF ? UpDownType.UP
+                                        : inverse((UpDownType) currentState));
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        return UnDefType.UNDEF;
     }
 
     protected State inverse(OnOffType currentState) {

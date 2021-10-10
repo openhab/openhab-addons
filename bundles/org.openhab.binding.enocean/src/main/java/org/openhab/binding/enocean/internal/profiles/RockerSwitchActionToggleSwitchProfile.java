@@ -25,6 +25,8 @@ import org.openhab.core.types.State;
 
 /**
  * @author Daniel Weber - Initial contribution
+ *         This profile is used for channel rockerSwitchAction to be able to bind this trigger channel directly to a
+ *         switch item
  */
 @NonNullByDefault
 public class RockerSwitchActionToggleSwitchProfile implements TriggerProfile {

@@ -15,6 +15,7 @@ package org.openhab.binding.enocean.internal.config;
 /**
  *
  * @author Daniel Weber - Initial contribution
+ *         This config class is used for channel rockerSwitchAction to define in which case it triggers.
  */
 public class EnOceanChannelRockerSwitchActionConfig {
 

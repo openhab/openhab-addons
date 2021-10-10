@@ -100,6 +100,9 @@ Hence if your device supports one of the following EEPs the chances are good tha
 Furthermore following supporting EEP family is available too: A5-11, types 0x03 (rollershutter position status), 0x04 (extended light status) and D0-06 (battery level indication).
 
 A `rockerSwitch` is used to receive messages from a physical EnOcean Rocker Switch.
+Channel `rockerswitchA` and `rockerswitchA` just react if corresponding rocker switch channel is pressed as single action.
+These channels do not emit an event if ChannelA and ChannelB are pressed simultaneously.
+To handle simultaneously pressed channels you have to use the `rockerSwitchAction` channel and configure it accordingly.
 A `classicDevice` is used for older EnOcean devices which react only on rocker switch messages (like Opus GN-A-R12V-SR-4).
 As these devices do not send their current status, you have to add additional listener channels for each physical Rocker Switch to your thing.
 In this way you can still sync your item status with the physical status of your device whenever it gets modified by a physical rocker switch.
@@ -254,7 +257,6 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | doublePress         | Trigger            | Channel type system:rawbutton, emits PRESSED |
 | longPress           | Trigger            | Channel type system:rawbutton, emits PRESSED and RELEASED events |
 | rockerswitchA/B     | Trigger            | Channel type system:rawrocker, emits DIR1_PRESSED, DIR1_RELEASED, DIR2_PRESSED, DIR2_RELEASED events |
-| secondActionPressed | Switch             | Indicates if second action of rocker switch is pressed too |
 | rockerSwitchAction  | Trigger            | Emits combined rocker switch actions for channel A and B and RELEASED events |
 | windowHandleState   | String             | Textual representation of handle position (OPEN, CLOSED, TILTED) |
 | contact             | Contact            | State OPEN/CLOSED (tilted handle => OPEN) |
