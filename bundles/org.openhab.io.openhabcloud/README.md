@@ -16,7 +16,7 @@ The openHAB Cloud service (and thus the connector to it) is useful for different
 * Open the openHAB web portal and login as an administrator.
 * Click on Settings, followed by Misc (in the Add-ons section)
 * Using the + button on the bottom right you can install the openHAB Cloud Add-on
-* register your session (https://myopenhab.org/) using UUID and Secret identity
+* Register your session (https://myopenhab.org/) using UUID and Secret identity
 
 ## UUID and Secret
 
