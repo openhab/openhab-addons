@@ -15,6 +15,7 @@
 
 		<channels>
 			<channel id="state" typeId="state"/>
+			<channel id="rawState" typeId="rawState"/>
 			<channel id="freezerstate" typeId="freezerstate"/>
 			<channel id="fridgestate" typeId="fridgestate"/>
 			<channel id="supercool" typeId="supercool"/>
