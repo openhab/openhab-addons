@@ -147,7 +147,8 @@ public class CameraServlet extends IpCameraServlet {
                             while (Duration.between(startTime, Instant.now()).toMillis() < 5000
                                     && Duration.between(handler.currentSnapshotTime, Instant.now()).toMillis() > 1200);
                             if (logger.isDebugEnabled()) {
-                                logger.debug("GET:/ipcamera.jpg returned snapshot from {}ms ago. Camera took approx {}ms",
+                                logger.debug(
+                                        "GET:/ipcamera.jpg returned snapshot from {}ms ago. Camera took approx {}ms",
                                         Duration.between(handler.currentSnapshotTime, Instant.now()).toMillis(),
                                         Duration.between(startTime, Instant.now()).toMillis());
                             }
