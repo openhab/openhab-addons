@@ -28,7 +28,7 @@ The second one is a random secret key which serves as a password.
 Both values are written to the local file system.
 If you loose these files for some reason, openHAB will automatically generate new ones.
 You will then have to reconfigure UUID and secret in the openHAB Cloud service under the _My account_ section.
-you will need these values to register on the website before connection is accepted.
+You will need these values to register on the website before connection is accepted.
 
 Location of UUID and Secret:
 
