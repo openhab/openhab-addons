@@ -18,11 +18,12 @@ import java.util.Date;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
+import org.openhab.binding.miele.internal.ExtendedDeviceStateUtil;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
@@ -104,28 +105,28 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
             return getState(dateFormatter.format(date));
         }
     },
-    TARGET_TEMP("targetTemperature", "target", DecimalType.class, false) {
+    TARGET_TEMP("targetTemperature", "target", QuantityType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+            return getTemperatureState(s);
         }
     },
-    MEASURED_TEMP("measuredTemperature", "measured", DecimalType.class, false) {
+    MEASURED_TEMP("measuredTemperature", "measured", QuantityType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+            return getTemperatureState(s);
         }
     },
-    DEVICE_TEMP_ONE("deviceTemperature1", "temp1", DecimalType.class, false) {
+    DEVICE_TEMP_ONE("deviceTemperature1", "temp1", QuantityType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+            return getTemperatureState(s);
         }
     },
-    DEVICE_TEMP_TWO("deviceTemperature2", "temp2", DecimalType.class, false) {
+    DEVICE_TEMP_TWO("deviceTemperature2", "temp2", QuantityType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+            return getTemperatureState(s);
         }
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
@@ -176,13 +177,13 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
-    public Class<? extends Type> getTypeClass() {
-        return typeClass;
+    public boolean isProperty() {
+        return isProperty;
     }
 
     @Override
-    public boolean isProperty() {
-        return isProperty;
+    public boolean isExtendedState() {
+        return false;
     }
 
     @Override
@@ -214,6 +215,15 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
         }
 
         return null;
+    }
+
+    public State getTemperatureState(String s) {
+        try {
+            return ExtendedDeviceStateUtil.getTemperatureState(s);
+        } catch (NumberFormatException e) {
+            logger.warn("An exception occurred while converting '{}' into a State", s);
+            return UnDefType.UNDEF;
+        }
     }
 
     public String getMieleEnum(String s, DeviceMetaData dmd) {

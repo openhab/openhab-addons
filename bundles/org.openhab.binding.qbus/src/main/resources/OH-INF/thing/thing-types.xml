@@ -175,7 +175,8 @@
 		<description>Temperature Measured by Thermostat</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>CurrentTemperature</tag>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -186,7 +187,8 @@
 		<description>Setpoint Temperature of Thermostat</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>TargetTemperature</tag>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state min="0" max="100" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>

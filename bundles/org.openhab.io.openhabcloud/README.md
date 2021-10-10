@@ -16,6 +16,7 @@ The openHAB Cloud service (and thus the connector to it) is useful for different
 * Open the openHAB web portal and login as an administrator.
 * Click on Settings, followed by Misc (in the Add-ons section)
 * Using the + button on the bottom right you can install the openHAB Cloud Add-on
+* Register your session (https://myopenhab.org/) using UUID and Secret identity
 
 ## UUID and Secret
 
@@ -27,6 +28,7 @@ The second one is a random secret key which serves as a password.
 Both values are written to the local file system.
 If you loose these files for some reason, openHAB will automatically generate new ones.
 You will then have to reconfigure UUID and secret in the openHAB Cloud service under the _My account_ section.
+You will need these values to register on the website before connection is accepted.
 
 Location of UUID and Secret:
 

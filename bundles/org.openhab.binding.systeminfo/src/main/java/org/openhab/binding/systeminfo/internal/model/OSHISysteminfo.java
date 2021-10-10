@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
@@ -339,7 +338,10 @@ public class OSHISysteminfo implements SysteminfoInterface {
     @Override
     public @Nullable DecimalType getSensorsFanSpeed(int index) throws DeviceNotFoundException {
         int[] fanSpeeds = sensors.getFanSpeeds();
-        int speed = getDevice(ArrayUtils.toObject(fanSpeeds), index);
+        int speed = 0;// 0 means unable to measure speed
+        if (index < fanSpeeds.length) {
+            speed = fanSpeeds[index];
+        }
         return speed > 0 ? new DecimalType(speed) : null;
     }
 

@@ -18,15 +18,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Matthew Skinner - Initial contribution
  */
 @NonNullByDefault
+@WebServlet(asyncSupported = true)
 public abstract class IpCameraServlet extends HttpServlet {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final long serialVersionUID = 1L;
@@ -53,7 +53,7 @@ public abstract class IpCameraServlet extends HttpServlet {
         try {
             httpService.registerServlet("/ipcamera/" + handler.getThing().getUID().getId(), this, null,
                     httpService.createDefaultHttpContext());
-        } catch (NamespaceException | ServletException e) {
+        } catch (Exception e) {
             logger.warn("Registering servlet failed:{}", e.getMessage());
         }
     }

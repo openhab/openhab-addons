@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
+import static org.openhab.binding.miele.internal.MieleBindingConstants.EXTENDED_DEVICE_STATE_PROPERTY_NAME;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.POWER_CONSUMPTION_CHANNEL_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.WATER_CONSUMPTION_CHANNEL_ID;
+
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,11 +23,12 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openhab.binding.miele.internal.ExtendedDeviceStateUtil;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
@@ -38,18 +43,19 @@ import com.google.gson.JsonElement;
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - Changed START_TIME to DateTimeType
+ * @author Jacob Laursen - Added power/water consumption channels
  */
 public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
 
-    PRODUCT_TYPE("productTypeId", "productType", StringType.class, true),
-    DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
-    BRAND_ID("brandId", "brandId", StringType.class, true),
-    COMPANY_ID("companyId", "companyId", StringType.class, true),
-    STATE("state", "state", StringType.class, false),
-    PROGRAMID("programId", "program", StringType.class, false),
-    PROGRAMTYPE("programType", "type", StringType.class, false),
-    PROGRAMPHASE("phase", "phase", StringType.class, false),
-    START_TIME("startTime", "start", DateTimeType.class, false) {
+    PRODUCT_TYPE("productTypeId", "productType", StringType.class, true, false),
+    DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true, false),
+    BRAND_ID("brandId", "brandId", StringType.class, true, false),
+    COMPANY_ID("companyId", "companyId", StringType.class, true, false),
+    STATE("state", "state", StringType.class, false, false),
+    PROGRAMID("programId", "program", StringType.class, false, false),
+    PROGRAMTYPE("programType", "type", StringType.class, false, false),
+    PROGRAMPHASE("phase", "phase", StringType.class, false, false),
+    START_TIME("startTime", "start", DateTimeType.class, false, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             Date date = new Date();
@@ -63,7 +69,7 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             return getState(dateFormatter.format(date));
         }
     },
-    DURATION("duration", "duration", DateTimeType.class, false) {
+    DURATION("duration", "duration", DateTimeType.class, false, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             Date date = new Date();
@@ -77,7 +83,7 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             return getState(dateFormatter.format(date));
         }
     },
-    ELAPSED_TIME("elapsedTime", "elapsed", DateTimeType.class, false) {
+    ELAPSED_TIME("elapsedTime", "elapsed", DateTimeType.class, false, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             Date date = new Date();
@@ -91,7 +97,7 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             return getState(dateFormatter.format(date));
         }
     },
-    FINISH_TIME("finishTime", "finish", DateTimeType.class, false) {
+    FINISH_TIME("finishTime", "finish", DateTimeType.class, false, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             Date date = new Date();
@@ -105,13 +111,13 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             return getState(dateFormatter.format(date));
         }
     },
-    TARGET_TEMP("targetTemperature", "target", DecimalType.class, false) {
+    TARGET_TEMP("targetTemperature", "target", QuantityType.class, false, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+            return getTemperatureState(s);
         }
     },
-    SPINNING_SPEED("spinningSpeed", "spinningspeed", StringType.class, false) {
+    SPINNING_SPEED("spinningSpeed", "spinningspeed", StringType.class, false, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
             if ("0".equals(s)) {
@@ -120,10 +126,10 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             if ("256".equals(s)) {
                 return getState("Rinsing");
             }
-            return getState(Integer.toString((Integer.valueOf(s) * 10)));
+            return getState(Integer.toString((Integer.valueOf(s))));
         }
     },
-    DOOR("signalDoor", "door", OpenClosedType.class, false) {
+    DOOR("signalDoor", "door", OpenClosedType.class, false, false) {
         @Override
 
         public State getState(String s, DeviceMetaData dmd) {
@@ -138,7 +144,11 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             return UnDefType.UNDEF;
         }
     },
-    SWITCH(null, "switch", OnOffType.class, false);
+    SWITCH(null, "switch", OnOffType.class, false, false),
+    POWER_CONSUMPTION(EXTENDED_DEVICE_STATE_PROPERTY_NAME, POWER_CONSUMPTION_CHANNEL_ID, QuantityType.class, false,
+            true),
+    WATER_CONSUMPTION(EXTENDED_DEVICE_STATE_PROPERTY_NAME, WATER_CONSUMPTION_CHANNEL_ID, QuantityType.class, false,
+            true);
 
     private final Logger logger = LoggerFactory.getLogger(WashingMachineChannelSelector.class);
 
@@ -146,13 +156,15 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
     private final String channelID;
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
+    private final boolean isExtendedState;
 
     WashingMachineChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
-            boolean isProperty) {
+            boolean isProperty, boolean isExtendedState) {
         this.mieleID = propertyID;
         this.channelID = channelID;
         this.typeClass = typeClass;
         this.isProperty = isProperty;
+        this.isExtendedState = isExtendedState;
     }
 
     @Override
@@ -171,13 +183,13 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
-    public Class<? extends Type> getTypeClass() {
-        return typeClass;
+    public boolean isProperty() {
+        return isProperty;
     }
 
     @Override
-    public boolean isProperty() {
-        return isProperty;
+    public boolean isExtendedState() {
+        return isExtendedState;
     }
 
     @Override
@@ -209,6 +221,15 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
         }
 
         return null;
+    }
+
+    public State getTemperatureState(String s) {
+        try {
+            return ExtendedDeviceStateUtil.getTemperatureState(s);
+        } catch (NumberFormatException e) {
+            logger.warn("An exception occurred while converting '{}' into a State", s);
+            return UnDefType.UNDEF;
+        }
     }
 
     public String getMieleEnum(String s, DeviceMetaData dmd) {

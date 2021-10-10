@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openhab.binding.miele.internal.ExtendedDeviceStateUtil;
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceClassObject;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
@@ -36,6 +37,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,8 +157,10 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                 for (JsonElement prop : dco.Properties.getAsJsonArray()) {
                     try {
                         DeviceProperty dp = gson.fromJson(prop, DeviceProperty.class);
-                        dp.Value = StringUtils.trim(dp.Value);
-                        dp.Value = StringUtils.strip(dp.Value);
+                        if (!dp.Name.equals(EXTENDED_DEVICE_STATE_PROPERTY_NAME)) {
+                            dp.Value = StringUtils.trim(dp.Value);
+                            dp.Value = StringUtils.strip(dp.Value);
+                        }
 
                         onAppliancePropertyChanged(applicationIdentifier, dp);
                     } catch (Exception p) {
@@ -188,7 +192,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
         this.onAppliancePropertyChanged(dp);
     }
 
-    private void onAppliancePropertyChanged(DeviceProperty dp) {
+    protected void onAppliancePropertyChanged(DeviceProperty dp) {
         try {
             DeviceMetaData dmd = null;
             if (dp.Metadata == null) {
@@ -209,6 +213,18 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                 JsonObject jsonMetaData = (JsonObject) JsonParser.parseString(metadata);
                 dmd = gson.fromJson(jsonMetaData, DeviceMetaData.class);
                 metaDataCache.put(new StringBuilder().append(dp.Name).toString().trim(), metadata);
+            }
+
+            if (dp.Name.equals(EXTENDED_DEVICE_STATE_PROPERTY_NAME)) {
+                if (!dp.Value.isEmpty()) {
+                    byte[] extendedStateBytes = ExtendedDeviceStateUtil.stringToBytes(dp.Value);
+                    logger.trace("Extended device state for {}: {}", getThing().getUID(),
+                            ExtendedDeviceStateUtil.bytesToHex(extendedStateBytes));
+                    if (this instanceof ExtendedDeviceStateListener) {
+                        ((ExtendedDeviceStateListener) this).onApplianceExtendedStateChanged(extendedStateBytes);
+                    }
+                }
+                return;
             }
 
             ApplianceChannelSelector selector = null;
@@ -242,6 +258,12 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
         } catch (IllegalArgumentException e) {
             logger.error("An exception occurred while processing a changed device property :'{}'", e.getMessage());
         }
+    }
+
+    protected void updateExtendedState(String channelId, State state) {
+        ChannelUID channelUid = new ChannelUID(getThing().getUID(), channelId);
+        logger.trace("Update state of {} with extended state '{}'", channelUid, state);
+        updateState(channelUid, state);
     }
 
     @Override
