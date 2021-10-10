@@ -18,6 +18,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.stream.IntStream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.powermax.internal.message.PowermaxMessageConstants;
 import org.openhab.binding.powermax.internal.message.PowermaxSendType;
 import org.slf4j.Logger;
@@ -28,12 +30,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxPanelSettings {
-
-    private final Logger logger = LoggerFactory.getLogger(PowermaxPanelSettings.class);
 
     /** Number of PGM and X10 devices managed by the system */
     private static final int NB_PGM_X10_DEVICES = 16;
+
+    private final Logger logger = LoggerFactory.getLogger(PowermaxPanelSettings.class);
 
     /** Raw buffers for settings */
     private Byte[][] rawSettings;
@@ -45,15 +48,15 @@ public class PowermaxPanelSettings {
     private boolean quickArm;
     private boolean bypassEnabled;
     private boolean partitionsEnabled;
-    private String[] pinCodes;
-    private String panelEprom;
-    private String panelSoftware;
-    private String panelSerial;
+    private String @Nullable [] pinCodes;
+    private @Nullable String panelEprom;
+    private @Nullable String panelSoftware;
+    private @Nullable String panelSerial;
     private PowermaxZoneSettings[] zoneSettings;
     private PowermaxX10Settings[] x10Settings;
-    private boolean[] keypad1wEnrolled;
-    private boolean[] keypad2wEnrolled;
-    private boolean[] sirensEnrolled;
+    private boolean @Nullable [] keypad1wEnrolled;
+    private boolean @Nullable [] keypad2wEnrolled;
+    private boolean @Nullable [] sirensEnrolled;
 
     /**
      * Constructor
@@ -108,21 +111,21 @@ public class PowermaxPanelSettings {
     /**
      * @return the panel EEPROM version
      */
-    public String getPanelEprom() {
+    public @Nullable String getPanelEprom() {
         return panelEprom;
     }
 
     /**
      * @return the panel software version
      */
-    public String getPanelSoftware() {
+    public @Nullable String getPanelSoftware() {
         return panelSoftware;
     }
 
     /**
      * @return the panel serial ID
      */
-    public String getPanelSerial() {
+    public @Nullable String getPanelSerial() {
         return panelSerial;
     }
 
@@ -147,7 +150,7 @@ public class PowermaxPanelSettings {
      *
      * @return the settings of the zone
      */
-    public PowermaxZoneSettings getZoneSettings(int zone) {
+    public @Nullable PowermaxZoneSettings getZoneSettings(int zone) {
         return ((zone < 1) || (zone > zoneSettings.length)) ? null : zoneSettings[zone - 1];
     }
 
@@ -158,7 +161,7 @@ public class PowermaxPanelSettings {
      *
      * @return the name of the zone
      */
-    public String getZoneName(int zone) {
+    public @Nullable String getZoneName(int zone) {
         PowermaxZoneSettings zoneSettings = getZoneSettings(zone);
         return (zoneSettings == null) ? null : zoneSettings.getName();
     }
@@ -204,7 +207,7 @@ public class PowermaxPanelSettings {
      *
      * @return the settings of the X10 device
      */
-    public PowermaxX10Settings getX10Settings(int idx) {
+    public @Nullable PowermaxX10Settings getX10Settings(int idx) {
         return ((idx < 1) || (idx >= x10Settings.length)) ? null : x10Settings[idx];
     }
 
@@ -214,8 +217,9 @@ public class PowermaxPanelSettings {
      * @return true if the 1 way keypad is enrolled; false if not
      */
     public boolean isKeypad1wEnrolled(int idx) {
-        return ((keypad1wEnrolled == null) || (idx < 1) || (idx >= keypad1wEnrolled.length)) ? false
-                : keypad1wEnrolled[idx - 1];
+        boolean @Nullable [] localKeypad1wEnrolled = keypad1wEnrolled;
+        return ((localKeypad1wEnrolled == null) || (idx < 1) || (idx >= localKeypad1wEnrolled.length)) ? false
+                : localKeypad1wEnrolled[idx - 1];
     }
 
     /**
@@ -224,8 +228,9 @@ public class PowermaxPanelSettings {
      * @return true if the 2 way keypad is enrolled; false if not
      */
     public boolean isKeypad2wEnrolled(int idx) {
-        return ((keypad2wEnrolled == null) || (idx < 1) || (idx >= keypad2wEnrolled.length)) ? false
-                : keypad2wEnrolled[idx - 1];
+        boolean @Nullable [] localKeypad2wEnrolled = keypad2wEnrolled;
+        return ((localKeypad2wEnrolled == null) || (idx < 1) || (idx >= localKeypad2wEnrolled.length)) ? false
+                : localKeypad2wEnrolled[idx - 1];
     }
 
     /**
@@ -234,19 +239,21 @@ public class PowermaxPanelSettings {
      * @return true if the siren is enrolled; false if not
      */
     public boolean isSirenEnrolled(int idx) {
-        return ((sirensEnrolled == null) || (idx < 1) || (idx >= sirensEnrolled.length)) ? false
-                : sirensEnrolled[idx - 1];
+        boolean @Nullable [] localSirensEnrolled = sirensEnrolled;
+        return ((localSirensEnrolled == null) || (idx < 1) || (idx >= localSirensEnrolled.length)) ? false
+                : localSirensEnrolled[idx - 1];
     }
 
     /**
-     * @return the PIN code of the first user of null if unknown (standard mode)
+     * @return the PIN code of the first user of an empty string if unknown (standard mode)
      */
     public String getFirstPinCode() {
-        return (pinCodes == null) ? null : pinCodes[0];
+        String @Nullable [] localPinCodes = pinCodes;
+        return (localPinCodes == null || localPinCodes.length == 0) ? "" : localPinCodes[0];
     }
 
     public void updateRawSettings(byte[] data) {
-        if ((data == null) || (data.length < 3)) {
+        if (data.length < 3) {
             return;
         }
         int start = 0;
@@ -276,14 +283,14 @@ public class PowermaxPanelSettings {
         }
     }
 
-    private byte[] readSettings(PowermaxSendType msgType, int start, int end) {
+    private byte @Nullable [] readSettings(PowermaxSendType msgType, int start, int end) {
         byte[] message = msgType.getMessage();
         int page = message[2] & 0x000000FF;
         int index = message[1] & 0x000000FF;
         return readSettings(page, index + start, index + end);
     }
 
-    private byte[] readSettings(int page, int start, int end) {
+    private byte @Nullable [] readSettings(int page, int start, int end) {
         int pageMin = page + start / 0x100;
         int indexPageMin = start % 0x100;
         int pageMax = page + end / 0x100;
@@ -332,7 +339,7 @@ public class PowermaxPanelSettings {
         return result;
     }
 
-    private String readSettingsAsString(PowermaxSendType msgType, int start, int end) {
+    private @Nullable String readSettingsAsString(PowermaxSendType msgType, int start, int end) {
         byte[] message = msgType.getMessage();
         int page = message[2] & 0x000000FF;
         int index = message[1] & 0x000000FF;
@@ -381,12 +388,11 @@ public class PowermaxPanelSettings {
      *
      * @param PowerlinkMode true if in Powerlink mode or false if in standard mode
      * @param defaultPanelType the default panel type to consider if not found in the raw buffers
-     * @param timeSet the time in milliseconds used to set time and date; null if no sync time requested
+     * @param timeSet the time in milliseconds used to set time and date; 0 if no sync time requested
      *
      * @return true if no problem encountered to get all the settings; false if not
      */
-    @SuppressWarnings("null")
-    public boolean process(boolean PowerlinkMode, PowermaxPanelType defaultPanelType, Long timeSet) {
+    public boolean process(boolean PowerlinkMode, PowermaxPanelType defaultPanelType, long timeSet) {
         logger.debug("Process settings Powerlink {}", PowerlinkMode);
 
         boolean result = true;
@@ -424,15 +430,15 @@ public class PowermaxPanelSettings {
         quickArm = false;
         bypassEnabled = false;
         partitionsEnabled = false;
-        pinCodes = new String[userCnt];
+        String[] localPinCodes = new String[userCnt];
         panelEprom = null;
         panelSoftware = null;
         panelSerial = null;
         zoneSettings = new PowermaxZoneSettings[zoneCnt];
         x10Settings = new PowermaxX10Settings[NB_PGM_X10_DEVICES];
-        keypad1wEnrolled = new boolean[keypad1wCnt];
-        keypad2wEnrolled = new boolean[keypad2wCnt];
-        sirensEnrolled = new boolean[sirenCnt];
+        boolean[] localKeypad1wEnrolled = new boolean[keypad1wCnt];
+        boolean[] localKeypad2wEnrolled = new boolean[keypad2wCnt];
+        boolean[] localSirensEnrolled = new boolean[sirenCnt];
 
         if (PowerlinkMode) {
             // Check time and date
@@ -453,7 +459,7 @@ public class PowermaxPanelSettings {
                                 cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND)));
 
                 // Check if time sync was OK
-                if (timeSet != null) {
+                if (timeSet > 0) {
                     long delta = (timeRead - timeSet) / 1000;
                     if (delta <= 5) {
                         logger.debug("Powermax alarm binding: time sync OK (delta {} s)", delta);
@@ -528,7 +534,8 @@ public class PowermaxPanelSettings {
                     2 * userCnt - 1);
             if (data != null) {
                 for (int i = 0; i < userCnt; i++) {
-                    pinCodes[i] = String.format("%02X%02X", data[i * 2] & 0x000000FF, data[i * 2 + 1] & 0x000000FF);
+                    localPinCodes[i] = String.format("%02X%02X", data[i * 2] & 0x000000FF,
+                            data[i * 2 + 1] & 0x000000FF);
                 }
             } else {
                 logger.debug("Cannot get PIN codes");
@@ -606,22 +613,26 @@ public class PowermaxPanelSettings {
 
                     boolean zoneEnrolled;
                     byte zoneInfo;
-                    byte sensorTypeCode;
                     String sensorTypeStr;
                     if (panelType.isPowerMaster()) {
-                        zoneEnrolled = !Arrays.equals(Arrays.copyOfRange(dataMr, i * 10 + 4, i * 10 + 9), zero5);
                         zoneInfo = data[i];
-                        sensorTypeCode = dataMr[i * 10 + 5];
-                        try {
-                            PowermasterSensorType sensorType = PowermasterSensorType.fromCode(sensorTypeCode);
-                            sensorTypeStr = sensorType.getLabel();
-                        } catch (IllegalArgumentException e) {
+                        if (dataMr != null) {
+                            zoneEnrolled = !Arrays.equals(Arrays.copyOfRange(dataMr, i * 10 + 4, i * 10 + 9), zero5);
+                            byte sensorTypeCode = dataMr[i * 10 + 5];
+                            try {
+                                PowermasterSensorType sensorType = PowermasterSensorType.fromCode(sensorTypeCode);
+                                sensorTypeStr = sensorType.getLabel();
+                            } catch (IllegalArgumentException e) {
+                                sensorTypeStr = null;
+                            }
+                        } else {
+                            zoneEnrolled = false;
                             sensorTypeStr = null;
                         }
                     } else {
                         zoneEnrolled = !Arrays.equals(Arrays.copyOfRange(data, i * 4, i * 4 + 3), zero3);
                         zoneInfo = data[i * 4 + 3];
-                        sensorTypeCode = data[i * 4 + 2];
+                        byte sensorTypeCode = data[i * 4 + 2];
                         try {
                             PowermaxSensorType sensorType = PowermaxSensorType
                                     .fromCode((byte) (sensorTypeCode & 0x0000000F));
@@ -686,7 +697,8 @@ public class PowermaxPanelSettings {
                     byte[] zero5 = new byte[] { 0, 0, 0, 0, 0 };
 
                     for (int i = 0; i < keypad2wCnt; i++) {
-                        keypad2wEnrolled[i] = !Arrays.equals(Arrays.copyOfRange(data, i * 10 + 4, i * 10 + 9), zero5);
+                        localKeypad2wEnrolled[i] = !Arrays.equals(Arrays.copyOfRange(data, i * 10 + 4, i * 10 + 9),
+                                zero5);
                     }
                 } else {
                     logger.debug("Cannot get 2 way keypad settings");
@@ -698,7 +710,8 @@ public class PowermaxPanelSettings {
                     byte[] zero5 = new byte[] { 0, 0, 0, 0, 0 };
 
                     for (int i = 0; i < sirenCnt; i++) {
-                        sirensEnrolled[i] = !Arrays.equals(Arrays.copyOfRange(data, i * 10 + 4, i * 10 + 9), zero5);
+                        localSirensEnrolled[i] = !Arrays.equals(Arrays.copyOfRange(data, i * 10 + 4, i * 10 + 9),
+                                zero5);
                     }
                 } else {
                     logger.debug("Cannot get siren settings");
@@ -711,7 +724,7 @@ public class PowermaxPanelSettings {
                     byte[] zero2 = new byte[] { 0, 0 };
 
                     for (int i = 0; i < keypad1wCnt; i++) {
-                        keypad1wEnrolled[i] = !Arrays.equals(Arrays.copyOfRange(data, i * 4, i * 4 + 2), zero2);
+                        localKeypad1wEnrolled[i] = !Arrays.equals(Arrays.copyOfRange(data, i * 4, i * 4 + 2), zero2);
                     }
                 } else {
                     logger.debug("Cannot get 1 way keypad settings");
@@ -723,7 +736,7 @@ public class PowermaxPanelSettings {
                     byte[] zero3 = new byte[] { 0, 0, 0 };
 
                     for (int i = 0; i < keypad2wCnt; i++) {
-                        keypad2wEnrolled[i] = !Arrays.equals(Arrays.copyOfRange(data, i * 4, i * 4 + 3), zero3);
+                        localKeypad2wEnrolled[i] = !Arrays.equals(Arrays.copyOfRange(data, i * 4, i * 4 + 3), zero3);
                     }
                 } else {
                     logger.debug("Cannot get 2 way keypad settings");
@@ -735,7 +748,7 @@ public class PowermaxPanelSettings {
                     byte[] zero3 = new byte[] { 0, 0, 0 };
 
                     for (int i = 0; i < sirenCnt; i++) {
-                        sirensEnrolled[i] = !Arrays.equals(Arrays.copyOfRange(data, i * 4, i * 4 + 3), zero3);
+                        localSirensEnrolled[i] = !Arrays.equals(Arrays.copyOfRange(data, i * 4, i * 4 + 3), zero3);
                     }
                 } else {
                     logger.debug("Cannot get siren settings");
@@ -757,6 +770,11 @@ public class PowermaxPanelSettings {
                 x10Settings[i] = new PowermaxX10Settings(null, true);
             }
         }
+
+        pinCodes = localPinCodes;
+        keypad1wEnrolled = localKeypad1wEnrolled;
+        keypad2wEnrolled = localKeypad2wEnrolled;
+        sirensEnrolled = localSirensEnrolled;
 
         return result;
     }

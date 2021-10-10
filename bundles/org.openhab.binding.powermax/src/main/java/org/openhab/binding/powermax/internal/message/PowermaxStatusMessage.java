@@ -16,6 +16,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.powermax.internal.state.PowermaxArmMode;
 import org.openhab.binding.powermax.internal.state.PowermaxPanelSettings;
 import org.openhab.binding.powermax.internal.state.PowermaxSensorType;
@@ -27,6 +29,7 @@ import org.openhab.binding.powermax.internal.state.PowermaxZoneSettings;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxStatusMessage extends PowermaxBaseMessage {
 
     private static byte[] zoneBytes(byte zones1, byte zones9, byte zones17, byte zones25) {
@@ -68,7 +71,7 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    protected PowermaxState handleMessageInternal(PowermaxCommManager commManager) {
+    protected @Nullable PowermaxState handleMessageInternal(@Nullable PowermaxCommManager commManager) {
         if (commManager == null) {
             return null;
         }
