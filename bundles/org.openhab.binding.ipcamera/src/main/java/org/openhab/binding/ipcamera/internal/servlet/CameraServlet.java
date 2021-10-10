@@ -127,7 +127,8 @@ public class CameraServlet extends IpCameraServlet {
             case "/ipcamera.jpg":
                 // Use cached image if recent. Cameras can take > 1sec to send back a reply.
                 // Example an Image item/widget may have a 1 second refresh.
-                if (Duration.between(handler.currentSnapshotTime, Instant.now()).toMillis() < 1200) {
+                if (handler.ffmpegSnapshotGeneration
+                        || Duration.between(handler.currentSnapshotTime, Instant.now()).toMillis() < 1200) {
                     sendSnapshotImage(resp, "image/jpg", handler.getSnapshot());
                 } else {
                     handler.getSnapshot();

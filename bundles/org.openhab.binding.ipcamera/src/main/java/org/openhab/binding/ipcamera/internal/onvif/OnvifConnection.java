@@ -857,11 +857,15 @@ public class OnvifConnection {
     }
 
     public void disconnect() {
-        if (usingEvents && isConnected && !mainEventLoopGroup.isShuttingDown()) {
-            // Some cameras may continue to send events even when they can't reach a server.
-            sendOnvifRequest(requestBuilder(RequestType.Unsubscribe, subscriptionXAddr));
+        if (bootstrap != null) {
+            if (usingEvents && isConnected && !mainEventLoopGroup.isShuttingDown()) {
+                // Some cameras may continue to send events even when they can't reach a server.
+                sendOnvifRequest(requestBuilder(RequestType.Unsubscribe, subscriptionXAddr));
+            }
+            // give time for the Unsubscribe request to be sent to the camera.
+            threadPool.schedule(this::cleanup, 100, TimeUnit.MILLISECONDS);
+        } else {
+            cleanup();
         }
-        // give time for the Unsubscribe request to be sent to the camera.
-        threadPool.schedule(this::cleanup, 100, TimeUnit.MILLISECONDS);
     }
 }
