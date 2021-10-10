@@ -60,23 +60,26 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
 
     public static enum TemperatureUnit {
         @SerializedName("C")
-        CELSIUS(SIUnits.CELSIUS),
+        CELSIUS(SIUnits.CELSIUS, 0.1f),
         @SerializedName("F")
-        FAHRENHEIT(ImperialUnits.FAHRENHEIT);
+        FAHRENHEIT(ImperialUnits.FAHRENHEIT, 1f);
 
         private final Unit<Temperature> unit;
+        private final float defaultPrecision;
 
-        TemperatureUnit(Unit<Temperature> unit) {
+        TemperatureUnit(Unit<Temperature> unit, float defaultPrecision) {
             this.unit = unit;
+            this.defaultPrecision = defaultPrecision;
         }
 
         public Unit<Temperature> getUnit() {
             return unit;
         }
-    }
 
-    private static final float DEFAULT_CELSIUS_PRECISION = 0.1f;
-    private static final float DEFAULT_FAHRENHEIT_PRECISION = 1f;
+        public float getDefaultPrecision() {
+            return defaultPrecision;
+        }
+    }
 
     private static final String ACTION_OFF = "off";
     private static final State ACTION_OFF_STATE = new StringType(ACTION_OFF);
@@ -215,9 +218,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
         BigDecimal maxTemp = channelConfiguration.maxTemp != null ? BigDecimal.valueOf(channelConfiguration.maxTemp)
                 : null;
         float precision = channelConfiguration.precision != null ? channelConfiguration.precision
-                : (TemperatureUnit.FAHRENHEIT.equals(channelConfiguration.temperatureUnit)
-                        ? DEFAULT_FAHRENHEIT_PRECISION
-                        : DEFAULT_CELSIUS_PRECISION);
+                : channelConfiguration.temperatureUnit.getDefaultPrecision();
         final ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
 
         ComponentChannel actionChannel = buildOptionalChannel(ACTION_CH_ID,
