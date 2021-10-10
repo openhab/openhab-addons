@@ -1606,7 +1606,6 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (mjpegUri.isEmpty()) {
                     mjpegUri = "/mjpegstream.cgi?-chn=12";
                 }
-                logger.debug("Setting up the Alarm Server settings in the camera now");
                 sendHttpGET(
                         "/param.cgi?cmd=setmdalarm&-aname=server2&-switch=on&-interval=1&cmd=setalarmserverattr&-as_index=3&-as_server="
                                 + hostIp + "&-as_port=" + SERVLET_PORT + "&-as_path=/ipcamera/"
