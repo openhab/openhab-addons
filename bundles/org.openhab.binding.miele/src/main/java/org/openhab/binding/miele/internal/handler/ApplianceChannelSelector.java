@@ -52,7 +52,6 @@ public interface ApplianceChannelSelector {
     boolean isExtendedState();
 
     /**
-     *
      * Returns a State for the given string, taking into
      * account the metadata provided. The meta data is sent by
      * the Miele appliance and is used to decide the State type
@@ -61,4 +60,12 @@ public interface ApplianceChannelSelector {
      * @param dmd - the device meta data
      */
     State getState(String s, DeviceMetaData dmd);
+
+    /**
+     * Returns a raw State for the given string, not taking into
+     * account any metadata.
+     *
+     * @param s - the value to be used to instantiate the State
+     */
+    State getState(String s);
 }

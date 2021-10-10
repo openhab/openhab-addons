@@ -241,9 +241,10 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                     ChannelUID theChannelUID = new ChannelUID(getThing().getUID(), selector.getChannelID());
 
                     if (dp.Value != null) {
-                        logger.trace("Update state of {} with getState '{}'", theChannelUID,
-                                selector.getState(dpValue, dmd));
-                        updateState(theChannelUID, selector.getState(dpValue, dmd));
+                        State state = selector.getState(dpValue, dmd);
+                        logger.trace("Update state of {} with getState '{}'", theChannelUID, state);
+                        updateState(theChannelUID, state);
+                        updateRawChannel(dp.Name, dpValue);
                     } else {
                         updateState(theChannelUID, UnDefType.UNDEF);
                     }
@@ -263,6 +264,36 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     protected void updateExtendedState(String channelId, State state) {
         ChannelUID channelUid = new ChannelUID(getThing().getUID(), channelId);
         logger.trace("Update state of {} with extended state '{}'", channelUid, state);
+        updateState(channelUid, state);
+    }
+
+    /**
+     * Update raw value channels for properties already mapped to text channels.
+     * Currently ApplianceChannelSelector only supports 1:1 mapping from property
+     * to channel.
+     */
+    private void updateRawChannel(String propertyName, String value) {
+        String channelId;
+        switch (propertyName) {
+            case STATE_PROPERTY_NAME:
+                channelId = STATE_CHANNEL_ID;
+                break;
+            case PROGRAM_ID_PROPERTY_NAME:
+                channelId = PROGRAM_CHANNEL_ID;
+                break;
+            default:
+                return;
+        }
+        ApplianceChannelSelector selector = null;
+        try {
+            selector = getValueSelectorFromChannelID(channelId);
+        } catch (IllegalArgumentException e) {
+            logger.trace("{} is not a valid channel for a {}", channelId, modelID);
+            return;
+        }
+        ChannelUID channelUid = new ChannelUID(getThing().getUID(), channelId);
+        State state = selector.getState(value);
+        logger.trace("Update state of {} with getState '{}'", channelUid, state);
         updateState(channelUid, state);
     }
 

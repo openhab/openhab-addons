@@ -15,6 +15,7 @@
 
 		<channels>
 			<channel id="state" typeId="state"/>
+			<channel id="rawState" typeId="rawState"/>
 			<channel id="supercool" typeId="supercool"/>
 			<channel id="current" typeId="currentTemperature">
 				<description>Current temperature in the fridge</description>
