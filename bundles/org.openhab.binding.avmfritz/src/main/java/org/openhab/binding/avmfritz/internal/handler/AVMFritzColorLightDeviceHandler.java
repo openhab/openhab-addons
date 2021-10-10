@@ -24,7 +24,6 @@ import org.openhab.core.thing.Thing;
 @NonNullByDefault
 public class AVMFritzColorLightDeviceHandler extends DeviceHandler {
 
-    // TODO: when getting here, we know that we need to retrieve the default colors. Maybe we can use that.
     public AVMFritzColorLightDeviceHandler(Thing thing) {
         super(thing);
     }

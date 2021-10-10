@@ -50,7 +50,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int HAN_FUN_DEVICE_BIT = 1; // Bit 0
-    protected static final int LIGHT_BIT = 1 << 2; // Bit 1
+    protected static final int LIGHT_BIT = 1 << 2; // Bit 2
     protected static final int HAN_FUN_BUTTON_BIT = 1 << 3; // Bit 3 - undocumented
     protected static final int HAN_FUN_ALARM_SENSOR_BIT = 1 << 4; // Bit 4
     protected static final int BUTTON_BIT = 1 << 5; // Bit 5
