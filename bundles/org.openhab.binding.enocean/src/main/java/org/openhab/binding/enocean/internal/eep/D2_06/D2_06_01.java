@@ -51,13 +51,13 @@ public class D2_06_01 extends _VLDMessage {
         LOGDATA04(0x23),
         CONTROLANDSETTINGS(0x80);
 
-        int intValue;
+        private int intValue;
 
         private MessageType(int intValue) {
             this.intValue = intValue;
         }
 
-        int getIntValue() {
+        private int getIntValue() {
             return this.intValue;
         }
     }
@@ -68,19 +68,19 @@ public class D2_06_01 extends _VLDMessage {
         NOTTILTED(0x01, "NOT TILTED"),
         TILTED(0x02, "TILTED");
 
-        int intValue;
-        String textValue;
+        private int intValue;
+        private String textValue;
 
         private SashState(int intValue, String textValue) {
             this.intValue = intValue;
             this.textValue = textValue;
         }
 
-        String getTextValue() {
+        private String getTextValue() {
             return this.textValue;
         }
 
-        static Optional<SashState> valueOf(int intValue) {
+        private static Optional<SashState> valueOf(int intValue) {
             return Arrays.stream(values()).filter(sashState -> sashState.intValue == intValue).findFirst();
         }
     }
@@ -101,11 +101,11 @@ public class D2_06_01 extends _VLDMessage {
             this.textValue = textValue;
         }
 
-        String getTextValue() {
+        private String getTextValue() {
             return this.textValue;
         }
 
-        static Optional<HandleState> valueOf(int intValue) {
+        private static Optional<HandleState> valueOf(int intValue) {
             return Arrays.stream(values()).filter(handleState -> handleState.intValue == intValue).findFirst();
         }
     }
@@ -123,11 +123,11 @@ public class D2_06_01 extends _VLDMessage {
             this.textValue = textValue;
         }
 
-        String getTextValue() {
+        private String getTextValue() {
             return this.textValue;
         }
 
-        static Optional<MotionState> valueOf(int intValue) {
+        private static Optional<MotionState> valueOf(int intValue) {
             return Arrays.stream(values()).filter(motionState -> motionState.intValue == intValue).findFirst();
         }
     }
