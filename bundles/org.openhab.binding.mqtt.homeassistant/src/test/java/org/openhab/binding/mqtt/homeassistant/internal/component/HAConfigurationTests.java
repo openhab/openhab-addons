@@ -172,14 +172,14 @@ public class HAConfigurationTests {
         assertThat(config.holdStateTemplate, is("{{ value_json.preset }}"));
         assertThat(config.holdStateTopic, is("zigbee2mqtt/th1"));
         assertThat(config.jsonAttributesTopic, is("zigbee2mqtt/th1"));
-        assertThat(config.maxTemp, is(35f));
-        assertThat(config.minTemp, is(5f));
+        assertThat(config.maxTemp, is(new BigDecimal(35)));
+        assertThat(config.minTemp, is(new BigDecimal(5)));
         assertThat(config.modeCommandTopic, is("zigbee2mqtt/th1/set/system_mode"));
         assertThat(config.modeStateTemplate, is("{{ value_json.system_mode }}"));
         assertThat(config.modeStateTopic, is("zigbee2mqtt/th1"));
         assertThat(config.modes, is(List.of("heat", "auto", "off")));
         assertThat(config.getName(), is("th1"));
-        assertThat(config.tempStep, is(0.5f));
+        assertThat(config.tempStep, is(new BigDecimal("0.5")));
         assertThat(config.temperatureCommandTopic, is("zigbee2mqtt/th1/set/current_heating_setpoint"));
         assertThat(config.temperatureStateTemplate, is("{{ value_json.current_heating_setpoint }}"));
         assertThat(config.temperatureStateTopic, is("zigbee2mqtt/th1"));
@@ -241,10 +241,10 @@ public class HAConfigurationTests {
         assertThat(config.temperatureLowStateTopic, is("T"));
         assertThat(config.powerCommandTopic, is("U"));
         assertThat(config.initial, is(10));
-        assertThat(config.maxTemp, is(40f));
-        assertThat(config.minTemp, is(0f));
+        assertThat(config.maxTemp, is(new BigDecimal(40)));
+        assertThat(config.minTemp, is(BigDecimal.ZERO));
         assertThat(config.temperatureUnit, is(Climate.TemperatureUnit.FAHRENHEIT));
-        assertThat(config.tempStep, is(1f));
+        assertThat(config.tempStep, is(BigDecimal.ONE));
         assertThat(config.precision, is(new BigDecimal("0.5")));
         assertThat(config.sendIfOff, is(false));
     }

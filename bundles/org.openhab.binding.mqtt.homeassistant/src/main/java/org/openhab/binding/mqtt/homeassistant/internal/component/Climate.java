@@ -198,13 +198,13 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
 
         protected Integer initial = 21;
         @SerializedName("max_temp")
-        protected @Nullable Float maxTemp;
+        protected @Nullable BigDecimal maxTemp;
         @SerializedName("min_temp")
-        protected @Nullable Float minTemp;
+        protected @Nullable BigDecimal minTemp;
         @SerializedName("temperature_unit")
         protected TemperatureUnit temperatureUnit = TemperatureUnit.CELSIUS; // System unit by default
         @SerializedName("temp_step")
-        protected Float tempStep = 1f;
+        protected BigDecimal tempStep = BigDecimal.ONE;
         protected @Nullable BigDecimal precision;
         @SerializedName("send_if_off")
         protected Boolean sendIfOff = true;
@@ -213,10 +213,6 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
     public Climate(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        BigDecimal minTemp = channelConfiguration.minTemp != null ? BigDecimal.valueOf(channelConfiguration.minTemp)
-                : null;
-        BigDecimal maxTemp = channelConfiguration.maxTemp != null ? BigDecimal.valueOf(channelConfiguration.maxTemp)
-                : null;
         BigDecimal precision = channelConfiguration.precision != null ? channelConfiguration.precision
                 : channelConfiguration.temperatureUnit.getDefaultPrecision();
         final ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
@@ -236,7 +232,8 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 channelConfiguration.awayModeStateTopic, commandFilter);
 
         buildOptionalChannel(CURRENT_TEMPERATURE_CH_ID,
-                new NumberValue(minTemp, maxTemp, precision, channelConfiguration.temperatureUnit.getUnit()),
+                new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp, precision,
+                        channelConfiguration.temperatureUnit.getUnit()),
                 updateListener, null, null, channelConfiguration.currentTemperatureTemplate,
                 channelConfiguration.currentTemperatureTopic, commandFilter);
 
@@ -259,22 +256,22 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 channelConfiguration.swingStateTemplate, channelConfiguration.swingStateTopic, commandFilter);
 
         buildOptionalChannel(TEMPERATURE_CH_ID,
-                new NumberValue(minTemp, maxTemp, BigDecimal.valueOf(channelConfiguration.tempStep),
-                        channelConfiguration.temperatureUnit.getUnit()),
+                new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp,
+                        channelConfiguration.tempStep, channelConfiguration.temperatureUnit.getUnit()),
                 updateListener, channelConfiguration.temperatureCommandTemplate,
                 channelConfiguration.temperatureCommandTopic, channelConfiguration.temperatureStateTemplate,
                 channelConfiguration.temperatureStateTopic, commandFilter);
 
         buildOptionalChannel(TEMPERATURE_HIGH_CH_ID,
-                new NumberValue(minTemp, maxTemp, BigDecimal.valueOf(channelConfiguration.tempStep),
-                        channelConfiguration.temperatureUnit.getUnit()),
+                new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp,
+                        channelConfiguration.tempStep, channelConfiguration.temperatureUnit.getUnit()),
                 updateListener, channelConfiguration.temperatureHighCommandTemplate,
                 channelConfiguration.temperatureHighCommandTopic, channelConfiguration.temperatureHighStateTemplate,
                 channelConfiguration.temperatureHighStateTopic, commandFilter);
 
         buildOptionalChannel(TEMPERATURE_LOW_CH_ID,
-                new NumberValue(minTemp, maxTemp, BigDecimal.valueOf(channelConfiguration.tempStep),
-                        channelConfiguration.temperatureUnit.getUnit()),
+                new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp,
+                        channelConfiguration.tempStep, channelConfiguration.temperatureUnit.getUnit()),
                 updateListener, channelConfiguration.temperatureLowCommandTemplate,
                 channelConfiguration.temperatureLowCommandTopic, channelConfiguration.temperatureLowStateTemplate,
                 channelConfiguration.temperatureLowStateTopic, commandFilter);
