@@ -15,6 +15,7 @@
 
 		<channels>
 			<channel id="state" typeId="state"/>
+			<channel id="rawState" typeId="rawState"/>
 			<channel id="plate1power" typeId="power"/>
 			<channel id="plate1heat" typeId="heat"/>
 			<channel id="plate1time" typeId="time"/>
