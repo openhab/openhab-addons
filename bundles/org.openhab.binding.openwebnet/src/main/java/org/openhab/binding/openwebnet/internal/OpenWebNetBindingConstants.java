@@ -126,9 +126,10 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_ACTUATORS = "actuators";
     // energy management
     public static final String CHANNEL_POWER = "power";
-    // scenario button
+    // scenario button channels
     public static final String CHANNEL_SCENARIO_BUTTON = "button#";
-    public static final String CHANNEL_TYPE_SCENARIO_BUTTON = "cenButtonEvent";
+    public static final String CHANNEL_TYPE_CEN_BUTTON_EVENT = "cenButtonEvent";
+    public static final String CHANNEL_TYPE_CEN_PLUS_BUTTON_EVENT = "cenPlusButtonEvent";
 
     // devices config properties
     public static final String CONFIG_PROPERTY_WHERE = "where";

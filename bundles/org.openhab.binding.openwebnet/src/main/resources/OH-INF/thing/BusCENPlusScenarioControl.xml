@@ -12,6 +12,8 @@
 		<label>CEN+ Scenario Control</label>
 		<description>A OpenWebNet BUS/SCS CEN+ Scenario Control device. BTicino models: HC/HD/HS/L/N/NT4680</description>
 
+		<!-- channels are created dynamically based on configured buttons -->
+
 		<properties>
 			<property name="vendor">BTicino/Legrand</property>
 			<property name="model">BTI-HC/HD/HS/L/N/NT4680</property>
@@ -27,10 +29,9 @@
 					buttons=1,2,4
 				</description>
 			</parameter>
-			<parameter name="where" type="text">
-				<label>OpenWebNet Device Address (WHERE)</label>
-				<description>Use 2+N[0-2047]; example Control 5 --> WHERE=25</description>
-				<required>true</required>
+			<parameter name="where" type="text" required="true">
+				<label>OpenWebNet Device Address (where)</label>
+				<description>Use 2+N[0-2047]. Example: scenario control 5 --> WHERE=25</description>
 			</parameter>
 		</config-description>
 

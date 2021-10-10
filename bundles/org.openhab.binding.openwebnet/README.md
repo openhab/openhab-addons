@@ -67,7 +67,7 @@ For other gateways you can add them manually, see [Thing Configuration](#thing-c
 - Once the gateway is online, a second Inbox Scan will discover BUS devices
 - BUS/SCS Dimmers must be ON and dimmed (30%-100%) during a Scan, otherwise they will be discovered as simple On/Off switches
     - *KNOWN ISSUE*: In some cases dimmers connected to a F429 Dali-interface are not automatically discovered
-- CEN/CEN+ Scenario Control devices will be discovered by activation only. See [discovery by activation](#discovery-by-activation) for details. After confirming a discovered CEN/CEN+ device from Inbox, activate again its scenario buttons to add button channels
+- CEN/CEN+ Scenario Control devices will be discovered by activation only. See [discovery by activation](#discovery-by-activation) for details. After confirming a discovered CEN/CEN+ device from Inbox, activate again its scenario buttons to add button channels automatically
 
 #### Discovery by Activation
 
@@ -152,14 +152,14 @@ Systems with Central Units (4 or 99 zones) are not fully supported yet.
 
 ## Channels 
 
-### Lighting, Automation and Power meter channels
+### Lighting, Automation, Power meter and CEN/CEN+ Scenario Events channels
 
 | Channel Type ID (channel ID)             | Applies to Thing Type IDs                                     | Item Type     | Description                                           | Read/Write |
 | ---------------------------------------- | ------------------------------------------------------------- | ------------- | ----------------------------------------------------- | :--------: |
 | `switch` or `switch_01`/`02` for ZigBee  | `bus_on_off_switch`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device `ON` and `OFF`                   |    R/W     |
 | `brightness`                             | `bus_dimmer`, `zb_dimmer`                                     | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`) |    R/W     |
 | `shutter`                                | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
-| `button#X`         | `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#button-scenario)  |     TRIGGER      |
+| `button#X`         | `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#cen-cen-channels)  |     R (TRIGGER)      |
 | `power`                                  | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter      |     R      |
 
 ### Thermo channels
@@ -188,14 +188,29 @@ It's possible to enter a value manually or set `shutterRun=AUTO` (default) to ca
 - if OH is restarted the binding does not know if a shutter position has changed in the meantime, so its position will be `UNDEF`. Move the shutter all `UP`/`DOWN` to synchronize again its position with the binding
 - the shutter position is estimated based on UP/DOWN timing: an error of ±2% is normal
 
-#### `button` scenario
+#### CEN/CEN+ channels
 
-- In CEN/CEN+ channels are named `button#X` where `X` is the button number on the Scenario Control device
-- In the .thing file configuration you must specify the `buttons` parameter to define a comma-separated list of buttons numbers [0-31] configured for the scenario device, example: `buttons=1,2,4`. See [openwebnet.things](#openwebnet-things) for an example
-- **===TODO===** - channel possible values are:
-    - `PRESSED` and then just after `RELEASED` when a CEN/CEN+ button is short-pressed (<0.5sec)
-    - `PRESSED_EXT` (updated again every 0.5sec) and then `RELEASED_EXT` when a CEN/CEN+ button is long pressed (>=0.5sec)
-- **===TODO===** - Sending on channels `button_X` the commands: `PRESSED`, `RELEASED`, etc. will simulate a *virtual short/long pressure* of the corresponding CEN/CEN+ button, enabling the activation of MH202 scenarios on the BUS from openHAB. See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-rules) sections for an example
+CEN/CEN+ are [TRIGGER channels](https://www.openhab.org/docs/configuration/rules-dsl.html#channel-based-triggers]): they handle events and do not have a state.
+
+A powerful feature is to be able to assign CEN or CEN+ commands to your physical wall switches and use the events they generate to trigger rules in openHAB: this way openHAB becomes a very powerful scenario manager activated by physical BTicino switches.
+See [openwebnet.rules](#openwebnet-rules) for an example on how to define rules that trigger on CEN/CEN+ push buttons events.
+
+It's also possible to send *virtual pressure* events on the BUS, for example to enable the activation of MH202 scenarios from openHAB.
+See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-rules) sections for an example on how to use the `virtualPress` action connected to a pushbutton on a sitemap.
+
+- channels are named `button#X` where `X` is the button number on the Scenario Control device
+- in the .thing file configuration you can specify the `buttons` parameter to define a comma-separated list of buttons numbers [0-31] configured for the scenario device, example: `buttons=1,2,4`
+- possible events are:
+    - for CEN:
+        - `START_PRESSURE` - sent when you start pressing the button
+        - `SHORT_PRESSURE` - sent if you pressed the button shorter than 0,5sec (sent at the moment when you release it)
+        - `EXTENDED_PRESSURE` - sent if you keep the button pressed longer than 0,5sec; will be sent again every 0,5sec as long as you hold pressed (good for dimming rules)
+        - `RELEASE_EXTENDED_PRESSURE` - sent once when you finally release the button after having it pressed longer than 0,5sec
+    - for CEN+:
+        - `SHORT_PRESSURE` - sent if you pressed the button shorter than 0,5sec (sent at the moment when you release it)
+        - `START_EXTENDED_PRESSURE` - sent once as soon as you keep the button pressed longer than 0,5sec
+        - `EXTENDED_PRESSURE` - sent after `START_EXTENDED_PRESSURE` if you keep the button pressed longer; will be sent again every 0,5sec as long as you hold pressed (good for dimming rules)
+        - `RELEASE_EXTENDED_PRESSURE` - sent once when you finally release the button after having it pressed longer than 0,5sec
 
 
 ## Full Example
@@ -209,12 +224,12 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_on_off_switch             LR_switch            "Living Room Light"        [ where="51" ]
       bus_dimmer                    LR_dimmer            "Living Room Dimmer"       [ where="0311#4#01" ]
       bus_automation                LR_shutter           "Living Room Shutter"      [ where="93", shutterRun="10050"]      
-      bus_energy_meter              CENTRAL_Ta           "Energy Meter Ta"           [ where="51" ]	
-      bus_energy_meter              CENTRAL_Tb           "Energy Meter Tb"           [ where="52" ]	   
+      bus_energy_meter              CENTRAL_Ta           "Energy Meter Ta"          [ where="51" ]	
+      bus_energy_meter              CENTRAL_Tb           "Energy Meter Tb"          [ where="52" ]	   
       bus_thermo_zone               LR_zone              "Living Room Zone"         [ where="2"]
-      bus_thermo_sensor             EXT_tempsensor       "External Temperature"  [ where="500"]
+      bus_thermo_sensor             EXT_tempsensor       "External Temperature"     [ where="500"]
       bus_cen_scenario_control      LR_CEN_scenario      "Living Room CEN"          [ where="51", buttons="4,3,8"]
-      bus_cenplus_scenario_control  LR_CENplus_scenario  "Living Room CEN+"            [ where="212", buttons="1,5,18" ]
+      bus_cenplus_scenario_control  LR_CENplus_scenario  "Living Room CEN+"         [ where="212", buttons="1,5,18" ]
 }
 ```
 
@@ -257,8 +272,8 @@ String              iLR_zone_cv                 "Conditioning valves"         (g
 
 Number:Temperature  iEXT_temp                   "Temperature [%.1f %unit%]"   (gExternal) { channel="openwebnet:bus_thermo_sensor:mybridge:EXT_tempsensor:temperature" }
 
-String			iLR_scenario_btn4	"Scenario Button 4"					<network>           { channel="openwebnet:bus_cen_scenario_control:mybridge:LR_CEN_scenario:button#4" }  
-String			iLR_scenario_btn1	"Scenario Button 1"					<network>           { channel="openwebnet:bus_cenplus_scenario_control:mybridge:LR_CENplus_scenario:button#1" }  
+String	              iCENPlusProxyItem	           "CEN+ Proxy Item"					
+
 
 ```
 
@@ -300,28 +315,47 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
           Default   item=iLR_zone_hv        label="Heating valves status"
           Default   item=iLR_zone_cv        label="Conditioning valves status"
     }
+    
+    Frame label="CEN+ Scenario activation"
+    {
+          Switch    item=iCENPlusProxyItem  label="My CEN+ scenario" icon="movecontrol"  mappings=[ON="Activate"]
+    }
 }
 ```
 
 ### openwebnet.rules
-===TODO RIVEDERE ====
+
 ```xtend
-// SCENARIO-A: short pressure on CEN+ button 1 will increase dimmer%
-rule "CEN+ dimmer increase"
-when
-    Item iLR_scenario_btn1 received update "RELEASED"
+rule "CEN+ virtual pressure from OH button"
+/* This rule triggers when the proxy item iCENPlusProxyItem is activated, for example from a button on WebUI/sitemap.
+When activated it sends a "virtual short pressure" of where=212, button=5 on the BUS 
+*/
+when 
+    Item iCENPlusProxyItem received command
 then
-        sendCommand(iLR_dimmer, INCREASE)  
+    val actions = getActions("openwebnet","openwebnet:bus_cenplus_scenario_control:mybridge:212")
+    actions.virtualPress("SHORT_PRESSURE", 5)
 end
 
-// SCENARIO-B: long pressure on CEN+ button 1 will switch off dimmer
-rule "CEN+ dimmer off"
+
+rule "CEN dimmer increase"
+// A "start pressure" event on CEN where=51, button=4 will increase dimmer%
 when
-    Item iLR_scenario_btn1 received update "RELEASED_EXT"
+    Channel "openwebnet:bus_cen_scenario_control:mybridge:51:button#4" triggered START_PRESSURE
 then
-        sendCommand(iLR_dimmer, OFF)  
+    sendCommand(iLR_dimmer, INCREASE)  
+end
+
+
+rule "CEN dimmer decrease"
+// A "release extended pressure" event on CEN where=51, button=4 will decrease dimmer%
+when
+    Channel "openwebnet:bus_cen_scenario_control:mybridge:51:button#4" triggered RELEASE_EXTENDED_PRESSURE
+then
+    sendCommand(iLR_dimmer, DECREASE)  
 end
 ```
+
 ## Notes
 
 - The OpenWebNet protocol is maintained and Copyright by BTicino/Legrand. The documentation of the protocol if freely accessible for developers on the [Legrand developer web site](https://developer.legrand.com/documentation/open-web-net-for-myhome/)
