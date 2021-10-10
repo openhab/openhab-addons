@@ -60,14 +60,14 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
 
     public static enum TemperatureUnit {
         @SerializedName("C")
-        CELSIUS(SIUnits.CELSIUS, 0.1f),
+        CELSIUS(SIUnits.CELSIUS, new BigDecimal("0.1")),
         @SerializedName("F")
-        FAHRENHEIT(ImperialUnits.FAHRENHEIT, 1f);
+        FAHRENHEIT(ImperialUnits.FAHRENHEIT, BigDecimal.ONE);
 
         private final Unit<Temperature> unit;
-        private final float defaultPrecision;
+        private final BigDecimal defaultPrecision;
 
-        TemperatureUnit(Unit<Temperature> unit, float defaultPrecision) {
+        TemperatureUnit(Unit<Temperature> unit, BigDecimal defaultPrecision) {
             this.unit = unit;
             this.defaultPrecision = defaultPrecision;
         }
@@ -76,7 +76,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
             return unit;
         }
 
-        public float getDefaultPrecision() {
+        public BigDecimal getDefaultPrecision() {
             return defaultPrecision;
         }
     }
@@ -205,7 +205,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
         protected TemperatureUnit temperatureUnit = TemperatureUnit.CELSIUS; // System unit by default
         @SerializedName("temp_step")
         protected Float tempStep = 1f;
-        protected @Nullable Float precision;
+        protected @Nullable BigDecimal precision;
         @SerializedName("send_if_off")
         protected Boolean sendIfOff = true;
     }
@@ -217,7 +217,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 : null;
         BigDecimal maxTemp = channelConfiguration.maxTemp != null ? BigDecimal.valueOf(channelConfiguration.maxTemp)
                 : null;
-        float precision = channelConfiguration.precision != null ? channelConfiguration.precision
+        BigDecimal precision = channelConfiguration.precision != null ? channelConfiguration.precision
                 : channelConfiguration.temperatureUnit.getDefaultPrecision();
         final ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
 
@@ -236,8 +236,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 channelConfiguration.awayModeStateTopic, commandFilter);
 
         buildOptionalChannel(CURRENT_TEMPERATURE_CH_ID,
-                new NumberValue(minTemp, maxTemp, BigDecimal.valueOf(precision),
-                        channelConfiguration.temperatureUnit.getUnit()),
+                new NumberValue(minTemp, maxTemp, precision, channelConfiguration.temperatureUnit.getUnit()),
                 updateListener, null, null, channelConfiguration.currentTemperatureTemplate,
                 channelConfiguration.currentTemperatureTopic, commandFilter);
 

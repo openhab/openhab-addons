@@ -19,6 +19,7 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -244,7 +245,7 @@ public class HAConfigurationTests {
         assertThat(config.minTemp, is(0f));
         assertThat(config.temperatureUnit, is(Climate.TemperatureUnit.FAHRENHEIT));
         assertThat(config.tempStep, is(1f));
-        assertThat(config.precision, is(0.5f));
+        assertThat(config.precision, is(new BigDecimal("0.5")));
         assertThat(config.sendIfOff, is(false));
     }
 }
