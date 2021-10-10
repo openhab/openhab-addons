@@ -65,6 +65,7 @@ After adding the Inbox item, enter the user name and password from the physical 
 
 
 ### Runtime data
+
 The Venstar thermostat provides data about how many minutes the system has been running in each of the different modes (heat1, heat2, cool1, cool2, aux1, aux2, free cool) every day for the last 7 days. A time stamp is provided with each run time data set which represents the end of each day. The binding reads the runtime data and time stamps and provides them all as separate channels.
 
 | Channel                | Type                 | Description                                  | Notes                                                      |

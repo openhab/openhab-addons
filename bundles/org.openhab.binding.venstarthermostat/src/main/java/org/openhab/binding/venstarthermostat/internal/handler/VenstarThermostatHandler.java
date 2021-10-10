@@ -391,7 +391,6 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
     }
 
     private void updateSettings(VenstarAwayMode away, VenstarScheduleMode schedule) {
-
         // this function corresponds to the thermostat local API POST /settings instruction
         // the function can be expanded with other parameters which are changed via POST /settings
         // settings that can be included are tempunits, away mode, schedule mode, humidifier setpoint, dehumidifier
