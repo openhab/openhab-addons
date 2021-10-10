@@ -114,7 +114,7 @@ public class OnvifConnection {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(2);
     private @Nullable Bootstrap bootstrap;
-    private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup();
+    private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup(2);
     private String ipAddress = "";
     private String user = "";
     private String password = "";
@@ -857,10 +857,15 @@ public class OnvifConnection {
     }
 
     public void disconnect() {
-        if (usingEvents && isConnected && !mainEventLoopGroup.isShuttingDown()) {
-            sendOnvifRequest(requestBuilder(RequestType.Unsubscribe, subscriptionXAddr));
+        if (bootstrap != null) {
+            if (usingEvents && isConnected && !mainEventLoopGroup.isShuttingDown()) {
+                // Some cameras may continue to send events even when they can't reach a server.
+                sendOnvifRequest(requestBuilder(RequestType.Unsubscribe, subscriptionXAddr));
+            }
+            // give time for the Unsubscribe request to be sent to the camera.
+            threadPool.schedule(this::cleanup, 100, TimeUnit.MILLISECONDS);
+        } else {
+            cleanup();
         }
-        // Some cameras may continue to send event callbacks even when they cant reach a server.
-        threadPool.schedule(this::cleanup, 500, TimeUnit.MILLISECONDS);
     }
 }
