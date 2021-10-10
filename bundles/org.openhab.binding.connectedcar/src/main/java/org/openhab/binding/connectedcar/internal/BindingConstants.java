@@ -107,6 +107,7 @@ public class BindingConstants {
     public static final String CHANNEL_CONTROL_UPDATE = "update";
     public static final String CHANNEL_CONTROL_LOCK = "lock";
     public static final String CHANNEL_CONTROL_ENGINE = "engine";
+    public static final String CHANNEL_CONTROL_RESTART = "restart";
     public static final String CHANNEL_CONTROL_CHARGER = "charge";
     public static final String CHANNEL_CONTROL_TARGETCHG = "targetChgLvl";
     public static final String CHANNEL_CONTROL_CLIMATER = "climater";
@@ -164,6 +165,8 @@ public class BindingConstants {
     public static final String CHANNEL_CHARGER_NAME = "chargerName";
     public static final String CHANNEL_CHARGER_ADDRESS = "chargerAddress";
     public static final String CHANNEL_CHARGER_LAST_CONNECT = "chargerLastConnect";
+    public static final String CHANNEL_CHARGER_CYCLES = "chargingCycles";
+    public static final String CHANNEL_CHARGER_ENERGY = "chargingEnergy";
 
     public static final String CHANNEL_GROUP_TRIP_PRE = "trip";
     public static final String CHANNEL_TRIP_SHORT = "Short";
@@ -281,10 +284,11 @@ public class BindingConstants {
     // CHarging transactions
     public static final String CHANNEL_CHANNEL_GROUP_TRANSACTIONS = "transaction";
     public static final String CHANNEL_TRANS_ID = "transId";
+    public static final String CHANNEL_TRANS_PUBLIC = "transPublic";
     public static final String CHANNEL_TRANS_LOCATION = "transLocation";
     public static final String CHANNEL_TRANS_ADDRESS = "transAddress";
     public static final String CHANNEL_TRANS_SUBID = "transSubscription";
-    public static final String CHANNEL_TRANS_EVSE = "transEvseId";
+    public static final String CHANNEL_TRANS_EVSE = "transStationId";
     public static final String CHANNEL_TRANS_PTYPE = "transPowerType";
     public static final String CHANNEL_TRANS_START = "transStart";
     public static final String CHANNEL_TRANS_END = "transEnd";

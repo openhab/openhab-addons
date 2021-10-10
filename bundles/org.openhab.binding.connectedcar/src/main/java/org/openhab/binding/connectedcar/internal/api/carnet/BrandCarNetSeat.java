@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.connectedcar.internal.api.carnet;
 
-import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.CNAPI_VW_TOKEN_URL;
+import static org.openhab.binding.connectedcar.internal.api.carnet.CarNetApiGSonDTO.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,7 +33,7 @@ public class BrandCarNetSeat extends CarNetApi implements BrandAuthenticator {
     static {
         properties.brand = "VW"; // CNAPI_BRAND_SEAT;
         properties.xcountry = "ES";
-        properties.apiDefaultUrl = "";
+        properties.apiDefaultUrl = CNAPI_DEFAULT_API_URL;
         properties.clientId = "50f215ac-4444-4230-9fb1-fe15cd1a9bcc@apps_vw-dilab_com";
         properties.xClientId = "9dcc70f0-8e79-423a-a3fa-4065d99088b4";
         properties.authScope = "openid profile mbb cars birthdate nickname address phone";

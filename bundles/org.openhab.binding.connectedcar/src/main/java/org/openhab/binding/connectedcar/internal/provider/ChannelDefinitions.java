@@ -473,6 +473,7 @@ public class ChannelDefinitions {
         add("", "", CHANNEL_CONTROL_UPDATE, ITEMT_SWITCH, group, null, false, false);
         add("", "", CHANNEL_CONTROL_LOCK, ITEMT_SWITCH, group, null, false, false);
         add("", "", CHANNEL_CONTROL_ENGINE, ITEMT_SWITCH, group, null, false, false);
+        add("", "", CHANNEL_CONTROL_RESTART, ITEMT_SWITCH, group, null, false, false);
         add("", "", CHANNEL_CONTROL_CHARGER, ITEMT_SWITCH, group, null, false, false);
         add("", "", CHANNEL_CONTROL_TARGETCHG, ITEMT_PERCENT, group, null, false, false);
         add("", "", CHANNEL_CONTROL_CLIMATER, ITEMT_SWITCH, group, null, false, false);
@@ -513,6 +514,8 @@ public class ChannelDefinitions {
         add("", "", CHANNEL_CHARGER_NAME, ITEMT_STRING, group);
         add("", "", CHANNEL_CHARGER_ADDRESS, ITEMT_STRING, group);
         add("", "", CHANNEL_CHARGER_LAST_CONNECT, ITEMT_DATETIME, group);
+        add("", "", CHANNEL_CHARGER_CYCLES, ITEMT_NUMBER, group);
+        add("", "", CHANNEL_CHARGER_ENERGY, ITEMT_ENERGY, group, Units.KILOWATT_HOUR, false, true);
 
         // Group climater
         group = CHANNEL_GROUP_CLIMATER;
@@ -586,6 +589,7 @@ public class ChannelDefinitions {
         // Chasrging Records
         group = CHANNEL_CHANNEL_GROUP_TRANSACTIONS;
         add("", "", CHANNEL_TRANS_ID, ITEMT_STRING, group, null, true, true);
+        add("", "", CHANNEL_TRANS_PUBLIC, ITEMT_SWITCH, group);
         add("", "", CHANNEL_TRANS_LOCATION, ITEMT_LOCATION, group);
         add("", "", CHANNEL_TRANS_ADDRESS, ITEMT_STRING, group);
         add("", "", CHANNEL_TRANS_SUBID, ITEMT_STRING, group, null, true, true);
@@ -595,7 +599,7 @@ public class ChannelDefinitions {
         add("", "", CHANNEL_TRANS_END, ITEMT_STRING, group);
         add("", "", CHANNEL_TRANS_ENERGY, ITEMT_ENERGY, group, Units.KILOWATT_HOUR, false, true);
         add("", "", CHANNEL_TRANS_PRICE, ITEMT_NUMBER, group);
-        add("", "", CHANNEL_TRANS_DURATION, ITEMT_NUMBER, group, QMINUTES);
+        add("", "", CHANNEL_TRANS_DURATION, ITEMT_TIME, group, Units.MINUTE);
         add("", "", CHANNEL_TRANS_RFID, ITEMT_STRING, group);
         add("", "", CHANNEL_TRANS_TARIFF, ITEMT_STRING, group);
     }

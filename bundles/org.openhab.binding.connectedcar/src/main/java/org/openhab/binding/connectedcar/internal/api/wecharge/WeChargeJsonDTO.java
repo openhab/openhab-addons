@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.connectedcar.internal.api.wecharge;
 
+import static org.openhab.binding.connectedcar.internal.util.Helpers.*;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,6 +98,13 @@ public class WeChargeJsonDTO {
         public String model;
         public String last_connect;
         public WCStationLocation location;
+    }
+
+    public static class WCChargingHistory {
+        @SerializedName("total_count")
+        public Integer totalCount = 0;
+        @SerializedName("total_energy_wh")
+        public Integer totalEngergyWh = 0;
     }
 
     public class WCStationDetails {
@@ -298,6 +308,8 @@ public class WeChargeJsonDTO {
             public String stationSerialNumber;
             @SerializedName("stop_date_time")
             public String stopDateTime;
+            @SerializedName("total_energy_wh")
+            public Double totalEngergyWh;
             @SerializedName("transaction_id")
             public String transactionId;
             @SerializedName("station_model")
@@ -321,29 +333,38 @@ public class WeChargeJsonDTO {
     }
 
     public static class WeChargeRecord extends WeChargePayRecord {
+        public Boolean publicCharging;
         public String rfidCard, tariff;
         public Boolean sessionFaulted;
 
         public WeChargeRecord(WeChargeHomeRecord r, WeChargeStatus status) {
-            this.id = r.transactionId;
-            this.createdAt = r.createdAt;
-            this.updatedAt = r.createdAt;
-            this.rfidCard = r.rfidCardLabel + "(" + r.rfidCardSerialNumber + ")";
-            this.locationEvseId = r.rfidCardSerialNumber;
-            this.locationName = r.currentStationName;
-            this.locationAddress = r.location.address.toString();
-            this.sessionFaulted = r.sessionFaulted;
-            this.startDateTime = r.startDateTime;
-            this.endDateTime = r.stopDateTime;
-
-            if (r.location.geoLocation != null) {
-                this.locationCoordinatesLatitude = r.location.geoLocation.latitude;
-                this.locationCoordinatesLongitude = r.location.geoLocation.longitude;
-            } else {
-                this.locationCoordinatesLatitude = "";
-                this.locationCoordinatesLongitude = "";
+            this.id = getString(r.transactionId);
+            this.publicCharging = false;
+            createdAt = getString(r.createdAt);
+            updatedAt = getString(r.createdAt);
+            rfidCard = getString(r.rfidCardLabel) + " (" + getString(r.rfidCardSerialNumber) + ")";
+            sessionFaulted = r.sessionFaulted;
+            totalEnergy = r.totalEngergyWh;
+            startDateTime = getString(r.startDateTime);
+            endDateTime = getString(r.stopDateTime);
+            Date start = convertDateTime(startDateTime);
+            Date end = convertDateTime(endDateTime);
+            long diff = end.getTime() - start.getTime();
+            if (diff > 0) {
+                totalTime = diff / 1000 / 60 + 1.0;
             }
-            WeChargeRfidCard rfid = status.getRfidCard(r.rfidCardLabel);
+            locationEvseId = getString(this.endDateTime);
+            locationName = getString(r.currentStationName);
+            locationAddress = r.location.address.toString();
+            if (r.location.geoLocation != null) {
+                locationCoordinatesLatitude = r.location.geoLocation.latitude;
+                locationCoordinatesLongitude = r.location.geoLocation.longitude;
+            } else {
+                locationCoordinatesLatitude = "";
+                locationCoordinatesLongitude = "";
+            }
+
+            WeChargeRfidCard rfid = status.getRfidCard(getString(r.rfidCardLabel));
             this.subscriptionId = rfid != null ? rfid.subscriptionId : "";
             WeChargeSubscription sub = status.getSubscription(this.subscriptionId);
             this.currency = sub != null ? sub.currency : "";
@@ -351,29 +372,32 @@ public class WeChargeJsonDTO {
         }
 
         public WeChargeRecord(WeChargePayRecord r, WeChargeStatus status) {
-            this.id = r.id;
-            this.createdAt = r.createdAt;
-            this.updatedAt = r.updatedAt;
-            this.locationName = r.locationName;
-            this.locationEvseId = r.locationEvseId;
-            this.locationAddress = r.locationAddress;
-            this.locationCoordinatesLatitude = r.locationCoordinatesLatitude;
-            this.locationCoordinatesLongitude = r.locationCoordinatesLongitude;
-            this.locationConnectorPowerType = r.locationConnectorPowerType;
-            this.startDateTime = r.startDateTime;
-            this.endDateTime = r.endDateTime;
-            this.totalEnergy = r.totalEnergy;
-            this.totalPrice = r.totalPrice;
-            this.totalTime = r.totalTime;
-            this.rfidCard = ""; // no info included!
-            this.sessionFaulted = false;
+            id = r.id;
+            publicCharging = true;
+            createdAt = getString(r.createdAt);
+            updatedAt = getString(r.updatedAt);
+            locationName = getString(r.locationName);
+            locationEvseId = getString(r.locationEvseId);
+            locationAddress = getString(r.locationAddress);
+            locationCoordinatesLatitude = getString(r.locationCoordinatesLatitude);
+            locationCoordinatesLongitude = getString(r.locationCoordinatesLongitude);
+            locationConnectorPowerType = getString(r.locationConnectorPowerType);
+            startDateTime = getString(r.startDateTime);
+            endDateTime = getString(r.endDateTime);
+            totalTime = r.totalTime;
+            totalEnergy = r.totalEnergy;
+            totalPrice = r.totalPrice;
+            rfidCard = ""; // no info included!
+            sessionFaulted = false;
         }
     }
 
     public static class WeChargeStatus {
         public String stationId = "";
+        public boolean chargerPro = true;
 
         public WeChargeStationDetails station;
+        public WCChargingHistory chargingHistory;
         public Map<String, WeChargeSubscription> subscriptions = new HashMap<>();
         public Map<String, WeChargeTariff> tariffs = new HashMap<>();;
         public Map<String, WeChargeRfidCard> rfidCards = new HashMap<>();;

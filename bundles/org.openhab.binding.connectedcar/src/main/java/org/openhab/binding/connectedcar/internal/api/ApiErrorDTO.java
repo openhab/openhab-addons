@@ -64,10 +64,10 @@ public class ApiErrorDTO {
     }
 
     public ApiErrorDTO(WCApiError wcerror) {
-        if (wcerror != null) {
-            code = getInteger(wcerror.code).toString();
-            error = getString(wcerror.message);
-            description = getString(wcerror.info) + ", retry=" + (wcerror.retry);
+        if (wcerror != null && wcerror.error != null) {
+            code = getInteger(wcerror.error.code).toString();
+            error = getString(wcerror.error.message);
+            description = getString(wcerror.error.info) + ", retry=" + (wcerror.error.retry);
         }
     }
 

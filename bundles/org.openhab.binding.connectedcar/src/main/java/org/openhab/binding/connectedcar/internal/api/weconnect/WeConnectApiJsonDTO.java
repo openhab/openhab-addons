@@ -32,6 +32,22 @@ public class WeConnectApiJsonDTO {
     public static final String WCSERVICE_CLIMATISATION = "climatisation";
     public static final String WCSERVICE_CHARGING = "charging";
 
+    public static final String WCCAPABILITY_PARKINGPOS = "parkingPosition";
+
+    public static class WCCapability {
+        /*
+         * {
+         * "id": "automation",
+         * "expirationDate": "2024-05-09T00:00:00Z",
+         * "userDisablingAllowed": true
+         * }
+         */
+        public String id;
+        public String expirationDate;
+        public Boolean userDisablingAllowed;
+        public ArrayList<Integer> status;
+    }
+
     public static class WCVehicleList {
         public static class WCVehicle {
             /*
@@ -42,19 +58,6 @@ public class WeConnectApiJsonDTO {
              * "nickname": "ID.3",
              * "capabilities": []
              */
-
-            public static class WCCapability {
-                /*
-                 * {
-                 * "id": "automation",
-                 * "expirationDate": "2024-05-09T00:00:00Z",
-                 * "userDisablingAllowed": true
-                 * }
-                 */
-                public String id;
-                public String expirationDate;
-                public Boolean userDisablingAllowed;
-            }
 
             public String vin;
             public String role;
@@ -337,13 +340,6 @@ public class WeConnectApiJsonDTO {
                  * "userDisablingAllowed": true
                  * },
                  */
-                public class WCCapability {
-                    public String id;
-                    public String expirationDate;
-                    public Boolean userDisablingAllowed;
-                    public ArrayList<Integer> status;
-                }
-
                 public ArrayList<WCCapability> capabilities;
             }
 
@@ -379,11 +375,15 @@ public class WeConnectApiJsonDTO {
              * "retry": true
              * }
              */
-            public Integer code;
-            public String message;
-            public Integer group;
-            public String info;
-            public Boolean retry;
+            public class WCApiErrorDetails {
+                public Integer code;
+                public String message;
+                public Integer group;
+                public String info;
+                public Boolean retry;
+            }
+
+            public WCApiErrorDetails error;
         }
 
         public class WCApiError2 {

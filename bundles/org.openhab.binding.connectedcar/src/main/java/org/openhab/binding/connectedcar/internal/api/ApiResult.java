@@ -159,7 +159,7 @@ public class ApiResult {
                             && response.contains("message")) {
                         // WeConnect v2
                         apiError = new ApiErrorDTO(gson.fromJson(response, WCApiError2.class));
-                    } else if (response.contains("\"group\": ")) {
+                    } else if (response.contains("\"error\": {") && response.contains("\"group\": ")) {
                         // WeConnect
                         apiError = new ApiErrorDTO(gson.fromJson(response, WCApiError.class));
                     } else if (response.contains("\"error_code\": ")) {

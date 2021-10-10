@@ -110,20 +110,20 @@ public class ApiDataTypesDTO {
         public VehicleDetails(CombinedConfig config, WCVehicle vehicle) {
             vin = vehicle.vin;
             brand = config.api.brand;
-            model = getString(vehicle.nickname) + "(" + brand + " " + getString(vehicle.model) + ")";
+            model = getString(vehicle.nickname) + " (" + brand + " " + getString(vehicle.model) + ")";
         }
 
         public VehicleDetails(CombinedConfig config, SEVehicle vehicle) {
             vin = getString(vehicle.vin);
             brand = getString(vehicle.specification.brand);
-            model = getString(vehicle.specification.title) + "(" + brand + " " + getString(vehicle.specification.model)
+            model = getString(vehicle.specification.title) + " (" + brand + " " + getString(vehicle.specification.model)
                     + ")";
         }
 
         public VehicleDetails(CombinedConfig config, WeChargeStationDetails station) {
             vin = station.id;
             brand = config.api.brand;
-            model = station.name + "(" + station.location.description + ", " + station.model + ")";
+            model = station.name + " (" + station.location.description + ", " + station.model + ")";
         }
 
         public String getId() {

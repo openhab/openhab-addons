@@ -35,6 +35,7 @@ import org.openhab.binding.connectedcar.internal.api.wecharge.WeChargeJsonDTO.We
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectServiceStatus;
 import org.openhab.binding.connectedcar.internal.handler.ThingBaseHandler;
 import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.ChannelIdMapEntry;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,20 +63,21 @@ public class WeChargeServiceStatus extends ApiBaseService {
             return false;
         }
 
-        addChannels(channels, true, CHANNEL_CONTROL_ENGINE);
-
-        String group = CHANNEL_GROUP_CHARGER;
-        addChannels(channels, group, true, CHANNEL_CHARGER_NAME, CHANNEL_CHARGER_ADDRESS, CHANNEL_CHARGER_LAST_CONNECT,
-                CHANNEL_CHARGER_PLUG_STATE);
+        // ID.Charger Pro provides number of charging cycles and total energy
+        boolean chargerPro = (status.chargingHistory.totalCount > 0 || status.chargingHistory.totalEngergyWh > 0);
+        addChannels(channels, true, CHANNEL_CHARGER_NAME, CHANNEL_CHARGER_ADDRESS, CHANNEL_CHARGER_LAST_CONNECT,
+                CHANNEL_CHARGER_PLUG_STATE, CHANNEL_CONTROL_RESTART);
+        addChannels(channels, chargerPro, CHANNEL_CHARGER_CYCLES, CHANNEL_CHARGER_ENERGY);
 
         // Create subscriptions
+        String group;
         for (int s = 0; s < status.subscriptions.size(); s++) {
             group = CHANNEL_GROUP_SUBSCRIPTION + (s + 1);
             addChannels(channels, group, true, CHANNEL_SUB_ENDDATE, CHANNEL_SUB_STATUS, CHANNEL_SUB_TARIFF,
                     CHANNEL_SUB_MFEE);
         }
 
-        // Create RFID cars
+        // Create RFID cards
         for (int c = 0; c < status.rfidCards.size(); c++) {
             group = CHANNEL_CHANNEL_GROUP_RFID + (c + 1);
             addChannels(channels, group, true, CHANNEL_RFID_ID, CHANNEL_RFID_PUBLIC, CHANNEL_RFID_STATUS,
@@ -86,10 +88,11 @@ public class WeChargeServiceStatus extends ApiBaseService {
         int num = getConfig().vehicle.numChargingRecords;
         for (int r = 1; r <= num; r++) {
             group = CHANNEL_CHANNEL_GROUP_TRANSACTIONS + r;
-            addChannels(channels, group, true, CHANNEL_TRANS_ID, CHANNEL_TRANS_LOCATION, CHANNEL_TRANS_ADDRESS,
-                    CHANNEL_TRANS_SUBID, CHANNEL_TRANS_EVSE, CHANNEL_TRANS_PTYPE, CHANNEL_TRANS_START,
-                    CHANNEL_TRANS_PTYPE, CHANNEL_TRANS_START, CHANNEL_TRANS_END, CHANNEL_TRANS_ENERGY,
+            addChannels(channels, group, true, CHANNEL_TRANS_ID, CHANNEL_TRANS_PUBLIC, CHANNEL_TRANS_LOCATION,
+                    CHANNEL_TRANS_ADDRESS, CHANNEL_TRANS_SUBID, CHANNEL_TRANS_EVSE, CHANNEL_TRANS_PTYPE,
+                    CHANNEL_TRANS_START, CHANNEL_TRANS_PTYPE, CHANNEL_TRANS_START, CHANNEL_TRANS_END,
                     CHANNEL_TRANS_RFID, CHANNEL_TRANS_TARIFF, CHANNEL_TRANS_PRICE, CHANNEL_TRANS_DURATION);
+            addChannels(channels, group, chargerPro, CHANNEL_TRANS_ENERGY);
         }
         return true;
     }
@@ -152,13 +155,15 @@ public class WeChargeServiceStatus extends ApiBaseService {
         int count = getConfig().vehicle.numChargingRecords;
         for (WeChargeRecord record : recordList) {
             String group = CHANNEL_CHANNEL_GROUP_TRANSACTIONS + i++;
-            updated |= updateChannel(group, CHANNEL_TRANS_ID, getStringType(record.id));
+            updated |= updateChannel(group, CHANNEL_TRANS_ID, getStringTypeNonEmpty(record.id));
+            updated |= updateChannel(group, CHANNEL_TRANS_PUBLIC, getOnOff(record.publicCharging));
             updated |= updateChannel(group, CHANNEL_TRANS_LOCATION,
-                    new GeoPosition(record.locationCoordinatesLatitude, record.locationCoordinatesLongitude)
-                            .asPointType());
-            updated |= updateChannel(group, CHANNEL_TRANS_ADDRESS, getStringType(record.locationAddress));
-            updated |= updateChannel(group, CHANNEL_TRANS_EVSE, getStringType(record.locationEvseId));
-            updated |= updateChannel(group, CHANNEL_TRANS_SUBID, getStringType(record.subscriptionId));
+                    record.locationCoordinatesLatitude.isEmpty() ? UnDefType.UNDEF
+                            : new GeoPosition(record.locationCoordinatesLatitude, record.locationCoordinatesLongitude)
+                                    .asPointType());
+            updated |= updateChannel(group, CHANNEL_TRANS_ADDRESS, getStringTypeNonEmpty(record.locationAddress));
+            updated |= updateChannel(group, CHANNEL_TRANS_EVSE, getStringTypeNonEmpty(record.locationEvseId));
+            updated |= updateChannel(group, CHANNEL_TRANS_SUBID, getStringTypeNonEmpty(record.subscriptionId));
             updated |= updateChannel(group, CHANNEL_TRANS_PTYPE,
                     getStringTypeNonEmpty(record.locationConnectorPowerType));
             updated |= updateChannel(group, CHANNEL_TRANS_RFID, getStringTypeNonEmpty(record.rfidCard));

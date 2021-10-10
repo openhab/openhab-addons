@@ -256,24 +256,25 @@ public class Helpers {
     }
 
     public static State getDateTime(String timestamp, ZoneId zoneId) {
+        if (timestamp.length() < 2) {
+            return UnDefType.UNDEF;
+        }
+        return new DateTimeType(ZonedDateTime.ofInstant(convertDateTime(timestamp).toInstant(), zoneId));
+    }
+
+    public static Date convertDateTime(String timestamp) {
         try {
-            Date date;
-            if (timestamp.length() < 2) {
-                return UnDefType.UNDEF;
-            }
             if (timestamp.length() > 13 && timestamp.charAt(2) == '-' && timestamp.charAt(5) == '-'
                     && timestamp.charAt(13) == ':') {
                 // format: 07-30-2021 15:28:38, e.g. Ford
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-uuuu HH:mm:ss");
-                date = simpleDateFormat.parse(timestamp);
+                return new SimpleDateFormat("MM-dd-uuuu HH:mm:ss").parse(timestamp);
             } else {
                 DateTimeFormatter fmt = timestamp.contains("+") ? DateTimeFormatter.ISO_ZONED_DATE_TIME
                         : DateTimeFormatter.ISO_INSTANT;
-                date = Date.from(Instant.from(fmt.parse(timestamp)));
+                return Date.from(Instant.from(fmt.parse(timestamp)));
             }
-            return new DateTimeType(ZonedDateTime.ofInstant(date.toInstant(), zoneId));
         } catch (DateTimeException | ParseException e) {
-            return UnDefType.UNDEF;
+            return new Date();
         }
     }
 

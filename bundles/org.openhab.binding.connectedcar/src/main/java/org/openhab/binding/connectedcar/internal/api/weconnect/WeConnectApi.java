@@ -35,6 +35,7 @@ import org.openhab.binding.connectedcar.internal.api.ApiResult;
 import org.openhab.binding.connectedcar.internal.api.ApiWithOAuth;
 import org.openhab.binding.connectedcar.internal.api.BrandAuthenticator;
 import org.openhab.binding.connectedcar.internal.api.IdentityManager;
+import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCCapability;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCParkingPosition;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleList;
 import org.openhab.binding.connectedcar.internal.api.weconnect.WeConnectApiJsonDTO.WCVehicleList.WCVehicle;
@@ -54,6 +55,7 @@ import org.slf4j.LoggerFactory;
 public class WeConnectApi extends ApiWithOAuth implements BrandAuthenticator {
     private final Logger logger = LoggerFactory.getLogger(WeConnectApi.class);
     private Map<String, WCVehicle> vehicleData = new HashMap<>();
+    private boolean capParkingPos = true;
 
     public WeConnectApi(ApiHttpClient httpClient, IdentityManager tokenManager,
             @Nullable ApiEventListener eventListener) {
@@ -94,10 +96,13 @@ public class WeConnectApi extends ApiWithOAuth implements BrandAuthenticator {
 
     @Override
     public VehicleStatus getVehicleStatus() throws ApiException {
-        // getChargingStations("50.577417", "7.240451");
         VehicleStatus status = new VehicleStatus(getWCStatus());
-        status.parkingPosition = getParkingPosition();
-        getVehicleLocation();
+        WCVehicleStatus wcStatus = status.wcStatus;
+        if (wcStatus != null && wcStatus.capabilityStatus != null
+                && hasCapability(wcStatus.capabilityStatus.capabilities, WCCAPABILITY_PARKINGPOS)) {
+            status.parkingPosition = getParkingPosition();
+        }
+        // getChargingStations("50.577417", "7.240451");
         return status;
     }
 
@@ -107,16 +112,21 @@ public class WeConnectApi extends ApiWithOAuth implements BrandAuthenticator {
     }
 
     public GeoPosition getParkingPosition() throws ApiException {
-        try {
-            WCParkingPosition pos = callApi("", "/vehicles/{2}/parkingposition", crerateParameters().getHeaders(),
-                    "getParkingPosition", WCParkingPosition.class);
-            return new GeoPosition(pos.data);
-        } catch (ApiException e) {
-            ApiResult res = e.getApiResult();
-            if (res.isHttpNoContent() || res.isHttpNotFound() || res.isHttpUnauthorized()) {
-                // (Temporary) not available
-            } else {
-                throw e;
+        if (capParkingPos) {
+            try {
+                WCParkingPosition pos = callApi("", "/vehicles/{2}/parkingposition", crerateParameters().getHeaders(),
+                        "getParkingPosition", WCParkingPosition.class);
+                return new GeoPosition(pos.data);
+            } catch (ApiException e) {
+                ApiResult res = e.getApiResult();
+                if (res.isHttpNoContent()) {
+                    // (Temporary) not available -> ignore
+                } else if ("4112".equals(res.getApiError().code) || res.isHttpNotFound() || res.isHttpUnauthorized()) {
+                    // Service/Capability not available: Ignore, but disable further calls
+                    capParkingPos = false;
+                } else {
+                    throw e;
+                }
             }
         }
         return new GeoPosition();
@@ -192,6 +202,15 @@ public class WeConnectApi extends ApiWithOAuth implements BrandAuthenticator {
         String payload = gson.toJson(status.climatisationSettings);
         payload = payload.replaceAll("\"carCapturedTimestamp\".*,", payload);
         return sendSettings(WCSERVICE_CHARGING, payload);
+    }
+
+    private boolean hasCapability(ArrayList<WCCapability> capabilities, String capability) {
+        for (WCCapability cap : capabilities) {
+            if (capability.equals(cap.id)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String sendAction(String service, String action, String body) throws ApiException {

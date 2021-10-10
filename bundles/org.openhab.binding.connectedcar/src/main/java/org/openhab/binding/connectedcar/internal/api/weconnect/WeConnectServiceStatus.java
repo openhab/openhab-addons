@@ -33,8 +33,6 @@ import org.openhab.binding.connectedcar.internal.provider.ChannelDefinitions.Cha
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PointType;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -125,8 +123,7 @@ public class WeConnectServiceStatus extends ApiBaseService {
         if (status != null) {
             logger.debug("{}: Vehicle Status:\n{}", thingId, status);
 
-            String group = CHANNEL_GROUP_STATUS;
-            updated |= updateChannel(group, CHANNEL_STATUS_ERROR, getStringType(status.error));
+            updated |= updateChannel(CHANNEL_STATUS_ERROR, getStringType(status.error));
             updated |= updateAccess(status);
             updated |= updateRange(status);
             updated |= updateChargingStatus(status);
@@ -142,31 +139,26 @@ public class WeConnectServiceStatus extends ApiBaseService {
     private boolean updateRange(WCVehicleStatus status) {
         boolean updated = false;
         if (status.rangeStatus != null) {
-            String group = CHANNEL_GROUP_RANGE;
-            updated |= updateChannel(group, CHANNEL_RANGE_TOTAL,
-                    toQuantityType(getInteger(status.rangeStatus.totalRange_km), 1, KILOMETRE));
-            updated |= updateChannel(group, CHANNEL_RANGE_PRANGE,
-                    toQuantityType(getInteger(status.rangeStatus.primaryEngine.remainingRange_km), 1, KILOMETRE));
+            updated |= updateChannel(CHANNEL_RANGE_TOTAL, getDecimal(status.rangeStatus.totalRange_km));
+            updated |= updateChannel(CHANNEL_RANGE_PRANGE,
+                    getDecimal(status.rangeStatus.primaryEngine.remainingRange_km));
         }
         return updated;
     }
 
     private boolean updateChargingStatus(WCVehicleStatus status) {
         boolean updated = false;
-        String group = CHANNEL_GROUP_CHARGER;
         if (status.chargingStatus != null) {
             updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_CHARGER,
                     "charging".equalsIgnoreCase(getString(status.chargingStatus.chargingState)) ? OnOffType.ON
                             : OnOffType.OFF);
-            updated |= updateChannel(group, CHANNEL_CHARGER_CHG_STATE,
-                    getStringType(status.chargingStatus.chargingState));
-            updated |= updateChannel(group, CHANNEL_CHARGER_MODE, getStringType(status.chargingStatus.chargeMode));
-            updated |= updateChannel(group, CHANNEL_CHARGER_REMAINING, toQuantityType(
-                    getInteger(status.chargingStatus.remainingChargingTimeToComplete_min), 0, Units.MINUTE));
-            updated |= updateChannel(group, CHANNEL_CHARGER_POWER, getDecimal(status.chargingStatus.chargePower_kW));
-            updated |= updateChannel(group, CHANNEL_CHARGER_RATE, getDecimal(status.chargingStatus.chargeRate_kmph));
-            updated |= updateChannel(group, CHANNEL_CONTROL_TARGETCHG,
-                    toQuantityType(getInteger(status.chargingSettings.targetSOC_pct), 0, PERCENT));
+            updated |= updateChannel(CHANNEL_CHARGER_CHG_STATE, getStringType(status.chargingStatus.chargingState));
+            updated |= updateChannel(CHANNEL_CHARGER_MODE, getStringType(status.chargingStatus.chargeMode));
+            updated |= updateChannel(CHANNEL_CHARGER_REMAINING,
+                    getDecimal(status.chargingStatus.remainingChargingTimeToComplete_min));
+            updated |= updateChannel(CHANNEL_CHARGER_POWER, getDecimal(status.chargingStatus.chargePower_kW));
+            updated |= updateChannel(CHANNEL_CHARGER_RATE, getDecimal(status.chargingStatus.chargeRate_kmph));
+            updated |= updateChannel(CHANNEL_CONTROL_TARGETCHG, getDecimal(status.chargingSettings.targetSOC_pct));
             String maxCurrent = getString(status.chargingSettings.maxChargeCurrentAC);
             if ("maximum".equalsIgnoreCase(maxCurrent)) {
                 maxCurrent = "255";
@@ -179,30 +171,27 @@ public class WeConnectServiceStatus extends ApiBaseService {
             }
         }
         if (status.batteryStatus != null) {
-            updated |= updateChannel(group, CHANNEL_CHARGER_CHGLVL,
-                    toQuantityType(getInteger(status.batteryStatus.currentSOC_pct), 0, PERCENT));
+            updated |= updateChannel(CHANNEL_CHARGER_CHGLVL, getDecimal(status.batteryStatus.currentSOC_pct));
         }
         if (status.plugStatus != null) {
-            updated |= updateChannel(group, CHANNEL_CHARGER_LOCK_STATE,
+            updated |= updateChannel(CHANNEL_CHARGER_LOCK_STATE,
                     getOnOff("locked".equals(getString(status.plugStatus.plugLockState))));
-            updated |= updateChannel(group, CHANNEL_CHARGER_PLUG_STATE,
-                    getStringType(status.plugStatus.plugConnectionState));
+            updated |= updateChannel(CHANNEL_CHARGER_PLUG_STATE, getStringType(status.plugStatus.plugConnectionState));
         }
         return updated;
     }
 
     private boolean updateClimatisationStatus(WCVehicleStatus status) {
         boolean updated = false;
-        String group = CHANNEL_GROUP_CLIMATER;
         if (status.climatisationStatus != null) {
-            updated |= updateChannel(group, CHANNEL_CLIMATER_GEN_STATE,
-                    getOnOffType(status.climatisationStatus.climatisationState));
-            updated |= updateChannel(group, CHANNEL_CLIMATER_REMAINING, toQuantityType(
-                    getInteger(status.climatisationStatus.remainingClimatisationTime_min), 0, Units.MINUTE));
+            updated |= updateChannel(CHANNEL_CLIMATER_GEN_STATE,
+                    getStringType(status.climatisationStatus.climatisationState));
+            updated |= updateChannel(CHANNEL_CLIMATER_REMAINING,
+                    getDecimal(status.climatisationStatus.remainingClimatisationTime_min));
         }
         if (status.climatisationSettings != null) {
-            updated |= updateChannel(group, CHANNEL_CONTROL_TARGET_TEMP,
-                    toQuantityType(getDouble(status.climatisationSettings.targetTemperature_C), 0, SIUnits.CELSIUS));
+            updated |= updateChannel(CHANNEL_CONTROL_TARGET_TEMP,
+                    getDecimal(status.climatisationSettings.targetTemperature_C));
         }
         if (status.climatisationTimer != null) {
             updated |= updateChannel(CHANNEL_STATUS_TIMEINCAR, getDateTime(status.climatisationTimer.timeInCar));
@@ -218,7 +207,7 @@ public class WeConnectServiceStatus extends ApiBaseService {
             for (int i = 0; i < status.windowHeatingStatus.windowHeatingStatus.size(); i++) {
                 on |= "on".equals(getString(status.windowHeatingStatus.windowHeatingStatus.get(i).windowHeatingState));
             }
-            updated |= updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_WINHEAT, on ? OnOffType.ON : OnOffType.OFF);
+            updated |= updateChannel(CHANNEL_CONTROL_WINHEAT, on ? OnOffType.ON : OnOffType.OFF);
         }
         return updated;
     }

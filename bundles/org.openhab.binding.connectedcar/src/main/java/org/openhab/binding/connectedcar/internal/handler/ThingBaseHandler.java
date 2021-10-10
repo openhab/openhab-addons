@@ -374,6 +374,7 @@ public abstract class ThingBaseHandler extends BaseThingHandler implements Accou
             }
 
             if (forceUpdate || (updateCounter % skipCount == 0)) {
+                forceUpdate = false;
                 AccountHandler handler = accountHandler;
                 if (handler != null) {
                     String error = "";
@@ -381,19 +382,22 @@ public abstract class ThingBaseHandler extends BaseThingHandler implements Accou
                     try {
                         Bridge bridge = getBridge();
                         if ((bridge == null) || bridge.getStatus() != ThingStatus.ONLINE) {
-                            error = "Account Thing is offline";
-                            if (status != ThingStatus.OFFLINE) {
+                            if (status == ThingStatus.UNKNOWN) {
+                                // account thing not yet initialited
+                                forceUpdate = true;
+                            } else if (status != ThingStatus.OFFLINE) {
                                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                                         "Account Thing is offline!");
                             }
-                        } else {
-                            boolean offline = (status == ThingStatus.UNKNOWN) || (status == ThingStatus.OFFLINE);
-                            if (offline) {
-                                initialized = initializeThing();
-                            }
-                            if (initialized) {
-                                updateVehicleStatus(); // on success thing must be online
-                            }
+                            return;
+                        }
+
+                        boolean offline = (status == ThingStatus.UNKNOWN) || (status == ThingStatus.OFFLINE);
+                        if (offline) {
+                            initialized = initializeThing();
+                        }
+                        if (initialized) {
+                            updateVehicleStatus(); // on success thing must be online
                         }
                     } catch (ApiException e) {
                         if (e.isTooManyRequests() || e.isHttpNotModified()) {
@@ -422,7 +426,6 @@ public abstract class ThingBaseHandler extends BaseThingHandler implements Accou
                         }
                     }
                 }
-                forceUpdate = false;
             }
 
         }, 1, POLL_INTERVAL_SEC, TimeUnit.SECONDS);
