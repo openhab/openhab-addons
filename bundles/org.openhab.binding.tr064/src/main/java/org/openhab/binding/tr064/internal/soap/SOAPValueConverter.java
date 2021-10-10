@@ -38,6 +38,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -211,7 +212,7 @@ public class SOAPValueConverter {
     private State processDecaDecibel(State state, Tr064ChannelConfig channelConfig) {
         Float value = state.as(DecimalType.class).floatValue() / 10;
 
-        return new QuantityType(value.toString() + " dB");
+        return new QuantityType(value, Units.DECIBEL);
     }
 
     /**
