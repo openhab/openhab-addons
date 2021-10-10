@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.powermax.internal.state;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * A class to store the settings of a zone
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxZoneSettings {
 
     // Note: PowermaxStatusMessage contains hardcoded references to some of these strings
@@ -27,14 +31,16 @@ public class PowermaxZoneSettings {
 
     private static final String[] ZONE_CHIMES = { "Off", "Melody", "Zone" };
 
-    private String name;
-    private String type;
-    private String chime;
-    private String sensorType;
-    private boolean[] partitions;
+    private final @Nullable String chime;
+    private final boolean[] partitions;
+
+    private @Nullable String name;
+    private @Nullable String type;
+    private @Nullable String sensorType;
     private boolean alwaysInAlarm;
 
-    public PowermaxZoneSettings(String name, byte type, byte chime, String sensorType, boolean[] partitions) {
+    public PowermaxZoneSettings(@Nullable String name, byte type, byte chime, @Nullable String sensorType,
+            boolean[] partitions) {
         this.name = name;
         this.type = ((type & 0x000000FF) < ZONE_TYPES.length) ? ZONE_TYPES[type & 0x000000FF] : null;
         this.chime = ((chime & 0x000000FF) < ZONE_CHIMES.length) ? ZONE_CHIMES[chime & 0x000000FF] : null;
@@ -48,7 +54,8 @@ public class PowermaxZoneSettings {
      * @return the zone name
      */
     public String getName() {
-        return (name == null) ? "Unknown" : name;
+        String localName = name;
+        return (localName == null) ? "Unknown" : localName;
     }
 
     /**
@@ -56,7 +63,7 @@ public class PowermaxZoneSettings {
      *
      * @param name the zone name
      */
-    public void setName(String name) {
+    public void setName(@Nullable String name) {
         this.name = name;
     }
 
@@ -64,7 +71,8 @@ public class PowermaxZoneSettings {
      * @return the zone type
      */
     public String getType() {
-        return (type == null) ? "Unknown" : type;
+        String localType = type;
+        return (localType == null) ? "Unknown" : localType;
     }
 
     /**
@@ -79,14 +87,16 @@ public class PowermaxZoneSettings {
     }
 
     public String getChime() {
-        return (chime == null) ? "Unknown" : chime;
+        String localChime = chime;
+        return (localChime == null) ? "Unknown" : localChime;
     }
 
     /**
      * @return the sensor type of this zone
      */
     public String getSensorType() {
-        return (sensorType == null) ? "Unknown" : sensorType;
+        String localSensorType = sensorType;
+        return (localSensorType == null) ? "Unknown" : localSensorType;
     }
 
     /**
