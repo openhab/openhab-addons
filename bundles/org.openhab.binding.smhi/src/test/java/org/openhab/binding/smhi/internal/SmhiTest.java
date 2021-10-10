@@ -18,6 +18,7 @@ import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -102,8 +103,8 @@ public class SmhiTest {
         assertEquals(0, pcat0.compareTo(BigDecimal.valueOf(0)));
         assertEquals(0, pmean0.compareTo(BigDecimal.valueOf(0)));
         assertEquals(0, pmedian0.compareTo(BigDecimal.valueOf(0)));
-        assertEquals(0, wsymb0.compareTo(BigDecimal.valueOf(2)));
-        assertEquals("2", new DecimalType(wsymb0.stripTrailingZeros()).toString());
+        assertEquals(0, wsymb0.compareTo(BigDecimal.valueOf(20)));
+        assertEquals("20", new DecimalType(wsymb0.setScale(0, RoundingMode.DOWN)).toString());
 
         Forecast forecast1 = timeSeries1.getForecast(TIME.plusHours(1), 0).orElseThrow(AssertionError::new);
 
