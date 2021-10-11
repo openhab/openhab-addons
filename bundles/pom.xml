@@ -9,13 +9,9 @@
     <groupId>org.openhab.addons</groupId>
 
     <artifactId>org.openhab.addons.reactor</artifactId>
-<<<<<<< HEAD
 
     <version>3.2.0-SNAPSHOT</version>
 
-=======
-    <version>3.2.0-SNAPSHOT</version>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -31,23 +27,15 @@
     <!-- automation -->
 
     <module>org.openhab.automation.groovyscripting</module>
-<<<<<<< HEAD
 
     <module>org.openhab.automation.jsscripting</module>
 
-=======
-    <module>org.openhab.automation.jsscripting</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.automation.jythonscripting</module>
 
     <module>org.openhab.automation.pidcontroller</module>
-<<<<<<< HEAD
 
     <module>org.openhab.automation.pwm</module>
 
-=======
-    <module>org.openhab.automation.pwm</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <!-- io -->
 
     <module>org.openhab.io.homekit</module>
@@ -55,13 +43,9 @@
     <module>org.openhab.io.hueemulation</module>
 
     <module>org.openhab.io.imperihome</module>
-<<<<<<< HEAD
 
     <module>org.openhab.io.metrics</module>
 
-=======
-    <module>org.openhab.io.metrics</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.io.neeo</module>
 
     <module>org.openhab.io.openhabcloud</module>
@@ -91,16 +75,11 @@
     <!-- bindings -->
 
     <module>org.openhab.binding.adorne</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.ahawastecollection</module>
 
     <module>org.openhab.binding.airq</module>
 
-=======
-    <module>org.openhab.binding.ahawastecollection</module>
-    <module>org.openhab.binding.airq</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.airquality</module>
 
     <module>org.openhab.binding.airvisualnode</module>
@@ -114,13 +93,9 @@
     <module>org.openhab.binding.amazonechocontrol</module>
 
     <module>org.openhab.binding.ambientweather</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.amplipi</module>
 
-=======
-    <module>org.openhab.binding.amplipi</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.androiddebugbridge</module>
 
     <module>org.openhab.binding.astro</module>
@@ -132,13 +107,9 @@
     <module>org.openhab.binding.automower</module>
 
     <module>org.openhab.binding.avmfritz</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.benqprojector</module>
 
-=======
-    <module>org.openhab.binding.benqprojector</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.bigassfan</module>
 
     <module>org.openhab.binding.bluetooth</module>
@@ -164,25 +135,17 @@
     <module>org.openhab.binding.bluetooth.roaming</module>
 
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.bmwconnecteddrive</module>
 
-=======
-    <module>org.openhab.binding.bmwconnecteddrive</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.boschindego</module>
 
     <module>org.openhab.binding.boschshc</module>
 
     <module>org.openhab.binding.bosesoundtouch</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.broadlinkthermostat</module>
 
-=======
-    <module>org.openhab.binding.broadlinkthermostat</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.bsblan</module>
 
     <module>org.openhab.binding.bticinosmarther</module>
@@ -204,13 +167,9 @@
     <module>org.openhab.binding.coronastats</module>
 
     <module>org.openhab.binding.daikin</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.dali</module>
 
-=======
-    <module>org.openhab.binding.dali</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.danfossairunit</module>
 
     <module>org.openhab.binding.darksky</module>
@@ -240,13 +199,9 @@
     <module>org.openhab.binding.dwdunwetter</module>
 
     <module>org.openhab.binding.ecobee</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.ecotouch</module>
 
-=======
-    <module>org.openhab.binding.ecotouch</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.elerotransmitterstick</module>
 
     <module>org.openhab.binding.energenie</module>
@@ -254,13 +209,9 @@
     <module>org.openhab.binding.enigma2</module>
 
     <module>org.openhab.binding.enocean</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.enphase</module>
 
-=======
-    <module>org.openhab.binding.enphase</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.enturno</module>
 
     <module>org.openhab.binding.epsonprojector</module>
@@ -276,8 +227,6 @@
     <module>org.openhab.binding.feican</module>
 
     <module>org.openhab.binding.fmiweather</module>
-
-    <module>org.openhab.binding.folderwatcher</module>
 
     <module>org.openhab.binding.folderwatcher</module>
 
@@ -310,23 +259,15 @@
     <module>org.openhab.binding.gree</module>
 
     <module>org.openhab.binding.groheondus</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.haassohnpelletstove</module>
 
-=======
-    <module>org.openhab.binding.haassohnpelletstove</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.harmonyhub</module>
 
     <module>org.openhab.binding.haywardomnilogic</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.hccrubbishcollection</module>
 
-=======
-    <module>org.openhab.binding.hccrubbishcollection</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.hdanywhere</module>
 
     <module>org.openhab.binding.hdpowerview</module>
@@ -336,7 +277,6 @@
     <module>org.openhab.binding.heliosventilation</module>
 
     <module>org.openhab.binding.heos</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.homeconnect</module>
 
@@ -344,11 +284,6 @@
 
     <module>org.openhab.binding.homewizard</module>
 
-=======
-    <module>org.openhab.binding.homeconnect</module>
-    <module>org.openhab.binding.homematic</module>
-    <module>org.openhab.binding.homewizard</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.hpprinter</module>
 
     <module>org.openhab.binding.http</module>
@@ -374,13 +309,9 @@
     <module>org.openhab.binding.insteon</module>
 
     <module>org.openhab.binding.ipcamera</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.ipobserver</module>
 
-=======
-    <module>org.openhab.binding.ipobserver</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.intesis</module>
 
     <module>org.openhab.binding.ipp</module>
@@ -424,19 +355,9 @@
     <module>org.openhab.binding.lgwebos</module>
 
     <module>org.openhab.binding.lifx</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.linky</module>
 
-    <!-- linky binding suppressed from the distribution until it is fixed
-      <module>org.openhab.binding.linky</module>
-    -->
-
-=======
-    <!-- linky binding suppressed from the distribution until it is fixed
-      <module>org.openhab.binding.linky</module>
-    -->
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.linuxinput</module>
 
     <module>org.openhab.binding.lirc</module>
@@ -448,11 +369,9 @@
     <module>org.openhab.binding.luftdateninfo</module>
 
     <module>org.openhab.binding.lutron</module>
-<<<<<<< HEAD
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.luxtronikheatpump</module>
+
     <module>org.openhab.binding.magentatv</module>
 
     <module>org.openhab.binding.mail</module>
@@ -460,11 +379,9 @@
     <module>org.openhab.binding.max</module>
 
     <module>org.openhab.binding.mcp23017</module>
-<<<<<<< HEAD
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.mecmeter</module>
+
     <module>org.openhab.binding.melcloud</module>
 
     <module>org.openhab.binding.meteoalerte</module>
@@ -474,19 +391,15 @@
     <module>org.openhab.binding.meteostick</module>
 
     <module>org.openhab.binding.miele</module>
-<<<<<<< HEAD
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.mielecloud</module>
+
     <module>org.openhab.binding.mihome</module>
 
     <module>org.openhab.binding.miio</module>
-<<<<<<< HEAD
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.mikrotik</module>
+
     <module>org.openhab.binding.millheat</module>
 
     <module>org.openhab.binding.milight</module>
@@ -496,11 +409,9 @@
     <module>org.openhab.binding.modbus</module>
 
     <module>org.openhab.binding.modbus.e3dc</module>
-<<<<<<< HEAD
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.modbus.sbc</module>
+
     <module>org.openhab.binding.modbus.studer</module>
 
     <module>org.openhab.binding.modbus.sunspec</module>
@@ -514,21 +425,17 @@
     <module>org.openhab.binding.mpd</module>
 
     <module>org.openhab.binding.mqtt</module>
-<<<<<<< HEAD
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.mqtt.espmilighthub</module>
+
     <module>org.openhab.binding.mqtt.generic</module>
 
     <module>org.openhab.binding.mqtt.homeassistant</module>
 
     <module>org.openhab.binding.mqtt.homie</module>
-<<<<<<< HEAD
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.myq</module>
+
     <module>org.openhab.binding.mystrom</module>
 
     <module>org.openhab.binding.nanoleaf</module>
@@ -594,11 +501,9 @@
     <module>org.openhab.binding.openwebnet</module>
 
     <module>org.openhab.binding.oppo</module>
-<<<<<<< HEAD
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.orbitbhyve</module>
+
     <module>org.openhab.binding.orvibo</module>
 
     <module>org.openhab.binding.paradoxalarm</module>
@@ -606,11 +511,9 @@
     <module>org.openhab.binding.pentair</module>
 
     <module>org.openhab.binding.phc</module>
-<<<<<<< HEAD
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.pilight</module>
+
     <module>org.openhab.binding.pioneeravr</module>
 
     <module>org.openhab.binding.pixometer</module>
@@ -622,11 +525,9 @@
     <module>org.openhab.binding.plclogo</module>
 
     <module>org.openhab.binding.plugwise</module>
-<<<<<<< HEAD
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.plugwiseha</module>
+
     <module>org.openhab.binding.powermax</module>
 
     <module>org.openhab.binding.pulseaudio</module>
@@ -634,12 +535,11 @@
     <module>org.openhab.binding.pushbullet</module>
 
     <module>org.openhab.binding.pushover</module>
-<<<<<<< HEAD
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.pushsafer</module>
+
     <module>org.openhab.binding.qbus</module>
+
     <module>org.openhab.binding.radiothermostat</module>
 
     <module>org.openhab.binding.regoheatpump</module>
@@ -647,13 +547,11 @@
     <module>org.openhab.binding.revogi</module>
 
     <module>org.openhab.binding.remoteopenhab</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.renault</module>
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.resol</module>
+
     <module>org.openhab.binding.rfxcom</module>
 
     <module>org.openhab.binding.rme</module>
@@ -671,11 +569,9 @@
     <module>org.openhab.binding.samsungtv</module>
 
     <module>org.openhab.binding.satel</module>
-<<<<<<< HEAD
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.semsportal</module>
+
     <module>org.openhab.binding.senechome</module>
 
     <module>org.openhab.binding.seneye</module>
@@ -711,11 +607,9 @@
     <module>org.openhab.binding.solaredge</module>
 
     <module>org.openhab.binding.solarlog</module>
-<<<<<<< HEAD
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.solarwatt</module>
+
     <module>org.openhab.binding.somfymylink</module>
 
     <module>org.openhab.binding.somfytahoma</module>
@@ -729,11 +623,9 @@
     <module>org.openhab.binding.spotify</module>
 
     <module>org.openhab.binding.squeezebox</module>
-<<<<<<< HEAD
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.surepetcare</module>
+
     <module>org.openhab.binding.synopanalyzer</module>
 
     <module>org.openhab.binding.systeminfo</module>
@@ -763,11 +655,9 @@
     <module>org.openhab.binding.tr064</module>
 
     <module>org.openhab.binding.tradfri</module>
-<<<<<<< HEAD
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.twitter</module>
+
     <module>org.openhab.binding.unifi</module>
 
     <module>org.openhab.binding.unifiedremote</module>
@@ -779,10 +669,7 @@
     <module>org.openhab.binding.urtsi</module>
 
     <module>org.openhab.binding.valloxmv</module>
-<<<<<<< HEAD
 
-=======
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.vdr</module>
     <module>org.openhab.binding.vektiva</module>
 
@@ -791,13 +678,9 @@
     <module>org.openhab.binding.velux</module>
 
     <module>org.openhab.binding.venstarthermostat</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.ventaair</module>
 
-=======
-    <module>org.openhab.binding.ventaair</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.verisure</module>
 
     <module>org.openhab.binding.vigicrues</module>
@@ -805,23 +688,15 @@
     <module>org.openhab.binding.vitotronic</module>
 
     <module>org.openhab.binding.volvooncall</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.warmup</module>
 
-=======
-    <module>org.openhab.binding.warmup</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.weathercompany</module>
 
     <module>org.openhab.binding.weatherunderground</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.webthing</module>
 
-=======
-    <module>org.openhab.binding.webthing</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.wemo</module>
 
     <module>org.openhab.binding.wifiled</module>
@@ -831,13 +706,9 @@
     <module>org.openhab.binding.wlanthermo</module>
 
     <module>org.openhab.binding.wled</module>
-<<<<<<< HEAD
 
     <module>org.openhab.binding.wolfsmartset</module>
 
-=======
-    <module>org.openhab.binding.wolfsmartset</module>
->>>>>>> 60b4dad600ef0c1181073f99b294318549570d0c
     <module>org.openhab.binding.xmltv</module>
 
     <module>org.openhab.binding.xmppclient</module>

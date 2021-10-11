@@ -24,25 +24,34 @@ public class Car {
 
     private final Logger logger = LoggerFactory.getLogger(Car.class);
 
-    public Integer battery_level;
-    public Boolean locked;
-    
+    public Double batteryLevel;
+    public Boolean hvacstatus;
+    public Double odometer;
+
     public void setBatteryStatus(JsonObject responseJson) {
         try {
-            battery_level = responseJson.get("data").getAsJsonObject().get("attributes").getAsJsonObject()
-                    .get("batteryLevel").getAsInt();
+            batteryLevel = responseJson.get("data").getAsJsonObject().get("attributes").getAsJsonObject()
+                    .get("batteryLevel").getAsDouble();
         } catch (Exception e) {
-        	logger.error("Error parsing Battery Status: {}", responseJson);
+            logger.error("Error {} parsing Battery Status: {}", e, responseJson);
         }
     }
 
-	public void seLockStatus(JsonObject responseJson) {
-		 try {
-            locked = responseJson.get("data").getAsJsonObject().get("attributes").getAsJsonObject()
-                    .get("locked").getAsBoolean();
+    public void setHVACStatus(JsonObject responseJson) {
+        try {
+            hvacstatus = responseJson.get("data").getAsJsonObject().get("attributes").getAsJsonObject()
+                    .get("hvacStatus").getAsString().equals("on");
         } catch (Exception e) {
-        	logger.error("Error parsing Lock Status: {}", responseJson);
+            logger.error("Error {} parsing HVAC Status: {}", e, responseJson);
         }
-		
-	}
+    }
+
+    public void setCockpit(JsonObject responseJson) {
+        try {
+            odometer = responseJson.get("data").getAsJsonObject().get("attributes").getAsJsonObject()
+                    .get("totalMileage").getAsDouble();
+        } catch (Exception e) {
+            logger.error("Error {} parsing Cockpit: {}", e, responseJson);
+        }
+    }
 }

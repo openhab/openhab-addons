@@ -20,7 +20,8 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.renault.internal.renault.api.MyRenaultHttpSession;
-import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -44,73 +45,57 @@ public class RenaultHandler extends BaseThingHandler {
 
     private @Nullable RenaultConfiguration config;
 
-    private @Nullable MyRenaultHttpSession httpSession;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
-    private ScheduledFuture<?> pollingJob;
-    
     public RenaultHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_BATTERY_LEVEL.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                getStatus();
-            }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+        // if (CHANNEL_BATTERY_LEVEL.equals(channelUID.getId())) {
+        if (command instanceof RefreshType) {
+            getStatus();
         }
+        // }
     }
 
     @Override
     public void initialize() {
-    	updateStatus(ThingStatus.UNKNOWN);
-    	this.config = getConfigAs(RenaultConfiguration.class);
+        updateStatus(ThingStatus.UNKNOWN);
+        this.config = getConfigAs(RenaultConfiguration.class);
+
         // Background initialization:
         scheduler.execute(() -> {
             getStatus();
         });
-        
-        pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, 0, config.refreshInterval, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, config.refreshInterval, config.refreshInterval,
+                TimeUnit.SECONDS);
     }
-    
 
-    
     @Override
     public void dispose() {
         if (pollingJob != null) {
-        	pollingJob.cancel(true);
+            pollingJob.cancel(true);
             pollingJob = null;
         }
     }
-    
 
     private void getStatus() {
-        
-    	if (httpSession == null && this.config != null) {
-            try {
-                initSession(this.config);
-                updateStatus(ThingStatus.ONLINE);
+        MyRenaultHttpSession httpSession;
+        try {
+            httpSession = new MyRenaultHttpSession(this.config);
+            updateStatus(ThingStatus.ONLINE);
+            httpSession.updateCarData(this.config);
 
-                updateState(CHANNEL_BATTERY_LEVEL, new PercentType(httpSession.getCar().battery_level));
+            updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(httpSession.getCar().batteryLevel));
+            updateState(CHANNEL_HVAC_STATUS, (httpSession.getCar().hvacstatus ? OnOffType.ON : OnOffType.OFF));
+            updateState(CHANNEL_ODOMETER, new DecimalType(httpSession.getCar().odometer));
 
-            } catch (Exception e) {
-                logger.error("Error initializing session.", e);
-                httpSession = null;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-        }
-    }
-
-    private void initSession(@Nullable RenaultConfiguration config) throws Exception {
-        if (config != null) {
-            httpSession = new MyRenaultHttpSession(config);
+        } catch (Exception e) {
+            httpSession = null;
+            logger.error("Error initializing session.", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 }

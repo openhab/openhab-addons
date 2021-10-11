@@ -24,6 +24,4 @@ public class RenaultConfiguration {
     public String locale;
     public String vin;
     public int refreshInterval;
-    
-    
 }

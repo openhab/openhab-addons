@@ -17,6 +17,8 @@
 
 		<channels>
 			<channel id="batterylevel" typeId="batterylevel"/>
+			<channel id="hvacstatus" typeId="hvacstatus"/>
+			<channel id="odometer" typeId="odometer"/>
 		</channels>
 		<config-description>
 
@@ -32,7 +34,7 @@
 			<parameter name="locale" type="text" required="true">
 				<label>Locale</label>
 				<description>Locale</description>
-			 	<options>
+				<options>
 					<option value="bg_BG">bg_BG</option>
 					<option value="cs_CZ">cs_CZ</option>
 					<option value="da_DK">da_DK</option>
@@ -71,7 +73,7 @@
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
 				<description>Interval the device is polled in sec.</description>
-				<default>300</default>
+				<default>600</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -81,9 +83,19 @@
 		<item-type>Number</item-type>
 		<label>Battery Level</label>
 		<description>State of the battery in %</description>
-		<state pattern="%d %%" readOnly="true"></state>
+		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
-	
-	
-	
+	<channel-type id="hvacstatus">
+		<item-type>Switch</item-type>
+		<label>HVAC</label>
+		<description>HVAC status</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="odometer">
+		<item-type>Number</item-type>
+		<label>Odometer</label>
+		<description>Total distance travelled</description>
+		<state pattern="%.1f" readOnly="true"></state>
+	</channel-type>
+
 </thing:thing-descriptions>

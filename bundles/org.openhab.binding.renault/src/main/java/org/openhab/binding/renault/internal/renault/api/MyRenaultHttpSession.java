@@ -38,6 +38,7 @@ public class MyRenaultHttpSession {
     private HttpClient httpClient;
     private Constants constants;
 
+    private Car car;
     private String kamereonToken;
     private String kamereonaccountId;
     private String cookieValue;
@@ -45,14 +46,11 @@ public class MyRenaultHttpSession {
     private String gigyaDataCenter;
     private String jwt;
 
-    private Car car;
-
     private final Logger logger = LoggerFactory.getLogger(MyRenaultHttpSession.class);
 
     public MyRenaultHttpSession(RenaultConfiguration config) throws Exception {
 
         car = new Car();
-
         this.httpClient = new HttpClient(new SslContextFactory(true));
         this.constants = new Constants(config.locale);
 
@@ -61,9 +59,13 @@ public class MyRenaultHttpSession {
         getAccountInfo(config);
         getJWT(config);
         getAccountID(config);
+    }
+
+    public void updateCarData(RenaultConfiguration config) throws Exception {
         getVehicle(config);
         getBatteryStatus(config);
         getHvacStatus(config);
+        getCockpit(config);
     }
 
     private void login(RenaultConfiguration config) throws Exception {
@@ -184,7 +186,6 @@ public class MyRenaultHttpSession {
             JsonObject responseJson = new JsonParser().parse(response.getContentAsString()).getAsJsonObject();
             logger.debug("responseJson: {} ", responseJson.toString());
             car.setBatteryStatus(responseJson);
-
         } else {
             logger.error("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
                     response.getContentAsString());
@@ -201,29 +202,28 @@ public class MyRenaultHttpSession {
         if (HttpStatus.OK_200 == response.getStatus()) {
             JsonObject responseJson = new JsonParser().parse(response.getContentAsString()).getAsJsonObject();
             logger.debug("responseJson: {} ", responseJson.toString());
-
+            car.setHVACStatus(responseJson);
         } else {
             logger.error("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
                     response.getContentAsString());
             throw new Exception("Get HVAC Status Error: " + response.getReason());
         }
-
     }
-    
-    private void getLockStatus(RenaultConfiguration config) throws Exception {
+
+    private void getCockpit(RenaultConfiguration config) throws Exception {
 
         Request request = getKamereonRequest("/commerce/v1/accounts/" + kamereonaccountId
-                + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/lock-status?country=" + getCountry(config));
+                + "/kamereon/kca/car-adapter/v2/cars/" + config.vin + "/cockpit?country=" + getCountry(config));
 
         ContentResponse response = request.send();
         if (HttpStatus.OK_200 == response.getStatus()) {
             JsonObject responseJson = new JsonParser().parse(response.getContentAsString()).getAsJsonObject();
             logger.debug("responseJson: {} ", responseJson.toString());
-            car.seLockStatus(responseJson);
+            car.setCockpit(responseJson);
         } else {
             logger.error("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
                     response.getContentAsString());
-            throw new Exception("Get Lock Status Error: " + response.getReason());
+            throw new Exception("Get Cockpit Error: " + response.getReason());
         }
     }
 
