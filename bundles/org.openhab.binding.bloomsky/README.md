@@ -71,7 +71,7 @@ The bridge does not have any channels.
 | boundedPoint      | String    | Indoor device setting (Obsolete)                                   | R          |
 | cityName          | String    | Weather observation city location                                  | R          |
 | deviceID          | String    | SKY Device unique identifier                                       | R          |
-| dst               | Number    | Daylight savings time on (1) or off (0)                            | R          |
+| dst               | Number    | Observation time stamps are using Daylight savings time (1) or standard time (0)                            | R          |
 | fullAddress       | String    | Weather observation full address                                   | R          |
 | lat               | Number    | Weather station latitude in decimal format                         | R          |
 | location          | Location  | Device location in lat.,lon.,height coordinates.  | R          |
