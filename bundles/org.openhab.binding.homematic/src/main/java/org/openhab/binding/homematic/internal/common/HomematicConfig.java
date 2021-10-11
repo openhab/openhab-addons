@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.homematic.internal.common;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmGatewayInfo;
 import org.openhab.binding.homematic.internal.model.HmInterface;
@@ -48,7 +46,6 @@ public class HomematicConfig {
     private int groupPort;
 
     private String callbackHost;
-    private String bindAddress;
     private int xmlCallbackPort;
     private int binCallbackPort;
 
@@ -88,30 +85,6 @@ public class HomematicConfig {
      */
     public void setCallbackHost(String callbackHost) {
         this.callbackHost = callbackHost;
-    }
-
-    /**
-     * Returns the bind address.
-     */
-    public String getBindAddress() {
-        return bindAddress;
-    }
-
-    /**
-     * Sets the bind address.
-     */
-    public void setBindAddress(String bindAddress) {
-        this.bindAddress = bindAddress;
-    }
-
-    /**
-     * Sets the callback host port.
-     *
-     * @deprecated use setBinCallbackPort
-     */
-    @Deprecated
-    public void setCallbackPort(int callbackPort) {
-        this.binCallbackPort = callbackPort;
     }
 
     /**
@@ -405,14 +378,12 @@ public class HomematicConfig {
 
     @Override
     public String toString() {
-        ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
-        tsb.append("gatewayAddress", gatewayAddress).append("callbackHost", callbackHost)
-                .append("bindAddress", bindAddress).append("xmlCallbackPort", xmlCallbackPort)
-                .append("binCallbackPort", binCallbackPort).append("gatewayType", gatewayType)
-                .append("rfPort", getRfPort()).append("wiredPort", getWiredPort()).append("hmIpPort", getHmIpPort())
-                .append("cuxdPort", getCuxdPort()).append("groupPort", getGroupPort()).append("timeout", timeout)
-                .append("discoveryTimeToLive", discoveryTimeToLive).append("installModeDuration", installModeDuration)
-                .append("socketMaxAlive", socketMaxAlive);
-        return tsb.toString();
+        return String.format(
+                "%s[gatewayAddress=%s,callbackHost=%s,xmlCallbackPort=%d,binCallbackPort=%d,"
+                        + "gatewayType=%s,rfPort=%d,wiredPort=%d,hmIpPort=%d,cuxdPort=%d,groupPort=%d,timeout=%d,"
+                        + "discoveryTimeToLive=%d,installModeDuration=%d,socketMaxAlive=%d]",
+                getClass().getSimpleName(), gatewayAddress, callbackHost, xmlCallbackPort, binCallbackPort, gatewayType,
+                getRfPort(), getWiredPort(), getHmIpPort(), getCuxdPort(), getGroupPort(), timeout, discoveryTimeToLive,
+                installModeDuration, socketMaxAlive);
     }
 }

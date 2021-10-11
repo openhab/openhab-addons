@@ -14,7 +14,6 @@ package org.openhab.io.neeo.internal.models;
 
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.type.ChannelType;
@@ -72,11 +71,11 @@ public enum NeeoCapabilityType {
      * @return the NeeoCapabilityType type
      */
     public static NeeoCapabilityType parse(final String text) {
-        if (StringUtils.isEmpty(text)) {
+        if (text.isEmpty()) {
             return EXCLUDE;
         }
         for (NeeoCapabilityType enm : NeeoCapabilityType.values()) {
-            if (StringUtils.equalsIgnoreCase(text, enm.text)) {
+            if (text.equalsIgnoreCase(enm.text)) {
                 return enm;
             }
         }
@@ -91,11 +90,12 @@ public enum NeeoCapabilityType {
      * @return the best guess {@link NeeoCapabilityType}
      */
     public static NeeoCapabilityType guessType(@Nullable ChannelType channelType) {
-        if (channelType == null || StringUtils.isEmpty(channelType.getItemType())) {
+        String itemType = channelType == null ? null : channelType.getItemType();
+        if (channelType == null || itemType == null || itemType.isEmpty()) {
             return NeeoCapabilityType.EXCLUDE;
         }
 
-        switch (channelType.getItemType().toLowerCase()) {
+        switch (itemType.toLowerCase()) {
             case "switch":
             case "contact":
             case "rollershutter":

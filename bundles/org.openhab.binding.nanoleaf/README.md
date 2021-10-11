@@ -1,31 +1,39 @@
 # Nanoleaf Binding
 
-This binding integrates the [Nanoleaf Light Panels](https://nanoleaf.me/en/consumer-led-lighting/products/smarter-series/nanoleaf-light-panels-smarter-kit/). 
+This binding integrates the [Nanoleaf Light Panels](https://nanoleaf.me/en/consumer-led-lighting/products/smarter-series/nanoleaf-light-panels-smarter-kit/).
 
 ![Image](doc/Nanoleaf.jpg)
 
 It enables you to authenticate, control, and obtain information of a Light Panel's device.
 The binding uses the [Nanoleaf OpenAPI](https://forum.nanoleaf.me/docs/openapi), which requires firmware version [1.5.0](https://helpdesk.nanoleaf.me/hc/en-us/articles/214006129-Light-Panels-Firmware-Release-Notes) or higher.
 
-![Image](doc/LightPanels2_small.jpg) ![Image](doc/NanoCanvas_small.jpg)
+![Image](doc/LightPanels2_small.jpg) ![Image](doc/the-worm-small.png) ![Image](doc/NanoCanvas_small.jpg) 
 
 ## Supported Things
 
-Currently Nanoleaf's "Light Panels" and "Canvas" devices are supported.
-Note that only the canvas type does support the touch functionality.
+Nanoleaf provides a bunch of devices of which some are connected to Wifi whereas other use the new Thread Technology. This binding only supports devices that are connected through Wifi.
+
+Currently Nanoleaf's "Light Panels" and "Canvas/Shapes" devices are supported.
 
 The binding supports two thing types: controller and lightpanel.
 
-The controller thing is the bridge for the individually attached panels/canvas and can be perceived as the nanoleaf device at the wall as a whole (either called "light panels" or "canvas" by Nanoleaf).
+The controller thing is the bridge for the individually attached panels/canvas and can be perceived as the Nanoleaf device at the wall as a whole (either called "light panels", "canvas" or "shapes" by Nanoleaf).
 With the controller thing you can control channels which affect all panels, e.g. selecting effects or setting the brightness.
 
 The lightpanel (singular) thing controls one of the individual panels/canvas that are connected to each other.
 Each individual panel has therefore its own id assigned to it.
-You can set the **color** for each panel or turn it on (white) or off (black) and in the case of a nanoleaf canvas you can even detect single and double **touch events** related to an individual panel which opens a whole new world of controlling any other device within your openHAB environment. 
+You can set the **color** for each panel and in the case of a Nanoleaf Canvas or Shapes you can even detect single / double **touch events** related to an individual panel or **swipe events** on the whole device which opens a whole new world of controlling any other device within your openHAB environment.
 
-Note: In case of major changes of a binding (like adding more features to a thing) it becomes necessary to delete your things due to the things not being compatible anymore.
-Don't worry too much though as they will be easily redetected and nothing really is lost.
-Just make sure that you delete them and rediscover as described below.
+
+| Nanoleaf Name          | Type | Description                                                | supported | touch support |
+| ---------------------- | ---- | ---------------------------------------------------------- | --------- | ------------- |
+| Light Panels           | NL22 | Triangles 1st Generation                                   |     X     |       -       |  
+| Shapes Triangle        | NL42 | Triangles 2nd Generation (rounded edges)                   |     X     |       X       |
+| Shapes Hexagon         | NL42 | Hexagons                                                   |     X     |       X       |
+| Shapes Mini Triangles  | NL42 | Mini Triangles                                             |     x     |       X       |
+| Canvas                 | NL29 | Squares                                                    |     X     |       X       |
+
+ x  = Supported  (-) = unknown (no device available to test)
 
 ## Discovery
 
@@ -49,7 +57,7 @@ Tip: if you press (2) just before adding the item from the inbox it usually catc
 
 **Adding the invidual light panels as a thing**
 
-After you have added the controller as a thing and it has been successfully paired as described as above, the individual panels connected to it can be discovered by **starting another scan** for the Nanoleaf binding. 
+After you have added the controller as a thing and it has been successfully paired as described as above, the individual panels connected to it can be discovered by **starting another scan** for the Nanoleaf binding.
 All connected panels will be added as separate things to the inbox.
 
 Troubleshooting: In seldom cases (in particular together with updating the binding) things or items do not work as expected, are offline or may not be detected.
@@ -60,29 +68,33 @@ In this case:
 - stop and then start openHAB
 - Rediscover like described above
 
-**Knowing which panel has which id**
+### Panel Layout
 
 Unfortunately it is not easy to find out which panel gets which id, and this becomes pretty important if you have lots of them and want to assign rules. 
-Don't worry as the binding comes with some helpful support in the background the canvas type (this is only provided for the canvas device because triangles can have weird layouts that are hard to express in a log output)
 
-- Set up a switch item with the channel panelLayout on the controller (see NanoRetrieveLayout below) and set the switch to true
-- look out for something like "Panel layout and ids" in the openHAB logs. Below that you will see a panel layout similar to
+For canvas that use square panels, you can request the layout through a [console command](https://www.openhab.org/docs/administration/console.html):
+
+then issue the following command:
+
+```
+openhab:nanoleaf layout [<thingUID>]
+```
+
+The `thingUID` is an optional parameter. If it is not provided, the command loops through all Nanoleaf controller things it can find and prints the layout for each of them.
 
 Compare the following output with the right picture at the beginning of the article
 
 ```                                     
             31413                    9162       13276     
 
-55836       56093       48111       38724       17870        5164       64279 
+55836       56093       48111       38724       17870        5164       64279
 
                         58086        8134                   39755             
 
                                     41451                                     
-                               
+
 ```
            
-Disclaimer: this works best with square devices and not necessarily well with triangles due to the more geometrically flexible layout.
-
 ## Thing Configuration
 
 The controller thing has the following parameters:
@@ -93,7 +105,7 @@ The controller thing has the following parameters:
 | port            | Port number of the light panels contoller. Default is 16021                           |
 | authToken       | The authentication token received from the controller after successful pairing.       |
 | refreshInterval | Interval in seconds to refresh the state of the light panels settings. Default is 60. |
-| deviceType      | (readOnly) defines the type: lightpanels (triangle) or canvas (square)                |
+| deviceType      | Defines the type `lightpanels` (triangle) or `canvas` (square or hexagon)             |
 
 The lightpanel thing has the following parameters:
 
@@ -102,65 +114,62 @@ The lightpanel thing has the following parameters:
 | id              | ID assigned by the controller to the individual panel (e.g. 158)                      |
 
 The IDs of the individual panels can be determined by starting another scan once the controller is configured and online.
-This will add all connected panels with their IDs to the inbox.
+This discovers all connected panels with their IDs.
 
 ## Channels
 
 The controller bridge has the following channels:
 
-| Channel             | Item Type | Description                                                            | Read Only |
-|---------------------|-----------|------------------------------------------------------------------------|-----------|
-| power               | Switch    | Power state of the light panels                                        | No        |
-| color               | Color     | Color of all light panels                                              | No        |
-| colorTemperature    | Dimmer    | Color temperature (in percent) of all light panels                     | No        |
-| colorTemperatureAbs | Number    | Color temperature (in Kelvin, 1200 to 6500) of all light panels        | No        |
-| colorMode           | String    | Color mode of the light panels                                         | Yes       |
-| effect              | String    | Selected effect of the light panels                                    | No        |
-| rhythmState         | Switch    | Connection state of the rhythm module                                  | Yes       |
-| rhythmActive        | Switch    | Activity state of the rhythm module                                    | Yes       |
-| rhythmMode          | Number    | Sound source for the rhythm module. 0=Microphone, 1=Aux cable          | No        |
-| panelLayout         | Switch    | Set to true will log out panel layout (returns to off automatically    | No        |
+| Channel             | Item Type | Description                                                                                               | Read Only |
+|---------------------|-----------|-----------------------------------------------------------------------------------------------------------|-----------|
+| color               | Color     | Color, power and brightness of all light panels                                                           | No        |
+| colorTemperature    | Dimmer    | Color temperature (in percent) of all light panels                                                        | No        |
+| colorTemperatureAbs | Number    | Color temperature (in Kelvin, 1200 to 6500) of all light panels                                           | No        |
+| colorMode           | String    | Color mode of the light panels                                                                            | Yes       |
+| effect              | String    | Selected effect of the light panels                                                                       | No        |
+| rhythmState         | Switch    | Connection state of the rhythm module                                                                     | Yes       |
+| rhythmActive        | Switch    | Activity state of the rhythm module                                                                       | Yes       |
+| rhythmMode          | Number    | Sound source for the rhythm module. 0=Microphone, 1=Aux cable                                             | No        |
+| swipe               | Trigger   | [Canvas / Shapes Only] Detects Swipes over the panel.LEFT, RIGHT, UP, DOWN events are supported.          | YES        |
+
+
 
 A lightpanel thing has the following channels:
 
-| Channel             | Item Type | Description                                                            | Read Only |
-|---------------------|-----------|------------------------------------------------------------------------|-----------|
-| panelColor          | Color     | Color of the individual light panel                                    | No        |
-| singleTap           | Switch    | [Canvas Only] Is set when the user taps that panel once (1 second pulse)              | Yes       |
-| doubleTap           | Switch    | [Canvas Only] Is set when the user taps that panel twice (1 second pulse)              | Yes       |
+| Channel             | Type      | Description                                                                                              | Read Only |
+|---------------------|-----------|----------------------------------------------------------------------------------------------------------|-----------|
+| color               | Color     | Color of the individual light panel                                                                      | No        |
+| tap                 | Trigger   | [Canvas / Shapes Only] Sends events of gestures. SHORT_PRESSED and DOUBLE_PRESSED events are supported.  | Yes       |
 
-**color and panelColor**
-
-The color and panelColor channels support full color control with hue, saturation and brightness values. 
+The color channels support full color control with hue, saturation and brightness values.
 For example, brightness of *all* panels at once can be controlled by defining a dimmer item for the color channel of the *controller thing*.
-The same applies to the panelColor channel of an individual lightpanel thing.
-
-What might not be obvious and even maybe confusing is the fact that brightness and color use the *same* channel but two different *itemTypes*. While the Color-itemtype controls the color, the Dimmer-itemtype controls the brightness on the same channel.
+The same applies to the color channel of an individual lightpanel.
 
 **Limitations assigning specific colors on individual panels:**
 
 - Due to the way the API of the nanoleaf is designed, each time a color is assigned to a panel, it will be directly sent to that panel. The result is that if you send colors to several panels more or less at the same time, they will not be set at the same time but one after the other and rather appear like a sequence but as a one shot.
-- Another important limitation is that individual panels cannot be set while a dynamic effect is running on the panel which means that the following happens 
-  - As soon as you set an individual panel a so called "static effect" is created which replaces the chosen dynamic effect. You can even see that in the nanoleaf app that shows that a static effect is now running.
-  - Unfortunately, at least at the moment, the colors of the current state cannot be retrieved due to the high frequency of color changes that cannot be read quickly enough from the canvas, so all panels go to OFF
-  - The the first panelColor command is applied to that panel (and of course then all subsequent commands)
-  - The fact that it is called a static effect does not mean that you cannot create animations. The Rainbow rule below shows a good example for the whole canvas. Just replace the controller item with a panel item and you will get the rainbow effect with an individual panel.   
+- Another important limitation is that individual panels cannot be set while a dynamic effect is running on the panel which means that as soon as you set an individual panel the "static effect" is set, which disables the chosen dynamic effect. The nanoleaf app shows that a static effect is now running, too.
+- The colors of the current state cannot be retrieved due to the high frequency of color changes that cannot be read quickly enough from the canvas, so all panels go to OFF
+- The first panelColor command is applied to that panel (and of course then all subsequent commands)
+- The fact that it is called a static effect does not mean that you cannot create animations. The Rainbow rule below shows a good example for the whole canvas. Just replace the controller item with a panel item and you will get the rainbow effect with an individual panel.   
 
 **Touch Support**
 
-Nanoleaf's Canvas introduces a whole new experience by adding touch support to it. This allows single and double taps on individual panels to be detected and then processed via rules to further control any other device!
-Note that even gestures like up, down, left, right are sent but can only be detected on the whole set of panels and not on an individual panel. These four gestures are not yet supported by the binding but may be added in a later release.
+Nanoleaf's Canvas introduces a whole new experience by supporting touch. This allows single and double taps on individual panels to be detected and processed via rules.
 
-To detect single and double taps the panel's have been extended to have two additional channels named singleTap and doubleTap which act like switches that are turned on as soon as a tap type is detected.
-These switches then act as a pulse to further control anything else via rules.
+Note that even gestures like up, down, left, right can be detected on the whole set of panels though not on an individual panel.
+The four swipe gestures are supported by the binding.
+See below for an example on how to use it.
 
-If a panel is tapped the switch is set to ON and automatically reset to OFF after 1 second (this may be configured in the future) to simulate a pulse. A rule can easily detect the transition from OFF to ON and later detect another tap as it is automatically reset by the binding. See the example below on Panel 2.
+To detect single and double taps the panel provides a *tap* channel while the controller provides a *swipe* channel to detect swipes.
 
-Keep in mind that the double tap is used as an already built-in functionality by default when you buy the nanoleaf: it switches all panels (hence the controller) to on or off like a light switch for all the panels at once. To circumvent that
+Keep in mind that the double tap is used as an already built-in functionality by default when you buy the nanoleaf: it switches all panels (hence the controller) to on or off like a light switch for all the panels at once.
+To circumvent that
 
-- Within the nanoleaf app go to the dashboard and choose your device. Enter the settings for that device by clicking the cog icon in the upper right corner. 
-- Enable "Touch Gesture" and assign the gestures you want to happen but set the double tap to unassigned.
-- To still have the possibility to switch on the whole canvas device with all its panels by double tapping a specific panel, you can easily write a rule that triggers on the double tap channel of that panel and then toggles the Power Channel of the controller. See the example below on Panel 1.
+- Within the nanoleaf app go to the dashboard and choose your device. Enter the settings for that device by clicking the cog icon in the upper right corner.
+- Enable "Touch Gesture" (the first radio button) and make sure that none of the gestures you use with openHAB is active. In general, it is recommended not to enable "touch sensitive gestures" (the second radio button). This prevents unexpected interference between openhHAB rules and Nanoleaf settings.
+
+- To still have the possibility to switch on the whole canvas device with all its panels by double tapping a specific panel, you can easily write a rule that triggers on the tap channel of that panel and then sends an ON to the color channel of the controller. See the example below on Panel 1.
 
 More details can be found in the full example below.
 
@@ -177,31 +186,31 @@ Bridge nanoleaf:controller:MyLightPanels @ "mylocation" [ address="192.168.1.100
 }
 ```
 
-If you define your device statically in the thing file, autodiscovery of the same thing is suppressed by using
+If you define your device statically in the thing file, auto-discovery of the same thing is suppressed by using
 
-* the [address="..." ]  of the controller 
+* the [address="..." ]  of the controller
 * and the [id=123] of the lightpanel
 
 in the bracket to identify the uniqueness of the discovered device. Therefore it is recommended to the give the controller a fixed ip address.
 
 Note: To generate the `authToken`:
-    
+
 * On the Nanoleaf controller, hold the on-off button for 5-7 seconds until the LED starts flashing.
 * Send a POST request to the authorization endpoint within 30 seconds of activating pairing, like this:
-    
+
 `http://<address>:16021/api/v1/new`
 
 e.g. via command line `curl --location --request POST 'http://<address>:16021/api/v1/new'`
 
 ### nanoleaf.items
 
-Note: If you did autodiscover your things and items:
+Note: If you auto-discovered your things and items:
 
 - A controller item looks like nanoleaf:controller:F0ED4F9351AF:power where F0ED4F9351AF is the id of the controller that has been automatically assigned by the binding.
 - A panel item looks like nanoleaf:lightpanel:F0ED4F9351AF:39755:singleTap where 39755 is the id of the panel that has been automatically assigned by the binding.
 
 ```
-Switch NanoleafPower "Nanoleaf" { channel="nanoleaf:controller:MyLightPanels:power" }
+Switch NanoleafPower "Nanoleaf" { channel="nanoleaf:controller:MyLightPanels:color" }
 Color NanoleafColor "Color" { channel="nanoleaf:controller:MyLightPanels:color" }
 Dimmer NanoleafBrightness "Brightness [%.0f]" { channel="nanoleaf:controller:MyLightPanels:color" }
 String NanoleafHue "Hue [%s]"
@@ -213,15 +222,11 @@ String NanoleafEffect "Effect" { channel="nanoleaf:controller:MyLightPanels:effe
 Switch NanoleafRhythmState "Rhythm connected [MAP(nanoleaf.map):%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmState" }
 Switch NanoleafRhythmActive "Rhythm active [MAP(nanoleaf.map):%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmActive" }
 Number NanoleafRhythmSource  "Rhythm source [%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmMode" }
-Switch NanoRetrieveLayout "Nano Layout" { channel="nanoleaf:controller:D81E7A7E424E:panelLayout" }
 
 // note that the next to items use the exact same channel but the two different types Color and Dimmer to control different parameters
-Color Panel1Color "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:panelColor" }
-Dimmer Panel1Brightness "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:panelColor" }
-Switch Panel1DoubleTap "Toggle device on and off" { channel="nanoleaf:lightpanel:MyLightPanels:135:doubleTap" }
-Switch Panel2Color "Panel 2" { channel="nanoleaf:lightpanel:MyLightPanels:158:panelColor" }
-Switch Panel2SingleTap "Panel 2 Single Tap" { channel="nanoleaf:lightpanel:MyLightPanels:158:singleTap" }
-Switch Panel2DoubleTap "Panel 2 Double Tap" { channel="nanoleaf:lightpanel:MyLightPanels:158:doubleTap" }
+Color PanelColor "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:color" }
+Dimmer Panel1Brightness "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:color" }
+Switch Panel2Color "Panel 2" { channel="nanoleaf:lightpanel:MyLightPanels:158:color" }
 Switch NanoleafRainbowScene "Show Rainbow Scene"
 ```
 
@@ -232,34 +237,30 @@ sitemap nanoleaf label="Nanoleaf"
 {
     Frame label="Controller" {
             Switch item=NanoleafPower
-            Slider item=NanoleafBrightness 
+            Slider item=NanoleafBrightness
             Colorpicker item=NanoleafColor           
             Text item=NanoleafHue
-            Text item=NanoleafSaturation 
+            Text item=NanoleafSaturation
             Slider item=NanoleafColorTemp     
             Setpoint item=NanoleafColorTempAbs step=100 minValue=1200 maxValue=6500            
             Text item=NanoleafColorMode
-            Selection item=NanoleafEffect mappings=["Color Burst"="Color Burst", "Fireworks" = "Fireworks", "Flames" = "Flames", "Forest" = "Forest", "Inner Peace" = "Inner Peace", "Meteor Shower" = "Meteor Shower", "Nemo" = "Nemo", "Northern Lights" = "Northern Lights", "Paint Splatter" = "Paint Splatter", "Pulse Pop Beats" = "Pulse Pop Beats", "Rhythmic Northern Lights" = "Rhythmic Northern Lights", "Ripple" = "Ripple", "Romantic" = "Romantic", "Snowfall" = "Snowfall", "Sound Bar" = "Sound Bar", "Streaking Notes" = "Streaking Notes", "moonlight" = "Moonlight", "*Static*" = "Color (single panels)", "*Dynamic*" = "Color (all panels)" ]
+            Selection item=NanoleafEffect
             Text item=NanoleafRhythmState
             Text item=NanoleafRhythmActive
             Selection item=NanoleafRhythmSource mappings=[0="Microphone", 1="Aux"]
-            Switch item=NanoRetrieveLayout
     }
-    
+
     Frame label="Panels" {
         Colorpicker item=Panel1Color
         Slider item=Panel1Brightness
         Colorpicker item=Panel2Color
     }
-    
+
     Frame label="Scenes" {
         Switch item=NanoleafRainbowScene
     }
 }
 ```
-
-Note: The mappings to effects in the selection item are specific for each Nanoleaf installation and should be adapted accordingly. 
-Only the effects "\*Static\*" and "\*Dynamic\*" are predefined by the controller and should always be present in the mappings.
 
 ### nanoleaf.rules
 
@@ -281,7 +282,7 @@ then
 
     var hue = 0
     var direction = 1
-    
+
     while(NanoleafRainbowScene.state == ON) {        
         Thread::sleep(pause)        
         hue = hue + (5 * direction)
@@ -300,8 +301,7 @@ end
 
 rule "Nanoleaf canvas touch detection Panel 2"
 when
-    Item Panel2SingleTap changed from NULL to ON or
-    Item Panel2SingleTap changed from OFF to ON
+    Channel "nanoleaf:lightpanel:MyLightPanels:158:tap" triggered SHORT_PRESS
 then
     logInfo("CanvasTouch", "Nanoleaf Canvas Panel 2 was touched once")
 
@@ -314,8 +314,7 @@ end
 
 rule "Nanoleaf double tap toggles power of device"
 when
-    Item Panel1DoubleTap changed from NULL to ON or
-    Item Panel1DoubleTap changed from OFF to ON
+    Channel "nanoleaf:lightpanel:MyLightPanels:135:tap" triggered DOUBLE_PRESS
 then
     logInfo("CanvasTouch", "Nanoleaf Canvas Panel 1 was touched twice. Toggle Power of whole canvas.")
 
@@ -325,7 +324,77 @@ then
         sendCommand(NanoleafPower,OFF)
     }
 end
+
+// This is a complex rule controlling an item (e.g. a lamp) by swiping the nanoleaf but only if the swipe action has been triggered to become active.
+
+var brightnessMode = null
+var oldEffect = null
+
+/*
+
+The idea behind that rule is to use one panel to switch on / off brightness control for a specific openHAB item.
+ 
+ - In this case the panel with the id=36604 has been created as a thing. 
+ - The controller color item is named SZNanoCanvas_Color
+ - The controller effect item that holds the last chosen effect is SZNanoCanvas_Effect
+ - Also that thing has channel to control the color of the panel
+ 
+We use that specific panel to toggle the brightness swipe mode on or off.
+We indicate that mode by  setting the canvas to red. When switching it
+off we make sure we return the effect that was on before.
+Only if the brightness swipe mode is ON we then use this to control the brightness of 
+another thing which in this case is a lamp. Every swipe changes the brightness by 10.
+By extending it further this would also allow to select different items to control by 
+tapping different panels before.
+
+*/
+
+rule "Enable swipe brightness mode"
+when
+    Channel "nanoleaf:lightpanel:645E3A484FFF:31104:tap" triggered SHORT_PRESSED
+then
+    if (brightnessMode == OFF || brightnessMode === null) {
+        brightnessMode = ON
+        oldEffect = SZNanoCanvas_Effect.state.toString
+        SZNanoCanvas_Color.sendCommand("0,100,100")
+    } else {
+        brightnessMode = OFF
+        sendCommand("SZNanoCanvas_Effect", oldEffect)
+    }    
+end
+
+rule "Swipe Nano to control brightness"
+when
+    Channel "nanoleaf:controller:645E3A484FFF:swipe" triggered 
+then
+    // Note: you can even control a rollershutter instead of a light dimmer
+    var dimItem = MyLampDimmerItem
+     
+    // only process the swipe if brightness mode is active
+    if (brightnessMode == ON) {
+        var currentBrightness = dimItem.state as Number
+        switch (receivedEvent) {
+            case "LEFT": {
+                if (currentBrightness >= 10) {
+                    currentBrightness = currentBrightness  - 10
+                } else {
+                    currentBrightness = 0;
+                }
+            }
+            case "RIGHT": {
+                if (currentBrightness <= 90) {
+                    currentBrightness = currentBrightness  + 10
+                } else {
+                    currentBrightness = 100;
+                }
+
+            }
+        }
+        sendCommand(dimItem, currentBrightness)
+    }
+end
 ```
+
 
 ### nanoleaf.map
 

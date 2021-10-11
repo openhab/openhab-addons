@@ -24,11 +24,12 @@ public class IhcConfiguration {
     public int timeout;
     public boolean loadProjectFile;
     public boolean createChannelsAutomatically;
+    public String tlsVersion;
 
     @Override
     public String toString() {
         return "[" + "hostname=" + hostname + ", username=" + username + ", password=******" + ", timeout=" + timeout
                 + ", loadProjectFile=" + loadProjectFile + ", createChannelsAutomatically="
-                + createChannelsAutomatically + "]";
+                + createChannelsAutomatically + ", tlsVersion=" + tlsVersion + "]";
     }
 }

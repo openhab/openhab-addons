@@ -44,6 +44,7 @@ If in the future, you add additional shades or scenes to your system, the bindin
 | host                    | The host name or IP address of the hub on your network. |
 | refresh                 | The number of milli-seconds between fetches of the PowerView hub's shade state (default 60'000 one minute). |
 | hardRefresh             | The number of minutes between hard refreshes of the PowerView hub's shade state (default 180 three hours). See [Refreshing the PowerView Hub Cache](#Refreshing-the-PowerView-Hub-Cache). |
+| hardRefreshBatteryLevel | The number of hours between hard refreshes of battery levels from the PowerView Hub (or 0 to disable, defaulting to weekly). See [Refreshing the PowerView Hub Cache](#Refreshing-the-PowerView-Hub-Cache). |
 
 ### Thing Configuration for PowerView Shades
 
@@ -73,12 +74,15 @@ If the shade has slats or rotatable vanes, there is also a dimmer channel `vane`
 If it is a dual action (top-down plus bottom-up) shade, there is also a roller shutter channel `secondary` which controls the vertical position of the secondary rail.
 All of these channels appear in the binding, but only those which have a physical implementation in the shade, will have any physical effect.
 
-| Channel    | Item Type     | Description |
-|------------|---------------|------------|
-| position   | Rollershutter | The vertical position of the shade's rail -- see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Stop commands will halt any current movement of the rail. |
-| secondary  | Rollershutter | The vertical position of the secondary rail (if any). Its function is basically identical to the `position` channel above -- but see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). |
-| vane       | Dimmer        | The degree of opening of the slats or vanes. Setting this to a non-zero value will first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position -- see [Interdependency between Channel positions](#Interdependency-between-Channel-positions). |
-| batteryLow | Switch        | Indicates ON when the battery level of the shade is low, as determined by the hub's internal rules. |
+| Channel        | Item Type                | Description |
+|----------------|--------------------------|-------------|
+| position       | Rollershutter            | The vertical position of the shade's rail -- see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Stop commands will halt any current movement of the rail. |
+| secondary      | Rollershutter            | The vertical position of the secondary rail (if any). Its function is basically identical to the `position` channel above -- but see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). |
+| vane           | Dimmer                   | The degree of opening of the slats or vanes. Setting this to a non-zero value will first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position -- see [Interdependency between Channel positions](#Interdependency-between-Channel-positions). |
+| lowBattery     | Switch                   | Indicates ON when the battery level of the shade is low, as determined by the hub's internal rules. |
+| batteryLevel   | Number                   | Battery level (10% = low, 50% = medium, 100% = high)
+| batteryVoltage | Number:ElectricPotential | Battery voltage reported by the shade. |
+| signalStrength | Number                   | Signal strength (0 for no or unknown signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
 ### Roller Shutter Up/Down Position vs. Open/Close State
 
@@ -131,6 +135,10 @@ In neither case will the hub be aware of the shade’s new position.
 The hub periodically does a _**"hard refresh"**_ in order to overcome this issue.
 The time interval between hard refreshes is set in the `hardRefresh` configuration parameter.
 To disable periodic hard refreshes, set `hardRefresh` to zero.
+
+Similarly, the battery level is transient and is only updated automatically by the hub once a week.
+To change this interval, set `hardRefreshBatteryLevel` to number of hours between refreshes.
+To use default hub behavior (weekly updates), set `hardRefreshBatteryLevel` to zero.
 
 Note: You can also force the hub to refresh itself by sending a `REFRESH` command in a rule to an item that is connected to a channel in the hub as follows:
 

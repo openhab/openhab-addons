@@ -62,7 +62,7 @@ public class DummyItemRegistry implements ItemRegistry {
 
     @Override
     public Item add(Item element) {
-        Item put = items.put(element.getUID(), element);
+        items.put(element.getUID(), element);
         for (RegistryChangeListener<Item> l : listeners) {
             l.added(element);
         }

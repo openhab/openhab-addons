@@ -13,11 +13,15 @@
 package org.openhab.binding.autelis.internal.handler;
 
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,14 +29,11 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.util.B64Code;
-import org.eclipse.jetty.util.StringUtil;
 import org.openhab.binding.autelis.internal.AutelisBindingConstants;
 import org.openhab.binding.autelis.internal.config.AutelisConfiguration;
 import org.openhab.core.library.types.DecimalType;
@@ -191,88 +192,94 @@ public class AutelisHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("handleCommand channel: {} command: {}", channelUID.getId(), command);
-        if (AutelisBindingConstants.CMD_LIGHTS.equals(channelUID.getId())) {
-            /*
-             * lighting command possible values, but we will let anything
-             * through. alloff, allon, csync, cset, cswim, party, romance,
-             * caribbean, american, sunset, royalty, blue, green, red, white,
-             * magenta, hold, recall
-             */
-            getUrl(baseURL + "/lights.cgi?val=" + command.toString(), TIMEOUT_SECONDS);
-        } else if (AutelisBindingConstants.CMD_REBOOT.equals(channelUID.getId()) && command == OnOffType.ON) {
-            getUrl(baseURL + "/userreboot.cgi?do=true" + command.toString(), TIMEOUT_SECONDS);
-            updateState(channelUID, OnOffType.OFF);
-        } else {
-            String[] args = channelUID.getId().split("-");
-            if (args.length < 2) {
-                logger.warn("Unown channel {} for command {}", channelUID, command);
-                return;
-            }
-            String type = args[0];
-            String name = args[1];
-
-            if (AutelisBindingConstants.CMD_EQUIPMENT.equals(type)) {
-                String cmd = "value";
-                int value;
-                if (command == OnOffType.OFF) {
-                    value = 0;
-                } else if (command == OnOffType.ON) {
-                    value = 1;
-                } else if (command instanceof DecimalType) {
-                    value = ((DecimalType) command).intValue();
-                    if (!isJandy() && value >= 3) {
-                        // this is a autelis dim type. not sure what 2 does
-                        cmd = "dim";
-                    }
-                } else {
-                    logger.error("command type {} is not supported", command);
-                    return;
-                }
-                String response = getUrl(baseURL + "/set.cgi?name=" + name + "&" + cmd + "=" + value, TIMEOUT_SECONDS);
-                logger.debug("equipment set {} {} {} : result {}", name, cmd, value, response);
-            } else if (AutelisBindingConstants.CMD_TEMP.equals(type)) {
-                String value;
-                if (command == IncreaseDecreaseType.INCREASE) {
-                    value = "up";
-                } else if (command == IncreaseDecreaseType.DECREASE) {
-                    value = "down";
-                } else if (command == OnOffType.OFF) {
-                    value = "0";
-                } else if (command == OnOffType.ON) {
-                    value = "1";
-                } else {
-                    value = command.toString();
-                }
-
-                String cmd;
-                // name ending in sp are setpoints, ht are heater?
-                if (name.endsWith("sp")) {
-                    cmd = "temp";
-                } else if (name.endsWith("ht")) {
-                    cmd = "hval";
-                } else {
-                    logger.error("Unknown temp type {}", name);
-                    return;
-                }
-                String response = getUrl(baseURL + "/set.cgi?wait=1&name=" + name + "&" + cmd + "=" + value,
-                        TIMEOUT_SECONDS);
-                logger.debug("temp set name:{} cmd:{} value:{} : result {}", name, cmd, value, response);
-            } else if (AutelisBindingConstants.CMD_CHEM.equals(type)) {
-                String response = getUrl(baseURL + "/set.cgi?name=" + name + "&chem=" + command.toString(),
-                        TIMEOUT_SECONDS);
-                logger.debug("chlrp {} {}: result {}", name, command, response);
-            } else if (AutelisBindingConstants.CMD_PUMPS.equals(type)) {
-                String response = getUrl(baseURL + "/set.cgi?name=" + name + "&speed=" + command.toString(),
-                        TIMEOUT_SECONDS);
-                logger.debug("pumps {} {}: result {}", name, command, response);
+        try {
+            logger.debug("handleCommand channel: {} command: {}", channelUID.getId(), command);
+            if (AutelisBindingConstants.CMD_LIGHTS.equals(channelUID.getId())) {
+                /*
+                 * lighting command possible values, but we will let anything
+                 * through. alloff, allon, csync, cset, cswim, party, romance,
+                 * caribbean, american, sunset, royalty, blue, green, red, white,
+                 * magenta, hold, recall
+                 */
+                getUrl(baseURL + "/lights.cgi?val=" + command.toString(), TIMEOUT_SECONDS);
+            } else if (AutelisBindingConstants.CMD_REBOOT.equals(channelUID.getId()) && command == OnOffType.ON) {
+                getUrl(baseURL + "/userreboot.cgi?do=true" + command.toString(), TIMEOUT_SECONDS);
+                updateState(channelUID, OnOffType.OFF);
             } else {
-                logger.error("Unsupported type {}", type);
+                String[] args = channelUID.getId().split("-");
+                if (args.length < 2) {
+                    logger.warn("Unown channel {} for command {}", channelUID, command);
+                    return;
+                }
+                String type = args[0];
+                String name = args[1];
+
+                if (AutelisBindingConstants.CMD_EQUIPMENT.equals(type)) {
+                    String cmd = "value";
+                    int value;
+                    if (command == OnOffType.OFF) {
+                        value = 0;
+                    } else if (command == OnOffType.ON) {
+                        value = 1;
+                    } else if (command instanceof DecimalType) {
+                        value = ((DecimalType) command).intValue();
+                        if (!isJandy() && value >= 3) {
+                            // this is a autelis dim type. not sure what 2 does
+                            cmd = "dim";
+                        }
+                    } else {
+                        logger.error("command type {} is not supported", command);
+                        return;
+                    }
+                    String response = getUrl(baseURL + "/set.cgi?name=" + name + "&" + cmd + "=" + value,
+                            TIMEOUT_SECONDS);
+                    logger.debug("equipment set {} {} {} : result {}", name, cmd, value, response);
+                } else if (AutelisBindingConstants.CMD_TEMP.equals(type)) {
+                    String value;
+                    if (command == IncreaseDecreaseType.INCREASE) {
+                        value = "up";
+                    } else if (command == IncreaseDecreaseType.DECREASE) {
+                        value = "down";
+                    } else if (command == OnOffType.OFF) {
+                        value = "0";
+                    } else if (command == OnOffType.ON) {
+                        value = "1";
+                    } else {
+                        value = command.toString();
+                    }
+
+                    String cmd;
+                    // name ending in sp are setpoints, ht are heater?
+                    if (name.endsWith("sp")) {
+                        cmd = "temp";
+                    } else if (name.endsWith("ht")) {
+                        cmd = "hval";
+                    } else {
+                        logger.error("Unknown temp type {}", name);
+                        return;
+                    }
+                    String response = getUrl(baseURL + "/set.cgi?wait=1&name=" + name + "&" + cmd + "=" + value,
+                            TIMEOUT_SECONDS);
+                    logger.debug("temp set name:{} cmd:{} value:{} : result {}", name, cmd, value, response);
+                } else if (AutelisBindingConstants.CMD_CHEM.equals(type)) {
+                    String response = getUrl(baseURL + "/set.cgi?name=" + name + "&chem=" + command.toString(),
+                            TIMEOUT_SECONDS);
+                    logger.debug("chlrp {} {}: result {}", name, command, response);
+                } else if (AutelisBindingConstants.CMD_PUMPS.equals(type)) {
+                    String response = getUrl(baseURL + "/set.cgi?name=" + name + "&speed=" + command.toString(),
+                            TIMEOUT_SECONDS);
+                    logger.debug("pumps {} {}: result {}", name, command, response);
+                } else {
+                    logger.error("Unsupported type {}", type);
+                }
             }
+            clearState(true);
+            // reset the schedule for our next poll which at that time will reflect if our command was successful or
+            // not.
+            initPolling(COMMAND_UPDATE_TIME_SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
-        clearState(true);
-        // reset the schedule for our next poll which at that time will reflect if our command was successful or not.
-        initPolling(COMMAND_UPDATE_TIME_SECONDS);
     }
 
     /**
@@ -288,17 +295,17 @@ public class AutelisHandler extends BaseThingHandler {
         String username = configuration.user;
         String password = configuration.password;
 
-        if (StringUtils.isBlank(username)) {
+        if (username == null || username.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "username must not be empty");
             return;
         }
 
-        if (StringUtils.isBlank(password)) {
+        if (password == null || password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "password must not be empty");
             return;
         }
 
-        if (StringUtils.isBlank(host)) {
+        if (host == null || host.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "hostname must not be empty");
             return;
         }
@@ -314,7 +321,8 @@ public class AutelisHandler extends BaseThingHandler {
         }
 
         baseURL = "http://" + host + ":" + port;
-        basicAuthentication = "Basic " + B64Code.encode(username + ":" + password, StringUtil.__ISO_8859_1);
+        basicAuthentication = "Basic "
+                + Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.ISO_8859_1));
         logger.debug("Autelius binding configured with base url {} and refresh period of {}", baseURL, refresh);
 
         initPolling(0);
@@ -349,7 +357,7 @@ public class AutelisHandler extends BaseThingHandler {
      * Poll the Autelis controller for updates. This will retrieve various xml documents and update channel states from
      * its contents.
      */
-    private void pollAutelisController() {
+    private void pollAutelisController() throws InterruptedException {
         logger.trace("Connecting to {}", baseURL);
 
         // clear our cached stated IF it is time.
@@ -443,7 +451,7 @@ public class AutelisHandler extends BaseThingHandler {
                     }
                 }
 
-                if (StringUtils.isEmpty((value))) {
+                if (value == null || value.isEmpty()) {
                     continue;
                 }
 
@@ -466,16 +474,13 @@ public class AutelisHandler extends BaseThingHandler {
      * @param timeout
      * @return
      */
-    private synchronized String getUrl(String url, int timeout) {
+    private synchronized String getUrl(String url, int timeout) throws InterruptedException {
         // throttle commands for a very short time to avoid 'loosing' them
         long now = System.currentTimeMillis();
         long nextReq = lastRequestTime + THROTTLE_TIME_MILLISECONDS;
         if (nextReq > now) {
-            try {
-                logger.trace("Throttling request for {} mills", nextReq - now);
-                Thread.sleep(nextReq - now);
-            } catch (InterruptedException ignored) {
-            }
+            logger.trace("Throttling request for {} mills", nextReq - now);
+            Thread.sleep(nextReq - now);
         }
         String getURL = url + (url.contains("?") ? "&" : "?") + "timestamp=" + System.currentTimeMillis();
         logger.trace("Getting URL {} ", getURL);
@@ -490,7 +495,7 @@ public class AutelisHandler extends BaseThingHandler {
             }
             lastRequestTime = System.currentTimeMillis();
             return response.getContentAsString();
-        } catch (Exception e) {
+        } catch (ExecutionException | TimeoutException e) {
             logger.debug("Could not make http connection", e);
         }
         return null;

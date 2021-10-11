@@ -130,9 +130,6 @@ Hint for the binding to identify the gateway type (auto|ccu|noccu) (default = "a
 - **callbackHost**
 Callback network address of the system runtime, default is auto-discovery
 
-- **bindAddress**
-The address the XML-/BINRPC server binds to, default is value of "callbackHost"
-
 - **xmlCallbackPort**
 Callback port of the binding's XML-RPC server, default is 9125 and counts up for each additional bridge
 
@@ -289,10 +286,12 @@ Dimmer  Light "Light [%d %%]"           { channel="homematic:HM-LC-Dim1T-Pl-2:cc
 
 The GATEWAY-EXTRAS is a virtual device which contains a switch to reload all values from all devices and also a switch to put the gateway in the install mode to add new devices.
 If the gateway supports variables and scripts, you can handle them with this device too.
-The type is generated: `GATEWAY-EXTRAS-[BRIDGE_ID]`.
 
-**Example:** bridgeId=ccu, type=GATEWAY-EXTRAS-CCU
-Address: fixed GWE00000000
+The type is generated: `GATEWAY-EXTRAS-[BRIDGE_ID]`.
+Example: bridgeId=**ccu** -> type=GATEWAY-EXTRAS-**CCU**
+
+The address of the virtual device must be the default value `GWE00000000`.
+Usage of a custom ID is not supported.
 
 ### RELOAD_ALL_FROM_GATEWAY
 
@@ -344,16 +343,17 @@ A virtual datapoint (String) to simulate a key press, available on all channels 
 
 Available values:
 
-- `SHORT_PRESS`: triggered on a short key press
-- `LONG_PRESS`: triggered on a key press longer than `LONG_PRESS_TIME` (variable configuration per key, default is 0.4 s)
-- `DOUBLE_PRESS`: triggered on a short key press but only if the latest `SHORT_PRESS` or `DOUBLE_PRESS` event is not older than 2.0 s (not related to `DBL_PRESS_TIME` configuration, which is more like a key lock because if it is other than `0.0` single presses are not notified anymore)
+- `SHORT_PRESSED`: triggered on a short key press
+- `LONG_PRESSED`: triggered on a key press longer than `LONG_PRESS_TIME` (variable configuration per key, default is 0.4 s)
+- `LONG_REPEATED`: triggered on long key press repetition, that is, in `LONG_PRESS_TIME` intervals as long as key is held
+- `LONG_RELEASED`: triggered when a key is released after being long pressed
 
 **Example:** to capture a short key press on the 19 button remote control in a rule
 
 ```javascript
 rule "example trigger rule"
 when
-    Channel 'homematic:HM-RC-19-B:ccu:KEQ0012345:1#BUTTON' triggered SHORT_PRESS
+    Channel 'homematic:HM-RC-19-B:ccu:KEQ0012345:1#BUTTON' triggered SHORT_PRESSED
 then
     ...
 end
@@ -666,6 +666,15 @@ You have to delete the thing, start a scan and add it again.
 
 In case of problems in the discovery or if above mentioned error message appears in `openhab.log`, the size for the transmission buffer for the communication with the gateway is too small.
 The problem can be solved by increasing the `bufferSize` value in the bridge configuration.
+
+**Rollershutters are inverted**
+
+openHAB and the CCU are using different values for the same state of a rollershutter.
+Examples: HmIP-BROLL, HmIP-FROLL, HmIP-BBL, HmIP-FBL and HmIP-DRBLI4
+|         | Open | Closed |
+|---------|------|--------|
+| openHAB | 0%   | 100%   |
+| CCU     | 100% | 0%     |
 
 ### Debugging and Tracing
 

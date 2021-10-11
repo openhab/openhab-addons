@@ -14,6 +14,7 @@ package org.openhab.binding.powermax.internal.connector;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.powermax.internal.message.PowermaxMessageEventListener;
 
 /**
@@ -21,12 +22,13 @@ import org.openhab.binding.powermax.internal.message.PowermaxMessageEventListene
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public interface PowermaxConnectorInterface {
 
     /**
      * Method for opening a connection to the Visonic alarm panel.
      */
-    public void open();
+    public void open() throws Exception;
 
     /**
      * Method for closing a connection to the Visonic alarm panel.

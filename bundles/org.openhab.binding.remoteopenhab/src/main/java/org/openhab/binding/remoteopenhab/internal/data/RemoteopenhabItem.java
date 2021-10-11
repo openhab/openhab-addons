@@ -29,4 +29,5 @@ public class RemoteopenhabItem {
     public String state = "";
     public String groupType = "";
     public @Nullable RemoteopenhabStateDescription stateDescription;
+    public @Nullable RemoteopenhabCommandDescription commandDescription;
 }

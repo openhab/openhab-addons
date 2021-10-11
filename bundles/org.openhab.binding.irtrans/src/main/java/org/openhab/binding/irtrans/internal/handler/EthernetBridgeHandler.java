@@ -35,7 +35,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants;
 import org.openhab.binding.irtrans.internal.IRtransBindingConstants.Led;
@@ -603,7 +603,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                 SelectionKey selKey = it.next();
                 it.remove();
                 if (selKey.isValid()) {
-                    if (selKey.isAcceptable() && selKey == listenerKey) {
+                    if (selKey.isAcceptable() && selKey.equals(listenerKey)) {
                         try {
                             SocketChannel newChannel = listenerChannel.accept();
                             newChannel.configureBlocking(false);
@@ -849,7 +849,6 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
 
         Matcher matcher = RESPONSE_PATTERN.matcher(response);
         if (matcher.matches()) {
-            String byteCountAsString = matcher.group(1);
             message = matcher.group(2);
         }
 

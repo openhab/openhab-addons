@@ -429,7 +429,7 @@ sitemap flashbriefings label="Flash Briefings"
 
 ## Smart Home Devices
 
-Note: the cannels of smartHomeDevices and smartHomeDeviceGroup will be created dynamically based on the capabilities reported by the amazon server. This can take a little bit of time. 
+Note: the channels of smartHomeDevices and smartHomeDeviceGroup will be created dynamically based on the capabilities reported by the amazon server. This can take a little bit of time. 
 The polling interval configured in the Account Thing to get the state is specified in minutes and has a minimum of 10. This means it takes up to 10 minutes to see the state of a channel. The reason for this low interval is, that the polling causes a big server load for the Smart Home Skills.
 
 #### Supported Things

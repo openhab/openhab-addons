@@ -19,7 +19,6 @@ import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.
 
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.config.YamahaBridgeConfig;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPlayControl;
@@ -244,8 +243,7 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
 
         // Spotify and NET RADIO input supports song cover image (at least on RX-S601D)
         String songImageUrl = getNodeContentOrEmpty(node, "Play_Info/Album_ART/URL");
-        msg.songImageUrl = StringUtils.isNotEmpty(songImageUrl)
-                ? String.format("http://%s%s", con.getHost(), songImageUrl)
+        msg.songImageUrl = !songImageUrl.isEmpty() ? String.format("http://%s%s", con.getHost(), songImageUrl)
                 : bridgeConfig.getAlbumUrl();
 
         logger.trace("Playback: {}, Station: {}, Artist: {}, Album: {}, Song: {}, SongImageUrl: {}", msg.playbackMode,

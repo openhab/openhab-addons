@@ -17,6 +17,7 @@ import static org.openhab.automation.pidcontroller.internal.PIDControllerConstan
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.automation.pidcontroller.internal.handler.PIDControllerTriggerHandler;
@@ -30,54 +31,100 @@ import org.openhab.core.config.core.ConfigDescriptionParameterBuilder;
 /**
  *
  * @author Hilbrand Bouwkamp - Initial Contribution
+ * @author Fabian Wolter - Add inspector Items for debugging
  */
 @NonNullByDefault
 public class PIDControllerTriggerType extends TriggerType {
     private static final String DEFAULT_LOOPTIME_MS = "1000";
+    private static final String ITEM = "item";
 
     public static PIDControllerTriggerType initialize() {
         List<ConfigDescriptionParameter> configDescriptions = new ArrayList<>();
-        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_INPUT_ITEM, Type.TEXT).withRequired(true)
-                .withReadOnly(true).withMultiple(false).withContext("item").withLabel("Input Item")
-                .withDescription("Item to monitor").build());
-        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_SETPOINT_ITEM, Type.TEXT)
-                .withRequired(true).withReadOnly(true).withMultiple(false).withContext("item").withLabel("Setpoint")
-                .withDescription("Targeted setpoint").build());
-        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_KP_GAIN, Type.DECIMAL).withRequired(true)
-                .withMultiple(false).withDefault("1.0").withMinimum(BigDecimal.ZERO).withLabel("Proportional Gain (Kp)")
-                .withDescription("Change to output propertional to current error value.").build());
-        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_KI_GAIN, Type.DECIMAL).withRequired(true)
-                .withMultiple(false).withDefault("1.0").withMinimum(BigDecimal.ZERO).withLabel("Integral Gain (Ki)")
-                .withDescription("Accelerate movement towards the setpoint.").build());
-        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_KD_GAIN, Type.DECIMAL).withRequired(true)
-                .withMultiple(false).withDefault("1.0").withMinimum(BigDecimal.ZERO).withLabel("Derivative Gain (Kd)")
-                .withDescription("Slows the rate of change of the output.").build());
-        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_KD_TIMECONSTANT, Type.DECIMAL)
-                .withRequired(true).withMultiple(false).withMinimum(BigDecimal.ZERO).withDefault("1.0")
-                .withLabel("Derivative Time Constant")
-                .withDescription("Slows the rate of change of the D part (T1) in seconds.").withUnit("s").build());
-        configDescriptions
-                .add(ConfigDescriptionParameterBuilder.create(CONFIG_COMMAND_ITEM, Type.TEXT).withRequired(false)
-                        .withReadOnly(true).withMultiple(false).withContext("item").withLabel("Command Item")
-                        .withDescription("You can send String commands to this Item like \"RESET\".").build());
-        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_LOOP_TIME, Type.DECIMAL)
-                .withRequired(true).withMultiple(false).withDefault(DEFAULT_LOOPTIME_MS).withLabel("Loop Time")
-                .withDescription("The interval the output value is updated in ms").withUnit("ms").build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_INPUT_ITEM, Type.TEXT) //
+                .withRequired(true) //
+                .withMultiple(false) //
+                .withContext(ITEM) //
+                .withLabel("Input Item") //
+                .withDescription("Item to monitor") //
+                .build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_SETPOINT_ITEM, Type.TEXT) //
+                .withRequired(true) //
+                .withMultiple(false) //
+                .withContext(ITEM) //
+                .withLabel("Setpoint") //
+                .withDescription("Targeted setpoint") //
+                .build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_KP_GAIN, Type.DECIMAL).withRequired(true) //
+                .withMultiple(false) //
+                .withDefault("1.0") //
+                .withMinimum(BigDecimal.ZERO) //
+                .withLabel("Proportional Gain (Kp)") //
+                .withDescription("Change to output propertional to current error value.") //
+                .build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_KI_GAIN, Type.DECIMAL) //
+                .withRequired(true) //
+                .withMultiple(false) //
+                .withDefault("1.0") //
+                .withMinimum(BigDecimal.ZERO) //
+                .withLabel("Integral Gain (Ki)") //
+                .withDescription("Accelerate movement towards the setpoint.") //
+                .build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_KD_GAIN, Type.DECIMAL) //
+                .withRequired(true) //
+                .withMultiple(false) //
+                .withDefault("1.0") //
+                .withMinimum(BigDecimal.ZERO) //
+                .withLabel("Derivative Gain (Kd)") //
+                .withDescription("Slows the rate of change of the output.") //
+                .build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_KD_TIMECONSTANT, Type.DECIMAL) //
+                .withRequired(true) //
+                .withMultiple(false) //
+                .withMinimum(BigDecimal.ZERO) //
+                .withDefault("1.0") //
+                .withLabel("Derivative Time Constant") //
+                .withDescription("Slows the rate of change of the D part (T1) in seconds.") //
+                .withUnit("s") //
+                .build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_LOOP_TIME, Type.DECIMAL) //
+                .withRequired(true) //
+                .withMultiple(false) //
+                .withDefault(DEFAULT_LOOPTIME_MS) //
+                .withLabel("Loop Time") //
+                .withDescription("The interval the output value is updated in ms") //
+                .withUnit("ms") //
+                .build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(P_INSPECTOR, Type.TEXT) //
+                .withRequired(false) //
+                .withMultiple(false) //
+                .withContext(ITEM) //
+                .withLabel("P Inspector Item") //
+                .withDescription("Item for debugging the P part") //
+                .build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(I_INSPECTOR, Type.TEXT) //
+                .withRequired(false) //
+                .withMultiple(false) //
+                .withContext(ITEM) //
+                .withLabel("I Inspector Item") //
+                .withDescription("Item for debugging the I part") //
+                .build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(D_INSPECTOR, Type.TEXT) //
+                .withRequired(false).withMultiple(false) //
+                .withContext(ITEM) //
+                .withLabel("D Inspector Item") //
+                .withDescription("Item for debugging the D part") //
+                .build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(E_INSPECTOR, Type.TEXT) //
+                .withRequired(false).withMultiple(false) //
+                .withContext(ITEM) //
+                .withLabel("Error Inspector Item") //
+                .withDescription("Item for debugging the error value") //
+                .build());
 
-        Output output = new Output(OUTPUT, BigDecimal.class.getName(), "Output", "Output value of the PID Controller",
-                null, null, null);
-        Output pInspector = new Output(P_INSPECTOR, BigDecimal.class.getName(), "P Inspector",
-                "Current P value of the pid controller", null, null, null);
-        Output iInspector = new Output(I_INSPECTOR, BigDecimal.class.getName(), "I Inspector",
-                "Current I value of the pid controller", null, null, null);
-        Output dInspector = new Output(D_INSPECTOR, BigDecimal.class.getName(), "D Inspector",
-                "Current D value of the pid controller", null, null, null);
-        Output eInspector = new Output(E_INSPECTOR, BigDecimal.class.getName(), "Error Value Inspector",
-                "Current error value of the pid controller", null, null, null);
+        Output output = new Output(COMMAND, BigDecimal.class.getName(), "Output", "Output value of the PID Controller",
+                Set.of("command"), null, null);
 
-        List<Output> outputs = List.of(output, pInspector, iInspector, dInspector, eInspector);
-
-        return new PIDControllerTriggerType(configDescriptions, outputs);
+        return new PIDControllerTriggerType(configDescriptions, List.of(output));
     }
 
     public PIDControllerTriggerType(List<ConfigDescriptionParameter> configDescriptions, List<Output> outputs) {

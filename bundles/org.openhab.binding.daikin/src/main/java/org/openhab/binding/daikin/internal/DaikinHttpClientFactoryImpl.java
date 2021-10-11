@@ -62,7 +62,7 @@ public class DaikinHttpClientFactoryImpl implements DaikinHttpClientFactory {
 
     private synchronized void initialize() {
         if (httpClient == null) {
-            httpClient = new HttpClient(new SslContextFactory(true));
+            httpClient = new HttpClient(new SslContextFactory.Client(true));
             try {
                 httpClient.start();
                 logger.debug("Daikin http client started");

@@ -23,11 +23,10 @@
 		<description>temperature value of this sensor</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
-			<parameter name="ignorepor" type="boolean">
+			<parameter name="ignorepor" type="boolean" required="false">
 				<label>Ignore POR-value</label>
 				<description>filters all 85°C readings (POR-value), may suppress valid readings if enabled</description>
 				<default>false</default>
-				<required>false</required>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -37,13 +36,12 @@
 		<description>temperature value of this sensor</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
-			<parameter name="ignorepor" type="boolean">
+			<parameter name="ignorepor" type="boolean" required="false">
 				<label>Ignore POR-value</label>
 				<description>filters all 85°C readings (POR-value), may suppress valid readings if enabled</description>
 				<default>false</default>
-				<required>false</required>
 			</parameter>
-			<parameter name="resolution" type="text">
+			<parameter name="resolution" type="text" required="false">
 				<label>Sensor Resolution</label>
 				<options>
 					<option value="9">9 bit</option>
@@ -53,7 +51,6 @@
 				</options>
 				<default>10</default>
 				<limitToOptions>true</limitToOptions>
-				<required>false</required>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -77,7 +74,7 @@
 		<description>relative humidity (0-100%)</description>
 		<state readOnly="true" pattern="%d %%"/>
 		<config-description>
-			<parameter name="humiditytype" type="text">
+			<parameter name="humiditytype" type="text" required="false">
 				<label>Humidity Sensor-Type</label>
 				<limitToOptions>true</limitToOptions>
 				<options>
@@ -87,7 +84,6 @@
 					<option value="/DATANAB/humidity">Datanab</option>
 				</options>
 				<default>/humidity</default>
-				<required>false</required>
 			</parameter>
 		</config-description>
 	</channel-type>

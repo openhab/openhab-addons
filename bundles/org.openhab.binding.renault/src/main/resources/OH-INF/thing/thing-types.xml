@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="renault"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="car">
+		<!-- Comment this in for Things which need a Bridge to function.
+			<supported-bridge-type-refs>
+			<bridge-type-ref id="renaultBridge" />
+			</supported-bridge-type-refs>
+		-->
+
+		<label>Renault Binding</label>
+		<description>Renault Binding for MyRenault registered Car</description>
+
+		<channels>
+			<channel id="batterylevel" typeId="batterylevel"/>
+		</channels>
+		<config-description>
+
+			<parameter name="myRenaultUsername" type="text" required="true">
+				<label>MyRenault Username</label>
+				<description>MyRenault Username</description>
+			</parameter>
+			<parameter name="myRenaultPassword" type="text" required="true">
+				<context>password</context>
+				<label>MyRenault Password</label>
+				<description>MyRenault Password</description>
+			</parameter>
+			<parameter name="locale" type="text" required="true">
+				<label>Locale</label>
+				<description>Locale</description>
+			 	<options>
+					<option value="bg_BG">bg_BG</option>
+					<option value="cs_CZ">cs_CZ</option>
+					<option value="da_DK">da_DK</option>
+					<option value="de_DE">de_DE</option>
+					<option value="de_AT">de_AT</option>
+					<option value="de_CH">de_CH</option>
+					<option value="en_GB">en_GB</option>
+					<option value="en_IE">en_IE</option>
+					<option value="es_ES">es_ES</option>
+					<option value="es_MX">es_MX</option>
+					<option value="fi_FI">fi_FI</option>
+					<option value="fr_FR">fr_FR</option>
+					<option value="fr_BE">fr_BE</option>
+					<option value="fr_CH">fr_CH</option>
+					<option value="fr_LU">fr_LU</option>
+					<option value="hr_HR">hr_HR</option>
+					<option value="hu_HU">hu_HU</option>
+					<option value="it_IT">it_IT</option>
+					<option value="it_CH">it_CH</option>
+					<option value="nl_NL">nl_NL</option>
+					<option value="nl_BE">nl_BE</option>
+					<option value="no_NO">no_NO</option>
+					<option value="pl_PL">pl_PL</option>
+					<option value="pt_PT">pt_PT</option>
+					<option value="ro_RO">ro_RO</option>
+					<option value="ru_RU">ru_RU</option>
+					<option value="sk_SK">sk_SK</option>
+					<option value="sl_SI">sl_SI</option>
+					<option value="sv_SE">sv_SE</option>
+				</options>
+			</parameter>
+			<parameter name="vin" type="text" required="true">
+				<label>VIN</label>
+				<description>Vehicle Identification Number</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>300</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="batterylevel">
+		<item-type>Number</item-type>
+		<label>Battery Level</label>
+		<description>State of the battery in %</description>
+		<state pattern="%d %%" readOnly="true"></state>
+	</channel-type>
+	
+	
+	
+</thing:thing-descriptions>

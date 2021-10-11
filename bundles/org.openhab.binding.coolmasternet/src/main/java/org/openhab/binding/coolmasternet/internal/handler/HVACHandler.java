@@ -136,7 +136,7 @@ public class HVACHandler extends BaseThingHandler {
                     if (command instanceof RefreshType) {
                         final String currentTemp = query(controller, "a");
                         if (currentTemp != null) {
-                            final Integer temp = new Integer(currentTemp);
+                            final Integer temp = Integer.parseInt(currentTemp);
                             final QuantityType<?> value = new QuantityType<>(temp, controller.getUnit());
                             updateState(CURRENT_TEMP, value);
                         }
@@ -157,7 +157,7 @@ public class HVACHandler extends BaseThingHandler {
                     if (command instanceof RefreshType) {
                         final String setTemp = query(controller, "t");
                         if (setTemp != null) {
-                            final Integer temp = new Integer(setTemp);
+                            final Integer temp = Integer.parseInt(setTemp);
                             final QuantityType<?> value = new QuantityType<>(temp, controller.getUnit());
                             updateState(SET_TEMP, value);
                         }

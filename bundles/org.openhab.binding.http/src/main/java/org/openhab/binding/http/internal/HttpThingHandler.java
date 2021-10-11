@@ -15,7 +15,11 @@ package org.openhab.binding.http.internal;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -33,8 +37,21 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.http.internal.config.HttpChannelConfig;
 import org.openhab.binding.http.internal.config.HttpChannelMode;
 import org.openhab.binding.http.internal.config.HttpThingConfig;
-import org.openhab.binding.http.internal.converter.*;
-import org.openhab.binding.http.internal.http.*;
+import org.openhab.binding.http.internal.converter.AbstractTransformingItemConverter;
+import org.openhab.binding.http.internal.converter.ColorItemConverter;
+import org.openhab.binding.http.internal.converter.DimmerItemConverter;
+import org.openhab.binding.http.internal.converter.FixedValueMappingItemConverter;
+import org.openhab.binding.http.internal.converter.GenericItemConverter;
+import org.openhab.binding.http.internal.converter.ImageItemConverter;
+import org.openhab.binding.http.internal.converter.ItemValueConverter;
+import org.openhab.binding.http.internal.converter.NumberItemConverter;
+import org.openhab.binding.http.internal.converter.PlayerItemConverter;
+import org.openhab.binding.http.internal.converter.RollershutterItemConverter;
+import org.openhab.binding.http.internal.http.Content;
+import org.openhab.binding.http.internal.http.HttpAuthException;
+import org.openhab.binding.http.internal.http.HttpResponseListener;
+import org.openhab.binding.http.internal.http.RateLimitedHttpClient;
+import org.openhab.binding.http.internal.http.RefreshingUrlCache;
 import org.openhab.binding.http.internal.transform.ValueTransformationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.PointType;
@@ -95,9 +112,9 @@ public class HttpThingHandler extends BaseThingHandler {
         }
 
         if (command instanceof RefreshType) {
-            String stateUrl = channelUrls.get(channelUID);
-            if (stateUrl != null) {
-                RefreshingUrlCache refreshingUrlCache = urlHandlers.get(stateUrl);
+            String key = channelUrls.get(channelUID);
+            if (key != null) {
+                RefreshingUrlCache refreshingUrlCache = urlHandlers.get(key);
                 if (refreshingUrlCache != null) {
                     try {
                         refreshingUrlCache.get().ifPresent(itemValueConverter::process);
@@ -272,17 +289,17 @@ public class HttpThingHandler extends BaseThingHandler {
 
         channels.put(channelUID, itemValueConverter);
         if (channelConfig.mode != HttpChannelMode.WRITEONLY) {
-            channelUrls.put(channelUID, stateUrl);
-            urlHandlers
-                    .computeIfAbsent(stateUrl,
-                            url -> new RefreshingUrlCache(scheduler, rateLimitedHttpClient, url, config))
-                    .addConsumer(itemValueConverter::process);
+            // we need a key consisting of stateContent and URL, only if both are equal, we can use the same cache
+            String key = channelConfig.stateContent + "$" + stateUrl;
+            channelUrls.put(channelUID, key);
+            urlHandlers.computeIfAbsent(key, k -> new RefreshingUrlCache(scheduler, rateLimitedHttpClient, stateUrl,
+                    config, channelConfig.stateContent)).addConsumer(itemValueConverter::process);
         }
 
         StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
                 .withReadOnly(channelConfig.mode == HttpChannelMode.READONLY).build().toStateDescription();
         if (stateDescription != null) {
-            // if the state description is not available, we don'tneed to add it
+            // if the state description is not available, we don't need to add it
             httpDynamicStateDescriptionProvider.setDescription(channelUID, stateDescription);
         }
     }

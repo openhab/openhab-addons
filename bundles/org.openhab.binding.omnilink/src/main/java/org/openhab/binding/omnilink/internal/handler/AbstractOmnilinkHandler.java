@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.omnilink.internal.discovery.ObjectPropertyRequest;
 import org.openhab.binding.omnilink.internal.discovery.ObjectPropertyRequests;
+import org.openhab.binding.omnilink.internal.exceptions.BridgeOfflineException;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -117,6 +118,11 @@ public abstract class AbstractOmnilinkHandler extends BaseThingHandler {
      * @return Configured area number for a thing.
      */
     protected int getAreaNumber() {
-        return ((Number) getThing().getConfiguration().get(THING_PROPERTIES_AREA)).intValue();
+        String areaNumber = getThing().getProperties().get(THING_PROPERTIES_AREA);
+        if (areaNumber != null) {
+            return Integer.valueOf(areaNumber);
+        } else {
+            return -1;
+        }
     }
 }

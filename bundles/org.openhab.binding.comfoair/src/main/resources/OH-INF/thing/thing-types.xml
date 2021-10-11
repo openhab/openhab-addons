@@ -41,18 +41,32 @@
 			<channel-group id="resets" typeId="resets"/>
 		</channel-groups>
 
-		<config-description>
-			<parameter name="serialPort" type="text" required="true">
-				<label>Serial Port</label>
-				<context>serial-port</context>
-				<description>Serial port that the ComfoAir is connected to</description>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" max="65535" min="10" unit="s" required="false">
-				<label>Refresh Interval</label>
-				<description>Refresh interval in seconds</description>
-				<default>60</default>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:comfoair:serial"/>
+
+	</thing-type>
+
+	<thing-type id="WHR930">
+		<label>Zehnder WHR930 Ventilation System</label>
+		<description>Provides a generic access to a Zehnder WHR930 ventilation device</description>
+
+		<channel-groups>
+			<channel-group id="bindingControl" typeId="bindingControl"/>
+			<channel-group id="ventilation" typeId="ventilation_WHR930"/>
+			<channel-group id="temperatures" typeId="temperatures_WHR930"/>
+			<channel-group id="times" typeId="times_WHR930"/>
+			<channel-group id="bypass" typeId="bypass"/>
+			<channel-group id="preheater" typeId="preheater"/>
+			<channel-group id="options" typeId="options_WHR930"/>
+			<channel-group id="menuP1" typeId="menuP1_WHR930"/>
+			<channel-group id="menuP2" typeId="menuP2_WHR930"/>
+			<channel-group id="menuP9" typeId="menuP9_WHR930"/>
+			<channel-group id="inputs" typeId="inputs"/>
+			<channel-group id="analogRF" typeId="analogRF"/>
+			<channel-group id="errors" typeId="errors"/>
+			<channel-group id="resets" typeId="resets"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:comfoair:serial"/>
 
 	</thing-type>
 
@@ -82,6 +96,23 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="ventilation_WHR930">
+		<label>Ventilation Values</label>
+		<channels>
+			<channel id="fanLevel" typeId="fan_evel"/>
+			<channel id="fanOut0" typeId="fan_out_0"/>
+			<channel id="fanOut1" typeId="fan_out_1"/>
+			<channel id="fanOut2" typeId="fan_out_2"/>
+			<channel id="fanIn0" typeId="fan_in_0"/>
+			<channel id="fanIn1" typeId="fan_in_1"/>
+			<channel id="fanIn2" typeId="fan_in_2"/>
+			<channel id="fanInPercent" typeId="fan_in_percent"/>
+			<channel id="fanOutPercent" typeId="fan_out_percent"/>
+			<channel id="fanInRPM" typeId="fan_in_RPM"/>
+			<channel id="fanOutRPM" typeId="fan_out_RPM"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="temperatures">
 		<label>Temperature Values</label>
 		<channels>
@@ -103,6 +134,21 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="temperatures_WHR930">
+		<label>Temperature Values</label>
+		<channels>
+			<channel id="targetTemperature" typeId="target_temperature"/>
+			<channel id="outdoorTemperatureIn" typeId="outdoor_temperature_in"/>
+			<channel id="outdoorTemperatureOut" typeId="outdoor_temperature_out"/>
+			<channel id="indoorTemperatureIn" typeId="indoor_temperature_in"/>
+			<channel id="indoorTemperatureOut" typeId="indoor_temperature_out"/>
+			<channel id="isT1Sensor" typeId="is_T1_sensor"/>
+			<channel id="isT2Sensor" typeId="is_T2_sensor"/>
+			<channel id="isT3Sensor" typeId="is_T3_sensor"/>
+			<channel id="isT4Sensor" typeId="is_T4_sensor"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="times">
 		<label>Uptimes</label>
 		<channels>
@@ -110,6 +156,19 @@
 			<channel id="level1Time" typeId="level1_time"/>
 			<channel id="level2Time" typeId="level2_time"/>
 			<channel id="level3Time" typeId="level3_time"/>
+			<channel id="freezeTime" typeId="freeze_time"/>
+			<channel id="preheaterTime" typeId="preheater_time"/>
+			<channel id="bypassTime" typeId="bypass_time"/>
+			<channel id="filterHours" typeId="filter_hours"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="times_WHR930">
+		<label>Uptimes</label>
+		<channels>
+			<channel id="level0Time" typeId="level0_time"/>
+			<channel id="level1Time" typeId="level1_time"/>
+			<channel id="level2Time" typeId="level2_time"/>
 			<channel id="freezeTime" typeId="freeze_time"/>
 			<channel id="preheaterTime" typeId="preheater_time"/>
 			<channel id="bypassTime" typeId="bypass_time"/>
@@ -189,6 +248,18 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="options_WHR930">
+		<label>Option Settings</label>
+		<channels>
+			<channel id="isPreheater" typeId="is_preheater"/>
+			<channel id="isBypass" typeId="is_bypass"/>
+			<channel id="recuType" typeId="recu_type"/>
+			<channel id="recuSize" typeId="recu_size"/>
+			<channel id="isChimney" typeId="is_chimney"/>
+			<channel id="isEnthalpy" typeId="is_enthalpy"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="menuP1">
 		<label>Menu P1: Control States</label>
 		<channels>
@@ -202,6 +273,18 @@
 			<channel id="menu27Mode" typeId="menu27_mode"/>
 			<channel id="menu28Mode" typeId="menu28_mode"/>
 			<channel id="menu29Mode" typeId="menu29_mode"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="menuP1_WHR930">
+		<label>Menu P1: Control States</label>
+		<channels>
+			<channel id="menu21Mode" typeId="menu21_mode"/>
+			<channel id="menu22Mode" typeId="menu22_mode"/>
+			<channel id="menu23Mode" typeId="menu23_mode"/>
+			<channel id="menu24Mode" typeId="menu24_mode"/>
+			<channel id="menu25Mode" typeId="menu25_mode"/>
+			<channel id="menu26Mode" typeId="menu26_mode"/>
 		</channels>
 	</channel-group-type>
 
@@ -219,6 +302,18 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="menuP2_WHR930">
+		<label>Menu P2: Delay Settings</label>
+		<channels>
+			<channel id="bathroomStartDelay" typeId="bathroom_start_delay"/>
+			<channel id="bathroomEndDelay" typeId="bathroom_end_delay"/>
+			<channel id="L1EndDelay" typeId="L1_end_delay"/>
+			<channel id="filterWeeks" typeId="filter_weeks"/>
+			<channel id="RFShortDelay" typeId="RF_short_delay"/>
+			<channel id="RFLongDelay" typeId="RF_long_delay"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="menuP9">
 		<label>Menu P9: Option Control States</label>
 		<channels>
@@ -229,6 +324,17 @@
 			<channel id="vControlState" typeId="v_control_state"/>
 			<channel id="frostState" typeId="frost_state"/>
 			<channel id="cookerhoodState" typeId="cookerhood_state"/>
+			<channel id="enthalpyState" typeId="enthalpy_state"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="menuP9_WHR930">
+		<label>Menu P9: Option Control States</label>
+		<channels>
+			<channel id="chimneyState" typeId="chimney_state"/>
+			<channel id="bypassState" typeId="bypass_state"/>
+			<channel id="vControlState" typeId="v_control_state"/>
+			<channel id="frostState" typeId="frost_state"/>
 			<channel id="enthalpyState" typeId="enthalpy_state"/>
 		</channels>
 	</channel-group-type>

@@ -33,7 +33,11 @@ import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.nikohomecontrol.internal.protocol.*;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcControllerEvent;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcEnergyMeter;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.ActionType;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcDevice2.NhcProperty;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcMessage2.NhcMessageParam;
@@ -104,19 +108,19 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
         InetAddress addr = handler.getAddr();
         if (addr == null) {
-            logger.warn("Niko Home Control: IP address cannot be empty");
+            logger.warn("IP address cannot be empty");
             stopCommunication();
             return;
         }
         String addrString = addr.getHostAddress();
         int port = handler.getPort();
-        logger.debug("Niko Home Control: initializing for mqtt connection to CoCo on {}:{}", addrString, port);
+        logger.debug("initializing for mqtt connection to CoCo on {}:{}", addrString, port);
 
         profile = handler.getProfile();
 
         String token = handler.getToken();
         if (token.isEmpty()) {
-            logger.warn("Niko Home Control: JWT token cannot be empty");
+            logger.warn("JWT token cannot be empty");
             stopCommunication();
             return;
         }
@@ -125,7 +129,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             mqttConnection.startConnection(addrString, port, profile, token);
             initialize();
         } catch (MqttException e) {
-            logger.warn("Niko Home Control: error in mqtt communication");
+            logger.debug("error in mqtt communication");
             stopCommunication();
         }
     }
@@ -150,7 +154,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             // Wait until we received all devices info to confirm we are active.
             return started.get(5000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.debug("Niko Home Control: exception waiting for connection start");
+            logger.debug("exception waiting for connection start");
             return false;
         }
     }
@@ -176,10 +180,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         mqttConnection.connectionPublish(profile + "/notification/cmd", gson.toJson(message));
     }
 
-    private void connectionLost() {
-        logger.debug("Niko Home Control: connection lost");
+    private void connectionLost(String message) {
+        logger.debug("connection lost");
         stopCommunication();
-        handler.controllerOffline();
+        handler.controllerOffline(message);
     }
 
     private void systemEvt(String response) {
@@ -189,13 +193,13 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         List<NhcSystemInfo2> systemInfo = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            List<NhcMessageParam> messageParams = message.params;
+            List<NhcMessageParam> messageParams = (message != null) ? message.params : null;
             if (messageParams != null) {
                 timeInfo = messageParams.stream().filter(p -> (p.timeInfo != null)).findFirst().get().timeInfo;
                 systemInfo = messageParams.stream().filter(p -> (p.systemInfo != null)).findFirst().get().systemInfo;
             }
         } catch (JsonSyntaxException e) {
-            logger.debug("Niko Home Control: unexpected json {}", response);
+            logger.debug("unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
             // Ignore if timeInfo not present in response, this should not happen in a timeInfo response
         }
@@ -214,12 +218,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         List<NhcSystemInfo2> systemInfo = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            List<NhcMessageParam> messageParams = message.params;
+            List<NhcMessageParam> messageParams = (message != null) ? message.params : null;
             if (messageParams != null) {
                 systemInfo = messageParams.stream().filter(p -> (p.systemInfo != null)).findFirst().get().systemInfo;
             }
         } catch (JsonSyntaxException e) {
-            logger.debug("Niko Home Control: unexpected json {}", response);
+            logger.debug("unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
             // Ignore if systemInfo not present in response, this should not happen in a systemInfo response
         }
@@ -234,12 +238,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         List<NhcService2> serviceList = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            List<NhcMessageParam> messageParams = message.params;
+            List<NhcMessageParam> messageParams = (message != null) ? message.params : null;
             if (messageParams != null) {
                 serviceList = messageParams.stream().filter(p -> (p.services != null)).findFirst().get().services;
             }
         } catch (JsonSyntaxException e) {
-            logger.debug("Niko Home Control: unexpected json {}", response);
+            logger.debug("unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
             // Ignore if services not present in response, this should not happen in a services response
         }
@@ -255,12 +259,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         List<NhcDevice2> deviceList = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            List<NhcMessageParam> messageParams = message.params;
+            List<NhcMessageParam> messageParams = (message != null) ? message.params : null;
             if (messageParams != null) {
                 deviceList = messageParams.stream().filter(p -> (p.devices != null)).findFirst().get().devices;
             }
         } catch (JsonSyntaxException e) {
-            logger.debug("Niko Home Control: unexpected json {}", response);
+            logger.debug("unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
             // Ignore if devices not present in response, this should not happen in a devices response
         }
@@ -274,7 +278,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         }
 
         // Once a devices list response is received, we know the communication is fully started.
-        logger.debug("Niko Home Control: Communication start complete.");
+        logger.debug("Communication start complete.");
         handler.controllerOnline();
         CompletableFuture<Boolean> future = communicationStarted;
         if (future != null) {
@@ -289,13 +293,13 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         String method = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            method = message.method;
-            List<NhcMessageParam> messageParams = message.params;
+            method = (message != null) ? message.method : null;
+            List<NhcMessageParam> messageParams = (message != null) ? message.params : null;
             if (messageParams != null) {
                 deviceList = messageParams.stream().filter(p -> (p.devices != null)).findFirst().get().devices;
             }
         } catch (JsonSyntaxException e) {
-            logger.debug("Niko Home Control: unexpected json {}", response);
+            logger.debug("unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
             // Ignore if devices not present in response, this should not happen in a devices event
         }
@@ -308,9 +312,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             return;
         } else if ("devices.added".equals(method)) {
             deviceList.forEach(this::addDevice);
-        } else if ("devices.changed".equals(method)) {
-            deviceList.forEach(this::removeDevice);
-            deviceList.forEach(this::addDevice);
         }
 
         deviceList.forEach(this::updateState);
@@ -322,17 +323,17 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         List<NhcNotification2> notificationList = null;
         try {
             NhcMessage2 message = gson.fromJson(response, messageType);
-            List<NhcMessageParam> messageParams = message.params;
+            List<NhcMessageParam> messageParams = (message != null) ? message.params : null;
             if (messageParams != null) {
                 notificationList = messageParams.stream().filter(p -> (p.notifications != null)).findFirst()
                         .get().notifications;
             }
         } catch (JsonSyntaxException e) {
-            logger.debug("Niko Home Control: unexpected json {}", response);
+            logger.debug("unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
             // Ignore if notifications not present in response, this should not happen in a notifications event
         }
-        logger.debug("Niko Home Control: notifications {}", notificationList);
+        logger.debug("notifications {}", notificationList);
         if (notificationList == null) {
             return;
         }
@@ -348,7 +349,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                         handler.noticeEvent(alarmText);
                         break;
                     default:
-                        logger.debug("Niko Home Control: unexpected message type {}", notification.type);
+                        logger.debug("unexpected message type {}", notification.type);
                 }
             }
         }
@@ -363,7 +364,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
         if ("action".equals(device.type)) {
             if (!actions.containsKey(device.uuid)) {
-                logger.debug("Niko Home Control: adding action device {}, {}", device.uuid, device.name);
+                logger.debug("adding action device {}, {}", device.uuid, device.name);
 
                 ActionType actionType;
                 switch (device.model) {
@@ -394,8 +395,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                         break;
                     default:
                         actionType = ActionType.GENERIC;
-                        logger.debug("Niko Home Control: device type {} not recognised, default to GENERIC action",
-                                device.type);
+                        logger.debug("device type {} not recognised, default to GENERIC action", device.type);
                 }
 
                 NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, device.model, device.technology,
@@ -404,7 +404,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             }
         } else if ("thermostat".equals(device.type)) {
             if (!thermostats.containsKey(device.uuid)) {
-                logger.debug("Niko Home Control: adding thermostat device {}, {}", device.uuid, device.name);
+                logger.debug("adding thermostat device {}, {}", device.uuid, device.name);
 
                 NhcThermostat2 nhcThermostat = new NhcThermostat2(device.uuid, device.name, device.model,
                         device.technology, location, this);
@@ -412,26 +412,28 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             }
         } else if ("centralmeter".equals(device.type)) {
             if (!energyMeters.containsKey(device.uuid)) {
-                logger.debug("Niko Home Control: adding centralmeter device {}, {}", device.uuid, device.name);
+                logger.debug("adding centralmeter device {}, {}", device.uuid, device.name);
                 NhcEnergyMeter2 nhcEnergyMeter = new NhcEnergyMeter2(device.uuid, device.name, device.model,
                         device.technology, this, scheduler);
                 energyMeters.put(device.uuid, nhcEnergyMeter);
             }
         } else {
-            logger.debug("Niko Home Control: device type {} not supported for {}, {}", device.type, device.uuid,
-                    device.name);
+            logger.debug("device type {} not supported for {}, {}", device.type, device.uuid, device.name);
         }
     }
 
     private void removeDevice(NhcDevice2 device) {
-        if (actions.containsKey(device.uuid)) {
-            actions.get(device.uuid).actionRemoved();
+        NhcAction action = actions.get(device.uuid);
+        NhcThermostat thermostat = thermostats.get(device.uuid);
+        NhcEnergyMeter energyMeter = energyMeters.get(device.uuid);
+        if (action != null) {
+            action.actionRemoved();
             actions.remove(device.uuid);
-        } else if (thermostats.containsKey(device.uuid)) {
-            thermostats.get(device.uuid).thermostatRemoved();
+        } else if (thermostat != null) {
+            thermostat.thermostatRemoved();
             thermostats.remove(device.uuid);
-        } else if (energyMeters.containsKey(device.uuid)) {
-            energyMeters.get(device.uuid).energyMeterRemoved();
+        } else if (energyMeter != null) {
+            energyMeter.energyMeterRemoved();
             energyMeters.remove(device.uuid);
         }
     }
@@ -481,10 +483,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         if (booleanState != null) {
             if (NHCON.equals(booleanState)) {
                 action.setBooleanState(true);
-                logger.debug("Niko Home Control: setting action {} internally to ON", action.getId());
+                logger.debug("setting action {} internally to ON", action.getId());
             } else if (NHCOFF.equals(booleanState)) {
                 action.setBooleanState(false);
-                logger.debug("Niko Home Control: setting action {} internally to OFF", action.getId());
+                logger.debug("setting action {} internally to OFF", action.getId());
             }
         }
 
@@ -492,8 +494,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             String brightness = dimmerProperty.get().brightness;
             if (brightness != null) {
                 action.setState(Integer.parseInt(brightness));
-                logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(),
-                        dimmerProperty.get().brightness);
+                logger.debug("setting action {} internally to {}", action.getId(), dimmerProperty.get().brightness);
             }
         }
     }
@@ -502,9 +503,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         deviceProperties.stream().map(p -> p.position).filter(Objects::nonNull).findFirst().ifPresent(position -> {
             try {
                 action.setState(Integer.parseInt(position));
-                logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(), position);
+                logger.debug("setting action {} internally to {}", action.getId(), position);
             } catch (NumberFormatException e) {
-                logger.trace("Niko Home Control: received empty rollershutter {} position info", action.getId());
+                logger.trace("received empty rollershutter {} position info", action.getId());
             }
         });
     }
@@ -576,13 +577,13 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         deviceProperties.stream().map(p -> p.electricalPower).filter(Objects::nonNull).findFirst()
                 .ifPresent(electricalPower -> {
                     try {
-                        energyMeter.setPower(Integer.parseInt(electricalPower));
-                        logger.trace("Niko Home Control: setting energy meter {} power to {}", energyMeter.getId(),
-                                electricalPower);
+                        // Sometimes API sends a fractional part, although API should only send whole units in W,
+                        // therefore drop fractional part
+                        energyMeter.setPower((int) Double.parseDouble(electricalPower));
+                        logger.trace("setting energy meter {} power to {}", energyMeter.getId(), electricalPower);
                     } catch (NumberFormatException e) {
                         energyMeter.setPower(null);
-                        logger.trace("Niko Home Control: received empty energy meter {} power reading",
-                                energyMeter.getId());
+                        logger.trace("received empty energy meter {} power reading", energyMeter.getId());
                     }
                 });
     }
@@ -607,6 +608,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         device.properties = deviceProperties;
 
         NhcAction2 action = (NhcAction2) actions.get(actionId);
+        if (action == null) {
+            return;
+        }
 
         switch (action.getType()) {
             case GENERIC:
@@ -639,7 +643,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 } else if (NHCDOWN.equals(value)) {
                     property.position = "0";
                 } else {
-                    int position = 100 - Integer.parseInt(value);
+                    int position = Integer.parseInt(value);
                     property.position = String.valueOf(position);
                 }
                 break;
@@ -745,12 +749,18 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         String topic = profile + "/control/devices/cmd";
         String gsonMessage = gson.toJson(message);
 
-        ((NhcEnergyMeter2) energyMeters.get(energyMeterId)).startEnergyMeter(topic, gsonMessage);
+        NhcEnergyMeter2 energyMeter = (NhcEnergyMeter2) energyMeters.get(energyMeterId);
+        if (energyMeter != null) {
+            energyMeter.startEnergyMeter(topic, gsonMessage);
+        }
     }
 
     @Override
     public void stopEnergyMeter(String energyMeterId) {
-        ((NhcEnergyMeter2) energyMeters.get(energyMeterId)).stopEnergyMeter();
+        NhcEnergyMeter2 energyMeter = (NhcEnergyMeter2) energyMeters.get(energyMeterId);
+        if (energyMeter != null) {
+            energyMeter.stopEnergyMeter();
+        }
     }
 
     /**
@@ -768,19 +778,26 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             mqttConnection.connectionPublish(topic, gsonMessage);
 
         } catch (MqttException e) {
-            logger.warn("Niko Home Control: sending command failed, trying to restart communication");
+            String message = e.getMessage();
+            message = (message != null) ? message : "Communication error";
+
+            logger.debug("sending command failed, trying to restart communication");
             restartCommunication();
             // retry sending after restart
             try {
                 if (communicationActive()) {
                     mqttConnection.connectionPublish(topic, gsonMessage);
                 } else {
-                    logger.warn("Niko Home Control: failed to restart communication");
-                    connectionLost();
+                    logger.debug("failed to restart communication");
                 }
             } catch (MqttException e1) {
-                logger.warn("Niko Home Control: error resending device command");
-                connectionLost();
+                message = e1.getMessage();
+                message = (message != null) ? message : "Communication error";
+
+                logger.debug("error resending device command");
+            }
+            if (!communicationActive()) {
+                connectionLost(message);
             }
         }
     }
@@ -791,24 +808,24 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         if ((profile + "/system/evt").equals(topic)) {
             systemEvt(message);
         } else if ((profile + "/system/rsp").equals(topic)) {
-            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
+            logger.debug("received topic {}, payload {}", topic, message);
             systeminfoPublishRsp(message);
         } else if ((profile + "/notification/evt").equals(topic)) {
-            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
+            logger.debug("received topic {}, payload {}", topic, message);
             notificationEvt(message);
         } else if ((profile + "/control/devices/evt").equals(topic)) {
-            logger.trace("Niko Home Control: received topic {}, payload {}", topic, message);
+            logger.trace("received topic {}, payload {}", topic, message);
             devicesEvt(message);
         } else if ((profile + "/control/devices/rsp").equals(topic)) {
-            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
+            logger.debug("received topic {}, payload {}", topic, message);
             devicesListRsp(message);
         } else if ((profile + "/authentication/rsp").equals(topic)) {
-            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
+            logger.debug("received topic {}, payload {}", topic, message);
             servicesListRsp(message);
         } else if ((profile + "/control/devices.error").equals(topic)) {
-            logger.warn("Niko Home Control: received error {}", message);
+            logger.warn("received error {}", message);
         } else {
-            logger.trace("Niko Home Control: not acted on received message topic {}, payload {}", topic, message);
+            logger.trace("not acted on received message topic {}, payload {}", topic, message);
         }
     }
 
@@ -845,10 +862,14 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
         if (error != null) {
             logger.debug("Connection state: {}", state, error);
-            restartCommunication();
+            String message = error.getMessage();
+            message = (message != null) ? message : "Error communicating with the controller";
+            if (!MqttConnectionState.CONNECTING.equals(state)) {
+                // This is a connection loss, try to restart
+                restartCommunication();
+            }
             if (!communicationActive()) {
-                logger.warn("Niko Home Control: failed to restart communication");
-                connectionLost();
+                connectionLost(message);
             }
         } else {
             logger.trace("Connection state: {}", state);

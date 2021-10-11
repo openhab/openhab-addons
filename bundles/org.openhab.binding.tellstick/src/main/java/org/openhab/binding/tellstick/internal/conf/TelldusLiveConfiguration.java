@@ -14,7 +14,7 @@ package org.openhab.binding.tellstick.internal.conf;
 
 /**
  * Configuration class for {@link TellstickBridge} bridge used to connect to the
- * Tellus Live service.
+ * Telldus Live service.
  *
  * @author Jarle Hjortland - Initial contribution
  */

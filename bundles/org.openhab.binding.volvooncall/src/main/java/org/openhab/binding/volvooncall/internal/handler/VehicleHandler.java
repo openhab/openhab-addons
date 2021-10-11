@@ -373,6 +373,22 @@ public class VehicleHandler extends BaseThingHandler {
     private State getBatteryValue(String channelId, HvBattery hvBattery) {
         switch (channelId) {
             case BATTERY_LEVEL:
+                /*
+                 * If the car is charging the battery level can be reported as 100% by the API regardless of actual
+                 * charge level, but isn't always. So, if we see that the car is Charging, ChargingPaused, or
+                 * ChargingInterrupted and the reported battery level is 100%, then instead produce UNDEF.
+                 *
+                 * If we see FullyCharged, then we can rely on the value being 100% anyway.
+                 */
+                if (hvBattery.hvBatteryChargeStatusDerived != null
+                        && hvBattery.hvBatteryChargeStatusDerived.toString().startsWith("CablePluggedInCar_Charging")
+                        && hvBattery.hvBatteryLevel != UNDEFINED && hvBattery.hvBatteryLevel == 100) {
+                    return UnDefType.UNDEF;
+                } else {
+                    return hvBattery.hvBatteryLevel != UNDEFINED ? new QuantityType<>(hvBattery.hvBatteryLevel, PERCENT)
+                            : UnDefType.UNDEF;
+                }
+            case BATTERY_LEVEL_RAW:
                 return hvBattery.hvBatteryLevel != UNDEFINED ? new QuantityType<>(hvBattery.hvBatteryLevel, PERCENT)
                         : UnDefType.UNDEF;
             case BATTERY_DISTANCE_TO_EMPTY:
@@ -382,6 +398,27 @@ public class VehicleHandler extends BaseThingHandler {
             case CHARGE_STATUS:
                 return hvBattery.hvBatteryChargeStatusDerived != null ? hvBattery.hvBatteryChargeStatusDerived
                         : UnDefType.UNDEF;
+            case CHARGE_STATUS_CABLE:
+                return hvBattery.hvBatteryChargeStatusDerived != null
+                        ? OnOffType.from(
+                                hvBattery.hvBatteryChargeStatusDerived.toString().startsWith("CablePluggedInCar_"))
+                        : UnDefType.UNDEF;
+            case CHARGE_STATUS_CHARGING:
+                return hvBattery.hvBatteryChargeStatusDerived != null
+                        ? OnOffType.from(hvBattery.hvBatteryChargeStatusDerived.toString().endsWith("_Charging"))
+                        : UnDefType.UNDEF;
+            case CHARGE_STATUS_FULLY_CHARGED:
+                /*
+                 * If the car is charging the battery level can be reported incorrectly by the API, so use the charging
+                 * status instead of checking the level when the car is plugged in.
+                 */
+                if (hvBattery.hvBatteryChargeStatusDerived != null
+                        && hvBattery.hvBatteryChargeStatusDerived.toString().startsWith("CablePluggedInCar_")) {
+                    return OnOffType.from(hvBattery.hvBatteryChargeStatusDerived.toString().endsWith("_FullyCharged"));
+                } else {
+                    return hvBattery.hvBatteryLevel != UNDEFINED ? OnOffType.from(hvBattery.hvBatteryLevel == 100)
+                            : UnDefType.UNDEF;
+                }
             case TIME_TO_BATTERY_FULLY_CHARGED:
                 return hvBattery.timeToHVBatteryFullyCharged != UNDEFINED
                         ? new QuantityType<>(hvBattery.timeToHVBatteryFullyCharged, MINUTE)

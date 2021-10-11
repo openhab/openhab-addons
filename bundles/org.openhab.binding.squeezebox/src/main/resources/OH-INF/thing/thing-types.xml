@@ -84,6 +84,7 @@
 			<channel id="numberPlaylistTracks" typeId="numberPlaylistTracks"/>
 			<channel id="playFavorite" typeId="playFavorite"/>
 			<channel id="rate" typeId="rate"/>
+			<channel id="sleep" typeId="sleep"/>
 		</channels>
 
 		<properties>
@@ -303,5 +304,11 @@
 		<item-type>Switch</item-type>
 		<label>Like or Unlike Song</label>
 		<description>Likes or unlikes the current song (if the service supports it)</description>
+	</channel-type>
+	<channel-type id="sleep">
+		<item-type>Number</item-type>
+		<label>Sleep</label>
+		<description>Power off player in specified number of minutes</description>
+		<state pattern="%d"></state>
 	</channel-type>
 </thing:thing-descriptions>

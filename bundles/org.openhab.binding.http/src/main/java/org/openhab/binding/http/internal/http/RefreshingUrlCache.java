@@ -12,18 +12,26 @@
  */
 package org.openhab.binding.http.internal.http;
 
-import java.net.*;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.AuthenticationStore;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.http.internal.Util;
 import org.openhab.binding.http.internal.config.HttpThingConfig;
 import org.slf4j.Logger;
@@ -46,17 +54,21 @@ public class RefreshingUrlCache {
     private final @Nullable String fallbackEncoding;
     private final Set<Consumer<Content>> consumers = ConcurrentHashMap.newKeySet();
     private final List<String> headers;
+    private final HttpMethod httpMethod;
+    private final String httpContent;
 
     private final ScheduledFuture<?> future;
     private @Nullable Content lastContent;
 
     public RefreshingUrlCache(ScheduledExecutorService executor, RateLimitedHttpClient httpClient, String url,
-            HttpThingConfig thingConfig) {
+            HttpThingConfig thingConfig, String httpContent) {
         this.httpClient = httpClient;
         this.url = url;
         this.timeout = thingConfig.timeout;
         this.bufferSize = thingConfig.bufferSize;
         this.headers = thingConfig.headers;
+        this.httpMethod = thingConfig.stateMethod;
+        this.httpContent = httpContent;
         fallbackEncoding = thingConfig.encoding;
 
         future = executor.scheduleWithFixedDelay(this::refresh, 1, thingConfig.refresh, TimeUnit.SECONDS);
@@ -78,7 +90,7 @@ public class RefreshingUrlCache {
             URI uri = Util.uriFromString(String.format(this.url, new Date()));
             logger.trace("Requesting refresh (retry={}) from '{}' with timeout {}ms", isRetry, uri, timeout);
 
-            httpClient.newRequest(uri).thenAccept(request -> {
+            httpClient.newRequest(uri, httpMethod, httpContent).thenAccept(request -> {
                 request.timeout(timeout, TimeUnit.MILLISECONDS);
 
                 headers.forEach(header -> {

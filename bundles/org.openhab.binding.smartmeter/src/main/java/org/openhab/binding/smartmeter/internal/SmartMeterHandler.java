@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,7 @@ import java.util.function.Supplier;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -93,32 +92,27 @@ public class SmartMeterHandler extends BaseThingHandler {
         cancelRead();
 
         SmartMeterConfiguration config = getConfigAs(SmartMeterConfiguration.class);
-        logger.debug("config port = {}", config.port);
 
-        boolean validConfig = true;
-        String errorMsg = null;
+        String port = config.port;
+        logger.debug("config port = {}", port);
 
-        if (StringUtils.trimToNull(config.port) == null) {
-            errorMsg = "Parameter 'port' is mandatory and must be configured";
-            validConfig = false;
-        }
-
-        if (validConfig) {
+        if (port == null || port.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Parameter 'port' is mandatory and must be configured");
+        } else {
             byte[] pullSequence = config.initMessage == null ? null
                     : HexUtils.hexToBytes(StringUtils.deleteWhitespace(config.initMessage));
             int baudrate = config.baudrate == null ? Baudrate.AUTO.getBaudrate()
                     : Baudrate.fromString(config.baudrate).getBaudrate();
             this.conformity = config.conformity == null ? Conformity.NONE : Conformity.valueOf(config.conformity);
             this.smlDevice = MeterDeviceFactory.getDevice(serialPortManagerSupplier, config.mode,
-                    this.thing.getUID().getAsString(), config.port, pullSequence, baudrate, config.baudrateChangeDelay);
+                    this.thing.getUID().getAsString(), port, pullSequence, baudrate, config.baudrateChangeDelay);
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
                     "Waiting for messages from device");
 
             smlDevice.addValueChangeListener(channelTypeProvider);
 
             updateOBISValue();
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         }
     }
 
@@ -204,7 +198,9 @@ public class SmartMeterHandler extends BaseThingHandler {
                     if (!channel.getProperties().containsKey(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS)) {
                         addObisPropertyToChannel(obis, channel);
                     }
-                    updateState(channel.getUID(), state);
+                    if (state != null) {
+                        updateState(channel.getUID(), state);
+                    }
 
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 } else {
@@ -256,7 +252,9 @@ public class SmartMeterHandler extends BaseThingHandler {
                     MeterValue<?> value = this.smlDevice.getMeterValue(obis);
                     if (value != null) {
                         State state = getStateForObisValue(value, channel);
-                        updateState(channel.getUID(), state);
+                        if (state != null) {
+                            updateState(channel.getUID(), state);
+                        }
                     }
                 }
             }
@@ -264,13 +262,14 @@ public class SmartMeterHandler extends BaseThingHandler {
     }
 
     @SuppressWarnings("unchecked")
-    private <Q extends Quantity<Q>> State getStateForObisValue(MeterValue<?> value, @Nullable Channel channel) {
+    private @Nullable <Q extends Quantity<Q>> State getStateForObisValue(MeterValue<?> value,
+            @Nullable Channel channel) {
         Unit<?> unit = value.getUnit();
         String valueString = value.getValue();
         if (unit != null) {
             valueString += " " + value.getUnit();
         }
-        State state = TypeParser.parseState(Arrays.asList(QuantityType.class, StringType.class), valueString);
+        State state = TypeParser.parseState(List.of(QuantityType.class, StringType.class), valueString);
         if (channel != null && state instanceof QuantityType) {
             state = applyConformity(channel, (QuantityType<Q>) state);
             Number conversionRatio = (Number) channel.getConfiguration()

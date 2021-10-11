@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>A Pulseaudio Sink</label>
 		<description>represents a pulseaudio sink</description>
+		<category>Speaker</category>
 
 		<channels>
 			<channel id="volume" typeId="volume"/>
@@ -17,10 +18,27 @@
 			<channel id="state" typeId="state"/>
 		</channels>
 		<config-description>
-			<parameter name="name" type="text">
+			<parameter name="name" type="text" required="true">
 				<label>Name</label>
 				<description>The name of one specific device.</description>
-				<required>true</required>
+			</parameter>
+			<parameter name="activateSimpleProtocolSink" type="boolean" required="false">
+				<label>Create an Audio Sink with simple-protocol-tcp</label>
+				<description>Activation of a corresponding sink in OpenHAB (module-simple-protocol-tcp must be available on the
+					pulseaudio server)</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="simpleProtocolSinkPort" type="integer" required="false">
+				<label>Simple Protocol Port</label>
+				<description>Default Port to allocate for use by module-simple-protocol-tcp on the pulseaudio server</description>
+				<default>4711</default>
+			</parameter>
+			<parameter name="simpleProtocolSinkIdleTimeout" type="integer" required="false">
+				<label>Idle Timeout</label>
+				<description>Timeout in ms after which the connection will be closed when no stream is running. This ensures that
+					your speaker is not on all the time and the pulseaudio sink can go to idle mode. -1 for no disconnection.
+				</description>
+				<default>30000</default>
 			</parameter>
 		</config-description>
 	</thing-type>

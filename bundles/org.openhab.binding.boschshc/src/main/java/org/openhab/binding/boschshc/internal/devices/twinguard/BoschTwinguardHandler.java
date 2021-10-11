@@ -68,9 +68,9 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
     void updateAirQualityState(AirQualityLevelState state) {
         updateState(CHANNEL_TEMPERATURE, new QuantityType<Temperature>(state.temperature, SIUnits.CELSIUS));
         updateState(CHANNEL_TEMPERATURE_RATING, new StringType(state.temperatureRating));
-        updateState(CHANNEL_HUMIDITY, new QuantityType<Dimensionless>(state.humidity, Units.ONE));
+        updateState(CHANNEL_HUMIDITY, new QuantityType<Dimensionless>(state.humidity, Units.PERCENT));
         updateState(CHANNEL_HUMIDITY_RATING, new StringType(state.humidityRating));
-        updateState(CHANNEL_PURITY, new QuantityType<Dimensionless>(state.purity, Units.ONE));
+        updateState(CHANNEL_PURITY, new QuantityType<Dimensionless>(state.purity, Units.PARTS_PER_MILLION));
         updateState(CHANNEL_AIR_DESCRIPTION, new StringType(state.description));
         updateState(CHANNEL_PURITY_RATING, new StringType(state.purityRating));
         updateState(CHANNEL_COMBINED_RATING, new StringType(state.combinedRating));

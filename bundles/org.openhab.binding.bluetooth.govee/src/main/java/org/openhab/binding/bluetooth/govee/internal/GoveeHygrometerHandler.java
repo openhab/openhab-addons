@@ -33,6 +33,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
+import org.openhab.binding.bluetooth.ConnectedBluetoothHandler;
 import org.openhab.binding.bluetooth.gattserial.MessageServicer;
 import org.openhab.binding.bluetooth.gattserial.SimpleGattSocket;
 import org.openhab.binding.bluetooth.govee.internal.command.hygrometer.GetBatteryCommand;
@@ -93,6 +94,11 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
     @Override
     public void initialize() {
         super.initialize();
+        if (thing.getStatus() == ThingStatus.OFFLINE) {
+            // something went wrong in super.initialize() so we shouldn't initialize further here either
+            return;
+        }
+
         config = getConfigAs(GoveeHygrometerConfiguration.class);
 
         Map<String, String> properties = thing.getProperties();
@@ -117,14 +123,14 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
                     logger.debug("refreshing temperature, humidity, and battery");
                     refreshBattery().join();
                     refreshTemperatureAndHumidity().join();
-                    connectionTaskExecutor.execute(device::disconnect);
+                    disconnect();
                     updateStatus(ThingStatus.ONLINE);
                 }
             } catch (RuntimeException ex) {
                 logger.warn("unable to refresh", ex);
             }
         }, 0, config.refreshInterval, TimeUnit.SECONDS);
-        keepAliveJob = connectionTaskExecutor.scheduleWithFixedDelay(() -> {
+        keepAliveJob = scheduler.scheduleWithFixedDelay(() -> {
             if (device.getConnectionState() == ConnectionState.CONNECTED) {
                 try {
                     GoveeMessage message = new GoveeMessage((byte) 0xAA, (byte) 1, null);
@@ -393,9 +399,9 @@ public class GoveeHygrometerHandler extends ConnectedBluetoothHandler {
     }
 
     @Override
-    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
-        super.onCharacteristicUpdate(characteristic);
-        commandSocket.receivePacket(characteristic.getByteValue());
+    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value) {
+        super.onCharacteristicUpdate(characteristic, value);
+        commandSocket.receivePacket(value);
     }
 
     private class CommandSocket extends SimpleGattSocket<GoveeMessage> {

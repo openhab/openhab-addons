@@ -14,12 +14,14 @@ package org.openhab.binding.bsblan.internal.helper;
 
 import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterDTO;
+import org.openhab.binding.bsblan.internal.handler.BsbLanParameterHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -74,7 +76,7 @@ public class BsbLanParameterConverter {
     }
 
     private static State getStateForUnitChannel(BsbLanApiParameterDTO parameter) {
-        String value = StringEscapeUtils.unescapeHtml(parameter.unit);
+        String value = StringEscapeUtils.unescapeHtml4(parameter.unit);
         return new StringType(value);
     }
 
@@ -110,7 +112,7 @@ public class BsbLanParameterConverter {
 
     /**
      * Converts a Command back to a value which is sent to the BSB-LAN device afterwards.
-     * 
+     *
      * @param channelId
      * @param command
      * @return null if conversion fails or channel is readonly.
@@ -133,8 +135,13 @@ public class BsbLanParameterConverter {
     }
 
     private static @Nullable String getValueForNumberValueChannel(Command command) {
+        if (command instanceof QuantityType<?>) {
+            // the target unit is yet unknown, so just use the value as is (without converting based on the unit)
+            QuantityType<?> quantity = (QuantityType<?>) command;
+            return String.valueOf(quantity.doubleValue());
+        }
         // check if numeric
-        if (command.toString().matches("-?\\d+(\\.\\d+)?")) {
+        else if (command.toString().matches("-?\\d+(\\.\\d+)?")) {
             return command.toString();
         }
         LOGGER.warn("Command '{}' is not a valid number value", command);

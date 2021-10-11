@@ -19,6 +19,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +47,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -85,11 +87,13 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> logRefreshJob;
+    private @Nullable ScheduledFuture<?> clockSyncJob;
 
     private int refreshPeriod = DEFAULT_REFRESH_PERIOD;
     private int logRefreshPeriod = DEFAULT_LOG_REFRESH_PERIOD;
     private boolean isCT80 = false;
     private boolean disableLogs = false;
+    private boolean clockSync = false;
     private String setpointCmdKeyPrefix = "t_";
 
     public RadioThermostatHandler(Thing thing, RadioThermostatStateDescriptionProvider stateDescriptionProvider,
@@ -110,8 +114,9 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         final Integer logRefresh = config.logRefresh;
         this.isCT80 = config.isCT80;
         this.disableLogs = config.disableLogs;
+        this.clockSync = config.clockSync;
 
-        if (hostName == null || hostName.equals("")) {
+        if (hostName == null || "".equals(hostName)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Thermostat Host Name must be specified");
             return;
@@ -144,12 +149,18 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             channels.removeIf(c -> (c.getUID().getId().equals(PROGRAM_MODE)));
             updateThing(editThing().withChannels(channels).build());
         }
+
+        updateStatus(ThingStatus.UNKNOWN);
+
         startAutomaticRefresh();
+
         if (!this.disableLogs || this.isCT80) {
             startAutomaticLogRefresh();
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
+        if (this.clockSync) {
+            scheduleClockSyncJob();
+        }
     }
 
     @Override
@@ -171,6 +182,35 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             refreshJob = null;
             this.refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, refreshPeriod, TimeUnit.MINUTES);
         }
+    }
+
+    /**
+     * Schedule the clock sync job
+     */
+    private void scheduleClockSyncJob() {
+        ScheduledFuture<?> clockSyncJob = this.clockSyncJob;
+        if (clockSyncJob == null || clockSyncJob.isCancelled()) {
+            clockSyncJob = null;
+            this.clockSyncJob = scheduler.scheduleWithFixedDelay(this::syncThermostatClock, 1, 60, TimeUnit.MINUTES);
+        }
+    }
+
+    /**
+     * Sync the thermostat's clock with the host system clock
+     */
+    private void syncThermostatClock() {
+        Calendar c = Calendar.getInstance();
+
+        // The thermostat week starts as Monday = 0, subtract 2 since in standard DoW Monday = 2
+        int thermDayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 2;
+        // Sunday will be -1, so add 7 to make it 6
+        if (thermDayOfWeek < 0) {
+            thermDayOfWeek += 7;
+        }
+
+        connector.sendCommand(null, null,
+                String.format(JSON_TIME, thermDayOfWeek, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)),
+                TIME_RESOURCE);
     }
 
     /**
@@ -213,10 +253,16 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             logRefreshJob.cancel(true);
             this.logRefreshJob = null;
         }
+
+        ScheduledFuture<?> clockSyncJob = this.clockSyncJob;
+        if (clockSyncJob != null) {
+            clockSyncJob.cancel(true);
+            this.clockSyncJob = null;
+        }
     }
 
     public void handleRawCommand(@Nullable String rawCommand) {
-        connector.sendCommand(null, null, rawCommand);
+        connector.sendCommand(null, null, rawCommand, DEFAULT_RESOURCE);
     }
 
     @Override
@@ -226,21 +272,19 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         } else {
             Integer cmdInt = -1;
             String cmdStr = command.toString();
-            if (cmdStr != null) {
-                try {
-                    // parse out an Integer from the string
-                    // ie '70.5 F' becomes 70, also handles negative numbers
-                    cmdInt = NumberFormat.getInstance().parse(cmdStr).intValue();
-                } catch (ParseException e) {
-                    logger.debug("Command: {} -> Not an integer", cmdStr);
-                }
+            try {
+                // parse out an Integer from the string
+                // ie '70.5 F' becomes 70, also handles negative numbers
+                cmdInt = NumberFormat.getInstance().parse(cmdStr).intValue();
+            } catch (ParseException e) {
+                logger.debug("Command: {} -> Not an integer", cmdStr);
             }
 
             switch (channelUID.getId()) {
                 case MODE:
                     // only do if commanded mode is different than current mode
                     if (!cmdInt.equals(rthermData.getThermostatData().getMode())) {
-                        connector.sendCommand("tmode", cmdStr);
+                        connector.sendCommand("tmode", cmdStr, DEFAULT_RESOURCE);
 
                         // set the new operating mode, reset everything else,
                         // because refreshing the tstat data below is really slow.
@@ -253,26 +297,26 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                         rthermData.getThermostatData().setProgramMode(-1);
                         updateChannel(PROGRAM_MODE, rthermData);
 
-                        // now just trigger a refresh of the thermost to get the new active setpoint
+                        // now just trigger a refresh of the thermostat to get the new active setpoint
                         // this takes a while for the JSON request to complete (async).
                         connector.getAsyncThermostatData(DEFAULT_RESOURCE);
                     }
                     break;
                 case FAN_MODE:
                     rthermData.getThermostatData().setFanMode(cmdInt);
-                    connector.sendCommand("fmode", cmdStr);
+                    connector.sendCommand("fmode", cmdStr, DEFAULT_RESOURCE);
                     break;
                 case PROGRAM_MODE:
                     rthermData.getThermostatData().setProgramMode(cmdInt);
-                    connector.sendCommand("program_mode", cmdStr);
+                    connector.sendCommand("program_mode", cmdStr, DEFAULT_RESOURCE);
                     break;
                 case HOLD:
                     if (command instanceof OnOffType && command == OnOffType.ON) {
                         rthermData.getThermostatData().setHold(1);
-                        connector.sendCommand("hold", "1");
+                        connector.sendCommand("hold", "1", DEFAULT_RESOURCE);
                     } else if (command instanceof OnOffType && command == OnOffType.OFF) {
                         rthermData.getThermostatData().setHold(0);
-                        connector.sendCommand("hold", "0");
+                        connector.sendCommand("hold", "0", DEFAULT_RESOURCE);
                     }
                     break;
                 case SET_POINT:
@@ -287,7 +331,16 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                         // don't do anything if we are not in heat or cool mode
                         break;
                     }
-                    connector.sendCommand(cmdKey, cmdInt.toString());
+                    connector.sendCommand(cmdKey, cmdInt.toString(), DEFAULT_RESOURCE);
+                    break;
+                case REMOTE_TEMP:
+                    if (cmdInt != -1) {
+                        QuantityType<?> remoteTemp = ((QuantityType<Temperature>) command)
+                                .toUnit(ImperialUnits.FAHRENHEIT);
+                        connector.sendCommand("rem_temp", String.valueOf(remoteTemp.intValue()), REMOTE_TEMP_RESOURCE);
+                    } else {
+                        connector.sendCommand("rem_mode", "0", REMOTE_TEMP_RESOURCE);
+                    }
                     break;
                 default:
                     logger.warn("Unsupported command: {}", command.toString());
@@ -320,7 +373,10 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                     updateAllChannels();
                     break;
                 case HUMIDITY_RESOURCE:
-                    rthermData.setHumidity(gson.fromJson(evtVal, RadioThermostatHumidityDTO.class).getHumidity());
+                    RadioThermostatHumidityDTO dto = gson.fromJson(evtVal, RadioThermostatHumidityDTO.class);
+                    if (dto != null) {
+                        rthermData.setHumidity(dto.getHumidity());
+                    }
                     updateChannel(HUMIDITY, rthermData);
                     break;
                 case RUNTIME_RESOURCE:
@@ -382,7 +438,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
     /**
      * Update a given channelId from the thermostat data
-     * 
+     *
      * @param the channel id to be updated
      * @param data the RadioThermostat dto
      * @return the value to be set in the state
@@ -456,7 +512,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
     /**
      * Build a list of fan modes based on what model thermostat is used
-     * 
+     *
      * @return list of state options for thermostat fan modes
      */
     private List<StateOption> getFanModeOptions() {

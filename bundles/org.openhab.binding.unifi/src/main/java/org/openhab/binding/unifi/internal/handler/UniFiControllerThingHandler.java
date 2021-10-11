@@ -88,7 +88,7 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
         logger.debug("Initializing the UniFi Controller Handler with config = {}", config);
         try {
             controller = new UniFiController(httpClient, config.getHost(), config.getPort(), config.getUsername(),
-                    config.getPassword());
+                    config.getPassword(), config.isUniFiOS());
             controller.start();
             updateStatus(ONLINE);
         } catch (UniFiInvalidHostException e) {

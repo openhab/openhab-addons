@@ -9,16 +9,15 @@
 		<description>@text/thing-type.nanoleaf.controller.description</description>
 
 		<channels>
-			<channel id="power" typeId="power"/>
-			<channel id="color" typeId="color"/>
-			<channel id="colorTemperature" typeId="colorTemperature"/>
-			<channel id="colorTemperatureAbs" typeId="colorTemperatureAbs"/>
+			<channel id="color" typeId="system.color"/>
+			<channel id="colorTemperature" typeId="system.color-temperature"/>
+			<channel id="colorTemperatureAbs" typeId="system.color-temperature-abs"/>
 			<channel id="colorMode" typeId="colorMode"/>
 			<channel id="effect" typeId="effect"/>
 			<channel id="rhythmState" typeId="rhythmState"/>
 			<channel id="rhythmActive" typeId="rhythmActive"/>
 			<channel id="rhythmMode" typeId="rhythmMode"/>
-			<channel id="panelLayout" typeId="panelLayout"/>
+			<channel id="swipe" typeId="swipe"/>
 		</channels>
 
 		<properties>
@@ -40,9 +39,8 @@
 		<label>@text/thing-type.nanoleaf.lightpanel.name</label>
 		<description>@text/thing-type.nanoleaf.lightpanel.description</description>
 		<channels>
-			<channel id="panelColor" typeId="color"/>
-			<channel id="singleTap" typeId="singleTap"/>
-			<channel id="doubleTap" typeId="doubleTap"/>
+			<channel id="color" typeId="system.color"/>
+			<channel id="tap" typeId="system.button"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -50,35 +48,13 @@
 		<config-description-ref uri="thing-type:nanoleaf:lightpanel"/>
 	</thing-type>
 
-	<channel-type id="power">
-		<item-type>Switch</item-type>
-		<label>@text/channel-type.nanoleaf.power.label</label>
-		<description>@text/channel-type.nanoleaf.power.description</description>
-		<category>Switch</category>
-		<state readOnly="false">
-			<options>
-				<option value="ON">On</option>
-				<option value="OFF">Off</option>
-			</options>
-		</state>
+	<channel-type id="effect">
+		<item-type>String</item-type>
+		<label>@text/channel-type.nanoleaf.effect.label</label>
+		<description>@text/channel-type.nanoleaf.effect.description</description>
 	</channel-type>
 
-	<channel-type id="colorTemperature">
-		<item-type>Dimmer</item-type>
-		<label>@text/channel-type.nanoleaf.colorTemperature.label</label>
-		<description>@text/channel-type.nanoleaf.colorTemperature.description</description>
-		<state min="0" max="100" step="1"/>
-	</channel-type>
-
-	<channel-type id="colorTemperatureAbs">
-		<item-type>Number</item-type>
-		<label>@text/channel-type.nanoleaf.colorTemperatureAbs.label</label>
-		<description>@text/channel-type.nanoleaf.colorTemperatureAbs.description</description>
-		<category>ColorLight</category>
-		<state min="1200" max="6500" step="100"/>
-	</channel-type>
-
-	<channel-type id="colorMode">
+	<channel-type id="colorMode" advanced="true">
 		<item-type>String</item-type>
 		<label>@text/channel-type.nanoleaf.colorMode.label</label>
 		<description>@text/channel-type.nanoleaf.colorMode.description</description>
@@ -91,62 +67,44 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="color">
-		<item-type>Color</item-type>
-		<label>@text/channel-type.nanoleaf.color.label</label>
-		<description>@text/Color of the Light Panels</description>
-	</channel-type>
-
-	<channel-type id="effect">
-		<item-type>String</item-type>
-		<label>@text/channel-type.nanoleaf.effect.label</label>
-		<description>@text/channel-type.nanoleaf.effect.description</description>
-	</channel-type>
-
-	<channel-type id="rhythmState">
+	<channel-type id="rhythmState" advanced="true">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.nanoleaf.rhythmState.label</label>
 		<description>@text/channel-type.nanoleaf.rhythmState.description</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="rhythmActive">
+	<channel-type id="rhythmActive" advanced="true">
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.nanoleaf.rhythmActive.label</label>
 		<description>@text/channel-type.nanoleaf.rhythmActive.description</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="rhythmMode">
+	<channel-type id="rhythmMode" advanced="true">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.nanoleaf.rhythmMode.label</label>
 		<description>@text/channel-type.nanoleaf.rhythmMode.description</description>
 		<state min="0" max="1">
 			<options>
 				<option value="0">Microphone</option>
-				<option value="1">Aux cable</option>
+				<option value="1">Aux Cable</option>
 			</options>
 		</state>
 	</channel-type>
 
-	<channel-type id="singleTap">
-		<item-type>Switch</item-type>
-		<label>@text/channel-type.nanoleaf.singleTap.label</label>
-		<description>@text/channel-type.nanoleaf.singleTap.description</description>
-		<state readOnly="false"/>
+	<channel-type id="swipe">
+		<kind>trigger</kind>
+		<label>@text/channel-type.nanoleaf.swipe.label</label>
+		<description>@text/channel-type.nanoleaf.swipe.description</description>
+		<event>
+			<options>
+				<option value="UP">Up</option>
+				<option value="DOWN">Down</option>
+				<option value="LEFT">Left</option>
+				<option value="RIGHT">Right</option>
+			</options>
+		</event>
 	</channel-type>
 
-	<channel-type id="doubleTap">
-		<item-type>Switch</item-type>
-		<label>@text/channel-type.nanoleaf.doubleTap.label</label>
-		<description>@text/channel-type.nanoleaf.doubleTap.description</description>
-		<state readOnly="false"/>
-	</channel-type>
-
-	<channel-type id="panelLayout">
-		<item-type>Switch</item-type>
-		<label>@text/channel-type.nanoleaf.panelLayout.label</label>
-		<description>@text/channel-type.nanoleaf.panelLayout.description</description>
-		<state readOnly="false"/>
-	</channel-type>
 </thing:thing-descriptions>

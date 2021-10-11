@@ -33,7 +33,7 @@ public class LifxLightConfig {
 
     public @Nullable MACAddress getMACAddress() {
         String localDeviceId = deviceId;
-        return localDeviceId == null ? null : new MACAddress(localDeviceId, true);
+        return localDeviceId == null ? null : new MACAddress(localDeviceId);
     }
 
     public @Nullable InetSocketAddress getHost() {

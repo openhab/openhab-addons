@@ -45,6 +45,7 @@ public class HttpChannelConfig {
     public @Nullable String commandExtension;
     public @Nullable String stateTransformation;
     public @Nullable String commandTransformation;
+    public String stateContent = "";
 
     public HttpChannelMode mode = HttpChannelMode.READWRITE;
 

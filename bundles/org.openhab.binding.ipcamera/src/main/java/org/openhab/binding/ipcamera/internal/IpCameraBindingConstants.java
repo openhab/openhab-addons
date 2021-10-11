@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ipcamera.internal;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,6 +42,11 @@ public class IpCameraBindingConstants {
         MJPEG,
         SNAPSHOT
     }
+
+    public static final BigDecimal BIG_DECIMAL_SCALE_MOTION = new BigDecimal(5000);
+    public static final long HLS_STARTUP_DELAY_MS = 4500;
+    @SuppressWarnings("null")
+    public static final int SERVLET_PORT = Integer.getInteger("org.osgi.service.http.port", 8080);
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_GROUP = new ThingTypeUID(BINDING_ID, "group");
@@ -129,4 +135,6 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_GOTO_PRESET = "gotoPreset";
     public static final String CHANNEL_START_STREAM = "startStream";
     public static final String CHANNEL_ENABLE_PRIVACY_MODE = "enablePrivacyMode";
+    public static final String CHANNEL_CAR_ALARM = "carAlarm";
+    public static final String CHANNEL_HUMAN_ALARM = "humanAlarm";
 }

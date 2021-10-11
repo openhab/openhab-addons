@@ -16,10 +16,10 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxTcpConnector extends PowermaxConnector {
 
     private final Logger logger = LoggerFactory.getLogger(PowermaxTcpConnector.class);
@@ -35,7 +36,7 @@ public class PowermaxTcpConnector extends PowermaxConnector {
     private final String ipAddress;
     private final int tcpPort;
     private final int connectTimeout;
-    private Socket tcpSocket;
+    private @Nullable Socket tcpSocket;
 
     /**
      * Constructor.
@@ -53,35 +54,23 @@ public class PowermaxTcpConnector extends PowermaxConnector {
     }
 
     @Override
-    public void open() {
+    public void open() throws Exception {
         logger.debug("open(): Opening TCP Connection");
 
-        try {
-            tcpSocket = new Socket();
-            tcpSocket.setSoTimeout(250);
-            SocketAddress socketAddress = new InetSocketAddress(ipAddress, tcpPort);
-            tcpSocket.connect(socketAddress, connectTimeout);
+        Socket socket = new Socket();
+        tcpSocket = socket;
+        socket.setSoTimeout(250);
+        SocketAddress socketAddress = new InetSocketAddress(ipAddress, tcpPort);
+        socket.connect(socketAddress, connectTimeout);
 
-            setInput(tcpSocket.getInputStream());
-            setOutput(tcpSocket.getOutputStream());
+        setInput(socket.getInputStream());
+        setOutput(socket.getOutputStream());
 
-            setReaderThread(new PowermaxReaderThread(this, readerThreadName));
-            getReaderThread().start();
+        PowermaxReaderThread readerThread = new PowermaxReaderThread(this, readerThreadName);
+        setReaderThread(readerThread);
+        readerThread.start();
 
-            setConnected(true);
-        } catch (UnknownHostException e) {
-            logger.debug("open(): Unknown Host Exception: {}", e.getMessage(), e);
-            setConnected(false);
-        } catch (SocketException e) {
-            logger.debug("open(): Socket Exception: {}", e.getMessage(), e);
-            setConnected(false);
-        } catch (IOException e) {
-            logger.debug("open(): IO Exception: {}", e.getMessage(), e);
-            setConnected(false);
-        } catch (Exception e) {
-            logger.debug("open(): Exception: {}", e.getMessage(), e);
-            setConnected(false);
-        }
+        setConnected(true);
     }
 
     @Override
@@ -90,9 +79,10 @@ public class PowermaxTcpConnector extends PowermaxConnector {
 
         super.cleanup(false);
 
-        if (tcpSocket != null) {
+        Socket socket = tcpSocket;
+        if (socket != null) {
             try {
-                tcpSocket.close();
+                socket.close();
             } catch (IOException e) {
                 logger.debug("Error while closing the socket: {}", e.getMessage());
             }

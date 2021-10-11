@@ -67,8 +67,9 @@ public interface NhcControllerEvent {
     /**
      * Called to indicate the connection with the Niko Home Control Controller is offline.
      *
+     * @param message
      */
-    public void controllerOffline();
+    public void controllerOffline(String message);
 
     /**
      * Called to indicate the connection with the Niko Home Control Controller is online.

@@ -32,6 +32,9 @@ import org.openhab.binding.roku.internal.dto.Apps;
 import org.openhab.binding.roku.internal.dto.Apps.App;
 import org.openhab.binding.roku.internal.dto.DeviceInfo;
 import org.openhab.binding.roku.internal.dto.Player;
+import org.openhab.binding.roku.internal.dto.TvChannel;
+import org.openhab.binding.roku.internal.dto.TvChannels;
+import org.openhab.binding.roku.internal.dto.TvChannels.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,10 +50,13 @@ public class RokuCommunicator {
 
     private final String urlKeyPress;
     private final String urlLaunchApp;
+    private final String urlLaunchTvChannel;
     private final String urlQryDevice;
     private final String urlQryActiveApp;
     private final String urlQryApps;
     private final String urlQryPlayer;
+    private final String urlQryActiveTvChannel;
+    private final String urlQryTvChannels;
 
     public RokuCommunicator(HttpClient httpClient, String host, int port) {
         this.httpClient = httpClient;
@@ -58,10 +64,13 @@ public class RokuCommunicator {
         final String baseUrl = "http://" + host + ":" + port;
         urlKeyPress = baseUrl + "/keypress/";
         urlLaunchApp = baseUrl + "/launch/";
+        urlLaunchTvChannel = baseUrl + "/launch/tvinput.dtv?ch=";
         urlQryDevice = baseUrl + "/query/device-info";
         urlQryActiveApp = baseUrl + "/query/active-app";
         urlQryApps = baseUrl + "/query/apps";
         urlQryPlayer = baseUrl + "/query/media-player";
+        urlQryActiveTvChannel = baseUrl + "/query/tv-active-channel";
+        urlQryTvChannels = baseUrl + "/query/tv-channels";
     }
 
     /**
@@ -82,6 +91,16 @@ public class RokuCommunicator {
      */
     public void launchApp(String appId) throws RokuHttpException {
         postCommand(urlLaunchApp + appId);
+    }
+
+    /**
+     * Send a TV channel change command to the Roku TV
+     *
+     * @param channelNumber The channel number of the channel to tune into, ie: 2.1
+     *
+     */
+    public void launchTvChannel(String channelNumber) throws RokuHttpException {
+        postCommand(urlLaunchTvChannel + channelNumber);
     }
 
     /**
@@ -185,6 +204,58 @@ public class RokuCommunicator {
             throw new RokuHttpException("No Player info model in response");
         } catch (JAXBException | XMLStreamException e) {
             throw new RokuHttpException("Exception creating Player info Unmarshaller: " + e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * Send a command to get tv-active-channel from the Roku TV and return a TvChannel object
+     *
+     * @return A TvChannel object populated with information about the current active TV Channel
+     * @throws RokuHttpException
+     */
+    public TvChannel getActiveTvChannel() throws RokuHttpException {
+        try {
+            JAXBContext ctx = JAXBUtils.JAXBCONTEXT_TVCHANNEL;
+            if (ctx != null) {
+                Unmarshaller unmarshaller = ctx.createUnmarshaller();
+                if (unmarshaller != null) {
+                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY
+                            .createXMLStreamReader(new StringReader(getCommand(urlQryActiveTvChannel)));
+                    TvChannel tvChannelInfo = (TvChannel) unmarshaller.unmarshal(xsr);
+                    if (tvChannelInfo != null) {
+                        return tvChannelInfo;
+                    }
+                }
+            }
+            throw new RokuHttpException("No TvChannel info model in response");
+        } catch (JAXBException | XMLStreamException e) {
+            throw new RokuHttpException("Exception creating TvChannel info Unmarshaller: " + e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * Send a command to get tv-channels from the Roku TV and return a list of Channel objects
+     *
+     * @return A List of Channel objects for all TV channels currently available on the Roku TV
+     * @throws RokuHttpException
+     */
+    public List<Channel> getTvChannelList() throws RokuHttpException {
+        try {
+            JAXBContext ctx = JAXBUtils.JAXBCONTEXT_TVCHANNELS;
+            if (ctx != null) {
+                Unmarshaller unmarshaller = ctx.createUnmarshaller();
+                if (unmarshaller != null) {
+                    XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY
+                            .createXMLStreamReader(new StringReader(getCommand(urlQryTvChannels)));
+                    TvChannels tvChannels = (TvChannels) unmarshaller.unmarshal(xsr);
+                    if (tvChannels != null) {
+                        return tvChannels.getChannel();
+                    }
+                }
+            }
+            throw new RokuHttpException("No TvChannels info model in response");
+        } catch (JAXBException | XMLStreamException e) {
+            throw new RokuHttpException("Exception creating TvChannel info Unmarshaller: " + e.getLocalizedMessage());
         }
     }
 

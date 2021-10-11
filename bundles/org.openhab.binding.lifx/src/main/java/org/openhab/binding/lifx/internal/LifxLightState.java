@@ -22,11 +22,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lifx.internal.dto.Effect;
+import org.openhab.binding.lifx.internal.dto.HevCycleState;
+import org.openhab.binding.lifx.internal.dto.PowerState;
+import org.openhab.binding.lifx.internal.dto.SignalStrength;
 import org.openhab.binding.lifx.internal.fields.HSBK;
 import org.openhab.binding.lifx.internal.listener.LifxLightStateListener;
-import org.openhab.binding.lifx.internal.protocol.Effect;
-import org.openhab.binding.lifx.internal.protocol.PowerState;
-import org.openhab.binding.lifx.internal.protocol.SignalStrength;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -34,12 +35,13 @@ import org.openhab.core.library.types.PercentType;
 /**
  * The {@link LifxLightState} stores the properties that represent the state of a light.
  *
- * @author Wouter Born - Extracted class from LifxLightHandler, added listener logic
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public class LifxLightState {
 
     private HSBK[] colors = new HSBK[] { new HSBK(DEFAULT_COLOR) };
+    private @Nullable HevCycleState hevCycleState;
     private @Nullable PercentType infrared;
     private @Nullable PowerState powerState;
     private @Nullable SignalStrength signalStrength;
@@ -51,6 +53,7 @@ public class LifxLightState {
     public void copy(LifxLightState other) {
         this.powerState = other.getPowerState();
         this.colors = other.getColors();
+        this.hevCycleState = other.getHevCycleState();
         this.infrared = other.getInfrared();
         this.signalStrength = other.getSignalStrength();
         this.tileEffect = other.getTileEffect();
@@ -74,6 +77,10 @@ public class LifxLightState {
             colorsCopy[i] = colors[i] != null ? new HSBK(colors[i]) : null;
         }
         return colorsCopy;
+    }
+
+    public @Nullable HevCycleState getHevCycleState() {
+        return hevCycleState;
     }
 
     public @Nullable PercentType getInfrared() {
@@ -156,6 +163,13 @@ public class LifxLightState {
         HSBK newColor = getColor(zoneIndex);
         newColor.setKelvin(kelvin);
         setColor(newColor, zoneIndex);
+    }
+
+    public void setHevCycleState(HevCycleState newHevCycleState) {
+        HevCycleState oldHevCycleState = this.hevCycleState;
+        this.hevCycleState = newHevCycleState;
+        updateLastChange();
+        listeners.forEach(listener -> listener.handleHevCycleStateChange(oldHevCycleState, newHevCycleState));
     }
 
     public void setInfrared(PercentType newInfrared) {

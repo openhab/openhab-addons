@@ -14,15 +14,18 @@ package org.openhab.binding.powermax.internal.state;
 
 import java.util.EventObject;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Event for state received from the Visonic alarm panel
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxStateEvent extends EventObject {
 
     private static final long serialVersionUID = 1L;
-    private PowermaxState state;
+    private final PowermaxState state;
 
     public PowermaxStateEvent(Object source, PowermaxState state) {
         super(source);

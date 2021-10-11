@@ -15,6 +15,8 @@ package org.openhab.binding.miio.internal;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,6 +29,7 @@ import org.openhab.binding.miio.internal.handler.MiIoGenericHandler;
 import org.openhab.binding.miio.internal.handler.MiIoUnsupportedHandler;
 import org.openhab.binding.miio.internal.handler.MiIoVacuumHandler;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -35,7 +38,10 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MiIoHandlerFactory} is responsible for creating things and thing
@@ -49,17 +55,23 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     private static final String THING_HANDLER_THREADPOOL_NAME = "thingHandler";
     protected final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(THING_HANDLER_THREADPOOL_NAME);
-
+    private final HttpClientFactory httpClientFactory;
     private MiIoDatabaseWatchService miIoDatabaseWatchService;
     private CloudConnector cloudConnector;
     private ChannelTypeRegistry channelTypeRegistry;
     private BasicChannelTypeProvider basicChannelTypeProvider;
+    private @Nullable Future<Boolean> scheduledTask;
+    private final Logger logger = LoggerFactory.getLogger(MiIoHandlerFactory.class);
 
     @Activate
-    public MiIoHandlerFactory(@Reference ChannelTypeRegistry channelTypeRegistry,
+    public MiIoHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference ChannelTypeRegistry channelTypeRegistry,
             @Reference MiIoDatabaseWatchService miIoDatabaseWatchService, @Reference CloudConnector cloudConnector,
             @Reference BasicChannelTypeProvider basicChannelTypeProvider, Map<String, Object> properties) {
+        this.httpClientFactory = httpClientFactory;
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
+        this.channelTypeRegistry = channelTypeRegistry;
+        this.basicChannelTypeProvider = basicChannelTypeProvider;
         this.cloudConnector = cloudConnector;
         @Nullable
         String username = (String) properties.get("username");
@@ -68,9 +80,23 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         @Nullable
         String country = (String) properties.get("country");
         cloudConnector.setCredentials(username, password, country);
-        scheduler.submit(() -> cloudConnector.isConnected());
-        this.channelTypeRegistry = channelTypeRegistry;
-        this.basicChannelTypeProvider = basicChannelTypeProvider;
+        try {
+            if (!scheduler.isShutdown()) {
+                scheduledTask = scheduler.submit(() -> cloudConnector.isConnected());
+            } else {
+                logger.debug("Unexpected: ScheduledExecutorService is shutdown.");
+            }
+        } catch (RejectedExecutionException e) {
+            logger.debug("Unexpected: ScheduledExecutorService task rejected.", e);
+        }
+    }
+
+    @Deactivate
+    public void dispose() {
+        final Future<Boolean> scheduledTask = this.scheduledTask;
+        if (scheduledTask != null && !scheduledTask.isDone()) {
+            scheduledTask.cancel(true);
+        }
     }
 
     @Override
@@ -91,6 +117,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
             return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry);
         }
-        return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService, cloudConnector);
+        return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService, cloudConnector,
+                httpClientFactory.getCommonHttpClient());
     }
 }

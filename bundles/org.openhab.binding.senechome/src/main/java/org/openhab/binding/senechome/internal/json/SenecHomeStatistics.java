@@ -13,41 +13,61 @@
 package org.openhab.binding.senechome.internal.json;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Json model of senec home devices: This sub model provides the current statistics by the inverter.
  *
+ * Section "STATISTIC" in Senec JSON.
+ *
  * @author Korbinian Probst - Initial Contribution
  */
 public class SenecHomeStatistics implements Serializable {
 
-    private static final long serialVersionUID = -7479338432170375451L;
+    private static final long serialVersionUID = -1102310892637495823L;
 
     /**
-     * total Wh charged to the battery
+     * total Wh charged to the battery (kWh)
      */
     public @SerializedName("LIVE_BAT_CHARGE") String liveBatCharge;
 
     /**
-     * total Wh discharged from the battery
+     * total Wh discharged from the battery (kWh)
      */
     public @SerializedName("LIVE_BAT_DISCHARGE") String liveBatDischarge;
 
     /**
-     * total Wh imported from grid
+     * total Wh imported from grid (kWh)
      */
     public @SerializedName("LIVE_GRID_IMPORT") String liveGridImport;
 
     /**
-     * total Wh supplied to the grid
+     * total Wh supplied to the grid (kWh)
      */
     public @SerializedName("LIVE_GRID_EXPORT") String liveGridExport;
 
+    /**
+     * Total house consumption (kWh)
+     */
+    public @SerializedName("LIVE_HOUSE_CONS") String liveHouseConsumption;
+
+    /**
+     * Total Wh produced (kWh)
+     */
+    public @SerializedName("LIVE_PV_GEN") String livePowerGenerator;
+
+    /**
+     * Total Wh provided to Wallbox (Wh)
+     */
+    public @SerializedName("LIVE_WB_ENERGY") String[] liveWallboxEnergy;
+
     @Override
     public String toString() {
-        return "SenecHomeStatistics [liveBatCharge=" + liveBatCharge + ", liveBatDischarge= " + liveBatDischarge
-                + ", liveGridImport= " + liveGridImport + ", liveGridExport= " + liveGridExport + "]";
+        return "SenecHomeStatistics [liveBatCharge=" + liveBatCharge + ", liveBatDischarge=" + liveBatDischarge
+                + ", liveGridImport=" + liveGridImport + ", liveGridExport=" + liveGridExport
+                + ", liveHouseConsumption=" + liveHouseConsumption + ", livePowerGen=" + livePowerGenerator
+                + ", liveWallboxEnergy=" + Arrays.toString(liveWallboxEnergy) + "]";
     }
 }

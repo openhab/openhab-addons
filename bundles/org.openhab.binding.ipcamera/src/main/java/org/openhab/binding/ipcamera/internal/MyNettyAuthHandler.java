@@ -95,7 +95,6 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         nonce = Helper.searchString(authenticate, "nonce=\"");
         opaque = Helper.searchString(authenticate, "opaque=\"");
         qop = Helper.searchString(authenticate, "qop=\"");
-
         if (!qop.isEmpty() && !realm.isEmpty()) {
             ipCameraHandler.useDigestAuth = true;
         } else {
@@ -105,7 +104,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         }
 
         String stale = Helper.searchString(authenticate, "stale=\"");
-        if (stale.equalsIgnoreCase("true")) {
+        if ("true".equalsIgnoreCase(stale)) {
             logger.debug("Camera reported stale=true which normally means the NONCE has expired.");
         }
 
@@ -128,8 +127,10 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
 
         String digestString = "username=\"" + username + "\", realm=\"" + realm + "\", nonce=\"" + nonce + "\", uri=\""
                 + requestURI + "\", cnonce=\"" + cnonce + "\", nc=" + nc + ", qop=\"" + qop + "\", response=\""
-                + response + "\", opaque=\"" + opaque + "\"";
-
+                + response + "\"";
+        if (!opaque.isEmpty()) {
+            digestString += ", opaque=\"" + opaque + "\"";
+        }
         if (reSend) {
             ipCameraHandler.sendHttpRequest(httpMethod, requestURI, digestString);
             return;

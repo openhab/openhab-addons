@@ -115,7 +115,7 @@ public class NhcAction2 extends NhcAction {
      */
     @Override
     public void execute(String command) {
-        logger.debug("Niko Home Control: execute action {} of type {} for {}", command, type, id);
+        logger.debug("execute action {} of type {} for {}", command, type, id);
 
         nhcComm.executeAction(id, command);
     }

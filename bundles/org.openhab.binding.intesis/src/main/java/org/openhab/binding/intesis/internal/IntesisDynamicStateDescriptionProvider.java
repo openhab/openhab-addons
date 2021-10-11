@@ -13,9 +13,14 @@
 package org.openhab.binding.intesis.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
+import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  *
@@ -25,4 +30,12 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class IntesisDynamicStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
 
+    @Activate
+    public IntesisDynamicStateDescriptionProvider(final @Reference EventPublisher eventPublisher, //
+            final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry, //
+            final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+        this.eventPublisher = eventPublisher;
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
+        this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
+    }
 }

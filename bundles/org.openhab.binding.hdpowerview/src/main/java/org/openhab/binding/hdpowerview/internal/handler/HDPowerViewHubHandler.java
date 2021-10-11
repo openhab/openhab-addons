@@ -21,13 +21,14 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
+import org.openhab.binding.hdpowerview.internal.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
@@ -63,27 +64,29 @@ import com.google.gson.JsonParseException;
 public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubHandler.class);
-    private final ClientBuilder clientBuilder;
+    private final HttpClient httpClient;
 
     private long refreshInterval;
-    private long hardRefreshInterval;
+    private long hardRefreshPositionInterval;
+    private long hardRefreshBatteryLevelInterval;
 
     private @Nullable HDPowerViewWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
-    private @Nullable ScheduledFuture<?> hardRefreshFuture;
+    private @Nullable ScheduledFuture<?> hardRefreshPositionFuture;
+    private @Nullable ScheduledFuture<?> hardRefreshBatteryLevelFuture;
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
 
-    public HDPowerViewHubHandler(Bridge bridge, ClientBuilder clientBuilder) {
+    public HDPowerViewHubHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
-        this.clientBuilder = clientBuilder;
+        this.httpClient = httpClient;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH.equals(command)) {
-            requestRefreshShades();
+            requestRefreshShadePositions();
             return;
         }
 
@@ -98,7 +101,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                     webTargets.activateScene(Integer.parseInt(channelUID.getId()));
                 } catch (HubMaintenanceException e) {
                     // exceptions are logged in HDPowerViewWebTargets
-                } catch (NumberFormatException | ProcessingException e) {
+                } catch (NumberFormatException | HubProcessingException e) {
                     logger.debug("Unexpected error {}", e.getMessage());
                 }
             }
@@ -116,9 +119,10 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             return;
         }
 
-        webTargets = new HDPowerViewWebTargets(clientBuilder.build(), host);
+        webTargets = new HDPowerViewWebTargets(httpClient, host);
         refreshInterval = config.refresh;
-        hardRefreshInterval = config.hardRefresh;
+        hardRefreshPositionInterval = config.hardRefresh;
+        hardRefreshBatteryLevelInterval = config.hardRefreshBatteryLevel;
         schedulePoll();
     }
 
@@ -146,14 +150,24 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         logger.debug("Scheduling poll for 5000ms out, then every {}ms", refreshInterval);
         this.pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 5000, refreshInterval, TimeUnit.MILLISECONDS);
 
-        future = this.hardRefreshFuture;
+        future = this.hardRefreshPositionFuture;
         if (future != null) {
             future.cancel(false);
         }
-        if (hardRefreshInterval > 0) {
-            logger.debug("Scheduling hard refresh every {}minutes", hardRefreshInterval);
-            this.hardRefreshFuture = scheduler.scheduleWithFixedDelay(this::requestRefreshShades, 1,
-                    hardRefreshInterval, TimeUnit.MINUTES);
+        if (hardRefreshPositionInterval > 0) {
+            logger.debug("Scheduling hard position refresh every {} minutes", hardRefreshPositionInterval);
+            this.hardRefreshPositionFuture = scheduler.scheduleWithFixedDelay(this::requestRefreshShadePositions, 1,
+                    hardRefreshPositionInterval, TimeUnit.MINUTES);
+        }
+
+        future = this.hardRefreshBatteryLevelFuture;
+        if (future != null) {
+            future.cancel(false);
+        }
+        if (hardRefreshBatteryLevelInterval > 0) {
+            logger.debug("Scheduling hard battery level refresh every {} hours", hardRefreshBatteryLevelInterval);
+            this.hardRefreshBatteryLevelFuture = scheduler.scheduleWithFixedDelay(
+                    this::requestRefreshShadeBatteryLevels, 1, hardRefreshBatteryLevelInterval, TimeUnit.HOURS);
         }
     }
 
@@ -164,11 +178,17 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
         this.pollFuture = null;
 
-        future = this.hardRefreshFuture;
+        future = this.hardRefreshPositionFuture;
         if (future != null) {
             future.cancel(true);
         }
-        this.hardRefreshFuture = null;
+        this.hardRefreshPositionFuture = null;
+
+        future = this.hardRefreshBatteryLevelFuture;
+        if (future != null) {
+            future.cancel(true);
+        }
+        this.hardRefreshBatteryLevelFuture = null;
     }
 
     private synchronized void poll() {
@@ -178,7 +198,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             pollScenes();
         } catch (JsonParseException e) {
             logger.warn("Bridge returned a bad JSON response: {}", e.getMessage());
-        } catch (ProcessingException e) {
+        } catch (HubProcessingException e) {
             logger.warn("Error connecting to bridge: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (HubMaintenanceException e) {
@@ -186,7 +206,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
     }
 
-    private void pollShades() throws JsonParseException, ProcessingException, HubMaintenanceException {
+    private void pollShades() throws JsonParseException, HubProcessingException, HubMaintenanceException {
         HDPowerViewWebTargets webTargets = this.webTargets;
         if (webTargets == null) {
             throw new ProcessingException("Web targets not initialized");
@@ -229,7 +249,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         thingHandler.onReceiveUpdate(shadeData);
     }
 
-    private void pollScenes() throws JsonParseException, ProcessingException, HubMaintenanceException {
+    private void pollScenes() throws JsonParseException, HubProcessingException, HubMaintenanceException {
         HDPowerViewWebTargets webTargets = this.webTargets;
         if (webTargets == null) {
             throw new ProcessingException("Web targets not initialized");
@@ -303,13 +323,27 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         return ret;
     }
 
-    private void requestRefreshShades() {
+    private void requestRefreshShadePositions() {
         Map<Thing, String> thingIdMap = getThingIdMap();
         for (Entry<Thing, String> item : thingIdMap.entrySet()) {
             Thing thing = item.getKey();
             ThingHandler handler = thing.getHandler();
             if (handler instanceof HDPowerViewShadeHandler) {
-                ((HDPowerViewShadeHandler) handler).requestRefreshShade();
+                ((HDPowerViewShadeHandler) handler).requestRefreshShadePosition();
+            } else {
+                String shadeId = item.getValue();
+                logger.debug("Shade '{}' handler not initialized", shadeId);
+            }
+        }
+    }
+
+    private void requestRefreshShadeBatteryLevels() {
+        Map<Thing, String> thingIdMap = getThingIdMap();
+        for (Entry<Thing, String> item : thingIdMap.entrySet()) {
+            Thing thing = item.getKey();
+            ThingHandler handler = thing.getHandler();
+            if (handler instanceof HDPowerViewShadeHandler) {
+                ((HDPowerViewShadeHandler) handler).requestRefreshShadeBatteryLevel();
             } else {
                 String shadeId = item.getValue();
                 logger.debug("Shade '{}' handler not initialized", shadeId);

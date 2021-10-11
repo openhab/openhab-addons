@@ -31,12 +31,6 @@
 				<default>80</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="statusrefresh" type="integer" unit="s">
-				<default>120</default>
-				<description>Unit status refresh interval (seconds)</description>
-				<label>Refresh</label>
-				<advanced>true</advanced>
-			</parameter>
 			<parameter name="addSecondaryUnits" type="boolean">
 				<default>false</default>
 				<description>If the controller is primary, add secondary controllers units as well</description>

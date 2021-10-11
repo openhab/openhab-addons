@@ -47,9 +47,6 @@ public class F6_10_01 extends _RPSMessage {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-        if (!isValid()) {
-            return UnDefType.UNDEF;
-        }
 
         byte data = (byte) (bytes[0] & 0x0F);
 
@@ -81,5 +78,11 @@ public class F6_10_01 extends _RPSMessage {
     @Override
     protected boolean validateData(byte[] bytes) {
         return super.validateData(bytes) && getBit(bytes[0], 6) && getBit(bytes[0], 3) && getBit(bytes[0], 2);
+    }
+
+    @Override
+    public boolean isValidForTeachIn() {
+        return !getBit(bytes[0], 7) && getBit(bytes[0], 6) && !getBit(bytes[0], 5) && !getBit(bytes[0], 4)
+                && getBit(bytes[0], 3) && getBit(bytes[0], 2);
     }
 }

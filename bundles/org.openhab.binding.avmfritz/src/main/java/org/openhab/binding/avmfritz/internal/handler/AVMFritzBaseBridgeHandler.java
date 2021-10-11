@@ -64,6 +64,7 @@ import org.slf4j.LoggerFactory;
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
+ * @author Ulrich Mertin - Added support for HAN-FUN blinds
  */
 @NonNullByDefault
 public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
@@ -326,12 +327,17 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                 return GROUP_SWITCH;
             }
         } else if (device instanceof DeviceModel && device.isHANFUNUnit()) {
+            if (device.isHANFUNBlinds()) {
+                return DEVICE_HAN_FUN_BLINDS;
+            }
             List<String> interfaces = Arrays
                     .asList(((DeviceModel) device).getEtsiunitinfo().getInterfaces().split(","));
             if (interfaces.contains(HAN_FUN_INTERFACE_ALERT)) {
                 return DEVICE_HAN_FUN_CONTACT;
             } else if (interfaces.contains(HAN_FUN_INTERFACE_SIMPLE_BUTTON)) {
                 return DEVICE_HAN_FUN_SWITCH;
+            } else if (interfaces.contains(HAN_FUN_INTERFACE_ON_OFF)) {
+                return DEVICE_HAN_FUN_ON_OFF;
             }
         }
         return device.getProductName().replaceAll(INVALID_PATTERN, "_");

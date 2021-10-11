@@ -38,6 +38,9 @@ public enum EiscpCommand {
     VOLUME_SET("MVL", "%02X"),
     VOLUME("MVL", ""),
 
+    AUDIOINFO("IFA", ""),
+    AUDIOINFO_QUERY("IFA", "QSTN"),
+
     SOURCE_UP("SLI", "UP"),
     SOURCE_DOWN("SLI", "DOWN"),
     SOURCE_QUERY("SLI", "QSTN"),

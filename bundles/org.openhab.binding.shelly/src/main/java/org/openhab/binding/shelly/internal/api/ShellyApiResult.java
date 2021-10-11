@@ -63,6 +63,10 @@ public class ShellyApiResult {
         return httpCode == OK_200;
     }
 
+    public boolean isNotFound() {
+        return httpCode == NOT_FOUND_404;
+    }
+
     public boolean isHttpAccessUnauthorized() {
         return (httpCode == UNAUTHORIZED_401 || response.contains(SHELLY_APIERR_UNAUTHORIZED));
     }

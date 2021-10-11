@@ -18,17 +18,21 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents layout of the light panels
  *
  * @author Martin Raepple - Initial contribution
+ * @author Stefan Höhn - further improvements
  */
 @NonNullByDefault
 public class Layout {
 
     private int numPanels;
-    private int sideLength;
+
+    private final Logger logger = LoggerFactory.getLogger(Layout.class);
 
     private @Nullable List<PositionDatum> positionData = null;
 
@@ -38,14 +42,6 @@ public class Layout {
 
     public void setNumPanels(int numPanels) {
         this.numPanels = numPanels;
-    }
-
-    public int getSideLength() {
-        return sideLength;
-    }
-
-    public void setSideLength(int sideLength) {
-        this.sideLength = sideLength;
     }
 
     public @Nullable List<PositionDatum> getPositionData() {
@@ -60,42 +56,55 @@ public class Layout {
      * Returns an text representation for a canvas layout.
      *
      * Note only canvas supported currently due to its easy geometry
-     * 
+     *
      * @return a String containing the layout
      */
     public String getLayoutView() {
-        if (positionData != null) {
+        List<PositionDatum> localPositionData = positionData;
+        if (localPositionData != null) {
             String view = "";
 
             int minx = Integer.MAX_VALUE;
             int maxx = Integer.MIN_VALUE;
             int miny = Integer.MAX_VALUE;
             int maxy = Integer.MIN_VALUE;
+            int sideLength = Integer.MIN_VALUE;
 
-            final int noofDefinedPanels = positionData.size();
+            final int noofDefinedPanels = localPositionData.size();
+
+            /*
+             * Since 5.0.0 sidelengths are panelspecific and not delivered per layout but only the individual panel.
+             * The only approximation we can do then is to derive the max-sidelength
+             * the other issue is that panel sidelength have become fix per paneltype which has to be retrieved in a
+             * hardcoded way.
+             */
             for (int index = 0; index < noofDefinedPanels; index++) {
-                if (positionData != null) {
-                    @Nullable
-                    PositionDatum panel = positionData.get(index);
+                PositionDatum panel = localPositionData.get(index);
+                logger.debug("Layout: Panel position data x={} y={}", panel.getPosX(), panel.getPosY());
 
-                    if (panel != null) {
-                        if (panel.getPosX() < minx) {
-                            minx = panel.getPosX();
-                        }
-                        if (panel.getPosX() > maxx) {
-                            maxx = panel.getPosX();
-                        }
-                        if (panel.getPosY() < miny) {
-                            miny = panel.getPosY();
-                        }
-                        if (panel.getPosY() > maxy) {
-                            maxy = panel.getPosY();
-                        }
-                    }
+                if (panel.getPosX() < minx) {
+                    minx = panel.getPosX();
+                }
+                if (panel.getPosX() > maxx) {
+                    maxx = panel.getPosX();
+                }
+                if (panel.getPosY() < miny) {
+                    miny = panel.getPosY();
+                }
+                if (panel.getPosY() > maxy) {
+                    maxy = panel.getPosY();
+                }
+                if (panel.getPanelSize() > sideLength) {
+                    sideLength = panel.getPanelSize();
                 }
             }
 
-            int shiftWidth = getSideLength() / 2;
+            int shiftWidth = sideLength / 2;
+
+            if (shiftWidth == 0) {
+                // seems we do not have squares here
+                return "Cannot render layout. Please note that layout views are only supported for square panels.";
+            }
 
             int lineY = maxy;
             Map<Integer, PositionDatum> map;
@@ -104,28 +113,34 @@ public class Layout {
                 map = new TreeMap<>();
                 for (int index = 0; index < noofDefinedPanels; index++) {
 
-                    if (positionData != null) {
-                        @Nullable
-                        PositionDatum panel = positionData.get(index);
+                    if (localPositionData != null) {
+                        PositionDatum panel = localPositionData.get(index);
 
-                        if (panel != null && panel.getPosY() == lineY)
+                        if (panel.getPosY() == lineY) {
                             map.put(panel.getPosX(), panel);
+                        }
                     }
                 }
                 lineY -= shiftWidth;
                 for (int x = minx; x <= maxx; x += shiftWidth) {
                     if (map.containsKey(x)) {
-                        @Nullable
                         PositionDatum panel = map.get(x);
-                        view += String.format("%5s ", panel.getPanelId());
-                    } else
+                        if (panel != null) {
+                            int panelId = panel.getPanelId();
+                            view += String.format("%5s ", panelId);
+                        } else {
+                            view += "      ";
+                        }
+                    } else {
                         view += "      ";
+                    }
                 }
-                view += "\n";
+                view += System.lineSeparator();
             }
 
             return view;
-        } else
+        } else {
             return "";
+        }
     }
 }

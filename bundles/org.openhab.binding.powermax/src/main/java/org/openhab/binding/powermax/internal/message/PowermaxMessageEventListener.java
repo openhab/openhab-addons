@@ -15,11 +15,14 @@ package org.openhab.binding.powermax.internal.message;
 import java.util.EventListener;
 import java.util.EventObject;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Powermax Alarm Event Listener interface. Handles incoming Powermax Alarm message events
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public interface PowermaxMessageEventListener extends EventListener {
 
     /**
@@ -28,4 +31,9 @@ public interface PowermaxMessageEventListener extends EventListener {
      * @param event the event object
      */
     public void onNewMessageEvent(EventObject event);
+
+    /**
+     * Event handler method to indicate that communication has been lost
+     */
+    public void onCommunicationFailure(String message);
 }

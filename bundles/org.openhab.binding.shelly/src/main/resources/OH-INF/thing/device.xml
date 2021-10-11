@@ -65,18 +65,18 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="batVoltage" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
-		<label>Battery Voltage</label>
-		<description>Battery voltage in V</description>
-		<state readOnly="true" pattern="%f %unit%">
+	<channel-type id="externalPower" advanced="true">
+		<item-type>Switch</item-type>
+		<label>External Power</label>
+		<description>ON: External power is connected</description>
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="uptime" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Uptime</label>
 		<description>Number of seconds since the device was powered up</description>
-		<state readOnly="true" pattern="%d %unit%">
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="heartBeat" advanced="true">
@@ -100,9 +100,10 @@
 		<description>Internal device temperature, helps to detect overheating due to installation issues</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>CurrentTemperature</tag>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%f %unit%">
+		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="selfTest">

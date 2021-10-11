@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.upb.internal.handler.UPBIoHandler.CmdStatus;
-import org.openhab.binding.upb.internal.message.MessageBuilder;
 import org.openhab.binding.upb.internal.message.MessageParseException;
 import org.openhab.binding.upb.internal.message.UPBMessage;
 import org.openhab.core.common.NamedThreadFactory;
@@ -177,9 +176,13 @@ public class SerialIoThread extends Thread {
         listener.incomingMessage(msg);
     }
 
-    public CompletionStage<CmdStatus> enqueue(final MessageBuilder msg) {
+    public CompletionStage<CmdStatus> enqueue(final String msg) {
+        return enqueue(msg, 1);
+    }
+
+    private CompletionStage<CmdStatus> enqueue(final String msg, int numAttempts) {
         final CompletableFuture<CmdStatus> completion = new CompletableFuture<>();
-        final Runnable task = new WriteRunnable(msg.build(), completion);
+        final Runnable task = new WriteRunnable(msg, completion, numAttempts);
         try {
             writeExecutor.execute(task);
         } catch (final RejectedExecutionException e) {
@@ -232,23 +235,18 @@ public class SerialIoThread extends Thread {
         private final String msg;
         private final CompletableFuture<CmdStatus> completion;
         private final CountDownLatch ackLatch = new CountDownLatch(1);
+        private final int numAttempts;
 
         private @Nullable Boolean ack;
 
-        public WriteRunnable(final String msg, final CompletableFuture<CmdStatus> completion) {
+        public WriteRunnable(final String msg, final CompletableFuture<CmdStatus> completion, int numAttempts) {
             this.msg = msg;
             this.completion = completion;
+            this.numAttempts = numAttempts;
         }
 
         // called by reader thread on ACK or NAK
         public void ackReceived(final boolean ack) {
-            if (logger.isDebugEnabled()) {
-                if (ack) {
-                    logger.debug("ACK received");
-                } else {
-                    logger.debug("NAK received");
-                }
-            }
             this.ack = ack;
             ackLatch.countDown();
         }
@@ -262,25 +260,32 @@ public class SerialIoThread extends Thread {
                 if (out == null) {
                     throw new IOException("serial port is not writable");
                 }
-                for (int tries = 0; tries < MAX_RETRIES && ack == null; tries++) {
-                    out.write(0x14);
-                    out.write(msg.getBytes(US_ASCII));
-                    out.write(0x0d);
-                    out.flush();
-                    final boolean acked = ackLatch.await(ACK_TIMEOUT_MS, MILLISECONDS);
-                    if (acked) {
-                        break;
+                final CmdStatus res;
+                out.write(0x14);
+                out.write(msg.getBytes(US_ASCII));
+                out.write(0x0d);
+                out.flush();
+                final boolean latched = ackLatch.await(ACK_TIMEOUT_MS, MILLISECONDS);
+                if (latched) {
+                    final Boolean ack = this.ack;
+                    if (ack == null) {
+                        logger.debug("write not acked, attempt {}", numAttempts);
+                        res = CmdStatus.WRITE_FAILED;
+                    } else if (ack) {
+                        completion.complete(CmdStatus.ACK);
+                        return;
+                    } else {
+                        logger.debug("NAK received, attempt {}", numAttempts);
+                        res = CmdStatus.NAK;
                     }
-                    logger.debug("ack timed out, retrying ({} of {})", tries + 1, MAX_RETRIES);
-                }
-                final Boolean ack = this.ack;
-                if (ack == null) {
-                    logger.debug("write not acked");
-                    completion.complete(CmdStatus.WRITE_FAILED);
-                } else if (ack) {
-                    completion.complete(CmdStatus.ACK);
                 } else {
-                    completion.complete(CmdStatus.NAK);
+                    logger.debug("ack timed out, attempt {}", numAttempts);
+                    res = CmdStatus.WRITE_FAILED;
+                }
+                if (numAttempts < MAX_RETRIES) {
+                    enqueue(msg, numAttempts + 1).thenAccept(completion::complete);
+                } else {
+                    completion.complete(res);
                 }
             } catch (final IOException | InterruptedException e) {
                 logger.warn("error writing message", e);
