@@ -64,7 +64,7 @@ public class D2_06_01 extends _VLDMessage {
 
     private enum SashState {
 
-        // WINDOWSTATE UNDEFINED(0x00, "UNDEFINED"),
+        // WINDOWSTATEUNDEFINED(0x00, "UNDEFINED"),
         NOTTILTED(0x01, "NOT TILTED"),
         TILTED(0x02, "TILTED");
 
