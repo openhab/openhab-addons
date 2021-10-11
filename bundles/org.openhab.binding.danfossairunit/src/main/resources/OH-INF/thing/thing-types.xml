@@ -191,7 +191,7 @@
 		<category>Fan</category>
 		<state step="10" min="0" max="100" readOnly="true"/>
 	</channel-type>
-	<channel-type id="filterPeriod">
+	<channel-type id="filterPeriod" advanced="true">
 		<item-type>Number</item-type>
 		<label>Filter Period</label>
 		<description>Number of months between filter replacements</description>
