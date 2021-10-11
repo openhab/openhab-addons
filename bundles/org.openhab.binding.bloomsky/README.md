@@ -74,7 +74,7 @@ The bridge does not have any channels.
 | dst               | Number    | Daylight savings time on (1) or off (0)                            | R          |
 | fullAddress       | String    | Weather observation full address                                   | R          |
 | lat               | Number    | Weather station latitude in decimal format                         | R          |
-| location          | Location  | Device location combined longitude, latittude                      | R          |
+| location          | Location  | Device location in lat.,lon.,height coordinates.  | R          |
 | lon               | Number    | Weather station longitude in decimal format                        | R          |
 | numOfFollowers    | Number    | Number of followers this PWS has as a favorite                     | R          |
 | previewImageList  | String    | Array list - URLs to last 5 image snapshots for timelapse video    | R          |
@@ -92,17 +92,17 @@ The bridge does not have any channels.
 | deviceType        | String    | Device type (model) SKY1 or SKY2                                   | R          |
 | dewPoint          | Number:Temperature    | Dew Point in Fahrenheit or Celsius                                 | R          |
 | heatIndex         | Number:Temperature    | Heat Index in Fahrenheit or Celsius                                | R          |
-| humidity          | Number:Dimensionless    | Relative humidity given as a percentage                            | R          |
+| humidity          | Number:Dimensionless    | Atmospheric humidity in percent.          | R          |
 | imageTS           | DateTime  | Current image time stamp in epoch format (Unix time stamp)         | R          |
 | imageURL          | String    | URL to jpg snapshot image from Sky camera taken at Image timestamp | R          |
 | luminance         | Number:Illuminance    | Luminance (brightness) given in candelas per square meter cd/m2    | R          |
 | night             | String    | Night detected after sunset/before sunrise                         | R          |
 | pressure          | Number:Pressure    | Barometric pressure inHG or mbar                                   | R          |
 | rain              | String    | Rain detected true or false (is it raining)                        | R          |
-| skyUVIndex        | String    | UV index                                                           | R          |
+| skyUVIndex        | Number    | UV index                                                           | R          |
 | temperature       | Number:Temperature    | Outside temperature in Fahrenheit or Celsius                       | R          |
 | tS                | DateTime  | Observation time stamp in epoch format (Unix time stamp)           | R          |
-| voltage           | Number    | Battery voltage to indicate charge level 100% = 2600+ mv           | R          |
+| batteryLevel           | Number    | Battery voltage to indicate charge level 100% = 2600+ mv           | R          |
 
 **SKY Video List F&#176; Group Channels**
 
@@ -144,10 +144,12 @@ The bridge does not have any channels.
 | rainDaily          | Number:Lenght    | Precipitation total current day                                    | R          |
 | rainRate           | String    | Precipitation rate                                                 | R          |
 | stormTimeStamp     | DateTime  | Storm update - date and time when observations were last updated   | R          |
-| stormUVIndex       | String    | UV index (overrides the SKY value)                                 | R          |
+| stormUVIndex       | Number    | UV index (overrides the SKY value)                                 | R          |
 | sustainedWindSpeed | Number:Speed    | Sustained Wind Speed                                               | R          |
 | windChill          | Number:Temperature    | Wind chill in Fahrenheit or Celsius                                | R          |
-| windDirection      | String    | Wind direction                                                     | R          |
+| windDirectionCompass      | String    | Wind direction as compass point (N, NE, E, SE...)                                                    | R          |
+| windDirectionAngle      | Number:Angle    | Wind direction in degrees (0-360°).)                                                    | R          |
+
 | windGust           | Number:Speed    | Wind Gust                                                          | R          |
 
 ## Full Example
