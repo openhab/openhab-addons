@@ -213,7 +213,8 @@ public class DanfossAirUnit {
     }
 
     public DecimalType getFilterLife() throws IOException {
-        return new DecimalType(BigDecimal.valueOf(asPercentByte(getByte(REGISTER_1_READ, FILTER_LIFE))));
+        BigDecimal value = BigDecimal.valueOf(asPercentByte(getByte(REGISTER_1_READ, FILTER_LIFE)));
+        return new DecimalType(value.setScale(1, RoundingMode.HALF_UP));
     }
 
     public DecimalType getFilterPeriod() throws IOException {
