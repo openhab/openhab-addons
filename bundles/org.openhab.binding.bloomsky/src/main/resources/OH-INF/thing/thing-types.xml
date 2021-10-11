@@ -9,29 +9,29 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-api"/>
 		</supported-bridge-type-refs>
-		<label>BloomSky - SKY Weather Station</label>
+		<label>BloomSky - Sky Weather Station</label>
 		<description>Provides weather data from the BloomSky personal weather stations account API</description>
 		<channel-groups>
 			<!-- Group for SKY 1/2 device details -->
 			<channel-group id="sky-device-information" typeId="sky-device-information">
-				<label>SKY Personal Weather Station device details</label>
-				<description>This is the SKY Weather Station device detail</description>
+				<label>Sky Weather Station Device Details</label>
+				<description>This is the Sky Weather Station device detail</description>
 			</channel-group>
 			<!-- Groups for SKY 1/2 weather observations -->
 			<channel-group id="sky-observations" typeId="sky-observations">
-				<label>SKY Personal Weather Station weather observations</label>
-				<description>This is the SKY 1/2 Weather Station current weather observations</description>
+				<label>Sky Weather Station Observations</label>
+				<description>This is the Sky 1/2 Weather Station current weather observations</description>
 			</channel-group>
 			<channel-group id="sky-video-list" typeId="sky-video-list">
-				<label>SKY Personal Weather Station five day video list in fahrenheit</label>
+				<label>Sky Five Day Video List °F </label>
 				<description>This is the SKY 1/2 Weather Station past five days of time-lapse videos in fahrenheit</description>
 			</channel-group>
 			<channel-group id="sky-video-list-c" typeId="sky-video-list-c">
-				<label>SKY Personal Weather Station five day video list in celsius</label>
+				<label>Sky Five Day Video List °C</label>
 				<description>This is the SKY 1/2 Weather Station past five days of time-lapse videos in celsius</description>
 			</channel-group>
 			<channel-group id="sky-preview-image-list" typeId="sky-preview-image-list">
-				<label>SKY Personal Weather Station last five preview images</label>
+				<label>Sky Last Five Preview Images</label>
 				<description>This is the SKY 1/2 Weather Station last five preview images</description>
 			</channel-group>
 		</channel-groups>
@@ -41,7 +41,7 @@
 
 	<channel-group-type id="sky-device-information">
 		<label>Sky Device Details</label>
-		<description>This is the SKY 1/2 device detail</description>
+		<description>This is the Sky 1/2 device detail</description>
 		<channels>
 			<channel typeId="utc" id="utc"></channel>
 			<channel typeId="cityName" id="cityName"></channel>
@@ -57,6 +57,7 @@
 			<channel typeId="numOfFollowers" id="numOfFollowers"></channel>
 			<channel typeId="lat" id="lat"></channel>
 			<channel typeId="alt" id="alt"></channel>
+			<channel typeId="system.location" id="location"></channel>
 			<channel typeId="fullAddress" id="fullAddress"></channel>
 			<channel typeId="streetName" id="streetName"></channel>
 			<channel typeId="previewImageList" id="previewImageList"></channel>
@@ -68,17 +69,17 @@
 		<description>This is the weather sensor observations from the SKY device</description>
 		<channels>
 			<channel typeId="luminance" id="luminance"></channel>
-			<channel typeId="temperature" id="temperature"></channel>
+			<channel typeId="system.outdoor-temperature" id="temperature"></channel>
 			<channel typeId="dewPoint" id="dewPoint"></channel>
 			<channel typeId="heatIndex" id="heatIndex"></channel>
 			<channel typeId="imageURL" id="imageURL"></channel>
 			<channel typeId="currentSkyImage" id="currentSkyImage"></channel>
 			<channel typeId="tS" id="tS"></channel>
 			<channel typeId="rain" id="rain"></channel>
-			<channel typeId="humidity" id="humidity"></channel>
+			<channel typeId="system.atmospheric-humidity" id="humidity"></channel>
 			<channel typeId="pressure" id="pressure"></channel>
 			<channel typeId="deviceType" id="deviceType"></channel>
-			<channel typeId="voltage" id="voltage"></channel>
+			<channel typeId="system.battery-level" id="batteryLevel"></channel>
 			<channel typeId="night" id="night"></channel>
 			<channel typeId="skyUVIndex" id="skyUVIndex"></channel>
 			<channel typeId="imageTS" id="imageTS"></channel>
@@ -86,7 +87,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="sky-video-list">
-		<label>Sky Video List: Fahrenheit</label>
+		<label>Sky Video List: °F</label>
 		<description>This is the weather stations last five days (starting with yesterday) of time-lapse videos in fahrenheit</description>
 		<channels>
 			<channel id="videoDay1" typeId="videoDay1"></channel>
@@ -98,7 +99,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="sky-video-list-c">
-		<label>Sky Video List: Celsius</label>
+		<label>Sky Video List: °C</label>
 		<description>This is the weather stations last five days (starting with yesterday) of time-lapse videos in celsius</description>
 		<channels>
 			<channel id="videoCDay1" typeId="videoCDay1"></channel>
@@ -153,7 +154,7 @@
 
 	<channel-type id="registerTime" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Device Registration Time Stamp</label>
+		<label>Device Registered Time Stamp</label>
 		<description>Registration time stamp - date and time when device was first registered with BloomSky account</description>
 		<category>Time</category>
 		<state readOnly="true"></state>
@@ -162,7 +163,7 @@
 	<channel-type id="dst" advanced="true">
 		<item-type>Number</item-type>
 		<label>Daylight Savings Time</label>
-		<description>Daylight savings time on (1) or off (0)</description>
+		<description>Daylight savings time active (1) or in-active (0)</description>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 
@@ -180,16 +181,25 @@
 		<state readOnly="true" pattern="%.5f"></state>
 	</channel-type>
 
+	<!-- Using system.location
+		<channel-type id="location">
+		<item-type>Location</item-type>
+		<label>Location Coordinates</label>
+		<description>Sky Location Coordinates</description>
+		<state readOnly="true"></state>
+		</channel-type>
+	-->
+
 	<channel-type id="videoList" advanced="true">
 		<item-type>String</item-type>
-		<label>Video List (Fahrenheit)</label>
+		<label>Video List (°F)</label>
 		<description>Video list - URLs to last five days of video time lapse mp4's in Fahrenheit</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="videoListC" advanced="true">
 		<item-type>String</item-type>
-		<label>Video List (Celsius)</label>
+		<label>Video List (°C)</label>
 		<description>Video list - URLs to last five days of video time lapse mp4's in Celsius</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -203,7 +213,7 @@
 
 	<channel-type id="numOfFollowers">
 		<item-type>Number</item-type>
-		<label>Number of Followers</label>
+		<label>Number Of Followers</label>
 		<description>Number of followers this PWS has as a favorite</description>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
@@ -250,18 +260,20 @@
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 
-	<channel-type id="temperature">
+	<!-- Using system.outdoor.temperature
+		<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Outside Temperature</label>
-		<description>Outside temperature in Fahrenheit or Celsius</description>
+		<description>Outside temperature in °F or °C</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
+		<state readOnly="true" pattern="%.1f %unit%" />
+		</channel-type>
+	-->
 
 	<channel-type id="dewPoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Dew Point</label>
-		<description>Dew Point in Fahrenheit or Celsius</description>
+		<description>Dew Point in °F or °C</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -269,21 +281,21 @@
 	<channel-type id="heatIndex">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Index</label>
-		<description>Heat Index in Fahrenheit or Celsius</description>
+		<description>Heat Index in °F or °C</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="imageURL">
 		<item-type>String</item-type>
-		<label>Current SKY Image URL</label>
+		<label>Current Sky Image URL</label>
 		<description>Image URL - URL to jpg snapshot image from the Sky camera taken at Image time stamp</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="currentSkyImage">
 		<item-type>Image</item-type>
-		<label>Current SKY Image</label>
+		<label>Current Sky Image</label>
 		<description>Image - snapshot image from the Sky camera taken at Image time stamp</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -303,14 +315,14 @@
 		<description>Rain detected true or false (is it raining)</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
-
-	<channel-type id="humidity">
+	<!-- Using system.atmospheric.humidity
+		<channel-type id="atmospheric-humidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Relative Humidity</label>
 		<description> Relative humidity given as a percentage</description>
-		<state readOnly="true" pattern="%.0f %unit%"/>
-	</channel-type>
-
+		<state readOnly="true" pattern="%.0f %unit%" />
+		</channel-type>
+	-->
 	<channel-type id="pressure">
 		<item-type>Number:Pressure</item-type>
 		<label>Barometric Pressure</label>
@@ -321,18 +333,15 @@
 
 	<channel-type id="deviceType">
 		<item-type>String</item-type>
-		<label>SKY Device Model</label>
+		<label>Sky Device Model</label>
 		<description>Device type (model) SKY1 or SKY2.</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-	<channel-type id="voltage">
-		<item-type>Number</item-type>
-		<label>Battery Level (voltage)</label>
-		<description>Battery voltage to indicate charge level 100% = 2600+ mv</description>
-		<state readOnly="true" pattern="%.0f"></state>
-	</channel-type>
-
+	<!-- Using system.battery-level <channel-type id="battery-level"> <item-type>Number</item-type> <label>Battery Level (Voltage)</label>
+		<description>Battery voltage to indicate charge level 100% = 2600+ mv</description> <category>Battery</category> <state
+		readOnly="true"
+		pattern="%.0f"></state> </channel-type> -->
 	<channel-type id="night">
 		<item-type>String</item-type>
 		<label>Night Detected</label>
@@ -342,17 +351,17 @@
 
 	<channel-type id="imageTS">
 		<item-type>DateTime</item-type>
-		<label>Current Image Time Stamp</label>
+		<label>Current Image Timestamp</label>
 		<description>Current image time stamp in epoch format (Unix time stamp)</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="skyUVIndex" advanced="true">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>UV Index</label>
 		<description>UV index</description>
-		<state readOnly="true" pattern="%.s"></state>
+		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
 	<channel-type id="videoDay1">
@@ -392,35 +401,35 @@
 
 	<channel-type id="videoCDay1">
 		<item-type>String</item-type>
-		<label>24hr Time-lapse Video Celsius 1</label>
+		<label>24hr Time-lapse Video °C 1</label>
 		<description>Day long time-lapse mp4 video 1of5 URL to access the celsius video</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="videoCDay2">
 		<item-type>String</item-type>
-		<label>24hr Time-lapse Video Celsius 2</label>
+		<label>24hr Time-lapse Video °C 2</label>
 		<description>Day long time-lapse mp4 video 2of5 URL to access the celsius video</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="videoCDay3">
 		<item-type>String</item-type>
-		<label>24hr Time-lapse Video Celsius 3</label>
+		<label>24hr Time-lapse Video °C 3</label>
 		<description>Day long time-lapse mp4 video 3of5 URL to access the celsius video</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="videoCDay4">
 		<item-type>String</item-type>
-		<label>24hr Time-lapse Video Celsius 4</label>
+		<label>24hr Time-lapse Video °C 4</label>
 		<description>Day long time-lapse mp4 video 4of5 URL to access the celsius video</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="videoCDay5">
 		<item-type>String</item-type>
-		<label>24hr Time-lapse Video Celsius 5</label>
+		<label>24hr Time-lapse Video °C 5</label>
 		<description>Day long time-lapse mp4 video 5of5 URL to access the celsius video</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -466,14 +475,14 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge-api"/>
 		</supported-bridge-type-refs>
-		<label>BloomSky STORM Personal Weather Station</label>
+		<label>BloomSky Storm Personal Weather Station</label>
 		<description>Provides weather data from the BloomSky personal weather stations account API</description>
 
 		<channel-groups>
 			<!-- Group for Storm weather observations -->
 			<channel-group id="storm-observations" typeId="storm-observations">
-				<label>STORM Personal Weather Station weather observations</label>
-				<description>This is the STORM Weather Station weather observations</description>
+				<label>Storm Weather Observations</label>
+				<description>This is the Storm Weather Station observations</description>
 			</channel-group>
 		</channel-groups>
 		<representation-property>stormAssociatedWithSkyDeviceID</representation-property>
@@ -484,7 +493,8 @@
 		<description>This is the weather sensor observations from the Storm device</description>
 		<channels>
 			<channel typeId="stormUVIndex" id="stormUVIndex"></channel>
-			<channel typeId="windDirection" id="windDirection"></channel>
+			<channel typeId="system.wind-direction" id="windDirectionAngle"></channel>
+			<channel typeId="windDirectionCompass" id="windDirectionCompass"></channel>
 			<channel typeId="rainDaily" id="rainDaily"></channel>
 			<channel typeId="windGust" id="windGust"></channel>
 			<channel typeId="windChill" id="windChill"></channel>
@@ -498,10 +508,10 @@
 	<!-- Storm Specific Channel Types -->
 
 	<channel-type id="stormUVIndex">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>UV Index</label>
 		<description>UV index</description>
-		<state readOnly="true" pattern="%.s"></state>
+		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
 	<channel-type id="rainRate">
@@ -509,7 +519,11 @@
 		<label>Precipitation Rate</label>
 		<description>Precipitation rate</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.7f %unit%"/>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="sustainedWindSpeed">
@@ -525,7 +539,7 @@
 		<label>Precipitation 24h</label>
 		<description>Precipitation last 24 hours</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.7f %unit%"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rainDaily">
@@ -533,16 +547,16 @@
 		<label>Precipitation Total Past 24h</label>
 		<description>Precipitation total last 24 hours</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.7f %unit%"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-
-	<channel-type id="windDirection">
+	<channel-type id="windDirectionCompass">
 		<item-type>String</item-type>
-		<label>Wind Direction</label>
-		<description>Wind direction</description>
+		<label>Wind Direction Compass</label>
+		<description>Wind direction as compass point (N, NE, E, SE, S, SW, W, NW)</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
+
 
 	<channel-type id="windGust">
 		<item-type>Number:Speed</item-type>
@@ -555,14 +569,14 @@
 	<channel-type id="windChill">
 		<item-type>Number:Temperature</item-type>
 		<label>Wind Chill</label>
-		<description>Wind chill in Fahrenheit or Celsius</description>
+		<description>Wind chill in °F or °C</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="stormTimeStamp" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Storm Observation Update Time Stamp</label>
+		<label>Storm Observation Update Timestamp</label>
 		<description>Storm update time stamp - date and time when observations were last updated</description>
 		<category>Time</category>
 		<state readOnly="true"></state>

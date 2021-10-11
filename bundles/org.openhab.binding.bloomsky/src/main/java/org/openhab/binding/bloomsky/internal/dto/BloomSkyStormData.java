@@ -25,7 +25,7 @@ public class BloomSkyStormData {
 
     @SerializedName("UVIndex")
     @Expose
-    private String uVIndex; // Calculated UV index (1-11+), this is more accurate than index from SKY device
+    private Integer uVIndex; // Calculated UV index (1-11+), this is more accurate than index from SKY device
 
     @SerializedName("WindDirection")
     @Expose
@@ -63,11 +63,11 @@ public class BloomSkyStormData {
     @Expose(deserialize = true)
     private Double rain24h;
 
-    public String getuVIndex() {
+    public Integer getuVIndex() {
         return uVIndex;
     }
 
-    public void setuVIndex(String uVIndex) {
+    public void setuVIndex(Integer uVIndex) {
         this.uVIndex = uVIndex;
     }
 

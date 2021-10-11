@@ -299,7 +299,7 @@ public class BloomSkySKYHandler extends BloomSkyAbstractHandler {
                 updateChannel(channelUID, undefOrQuantity(obs.getaLT(), getDistanceUnit()));
                 break;
             case CH_SKY_LOCATION:
-                updateChannel(channelUID, undefOrPoint(obs.getlAT(), obs.getlON()));
+                updateChannel(channelUID, undefOrPoint(obs.getlAT(), obs.getlON(), obs.getaLT()));
                 break;
             case CH_SKY_FULL_ADDRESS:
                 updateChannel(channelUID, undefOrString(obs.getFullAddress()));
@@ -373,14 +373,17 @@ public class BloomSkySKYHandler extends BloomSkyAbstractHandler {
                 updateChannel(channelUID, undefOrString(obs.getData().getDeviceType()));
                 break;
             case CH_SKY_VOLTAGE:
-                updateChannel(channelUID, undefOrQuantity(obs.getData().getVoltage(), getVoltageUnit()));
-
+                int voltage = (obs.getData().getVoltage() / BATTERY_FULLY_CHARGED) * 100;
+                if (voltage >= 100) {
+                    voltage = 100;
+                }
+                updateChannel(channelUID, undefOrQuantity(voltage, getVoltageUnit()));
                 break;
             case CH_SKY_NIGHT:
                 updateChannel(channelUID, undefOrString(obs.getData().getNight()));
                 break;
             case CH_SKY_UVINDEX:
-                updateChannel(channelUID, undefOrString(obs.getData().getuVIndex()));
+                updateChannel(channelUID, undefOrDecimal(obs.getData().getuVIndex()));
                 break;
             case CH_SKY_IMAGE_TS:
                 updateChannel(channelUID, undefOrDate(obs.getData().getImageTS()));

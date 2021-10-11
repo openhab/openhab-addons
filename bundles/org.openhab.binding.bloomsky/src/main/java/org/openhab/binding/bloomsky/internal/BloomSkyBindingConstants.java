@@ -39,6 +39,7 @@ public class BloomSkyBindingConstants {
     public static final String REFRESH_INTERVAL = "refreshInterval";
     public static final String PARAM_UNITS = "unit";
     public static final String TOO_WARM_FOR_WIND_CHILL = "Too warm for wind chill";
+    public static final Integer BATTERY_FULLY_CHARGED = 2600;
 
     // Bridge
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge-api");
@@ -92,7 +93,7 @@ public class BloomSkyBindingConstants {
     public static final String CH_SKY_HUMIDITY = "humidity";
     public static final String CH_SKY_PRESSURE = "pressure";
     public static final String CH_SKY_DEVICE_TYPE = "deviceType";
-    public static final String CH_SKY_VOLTAGE = "voltage";
+    public static final String CH_SKY_VOLTAGE = "batteryLevel";
     public static final String CH_SKY_NIGHT = "night";
     public static final String CH_SKY_UVINDEX = "skyUVIndex";
     public static final String CH_SKY_IMAGE_TS = "imageTS";
@@ -143,7 +144,8 @@ public class BloomSkyBindingConstants {
 
     // List of storm weather sensor observations Channel IDs
     public static final String CH_STORM_UV_INDEX = "stormUVIndex";
-    public static final String CH_STORM_WIND_DIRECTION = "windDirection";
+    public static final String CH_STORM_WIND_DIRECTION_COMPASS_ANGLE = "windDirectionAngle";
+    public static final String CH_STORM_WIND_DIRECTION_COMPASS_POINT = "windDirectionCompass";
     public static final String CH_STORM_RAIN_DAILY = "rainDaily";
     public static final String CH_STORM_WIND_GUST = "windGust";
     public static final String CH_STORM_SUSTAINED_WIND_SPEED = "sustainedWindSpeed";

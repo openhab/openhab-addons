@@ -16,6 +16,8 @@ import static org.openhab.binding.bloomsky.internal.BloomSkyBindingConstants.*;
 
 import java.text.DecimalFormat;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -63,6 +65,20 @@ public class BloomSkyStormHandler extends BloomSkyAbstractHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_STORM);
 
     private @Nullable Future<?> refreshObservationsJob;
+
+    private static final Map<String, Number> WIN_DIR_MAP;
+    static {
+        WIN_DIR_MAP = new HashMap<>();
+        WIN_DIR_MAP.put("NE", 45);
+        WIN_DIR_MAP.put("E", 90);
+        WIN_DIR_MAP.put("SE", 135);
+        WIN_DIR_MAP.put("S", 180);
+        WIN_DIR_MAP.put("SW", 225);
+        WIN_DIR_MAP.put("W", 270);
+        WIN_DIR_MAP.put("NW", 315);
+        WIN_DIR_MAP.put("N", 360);
+
+    }
 
     /**
      * Runnable used to schedule background refresh of the Storm device details and observation channels
@@ -233,9 +249,13 @@ public class BloomSkyStormHandler extends BloomSkyAbstractHandler {
         String channelId = channelUID.getIdWithoutGroup();
         switch (channelId) {
             case CH_STORM_UV_INDEX:
-                updateChannel(channelUID, undefOrString(obs.getStorm().getuVIndex()));
+                updateChannel(channelUID, undefOrDecimal(obs.getStorm().getuVIndex()));
                 break;
-            case CH_STORM_WIND_DIRECTION:
+            case CH_STORM_WIND_DIRECTION_COMPASS_ANGLE:
+                Number windAngle = WIN_DIR_MAP.get(obs.getStorm().getWindDirection());
+                updateChannel(channelUID, undefOrQuantity(windAngle, getWindAngleUnit()));
+                break;
+            case CH_STORM_WIND_DIRECTION_COMPASS_POINT:
                 updateChannel(channelUID, undefOrString(obs.getStorm().getWindDirection()));
                 break;
             case CH_STORM_RAIN_DAILY:
@@ -252,6 +272,8 @@ public class BloomSkyStormHandler extends BloomSkyAbstractHandler {
                 DecimalFormat df2 = new DecimalFormat("#.##");
                 String rainRate = df2.format(obs.getStorm().getRainRate()) + " " + getRainRateUnit();
                 updateChannel(channelUID, undefOrString(rainRate));
+                logger.debug("Rain rate = {}, Rain Units = {}", obs.getStorm().getRainRate(), getRainRateUnit());
+                // updateChannel(channelUID, undefOrQuantity(obs.getStorm().getRainRate(), getRainRateUnit()));
                 break;
             case CH_STORM_RAIN_24H:
                 updateChannel(channelUID, undefOrQuantity(obs.getStorm().getRain24h(), getLengthUnit()));

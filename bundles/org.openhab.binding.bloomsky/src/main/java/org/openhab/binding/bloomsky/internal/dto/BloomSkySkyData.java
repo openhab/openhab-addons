@@ -86,7 +86,7 @@ public class BloomSkySkyData {
      */
     @SerializedName("UVIndex")
     @Expose
-    private String uVIndex;
+    private Integer uVIndex;
 
     @SerializedName("ImageTS")
     @Expose
@@ -172,11 +172,11 @@ public class BloomSkySkyData {
         this.night = night;
     }
 
-    public String getuVIndex() {
+    public Integer getuVIndex() {
         return uVIndex;
     }
 
-    public void setuVIndex(String uVIndex) {
+    public void setuVIndex(Integer uVIndex) {
         this.uVIndex = uVIndex;
     }
 

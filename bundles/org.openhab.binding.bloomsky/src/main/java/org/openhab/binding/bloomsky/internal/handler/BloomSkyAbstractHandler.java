@@ -221,9 +221,10 @@ public abstract class BloomSkyAbstractHandler extends BaseThingHandler {
         return value == null ? UnDefType.UNDEF : new QuantityType<>(value, unit);
     }
 
-    protected State undefOrPoint(@Nullable Number lat, @Nullable Number lon) {
-        return lat != null && lon != null
-                ? new PointType(new DecimalType(lat.doubleValue()), new DecimalType(lon.doubleValue()))
+    protected State undefOrPoint(@Nullable Number lat, @Nullable Number lon, @Nullable Number alt) {
+        return lat != null && lon != null && alt != null
+                ? new PointType(new DecimalType(lat.doubleValue()), new DecimalType(lon.doubleValue()),
+                        new DecimalType(alt.doubleValue()))
                 : UnDefType.UNDEF;
     }
 
@@ -252,6 +253,10 @@ public abstract class BloomSkyAbstractHandler extends BaseThingHandler {
 
     protected Unit<?> getWindSpeedUnit() {
         return isImperial() ? ImperialUnits.MILES_PER_HOUR : Units.METRE_PER_SECOND;
+    }
+
+    protected Unit<?> getWindAngleUnit() {
+        return Units.DEGREE_ANGLE;
     }
 
     protected Unit<?> getDistanceUnit() {
