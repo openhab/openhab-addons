@@ -94,9 +94,9 @@ public class EnOceanProfileFactory implements ProfileFactory, ProfileAdvisor, Pr
     public @Nullable Profile createProfile(ProfileTypeUID profileTypeUID, ProfileCallback callback,
             ProfileContext profileContext) {
         if (ROCKERSWITCHACTION_TOGGLE_PLAYER.equals(profileTypeUID)) {
-            return new RockerSwitchActionTogglePlayerProfile(callback);
+            return new RockerSwitchActionTogglePlayerProfile(callback, profileContext);
         } else if (ROCKERSWITCHACTION_TOGGLE_SWITCH.equals(profileTypeUID)) {
-            return new RockerSwitchActionToggleSwitchProfile(callback);
+            return new RockerSwitchActionToggleSwitchProfile(callback, profileContext);
         } else {
             return null;
         }

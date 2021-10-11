@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- RockerSwitch -->
-	<thing-type id="rockerSwitch" extensible="rockerSwitchAction">
+	<thing-type id="rockerSwitch">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
@@ -20,8 +20,8 @@
 			<channel typeId="system.rawrocker" id="rockerswitchB">
 				<label>Rocker Switch - Channel B</label>
 			</channel>
-			<channel typeId="secondActionPressed" id="secondActionPressed">
-				<label>Second Action Pressed</label>
+			<channel id="rockerSwitchAction" typeId="rockerSwitchAction">
+				<label>Rocker Switch Action</label>
 			</channel>
 		</channels>
 

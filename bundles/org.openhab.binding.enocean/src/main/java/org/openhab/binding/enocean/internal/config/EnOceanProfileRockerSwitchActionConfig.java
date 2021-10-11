@@ -13,16 +13,17 @@
 package org.openhab.binding.enocean.internal.config;
 
 /**
+ * This {@link EnOceanProfileRockerSwitchActionConfig} config class is used for rockerSwitchAction profiles to define in
+ * which case it should react.
  *
  * @author Daniel Weber - Initial contribution
- *         This config class is used for channel rockerSwitchAction to define in which case it triggers.
  */
-public class EnOceanChannelRockerSwitchActionConfig {
+public class EnOceanProfileRockerSwitchActionConfig {
 
     public String channelAFilter;
     public String channelBFilter;
 
-    public EnOceanChannelRockerSwitchActionConfig() {
+    public EnOceanProfileRockerSwitchActionConfig() {
         channelAFilter = "*";
         channelBFilter = "*";
     }

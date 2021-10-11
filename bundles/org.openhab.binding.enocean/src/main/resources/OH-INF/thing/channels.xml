@@ -752,13 +752,6 @@
 		<state min="0" max="100" pattern="%.1f rpm" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="secondActionPressed">
-		<item-type>Switch</item-type>
-		<label>Second Action Pressed</label>
-		<description>Indicates if second action of rocker switch is pressed.</description>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="rockerSwitchAction">
 		<kind>trigger</kind>
 		<label>Rocker Switch Action</label>
@@ -776,28 +769,6 @@
 				<option value="RELEASED"></option>
 			</options>
 		</event>
-		<config-description>
-			<parameter name="channelAFilter" type="text">
-				<label>Channel A Filter</label>
-				<default>*</default>
-				<options>
-					<option value="*">Any Direction</option>
-					<option value="DIR1">Direction 1</option>
-					<option value="DIR2">Direction 2</option>
-					<option value="-">No Direction</option>
-				</options>
-			</parameter>
-			<parameter name="channelBFilter" type="text">
-				<label>Channel B Filter</label>
-				<default>*</default>
-				<options>
-					<option value="*">Any Direction</option>
-					<option value="DIR1">Direction 1</option>
-					<option value="DIR2">Direction 2</option>
-					<option value="-">No Direction</option>
-				</options>
-			</parameter>
-		</config-description>
 	</channel-type>
 
 </thing:thing-descriptions>

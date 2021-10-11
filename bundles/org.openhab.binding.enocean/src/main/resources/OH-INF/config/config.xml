@@ -61,4 +61,27 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="profile:enocean:rockerswitchaction-toggle-switch">
+		<parameter name="channelAFilter" type="text">
+			<label>Channel A Filter</label>
+			<default>*</default>
+			<options>
+				<option value="*">Any Direction</option>
+				<option value="DIR1">Direction 1</option>
+				<option value="DIR2">Direction 2</option>
+				<option value="-">No Direction</option>
+			</options>
+		</parameter>
+		<parameter name="channelBFilter" type="text">
+			<label>Channel B Filter</label>
+			<default>*</default>
+			<options>
+				<option value="*">Any Direction</option>
+				<option value="DIR1">Direction 1</option>
+				<option value="DIR2">Direction 2</option>
+				<option value="-">No Direction</option>
+			</options>
+		</parameter>
+	</config-description>
+
 </config-description:config-descriptions>

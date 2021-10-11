@@ -72,7 +72,7 @@ public class F6_02_02 extends F6_02 {
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, Configuration config) {
         if (command instanceof StringType) {
-            StringType s = (StringType) command;
+            String s = ((StringType) command).toString();
 
             if (s.equals(CommonTriggerEvents.DIR1_RELEASED) || s.equals(CommonTriggerEvents.DIR2_RELEASED)) {
                 setStatus(_RPSMessage.T21Flag);

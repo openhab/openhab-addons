@@ -14,7 +14,6 @@ package org.openhab.binding.enocean.internal.eep.F6_02;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchActionConfig;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelRockerSwitchConfigBase.SwitchMode;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -40,7 +39,6 @@ public abstract class F6_02 extends _RPSMessage {
 
     final String DIR1 = "DIR1";
     final String DIR2 = "DIR2";
-    final String ANYDIR = "*";
     final String NODIR = "-";
 
     int secondByte = -1;
@@ -69,23 +67,20 @@ public abstract class F6_02 extends _RPSMessage {
             return DIR1;
         } else if ((bytes[0] >>> 5) == BI && (bytes[0] & PRESSED) != 0) {
             return DIR2;
+        } else if (((bytes[0] & 0xf) >>> 1) == B0 && (bytes[0] & PRESSED_SEC) != 0) {
+            return DIR1;
+        } else if (((bytes[0] & 0xf) >>> 1) == BI && (bytes[0] & PRESSED_SEC) != 0) {
+            return DIR2;
         } else {
             return NODIR;
         }
     }
 
     protected String getRockerSwitchAction(Configuration config) {
-        EnOceanChannelRockerSwitchActionConfig conf = config.as(EnOceanChannelRockerSwitchActionConfig.class);
         String dirA = getChannelADir();
         String dirB = getChannelBDir();
 
-        if (!(conf.channelAFilter.equals(ANYDIR) || conf.channelAFilter.equals(dirA))) {
-            return null;
-        } else if (!(conf.channelBFilter.equals(ANYDIR) || conf.channelBFilter.equals(dirB))) {
-            return null;
-        } else {
-            return dirA + "|" + dirB;
-        }
+        return dirA + "|" + dirB;
     }
 
     protected String getChannelEvent(byte dir1, byte dir2) {

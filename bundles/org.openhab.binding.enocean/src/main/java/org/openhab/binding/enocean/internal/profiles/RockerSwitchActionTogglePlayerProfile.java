@@ -15,28 +15,24 @@ package org.openhab.binding.enocean.internal.profiles;
 import static org.openhab.binding.enocean.internal.profiles.EnOceanProfiles.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.profiles.ProfileCallback;
+import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.thing.profiles.ProfileTypeUID;
-import org.openhab.core.thing.profiles.TriggerProfile;
 import org.openhab.core.types.State;
 
 /**
+ * The {@link RockerSwitchActionTogglePlayerProfile} is used for channel rockerSwitchAction to be able to bind this
+ * trigger channel directly to a player item
+ * 
  * @author Daniel Weber - Initial contribution
- *         This profile is used for channel rockerSwitchAction to be able to bind this trigger channel directly to a
- *         player item
  */
 @NonNullByDefault
-public class RockerSwitchActionTogglePlayerProfile implements TriggerProfile {
+public class RockerSwitchActionTogglePlayerProfile extends RockerSwitchActionBaseProfile {
 
-    private final ProfileCallback callback;
-
-    private @Nullable State previousState;
-
-    public RockerSwitchActionTogglePlayerProfile(ProfileCallback callback) {
-        this.callback = callback;
+    public RockerSwitchActionTogglePlayerProfile(ProfileCallback callback, ProfileContext context) {
+        super(callback, context);
     }
 
     @Override
@@ -52,7 +48,7 @@ public class RockerSwitchActionTogglePlayerProfile implements TriggerProfile {
     @Override
     public void onTriggerFromHandler(String event) {
         // Ignore released event
-        if (!CommonTriggerEvents.RELEASED.equals(event)) {
+        if (!CommonTriggerEvents.RELEASED.equals(event) && isEventValid(event)) {
             PlayPauseType newState = PlayPauseType.PLAY.equals(previousState) ? PlayPauseType.PAUSE
                     : PlayPauseType.PLAY;
             callback.sendCommand(newState);

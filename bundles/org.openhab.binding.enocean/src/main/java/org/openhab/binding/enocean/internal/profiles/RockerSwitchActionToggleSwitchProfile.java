@@ -15,28 +15,24 @@ package org.openhab.binding.enocean.internal.profiles;
 import static org.openhab.binding.enocean.internal.profiles.EnOceanProfiles.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.profiles.ProfileCallback;
+import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.thing.profiles.ProfileTypeUID;
-import org.openhab.core.thing.profiles.TriggerProfile;
 import org.openhab.core.types.State;
 
 /**
+ * The {@link RockerSwitchActionToggleSwitchProfile} is used for channel rockerSwitchAction to be able to bind this
+ * trigger channel directly to a switch item
+ * 
  * @author Daniel Weber - Initial contribution
- *         This profile is used for channel rockerSwitchAction to be able to bind this trigger channel directly to a
- *         switch item
  */
 @NonNullByDefault
-public class RockerSwitchActionToggleSwitchProfile implements TriggerProfile {
+public class RockerSwitchActionToggleSwitchProfile extends RockerSwitchActionBaseProfile {
 
-    private final ProfileCallback callback;
-
-    private @Nullable State previousState;
-
-    public RockerSwitchActionToggleSwitchProfile(ProfileCallback callback) {
-        this.callback = callback;
+    public RockerSwitchActionToggleSwitchProfile(ProfileCallback callback, ProfileContext context) {
+        super(callback, context);
     }
 
     @Override
@@ -52,7 +48,7 @@ public class RockerSwitchActionToggleSwitchProfile implements TriggerProfile {
     @Override
     public void onTriggerFromHandler(String event) {
         // Ignore released event
-        if (!CommonTriggerEvents.RELEASED.equals(event)) {
+        if (!CommonTriggerEvents.RELEASED.equals(event) && isEventValid(event)) {
             OnOffType newState = OnOffType.ON.equals(previousState) ? OnOffType.OFF : OnOffType.ON;
             callback.sendCommand(newState);
             previousState = newState;
