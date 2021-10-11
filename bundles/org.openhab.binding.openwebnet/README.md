@@ -119,14 +119,17 @@ Alternatively the ZigBee USB Gateway thing can be configured using the `.things`
 ### Configuring Devices
 
 Devices can be discovered automatically using an Inbox Scan after a gateway has been configured and connected.
+
 For any manually added device, you must configure:
 
 - the associated gateway (`Parent Bridge` menu)
 - the `where` config parameter (`OpenWebNet Device Address`):
-  - example for BUS/SCS device with WHERE address Point to Point `A=2 PL=4` --> `where="24"`
-  - example for BUS/SCS device with WHERE address Point to Point `A=03 PL=11` on local bus --> `where="0311#4#01"`
-  - example for BUS/SCS CEN+ scenario: add `2` before the configured scenario `5` --> `where="25"`
-  - example for ZigBee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
+    - example for BUS/SCS:
+        - light device with WHERE address Point to Point `A=2 PL=4` --> `where="24"`
+        - light device with WHERE address Point to Point `A=03 PL=11` on local bus --> `where="0311#4#01"`
+        - CEN scenario with WHERE address Point to Point `A=05 PL=12` --> `where="0512"`
+        - CEN+ configured scenario `5`: add a `2` before --> `where="25"`
+    - example for ZigBee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
  
 
 #### Configuring Thermo
@@ -136,14 +139,14 @@ In BTicino MyHOME Thermoregulation (WHO=4) each **zone** has associated a thermo
 Thermo zones can be configured defining a `bus_thermo_zone` Thing for each zone with the following parameters:
 
 - the `where` config parameter (`OpenWebNet Device Address`):
-  - example BUS/SCS Thermo zone `1` --> `where="1"` 
+    - example BUS/SCS Thermo zone `1` --> `where="1"` 
 - the `standAlone` config parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4 or 99 zones). `standAlone=true` means no Central Unit is present in the system.
 
 Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with the following parameters:
 
 - the `where` config parameter (`OpenWebNet Device Address`):
-  - example sensor `5` of external zone `00` --> `where="500"`
-  - example: slave sensor `3` of zone `2` --> `where="302"`
+    - example sensor `5` of external zone `00` --> `where="500"`
+    - example: slave sensor `3` of zone `2` --> `where="302"`
 
 #### NOTE
 
@@ -193,7 +196,7 @@ It's possible to enter a value manually or set `shutterRun=AUTO` (default) to ca
 CEN/CEN+ are [TRIGGER channels](https://www.openhab.org/docs/configuration/rules-dsl.html#channel-based-triggers]): they handle events and do not have a state.
 
 A powerful feature is to be able to assign CEN or CEN+ commands to your physical wall switches and use the events they generate to trigger rules in openHAB: this way openHAB becomes a very powerful scenario manager activated by physical BTicino switches.
-See [openwebnet.rules](#openwebnet-rules) for an example on how to define rules that trigger on CEN/CEN+ push buttons events.
+See [openwebnet.rules](#openwebnet-rules) for an example on how to define rules that trigger on CEN/CEN+ buttons events.
 
 It's also possible to send *virtual pressure* events on the BUS, for example to enable the activation of MH202 scenarios from openHAB.
 See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-rules) sections for an example on how to use the `virtualPress` action connected to a pushbutton on a sitemap.

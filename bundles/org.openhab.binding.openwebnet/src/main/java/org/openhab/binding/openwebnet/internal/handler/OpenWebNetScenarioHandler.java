@@ -45,7 +45,7 @@ import org.openwebnet4j.message.CENScenario;
 import org.openwebnet4j.message.CENScenario.CENPressure;
 import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.Where;
-import org.openwebnet4j.message.WhereLightAutom;
+import org.openwebnet4j.message.WhereCEN;
 import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -340,7 +340,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
 
     @Override
     protected Where buildBusWhere(String wStr) throws IllegalArgumentException {
-        return new WhereLightAutom(wStr);
+        return new WhereCEN(wStr);
     }
 
     @Override
