@@ -25,8 +25,3 @@ features/**/src/main/feature
 .factorypath
 pom.xml.versionsBackup
 .openapi-generator
-
-.metals
-.vim
-shell.nix
-tags
