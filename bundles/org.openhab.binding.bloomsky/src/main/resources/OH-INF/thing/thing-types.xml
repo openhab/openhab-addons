@@ -162,8 +162,8 @@
 
 	<channel-type id="dst" advanced="true">
 		<item-type>Number</item-type>
-		<label>Daylight Savings Time</label>
-		<description>Daylight savings time active (1) or in-active (0)</description>
+		<label>Observation DST Flag</label>
+		<description>Observation times stamp is using Daylight savings time (1) or standard time (0)</description>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 
