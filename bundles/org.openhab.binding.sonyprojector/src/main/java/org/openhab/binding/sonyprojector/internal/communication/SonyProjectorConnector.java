@@ -103,7 +103,7 @@ public abstract class SonyProjectorConnector {
             status = getStatusPower();
         } catch (SonyProjectorException e) {
         }
-        logger.debug("Current Power Status: {}", status == null ? "undefined" : status.getName());
+        logger.debug("Current Power Status: {}", status == null ? "undefined" : status.toString());
         if (status != null && status != SonyProjectorStatusPower.STANDBY) {
             throw new SonyProjectorException("Projector not ready for command ON");
         } else if (model.isPowerCmdAvailable()) {
@@ -129,7 +129,7 @@ public abstract class SonyProjectorConnector {
             status = getStatusPower();
         } catch (SonyProjectorException e) {
         }
-        logger.debug("Current Power Status: {}", status == null ? "undefined" : status.getName());
+        logger.debug("Current Power Status: {}", status == null ? "undefined" : status.toString());
         if (status == null || status != SonyProjectorStatusPower.POWER_ON) {
             throw new SonyProjectorException("Projector not ready for command OFF");
         } else if (model.isPowerCmdAvailable()) {
