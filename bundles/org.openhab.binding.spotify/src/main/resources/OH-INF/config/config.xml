@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="spotify:config:playlists">
+		<parameter name="limit" type="integer" min="1" max="50">
+			<label>Limit</label>
+			<description>The maximum number of playlists to return</description>
+			<default>20</default>
+		</parameter>
+		<parameter name="offset" type="integer" min="0" max="100000">
+			<label>Offset</label>
+			<description>The index of the first playlist to return</description>
+			<default>0</default>
+		</parameter>
+	</config-description>
+	<config-description uri="spotify:config:album-image">
+		<parameter name="imageIndex" type="integer" min="0" max="2">
+			<label>Image Index</label>
+			<description>Index in list of to select image to show</description>
+			<default>0</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
