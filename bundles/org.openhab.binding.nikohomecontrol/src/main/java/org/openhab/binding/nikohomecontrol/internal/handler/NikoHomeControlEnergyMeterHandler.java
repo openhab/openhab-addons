@@ -77,7 +77,11 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
 
         NikoHomeControlCommunication nhcComm = getCommunication();
         if (nhcComm == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "@text/offline.bridge-unitialized");
             return;
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
         }
 
         // We need to do this in a separate thread because we may have to wait for the
@@ -232,7 +236,7 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
     private @Nullable NikoHomeControlCommunication getCommunication() {
         NikoHomeControlBridgeHandler nhcBridgeHandler = getBridgeHandler();
         if (nhcBridgeHandler == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "@text/offline.bridge-unitialized");
             return null;
         }
@@ -243,7 +247,7 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
     private @Nullable NikoHomeControlBridgeHandler getBridgeHandler() {
         Bridge nhcBridge = getBridge();
         if (nhcBridge == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "@text/offline.bridge-unitialized");
             return null;
         }

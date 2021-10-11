@@ -68,7 +68,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     public void handleCommand(ChannelUID channelUID, Command command) {
         NikoHomeControlCommunication nhcComm = getCommunication();
         if (nhcComm == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "@text/offline.bridge-unitialized");
             return;
         }
@@ -142,6 +142,8 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
                 }
                 updateStatus(ThingStatus.ONLINE);
                 break;
+            default:
+                logger.debug("channel unknown {}", channelUID.getId());
         }
     }
 
@@ -154,7 +156,11 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
         NikoHomeControlCommunication nhcComm = getCommunication();
         if (nhcComm == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "@text/offline.bridge-unitialized");
             return;
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
         }
 
         // We need to do this in a separate thread because we may have to wait for the
@@ -304,7 +310,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     private @Nullable NikoHomeControlCommunication getCommunication() {
         NikoHomeControlBridgeHandler nhcBridgeHandler = getBridgeHandler();
         if (nhcBridgeHandler == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "@text/offline.bridge-unitialized");
             return null;
         }
@@ -315,7 +321,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     private @Nullable NikoHomeControlBridgeHandler getBridgeHandler() {
         Bridge nhcBridge = getBridge();
         if (nhcBridge == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "@text/offline.bridge-unitialized");
             return null;
         }

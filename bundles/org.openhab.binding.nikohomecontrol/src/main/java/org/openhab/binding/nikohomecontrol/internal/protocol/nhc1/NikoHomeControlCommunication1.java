@@ -58,7 +58,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
 
     private Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication1.class);
 
-    private String eventThreadName = THREAD_NAME_PREFIX + "";
+    private String eventThreadName = THREAD_NAME_PREFIX;
 
     private final NhcSystemInfo1 systemInfo = new NhcSystemInfo1();
     private final Map<String, NhcLocation1> locations = new ConcurrentHashMap<>();
