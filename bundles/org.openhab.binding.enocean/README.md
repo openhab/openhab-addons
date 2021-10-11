@@ -100,7 +100,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 Furthermore following supporting EEP family is available too: A5-11, types 0x03 (rollershutter position status), 0x04 (extended light status) and D0-06 (battery level indication).
 
 A `rockerSwitch` is used to receive messages from a physical EnOcean Rocker Switch.
-Channel `rockerswitchA` and `rockerswitchA` just react if corresponding rocker switch channel is pressed as single action.
+Channel `rockerswitchA` and `rockerswitchB` just react if corresponding rocker switch channel is pressed as single action.
 These channels do not emit an event if ChannelA and ChannelB are pressed simultaneously.
 To handle simultaneously pressed channels you have to use the `rockerSwitchAction` channel.
 A `classicDevice` is used for older EnOcean devices which react only on rocker switch messages (like Opus GN-A-R12V-SR-4).
@@ -340,8 +340,6 @@ Some channels can be configured with parameters.
 |  totalusage   | validateValue  | Filter out increases more than 10.0 kWh and decreases less than 1.0 kWh | true / false                                                                                                                     |
 |               | tariff         | Tariff info or measurement channel to listen to | 0-15 |
 |  contact      | inverted       | Swap OPEN / CLOSED. Set True for Eltako FPE-2.                    | true / false. Defaults to false.                                                                                                    |
-| rockerSwitchAction | channelAFilter | Defines for which channel A events this trigger should fire | *: Any Direction, DIR1, DIR2, -:No Direction. Defaults to * |
-| rockerSwitchAction | channelBFilter | Defines for which channel B events this trigger should fire | *: Any Direction, DIR1, DIR2, -:No Direction. Defaults to * |
 
 Possible declaration in Thing DSL:
 
