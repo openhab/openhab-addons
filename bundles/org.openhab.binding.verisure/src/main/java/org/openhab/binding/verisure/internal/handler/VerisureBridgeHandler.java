@@ -14,9 +14,6 @@ package org.openhab.binding.verisure.internal.handler;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -107,19 +104,15 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
         REFRESH_SEC = config.refresh;
 
         this.pinCode = config.pin;
-        if (config.username == null || config.password == null) {
+        if (config.username.isBlank() || config.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configuration of username and password is mandatory");
         } else if (REFRESH_SEC < 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Refresh time cannot negative!");
         } else {
             try {
-                authstring = "j_username=" + config.username + "&j_password="
-                        + URLEncoder.encode(config.password, StandardCharsets.UTF_8.toString())
-                        + "&spring-security-redirect=" + START_REDIRECT;
                 authstring = "j_username=" + config.username;
                 scheduler.execute(() -> {
-
                     if (session == null) {
                         logger.debug("Session is null, let's create a new one");
                         session = new VerisureSession(this.httpClient);
@@ -135,7 +128,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                         startAutomaticRefresh();
                     }
                 });
-            } catch (RuntimeException | UnsupportedEncodingException e) {
+            } catch (RuntimeException e) {
                 logger.warn("Failed to initialize: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }

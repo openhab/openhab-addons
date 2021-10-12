@@ -77,7 +77,7 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
                     updateState(channelUID, state);
                 });
         List<Climate> climateList = climateJSON.getData().getInstallation().getClimates();
-        if (climateList != null) {
+        if (climateList != null && !climateList.isEmpty()) {
             String timeStamp = climateList.get(0).getTemperatureTimestamp();
             if (timeStamp != null) {
                 updateTimeStamp(timeStamp);
@@ -91,17 +91,17 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
         List<Climate> climateList = climateJSON.getData().getInstallation().getClimates();
         switch (channelId) {
             case CHANNEL_TEMPERATURE:
-                if (climateList != null) {
+                if (climateList != null && !climateList.isEmpty()) {
                     double temperature = climateList.get(0).getTemperatureValue();
                     return new QuantityType<Temperature>(temperature, SIUnits.CELSIUS);
                 }
             case CHANNEL_HUMIDITY:
-                if (climateList != null && climateList.get(0).isHumidityEnabled()) {
+                if (climateList != null && !climateList.isEmpty() && climateList.get(0).isHumidityEnabled()) {
                     double humidity = climateList.get(0).getHumidityValue();
                     return new QuantityType<Dimensionless>(humidity, Units.PERCENT);
                 }
             case CHANNEL_HUMIDITY_ENABLED:
-                if (climateList != null) {
+                if (climateList != null && !climateList.isEmpty()) {
                     boolean humidityEnabled = climateList.get(0).isHumidityEnabled();
                     return OnOffType.from(humidityEnabled);
                 }
@@ -112,7 +112,7 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
                 VerisureBatteryStatusDTO batteryStatus = climateJSON.getBatteryStatus();
                 if (batteryStatus != null) {
                     String status = batteryStatus.getStatus();
-                    if (status != null && "CRITICAL".equals(status)) {
+                    if ("CRITICAL".equals(status)) {
                         return OnOffType.from(true);
                     }
                 }

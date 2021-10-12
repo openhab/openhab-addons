@@ -88,7 +88,7 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler<Verisur
                 VerisureBatteryStatusDTO batteryStatus = doorWindowJSON.getBatteryStatus();
                 if (batteryStatus != null) {
                     String status = batteryStatus.getStatus();
-                    if (status != null && "CRITICAL".equals(status)) {
+                    if ("CRITICAL".equals(status)) {
                         return OnOffType.from(true);
                     }
                 }

@@ -97,23 +97,22 @@ public class VerisureSession {
     private @Nullable String csrf;
     private @Nullable String pinCode;
     private HttpClient httpClient;
-    private @Nullable String userName = "";
-    private @Nullable String password = "";
-    private @Nullable String vid = "";
-    private @Nullable String vsAccess = "";
-    private @Nullable String vsStepup = "";
+    private String userName = "";
+    private String password = "";
+    private String vid = "";
+    private String vsAccess = "";
+    private String vsStepup = "";
 
     public VerisureSession(HttpClient httpClient) {
         this.httpClient = httpClient;
     }
 
-    public boolean initialize(@Nullable String authstring, @Nullable String pinCode, @Nullable String userName,
-            @Nullable String passWord) {
+    public boolean initialize(@Nullable String authstring, @Nullable String pinCode, String userName, String password) {
         if (authstring != null) {
             this.authstring = authstring.substring(0);
             this.pinCode = pinCode;
             this.userName = userName;
-            this.password = passWord;
+            this.password = password;
             // Try to login to Verisure
             if (logIn()) {
                 return getInstallations();
@@ -353,11 +352,11 @@ public class VerisureSession {
             String basicAuhentication = Base64.getEncoder().encodeToString((userName + ":" + password).getBytes());
             request.header("authorization", "Basic " + basicAuhentication);
         } else {
-            if (vid != null && !vid.isEmpty()) {
+            if (!vid.isEmpty()) {
                 request.cookie(new HttpCookie(VID, vid));
                 logger.debug("Setting cookie with vid {}", vid);
             }
-            if (vsAccess != null && !vsAccess.isEmpty()) {
+            if (!vsAccess.isEmpty()) {
                 request.cookie(new HttpCookie(VS_ACCESS, vsAccess));
                 logger.debug("Setting cookie with vs-access {}", vsAccess);
             }
@@ -535,7 +534,7 @@ public class VerisureSession {
                 String url = AUTH_LOGIN;
                 int httpStatusCode = postVerisureAPI(url, "empty");
                 analyzeCookies();
-                if (vsStepup != null && !vsStepup.isEmpty()) {
+                if (!vsStepup.isEmpty()) {
                     logger.warn("MFA is activated on this user! Not supported by binding!");
                     return false;
                 }
@@ -899,7 +898,7 @@ public class VerisureSession {
                     .getUserTrackings();
             userTrackingList.forEach(userTracking -> {
                 String localUserTrackingStatus = userTracking.getStatus();
-                if (localUserTrackingStatus != null && "ACTIVE".equals(localUserTrackingStatus)) {
+                if ("ACTIVE".equals(localUserTrackingStatus)) {
                     VerisureUserPresencesDTO upThing = new VerisureUserPresencesDTO();
                     VerisureUserPresencesDTO.Installation inst = new VerisureUserPresencesDTO.Installation();
                     inst.setUserTrackings(Collections.singletonList(userTracking));
