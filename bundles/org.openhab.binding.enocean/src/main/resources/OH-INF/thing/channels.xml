@@ -810,4 +810,23 @@
 		<state min="0" max="100" pattern="%.1f rpm" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="rockerSwitchAction">
+		<kind>trigger</kind>
+		<label>Rocker Switch Action</label>
+		<description>Is triggered when a certain combination of rockers is pressed or released.</description>
+		<event>
+			<options>
+				<option value="DIR1|-"></option>
+				<option value="DIR2|-"></option>
+				<option value="DIR1|DIR1"></option>
+				<option value="DIR1|DIR2"></option>
+				<option value="DIR2|DIR1"></option>
+				<option value="DIR2|DIR2"></option>
+				<option value="-|DIR1"></option>
+				<option value="-|DIR2"></option>
+				<option value="RELEASED"></option>
+			</options>
+		</event>
+	</channel-type>
+
 </thing:thing-descriptions>
