@@ -60,7 +60,19 @@ public class SerialIoThread extends Thread {
     private final MessageListener listener;
     // Single-threaded executor for writes that serves to serialize writes.
     private final ExecutorService writeExecutor = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(WRITE_QUEUE_LENGTH), new NamedThreadFactory("upb-serial-writer", true));
+            new LinkedBlockingQueue<>(WRITE_QUEUE_LENGTH), new NamedThreadFactory("upb-serial-writer", true)) {
+        @Override
+        protected void beforeExecute(final @Nullable Thread t, final @Nullable Runnable r) {
+            // ensure we have prepared the PIM before allowing any writes
+            super.beforeExecute(t, r);
+            try {
+                initialized.await();
+            } catch (final InterruptedException e) {
+                t.interrupt();
+            }
+        }
+    };
+    private final CountDownLatch initialized = new CountDownLatch(1);
     private final SerialPort serialPort;
 
     private volatile @Nullable WriteRunnable currentWrite;
@@ -202,6 +214,9 @@ public class SerialIoThread extends Thread {
             out.flush();
         } catch (final IOException e) {
             logger.warn("error setting message mode", e);
+        } finally {
+            // signal that writes can proceed
+            initialized.countDown();
         }
     }
 
