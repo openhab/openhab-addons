@@ -55,8 +55,14 @@ Thing coffeemachine coffeemachine [uid="001d63fffe020505#190"]
 
 ## Channels
 
-See below which channels are available for each appliance type. Raw program and phase values are individual for each appliance type,
-while these raw state values are unique across all appliance types:
+### Raw values
+
+Some channels represent raw/numeric values for state, program and phase, namely rawState, rawProgram and rawPhase.
+These channels are more reliable as rule triggers/logic than using their text-based counterparts. Raw values are
+always available from the gateway even when texts are missing. Only a subset of available raw values are documented
+here since no official documentation exists.
+
+#### State
 
 | State | Description                  | Appliances                                                      |
 |-------|------------------------------|-----------------------------------------------------------------|
@@ -81,7 +87,11 @@ while these raw state values are unique across all appliance types:
 | 146   | Super Cooling/Super Freezing | Fridge/Freezer combination                                      |
 | 255   | Not Connected                | All                                                             |
 
-### Coffee Machine
+### Appliances
+
+Channels available for each appliance type are listed below.
+
+#### Coffee Machine
 
 | Channel             | Type                 | Read/write | Description                                                         |
 |---------------------|----------------------|------------|---------------------------------------------------------------------|
@@ -95,7 +105,7 @@ while these raw state values are unique across all appliance types:
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 
-### Dishwasher
+#### Dishwasher
 
 | Channel             | Type                 | Read/write | Description                                                         |
 |---------------------|----------------------|------------|---------------------------------------------------------------------|
@@ -114,7 +124,34 @@ while these raw state values are unique across all appliance types:
 | powerConsumption    | Number:Power         | Read       | Power consumption by the currently running program on the appliance |
 | waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance |
 
-### Fridge
+##### Programs
+
+| Program | Description                         |
+|---------|-------------------------------------|
+| 26      | Pots & Pans                         |
+| 27      | Clean Machine                       |
+| 28      | Economy                             |
+| 30      | Normal                              |
+| 32      | Sensor Wash                         |
+| 34      | Energy Saver                        |
+| 35      | China & Crystal                     |
+| 36      | Extra Quiet                         |
+| 37      | SaniWash                            |
+| 38      | QuickPowerWash                      |
+| 42      | Tall items                          |
+
+##### Phases
+
+| Phase | Legacy | Description                  |
+|-------|--------|------------------------------|
+| 1792  | 0      | None (appliance off)         |
+| 1794  | 2      | Pre-Wash                     |
+| 1795  | 3      | Main Wash                    |
+| 1796  | 4      | Rinses                       |
+| 1798  | 6      | Final rinse                  |
+| 1799  | 7      | Drying                       |
+
+#### Fridge
 
 | Channel             | Type                 | Read/write | Description                                                         |
 |---------------------|----------------------|------------|---------------------------------------------------------------------|
@@ -126,7 +163,7 @@ while these raw state values are unique across all appliance types:
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 
-### Fridge/Freezer combination
+#### Fridge/Freezer combination
 
 | Channel             | Type                 | Read/write | Description                                                         |
 |---------------------|----------------------|------------|---------------------------------------------------------------------|
@@ -143,7 +180,7 @@ while these raw state values are unique across all appliance types:
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
 | start               | Switch               | Write      | Switch the appliance on or off                                      |
 
-### Hob
+#### Hob
 
 | Channel             | Type                 | Read/write | Description                                                         |
 |---------------------|----------------------|------------|---------------------------------------------------------------------|
@@ -168,7 +205,7 @@ while these raw state values are unique across all appliance types:
 | plate6heat          | Number               | Read       | Remaining heat level of heating zone/plate 6                        |
 | plate6time          | String               | Read       | Remaining time of heating zone/plate 6                              |
 
-### Hood
+#### Hood
 
 | Channel             | Type                 | Read/write | Description                                                         |
 |---------------------|----------------------|------------|---------------------------------------------------------------------|
@@ -178,7 +215,7 @@ while these raw state values are unique across all appliance types:
 | ventilation         | Number               | Read       | Current ventilation power                                           |
 | stop                | Switch               | Write      | Stop the appliance                                                  |
 
-### Oven
+#### Oven
 
 | Channel             | Type                 | Read/write | Description                                                         |
 |---------------------|----------------------|------------|---------------------------------------------------------------------|
@@ -201,11 +238,26 @@ while these raw state values are unique across all appliance types:
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 | stop                | Switch               | Write      | Stop the appliance                                                  |
 
-### Microwave/Oven combination
+##### Phases
+
+| Phase | Legacy | Description                  |
+|-------|--------|------------------------------|
+| 3072  | 0      | None (appliance off)         |
+| 3073  | 1      | Heating                      |
+| 3074  | 2      | Temp. hold                   |
+| 3075  | 3      | Door Open                    |
+| 3076  | 4      | Pyrolysis                    |
+| 3079  | 7      | Lighting                     |
+| 3080  | 8      | Searing phase                |
+| 3082  | 10     | Defrost                      |
+| 3083  | 11     | Cooling down                 |
+| 3084  | 12     | Energy save phase            |
+
+#### Microwave/Oven combination
 
 See oven.
 
-### Tumble Dryer
+#### Tumble Dryer
 
 | Channel             | Type                 | Read/write | Description                                                         |
 |---------------------|----------------------|------------|---------------------------------------------------------------------|
@@ -224,7 +276,51 @@ See oven.
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 | step                | Number               | Read       | Current step in the program running on the appliance                |
 
-### Washing Machine
+##### Programs
+
+| Program | Description                         |
+|---------|-------------------------------------|
+| 10      | Automatic Plus                      |
+| 23      | Cottons hygiene                     |
+| 30      | Minimum iron                        |
+| 31      | Gentle minimum iron                 |
+| 40      | Woollens handcare                   |
+| 50      | Delicates                           |
+| 60      | Warm Air                            |
+| 70      | Cool air                            |
+| 80      | Express                             |
+| 90      | Cottons                             |
+| 100     | Gentle smoothing                    |
+| 120     | Proofing                            |
+| 130     | Denim                               |
+| 131     | Gentle denim                        |
+| 140     | Shirts                              |
+| 141     | Gentle shirts                       |
+| 150     | Sportswear                          |
+| 160     | Outerwear                           |
+| 170     | Silks handcare                      |
+| 190     | Standard pillows                    |
+| 220     | Basket programme                    |
+| 240     | Smoothing                           |
+| 65000   | Cottons (auto load control)         |
+| 65001   | Minimum iron (auto load control)    |
+
+##### Phases
+
+| Phase | Legacy | Description                  |
+|-------|--------|------------------------------|
+| 512   | 0      | None (appliance off)         |
+| 513   | 1      | Programme running            |
+| 514   | 2      | Drying                       |
+| 515   | 3      | Drying Machine iron          |
+| 516   | 4      | Drying Hand iron (1)         |
+| 517   | 5      | Drying Normal                |
+| 518   | 6      | Drying Normal+               |
+| 519   | 7      | Cooling down                 |
+| 520   | 8      | Drying Hand iron (2)         |
+| 522   | 10     | Finished                     |
+
+#### Washing Machine
 
 | Channel             | Type                 | Read/write | Description                                                         |
 |---------------------|----------------------|------------|---------------------------------------------------------------------|
@@ -245,6 +341,52 @@ See oven.
 | spinningspeed       | String               | Read       | Spinning speed in the program running on the appliance              |
 | powerConsumption    | Number:Power         | Read       | Power consumption by the currently running program on the appliance |
 | waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance |
+
+##### Programs
+
+| Program | Description                         |
+|---------|-------------------------------------|
+| 1       | Cottons                             |
+| 3       | Minimum iron                        |
+| 4       | Delicates                           |
+| 8       | Woollens                            |
+| 9       | Silks                               |
+| 17      | Starch                              |
+| 18      | Rinse                               |
+| 21      | Drain/Spin                          |
+| 22      | Curtains                            |
+| 23      | Shirts                              |
+| 24      | Denim                               |
+| 27      | Proofing                            |
+| 29      | Sportswear                          |
+| 31      | Automatic Plus                      |
+| 37      | Outerwear                           |
+| 39      | Pillows                             |
+| 50      | Dark Garments                       |
+| 53      | First wash                          |
+| 75      | Steam care                          |
+| 76      | Freshen up                          |
+| 91      | Maintenance wash                    |
+| 95      | Down duvets                         |
+| 122     | Express 20                          |
+| 129     | Down filled items                   |
+| 133     | Cottons Eco                         |
+| 146     | QuickPowerWash                      |
+| 65532   | Mix                                 |
+
+##### Phases
+
+| Phase | Legacy | Description                  |
+|-------|--------|------------------------------|
+| 256   | 0      | None (appliance off)         |
+| 257   | 1      | Pre-wash                     |
+| 260   | 4      | Washing                      |
+| 261   | 5      | Rinses                       |
+| 263   | 7      | Clean                        |
+| 265   | 9      | Drain                        |
+| 266   | 10     | Spin                         |
+| 267   | 11     | Anti-crease                  |
+| 268   | 12     | Finished                     |
 
 # Configuration Examples
 
