@@ -325,10 +325,10 @@ public class SonyProjectorHandler extends BaseThingHandler {
             logger.debug("Serial config model {}", configModel);
             if (config.port == null || config.port.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/ofline.config-error-unknown-port");
+                        "@text/offline.config-error-unknown-port");
             } else if (config.port.toLowerCase().startsWith("rfc2217")) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/ofline.config-error-invalid-thing-type");
+                        "@text/offline.config-error-invalid-thing-type");
             } else if (configModel == null || configModel.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-unknown-model");
@@ -353,10 +353,10 @@ public class SonyProjectorHandler extends BaseThingHandler {
                         "@text/offline.config-error-unknown-host");
             } else if (config.port == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/ofline.config-error-unknown-port");
+                        "@text/offline.config-error-unknown-port");
             } else if (config.port <= 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/ofline.config-error-invalid-port");
+                        "@text/offline.config-error-invalid-port");
             } else if (configModel == null || configModel.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-unknown-model");
