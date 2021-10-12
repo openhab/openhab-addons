@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ekey"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="userName">
+		<item-type>String</item-type>
+		<label>@text/channel-type.ekey.userName.label</label>
+		<description>@text/channel-type.ekey.userName.description</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="userStatus">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.ekey.userStatus.label</label>
+		<description>@text/channel-type.ekey.userStatus.description</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="keyId">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.ekey.keyId.label</label>
+		<description>@text/channel-type.ekey.keyId.description</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="fsName">
+		<item-type>String</item-type>
+		<label>@text/channel-type.ekey.fsName.label</label>
+		<description>@text/channel-type.ekey.fsName.description</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="inputId">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.ekey.inputId.label</label>
+		<description>@text/channel-type.ekey.inputId.description</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="relayId">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.ekey.relayId.label</label>
+		<description>@text/channel-type.ekey.relayId.description</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="termId">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.ekey.termId.label</label>
+		<description>@text/channel-type.ekey.termId.description</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="reserved">
+		<item-type>String</item-type>
+		<label>@text/channel-type.ekey.reserved.label</label>
+		<description>@text/channel-type.ekey.reserved.description</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="event">
+		<item-type>String</item-type>
+		<label>@text/channel-type.ekey.event.label</label>
+		<description>@text/channel-type.ekey.event.description</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>
