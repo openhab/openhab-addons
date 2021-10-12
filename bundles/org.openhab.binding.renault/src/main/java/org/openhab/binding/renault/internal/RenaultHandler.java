@@ -70,7 +70,7 @@ public class RenaultHandler extends BaseThingHandler {
             getStatus();
         });
         pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, config.refreshInterval, config.refreshInterval,
-                TimeUnit.SECONDS);
+                TimeUnit.MINUTES);
     }
 
     @Override

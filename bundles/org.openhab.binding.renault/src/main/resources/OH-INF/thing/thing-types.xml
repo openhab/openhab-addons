@@ -72,8 +72,8 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
-				<default>600</default>
+				<description>Interval the car is polled in minutes.</description>
+				<default>10</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -89,7 +89,6 @@
 		<item-type>Switch</item-type>
 		<label>HVAC</label>
 		<description>HVAC status</description>
-		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="odometer">
 		<item-type>Number</item-type>

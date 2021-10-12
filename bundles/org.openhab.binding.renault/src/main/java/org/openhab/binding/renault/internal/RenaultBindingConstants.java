@@ -31,6 +31,6 @@ public class RenaultBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_BATTERY_LEVEL = "batterylevel";
-    public static final String CHANNEL_HVAC_STATUS = "hvacStatus";
+    public static final String CHANNEL_HVAC_STATUS = "hvacstatus";
     public static final String CHANNEL_ODOMETER = "odometer";
 }
