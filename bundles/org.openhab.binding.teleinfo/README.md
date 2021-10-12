@@ -115,10 +115,10 @@ Channel availability depends on the electricity connection (single or three-phas
 | ngtf     | `String`                  | Provider schedule name                                   | All    | All   |
 | ltarf    | `String`                  | Current pricing label                                    | All    | All   |
 | east     | `Number:Energy`           | Total active energy withdrawn                            | All    | All   |
-| easf*XX* | `Number:Energy`           | Active energy withdrawn from provider on index $`XX \in  {01,\dots,10}`$  | All  | All   |
-| easd*XX* | `Number:Energy`           | Active energy withdrawn from distributor on index $`XX \in  {01,\dots,04}`$ | All  | All   |
-| irms*X*  | `Number:ElectricCurrent`  | RMS Current on phase $`X`$                               | All for $`X=1`$, Three-phase for $`X\in \{2,3\}`$| All   |
-| urms*X*  | `Number:Potential`        | RMS Voltage on phase $`X`$                               | All for $`X=1`$, Three-phase for $`X\in \{2,3\}`$ | All   |
+| easf*XX* | `Number:Energy`           | Active energy withdrawn from provider on index <img src="https://render.githubusercontent.com/render/math?math=XX \in  \{01,\dots,10\}"/>  | All  | All   |
+| easd*XX* | `Number:Energy`           | Active energy withdrawn from distributor on index <img src="https://render.githubusercontent.com/render/math?math=XX \in  \{01,\dots,04\}"/> | All  | All   |
+| irms*X*  | `Number:ElectricCurrent`  | RMS Current on phase *X*                                 | All for <img src="https://render.githubusercontent.com/render/math?math=X=1"/>, Three-phase for <img src="https://render.githubusercontent.com/render/math?math=X\in \{2,3\}"/> | All   |
+| urms*X*  | `Number:Potential`        | RMS Voltage on phase *X*                                 | All for <img src="https://render.githubusercontent.com/render/math?math=X=1"/>, Three-phase for <img src="https://render.githubusercontent.com/render/math?math=X\in \{2,3\}"/> | All   |
 | pref     | `Number:Power`            | Reference apparent power                                 | All    | All   |
 | pcoup    | `Number:Power`            | Apparent power rupture capacity                          | All    | All   |
 | sinsts   | `Number:Power`            | Instantaneous withdrawn apparent power                   | Single-phase | All   |
@@ -126,9 +126,9 @@ Channel availability depends on the electricity connection (single or three-phas
 | smaxsnMinus1 | `Number:Power`        | Maximum withdrawn apparent power of the previous day     | Single-phase | All   |
 | ccasn    | `Number:Power`            | Active charge point N                                    | All    | All   |
 | ccasnMinus1 | `Number:Power`         | Active charge point N-1                                  | All    | All   |
-| umoy*X*  | `Number:Potential`        | Mean Voltage on phase $`X`$                              | All for $`X=1`$, Three-phase for $`X\in \{2,3\}`$ | All   |
-| dpm*X*   | `String`                  | Start of mobile peak period $`X\in  {1,\dots,3}`$        | All    | All   |
-| fpm*X*   | `String`                  | End of mobile peak period $`X\in  {1,\dots,3}`$          | All    | All   |
+| umoy*X*  | `Number:Potential`        | Mean Voltage on phase *X*                              | All for <img src="https://render.githubusercontent.com/render/math?math=X=1"/>, Three-phase for <img src="https://render.githubusercontent.com/render/math?math=X\in \{2,3\}"/> | All   |
+| dpm*X*   | `String`                  | Start of mobile peak period <img src="https://render.githubusercontent.com/render/math?math=X\in  \{1,\dots,3\}"/>  | All    | All   |
+| fpm*X*   | `String`                  | End of mobile peak period <img src="https://render.githubusercontent.com/render/math?math=X\in  \{1,\dots,3\}"/> | All    | All   |
 | msg1     | `String`                  | Short message                                            | All    | All   |
 | msg2     | `String`                  | Very short message                                       | All    | All   |
 | ntarf    | `String`                  | Index of current pricing                                 | All    | All   |
@@ -141,20 +141,20 @@ Channel availability depends on the electricity connection (single or three-phas
 | smaxsnMinus1Date | `DateTime`        | Timestamp of SMAXSN-1 value                              | All    | All   |
 | ccasnDate | `DateTime`               | Timestamp of CCASN value                                 | All    | All   |
 | ccasnMinus1Date  | `DateTime`        | Timestamp of CCASN-1 value                               | All    | All   |
-| umoy*X*Date | `DateTime`             | Timestamp of UMOY*X* value                               | All for $`X=1`$, Three-phase for $`X\in \{2,3\}`$ | All   |
+| umoy*X*Date | `DateTime`             | Timestamp of UMOY*X* value                               | All for <img src="https://render.githubusercontent.com/render/math?math=X=1"/>, Three-phase for <img src="https://render.githubusercontent.com/render/math?math=X\in \{2,3\}"/> | All   |
 | dpm*X*Date  | `DateTime`             | Date of DPM*X*                                           | All    | All   |
 | fpm*X*Date | `DateTime`              | Date of FPM*X*                                           | All    | All   |
-| relais*X* | `Switch`                 | relais status ($`X\in  {1,\dots,8}`$ )                   | All    | All   |
-| sinsts*X* | `Number:Power`           | Instantaneous withdrawn apparent power on phase $`X`$    | Three-phase | All   |
-| smaxsn*X*   | `Number:Power`         | Maximum withdrawn apparent power of the day on phase $`X`$ | Three-phase | All   |
-| smaxsn*X*Minus1 | `Number:Power`     | Maximum withdrawn apparent power on the previous day on phase $`X`$ | Three-phase | All   |
+| relais*X* | `Switch`                 | relais status (<img src="https://render.githubusercontent.com/render/math?math=X\in  {1,\dots,8}"/> )                   | All    | All   |
+| sinsts*X* | `Number:Power`           | Instantaneous withdrawn apparent power on phase *X*    | Three-phase | All   |
+| smaxsn*X*   | `Number:Power`         | Maximum withdrawn apparent power of the day on phase *X* | Three-phase | All   |
+| smaxsn*X*Minus1 | `Number:Power`     | Maximum withdrawn apparent power on the previous day on phase *X* | Three-phase | All   |
 | smaxs*X*nDate | `DateTime`           | Timestamp of SMAXSN*X* value                             | Three-phase | All   |
 | smaxsn*X*Minus1Date | `DateTime`     | Timestamp of SMAXSN*X*-1 value                           | Three-phase | All   |
 | eait     | `Number:Energy`           | Total active energy withdrawn                            | All    | All   |
-| erq*X* | `Number:Energy`             | Active energy withdrawn from provider on index $`XX \in  {01,\dots,10}`$  | All  | All   |
-| sinsti | `Number:Energy`             | Active energy withdrawn from distributor on index $`XX \in  {01,\dots,04}`$ | All  | All   |
-| smaxin | `Number:Power`              | Maximum injected apparent power of the day               | All for $`X=1`$, Three-phase for $`X\in \{2,3\}`$| All   |
-| smaxinMinus1 | `Number:Power`        | Maximum injected apparent power of the previous day      | All for $`X=1`$, Three-phase for $`X\in \{2,3\}`$ | All   |
+| erq*X* | `Number:Energy`             | Active energy withdrawn from provider on index <img src="https://render.githubusercontent.com/render/math?math=XX \in  \{01,\dots,10\}"/>  | All  | All   |
+| sinsti | `Number:Energy`             | Active energy withdrawn from distributor on index <img src="https://render.githubusercontent.com/render/math?math=XX \in  \{01,\dots,04\}"/> | All  | All   |
+| smaxin | `Number:Power`              | Maximum injected apparent power of the day               | All for <img src="https://render.githubusercontent.com/render/math?math=X=1"/>, Three-phase for <img src="https://render.githubusercontent.com/render/math?math=X\in \{2,3\}"/> | All   |
+| smaxinMinus1 | `Number:Power`        | Maximum injected apparent power of the previous day      | All for <img src="https://render.githubusercontent.com/render/math?math=X=1"/>, Three-phase for <img src="https://render.githubusercontent.com/render/math?math=X\in \{2,3\}"/> | All   |
 | ccain    | `Number:Power`            | Injected active charge point N                           | All    | Producer |
 | ccainMinus1 | `Number:Power`         | Injected active charge point N-1                         | All    | Producer |
 | smaxinDate | `DateTime`              | Timestamp of SMAXIN value                                | All    | Producer |
