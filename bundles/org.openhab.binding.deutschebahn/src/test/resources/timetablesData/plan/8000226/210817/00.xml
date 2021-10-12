@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<timetable station='Lehrte'>
+  <s id="-2534056427099012540-2108170012-6">
+    <tl f="D" t="p" o="W3" c="WFB" n="95792"/>
+    <ar pt="2108170044" pp="14" l="RE70" ppth="Braunschweig Hbf|Vechelde|Peine|V&#246;hrum|H&#228;melerwald"/>
+    <dp pt="2108170047" pp="14" l="RE70" ppth="Hannover Hbf"/>
+  </s>
+  <s id="8693031459340504773-2108162347-6">
+    <tl f="S" t="p" o="800244" c="S" n="99138"/>
+    <ar pt="2108170010" pp="13" l="7" ppth="Hannover Hbf|Hannover-Kleefeld|Hannover Karl-Wiechert-Allee|Hannover Anderten-Misburg|Ahlten"/>
+  </s>
+  <s id="5845049446990543970-2108170002-10">
+    <tl t="p" o="R0" c="ENO" n="83538"/>
+    <ar pt="2108170043" pp="3" l="RE30" ppth="Wolfsburg Hbf|Fallersleben|Calberlah|Gifhorn|Leiferde(b Gifhorn)|Meinersen|Dedenhausen|Dollbergen|Immensen-Arpke"/>
+  </s>
+  <s id="1872572738060974975-2108170016-1">
+    <tl t="p" o="R0" c="ENO" n="83539"/>
+    <dp pt="2108170016" pp="3" l="RE30" ppth="Immensen-Arpke|Dollbergen|Dedenhausen|Meinersen|Leiferde(b Gifhorn)|Gifhorn|Calberlah|Fallersleben|Wolfsburg Hbf"/>
+  </s>
+  <s id="-430306391697164748-2108170024-2">
+    <tl f="D" t="p" o="W3" c="WFB" n="95793"/>
+    <ar pt="2108170044" pp="13" l="RE70" ppth="Hannover Hbf"/>
+    <dp pt="2108170045" pp="13" l="RE70" ppth="H&#228;melerwald|V&#246;hrum|Peine|Vechelde|Braunschweig Hbf"/>
+  </s>
+</timetable>

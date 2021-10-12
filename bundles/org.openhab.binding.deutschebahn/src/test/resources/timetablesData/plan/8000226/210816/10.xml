@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<timetable station='Lehrte'>
+  <s id="-2287077818259696863-2108160947-6">
+    <tl f="S" t="p" o="800244" c="S" n="99110"/>
+    <ar pt="2108161010" pp="13" l="7" ppth="Hannover Hbf|Hannover-Kleefeld|Hannover Karl-Wiechert-Allee|Hannover Anderten-Misburg|Ahlten"/>
+  </s>
+  <s id="-7727555432663336240-2108161011-6">
+    <tl f="S" t="p" o="800244" c="S" n="99033"/>
+    <ar pt="2108161034" pp="13" l="3" ppth="Celle|Ehlershausen|Otze|Burgdorf|Aligse"/>
+    <dp pt="2108161038" pp="13" l="3" ppth="Sehnde|Algermissen|Harsum|Hildesheim Hbf"/>
+  </s>
+  <s id="-9206541391658417235-2108160958-10">
+    <tl t="p" o="R0" c="ENO" n="83510"/>
+    <ar pt="2108161040" pp="3" l="RE30" ppth="Wolfsburg Hbf|Fallersleben|Calberlah|Gifhorn|Leiferde(b Gifhorn)|Meinersen|Dedenhausen|Dollbergen|Immensen-Arpke"/>
+  </s>
+  <s id="-1174241606353260853-2108161016-1">
+    <tl t="p" o="R0" c="ENO" n="83511"/>
+    <dp pt="2108161016" pp="3" l="RE30" ppth="Immensen-Arpke|Dollbergen|Dedenhausen|Meinersen|Leiferde(b Gifhorn)|Gifhorn|Calberlah|Fallersleben|Wolfsburg Hbf"/>
+  </s>
+  <s id="-7324985626915628890-2108160824-12">
+    <tl f="D" t="p" o="W3" c="WFB" n="95825"/>
+    <ar pt="2108161015" pp="14" l="RE70" ppth="Bielefeld Hbf|Herford|L&#246;hne(Westf)|Bad Oeynhausen|Porta Westfalica|Minden(Westf)|B&#252;ckeburg|Stadthagen|Haste|Wunstorf|Hannover Hbf"/>
+    <dp pt="2108161018" pp="14" l="RE70" ppth="H&#228;melerwald|V&#246;hrum|Peine|Vechelde|Braunschweig Hbf"/>
+  </s>
+  <s id="244929573019057867-2108161012-6">
+    <tl f="D" t="p" o="W3" c="WFB" n="95776"/>
+    <ar pt="2108161044" pp="14" l="RE60" ppth="Braunschweig Hbf|Vechelde|Peine|V&#246;hrum|H&#228;melerwald"/>
+    <dp pt="2108161047" pp="14" l="RE60" ppth="Hannover Hbf|Wunstorf|Haste|Stadthagen|B&#252;ckeburg|Minden(Westf)|Porta Westfalica|Bad Oeynhausen|L&#246;hne(Westf)|Kirchlengern|B&#252;nde(Westf)|Melle|Osnabr&#252;ck Hbf|Osnabr&#252;ck Altstadt|Ibbenb&#252;ren-Laggenbeck|Ibbenb&#252;ren|Ibbenb&#252;ren-Esch|H&#246;rstel|Rheine"/>
+  </s>
+  <s id="-3376513334056532423-2108161055-1">
+    <tl f="S" t="p" o="800244" c="S" n="99111"/>
+    <dp pt="2108161055" pp="13" l="3" ppth="Ahlten|Hannover Anderten-Misburg|Hannover Karl-Wiechert-Allee|Hannover-Kleefeld|Hannover Hbf"/>
+  </s>
+  <s id="-8744470103815834345-2108161006-5">
+    <tl f="S" t="p" o="800244" c="S" n="99032"/>
+    <ar pt="2108161029" pp="14" l="3" ppth="Hildesheim Hbf|Harsum|Algermissen|Sehnde"/>
+    <dp pt="2108161034" pp="14" l="3" ppth="Aligse|Burgdorf|Otze|Ehlershausen|Celle"/>
+  </s>
+</timetable>
