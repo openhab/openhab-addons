@@ -20,6 +20,9 @@
 			<channel typeId="system.rawrocker" id="rockerswitchB">
 				<label>Rocker Switch - Channel B</label>
 			</channel>
+			<channel id="rockerSwitchAction" typeId="rockerSwitchAction">
+				<label>Rocker Switch Action</label>
+			</channel>
 		</channels>
 
 		<config-description>
