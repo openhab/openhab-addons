@@ -41,7 +41,7 @@ These are the available configuration parameters:
 | exhaust_temp | recuperator | Number | RO | Temperature of the air when pushed outside  |
 | battery_life | service | Number | RO | Remaining Air Dial Battery Level (percentage) |
 | filter_life | service | Number | RO | Remaining life of filter until exchange is necessary (percentage) |
-| filter_period | service | Number | RW | Number of months between filter replacements (between 3 and 12) |
+| filter_period | service | Number | RW | Number of months between filter replacements (between 3 and 12). This value affects calculation of filter_life by the unit, and might get overwritten by Air Dial or Link CC Controller. |
 
 
 ## Full Example
