@@ -59,13 +59,13 @@ public class MyRenaultHttpSession {
         getAccountInfo(config);
         getJWT(config);
         getAccountID(config);
+        getVehicle(config);
     }
 
     public void updateCarData(RenaultConfiguration config) throws Exception {
-        getVehicle(config);
+        getCockpit(config);
         getBatteryStatus(config);
         getHvacStatus(config);
-        getCockpit(config);
     }
 
     private void login(RenaultConfiguration config) throws Exception {
@@ -169,6 +169,7 @@ public class MyRenaultHttpSession {
         if (HttpStatus.OK_200 == response.getStatus()) {
             JsonObject responseJson = new JsonParser().parse(response.getContentAsString()).getAsJsonObject();
             logger.debug("responseJson: {} ", responseJson.toString());
+            car.setDetails(responseJson);
         } else {
             logger.error("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
                     response.getContentAsString());

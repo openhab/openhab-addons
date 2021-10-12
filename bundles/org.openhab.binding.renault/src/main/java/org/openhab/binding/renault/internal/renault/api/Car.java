@@ -15,6 +15,8 @@ package org.openhab.binding.renault.internal.renault.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -27,6 +29,7 @@ public class Car {
     public Double batteryLevel;
     public Boolean hvacstatus;
     public Double odometer;
+    public String imageURL;
 
     public void setBatteryStatus(JsonObject responseJson) {
         try {
@@ -52,6 +55,25 @@ public class Car {
                     .get("totalMileage").getAsDouble();
         } catch (Exception e) {
             logger.error("Error {} parsing Cockpit: {}", e, responseJson);
+        }
+    }
+
+    public void setDetails(JsonObject responseJson) {
+        try {
+            JsonArray assetsJson = responseJson.get("assets").getAsJsonArray();
+            for (JsonElement asset : assetsJson) {
+                if (asset.getAsJsonObject().get("assetType").getAsString().equals("PICTURE")) {
+                    JsonArray renditions = asset.getAsJsonObject().get("renditions").getAsJsonArray();
+                    for (JsonElement rendition : renditions) {
+                        if (rendition.getAsJsonObject().get("resolutionType").getAsString()
+                                .equals("ONE_MYRENAULT_SMALL")) {
+                            imageURL = rendition.getAsJsonObject().get("url").getAsString();
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error {} parsing Details: {}", e, responseJson);
         }
     }
 }

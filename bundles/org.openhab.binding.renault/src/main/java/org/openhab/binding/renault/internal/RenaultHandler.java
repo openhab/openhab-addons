@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.renault.internal.renault.api.MyRenaultHttpSession;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -91,6 +92,7 @@ public class RenaultHandler extends BaseThingHandler {
             updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(httpSession.getCar().batteryLevel));
             updateState(CHANNEL_HVAC_STATUS, (httpSession.getCar().hvacstatus ? OnOffType.ON : OnOffType.OFF));
             updateState(CHANNEL_ODOMETER, new DecimalType(httpSession.getCar().odometer));
+            updateState(CHANNEL_IMAGE, new StringType(httpSession.getCar().imageURL));
 
         } catch (Exception e) {
             httpSession = null;

@@ -33,4 +33,5 @@ public class RenaultBindingConstants {
     public static final String CHANNEL_BATTERY_LEVEL = "batterylevel";
     public static final String CHANNEL_HVAC_STATUS = "hvacstatus";
     public static final String CHANNEL_ODOMETER = "odometer";
+    public static final String CHANNEL_IMAGE = "image";
 }
