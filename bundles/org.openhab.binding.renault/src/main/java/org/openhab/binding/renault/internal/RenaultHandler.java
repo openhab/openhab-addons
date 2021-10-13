@@ -80,6 +80,7 @@ public class RenaultHandler extends BaseThingHandler {
             pollingJob.cancel(true);
             pollingJob = null;
         }
+        super.dispose();
     }
 
     private void getStatus() {
