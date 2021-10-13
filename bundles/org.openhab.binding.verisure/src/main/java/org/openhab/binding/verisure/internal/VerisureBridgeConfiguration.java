@@ -25,6 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
 public class VerisureBridgeConfiguration {
     public String username = "";
     public String password = "";
-    public int refresh;
+    public int refresh = 600;
     public @Nullable String pin;
 }
