@@ -31,6 +31,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,13 +50,18 @@ public class HaywardPumpHandler extends HaywardThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
+        try {
+            setStateDescriptions();
+            updateStatus(ThingStatus.ONLINE);
+        } catch (HaywardException e) {
+            updateStatus(ThingStatus.OFFLINE);
+        }
     }
 
     @Override
-    public void getTelemetry(String xmlResponse) throws HaywardException {
-        List<String> systemIDs = new ArrayList<>();
-        List<String> data = new ArrayList<>();
+    public void setStateDescriptions() throws HaywardException {
+        List<StateOption> options = new ArrayList<>();
+        String option;
 
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -72,6 +78,44 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                             .build();
                     bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
                 }
+
+                // Set Pump Speed States
+                ch = thing.getChannel(HaywardBindingConstants.CHANNEL_PUMP_SPEEDSELECT);
+                if (ch != null) {
+                    option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_LOWSPEED);
+                    if (option != null) {
+                        options.add(new StateOption(option, "Low"));
+                    }
+                    option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MEDSPEED);
+                    if (option != null) {
+                        options.add(new StateOption(option, "Medium"));
+                    }
+                    option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_HIGHSPEED);
+                    if (option != null) {
+                        options.add(new StateOption(option, "High"));
+                    }
+                    option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_CUSTOMSPEED);
+                    if (option != null) {
+                        options.add(new StateOption(option, "Custom"));
+                    }
+
+                    StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
+                            .withOptions(options).build();
+                    bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void getTelemetry(String xmlResponse) throws HaywardException {
+        List<String> systemIDs = new ArrayList<>();
+        List<String> data = new ArrayList<>();
+
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
+            if (bridgehandler != null) {
                 systemIDs = bridgehandler.evaluateXPath("//Pump/@systemId", xmlResponse);
                 String thingSystemID = getThing().getUID().getId();
                 for (int i = 0; i < systemIDs.size(); i++) {
@@ -85,6 +129,10 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                         } else {
                             updateData(HaywardBindingConstants.CHANNEL_PUMP_ENABLE, "1");
                         }
+
+                        // Speed Select
+                        data = bridgehandler.evaluateXPath("//Filter/@pumpSpeed", xmlResponse);
+                        updateData(HaywardBindingConstants.CHANNEL_PUMP_SPEEDSELECT, data.get(i));
 
                         // State
                         data = bridgehandler.evaluateXPath("//Pump/@pumpState", xmlResponse);
@@ -129,6 +177,8 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                             }
                             break;
                         case HaywardBindingConstants.CHANNEL_PUMP_SPEED:
+                            break;
+                        case HaywardBindingConstants.CHANNEL_PUMP_SPEEDSELECT:
                             break;
                         default:
                             logger.warn("haywardCommand Unsupported type {}", channelUID);

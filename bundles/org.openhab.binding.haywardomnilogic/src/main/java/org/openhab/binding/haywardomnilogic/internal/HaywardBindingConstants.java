@@ -97,6 +97,7 @@ public class HaywardBindingConstants {
     public static final String CHANNEL_FILTER_ENABLE = "filterEnable";
     public static final String CHANNEL_FILTER_VALVEPOSITION = "filterValvePosition";
     public static final String CHANNEL_FILTER_SPEED = "filterSpeed";
+    public static final String CHANNEL_FILTER_SPEEDSELECT = "filterSpeedSelect";
     public static final String CHANNEL_FILTER_STATE = "filterState";
     public static final String CHANNEL_FILTER_LASTSPEED = "filterLastSpeed";
 
@@ -125,6 +126,7 @@ public class HaywardBindingConstants {
     // List of all Channel ids (pump)
     public static final String CHANNEL_PUMP_ENABLE = "pumpEnable";
     public static final String CHANNEL_PUMP_SPEED = "pumpSpeed";
+    public static final String CHANNEL_PUMP_SPEEDSELECT = "pumpSpeedSelect";
     public static final String CHANNEL_PUMP_STATE = "pumpState";
     public static final String CHANNEL_PUMP_LASTSPEED = "pumpLastSpeed";
 

@@ -15,6 +15,7 @@
 			<channel id="filterEnable" typeId="system.power"/>
 			<channel id="filterValvePosition" typeId="valvePosition"/>
 			<channel id="filterSpeed" typeId="filterSpeed"/>
+			<channel id="filterSpeedSelect" typeId="filterSpeedSelect"/>
 			<channel id="filterState" typeId="filterState"/>
 			<channel id="filterLastSpeed" typeId="filterLastSpeed"/>
 		</channels>
@@ -56,7 +57,22 @@
 		<item-type>Dimmer</item-type>
 		<label>Filter Speed</label>
 		<description>Filter Speed (%)</description>
-		<state min="15" max="90" step="5" pattern="%1.0f%%" readOnly="false"/>
+		<state min="0" max="100" step="5" pattern="%1.0f%%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="filterSpeedSelect">
+		<item-type>String</item-type>
+		<label>Filter Speed States</label>
+		<description>Filter Speed States</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Off</option>
+				<option value="33">Low</option>
+				<option value="66">Medium</option>
+				<option value="100">High</option>
+				<option value="100">Custom</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="filterState">

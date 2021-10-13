@@ -56,6 +56,9 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
 
     public abstract void getTelemetry(String xmlResponse) throws HaywardException;
 
+    public void setStateDescriptions() throws HaywardException {
+    }
+
     public State toState(String type, String channelID, String value) throws NumberFormatException {
         switch (type) {
             case "Number":

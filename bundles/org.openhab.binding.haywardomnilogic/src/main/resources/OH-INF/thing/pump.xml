@@ -14,6 +14,7 @@
 		<channels>
 			<channel id="pumpEnable" typeId="system.power"/>
 			<channel id="pumpSpeed" typeId="pumpSpeed"/>
+			<channel id="pumpSpeedSelect" typeId="pumpSpeedSelect"/>
 			<channel id="pumpState" typeId="pumpState"/>
 			<channel id="pumpLastSpeed" typeId="pumpLastSpeed"/>
 		</channels>
@@ -40,7 +41,22 @@
 		<item-type>Dimmer</item-type>
 		<label>Pump Speed</label>
 		<description>Pump Speed (%)</description>
-		<state min="0" max="100" step="1.0" pattern="%1.0f%%" readOnly="false"/>
+		<state min="0" max="100" step="1" pattern="%1.0f%%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="pumpSpeedSelect">
+		<item-type>String</item-type>
+		<label>Pump Speed States</label>
+		<description>Pump Speed States</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Off</option>
+				<option value="33">Low</option>
+				<option value="66">Medium</option>
+				<option value="100">High</option>
+				<option value="100">Custom</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="pumpState">
