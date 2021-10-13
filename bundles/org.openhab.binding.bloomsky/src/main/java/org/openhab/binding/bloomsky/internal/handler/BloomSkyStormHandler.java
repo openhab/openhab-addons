@@ -14,7 +14,6 @@ package org.openhab.binding.bloomsky.internal.handler;
 
 import static org.openhab.binding.bloomsky.internal.BloomSkyBindingConstants.*;
 
-import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,6 +65,9 @@ public class BloomSkyStormHandler extends BloomSkyAbstractHandler {
 
     private @Nullable Future<?> refreshObservationsJob;
 
+    /**
+     * Used to convert API returned compass point name to an angle
+     */
     private static final Map<String, Number> WIN_DIR_MAP;
     static {
         WIN_DIR_MAP = new HashMap<>();
@@ -141,7 +143,6 @@ public class BloomSkyStormHandler extends BloomSkyAbstractHandler {
             State state = weatherDataCache.get(channelUID.getId());
             if (state != null) {
                 updateChannel(channelUID, state);
-                // updateChannel(channelUID.getId());
             }
         }
     }
@@ -268,12 +269,7 @@ public class BloomSkyStormHandler extends BloomSkyAbstractHandler {
                 updateChannel(channelUID, undefOrQuantity(obs.getStorm().getSustainedWindSpeed(), getWindSpeedUnit()));
                 break;
             case CH_STORM_RAIN_RATE:
-                // Treating this double value as string to get the unit correct, OH is setting to MPH regardless type
-                DecimalFormat df2 = new DecimalFormat("#.##");
-                String rainRate = df2.format(obs.getStorm().getRainRate()) + " " + getRainRateUnit();
-                updateChannel(channelUID, undefOrString(rainRate));
-                logger.debug("Rain rate = {}, Rain Units = {}", obs.getStorm().getRainRate(), getRainRateUnit());
-                // updateChannel(channelUID, undefOrQuantity(obs.getStorm().getRainRate(), getRainRateUnit()));
+                updateChannel(channelUID, undefOrQuantity(obs.getStorm().getRainRate(), getRainRateUnit()));
                 break;
             case CH_STORM_RAIN_24H:
                 updateChannel(channelUID, undefOrQuantity(obs.getStorm().getRain24h(), getLengthUnit()));

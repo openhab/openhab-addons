@@ -35,7 +35,6 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
@@ -194,7 +193,13 @@ public abstract class BloomSkyAbstractHandler extends BaseThingHandler {
     }
 
     protected State undefOrStringList(@Nullable List<String> value) {
-        return value == null ? UnDefType.UNDEF : new StringListType(value);
+        String stringValue = "";
+        if (value != null) {
+            stringValue = value.toString(); // Save list as string, remove "[" from string
+            stringValue = value.toString().substring(1, stringValue.length() - 1);
+        }
+        ;
+        return value == null ? UnDefType.UNDEF : new StringType(stringValue);
     }
 
     protected State undefOrDate(@Nullable Long value) {
@@ -248,7 +253,7 @@ public abstract class BloomSkyAbstractHandler extends BaseThingHandler {
     }
 
     protected Unit<?> getRainRateUnit() {
-        return isImperial() ? Units.INCHES_PER_HOUR : Units.MILLIMETRE_PER_HOUR;
+        return isImperial() ? ImperialUnits.INCH : MILLI(SIUnits.METRE);
     }
 
     protected Unit<?> getWindSpeedUnit() {

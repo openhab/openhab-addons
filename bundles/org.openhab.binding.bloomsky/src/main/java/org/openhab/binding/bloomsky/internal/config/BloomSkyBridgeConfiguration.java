@@ -36,7 +36,8 @@ public class BloomSkyBridgeConfiguration {
     public int refreshInterval = 5; // Minimum interval is five minutes
 
     // Initialize with default units based on country code
-    public @Nullable String units = setDisplayUnits(countryCode.toUpperCase());
+    // public @Nullable String units = setDisplayUnits(countryCode.toUpperCase());
+    public @Nullable String units = IMPERIAL_UNITS;
 
     /**
      * @param countryCode to test for default display units

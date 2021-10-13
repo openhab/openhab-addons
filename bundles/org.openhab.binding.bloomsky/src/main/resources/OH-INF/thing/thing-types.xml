@@ -77,7 +77,7 @@
 			<channel typeId="tS" id="tS"></channel>
 			<channel typeId="rain" id="rain"></channel>
 			<channel typeId="system.atmospheric-humidity" id="humidity"></channel>
-			<channel typeId="pressure" id="pressure"></channel>
+			<channel typeId="system.barometric-pressure" id="pressure"></channel>
 			<channel typeId="deviceType" id="deviceType"></channel>
 			<channel typeId="system.battery-level" id="batteryLevel"></channel>
 			<channel typeId="night" id="night"></channel>
@@ -181,15 +181,6 @@
 		<state readOnly="true" pattern="%.5f"></state>
 	</channel-type>
 
-	<!-- Using system.location
-		<channel-type id="location">
-		<item-type>Location</item-type>
-		<label>Location Coordinates</label>
-		<description>Sky Location Coordinates</description>
-		<state readOnly="true"></state>
-		</channel-type>
-	-->
-
 	<channel-type id="videoList" advanced="true">
 		<item-type>String</item-type>
 		<label>Video List (°F)</label>
@@ -260,16 +251,6 @@
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 
-	<!-- Using system.outdoor.temperature
-		<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Outside Temperature</label>
-		<description>Outside temperature in °F or °C</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
-		</channel-type>
-	-->
-
 	<channel-type id="dewPoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Dew Point</label>
@@ -315,21 +296,6 @@
 		<description>Rain detected true or false (is it raining)</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
-	<!-- Using system.atmospheric.humidity
-		<channel-type id="atmospheric-humidity">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Relative Humidity</label>
-		<description> Relative humidity given as a percentage</description>
-		<state readOnly="true" pattern="%.0f %unit%" />
-		</channel-type>
-	-->
-	<channel-type id="pressure">
-		<item-type>Number:Pressure</item-type>
-		<label>Barometric Pressure</label>
-		<description>Barometric pressure inHG or mbar</description>
-		<category>Pressure</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
 
 	<channel-type id="deviceType">
 		<item-type>String</item-type>
@@ -338,10 +304,6 @@
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-	<!-- Using system.battery-level <channel-type id="battery-level"> <item-type>Number</item-type> <label>Battery Level (Voltage)</label>
-		<description>Battery voltage to indicate charge level 100% = 2600+ mv</description> <category>Battery</category> <state
-		readOnly="true"
-		pattern="%.0f"></state> </channel-type> -->
 	<channel-type id="night">
 		<item-type>String</item-type>
 		<label>Night Detected</label>
@@ -515,7 +477,7 @@
 	</channel-type>
 
 	<channel-type id="rainRate">
-		<item-type>String</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Precipitation Rate</label>
 		<description>Precipitation rate</description>
 		<category>Rain</category>
@@ -523,7 +485,7 @@
 			<tag>Measurement</tag>
 			<tag>Rain</tag>
 		</tags>
-		<state readOnly="true" pattern="%s"/>
+		<state readOnly="true" pattern="%.2f %unit%/hr"/>
 	</channel-type>
 
 	<channel-type id="sustainedWindSpeed">

@@ -16,6 +16,7 @@
 			<description>Specifies the refresh interval (in minutes).</description>
 			<default>5</default>
 		</parameter>
+		<!-- 
 		<parameter name="units" type="text">
 			<label>Measurement Display Units</label>
 			<description>Specifies the units Imperial or Metric to use for displaying sensor readings.</description>
@@ -25,6 +26,6 @@
 			</options>
 			<default>Imperial</default>
 		</parameter>
-
+ -->
 	</config-description>
 </config-description:config-descriptions>

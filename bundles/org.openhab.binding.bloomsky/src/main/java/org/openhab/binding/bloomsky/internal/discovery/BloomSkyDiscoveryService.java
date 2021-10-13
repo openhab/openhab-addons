@@ -145,8 +145,6 @@ public class BloomSkyDiscoveryService extends AbstractDiscoveryService {
             job = scheduler.scheduleWithFixedDelay(() -> {
                 scanForNewDevices();
             }, 15, DISCOVERY_INTERVAL_SECONDS, TimeUnit.SECONDS);
-            // job = scheduler.scheduleWithFixedDelay(this::scanForNewDevices, 0, DISCOVERY_INTERVAL_SECONDS,
-            // TimeUnit.SECONDS);
         }
     }
 

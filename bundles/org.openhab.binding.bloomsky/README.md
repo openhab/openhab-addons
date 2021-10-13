@@ -31,15 +31,11 @@ The following thing types are supported:
 
 Once a Bridge thing is configured with a valid API key, the binding will auto-discover the _SKY1/SKY2_ and optionally (if you have one installed), a _STORM_ weather station thing associated with that account.  
 
-The binding will use the openHAB locale setting to determine if readings are to be returned in imperial or metric units.
+The binding will use the openHAB regional setting to determine if readings are to be returned in imperial or metric units.
 
-If the system location (locale) is changed, the background discovery updates the configuration of the device sensor data automatically.
+The regional settings (advanced box checked) can be used to select either Imperial or Metric units; the background discovery updates the configuration of the device sensor data automatically.
 
 If a bridge is correctly configured, the discovered thing will automatically go online.
-
-## Binding Configuration
-
-The binding has no configuration options, all configuration is done at Thing and Channel levels.
 
 ## Thing Configuration
 
@@ -49,17 +45,13 @@ The **bridge** thing has three (3) configuration parameters:
 | :---      | :---         | ---               | ---        |
 | API Key | apiKey | Required | API key to access the BloomSky personal weather station API service.  Obtain this key from the BloomSky Device Owners page. |
 | Refresh Interval | refreshInterval | Required | Default (minimumn) value is 5 minutes. This is based on the API which updates on 5 minute intervals. |
-| Measurement Display Units | units | Required | Observations can be displayed in either Imperial (US) or Metric (SI) units.  Default is set to system locale. |  
+
 
 The **sky** and **storm** things do not have configuration parameters, they will refresh and display units based on the bridge configuration.
 
 The refresh request for either the sky or storm things will also pull its associated device's information/observations.
 
 ## Channels
-
-### Bridge (Account) Channels
-
-The bridge does not have any channels.
 
 ### SKY Channels 
 
@@ -225,13 +217,13 @@ You can use the discovery functionality of the binding to obtain the deviceId an
     Image                   SKY1_PreviewImageListPreviewImage4    "Video preview image 4"                     <camera>             {channel="bloomsky:sky:23464ce621:94A1A2733046:sky-preview-image-list#previewImage4"}
     Image                   SKY1_PreviewImageListPreviewImage5    "Video preview image 5"                     <camera>             {channel="bloomsky:sky:23464ce621:94A1A2733046:sky-preview-image-list#previewImage5"}
     // STORM Weather Station Items
-    String                  STORM_StormUVIndex                    "Uv index"                                  <sun>                {channel="bloomsky:storm:23464ce621:94A1A2733046:storm-observations#stormUVIndex"}
-    String                  STORM_WindDirection                   "Wind direction"                            <wind>               {channel="bloomsky:storm:23464ce621:94A1A2733046:storm-observations#windDirection"}
+    Number                  STORM_StormUVIndex                    "Uv index"                                  <sun>                {channel="bloomsky:storm:23464ce621:94A1A2733046:storm-observations#stormUVIndex"}
+    String                  STORM_WindDirectionCompass            "Wind direction Compass"                    <wind>               {channel="bloomsky:storm:23464ce621:94A1A2733046:storm-observations#windDirectionCompass"}
     Number:Length           STORM_RainDaily                       "Precipitation total past 24h [%.2f in]"    <rain>               {channel="bloomsky:storm:23464ce621:94A1A2733046:storm-observations#rainDaily"}
     Number:Speed            STORM_WindGust                        "Wind gust"                                 <wind>               {channel="bloomsky:storm:23464ce621:94A1A2733046:storm-observations#windGust"}
     Number:Temperature      STORM_WindChill                       "Wind chill"                                <temerature_cold>    {channel="bloomsky:storm:23464ce621:94A1A2733046:storm-observations#windChill"}
     Number:Speed            STORM_SustainedWindSpeed              "Sustained wind speed"                      <wind>               {channel="bloomsky:storm:23464ce621:94A1A2733046:storm-observations#sustainedWindSpeed"}
-    String                  STORM_RainRate                        "Precipitation rate [%.2f in/hr]"           <rain>               {channel="bloomsky:storm:23464ce621:94A1A2733046:storm-observations#rainRate"}
+    Number:Length           STORM_RainRate                        "Precipitation rate [%.2f %unit%/hr]"       <rain>               {channel="bloomsky:storm:23464ce621:94A1A2733046:storm-observations#precipitationRate"}
     Number:Length           STORM_Rain24H                         "Precipitation 24h [%.2f in]"               <rain>               {channel="bloomsky:storm:23464ce621:94A1A2733046:storm-observations#rain24h"}
     DateTime                STORM_StormTimeStamp                  "Storm observation update time stamp"       <time>               {channel="bloomsky:storm:23464ce621:94A1A2733046:storm-observations#stormTimeStamp"}
 ```
@@ -240,7 +232,7 @@ You can use the discovery functionality of the binding to obtain the deviceId an
 ### bloomsky.sitemap
 
 ```
-    sitemap bloomsky label="OH3.1.0 BloomSky Binding Sitemap Example" 
+    sitemap bloomsky label="OH3.2.0 BloomSky Binding Sitemap Example" 
     {
         Frame {
             Text label="Bloomsky Weather Station" {
