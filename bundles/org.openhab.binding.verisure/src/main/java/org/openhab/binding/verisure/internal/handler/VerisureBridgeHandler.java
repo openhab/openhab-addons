@@ -105,6 +105,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
         if (config.username.isBlank() || config.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configuration of username and password is mandatory");
+
         } else if (config.refresh < 10) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Refresh time is lower than min value of 10!");
