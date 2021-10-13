@@ -163,7 +163,7 @@
 	<channel-type id="dst" advanced="true">
 		<item-type>Number</item-type>
 		<label>Observation DST Flag</label>
-		<description>Observation times stamp is using Daylight savings time (1) or standard time (0)</description>
+		<description>Weather station is in an area using Daylight savings time (1) or standard time (0)</description>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 
