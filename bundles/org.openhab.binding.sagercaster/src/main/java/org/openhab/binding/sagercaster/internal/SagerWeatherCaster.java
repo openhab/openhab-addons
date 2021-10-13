@@ -104,9 +104,8 @@ public class SagerWeatherCaster {
 
     @Activate
     public SagerWeatherCaster() {
-        InputStream input = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("/sagerForecaster.properties");
-        try {
+        try (InputStream input = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("/sagerForecaster.properties")) {
             forecaster.load(input);
         } catch (IOException e) {
             logger.warn("Error during Sager Forecaster startup", e);
@@ -119,9 +118,9 @@ public class SagerWeatherCaster {
 
     public void setBearing(int newBearing, int oldBearing) {
         int windEvol = sagerWindTrend(oldBearing, newBearing);
-        if ((windEvol != this.windEvolution) || (newBearing != currentBearing)) {
-            this.currentBearing = newBearing;
-            this.windEvolution = windEvol;
+        if ((windEvol != windEvolution) || (newBearing != currentBearing)) {
+            currentBearing = newBearing;
+            windEvolution = windEvol;
             updatePrediction();
         }
     }
@@ -129,26 +128,26 @@ public class SagerWeatherCaster {
     public void setPressure(double newPressure, double oldPressure) {
         int newSagerPressure = sagerPressureLevel(newPressure);
         int pressEvol = sagerPressureTrend(newPressure, oldPressure);
-        if ((pressEvol != this.pressureEvolution) || (newSagerPressure != sagerPressure)) {
-            this.sagerPressure = newSagerPressure;
-            this.pressureEvolution = pressEvol;
+        if ((pressEvol != pressureEvolution) || (newSagerPressure != sagerPressure)) {
+            sagerPressure = newSagerPressure;
+            pressureEvolution = pressEvol;
             updatePrediction();
         }
     }
 
     public void setCloudLevel(int cloudiness) {
-        this.cloudLevel = cloudiness;
+        cloudLevel = cloudiness;
         sagerNubesUpdate();
     }
 
-    public void setRaining(boolean raining) {
-        this.raining = raining;
+    public void setRaining(boolean isRaining) {
+        raining = isRaining;
         sagerNubesUpdate();
     }
 
     public void setBeaufort(int beaufortIndex) {
         if (currentBeaufort != beaufortIndex) {
-            this.currentBeaufort = beaufortIndex;
+            currentBeaufort = beaufortIndex;
             updatePrediction();
         }
     }
@@ -181,50 +180,43 @@ public class SagerWeatherCaster {
             result = 5; // raining
         }
         if (result != nubes) {
-            this.nubes = result;
+            nubes = result;
             updatePrediction();
         }
     }
 
     private static int sagerPressureLevel(double current) {
-        int result = 1;
         if (current > 1029.46) {
-            result = 1;
+            return 1;
         } else if (current > 1019.3) {
-            result = 2;
+            return 2;
         } else if (current > 1012.53) {
-            result = 3;
+            return 3;
         } else if (current > 1005.76) {
-            result = 4;
+            return 4;
         } else if (current > 999) {
-            result = 5;
+            return 5;
         } else if (current > 988.8) {
-            result = 6;
+            return 6;
         } else if (current > 975.28) {
-            result = 7;
-        } else {
-            result = 8;
+            return 7;
         }
-        return result;
+        return 8;
     }
 
     private static int sagerPressureTrend(double current, double historic) {
         double evol = current - historic;
-        int result = 0;
 
         if (evol > 1.4) {
-            result = 1; // Rising Rapidly
+            return 1; // Rising Rapidly
         } else if (evol > 0.68) {
-            result = 2; // Rising Slowly
+            return 2; // Rising Slowly
         } else if (evol > -0.68) {
-            result = 3; // Normal
+            return 3; // Normal
         } else if (evol > -1.4) {
-            result = 4; // Decreasing Slowly
-        } else {
-            result = 5; // Decreasing Rapidly
+            return 4; // Decreasing Slowly
         }
-
-        return result;
+        return 5; // Decreasing Rapidly
     }
 
     private static int sagerWindTrend(double historic, double position) {
@@ -240,7 +232,7 @@ public class SagerWeatherCaster {
 
     private String getCompass() {
         double step = 360.0 / NTZDIRECTIONS.length;
-        double b = Math.floor((this.currentBearing + (step / 2.0)) / step);
+        double b = Math.floor((currentBearing + (step / 2.0)) / step);
         return NTZDIRECTIONS[(int) (b % NTZDIRECTIONS.length)];
     }
 
@@ -334,36 +326,32 @@ public class SagerWeatherCaster {
         if (prevision.isPresent()) {
             char forecast = prevision.get().zForecast;
             return Character.toString(forecast);
-        } else {
-            return "-";
         }
+        return "-";
     }
 
     public String getWindVelocity() {
         if (prevision.isPresent()) {
             char windVelocity = prevision.get().zWindVelocity;
             return Character.toString(windVelocity);
-        } else {
-            return "-";
         }
+        return "-";
     }
 
     public String getWindDirection() {
         if (prevision.isPresent()) {
             int direction = prevision.get().zWindDirection;
             return String.valueOf(direction);
-        } else {
-            return "-";
         }
+        return "-";
     }
 
     public String getWindDirection2() {
         if (prevision.isPresent()) {
             int direction = prevision.get().zWindDirection2;
             return String.valueOf(direction);
-        } else {
-            return "-";
         }
+        return "-";
     }
 
     public void setLatitude(double latitude) {

@@ -51,14 +51,18 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SagerCasterHandler extends BaseThingHandler {
+
     private final Logger logger = LoggerFactory.getLogger(SagerCasterHandler.class);
+
     private final SagerWeatherCaster sagerWeatherCaster;
+
     private final WindDirectionStateDescriptionProvider stateDescriptionProvider;
-    private int currentTemp = 0;
 
     private final ExpiringMap<QuantityType<Pressure>> pressureCache = new ExpiringMap<>();
     private final ExpiringMap<QuantityType<Temperature>> temperatureCache = new ExpiringMap<>();
     private final ExpiringMap<QuantityType<Angle>> bearingCache = new ExpiringMap<>();
+
+    private int currentTemp = 0;
 
     public SagerCasterHandler(Thing thing, WindDirectionStateDescriptionProvider stateDescriptionProvider,
             SagerWeatherCaster sagerWeatherCaster) {

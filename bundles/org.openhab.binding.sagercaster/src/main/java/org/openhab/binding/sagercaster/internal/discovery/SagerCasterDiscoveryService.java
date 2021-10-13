@@ -14,10 +14,9 @@ package org.openhab.binding.sagercaster.internal.discovery;
 
 import static org.openhab.binding.sagercaster.internal.SagerCasterBindingConstants.*;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -44,21 +43,22 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.sagercaster")
 public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(SagerCasterDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
     private static final int LOCATION_CHANGED_CHECK_INTERVAL = 60;
+    private static final ThingUID sagerCasterThing = new ThingUID(THING_TYPE_SAGERCASTER, LOCAL);
+
+    private final Logger logger = LoggerFactory.getLogger(SagerCasterDiscoveryService.class);
     private final LocationProvider locationProvider;
+
     private @Nullable ScheduledFuture<?> discoveryJob;
     private @Nullable PointType previousLocation;
-
-    private static final ThingUID sagerCasterThing = new ThingUID(THING_TYPE_SAGERCASTER, LOCAL);
 
     /**
      * Creates a SagerCasterDiscoveryService with enabled autostart.
      */
     @Activate
     public SagerCasterDiscoveryService(final @Reference LocationProvider locationProvider) {
-        super(new HashSet<>(Arrays.asList(new ThingTypeUID(BINDING_ID, "-"))), DISCOVER_TIMEOUT_SECONDS, true);
+        super(Set.of(new ThingTypeUID(BINDING_ID, "-")), DISCOVER_TIMEOUT_SECONDS, true);
         this.locationProvider = locationProvider;
     }
 
@@ -102,7 +102,7 @@ public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        ScheduledFuture<?> localJob = this.discoveryJob;
+        ScheduledFuture<?> localJob = discoveryJob;
         logger.debug("Stopping Sager Weathercaster background discovery");
         if (localJob != null && !localJob.isCancelled()) {
             if (localJob.cancel(true)) {
