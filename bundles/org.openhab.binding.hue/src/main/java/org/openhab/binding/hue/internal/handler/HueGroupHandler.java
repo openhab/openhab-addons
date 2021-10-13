@@ -15,9 +15,8 @@ package org.openhab.binding.hue.internal.handler;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -31,6 +30,8 @@ import org.openhab.binding.hue.internal.Scene;
 import org.openhab.binding.hue.internal.State;
 import org.openhab.binding.hue.internal.State.ColorMode;
 import org.openhab.binding.hue.internal.StateUpdate;
+import org.openhab.binding.hue.internal.dto.ColorTemperature;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -59,7 +60,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class HueGroupHandler extends BaseThingHandler implements GroupStatusListener {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_GROUP);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_GROUP);
+    public static final String PROPERTY_MEMBERS = "members";
 
     private final Logger logger = LoggerFactory.getLogger(HueGroupHandler.class);
     private final HueStateDescriptionOptionProvider stateDescriptionOptionProvider;
@@ -69,6 +71,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     private @Nullable Integer lastSentColorTemp;
     private @Nullable Integer lastSentBrightness;
 
+    private ColorTemperature colorTemperatureCapabilties = new ColorTemperature();
     private long defaultFadeTime = 400;
 
     private @Nullable HueClient hueClient;
@@ -76,7 +79,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     private @Nullable ScheduledFuture<?> scheduledFuture;
     private @Nullable FullGroup lastFullGroup;
 
-    private List<String> consoleScenesList = new ArrayList<>();
+    private List<String> consoleScenesList = List.of();
 
     public HueGroupHandler(Thing thing, HueStateDescriptionOptionProvider stateDescriptionOptionProvider) {
         super(thing);
@@ -119,6 +122,14 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-group-id");
+        }
+    }
+
+    private synchronized void initializeProperties(@Nullable FullGroup fullGroup) {
+        if (fullGroup != null) {
+            Map<String, String> properties = editProperties();
+            properties.put(PROPERTY_MEMBERS, fullGroup.getLightIds().stream().collect(Collectors.joining(",")));
+            updateProperties(properties);
         }
     }
 
@@ -201,7 +212,8 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
                 break;
             case CHANNEL_COLORTEMPERATURE:
                 if (command instanceof PercentType) {
-                    newState = LightStateConverter.toColorTemperatureLightState((PercentType) command);
+                    newState = LightStateConverter.toColorTemperatureLightStateFromPercentType((PercentType) command,
+                            colorTemperatureCapabilties);
                     newState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
                     newState = LightStateConverter.toOnOffLightState((OnOffType) command);
@@ -210,6 +222,13 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
                     if (newState != null) {
                         newState.setTransitionTime(fadeTime);
                     }
+                }
+                break;
+            case CHANNEL_COLORTEMPERATURE_ABS:
+                if (command instanceof DecimalType) {
+                    newState = LightStateConverter.toColorTemperatureLightState((DecimalType) command,
+                            colorTemperatureCapabilties);
+                    newState.setTransitionTime(fadeTime);
                 }
                 break;
             case CHANNEL_BRIGHTNESS:
@@ -228,7 +247,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
                 if (newState != null && lastColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
-                    newState.setColorTemperature(lastColorTemp);
+                    newState.setColorTemperature(lastColorTemp, colorTemperatureCapabilties);
                     newState.setTransitionTime(fadeTime);
                 }
                 break;
@@ -240,7 +259,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
                 if (newState != null && lastColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
-                    newState.setColorTemperature(lastColorTemp);
+                    newState.setColorTemperature(lastColorTemp, colorTemperatureCapabilties);
                     newState.setTransitionTime(fadeTime);
                 }
                 break;
@@ -296,8 +315,9 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         StateUpdate stateUpdate = null;
         Integer currentColorTemp = getCurrentColorTemp(group.getState());
         if (currentColorTemp != null) {
-            int newColorTemp = LightStateConverter.toAdjustedColorTemp(command, currentColorTemp);
-            stateUpdate = new StateUpdate().setColorTemperature(newColorTemp);
+            int newColorTemp = LightStateConverter.toAdjustedColorTemp(command, currentColorTemp,
+                    colorTemperatureCapabilties);
+            stateUpdate = new StateUpdate().setColorTemperature(newColorTemp, colorTemperatureCapabilties);
         }
         return stateUpdate;
     }
@@ -369,6 +389,8 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
 
         logger.trace("New state for group {}", groupId);
 
+        initializeProperties(group);
+
         lastSentColorTemp = null;
         lastSentBrightness = null;
 
@@ -380,25 +402,27 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
 
         HSBType hsbType = LightStateConverter.toHSBType(state);
         if (!state.isOn()) {
-            hsbType = new HSBType(hsbType.getHue(), hsbType.getSaturation(), new PercentType(0));
+            hsbType = new HSBType(hsbType.getHue(), hsbType.getSaturation(), PercentType.ZERO);
         }
         updateState(CHANNEL_COLOR, hsbType);
 
         ColorMode colorMode = state.getColorMode();
         if (ColorMode.CT.equals(colorMode)) {
-            PercentType colorTempPercentType = LightStateConverter.toColorTemperaturePercentType(state);
-            updateState(CHANNEL_COLORTEMPERATURE, colorTempPercentType);
+            updateState(CHANNEL_COLORTEMPERATURE,
+                    LightStateConverter.toColorTemperaturePercentType(state, colorTemperatureCapabilties));
+            updateState(CHANNEL_COLORTEMPERATURE_ABS, LightStateConverter.toColorTemperature(state));
         } else {
-            updateState(CHANNEL_COLORTEMPERATURE, UnDefType.NULL);
+            updateState(CHANNEL_COLORTEMPERATURE, UnDefType.UNDEF);
+            updateState(CHANNEL_COLORTEMPERATURE_ABS, UnDefType.UNDEF);
         }
 
         PercentType brightnessPercentType = LightStateConverter.toBrightnessPercentType(state);
         if (!state.isOn()) {
-            brightnessPercentType = new PercentType(0);
+            brightnessPercentType = PercentType.ZERO;
         }
         updateState(CHANNEL_BRIGHTNESS, brightnessPercentType);
 
-        updateState(CHANNEL_SWITCH, state.isOn() ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_SWITCH, OnOffType.from(state.isOn()));
 
         return true;
     }
@@ -423,8 +447,8 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
      */
     @Override
     public void onScenesUpdated(List<Scene> updatedScenes) {
-        List<StateOption> stateOptions = Collections.emptyList();
-        consoleScenesList = new ArrayList<>();
+        List<StateOption> stateOptions = List.of();
+        consoleScenesList = List.of();
         HueClient handler = getHueClient();
         if (handler != null) {
             FullGroup group = handler.getGroupById(groupId);

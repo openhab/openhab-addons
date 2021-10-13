@@ -44,7 +44,7 @@ The thing has the following configuration parameters:
 | Address          | host         | Host name or IP address of the Oppo player or serial over IP device.                                                             | host name or ip           |
 | Port             | port         | Communication port for using serial over IP. Leave blank if using direct IP connection to the player.                            | ip port number            |
 | Serial Port      | serialPort   | Serial port to use for directly connecting to the Oppo player                                                                    | a comm port name          |
-| Verbose Mode     | verboseMode  | (Optional) If true, the player will send time updates every second. If set false, the binding polls the player every 15 seconds. | Boolean; default false    |
+| Verbose Mode     | verboseMode  | (Optional) If true, the player will send time updates every second. If set false, the binding polls the player every 10 seconds. | Boolean; default false    |
 
 Some notes:
 
@@ -54,9 +54,10 @@ Some notes:
 * The UDP-20x series should be fully functional over direct IP connection but this was not able to be tested by the developer.
 * As previously noted, when using verbose mode, the player will send time code messages once per second while playback is ongoing.
 * Be aware that this could cause performance impacts to your openHAB system.
-* In non-verbose (the default), the binding will poll the player every 15 seconds to update play time, track and chapter information instead.
+* In non-verbose (the default), the binding will poll the player every 10 seconds to update play time, track and chapter information instead.
 * In order for the direct IP connection to work while the player is turned off, the Standby Mode setting must be set to "Quick Start" in the Device Setup menu.
 * Likewise if the player is turned off, it may not be discoverable by the Binding's discovery scan.
+* If the player is switched off when the binding first starts up or if power to the player is ever interrupted, up to 30 seconds may elapse before the binding begins to update when the player is switched on.
 * If you experience any issues using the binding, first ensure that the player's firmware is up to date with the latest available version (especially on the older models).
 * For the older models, some of the features in the control API were added after the players were shipped.
 * Available HDMI modes for BDP-83 & BDP-9x: AUTO, SRC, 1080P, 1080I, 720P, SDP, SDI

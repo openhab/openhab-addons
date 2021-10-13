@@ -30,7 +30,7 @@ public class NikobusSwitchModuleHandler extends NikobusModuleHandler {
     }
 
     @Override
-    protected int valueFromCommand(Command command) {
+    protected int valueFromCommand(String channelId, Command command) {
         if (command == OnOffType.ON) {
             return 0xff;
         }
@@ -43,7 +43,7 @@ public class NikobusSwitchModuleHandler extends NikobusModuleHandler {
     }
 
     @Override
-    protected State stateFromValue(int value) {
+    protected State stateFromValue(String channelId, int value) {
         return value != 0 ? OnOffType.ON : OnOffType.OFF;
     }
 }

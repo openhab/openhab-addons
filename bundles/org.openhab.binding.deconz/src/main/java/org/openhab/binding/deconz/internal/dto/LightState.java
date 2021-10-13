@@ -36,6 +36,7 @@ public class LightState {
     public @Nullable String colormode;
     public @Nullable String effect;
     public @Nullable Integer effectSpeed;
+    public @Nullable Integer ontime;
 
     // depending on the type of light
     public @Nullable Integer hue;
@@ -68,6 +69,7 @@ public class LightState {
         colormode = null;
         effect = null;
         effectSpeed = null;
+        ontime = null;
 
         hue = null;
         sat = null;
@@ -85,7 +87,7 @@ public class LightState {
     public String toString() {
         return "LightState{" + "reachable=" + reachable + ", on=" + on + ", bri=" + bri + ", alert='" + alert + '\''
                 + ", colormode='" + colormode + '\'' + ", effect='" + effect + '\'' + ", effectSpeed=" + effectSpeed
-                + ", hue=" + hue + ", sat=" + sat + ", ct=" + ct + ", xy=" + Arrays.toString(xy) + ", transitiontime="
-                + transitiontime + '}';
+                + ", ontime=" + ontime + ", hue=" + hue + ", sat=" + sat + ", ct=" + ct + ", xy=" + Arrays.toString(xy)
+                + ", transitiontime=" + transitiontime + '}';
     }
 }

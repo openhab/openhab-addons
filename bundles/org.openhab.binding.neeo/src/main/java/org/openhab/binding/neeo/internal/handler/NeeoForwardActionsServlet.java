@@ -14,6 +14,7 @@ package org.openhab.binding.neeo.internal.handler;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServlet;
@@ -44,10 +45,10 @@ public class NeeoForwardActionsServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(NeeoForwardActionsServlet.class);
 
     /** The event publisher */
-    private final Callback callback;
+    private final Consumer<String> callback;
 
     /** The forwarding chain */
-    private final String forwardChain;
+    private final @Nullable String forwardChain;
 
     /** The {@link ClientBuilder} to use */
     private final ClientBuilder clientBuilder;
@@ -56,14 +57,14 @@ public class NeeoForwardActionsServlet extends HttpServlet {
     private final ScheduledExecutorService scheduler;
 
     /**
-     * Creates the servlet the will process foward action events from the NEEO brain.
+     * Creates the servlet the will process forward action events from the NEEO brain.
      *
      * @param scheduler a non-null {@link ScheduledExecutorService} to schedule forward actions
-     * @param callback a non-null {@link Callback}
+     * @param callback a non-null String consumer
      * @param forwardChain a possibly null, possibly empty forwarding chain
      */
-    NeeoForwardActionsServlet(ScheduledExecutorService scheduler, Callback callback, String forwardChain,
-            ClientBuilder clientBuilder) {
+    NeeoForwardActionsServlet(ScheduledExecutorService scheduler, Consumer<String> callback,
+            @Nullable String forwardChain, ClientBuilder clientBuilder) {
         super();
 
         this.scheduler = scheduler;
@@ -89,24 +90,22 @@ public class NeeoForwardActionsServlet extends HttpServlet {
         final String json = req.getReader().lines().collect(Collectors.joining("\n"));
         logger.debug("handleForwardActions {}", json);
 
-        callback.post(json);
+        callback.accept(json);
 
-        scheduler.execute(() -> {
-            try (final HttpRequest request = new HttpRequest(clientBuilder)) {
-                for (final String forwardUrl : forwardChain.split(",")) {
-                    if (forwardUrl != null && !forwardUrl.isEmpty()) {
-                        final HttpResponse httpResponse = request.sendPostJsonCommand(forwardUrl, json);
-                        if (httpResponse.getHttpCode() != HttpStatus.OK_200) {
-                            logger.debug("Cannot forward event {} to {}: {}", json, forwardUrl,
-                                    httpResponse.getHttpCode());
+        if (forwardChain != null && !forwardChain.isEmpty()) {
+            scheduler.execute(() -> {
+                try (final HttpRequest request = new HttpRequest(clientBuilder)) {
+                    for (final String forwardUrl : forwardChain.split(",")) {
+                        if (!forwardUrl.isEmpty()) {
+                            final HttpResponse httpResponse = request.sendPostJsonCommand(forwardUrl, json);
+                            if (httpResponse.getHttpCode() != HttpStatus.OK_200) {
+                                logger.debug("Cannot forward event {} to {}: {}", json, forwardUrl,
+                                        httpResponse.getHttpCode());
+                            }
                         }
                     }
                 }
-            }
-        });
-    }
-
-    interface Callback {
-        void post(String json);
+            });
+        }
     }
 }

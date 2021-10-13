@@ -26,7 +26,7 @@ public interface PowermaxConnectorInterface {
     /**
      * Method for opening a connection to the Visonic alarm panel.
      */
-    public void open();
+    public void open() throws Exception;
 
     /**
      * Method for closing a connection to the Visonic alarm panel.

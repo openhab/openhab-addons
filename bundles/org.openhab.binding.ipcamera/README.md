@@ -213,6 +213,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `activateAlarmOutput2` | Switch | Toggles a cameras relay output 2. |
 | `audioAlarm` | Switch (read only) | When the camera detects noise above a threshold this switch will move to ON. |
 | `autoLED` | Switch | When ON this sets a cameras IR LED to automatically turn on or off. |
+| `carAlarm` | Switch | When a car is detected the switch will turn ON. |
 | `cellMotionAlarm` | Switch (read only) | ONVIF cameras only will reflect the status of the ONVIF event of the same name. |
 | `doorBell` | Switch (read only) | Doorbird only, will reflect the status of the doorbell button. |
 | `enableAudioAlarm` | Switch | Allows the audio alarm to be turned ON or OFF. |
@@ -234,6 +235,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `gifHistoryLength` | Number | How many filenames are in the `gifHistory`. |
 | `gotoPreset` | String | ONVIF cameras that can move only. Will cause the camera to move to a preset location. |
 | `hlsUrl` | String | The URL for the ipcamera.m3u8 file. |
+| `humanAlarm` | Switch | When a camera detects a human this switch will turn ON. |
 | `imageUrl` | String | The URL for the ipcamera.jpg file. |
 | `itemLeft` | Switch (read only) | Will turn ON if an API camera detects an item has been left behind. |
 | `itemTaken` | Switch (read only) | Will turn ON if an API camera detects an item has been stolen. |
@@ -378,6 +380,9 @@ See this forum thread for examples of how to use snapshots and streams in a site
 <https://community.openhab.org/t/ip-camera-how-to-clickable-thumbnail-overview-in-sitemaps-that-opens-up-to-a-larger-view/77990>
 
 ## Video Streams
+
+To get video streams working, this forum thread has working widget examples that you can use.
+<https://community.openhab.org/t/oh3-widget-building-a-camera-widget/110069>
 
 To get some of the video formats working, you need to install FFmpeg. 
 Visit their site here to learn how <https://ffmpeg.org/>

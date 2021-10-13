@@ -12,7 +12,6 @@
 				"piid": 1,
 				"friendlyName": "Power",
 				"channel": "power",
-				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -30,10 +29,29 @@
 				"property": "mode",
 				"siid": 2,
 				"piid": 5,
-				"friendlyName": "Mode",
+				"friendlyName": "Mode - Fan Level",
 				"channel": "mode",
-				"channelType": "humidifierOperationMode",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Auto"
+						},
+						{
+							"value": "1",
+							"label": "Silent"
+						},
+						{
+							"value": "2",
+							"label": "Normal"
+						},
+						{
+							"value": "3",
+							"label": "Maximum"
+						}
+					]
+				},
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -44,7 +62,8 @@
 				],
 				"tags": [
 					"Control"
-				]
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Auto\",\"1\"\u003d\"Silent\",\"2\"\u003d\"Normal\",\"3\"\u003d\"Maximum\"]"
 			},
 			{
 				"property": "fault",
@@ -52,8 +71,14 @@
 				"piid": 2,
 				"friendlyName": "Humidifier Device Fault",
 				"channel": "Fault",
-				"channelType": "miot_uint8",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 15,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -80,8 +105,14 @@
 				"piid": 6,
 				"friendlyName": "Target Humidity",
 				"channel": "targetHumidity",
-				"channelType": "humidity",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 30,
+					"maximum": 80,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": [
@@ -97,8 +128,14 @@
 				"piid": 7,
 				"friendlyName": "Water Level",
 				"channel": "waterlevel",
-				"channelType": "waterlevel",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"transformation": "tankLevel",
 				"ChannelGroup": "Status",
@@ -111,7 +148,23 @@
 				"piid": 2,
 				"friendlyName": "LED Brightness",
 				"channel": "bright",
-				"type": "Dimmer",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Dark"
+						},
+						{
+							"value": "1",
+							"label": "Dimmed"
+						},
+						{
+							"value": "2",
+							"label": "Brightest"
+						}
+					]
+				},
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -124,7 +177,8 @@
 				"tags": [
 					"Control",
 					"Light"
-				]
+				],
+				"readmeComment": "Value mapping [\"0\"\u003d\"Dark\",\"1\"\u003d\"Dimmed\",\"2\"\u003d\"Brightest\"]"
 			},
 			{
 				"property": "buzzer",
@@ -132,7 +186,6 @@
 				"piid": 1,
 				"friendlyName": "Buzzer Status",
 				"channel": "buzzer",
-				"channelType": "buzzer",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -149,7 +202,6 @@
 				"piid": 8,
 				"friendlyName": "Dry",
 				"channel": "dry",
-				"channelType": "dry",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -166,7 +218,6 @@
 				"piid": 9,
 				"friendlyName": "Run Time",
 				"channel": "usedhours",
-				"channelType": "usedhours",
 				"type": "Number:Time",
 				"unit": "hours",
 				"refresh": true,
@@ -181,7 +232,6 @@
 				"piid": 3,
 				"friendlyName": "Power Time",
 				"channel": "powerhours",
-				"channelType": "powerhours",
 				"type": "Number:Time",
 				"unit": "hours",
 				"refresh": true,
@@ -196,8 +246,13 @@
 				"piid": 11,
 				"friendlyName": "Target Motor Speed",
 				"channel": "targetmotorspeed",
-				"channelType": "motorspeed",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 200,
+					"maximum": 2000,
+					"step": 10,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": []
@@ -208,8 +263,14 @@
 				"piid": 1,
 				"friendlyName": "Actual Motor Speed",
 				"channel": "actualmotorspeed",
-				"channelType": "motorspeed",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2000,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": []
@@ -220,9 +281,14 @@
 				"piid": 7,
 				"friendlyName": "Temperature",
 				"channel": "temperature",
-				"channelType": "temperatureC",
 				"type": "Number:Temperature",
 				"unit": "CELCIUS",
+				"stateDescription": {
+					"minimum": -40,
+					"maximum": 125,
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": [],
@@ -238,7 +304,6 @@
 				"piid": 1,
 				"friendlyName": "Child Lock",
 				"channel": "childlock",
-				"channelType": "childlock",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -255,10 +320,27 @@
 				"piid": 10,
 				"friendlyName": "Button Pressed",
 				"channel": "ButtonPressed",
-				"channelType": "humidifierLastPressedButton",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "none"
+						},
+						{
+							"value": "1",
+							"label": "led"
+						},
+						{
+							"value": "2",
+							"label": "power"
+						}
+					]
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": "Value mapping [\"0\"\u003d\"none\",\"1\"\u003d\"led\",\"2\"\u003d\"power\"]"
 			},
 			{
 				"property": "clean",
@@ -266,30 +348,12 @@
 				"piid": 5,
 				"friendlyName": "Clean Mode",
 				"channel": "clean",
-				"channelType": "clean",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
-					}
-				]
-			},
-			{
-				"property": "country_code",
-				"siid": 7,
-				"piid": 4,
-				"friendlyName": "Country Code",
-				"channel": "countryCode",
-				"channelType": "countryCode",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
 					}
 				]
 			}

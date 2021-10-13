@@ -14,7 +14,7 @@ package org.openhab.binding.onebusaway.internal.config;
 
 import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants.ROUTE_CONFIG_ROUTE_ID;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * The {@link RouteConfiguration} defines the model for a route stop configuration.

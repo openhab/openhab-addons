@@ -15,6 +15,7 @@
 		<channels>
 			<channel id="switch" typeId="system.power"/>
 			<channel id="color_temperature" typeId="system.color-temperature"/>
+			<channel id="color_temperature_abs" typeId="system.color-temperature-abs"/>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="color" typeId="system.color"/>
 			<channel id="alert" typeId="alert"/>

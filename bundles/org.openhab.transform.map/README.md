@@ -1,6 +1,7 @@
 # Map Transformation Service
 
-Transforms the input by mapping it to another string. It expects the mappings to be read from a file which is stored under the `transform` folder. 
+Transforms the input by mapping it to another string. It expects the mappings to be read from a file which is stored under the `transform` folder.
+The file name must have the `.map` extension. 
 
 This file should be in property syntax, i.e. simple lines with "key=value" pairs. 
 The file format is documented [here](https://docs.oracle.com/javase/8/docs/api/java/util/Properties.html#load-java.io.Reader-).

@@ -15,7 +15,6 @@ package org.openhab.binding.mqtt.homeassistant.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.Configuration;
@@ -93,7 +92,7 @@ public class HaID {
     private static final String createTopic(HaID id) {
         StringBuilder str = new StringBuilder();
         str.append(id.baseTopic).append('/').append(id.component).append('/');
-        if (StringUtils.isNotBlank(id.nodeID)) {
+        if (!id.nodeID.isBlank()) {
             str.append(id.nodeID).append('/');
         }
         str.append(id.objectID).append('/');
@@ -175,7 +174,7 @@ public class HaID {
      */
     public String toShortTopic() {
         String objectID = this.objectID;
-        if (StringUtils.isNotBlank(nodeID)) {
+        if (!nodeID.isBlank()) {
             objectID = nodeID + "/" + objectID;
         }
 
@@ -192,10 +191,10 @@ public class HaID {
         String result = uniqueId;
 
         // the null test is only here so the compile knows, result is not null afterwards
-        if (result == null || StringUtils.isBlank(result)) {
+        if (result == null || result.isBlank()) {
             StringBuilder str = new StringBuilder();
 
-            if (StringUtils.isNotBlank(nodeID)) {
+            if (!nodeID.isBlank()) {
                 str.append(nodeID).append('_');
             }
             str.append(objectID).append('_').append(component);

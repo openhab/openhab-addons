@@ -17,10 +17,7 @@ import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -132,8 +129,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
 
         Map<String, String> properties = getThing().getProperties();
         String propertyModelId = properties.get(Thing.PROPERTY_MODEL_ID);
-        if (MODEL_ID_CANVAS.equals(propertyModelId)) {
-            config.deviceType = DEVICE_TYPE_CANVAS;
+        if (hasTouchSupport(propertyModelId)) {
+            config.deviceType = DEVICE_TYPE_TOUCHSUPPORT;
         } else {
             config.deviceType = DEVICE_TYPE_LIGHTPANELS;
         }
@@ -334,9 +331,9 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
 
     private synchronized void startTouchJob() {
         NanoleafControllerConfig config = getConfigAs(NanoleafControllerConfig.class);
-        if (!config.deviceType.equals(DEVICE_TYPE_CANVAS)) {
+        if (!config.deviceType.equals(DEVICE_TYPE_TOUCHSUPPORT)) {
             logger.debug("NOT starting TouchJob for Panel {} because it has wrong device type '{}' vs required '{}'",
-                    this.getThing().getUID(), config.deviceType, DEVICE_TYPE_CANVAS);
+                    this.getThing().getUID(), config.deviceType, DEVICE_TYPE_TOUCHSUPPORT);
             return;
         } else {
             logger.debug("Starting TouchJob for Panel {}", this.getThing().getUID());
@@ -351,6 +348,10 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         } else {
             logger.error("starting TouchJob for Controller {} failed - missing token", this.getThing().getUID());
         }
+    }
+
+    private boolean hasTouchSupport(@Nullable String deviceType) {
+        return (MODELS_WITH_TOUCHSUPPORT.contains(deviceType));
     }
 
     private synchronized void stopTouchJob() {
@@ -636,9 +637,9 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
 
         Configuration config = editConfiguration();
 
-        if (MODEL_ID_CANVAS.equals(controllerInfo.getModel())) {
-            config.put(NanoleafControllerConfig.DEVICE_TYPE, DEVICE_TYPE_CANVAS);
-            logger.debug("Set to device type {}", DEVICE_TYPE_CANVAS);
+        if (hasTouchSupport(controllerInfo.getModel())) {
+            config.put(NanoleafControllerConfig.DEVICE_TYPE, DEVICE_TYPE_TOUCHSUPPORT);
+            logger.debug("Set to device type {}", DEVICE_TYPE_TOUCHSUPPORT);
         } else {
             config.put(NanoleafControllerConfig.DEVICE_TYPE, DEVICE_TYPE_LIGHTPANELS);
             logger.debug("Set to device type {}", DEVICE_TYPE_LIGHTPANELS);

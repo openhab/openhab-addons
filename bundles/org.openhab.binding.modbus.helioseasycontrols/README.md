@@ -1,7 +1,7 @@
 # Helios easyControls
 
 Helios Heat-Recovery Ventilation devices use a Modbus protocol to communicate with different sensors, switches, etc. Some devices come with an integrated web interface (easyControls) as well as a Modbus TCP/IP Gateway.
-See https://www.easycontrols.net/de/service/downloads/send/4-software/16-modbus-dokumentation-f%C3%BCr-kwl-easycontrols-ger%C3%A4te for the corresponding specification.
+See the corresponding [specification](https://www.easycontrols.net/de/service/downloads/send/4-software/16-modbus-dokumentation-f%C3%BCr-kwl-easycontrols-ger%C3%A4te).
 
 ## Supported Things
 
@@ -116,16 +116,16 @@ The following channels are supported:
 | operatingHoursNhz                | general         | Operating hours afterheater (in minutes) (0 - 2^32-1 min)                                                                        | Number:Time              | R  | 
 | outputPowerVhz                   | general         | Output power of preheater (in percent) (0 - 2^32-1 %)                                                                            | Number:Dimensionless     | R  | 
 | outputPowerNhz                   | general         | Output power of afterheater (in percent) (0 - 2^32-1 %)                                                                          | Number:Dimensionless     | R  | 
-| errors                           | general         | Errors as integer value (0 - 2^32-1)                                                                                             | Number                   | R  | 
-| warnings                         | general         | Warnings as integer value (0 - 2^32-1)                                                                                           | Number                   | R  | 
-| infos                            | general         | Infos as integer value (0 - 2^32-1)                                                                                              | Number                   | R  | 
-| noOfErrors                       | general         | Number of bit-coded errors (0 - 32)                                                                                              | Number                   | R  | 
-| noOfWarnings                     | general         | Number of bit-coded warnings (0 - 8)                                                                                             | Number                   | R  | 
-| noOfInfos                        | general         | Number of bit-coded infos (0 - 8)                                                                                                | Number                   | R  | 
-| errorsMsg                        | general         | Errors as string                                                                                                                 | String                   | R  | 
-| warningsMsg                      | general         | Warnings as string                                                                                                               | String                   | R  | 
-| infosMsg                         | general         | Infos as string                                                                                                                  | String                   | R  | 
-| statusFlags                      | general         | Status flags                                                                                                                     | String                   | R  | 
+| errors                           | general         | Errors as integer value (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 2^32-1)                                   | Number                   | R  | 
+| warnings                         | general         | Warnings as integer value (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 2^32-1)                                 | Number                   | R  | 
+| infos                            | general         | Infos as integer value (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 2^32-1)                                    | Number                   | R  | 
+| noOfErrors                       | general         | Number of bit-coded errors (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 32)                                    | Number                   | R  | 
+| noOfWarnings                     | general         | Number of bit-coded warnings (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 8)                                   | Number                   | R  | 
+| noOfInfos                        | general         | Number of bit-coded infos (see [Errors / Warnings / Infos](#errors-warnings-infos)) (0 - 8)                                      | Number                   | R  | 
+| errorsMsg                        | general         | Errors as string (see [Errors / Warnings / Infos](#errors-warnings-infos))                                                       | String                   | R  | 
+| warningsMsg                      | general         | Warnings as string (see [Errors / Warnings / Infos](#errors-warnings-infos))                                                     | String                   | R  | 
+| infosMsg                         | general         | Infos as string (see [Errors / Warnings / Infos](#errors-warnings-infos))                                                        | String                   | R  | 
+| statusFlags                      | general         | Status flags (see [Errors / Warnings / Infos](#errors-warnings-infos))                                                           | String                   | R  | 
 | bypassStatus                     | general         | Status of the bypass (OFF = closed, ON = open)                                                                                   | Switch                   | R  | 
 | bypassFrom                       | unitConfig      | Bypass active from                                                                                                               | DateTime                 | RW | 
 | bypassTo                         | unitConfig      | Bypass active to                                                                                                                 | DateTime                 | RW | 
@@ -183,6 +183,7 @@ public void setBypassFrom(int day, int month)
 ```
 
 *Parameters:*
+
 * *day:* The day from when the bypass should be active
 * *month:* The month from when the bypass should be active
 
@@ -192,8 +193,57 @@ public void setBypassTo(int day, int month)
 ```
 
 *Parameters:*
+
 * *day:* The day until when the bypass should be active
 * *month:* The month until when the bypass should be active
+
+
+```
+public Map<String, Object> getErrorMessages()
+```
+
+*Return values:*
+
+* *errorMessages:* A `List<String>` object containing all error messages
+
+
+```
+public Map<String, Object> getWarningMessages()
+```
+
+*Return values:*
+
+* *warningMessages:* A `List<String>` object containing all warning messages
+
+
+```
+public Map<String, Object> getInfoMessages()
+```
+
+*Return values:*
+
+* *infoMessages:* A `List<String>` object containing all info messages
+
+
+```
+public Map<String, Object> getStatusMessages()
+```
+
+*Return values:*
+
+* *statusMessages:* A `List<String>` object containing all status messages
+
+
+```
+public Map<String, Object> getMessages()
+```
+
+*Return values:*
+
+* *errorMessages:* A `List<String>` object containing all error messages
+* *warningMessages:* A `List<String>` object containing all warning messages
+* *infoMessages:* A `List<String>` object containing all info messages
+* *statusMessages:* A `List<String>` object containing all status messages
 
 
 ## Properties
@@ -277,6 +327,21 @@ The binding provides the following properties:
 | sensorConfigKwlFtf8              | Sensor configuration (installed or not) KWL-FTF 8 (OFF = no sensor, ON = sensor installed)                                       | 
 
 
+## Errors / Warnings / Infos
+
+Errors, warnings and infos of the device are provided in a bit encoded way. I.e. each bit in a 8 bit or 32 bit variable encodes potentially multiple errors, warnings or infos.
+Also status flags are provided this way. For details please refer to the manufacturer's [specification](https://www.easycontrols.net/de/service/downloads/send/4-software/16-modbus-dokumentation-f%C3%BCr-kwl-easycontrols-ger%C3%A4te).
+
+Based on that concept, errors, warnings and infos are provided in 3 different ways:
+
+* As an unsigned integer value with the decimal representation of the encoded bits
+* The total number of encoded errors, warning or infos
+* The bit encoded as a string
+
+Since there can potentially be several errors, warnings or infos, using a simple MAP to display the corresponding message in a UI will not work in all cases. String items with multiple lines will not display properly in the UIs.
+Therefore the binding provides actions to retrieve the different messages as an `ArrayList<String>` object which can then be used to e.g. send the messages via email.
+
+
 ## Full Example
 
 ### Thing Configuration
@@ -291,50 +356,71 @@ Bridge modbus:tcp:modbus-gateway "Modbus TCP/IP Gateway" [ host="192.168.47.11",
 
 ```
 // Manual operation
-Number KWL_Manual                        "Manual operation"                          <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#operatingMode"}
-Number KWL_Stage                         "KWL fan stage"                             <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#fanStage"}
-Number:Dimensionless KWL_Stage_Percent   "KWL fan stage [%d %unit%]"                 <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#percentageFanStage"}
+Number KWL_Manual                        "Manual operation"                          <fan>         (gKWL) ["Control"]                    {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#operatingMode"}
+Number KWL_Stage                         "KWL fan stage"                             <fan>         (gKWL) ["Setpoint", "Level"]          {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#fanStage"}
+Number:Dimensionless KWL_Stage_Percent   "KWL fan stage [%d %unit%]"                 <fan>         (gKWL) ["Status", "Level"]            {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#percentageFanStage"}
 
 // Party mode
-Switch KWL_Party_Mode                    "Party mode"                                <parents>     (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeStatus"}
-Number:Time KWL_Party_Mode_Duration      "Party mode duration [%d %unit%]"           <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeDuration"}
-Number KWL_Party_Mode_Stage              "Party mode fan stage"                      <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeFanStage"}
-Number:Time KWL_Party_Mode_Remaining     "Party mode remaining time [%d %unit%]"     <clock>       (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#partyModeRemainingTime"}
+Switch KWL_Party_Mode                    "Party mode"                                <parents>     (gKWL) ["Control"]                    {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeStatus"}
+Number:Time KWL_Party_Mode_Duration      "Party mode duration [%d %unit%]"           <clock>       (gKWL) ["Setpoint", "Duration"]       {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeDuration"}
+Number KWL_Party_Mode_Stage              "Party mode fan stage"                      <fan>         (gKWL) ["Setpoint", "Level"]          {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#partyModeFanStage"}
+Number:Time KWL_Party_Mode_Remaining     "Party mode remaining time [%d %unit%]"     <clock>       (gKWL) ["Status", "Duration"]         {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#partyModeRemainingTime"}
 
 // Standby mode
-Switch KWL_Standby_Mode                  "Standby mode"                              <fan_off>     (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeStatus"}
-Number:Time KWL_Standby_Mode_Duration    "Standby mode duration [%d %unit%]"         <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeDuration"}
-Number KWL_Standby_Mode_Stage            "Standby mode fan stage"                    <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeFanStage"}
-Number:Time KWL_Standby_Mode_Remaining   "Standby mode remaining time [%d %unit%]"   <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeRemainingTime"}
+Switch KWL_Standby_Mode                  "Standby mode"                              <fan_off>     (gKWL) ["Control"]                    {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeStatus"}
+Number:Time KWL_Standby_Mode_Duration    "Standby mode duration [%d %unit%]"         <clock>       (gKWL) ["Setpoint", "Duration"]       {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeDuration"}
+Number KWL_Standby_Mode_Stage            "Standby mode fan stage"                    <fan>         (gKWL) ["Setpoint", "Level"]          {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeFanStage"}
+Number:Time KWL_Standby_Mode_Remaining   "Standby mode remaining time [%d %unit%]"   <clock>       (gKWL) ["Status", "Duration"]         {channel="modbus:helios-easycontrols:modbus-gateway:kwl:operation#standbyModeRemainingTime"}
 
 // Status infos
-Number:Temperature KWL_Temp_Outide_Air   "Temperature outside air [%.1f °C]"         <temperature> (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#temperatureOutsideAir"}
-Number:Temperature KWL_Temp_Supply_Air   "Temperature supply air [%.1f °C]"          <temperature> (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#temperatureSupplyAir"}
-Number:Temperature KWL_Temp_Outgoing_Air "Temperature outgoing air [%.1f °C]"        <temperature> (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#temperatureOutgoingAir"}
-Number:Temperature KWL_Temp_Extract_Air  "Temperature extract air [%.1f °C]"         <temperature> (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#temperatureExtractAir"}
-Number KWL_Supply_Air_RPM                "RPM supply air [%d]"                       <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#supplyAirRpm"}
-Number KWL_Extract_Air_RPM               "RPM extract air [%d]"                      <fan>         (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#extractAirRpm"}
-Number KWL_Filter_Change                 "Filter change [MAP(helios_yes_no.map):%s]" <none>        (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:unitConfig#filterChange"}
-Number:Time KWL_Filter_Change_Remaining  "Filter change [%d %unit%]"                 <clock>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#filterChangeRemainingTime"}
+Number:Temperature KWL_Temp_Outide_Air   "Temperature outside air [%.1f °C]"         <temperature> (gKWL) ["Measurement", "Temperature"] {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#temperatureOutsideAir"}
+Number:Temperature KWL_Temp_Supply_Air   "Temperature supply air [%.1f °C]"          <temperature> (gKWL) ["Measurement", "Temperature"] {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#temperatureSupplyAir"}
+Number:Temperature KWL_Temp_Outgoing_Air "Temperature outgoing air [%.1f °C]"        <temperature> (gKWL) ["Measurement", "Temperature"] {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#temperatureOutgoingAir"}
+Number:Temperature KWL_Temp_Extract_Air  "Temperature extract air [%.1f °C]"         <temperature> (gKWL) ["Measurement", "Temperature"] {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#temperatureExtractAir"}
+Number KWL_Supply_Air_RPM                "RPM supply air [%d]"                       <fan>         (gKWL) ["Measurement", "Property"]    {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#supplyAirRpm"}
+Number KWL_Extract_Air_RPM               "RPM extract air [%d]"                      <fan>         (gKWL) ["Measurement", "Property"]    {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#extractAirRpm"}
+Number KWL_Filter_Change                 "Filter change [MAP(helios_yes_no.map):%s]" <none>        (gKWL) ["Status"]                     {channel="modbus:helios-easycontrols:modbus-gateway:kwl:unitConfig#filterChange"}
+Number:Time KWL_Filter_Change_Remaining  "Filter change [%d %unit%]"                 <clock>       (gKWL) ["Status", "Duration"]         {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#filterChangeRemainingTime"}
 
-Number KWL_Errors                        "Number errors [%d]"                        <error>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#noOfErrors"}
-String KWL_Errors_String                 "Error messages [%s]"                       <error>       (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#errorsMsg"}
-Number KWL_Warnings                      "Number warnings [%d]"                      <warning>     (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#noOfWarnings"}
-String KWL_Warnings_String               "Warning messages [%s]"                     <warning>     (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#warningsMsg"}
-Number KWL_Infos                         "Number infos [%d]"                         <info>        (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#noOfInfos"}
-String KWL_Infos_String                  "Info messages [%s]"                        <info>        (gKWL) {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#infosMsg"}
+Number KWL_Errors                        "Number errors [%d]"                        <error>       (gKWL) ["Status"]                     {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#noOfErrors"}
+String KWL_Errors_String                 "Error messages [%s]"                       <error>       (gKWL) ["Status"]                     {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#errorsMsg"}
+Number KWL_Warnings                      "Number warnings [%d]"                      <warning>     (gKWL) ["Status"]                     {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#noOfWarnings"}
+String KWL_Warnings_String               "Warning messages [%s]"                     <warning>     (gKWL) ["Status"]                     {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#warningsMsg"}
+Number KWL_Infos                         "Number infos [%d]"                         <info>        (gKWL) ["Status"]                     {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#noOfInfos"}
+String KWL_Infos_String                  "Info messages [%s]"                        <info>        (gKWL) ["Status"]                     {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#infosMsg"}
+String KWL_Status_Flags                  "Status Flags [%s]"                         <info>        (gKWL) ["Status"]                     {channel="modbus:helios-easycontrols:modbus-gateway:kwl:general#statusFlags"}
 ```
 
 ### Rule
 
 ```
-rule "Rest filter change remaining time"
+import java.util.List
+import java.util.Map
+
+rule "Reset filter change remaining time"
     when
         Item Rem_KWL_Filter received command OFF
     then
         val kwlActions = getActions("modbus.helioseasycontrols", "modbus:helios-easycontrols:modbus-gateway:kwl")
         kwlActions.resetFilterChangeTimer()
 end
+
+
+rule "Log KWL messages"
+    when
+        Item KWL_Errors_String changed or
+        Item KWL_Warnings_String changed or
+        Item KWL_Infos_String changed or
+        KWL_Status_Flags changed
+    then
+        val kwlActions = getActions("modbus.helioseasycontrols", "modbus:helios-easycontrols:modbus-gateway:kwl")
+        val Map<String, List<String>> msg = kwlActions.getMessages
+        logInfo("KWL Error Messages", msg.get("errorMessages").toString)
+        logInfo("KWL Warning Messages", msg.get("warningMessages").toString)
+        logInfo("KWL Info Messages", msg.get("infoMessages").toString)
+        logInfo("KWL Status Messages", msg.get("statusMessages").toString)
+end
+
 ```
 
 ### Transformation

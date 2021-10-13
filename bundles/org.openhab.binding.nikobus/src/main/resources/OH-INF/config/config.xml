@@ -44,6 +44,10 @@
 			<label>Delay</label>
 			<description>Delay specifying how many seconds after duration module's output is set to OFF. Defaults to 5 seconds</description>
 		</parameter>
+		<parameter name="reverse" type="boolean">
+			<label>Reverse Direction</label>
+			<description>Reverse direction of rollershutters. Defaults to false</description>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

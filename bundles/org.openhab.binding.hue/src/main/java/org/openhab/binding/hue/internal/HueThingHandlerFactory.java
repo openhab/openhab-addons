@@ -144,7 +144,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
         if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new HueBridgeHandler((Bridge) thing, stateOptionProvider);
         } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            return new HueLightHandler(thing);
+            return new HueLightHandler(thing, stateOptionProvider);
         } else if (DimmerSwitchHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new DimmerSwitchHandler(thing);
         } else if (TapSwitchHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {

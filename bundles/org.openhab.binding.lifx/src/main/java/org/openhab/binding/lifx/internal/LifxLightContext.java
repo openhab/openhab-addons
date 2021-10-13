@@ -17,12 +17,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lifx.internal.handler.LifxLightHandler;
 import org.openhab.binding.lifx.internal.handler.LifxLightHandler.CurrentLightState;
-import org.openhab.binding.lifx.internal.protocol.Product;
 
 /**
  * The {@link LifxLightContext} shares the context of a light with {@link LifxLightHandler} helper objects.
  *
- * @author Wouter Born - Add optional host configuration parameter
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public class LifxLightContext {
@@ -31,10 +30,10 @@ public class LifxLightContext {
     private final LifxLightConfig configuration;
     private final CurrentLightState currentLightState;
     private final LifxLightState pendingLightState;
-    private final Product product;
+    private final LifxProduct product;
     private final ScheduledExecutorService scheduler;
 
-    public LifxLightContext(String logId, Product product, LifxLightConfig configuration,
+    public LifxLightContext(String logId, LifxProduct product, LifxLightConfig configuration,
             CurrentLightState currentLightState, LifxLightState pendingLightState, ScheduledExecutorService scheduler) {
         this.logId = logId;
         this.configuration = configuration;
@@ -52,7 +51,7 @@ public class LifxLightContext {
         return configuration;
     }
 
-    public Product getProduct() {
+    public LifxProduct getProduct() {
         return product;
     }
 

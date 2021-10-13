@@ -108,21 +108,21 @@ demo.things:
 Bridge serial:serialBridge:sensors [serialPort="/dev/ttyUSB01", baudRate=57600] {
     Thing serialDevice temperatureSensor [patternMatch="20;05;Cresta;ID=2801;.*"] {
         Channels:
-            Type number : temperature [transform="REGEX:.*?TEMP=(.*?);.*"]
-            Type number : humidity [transform="REGEX:.*?HUM=(.*?);.*"]
+            Type number : temperature [stateTransformation="REGEX:.*?TEMP=(.*?);.*"]
+            Type number : humidity [stateTransformation="REGEX:.*?HUM=(.*?);.*"]
     }
     Thing serialDevice rollershutter [patternMatch=".*"] {
         Channels:
-            Type rollershutter : serialRollo [transform="REGEX:Position:([0-9.]*)", up="Rollo_UP\n", down="Rollo_DOWN\n", stop="Rollo_STOP\n"]
-            Type switch : roloAt100 [transform="REGEX:s/Position:100/ON/"]
+            Type rollershutter : serialRollo [stateTransformation="REGEX:Position:([0-9.]*)", upValue="Rollo_UP\n", downValue="Rollo_DOWN\n", stopValue="Rollo_STOP\n"]
+            Type switch : roloAt100 [stateTransformation="REGEX:s/Position:100/ON/"]
     }
     Thing serialDevice relay [patternMatch=".*"] {
         Channels:
-            Type switch : serialRelay [on="Q1_ON\n", off="Q1_OFF\n"]
+            Type switch : serialRelay [onValue="Q1_ON\n", offValue="Q1_OFF\n"]
     }
     Thing serialDevice myDevice [patternMatch="ID=2341;.*"] {
         Channels:
-            Type string : control [commandTransform="JS:addCheckSum.js", commandFormat="ID=2341;COMMAND=%s;"]
+            Type string : control [commandTransformation="JS:addCheckSum.js", commandFormat="ID=2341;COMMAND=%s;"]
     }
 }
 

@@ -18,6 +18,8 @@ import java.io.StringReader;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.avmfritz.internal.dto.templates.TemplateListModel;
@@ -58,14 +60,15 @@ public class FritzAhaUpdateTemplatesCallback extends FritzAhaReauthCallback {
         logger.trace("Received response '{}'", response);
         if (isValidRequest()) {
             try {
+                XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
                 Unmarshaller unmarshaller = JAXBUtils.JAXBCONTEXT_TEMPLATES.createUnmarshaller();
-                TemplateListModel model = (TemplateListModel) unmarshaller.unmarshal(new StringReader(response));
+                TemplateListModel model = (TemplateListModel) unmarshaller.unmarshal(xsr);
                 if (model != null) {
                     handler.addTemplateList(model.getTemplates());
                 } else {
                     logger.debug("no template in response");
                 }
-            } catch (JAXBException e) {
+            } catch (JAXBException | XMLStreamException e) {
                 logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
             }
         } else {

@@ -14,6 +14,21 @@
 			<channel id="temperature" typeId="temperature-channel"/>
 		</channels>
 
+		<properties>
+			<property name="mac"/>
+			<property name="version"/>
+			<property name="type"/>
+			<property name="ssid"/>
+			<property name="ip"/>
+			<property name="mask"/>
+			<property name="gw"/>
+			<property name="dns"/>
+			<property name="static"/>
+			<property name="connected"/>
+		</properties>
+
+		<representation-property>mac</representation-property>
+
 		<config-description>
 			<parameter name="hostname" type="text">
 				<label>Hostname</label>
@@ -30,11 +45,59 @@
 
 	</thing-type>
 
+	<thing-type id="mystrombulb">
+		<label>myStrom Bulb</label>
+		<description>Controls the myStrom bulb</description>
+
+		<channels>
+			<channel id="switch" typeId="system.power"/>
+			<channel id="power" typeId="power-channel"/>
+			<channel id="color" typeId="system.color"/>
+			<channel id="colorTemperature" typeId="system.color-temperature"/>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="ramp" typeId="ramp-channel"/>
+			<channel id="mode" typeId="mode-channel"/>
+		</channels>
+
+		<properties>
+			<property name="mac"/>
+			<property name="version"/>
+			<property name="type"/>
+			<property name="ssid"/>
+			<property name="ip"/>
+			<property name="mask"/>
+			<property name="gw"/>
+			<property name="dns"/>
+			<property name="static"/>
+			<property name="connected"/>
+		</properties>
+
+		<representation-property>mac</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text">
+				<label>Hostname</label>
+				<description>The host name or IP address of the myStrom bulb.</description>
+				<context>network-address</context>
+				<default>localhost</default>
+				<required>true</required>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>10</default>
+				<required>true</required>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+
 	<channel-type id="power-channel">
 		<item-type>Number:Power</item-type>
 		<label>Power Consumption</label>
 		<description>The current power delivered by the plug</description>
-		<state readOnly="true"/>
+		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperature-channel">
@@ -43,4 +106,25 @@
 		<description>The current temperature at the plug</description>
 		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="ramp-channel">
+		<item-type>Number:Time</item-type>
+		<label>Ramp</label>
+		<description>Transition time from the light’s current state to the new state.</description>
+		<state pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="mode-channel">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>The color mode we want the Bulb to set to</description>
+		<command>
+			<options>
+				<option value="rgb">RGB</option>
+				<option value="hsv">HSB (HSV)</option>
+				<option value="mono">MONO</option>
+			</options>
+		</command>
+	</channel-type>
+
 </thing:thing-descriptions>

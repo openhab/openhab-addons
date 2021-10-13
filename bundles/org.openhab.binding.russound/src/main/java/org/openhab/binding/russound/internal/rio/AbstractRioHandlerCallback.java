@@ -14,7 +14,6 @@ package org.openhab.binding.russound.internal.rio;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.core.types.State;
 
 /**
@@ -56,7 +55,7 @@ public abstract class AbstractRioHandlerCallback implements RioHandlerCallback {
      * @throws IllegalArgumentException if state is null
      */
     protected void fireStateUpdated(String channelId, State state) {
-        if (StringUtils.isEmpty(channelId)) {
+        if (channelId == null || channelId.isEmpty()) {
             throw new IllegalArgumentException("channelId cannot be null or empty)");
         }
         if (state == null) {

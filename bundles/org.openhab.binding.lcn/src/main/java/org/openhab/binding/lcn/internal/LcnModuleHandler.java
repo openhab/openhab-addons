@@ -68,6 +68,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LcnModuleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LcnModuleHandler.class);
+    private static final int FIRMWARE_VERSION_LENGTH = 6;
     private static final Map<String, Converter> VALUE_CONVERTERS = new HashMap<>();
     private static final InversionConverter INVERSION_CONVERTER = new InversionConverter();
     private @Nullable LcnAddrMod moduleAddress;
@@ -95,11 +96,11 @@ public class LcnModuleHandler extends BaseThingHandler {
         LcnAddrMod localModuleAddress = moduleAddress = new LcnAddrMod(localConfig.segmentId, localConfig.moduleId);
 
         try {
-            // Determine serial number of manually added modules
+            ModInfo info = getPckGatewayHandler().getModInfo(localModuleAddress);
+            readFirmwareVersionFromProperty().ifPresent(info::setFirmwareVersion);
             requestFirmwareVersionAndSerialNumberIfNotSet();
 
             // create sub handlers
-            ModInfo info = getPckGatewayHandler().getModInfo(localModuleAddress);
             for (LcnChannelGroup type : LcnChannelGroup.values()) {
                 subHandlers.put(type, type.createSubHandler(this, info));
             }
@@ -158,12 +159,26 @@ public class LcnModuleHandler extends BaseThingHandler {
      * @throws LcnException when the handler is not initialized
      */
     protected void requestFirmwareVersionAndSerialNumberIfNotSet() throws LcnException {
-        String serialNumber = getThing().getProperties().get(Thing.PROPERTY_SERIAL_NUMBER);
-        if (serialNumber == null || serialNumber.isEmpty()) {
+        if (readFirmwareVersionFromProperty().isEmpty()) {
             LcnAddrMod localModuleAddress = moduleAddress;
             if (localModuleAddress != null) {
                 getPckGatewayHandler().getModInfo(localModuleAddress).requestFirmwareVersion();
             }
+        }
+    }
+
+    private Optional<Integer> readFirmwareVersionFromProperty() {
+        String prop = getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION);
+
+        if (prop == null || prop.length() != FIRMWARE_VERSION_LENGTH) {
+            return Optional.empty();
+        }
+
+        try {
+            return Optional.of(Integer.parseInt(prop, 16));
+        } catch (NumberFormatException e) {
+            logger.warn("{}: Serial number property invalid", moduleAddress);
+            return Optional.empty();
         }
     }
 
@@ -241,11 +256,7 @@ public class LcnModuleHandler extends BaseThingHandler {
      * @param pck the message without line termination
      */
     public void handleStatusMessage(String pck) {
-        for (AbstractLcnModuleSubHandler handler : subHandlers.values()) {
-            if (handler.tryParse(pck)) {
-                break;
-            }
-        }
+        subHandlers.values().forEach(h -> h.tryParse(pck));
 
         metadataSubHandlers.forEach(h -> h.tryParse(pck));
     }
@@ -340,6 +351,15 @@ public class LcnModuleHandler extends BaseThingHandler {
     }
 
     /**
+     * Updates the LCN module's serial number property.
+     *
+     * @param serialNumber the new serial number
+     */
+    public void updateFirmwareVersionProperty(String firmwareVersion) {
+        updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
+    }
+
+    /**
      * Invoked when an trigger for this LCN module should be fired to openHAB.
      *
      * @param channelGroup the Channel to update
@@ -384,7 +404,7 @@ public class LcnModuleHandler extends BaseThingHandler {
             LcnAddrMod localModuleAddress = moduleAddress;
             if (connection != null && localModuleAddress != null) {
                 getPckGatewayHandler().getModInfo(localModuleAddress).onAck(LcnBindingConstants.CODE_ACK, connection,
-                        getPckGatewayHandler().getTimeoutMs(), System.nanoTime());
+                        getPckGatewayHandler().getTimeoutMs(), System.currentTimeMillis());
             }
         } catch (LcnException e) {
             logger.warn("Connection or module address not set");

@@ -4,7 +4,7 @@ The binding uses the Tankerkönig API <https://www.tankerkoenig.de> for collecti
 Special thanks to the creators of Tankerkönig for providing an easy way to get data from the &lsqb;MTS-K&rsqb; (Markttransparenzstelle für Kraftstoffe).
 
 Tankerkönig is providing this service for free, however they request to prevent overloading of their server by reducing the number of web-requests.
-This binding handles those requests (minimum Refresh Interval is 10 minutes, a webserver does handle a maximum of 10 stations).
+This binding handles those requests (minimum Refresh Interval is 5 minutes, a webserver does handle a maximum of 10 stations).
 The data will be updated for each Station individually after the initialization and after each Refresh Interval for all (open) stations (Note: changing the Webservice will cause the Refresh Interval to restart).
 Additionally one may select the mode Opening-Times in which only those Stations get polled which are actually open.
 For a correct usage of opening times the binding needs the information if the actual day is a holiday.
@@ -49,7 +49,7 @@ The binding has no configuration options itself, all configuration is done at 'B
 
 ## Thing configuration
 
-The Webservice (bridge) needs to be configured with the personal API-Key, the desired Refresh Interval (the time interval between price-updates, default 60 minutes, minimum 10 minutes) and the Opening-Times mode selection (in this mode price-updates are only requested from stations that are actually open).
+The Webservice (bridge) needs to be configured with the personal API-Key, the desired Refresh Interval (the time interval between price-updates, default 60 minutes, minimum 5 minutes) and the Opening-Times mode selection (in this mode price-updates are only requested from stations that are actually open).
 A single Webservice can handle up to 10 Stations.
 
 Each Station needs to be configured with a LocationID and the Webservice to which it is linked.

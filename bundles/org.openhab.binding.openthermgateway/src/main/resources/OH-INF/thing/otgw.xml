@@ -14,6 +14,9 @@
 			<channel id="controlsetpoint" typeId="controlsetpoint"/>
 			<channel id="controlsetpointrequested" typeId="controlsetpointrequested"/>
 			<channel id="controlsetpointoverride" typeId="controlsetpointoverride"/>
+			<channel id="controlsetpoint2" typeId="controlsetpoint2"/>
+			<channel id="controlsetpoint2requested" typeId="controlsetpoint2requested"/>
+			<channel id="controlsetpoint2override" typeId="controlsetpoint2override"/>
 			<channel id="dhwtemp" typeId="dhwtemp"/>
 			<channel id="tdhwset" typeId="tdhwset"/>
 			<channel id="overridedhwsetpoint" typeId="overridedhwsetpoint"/>
@@ -24,6 +27,9 @@
 			<channel id="ch_enable" typeId="ch_enable"/>
 			<channel id="ch_enablerequested" typeId="ch_enablerequested"/>
 			<channel id="ch_enableoverride" typeId="ch_enableoverride"/>
+			<channel id="ch2_enable" typeId="ch2_enable"/>
+			<channel id="ch2_enablerequested" typeId="ch2_enablerequested"/>
+			<channel id="ch2_enableoverride" typeId="ch2_enableoverride"/>
 			<channel id="ch_mode" typeId="ch_mode"/>
 			<channel id="dhw_enable" typeId="dhw_enable"/>
 			<channel id="dhw_mode" typeId="dhw_mode"/>
@@ -38,11 +44,10 @@
 			<channel id="airpressfault" typeId="airpressfault"/>
 			<channel id="waterovtemp" typeId="waterovtemp"/>
 			<channel id="oemfaultcode" typeId="oemfaultcode"/>
-			<channel id="diag" typeId="diag"/>
 			<channel id="sendcommand" typeId="sendcommand"/>
 		</channels>
 		<properties>
-			<property name="version">1.1.0</property>
+			<property name="version">1.2.0</property>
 		</properties>
 		<config-description-ref uri="thing-type:openthermgateway:otgw"/>
 	</thing-type>

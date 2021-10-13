@@ -16,7 +16,7 @@
 
   <properties>
     <bnd.importpackage>!com.luckycatlabs.*,!com.jcraft.jzlib.*,!org.apache.commons.cli.*,!org.eclipse.swt.*</bnd.importpackage>
-    <dep.noembedding>netty-transport-native-unix-common,netty-common,netty-transport,netty-transport-native-epoll,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-handler</dep.noembedding>
+    <dep.noembedding>netty-transport-native-unix-common,netty-common,netty-transport,netty-transport-native-epoll,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-handler,netty-transport-native-kqueue,netty-handler-proxy,netty-codec-socks</dep.noembedding>
   </properties>
 
   <dependencies>
@@ -36,13 +36,13 @@
     <dependency>
       <groupId>org.asynchttpclient</groupId>
       <artifactId>async-http-client</artifactId>
-      <version>2.0.19</version>
+      <version>2.10.4</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.asynchttpclient</groupId>
       <artifactId>async-http-client-netty-utils</artifactId>
-      <version>2.0.19</version>
+      <version>2.10.4</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -102,6 +102,24 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-buffer</artifactId>
+      <version>4.1.42.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-transport-native-kqueue</artifactId>
+      <version>4.1.42.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-handler-proxy</artifactId>
+      <version>4.1.42.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-codec-socks</artifactId>
       <version>4.1.42.Final</version>
       <scope>compile</scope>
     </dependency>

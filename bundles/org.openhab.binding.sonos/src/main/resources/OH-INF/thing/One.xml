@@ -15,6 +15,7 @@
 			<channel id="alarm" typeId="alarm"/>
 			<channel id="alarmproperties" typeId="alarmproperties"/>
 			<channel id="alarmrunning" typeId="alarmrunning"/>
+			<channel id="bass" typeId="bass"/>
 			<channel id="control" typeId="system.media-control"/>
 			<channel id="currentalbum" typeId="currentalbum"/>
 			<channel id="currentalbumart" typeId="currentalbumart"/>
@@ -27,6 +28,7 @@
 			<channel id="favorite" typeId="favorite"/>
 			<channel id="led" typeId="led"/>
 			<channel id="localcoordinator" typeId="localcoordinator"/>
+			<channel id="loudness" typeId="loudness"/>
 			<channel id="mute" typeId="system.mute"/>
 			<channel id="notificationsound" typeId="notificationsound"/>
 			<channel id="playlist" typeId="playlist"/>
@@ -46,6 +48,7 @@
 			<channel id="standalone" typeId="standalone"/>
 			<channel id="state" typeId="state"/>
 			<channel id="stop" typeId="stop"/>
+			<channel id="treble" typeId="treble"/>
 			<channel id="tuneinstationid" typeId="tuneinstationid"/>
 			<channel id="volume" typeId="system.volume"/>
 			<channel id="zonegroupid" typeId="zonegroupid"/>
@@ -54,6 +57,8 @@
 			<channel id="sleeptimer" typeId="sleeptimer"/>
 			<channel id="currenttransporturi" typeId="currenttransporturi"/>
 			<channel id="currenttrackuri" typeId="currenttrackuri"/>
+			<!-- Extended SONOS channels -->
+			<channel id="microphone" typeId="microphone"/>
 			<channel id="speechenhancement" typeId="speechenhancement"/>
 		</channels>
 

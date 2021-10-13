@@ -12,6 +12,7 @@
 		<channels>
 			<channel id="status" typeId="status"></channel>
 		</channels>
+		<representation-property>id</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:gateway"/>
 	</thing-type>
 

@@ -59,6 +59,18 @@
 				<limitToOptions>true</limitToOptions>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="stateMethod" type="text">
+				<label>State Method</label>
+				<description>HTTP method (GET,POST, PUT) for retrieving a status.</description>
+				<options>
+					<option value="GET">GET</option>
+					<option value="POST">POST</option>
+					<option value="PUT">PUT</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>GET</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="commandMethod" type="text">
 				<label>Command Method</label>
 				<description>HTTP method (GET,POST, PUT) for sending commands.</description>

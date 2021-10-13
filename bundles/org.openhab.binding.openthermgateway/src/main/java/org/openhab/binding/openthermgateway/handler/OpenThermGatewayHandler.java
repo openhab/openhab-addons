@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.openthermgateway.handler;
 
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
@@ -56,11 +57,10 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     private final Logger logger = LoggerFactory.getLogger(OpenThermGatewayHandler.class);
 
     private @Nullable OpenThermGatewayConfiguration config;
-
     private @Nullable OpenThermGatewayConnector connector;
+    private @Nullable ScheduledFuture<?> reconnectTask;
 
     private boolean connecting = false;
-
     private boolean explicitDisconnect = false;
 
     public OpenThermGatewayHandler(Thing thing) {
@@ -80,6 +80,9 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        @Nullable
+        OpenThermGatewayConnector conn = connector;
+
         logger.debug("Received channel: {}, command: {}", channelUID, command);
 
         if (!(command instanceof RefreshType)) {
@@ -105,23 +108,26 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                 gatewayCommand = GatewayCommand.parse(code, command.toFullString());
             }
 
-            if (checkConnection()) {
-                @Nullable
-                OpenThermGatewayConnector conn = connector;
+            if (conn != null && conn.isConnected()) {
+                conn.sendCommand(gatewayCommand);
 
-                if (conn != null) {
-                    conn.sendCommand(gatewayCommand);
-
-                    if (code == GatewayCommandCode.ControlSetpoint) {
-                        if (gatewayCommand.getMessage().equals("0.0")) {
-                            updateState(
-                                    OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT,
-                                    UnDefType.UNDEF);
-                        }
-                        updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED,
-                                OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
+                if (code == GatewayCommandCode.ControlSetpoint) {
+                    if (gatewayCommand.getMessage().equals("0.0")) {
+                        updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT,
+                                UnDefType.UNDEF);
                     }
+                    updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED,
+                            OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
+                } else if (code == GatewayCommandCode.ControlSetpoint2) {
+                    if (gatewayCommand.getMessage().equals("0.0")) {
+                        updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_WATER_SETPOINT,
+                                UnDefType.UNDEF);
+                    }
+                    updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_ENABLED,
+                            OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
                 }
+            } else {
+                connect();
             }
         }
     }
@@ -141,9 +147,6 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     @Override
     public void disconnected() {
         @Nullable
-        OpenThermGatewayConnector conn = connector;
-
-        @Nullable
         OpenThermGatewayConfiguration conf = config;
 
         connecting = false;
@@ -151,12 +154,9 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Disconnected");
 
         // retry connection if disconnect is not explicitly requested
-        if (conf != null && !explicitDisconnect && conf.connectionRetryInterval > 0) {
-            scheduler.schedule(() -> {
-                if (conn != null && !connecting && !conn.isConnected()) {
-                    connect();
-                }
-            }, conf.connectionRetryInterval, TimeUnit.SECONDS);
+        if (!explicitDisconnect && conf != null && conf.connectionRetryInterval > 0) {
+            logger.debug("Scheduling to reconnect in {} seconds.", conf.connectionRetryInterval);
+            reconnectTask = scheduler.schedule(this::connect, conf.connectionRetryInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -215,30 +215,31 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     @Override
     public void dispose() {
         disconnect();
+
+        ScheduledFuture<?> localReconnectTask = reconnectTask;
+        if (localReconnectTask != null) {
+            localReconnectTask.cancel(true);
+            reconnectTask = null;
+        }
+
         super.dispose();
     }
 
-    private boolean checkConnection() {
-        @Nullable
-        OpenThermGatewayConnector conn = connector;
-
-        if (conn != null && conn.isConnected()) {
-            return true;
-        }
-
-        return connect();
-    }
-
-    private boolean connect() {
+    private void connect() {
         @Nullable
         OpenThermGatewayConfiguration conf = config;
+
+        explicitDisconnect = false;
+
+        if (connecting) {
+            logger.debug("OpenTherm Gateway connector is already connecting ...");
+            return;
+        }
 
         disconnect();
 
         if (conf != null) {
             logger.debug("Starting OpenTherm Gateway connector");
-
-            explicitDisconnect = false;
 
             connector = new OpenThermGatewaySocketConnector(this, conf.ipaddress, conf.port);
 
@@ -247,22 +248,18 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
             thread.start();
 
             logger.debug("OpenTherm Gateway connector started");
-
-            return true;
         }
-
-        return false;
     }
 
     private void disconnect() {
         @Nullable
         OpenThermGatewayConnector conn = connector;
 
+        explicitDisconnect = true;
+
         if (conn != null) {
             if (conn.isConnected()) {
                 logger.debug("Stopping OpenTherm Gateway connector");
-
-                explicitDisconnect = true;
                 conn.stop();
             }
 
@@ -284,6 +281,10 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                 return GatewayCommandCode.ControlSetpoint;
             case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED:
                 return GatewayCommandCode.CentralHeating;
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_WATER_SETPOINT:
+                return GatewayCommandCode.ControlSetpoint2;
+            case OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_ENABLED:
+                return GatewayCommandCode.CentralHeating2;
             case OpenThermGatewayBindingConstants.CHANNEL_SEND_COMMAND:
                 return null;
             default:

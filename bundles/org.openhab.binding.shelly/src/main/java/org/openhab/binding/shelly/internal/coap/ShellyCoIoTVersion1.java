@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
@@ -63,10 +64,10 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
      *            ignored.
      */
     @Override
-    public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, CoIotSensor s,
-            Map<String, State> updates) {
+    public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, int serial, CoIotSensor s,
+            Map<String, State> updates, ShellyColorUtils col) {
         // first check the base implementation
-        if (super.handleStatusUpdate(sensorUpdates, sen, s, updates)) {
+        if (super.handleStatusUpdate(sensorUpdates, sen, s, updates, col)) {
             // process by the base class
             return true;
         }
@@ -162,10 +163,10 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                                 toQuantityType(pos, Units.PERCENT));
                         break;
                     case "input event": // Shelly Button 1
-                        handleInputEvent(sen, getString(s.valueStr), -1, updates);
+                        handleInputEvent(sen, getString(s.valueStr), -1, serial, updates);
                         break;
                     case "input event counter": // Shelly Button 1/ix3
-                        handleInputEvent(sen, "", getInteger((int) s.value), updates);
+                        handleInputEvent(sen, "", getInteger((int) s.value), serial, updates);
                         break;
                     case "flood":
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
@@ -227,7 +228,7 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
      * @return fixed Sensor description (sen)
      */
     @Override
-    public CoIotDescrSen fixDescription(CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
+    public CoIotDescrSen fixDescription(@Nullable CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
         // Shelly1: reports null descr+type "Switch" -> map to S
         // Shelly1PM: reports null descr+type "Overtemp" -> map to O
         // Shelly1PM: reports null descr+type "W" -> add description
@@ -238,6 +239,9 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
         // Shelly Sense: Motion is reported with Desc "battery", but type "H" instead of "B"
         // Shelly Bulb: Colors are coded with Type="Red" etc. rather than Type="S" and color as Descr
         // Shelly RGBW2 is reporting Brightness, Power, VSwitch for each channel, but all with L=0
+        if (sen == null) {
+            throw new IllegalArgumentException("sen should not be null!");
+        }
         if (sen.desc == null) {
             sen.desc = "";
         }
@@ -255,8 +259,10 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                 CoIotDescrBlk blk = new CoIotDescrBlk();
                 CoIotDescrBlk blk0 = blkMap.get("0"); // blk 0 is always there
                 blk.id = sen.links;
-                blk.desc = blk0.desc + "_" + blk.id;
-                blkMap.put(blk.id, blk);
+                if (blk0 != null) {
+                    blk.desc = blk0.desc + "_" + blk.id;
+                    blkMap.put(blk.id, blk);
+                }
             }
         }
 

@@ -17,8 +17,6 @@ import static org.openhab.io.homekit.internal.HomekitCharacteristicType.SMOKE_DE
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
@@ -38,7 +36,7 @@ public class HomekitSmokeSensorImpl extends AbstractHomekitAccessoryImpl impleme
     public HomekitSmokeSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        smokeDetectedReader = createBooleanReader(SMOKE_DETECTED_STATE, OnOffType.ON, OpenClosedType.OPEN);
+        smokeDetectedReader = createBooleanReader(SMOKE_DETECTED_STATE);
         this.getServices().add(new SmokeSensorService(this));
     }
 

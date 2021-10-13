@@ -6,6 +6,7 @@
 	<feature name="openhab-binding-magentatv" description="MagentaTV Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-upnp</feature>
+		<feature dependency="true">openhab.tp-commons-net</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.magentatv/${project.version}</bundle>
 	</feature>
 </features>

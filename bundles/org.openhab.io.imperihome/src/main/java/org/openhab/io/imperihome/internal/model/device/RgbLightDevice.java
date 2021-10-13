@@ -14,7 +14,7 @@ package org.openhab.io.imperihome.internal.model.device;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;

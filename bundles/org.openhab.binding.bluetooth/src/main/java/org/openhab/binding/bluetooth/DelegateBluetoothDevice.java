@@ -113,6 +113,12 @@ public abstract class DelegateBluetoothDevice extends BluetoothDevice {
     }
 
     @Override
+    public boolean isNotifying(BluetoothCharacteristic characteristic) {
+        BluetoothDevice delegate = getDelegate();
+        return delegate != null ? delegate.isNotifying(characteristic) : false;
+    }
+
+    @Override
     public boolean enableNotifications(BluetoothCharacteristic characteristic) {
         BluetoothDevice delegate = getDelegate();
         return delegate != null ? delegate.enableNotifications(characteristic) : false;

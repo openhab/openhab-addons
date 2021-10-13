@@ -32,6 +32,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,16 @@ public class BoschHttpClient extends HttpClient {
         super(sslContextFactory);
         this.ipAddress = ipAddress;
         this.systemPassword = systemPassword;
+    }
+
+    /**
+     * Returns the public information URL for the Bosch SHC clients, using port 8446.
+     * See https://github.com/BoschSmartHome/bosch-shc-api-docs/blob/master/postman/README.md
+     *
+     * @return URL for public information
+     */
+    public String getPublicInformationUrl() {
+        return String.format("https://%s:8446/smarthome/public/information", this.ipAddress);
     }
 
     /**
@@ -103,9 +114,41 @@ public class BoschHttpClient extends HttpClient {
     }
 
     /**
+     * Checks if the Bosch SHC is online.
+     *
+     * The HTTP server could be offline (Timeout of request).
+     * Or during boot-up the server can response e.g. with SERVICE_UNAVAILABLE_503
+     *
+     * Will return true, if the server responds with the "public information".
+     *
+     *
+     * @return true if HTTP server is online
+     * @throws InterruptedException in case of an interrupt
+     */
+    public boolean isOnline() throws InterruptedException {
+        try {
+            String url = this.getPublicInformationUrl();
+            Request request = this.createRequest(url, GET);
+            ContentResponse contentResponse = request.send();
+            if (HttpStatus.getCode(contentResponse.getStatus()).isSuccess()) {
+                String content = contentResponse.getContentAsString();
+                logger.debug("Online check completed with success: {} - status code: {}", content,
+                        contentResponse.getStatus());
+                return true;
+            } else {
+                logger.debug("Online check failed with status code: {}", contentResponse.getStatus());
+                return false;
+            }
+        } catch (TimeoutException | ExecutionException | NullPointerException e) {
+            logger.debug("Online check failed because of {}!", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Checks if the Bosch SHC can be accessed.
-     * 
-     * @return true if HTTP access was successful
+     *
+     * @return true if HTTP access to SHC devices was successful
      * @throws InterruptedException in case of an interrupt
      */
     public boolean isAccessPossible() throws InterruptedException {
@@ -113,11 +156,17 @@ public class BoschHttpClient extends HttpClient {
             String url = this.getBoschSmartHomeUrl("devices");
             Request request = this.createRequest(url, GET);
             ContentResponse contentResponse = request.send();
-            String content = contentResponse.getContentAsString();
-            logger.debug("Access check response complete: {} - return code: {}", content, contentResponse.getStatus());
-            return true;
+            if (HttpStatus.getCode(contentResponse.getStatus()).isSuccess()) {
+                String content = contentResponse.getContentAsString();
+                logger.debug("Access check completed with success: {} - status code: {}", content,
+                        contentResponse.getStatus());
+                return true;
+            } else {
+                logger.debug("Access check failed with status code: {}", contentResponse.getStatus());
+                return false;
+            }
         } catch (TimeoutException | ExecutionException | NullPointerException e) {
-            logger.debug("Access check response failed because of {}!", e.getMessage());
+            logger.debug("Access check failed because of {}!", e.getMessage());
             return false;
         }
     }
@@ -130,8 +179,8 @@ public class BoschHttpClient extends HttpClient {
      * @throws InterruptedException in case of an interrupt
      */
     public boolean doPairing() throws InterruptedException {
-        logger.trace("Starting pairing openHAB Client with Bosch SmartHomeController!");
-        logger.trace("Please press the Bosch SHC button until LED starts blinking");
+        logger.trace("Starting pairing openHAB Client with Bosch Smart Home Controller!");
+        logger.trace("Please press the Bosch Smart Home Controller button until LED starts blinking");
 
         ContentResponse contentResponse;
         try {
@@ -169,7 +218,7 @@ public class BoschHttpClient extends HttpClient {
             // javax.net.ssl.SSLHandshakeException: General SSLEngine problem
             // => usually the pairing failed, because hardware button was not pressed.
             logger.trace("Pairing failed - Details: {}", e.getMessage());
-            logger.warn("Pairing failed. Was the Bosch SHC button pressed?");
+            logger.warn("Pairing failed. Was the Bosch Smart Home Controller button pressed?");
             return false;
         }
     }
@@ -194,7 +243,12 @@ public class BoschHttpClient extends HttpClient {
      * @return created HTTP request instance
      */
     public Request createRequest(String url, HttpMethod method, @Nullable Object content) {
-        Request request = this.newRequest(url).method(method).header("Content-Type", "application/json");
+        logger.trace("Create request for http client {}", this.toString());
+
+        Request request = this.newRequest(url).method(method).header("Content-Type", "application/json")
+                .header("api-version", "2.1") // see https://github.com/BoschSmartHome/bosch-shc-api-docs/issues/46
+                .timeout(10, TimeUnit.SECONDS); // Set default timeout
+
         if (content != null) {
             String body = GSON.toJson(content);
             logger.trace("create request for {} and content {}", url, body);
@@ -202,9 +256,6 @@ public class BoschHttpClient extends HttpClient {
         } else {
             logger.trace("create request for {}", url);
         }
-
-        // Set default timeout
-        request.timeout(10, TimeUnit.SECONDS);
 
         return request;
     }
@@ -220,9 +271,11 @@ public class BoschHttpClient extends HttpClient {
      */
     public <TContent> TContent sendRequest(Request request, Class<TContent> responseContentClass)
             throws InterruptedException, TimeoutException, ExecutionException {
+        logger.trace("Send request: {}", request.toString());
+
         ContentResponse contentResponse = request.send();
 
-        logger.debug("BoschHttpClient: response complete: {} - return code: {}", contentResponse.getContentAsString(),
+        logger.debug("Received response: {} - status: {}", contentResponse.getContentAsString(),
                 contentResponse.getStatus());
 
         try {

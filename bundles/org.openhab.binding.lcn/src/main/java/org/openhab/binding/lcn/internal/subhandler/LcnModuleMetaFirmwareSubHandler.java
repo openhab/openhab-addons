@@ -47,6 +47,7 @@ public class LcnModuleMetaFirmwareSubHandler extends AbstractLcnModuleSubHandler
     public void handleStatusMessage(Matcher matcher) {
         info.setFirmwareVersion(Integer.parseInt(matcher.group("firmwareVersion"), 16));
         handler.updateSerialNumberProperty(matcher.group("sn"));
+        handler.updateFirmwareVersionProperty(matcher.group("firmwareVersion"));
     }
 
     @Override

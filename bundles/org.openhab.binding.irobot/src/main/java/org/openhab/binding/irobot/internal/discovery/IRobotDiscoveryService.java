@@ -17,6 +17,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -92,7 +93,10 @@ public class IRobotDiscoveryService extends AbstractDiscoveryService {
                 logger.debug("Starting broadcast for {}", broadcastAddress.toString());
 
                 try (DatagramSocket socket = IdentProtocol.sendRequest(broadcastAddress)) {
-                    while (receivePacketAndDiscover(socket)) {
+                    DatagramPacket incomingPacket;
+
+                    while ((incomingPacket = receivePacket(socket)) != null) {
+                        discover(incomingPacket);
                     }
                 } catch (IOException e) {
                     logger.warn("Error sending broadcast: {}", e.toString());
@@ -119,31 +123,35 @@ public class IRobotDiscoveryService extends AbstractDiscoveryService {
         return addresses;
     }
 
-    private boolean receivePacketAndDiscover(DatagramSocket socket) {
-        DatagramPacket incomingPacket;
-
+    private @Nullable DatagramPacket receivePacket(DatagramSocket socket) {
         try {
-            incomingPacket = IdentProtocol.receiveResponse(socket);
+            return IdentProtocol.receiveResponse(socket);
         } catch (IOException e) {
             // This is not really an error, eventually we get a timeout
             // due to a loop in the caller
-            return false;
+            return null;
         }
+    }
 
+    private void discover(DatagramPacket incomingPacket) {
         String host = incomingPacket.getAddress().toString().substring(1);
+        String reply = new String(incomingPacket.getData(), StandardCharsets.UTF_8);
+
+        logger.trace("Received IDENT from {}: {}", host, reply);
+
         IdentProtocol.IdentData ident;
 
         try {
-            ident = IdentProtocol.decodeResponse(incomingPacket);
+            ident = IdentProtocol.decodeResponse(reply);
         } catch (JsonParseException e) {
             logger.warn("Malformed IDENT reply from {}!", host);
-            return true;
+            return;
         }
 
         // This check comes from Roomba980-Python
         if (ident.ver < IdentData.MIN_SUPPORTED_VERSION) {
             logger.warn("Found unsupported iRobot \"{}\" version {} at {}", ident.robotname, ident.ver, host);
-            return true;
+            return;
         }
 
         if (ident.product.equals(IdentData.PRODUCT_ROOMBA)) {
@@ -153,7 +161,5 @@ public class IRobotDiscoveryService extends AbstractDiscoveryService {
 
             thingDiscovered(result);
         }
-
-        return true;
     }
 }

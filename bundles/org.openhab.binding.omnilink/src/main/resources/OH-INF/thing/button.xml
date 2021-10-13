@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="omnilink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Button Thing -->
+	<thing-type id="button">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>Button</label>
+		<description>A button configured in the controller.</description>
+		<channels>
+			<channel id="press" typeId="button_press"/>
+			<channel id="activated_event" typeId="button_activated"/>
+		</channels>
+		<properties>
+			<property name="name"/>
+			<property name="area"/>
+		</properties>
+		<representation-property>number</representation-property>
+		<config-description>
+			<parameter name="number" type="integer" required="true">
+				<label>Button Number</label>
+				<description>The button number.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Button Channels -->
+	<channel-type id="button_press">
+		<item-type>Switch</item-type>
+		<label>Button Press</label>
+		<description>Sends a button event to the controller.</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="button_activated">
+		<kind>trigger</kind>
+		<label>Button Activated</label>
+		<description>Event sent when a button is activated.</description>
+	</channel-type>
+
+</thing:thing-descriptions>

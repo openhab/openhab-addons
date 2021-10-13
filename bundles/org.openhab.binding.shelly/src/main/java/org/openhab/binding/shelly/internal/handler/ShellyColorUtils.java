@@ -65,16 +65,16 @@ public class ShellyColorUtils {
         setTemp(col.temp);
     }
 
-    void setMode(String mode) {
+    public void setMode(String mode) {
         this.mode = mode;
     }
 
-    void setMinMaxTemp(int min, int max) {
+    public void setMinMaxTemp(int min, int max) {
         minTemp = min;
         maxTemp = max;
     }
 
-    boolean setRGBW(int red, int green, int blue, int white) {
+    public boolean setRGBW(int red, int green, int blue, int white) {
         setRed(red);
         setGreen(green);
         setBlue(blue);
@@ -82,56 +82,56 @@ public class ShellyColorUtils {
         return true;
     }
 
-    boolean setRed(int value) {
+    public boolean setRed(int value) {
         boolean changed = red != value;
         red = value;
         percentRed = toPercent(red);
         return changed;
     }
 
-    boolean setGreen(int value) {
+    public boolean setGreen(int value) {
         boolean changed = green != value;
         green = value;
         percentGreen = toPercent(green);
         return changed;
     }
 
-    boolean setBlue(int value) {
+    public boolean setBlue(int value) {
         boolean changed = blue != value;
         blue = value;
         percentBlue = toPercent(blue);
         return changed;
     }
 
-    boolean setWhite(int value) {
+    public boolean setWhite(int value) {
         boolean changed = white != value;
         white = value;
         percentWhite = toPercent(white);
         return changed;
     }
 
-    boolean setBrightness(int value) {
+    public boolean setBrightness(int value) {
         boolean changed = brightness != value;
         brightness = value;
         percentBrightness = toPercent(brightness, SHELLY_MIN_BRIGHTNESS, SHELLY_MAX_BRIGHTNESS);
         return changed;
     }
 
-    boolean setGain(int value) {
+    public boolean setGain(int value) {
         boolean changed = gain != value;
         gain = value;
         percentGain = toPercent(gain, SHELLY_MIN_GAIN, SHELLY_MAX_GAIN);
         return changed;
     }
 
-    boolean setTemp(int value) {
+    public boolean setTemp(int value) {
         boolean changed = temp != value;
         temp = value;
         percentTemp = toPercent(temp, minTemp, maxTemp);
         return changed;
     }
 
-    boolean setEffect(int value) {
+    public boolean setEffect(int value) {
         boolean changed = effect != value;
         effect = value;
         return changed;
@@ -168,18 +168,22 @@ public class ShellyColorUtils {
         return values;
     }
 
+    public boolean isRgbValid() {
+        return (red != -1) && (blue != -1) && (green != -1);
+    }
+
     public static PercentType toPercent(Integer value) {
         return toPercent(value, 0, SHELLY_MAX_COLOR);
     }
 
     public static PercentType toPercent(Integer _value, Integer min, Integer max) {
-        Double range = max.doubleValue() - min.doubleValue();
-        Double value = _value.doubleValue();
+        double range = max.doubleValue() - min.doubleValue();
+        double value = _value.doubleValue();
         value = value < min ? min.doubleValue() : value;
         value = value > max ? max.doubleValue() : value;
-        Double percent = 0.0;
+        double percent = 0.0;
         if (range > 0) {
-            percent = new Double(Math.round((value - min) / range * 100));
+            percent = Math.round((value - min) / range * 100);
         }
         return new PercentType(new BigDecimal(percent));
     }

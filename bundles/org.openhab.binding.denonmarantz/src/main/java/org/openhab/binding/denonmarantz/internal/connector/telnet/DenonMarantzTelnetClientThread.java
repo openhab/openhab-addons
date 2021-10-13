@@ -20,7 +20,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +73,7 @@ public class DenonMarantzTelnetClientThread extends Thread {
                         break;
                     }
                     logger.trace("Received from {}: {}", config.getHost(), line);
-                    if (!StringUtils.isBlank(line)) {
+                    if (!line.isBlank()) {
                         listener.receivedLine(line);
                     }
                 } catch (SocketTimeoutException e) {

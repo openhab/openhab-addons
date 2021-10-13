@@ -13,7 +13,7 @@
 package org.openhab.binding.lifx.internal;
 
 import static org.openhab.binding.lifx.internal.LifxBindingConstants.MIN_ZONE_INDEX;
-import static org.openhab.binding.lifx.internal.protocol.Product.Feature.*;
+import static org.openhab.binding.lifx.internal.LifxProduct.Feature.*;
 import static org.openhab.binding.lifx.internal.util.LifxMessageUtil.infraredToPercentType;
 
 import java.util.concurrent.ScheduledExecutorService;
@@ -23,22 +23,21 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lifx.internal.dto.GetColorZonesRequest;
+import org.openhab.binding.lifx.internal.dto.GetLightInfraredRequest;
+import org.openhab.binding.lifx.internal.dto.GetRequest;
+import org.openhab.binding.lifx.internal.dto.GetTileEffectRequest;
+import org.openhab.binding.lifx.internal.dto.GetWifiInfoRequest;
+import org.openhab.binding.lifx.internal.dto.Packet;
+import org.openhab.binding.lifx.internal.dto.StateLightInfraredResponse;
+import org.openhab.binding.lifx.internal.dto.StateLightPowerResponse;
+import org.openhab.binding.lifx.internal.dto.StateMultiZoneResponse;
+import org.openhab.binding.lifx.internal.dto.StatePowerResponse;
+import org.openhab.binding.lifx.internal.dto.StateResponse;
+import org.openhab.binding.lifx.internal.dto.StateTileEffectResponse;
+import org.openhab.binding.lifx.internal.dto.StateWifiInfoResponse;
 import org.openhab.binding.lifx.internal.fields.HSBK;
 import org.openhab.binding.lifx.internal.handler.LifxLightHandler.CurrentLightState;
-import org.openhab.binding.lifx.internal.protocol.GetColorZonesRequest;
-import org.openhab.binding.lifx.internal.protocol.GetLightInfraredRequest;
-import org.openhab.binding.lifx.internal.protocol.GetRequest;
-import org.openhab.binding.lifx.internal.protocol.GetTileEffectRequest;
-import org.openhab.binding.lifx.internal.protocol.GetWifiInfoRequest;
-import org.openhab.binding.lifx.internal.protocol.Packet;
-import org.openhab.binding.lifx.internal.protocol.Product;
-import org.openhab.binding.lifx.internal.protocol.StateLightInfraredResponse;
-import org.openhab.binding.lifx.internal.protocol.StateLightPowerResponse;
-import org.openhab.binding.lifx.internal.protocol.StateMultiZoneResponse;
-import org.openhab.binding.lifx.internal.protocol.StatePowerResponse;
-import org.openhab.binding.lifx.internal.protocol.StateResponse;
-import org.openhab.binding.lifx.internal.protocol.StateTileEffectResponse;
-import org.openhab.binding.lifx.internal.protocol.StateWifiInfoResponse;
 import org.openhab.core.library.types.PercentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * The {@link LifxLightCurrentStateUpdater} sends packets to a light in order to update the {@code currentLightState} to
  * the actual light state.
  *
- * @author Wouter Born - Extracted class from LifxLightHandler
+ * @author Wouter Born - Initial contribution
  */
 @NonNullByDefault
 public class LifxLightCurrentStateUpdater {
@@ -57,7 +56,7 @@ public class LifxLightCurrentStateUpdater {
     private final Logger logger = LoggerFactory.getLogger(LifxLightCurrentStateUpdater.class);
 
     private final String logId;
-    private final Product product;
+    private final LifxProduct product;
     private final CurrentLightState currentLightState;
     private final ScheduledExecutorService scheduler;
     private final LifxLightCommunicationHandler communicationHandler;
