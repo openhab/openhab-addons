@@ -173,7 +173,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             if (config.alarmPollTime > 0) {
                 initAlarmPolling(1);
             }
-
         } catch (HaywardException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "scheduledInitialize exception: " + e.getMessage());
