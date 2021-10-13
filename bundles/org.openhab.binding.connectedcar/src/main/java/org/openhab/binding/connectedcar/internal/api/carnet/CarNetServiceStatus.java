@@ -230,7 +230,7 @@ public class CarNetServiceStatus extends ApiBaseService {
     private boolean updateNumberChannel(Channel channel, ChannelIdMapEntry definition, CNStatusField field) {
         State state = UnDefType.UNDEF;
         String val = getString(field.value);
-        if (!val.isEmpty()) {
+        if (!val.isEmpty() && isNumeric(val)) {
             double value = Double.parseDouble(val);
             if (value < 0) {
                 value = definition.symbolicName.startsWith("GT0") ? 0 : value * -1.0; // no egative values

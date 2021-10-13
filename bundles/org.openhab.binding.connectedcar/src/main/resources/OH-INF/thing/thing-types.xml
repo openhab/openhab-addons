@@ -135,8 +135,8 @@
 		<description>@text/thing-type.connectedcar.vehicle.group.climater.description</description>
 	</channel-group-type>
 	<channel-group-type id="charger">
-		<label>@text/thing-type.connectedcar.vehicle.group."charger".label</label>
-		<description>@text/thing-type.connectedcar.vehicle.group."charger".description</description>
+		<label>@text/thing-type.connectedcar.vehicle.group.charger.label</label>
+		<description>@text/thing-type.connectedcar.vehicle.group.charger.description</description>
 	</channel-group-type>
 	<channel-group-type id="rluHistory">
 		<label>@text/thing-type.connectedcar.vehicle.group.rluHistory.label</label>
