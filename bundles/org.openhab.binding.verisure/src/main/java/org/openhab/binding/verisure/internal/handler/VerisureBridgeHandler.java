@@ -62,7 +62,6 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
 
     private String authstring = "";
     private @Nullable String pinCode;
-    private static int REFRESH_SEC = 600;
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> immediateRefreshJob;
     private @Nullable VerisureSession session;
@@ -101,13 +100,12 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing Verisure Binding");
         VerisureBridgeConfiguration config = getConfigAs(VerisureBridgeConfiguration.class);
-        REFRESH_SEC = config.refresh;
 
         this.pinCode = config.pin;
         if (config.username.isBlank() || config.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configuration of username and password is mandatory");
-        } else if (REFRESH_SEC < 0) {
+        } else if (config.refresh < 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Refresh time cannot negative!");
         } else {
             try {
@@ -125,7 +123,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                                     "Failed to login to Verisure, please check your account settings! Is MFA activated?");
                             return;
                         }
-                        startAutomaticRefresh();
+                        startAutomaticRefresh(config.refresh);
                     }
                 });
             } catch (RuntimeException e) {
@@ -219,12 +217,12 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void startAutomaticRefresh() {
+    private void startAutomaticRefresh(int refresh) {
         ScheduledFuture<?> refreshJob = this.refreshJob;
         logger.debug("Start automatic refresh {}", refreshJob);
         if (refreshJob == null || refreshJob.isCancelled()) {
             try {
-                this.refreshJob = scheduler.scheduleWithFixedDelay(this::refreshAndUpdateStatus, 0, REFRESH_SEC,
+                this.refreshJob = scheduler.scheduleWithFixedDelay(this::refreshAndUpdateStatus, 0, refresh,
                         TimeUnit.SECONDS);
                 logger.debug("Scheduling at fixed delay refreshjob {}", this.refreshJob);
             } catch (RejectedExecutionException e) {
