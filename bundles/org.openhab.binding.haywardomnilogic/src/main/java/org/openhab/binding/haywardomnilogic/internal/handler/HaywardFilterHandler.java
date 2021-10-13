@@ -162,6 +162,8 @@ public class HaywardFilterHandler extends HaywardThingHandler {
 
         String systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
         String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
+        String filterMinSpeed = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MINSPEED);
+        String filterMaxSpeed = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MAXSPEED);
 
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -172,15 +174,20 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                     switch (channelUID.getId()) {
                         case HaywardBindingConstants.CHANNEL_FILTER_ENABLE:
                             if (command == OnOffType.ON) {
-                                // Command max speed of filter when filter is enabled
-                                String filterMaxSpeed = getThing().getProperties()
-                                        .get(HaywardBindingConstants.PROPERTY_FILTER_MAXSPEED);
                                 cmdString = filterMaxSpeed;
                             } else {
                                 cmdString = "0";
                             }
                             break;
                         case HaywardBindingConstants.CHANNEL_FILTER_SPEED:
+                            if (filterMinSpeed != null && filterMaxSpeed != null) {
+                                if (Integer.parseInt(cmdString) > 0
+                                        && Integer.parseInt(cmdString) < Integer.parseInt(filterMinSpeed)) {
+                                    cmdString = filterMinSpeed;
+                                } else if (Integer.parseInt(cmdString) > Integer.parseInt(filterMaxSpeed)) {
+                                    cmdString = filterMaxSpeed;
+                                }
+                            }
                             break;
                         case HaywardBindingConstants.CHANNEL_FILTER_SPEEDSELECT:
                             break;

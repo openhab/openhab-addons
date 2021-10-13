@@ -82,6 +82,10 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
 
         String systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
         String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
+        String heaterMinSetTemp = getThing().getProperties()
+                .get(HaywardBindingConstants.PROPERTY_VIRTUALHEATER_MINSETTABLEWATERTEMP);
+        String heaterMaxSetTemp = getThing().getProperties()
+                .get(HaywardBindingConstants.PROPERTY_VIRTUALHEATER_MAXSETTABLEWATERTEMP);
 
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -111,6 +115,14 @@ public class HaywardVirtualHeaterHandler extends HaywardThingHandler {
                             break;
 
                         case HaywardBindingConstants.CHANNEL_VIRTUALHEATER_CURRENTSETPOINT:
+                            if (heaterMinSetTemp != null && heaterMaxSetTemp != null) {
+                                if (Integer.parseInt(cmdString) < Integer.parseInt(heaterMinSetTemp)) {
+                                    cmdString = heaterMinSetTemp;
+                                } else if (Integer.parseInt(cmdString) > Integer.parseInt(heaterMaxSetTemp)) {
+                                    cmdString = heaterMaxSetTemp;
+                                }
+                            }
+
                             cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS
                                     + "<Name>SetUIHeaterCmd</Name><Parameters>"
                                     + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token

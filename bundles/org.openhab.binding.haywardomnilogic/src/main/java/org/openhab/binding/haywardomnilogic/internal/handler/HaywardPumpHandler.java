@@ -158,6 +158,8 @@ public class HaywardPumpHandler extends HaywardThingHandler {
 
         String systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
         String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
+        String pumpMinSpeed = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MINSPEED);
+        String pumpMaxSpeed = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MAXSPEED);
 
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -168,15 +170,20 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                     switch (channelUID.getId()) {
                         case HaywardBindingConstants.CHANNEL_PUMP_ENABLE:
                             if (command == OnOffType.ON) {
-                                // Command max speed of pump when pump is enabled
-                                String pumpMaxSpeed = getThing().getProperties()
-                                        .get(HaywardBindingConstants.PROPERTY_PUMP_MAXSPEED);
                                 cmdString = pumpMaxSpeed;
                             } else {
                                 cmdString = "0";
                             }
                             break;
                         case HaywardBindingConstants.CHANNEL_PUMP_SPEED:
+                            if (pumpMinSpeed != null && pumpMaxSpeed != null) {
+                                if (Integer.parseInt(cmdString) > 0
+                                        && Integer.parseInt(cmdString) < Integer.parseInt(pumpMinSpeed)) {
+                                    cmdString = pumpMinSpeed;
+                                } else if (Integer.parseInt(cmdString) > Integer.parseInt(pumpMaxSpeed)) {
+                                    cmdString = pumpMaxSpeed;
+                                }
+                            }
                             break;
                         case HaywardBindingConstants.CHANNEL_PUMP_SPEEDSELECT:
                             break;
