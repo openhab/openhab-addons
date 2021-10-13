@@ -76,14 +76,14 @@ public class E3DCConnector {
             final String user = config.getWebusername(); // typically email address
             final String pwd = config.getWebpassword(); // used to log into E3DC portal
 
-            logger.warn("Open connection to server {}:{} ...", address, port);
+            logger.debug("Open connection to server {}:{} ...", address, port);
             try {
                 openConnection(address, port);
-                logger.warn("Sending authentication frame to server...");
+                logger.debug("Sending authentication frame to server...");
                 byte[] authFrame = E3DCRequests.buildAuthenticationMessage(user, pwd);
                 Integer bytesSent = sendFrameToServer(aesHelper::encrypt, authFrame);
                 byte[] decBytesReceived = receiveFrameFromServer(aesHelper::decrypt);
-                logger.warn("Authentication: Received {} decrypted bytes from server.", decBytesReceived.length);
+                logger.debug("Authentication: Received {} decrypted bytes from server.", decBytesReceived.length);
             } catch (UnknownHostException e) {
                 handle.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Could not connect to host");
@@ -121,13 +121,13 @@ public class E3DCConnector {
     }
 
     public void setuint32CharValue(RSCPTag containerTag, RSCPTag tag, int value) {
-        logger.debug("setuint32CharValue container:{} tag:{} vale:{}", containerTag.name(), tag.name(), value);
+        logger.trace("setuint32CharValue container:{} tag:{} vale:{}", containerTag.name(), tag.name(), value);
         byte[] reqFrame = E3DCRequests.buildRequestSetFrame(containerTag, tag, value);
         handleRequest(reqFrame);
     }
 
     public void setCharValue(RSCPTag containerTag, RSCPTag tag, char value) {
-        logger.tracetrace("setCharValue container:{} tag:{} vale:{}", containerTag.name(), tag.name(), value);
+        logger.trace("setCharValue container:{} tag:{} vale:{}", containerTag.name(), tag.name(), value);
         byte[] reqFrame = E3DCRequests.buildRequestSetFrame(containerTag, tag, value);
         handleRequest(reqFrame);
     }
@@ -147,10 +147,10 @@ public class E3DCConnector {
         if (isNotConnected()) {
             connectE3DC();
         }
-        logger.debug("Unencrypted frame to send: {}", ByteUtils.byteArrayToHexString(reqFrame));
+        logger.trace("Unencrypted frame to send: {}", ByteUtils.byteArrayToHexString(reqFrame));
         Integer bytesSent = sendFrameToServer(aesHelper::encrypt, reqFrame);
         byte[] decBytesReceived = receiveFrameFromServer(aesHelper::decrypt);
-        logger.debug("Decrypted frame received: {}", ByteUtils.byteArrayToHexString(decBytesReceived));
+        logger.trace("Decrypted frame received: {}", ByteUtils.byteArrayToHexString(decBytesReceived));
         RSCPFrame responseFrame = RSCPFrame.builder().buildFromRawBytes(decBytesReceived);
 
         handleE3DCResponse(responseFrame);
