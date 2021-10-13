@@ -189,7 +189,7 @@ Supported by: all inverter things
 ### Thing Configuration
 
 ```
-Bridge modbus:tcp:bridge [ host="hostname|ip", port=502, id=1, enableDiscovery=true ]
+Bridge modbus:tcp:modbusbridge [ host="hostname|ip", port=502, id=1, enableDiscovery=true ]
 Thing modbus:inverter-single-phase:bridge:se4000h "SE4000h" (modbus:tcp:modbusbridge) [ address=40069, length=52, refresh=15 ]
 ```
 
