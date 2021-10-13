@@ -249,7 +249,7 @@ public class MiIoAsyncCommunication {
     public synchronized void startReceiver() {
         MessageSenderThread senderThread = this.senderThread;
         if (senderThread == null || !senderThread.isAlive()) {
-            senderThread = new MessageSenderThread();
+            senderThread = new MessageSenderThread(deviceId);
             senderThread.start();
             this.senderThread = senderThread;
         }
@@ -261,14 +261,17 @@ public class MiIoAsyncCommunication {
      *
      */
     private class MessageSenderThread extends Thread {
-        public MessageSenderThread() {
-            super("Mi IO MessageSenderThread");
+        private final String deviceId;
+
+        public MessageSenderThread(String deviceId) {
+            super("OH-binding-miio-MessageSenderThread-" + deviceId);
             setDaemon(true);
+            this.deviceId = deviceId;
         }
 
         @Override
         public void run() {
-            logger.debug("Starting Mi IO MessageSenderThread");
+            logger.debug("Starting Mi IO MessageSenderThread {}", deviceId);
             while (!interrupted()) {
                 try {
                     if (concurrentLinkedQueue.isEmpty()) {
@@ -291,11 +294,11 @@ public class MiIoAsyncCommunication {
                     // That's our signal to stop
                     break;
                 } catch (Exception e) {
-                    logger.warn("Error while polling/sending message", e);
+                    logger.warn("Error while polling/sending message for {}", deviceId, e);
                 }
             }
             closeSocket();
-            logger.debug("Finished Mi IO MessageSenderThread");
+            logger.debug("Finished Mi IO MessageSenderThread {}", deviceId);
         }
     }
 

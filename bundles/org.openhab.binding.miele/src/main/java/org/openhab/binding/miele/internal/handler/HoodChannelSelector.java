@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
+
 import java.lang.reflect.Method;
 import java.util.Map.Entry;
 
@@ -31,6 +33,7 @@ import com.google.gson.JsonElement;
  * The {@link ApplianceChannelSelector} for ventilation hoods
  *
  * @author Karel Goderis - Initial contribution
+ * @author Jacob Laursen - Added raw channels
  */
 public enum HoodChannelSelector implements ApplianceChannelSelector {
 
@@ -38,7 +41,8 @@ public enum HoodChannelSelector implements ApplianceChannelSelector {
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
     BRAND_ID("brandId", "brandId", StringType.class, true),
     COMPANY_ID("companyId", "companyId", StringType.class, true),
-    STATE("state", "state", StringType.class, false),
+    STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false),
+    STATE(null, STATE_CHANNEL_ID, DecimalType.class, false),
     VENTILATION("ventilationPower", "ventilation", DecimalType.class, false),
     LIGHT("lightingStatus", "light", OnOffType.class, false) {
         @Override
@@ -87,13 +91,13 @@ public enum HoodChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
-    public Class<? extends Type> getTypeClass() {
-        return typeClass;
+    public boolean isProperty() {
+        return isProperty;
     }
 
     @Override
-    public boolean isProperty() {
-        return isProperty;
+    public boolean isExtendedState() {
+        return false;
     }
 
     @Override

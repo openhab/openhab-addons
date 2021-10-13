@@ -5,35 +5,48 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="io:metrics">
-		<parameter name="influxMetricsEnabled" type="boolean">
+		<parameter-group name="influx">
 			<label>Influx Metrics</label>
+		</parameter-group>
+		<parameter-group name="jmx">
+			<label>JMX Metrics</label>
+		</parameter-group>
+
+		<parameter name="influxMetricsEnabled" type="boolean" groupName="influx">
+			<label>Enabled</label>
 			<description>Enable the Influx (www.influxdata.com) Metrics. Further Configuration of the InfluxDB Instance
 				Necessary.</description>
 			<default>false</default>
 		</parameter>
-		<parameter name="influxURL" type="text">
-			<label>InfluxDB URL</label>
+		<parameter name="influxURL" type="text" groupName="influx">
+			<label>URL</label>
 			<description>The URL of the InfluxDB Instance. Defaults to http://localhost:8086</description>
 			<default>http://localhost:8086</default>
 		</parameter>
-		<parameter name="influxDB" type="text">
-			<label>InfluxDB Database Name</label>
+		<parameter name="influxDB" type="text" groupName="influx">
+			<label>Database Name</label>
 			<description>The Name of the Database to Use. Defaults to "openhab".</description>
 			<default>openhab</default>
 		</parameter>
-		<parameter name="influxUsername" type="text">
-			<label>InfluxDB User Name</label>
+		<parameter name="influxUsername" type="text" groupName="influx">
+			<label>User Name</label>
 			<description>The InfluxDB User Name (No Default).</description>
 		</parameter>
-		<parameter name="influxPassword" type="text">
-			<label>InfluxDB Password</label>
+		<parameter name="influxPassword" type="text" groupName="influx">
+			<label>Password</label>
 			<description>The InfluxDB Password (No Default).</description>
 			<context>password</context>
 		</parameter>
-		<parameter name="influxUpdateIntervalInSeconds" type="integer" unit="s" min="1">
-			<label>InfluxDB Update Interval in Seconds</label>
+		<parameter name="influxUpdateIntervalInSeconds" type="integer" unit="s" min="1" groupName="influx">
+			<label>Update Interval in Seconds</label>
 			<description>Controls How Often Metrics Are Exported to InfluxDB (in Seconds). Defaults to 300</description>
 			<default>300</default>
+		</parameter>
+
+		<parameter name="jmxMetricsEnabled" type="boolean" groupName="jmx">
+			<label>Enabled</label>
+			<description>Enable the Java Management Extensions (JMX) Metrics.</description>
+			<default>false</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

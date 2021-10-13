@@ -198,7 +198,8 @@ public class NetworkHandler extends BaseThingHandler
         presenceDetection.setRefreshInterval(handlerConfiguration.refreshInterval.longValue());
         presenceDetection.setTimeout(handlerConfiguration.timeout.intValue());
 
-        wakeOnLanPacketSender = new WakeOnLanPacketSender(handlerConfiguration.macAddress);
+        wakeOnLanPacketSender = new WakeOnLanPacketSender(handlerConfiguration.macAddress,
+                handlerConfiguration.hostname, handlerConfiguration.port);
 
         updateStatus(ThingStatus.ONLINE);
         presenceDetection.startAutomaticRefresh(scheduler);

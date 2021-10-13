@@ -175,7 +175,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 290 different models.
+Currently the miio binding supports more than 300 different models.
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
 |------------------------------|------------------|------------------------|-----------|------------|
@@ -412,6 +412,7 @@ Currently the miio binding supports more than 290 different models.
 | Mi Smart LED Living Room Ceiling Light | miio:basic       | [yeelink.light.ceiling21](#yeelink-light-ceiling21) | Yes       |            |
 | Mi Smart LED Ceiling Light   | miio:basic       | [yeelink.light.ceiling22](#yeelink-light-ceiling22) | Yes       |            |
 | Mi Smart LED Ceiling Light (350mm) | miio:basic       | [yeelink.light.ceiling23](#yeelink-light-ceiling23) | Yes       |            |
+| Yeelight Jade Smart LED Ceiling Light C2001 | miio:basic       | [yeelink.light.ceil26](#yeelink-light-ceil26) | Yes       |            |
 | Yeelight Color Bulb          | miio:basic       | [yeelink.light.color1](#yeelink-light-color1) | Yes       |            |
 | Yeelight LED Bulb (Color)    | miio:basic       | [yeelink.light.color2](#yeelink-light-color2) | Yes       |            |
 | Mi LED Smart Bulb (White and Color) | miio:basic       | [yeelink.light.color3](#yeelink-light-color3) | Yes       |            |
@@ -459,6 +460,8 @@ Currently the miio binding supports more than 290 different models.
 | Mi Water Purifier v2         | miio:basic       | [yunmi.waterpurifier.v2](#yunmi-waterpurifier-v2) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Water Purifier (Under sink) v3 | miio:basic       | [yunmi.waterpurifier.v3](#yunmi-waterpurifier-v3) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Water Purifier v4         | miio:basic       | [yunmi.waterpurifier.v4](#yunmi-waterpurifier-v4) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Smartmi Ventilation System   | miio:basic       | [zhimi.airfresh.va2](#zhimi-airfresh-va2) | Yes       |            |
+| Smartmi Fresh Air System (Heating) | miio:basic       | [zhimi.airfresh.va4](#zhimi-airfresh-va4) | Yes       |            |
 | Mi PM2.5 Air Quality Monitor | miio:basic       | [zhimi.airmonitor.v1](#zhimi-airmonitor-v1) | Yes       |            |
 | Mi Air Purifier 2 (mini)     | miio:basic       | [zhimi.airpurifier.m1](#zhimi-airpurifier-m1) | Yes       |            |
 | Mi Air Purifier 2            | miio:basic       | [zhimi.airpurifier.m2](#zhimi-airpurifier-m2) | Yes       |            |
@@ -3382,6 +3385,19 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | customScene          | String               | Set Scene                                |            |
 | nightlightBrightness | Number               | Nightlight Brightness                    |            |
 
+### Yeelight Jade Smart LED Ceiling Light C2001 (<a name="yeelink-light-ceil26">yeelink.light.ceil26</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| brightness           | Dimmer               | Brightness                               |            |
+| delayoff             | Number:Time          | Shutdown Timer                           |            |
+| colorTemperature     | Number               | Color Temperature                        |            |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| name                 | String               | Name                                     |            |
+| customScene          | String               | Set Scene                                |            |
+| nightlightBrightness | Number               | Nightlight Brightness                    |            |
+
 ### Yeelight Color Bulb (<a name="yeelink-light-color1">yeelink.light.color1</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
@@ -4217,6 +4233,44 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | tds_warn_thd         | Number               | TDS Warn Threshold                       |            |
 | tds_out_avg          | Number               | Average TDS out                          |            |
 | lightMode            | Number               | Light Mode                               | Value mapping `["0"="Simple Mode","1"="Special Mode"]` |
+
+### Smartmi Ventilation System (<a name="zhimi-airfresh-va2">zhimi.airfresh.va2</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| heater               | Switch               | Heater                                   |            |
+| mode                 | String               | Mode                                     | Value mapping `["interval"="Interval","silent"="Night","low"="1","middle"="2","strong"="3","auto"="Auto"]` |
+| humidity             | Number:Dimensionless | Humidity                                 |            |
+| co2                  | Number:Dimensionless | CO2                                      |            |
+| childLock            | Switch               | Child Lock                               |            |
+| buzzer               | Switch               | Buzzer                                   |            |
+| aqi                  | Number               | Air Quality Index                        |            |
+| averageaqi           | Number               | Average Air Quality Index                |            |
+| filterhours          | Number:Time          | Filter Hours used                        |            |
+| usedhours            | Number:Time          | Run Time                                 |            |
+| motorspeed           | Number               | Motor Speed                              |            |
+| led_level            | Number               | Led - Brightness                         | Value mapping `["0"="High","1"="Low","2"="Idle"]` |
+| temperature          | Number:Temperature   | Temperature                              |            |
+
+### Smartmi Fresh Air System (Heating) (<a name="zhimi-airfresh-va4">zhimi.airfresh.va4</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| heater               | Switch               | Heater                                   |            |
+| mode                 | String               | Mode                                     | Value mapping `["interval"="Interval","silent"="Night","low"="1","middle"="2","strong"="3","auto"="Auto"]` |
+| humidity             | Number:Dimensionless | Humidity                                 |            |
+| co2                  | Number:Dimensionless | CO2                                      |            |
+| childLock            | Switch               | Child Lock                               |            |
+| buzzer               | Switch               | Buzzer                                   |            |
+| aqi                  | Number               | Air Quality Index                        |            |
+| averageaqi           | Number               | Average Air Quality Index                |            |
+| filterhours          | Number:Time          | Filter Hours used                        |            |
+| usedhours            | Number:Time          | Run Time                                 |            |
+| motorspeed           | Number               | Motor Speed                              |            |
+| led_level            | Number               | Led - Brightness                         | Value mapping `["0"="High","1"="Low","2"="Idle"]` |
+| temperature          | Number:Temperature   | Temperature                              |            |
 
 ### Mi PM2.5 Air Quality Monitor (<a name="zhimi-airmonitor-v1">zhimi.airmonitor.v1</a>) Channels
 
@@ -8563,6 +8617,22 @@ String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"
 Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
 ```
 
+### Yeelight Jade Smart LED Ceiling Light C2001 (yeelink.light.ceil26) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_light "Yeelight Jade Smart LED Ceiling Light C2001" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
+Number nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+```
+
 ### Yeelight Color Bulb (yeelink.light.color1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -9535,6 +9605,50 @@ Number maintenance_interval "Maintenance Interval" (G_waterpurifier) {channel="m
 Number tds_warn_thd "TDS Warn Threshold" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_warn_thd"}
 Number tds_out_avg "Average TDS out" (G_waterpurifier) {channel="miio:basic:waterpurifier:tds_out_avg"}
 Number lightMode "Light Mode" (G_waterpurifier) {channel="miio:basic:waterpurifier:lightMode"}
+```
+
+### Smartmi Ventilation System (zhimi.airfresh.va2) item file lines
+
+note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_airfresh "Smartmi Ventilation System" <status>
+Switch power "Power" (G_airfresh) {channel="miio:basic:airfresh:power"}
+Switch heater "Heater" (G_airfresh) {channel="miio:basic:airfresh:heater"}
+String mode "Mode" (G_airfresh) {channel="miio:basic:airfresh:mode"}
+Number:Dimensionless humidity "Humidity" (G_airfresh) {channel="miio:basic:airfresh:humidity"}
+Number:Dimensionless co2 "CO2" (G_airfresh) {channel="miio:basic:airfresh:co2"}
+Switch childLock "Child Lock" (G_airfresh) {channel="miio:basic:airfresh:childLock"}
+Switch buzzer "Buzzer" (G_airfresh) {channel="miio:basic:airfresh:buzzer"}
+Number aqi "Air Quality Index" (G_airfresh) {channel="miio:basic:airfresh:aqi"}
+Number averageaqi "Average Air Quality Index" (G_airfresh) {channel="miio:basic:airfresh:averageaqi"}
+Number:Time filterhours "Filter Hours used" (G_airfresh) {channel="miio:basic:airfresh:filterhours"}
+Number:Time usedhours "Run Time" (G_airfresh) {channel="miio:basic:airfresh:usedhours"}
+Number motorspeed "Motor Speed" (G_airfresh) {channel="miio:basic:airfresh:motorspeed"}
+Number led_level "Led - Brightness" (G_airfresh) {channel="miio:basic:airfresh:led_level"}
+Number:Temperature temperature "Temperature" (G_airfresh) {channel="miio:basic:airfresh:temperature"}
+```
+
+### Smartmi Fresh Air System (Heating) (zhimi.airfresh.va4) item file lines
+
+note: Autogenerated example. Replace the id (airfresh) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_airfresh "Smartmi Fresh Air System (Heating)" <status>
+Switch power "Power" (G_airfresh) {channel="miio:basic:airfresh:power"}
+Switch heater "Heater" (G_airfresh) {channel="miio:basic:airfresh:heater"}
+String mode "Mode" (G_airfresh) {channel="miio:basic:airfresh:mode"}
+Number:Dimensionless humidity "Humidity" (G_airfresh) {channel="miio:basic:airfresh:humidity"}
+Number:Dimensionless co2 "CO2" (G_airfresh) {channel="miio:basic:airfresh:co2"}
+Switch childLock "Child Lock" (G_airfresh) {channel="miio:basic:airfresh:childLock"}
+Switch buzzer "Buzzer" (G_airfresh) {channel="miio:basic:airfresh:buzzer"}
+Number aqi "Air Quality Index" (G_airfresh) {channel="miio:basic:airfresh:aqi"}
+Number averageaqi "Average Air Quality Index" (G_airfresh) {channel="miio:basic:airfresh:averageaqi"}
+Number:Time filterhours "Filter Hours used" (G_airfresh) {channel="miio:basic:airfresh:filterhours"}
+Number:Time usedhours "Run Time" (G_airfresh) {channel="miio:basic:airfresh:usedhours"}
+Number motorspeed "Motor Speed" (G_airfresh) {channel="miio:basic:airfresh:motorspeed"}
+Number led_level "Led - Brightness" (G_airfresh) {channel="miio:basic:airfresh:led_level"}
+Number:Temperature temperature "Temperature" (G_airfresh) {channel="miio:basic:airfresh:temperature"}
 ```
 
 ### Mi PM2.5 Air Quality Monitor (zhimi.airmonitor.v1) item file lines
