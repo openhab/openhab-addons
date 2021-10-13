@@ -78,8 +78,12 @@ public class VolvoOnCallBindingConstants {
     public static final String AVERAGE_SPEED = "averageSpeed";
     public static final String SERVICE_WARNING = "serviceWarningStatus";
     public static final String BATTERY_LEVEL = "batteryLevel";
+    public static final String BATTERY_LEVEL_RAW = "batteryLevelRaw";
     public static final String BATTERY_DISTANCE_TO_EMPTY = "batteryDistanceToEmpty";
     public static final String CHARGE_STATUS = "chargeStatus";
+    public static final String CHARGE_STATUS_CABLE = "chargeStatusCable";
+    public static final String CHARGE_STATUS_CHARGING = "chargeStatusCharging";
+    public static final String CHARGE_STATUS_FULLY_CHARGED = "chargeStatusFullyCharged";
     public static final String TIME_TO_BATTERY_FULLY_CHARGED = "timeToHVBatteryFullyCharged";
     public static final String CHARGING_END = "chargingEnd";
     public static final String BULB_FAILURE = "bulbFailure";

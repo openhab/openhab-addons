@@ -77,7 +77,6 @@ public class EnturNoConnection {
     private final EnturNoHandler handler;
     private final HttpClient httpClient;
 
-    private final JsonParser parser = new JsonParser();
     private final Gson gson = new Gson();
 
     public EnturNoConnection(EnturNoHandler handler, HttpClient httpClient) {
@@ -161,14 +160,18 @@ public class EnturNoConnection {
             String errorMessage = e.getLocalizedMessage();
             logger.debug("Exception occurred during execution: {}", errorMessage, e);
             throw new EnturCommunicationException(errorMessage, e);
-        } catch (InterruptedException | TimeoutException | IOException e) {
+        } catch (TimeoutException | IOException e) {
             logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
+            throw new EnturCommunicationException(e.getLocalizedMessage(), e);
+        } catch (InterruptedException e) {
+            logger.debug("Execution interrupted: {}", e.getLocalizedMessage(), e);
+            Thread.currentThread().interrupt();
             throw new EnturCommunicationException(e.getLocalizedMessage(), e);
         }
     }
 
     private String getErrorMessage(String response) {
-        JsonObject jsonResponse = parser.parse(response).getAsJsonObject();
+        JsonObject jsonResponse = JsonParser.parseString(response).getAsJsonObject();
         if (jsonResponse.has(PROPERTY_MESSAGE)) {
             return jsonResponse.get(PROPERTY_MESSAGE).getAsString();
         }

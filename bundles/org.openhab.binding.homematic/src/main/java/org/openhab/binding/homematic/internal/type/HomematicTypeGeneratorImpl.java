@@ -169,8 +169,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(channel);
                     ChannelGroupType groupType = channelGroupTypeProvider.getInternalChannelGroupType(groupTypeUID);
                     if (groupType == null || device.isGatewayExtras()) {
-                        String groupLabel = String.format("%s",
-                                MiscUtils.capitalize(channel.getType().replace("_", " ")));
+                        String groupLabel = String.format("%s", channel.getType() == null ? null
+                                : MiscUtils.capitalize(channel.getType().replace("_", " ")));
                         groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, groupLabel)
                                 .withChannelDefinitions(channelDefinitions).build();
                         channelGroupTypeProvider.addChannelGroupType(groupType);
@@ -250,7 +250,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     /**
      * Creates the ChannelType for the given datapoint.
      */
-    private ChannelType createChannelType(HmDatapoint dp, ChannelTypeUID channelTypeUID) {
+    public static ChannelType createChannelType(HmDatapoint dp, ChannelTypeUID channelTypeUID) {
         ChannelType channelType;
         if (dp.getName().equals(DATAPOINT_NAME_LOWBAT) || dp.getName().equals(DATAPOINT_NAME_LOWBAT_IP)) {
             channelType = DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_LOW_BATTERY;
@@ -339,7 +339,6 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     builder.withLabel(MetadataUtils.getLabel(dp));
                     builder.withDefault(Objects.toString(dp.getDefaultValue(), ""));
                     builder.withDescription(MetadataUtils.getDatapointDescription(dp));
-
                     if (dp.isEnumType()) {
                         builder.withLimitToOptions(dp.isEnumType());
                         List<ParameterOption> options = MetadataUtils.generateOptions(dp,
@@ -353,8 +352,15 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                     }
 
                     if (dp.isNumberType()) {
+                        Number defaultValue = (Number) dp.getDefaultValue();
+                        Number maxValue = dp.getMaxValue();
+                        // some datapoints can have a default value that is greater than the maximum value
+                        if (defaultValue != null && maxValue != null
+                                && defaultValue.doubleValue() > maxValue.doubleValue()) {
+                            maxValue = defaultValue;
+                        }
                         builder.withMinimum(MetadataUtils.createBigDecimal(dp.getMinValue()));
-                        builder.withMaximum(MetadataUtils.createBigDecimal(dp.getMaxValue()));
+                        builder.withMaximum(MetadataUtils.createBigDecimal(maxValue));
                         builder.withStepSize(MetadataUtils
                                 .createBigDecimal(dp.isFloatType() ? Float.valueOf(0.1f) : Long.valueOf(1L)));
                         builder.withUnitLabel(MetadataUtils.getUnit(dp));

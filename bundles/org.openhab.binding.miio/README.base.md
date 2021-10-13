@@ -76,21 +76,23 @@ However, for devices that are unsupported, you may override the value and try to
 |-----------------|---------|----------|---------------------------------------------------------------------|
 | host            | text    | true     | Device IP address                                                   |
 | token           | text    | true     | Token for communication (in Hex)                                    |
-| deviceId        | text    | true     | Device ID number for communication (in Hex)                         |
+| deviceId        | text    | true     | Device Id (typically a number for normal devices) for communication |
 | model           | text    | false    | Device model string, used to determine the subtype                  |
 | refreshInterval | integer | false    | Refresh interval for refreshing the data in seconds. (0=disabled)   |
 | timeout         | integer | false    | Timeout time in milliseconds                                        |
-| communication   | test    | false    | Communicate direct or via cloud (options values: 'direct', 'cloud') |
+| communication   | text    | false    | Communicate direct or via cloud (options values: 'direct', 'cloud') |
+| cloudServer     | text    | false    | Identifies the country server to use in case of cloud communication |
 
-Note: Suggest to use the cloud communication only for devices that require it. It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
+Note: Suggest to use the cloud communication only for devices that require it. 
+It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
 
 ### Example Thing file
 
-`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="0326xxxx", model="philips.light.bulb", communication="direct"  ]` 
+`Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="326xxxx", model="philips.light.bulb", communication="direct" ]` 
 
 or in case of unknown models include the model information of a similar device that is supported:
 
-`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId=“0470DDAA”, model="roborock.vacuum.s4", communication="cloud"]`
+`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId="326xxxx", model="roborock.vacuum.s4", communication="direct", cloudServer="de" ]`
 
 # Advanced: Unsupported devices
 
@@ -162,7 +164,7 @@ Set the communication in the thing configuration to 'cloud'.
 
 _Cloud connectivity is not working_
 The most common problem is a wrong userId/password. Try to fix your userId/password.
-If it still fails, you're bit out of luck. You may try to restart OpenHAB (not just the binding) to clean the cookies. 
+If it still fails, you're bit out of luck. You may try to restart openHAB (not just the binding) to clean the cookies. 
 As the cloud logon process is still little understood, your only luck might be to enable trace logging and see if you can translate the Chinese error code that it returns.
 
 _My Roborock vacuum is not found or not reacting_
@@ -192,6 +194,47 @@ All devices have available the following channels (marked as advanced) besides t
 
 note: the ADVANCED  `actions#commands` and `actions#rpc` channels can be used to send commands that are not automated via the binding. This is available for all devices
 e.g. `openhab:send actionCommand 'upd_timer["1498595904821", "on"]'` would enable a pre-configured timer. See https://github.com/marcelrv/XiaomiRobotVacuumProtocol for all known available commands.
+
+
+### Robo Rock vacuum Channels
+
+| Type    | Channel                           | Description                |
+|---------|-----------------------------------|----------------------------|
+| Number  | status#segment_status             | Segment Status             |
+| Number  | status#map_status                 | Map Box Status             |
+| Number  | status#led_status                 | Led Box Status             |
+| String  | info#carpet_mode                  | Carpet Mode details        |
+| String  | info#fw_features                  | Firmware Features          |
+| String  | info#room_mapping                 | Room Mapping details       |
+| String  | info#multi_maps_list              | Maps Listing details       |
+
+Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
+
+| Type    | Channel                           | Description                |
+|---------|-----------------------------------|----------------------------|
+| Switch  | status#water_box_status           | Water Box Status           |
+| Switch  | status#lock_status                | Lock Status                |
+| Number  | status#water_box_mode             | Water Box Mode             |
+| Switch  | status#water_box_carriage_status  | Water Box Carriage Status  |
+| Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
+| Switch  | status#is_locating                | Robot is locating          |
+| Number  | actions#segment                   | Room Clean  (enter room #) |
+
+Note: cleaning map is only available with cloud access.
+
+There are several advanced channels, which may be useful in rules (e.g. for individual room cleaning etc)
+In case your vacuum does not support one of these commands, it will show "unsupported_method" for string channels or no value for numeric channels.
+
+### Advanced: Vacuum Map Customization
+
+In case the default rendering of the vacuum map is not meeting your integration needs, the rendering can be tailored.
+The way to customize this is to create a file with the name `mapConfig.json` in the `userdata/miio` folder.
+If the binding finds this file it will read the map rendering preferences from there.
+If the file is available but invalid json, it will create a new file with all the default values for you to customize.
+This allows you to control the colors, if logo is displayed, if and what text is rendered etc.
+To (re-)read the file either restart openHAB, restart the binding or alternatively edit the thing and make (any) minor change.
+Note, cropping is disabled (hence showing like the maps in OH3.1 and earlier) for any `cropBorder` value < 0.
+Note, not all the values need to be in the json file, e.g. a subset of the parameters also works, the parameters not in the `mapConfig.json` will take the default values.
 
 
 !!!channelList
@@ -242,34 +285,6 @@ Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="miio:vac
 
 Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"}
 ```
-
-Note: cleaning map is only available with cloud access.
-
-There are several advanced channels, which may be useful in rules (e.g. for individual room cleaning etc)
-In case your vacuum does not support one of these commands, it will show "unsupported_method" for string channels or no value for numeric channels.
-
-| Type    | Channel                           | Description                |
-|---------|-----------------------------------|----------------------------|
-| Number  | status#segment_status             | Segment Status             |
-| Number  | status#map_status                 | Map Box Status             |
-| Number  | status#led_status                 | Led Box Status             |
-| String  | info#carpet_mode                  | Carpet Mode details        |
-| String  | info#fw_features                  | Firmware Features          |
-| String  | info#room_mapping                 | Room Mapping details       |
-| String  | info#multi_maps_list              | Maps Listing details       |
-
-Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
-
-| Type    | Channel                           | Description                |
-|---------|-----------------------------------|----------------------------|
-| Switch  | status#water_box_status           | Water Box Status           |
-| Switch  | status#lock_status                | Lock Status                |
-| Number  | status#water_box_mode             | Water Box Mode             |
-| Switch  | status#water_box_carriage_status  | Water Box Carriage Status  |
-| Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
-| Switch  | status#is_locating                | Robot is locating          |
-| Number  | actions#segment                   | Room Clean  (enter room #) |
-
 
 
 !!!itemFileExamples

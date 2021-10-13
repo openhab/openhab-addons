@@ -147,8 +147,7 @@ public class NeeoApi implements AutoCloseable {
                 throw resp.createException();
             }
 
-            final JsonParser parser = new JsonParser();
-            final JsonObject root = parser.parse(resp.getContent()).getAsJsonObject();
+            final JsonObject root = JsonParser.parseString(resp.getContent()).getAsJsonObject();
             for (Map.Entry<String, JsonElement> room : root.getAsJsonObject("rooms").entrySet()) {
                 final JsonObject roomObj = (JsonObject) room.getValue();
 

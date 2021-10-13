@@ -98,10 +98,9 @@ public final class Utils {
     public static JsonObject convertFileToJSON(URL fileName) throws JsonIOException, JsonSyntaxException,
             JsonParseException, IOException, URISyntaxException, NoSuchFileException {
         JsonObject jsonObject = new JsonObject();
-        JsonParser parser = new JsonParser();
         try (InputStream inputStream = fileName.openStream();
                 InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
-            JsonElement jsonElement = parser.parse(reader);
+            JsonElement jsonElement = JsonParser.parseReader(reader);
             jsonObject = jsonElement.getAsJsonObject();
             return jsonObject;
         }
@@ -127,5 +126,18 @@ public final class Utils {
             //
         }
         return value;
+    }
+
+    /**
+     * Formats the deviceId to a hex string if possible. Otherwise returns the id unmodified.
+     *
+     * @param did
+     * @return did
+     */
+    public static String getHexId(String did) {
+        if (!did.isBlank() && !did.contains(".")) {
+            return toHEX(did);
+        }
+        return did;
     }
 }

@@ -13,12 +13,11 @@
 package org.openhab.binding.chromecast.internal.handler;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -60,12 +59,11 @@ import su.litvak.chromecast.api.v2.ChromeCast;
  */
 @NonNullByDefault
 public class ChromecastHandler extends BaseThingHandler implements AudioSink {
-
-    private static final Set<AudioFormat> SUPPORTED_FORMATS = Collections
-            .unmodifiableSet(Stream.of(AudioFormat.MP3, AudioFormat.WAV).collect(Collectors.toSet()));
-    private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Collections.singleton(AudioStream.class);
-
     private final Logger logger = LoggerFactory.getLogger(ChromecastHandler.class);
+
+    private static final Set<AudioFormat> SUPPORTED_FORMATS = Set.of(AudioFormat.MP3, AudioFormat.WAV);
+    private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Set.of(AudioStream.class);
+
     private final AudioHTTPServer audioHTTPServer;
     private final @Nullable String callbackUrl;
 
@@ -92,11 +90,13 @@ public class ChromecastHandler extends BaseThingHandler implements AudioSink {
         ChromecastConfig config = getConfigAs(ChromecastConfig.class);
 
         final String ipAddress = config.ipAddress;
-        if (ipAddress == null || ipAddress.isEmpty()) {
+        if (ipAddress == null || ipAddress.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to Chromecast. IP address is not valid or missing.");
             return;
         }
+
+        updateStatus(ThingStatus.UNKNOWN);
 
         Coordinator localCoordinator = coordinator;
         if (localCoordinator != null && (!localCoordinator.chromeCast.getAddress().equals(ipAddress)
@@ -109,8 +109,14 @@ public class ChromecastHandler extends BaseThingHandler implements AudioSink {
             ChromeCast chromecast = new ChromeCast(ipAddress, config.port);
             localCoordinator = new Coordinator(this, thing, chromecast, config.refreshRate, audioHTTPServer,
                     callbackUrl);
-            localCoordinator.initialize();
             coordinator = localCoordinator;
+
+            scheduler.submit(() -> {
+                Coordinator c = coordinator;
+                if (c != null) {
+                    c.initialize();
+                }
+            });
         }
     }
 
@@ -211,7 +217,7 @@ public class ChromecastHandler extends BaseThingHandler implements AudioSink {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(ChromecastActions.class);
+        return List.of(ChromecastActions.class);
     }
 
     public boolean playURL(String url, @Nullable String mediaType) {
@@ -235,6 +241,19 @@ public class ChromecastHandler extends BaseThingHandler implements AudioSink {
         private final ChromecastStatusUpdater statusUpdater;
         private final ChromecastScheduler scheduler;
 
+        /**
+         * used internally to represent the connection state
+         */
+        private enum ConnectionState {
+            UNKNOWN,
+            CONNECTING,
+            CONNECTED,
+            DISCONNECTING,
+            DISCONNECTED
+        }
+
+        private ConnectionState connectionState = ConnectionState.UNKNOWN;
+
         private Coordinator(ChromecastHandler handler, Thing thing, ChromeCast chromeCast, long refreshRate,
                 AudioHTTPServer audioHttpServer, @Nullable String callbackURL) {
             this.chromeCast = chromeCast;
@@ -249,30 +268,52 @@ public class ChromecastHandler extends BaseThingHandler implements AudioSink {
         }
 
         void initialize() {
+            if (connectionState == ConnectionState.CONNECTED) {
+                logger.debug("Already connected");
+                return;
+            } else if (connectionState == ConnectionState.CONNECTING) {
+                logger.debug("Already connecting");
+                return;
+            } else if (connectionState == ConnectionState.DISCONNECTING) {
+                logger.warn("Trying to re-connect while still disconnecting");
+                return;
+            }
+            connectionState = ConnectionState.CONNECTING;
+
             chromeCast.registerListener(eventReceiver);
             chromeCast.registerConnectionListener(eventReceiver);
 
-            this.connect();
+            connect();
         }
 
         void destroy() {
+            connectionState = ConnectionState.DISCONNECTING;
+
             chromeCast.unregisterConnectionListener(eventReceiver);
             chromeCast.unregisterListener(eventReceiver);
 
+            scheduler.destroy();
+
             try {
-                scheduler.destroy();
                 chromeCast.disconnect();
-            } catch (final IOException ex) {
-                logger.debug("Disconnect failed: {}", ex.getMessage());
+
+                connectionState = ConnectionState.DISCONNECTED;
+            } catch (final IOException e) {
+                logger.debug("Disconnect failed: {}", e.getMessage());
+                connectionState = ConnectionState.UNKNOWN;
             }
         }
 
         private void connect() {
             try {
                 chromeCast.connect();
+
                 statusUpdater.updateMediaStatus(null);
                 statusUpdater.updateStatus(ThingStatus.ONLINE);
-            } catch (final Exception e) {
+
+                connectionState = ConnectionState.CONNECTED;
+            } catch (final IOException | GeneralSecurityException e) {
+                logger.debug("Connect failed, trying to reconnect: {}", e.getMessage());
                 statusUpdater.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         e.getMessage());
                 scheduler.scheduleConnect();

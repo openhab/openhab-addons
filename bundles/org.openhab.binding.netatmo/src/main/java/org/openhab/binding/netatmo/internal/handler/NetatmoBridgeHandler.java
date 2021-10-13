@@ -299,7 +299,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
                 .map(api -> api.getmeasure(equipmentId, scale, types, moduleId, null, "last", 1, true, false).getBody())
                 .orElse(null);
         updateStatus(ThingStatus.ONLINE);
-        NAMeasureBodyElem element = (data != null && data.size() > 0) ? data.get(0) : null;
+        NAMeasureBodyElem element = data != null && !data.isEmpty() ? data.get(0) : null;
         return element != null ? element.getValue().get(0) : Collections.emptyList();
     }
 

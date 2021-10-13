@@ -1,0 +1,20 @@
+{
+  "structures": [
+    {
+      "name": "enterprises/project-id/structures/beach-house-structure-id",
+      "traits": {
+        "sdm.structures.traits.Info": {
+          "customName": "Beach House"
+        }
+      }
+    },
+    {
+      "name": "enterprises/project-id/structures/home-structure-id",
+      "traits": {
+        "sdm.structures.traits.Info": {
+          "customName": "Home"
+        }
+      }
+    }
+  ]
+}

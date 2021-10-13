@@ -59,7 +59,6 @@ public class DbXmlInfoReader {
     }
 
     private void configureSecurity(XStream xstream) {
-        XStream.setupDefaultSecurity(xstream);
         xstream.allowTypesByWildcard(new String[] { Project.class.getPackageName() + ".**" });
     }
 

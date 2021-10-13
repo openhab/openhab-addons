@@ -60,7 +60,7 @@ class SqueezeBoxPlayerState {
     }
 
     boolean isShuffling() {
-        return savedShuffle == 0 ? false : true;
+        return savedShuffle != 0;
     }
 
     int getShuffle() {
@@ -68,7 +68,7 @@ class SqueezeBoxPlayerState {
     }
 
     boolean isRepeating() {
-        return savedRepeat == 0 ? false : true;
+        return savedRepeat != 0;
     }
 
     int getRepeat() {

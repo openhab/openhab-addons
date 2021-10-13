@@ -102,6 +102,16 @@ public final class LifxMessageUtil {
         return new PercentType(value);
     }
 
+    public static int commandToKelvin(DecimalType temperature, TemperatureRange temperatureRange) {
+        return temperature instanceof PercentType ? percentTypeToKelvin((PercentType) temperature, temperatureRange)
+                : decimalTypeToKelvin(temperature, temperatureRange);
+    }
+
+    public static int decimalTypeToKelvin(DecimalType temperature, TemperatureRange temperatureRange) {
+        return Math.round(Math.min(Math.max(temperature.intValue(), temperatureRange.getMinimum()),
+                temperatureRange.getMaximum()));
+    }
+
     public static int percentTypeToKelvin(PercentType temperature, TemperatureRange temperatureRange) {
         return Math.round(
                 temperatureRange.getMaximum() - (temperature.floatValue() * (temperatureRange.getRange() / 100)));

@@ -33,7 +33,7 @@
 
 		<representation-property>deviceId</representation-property>
 
-		<config-description-ref uri="thing-type:device:plug"/>
+		<config-description-ref uri="thing-type:tplinksmarthome:device-plug"/>
 	</thing-type>
 
 </thing:thing-descriptions>

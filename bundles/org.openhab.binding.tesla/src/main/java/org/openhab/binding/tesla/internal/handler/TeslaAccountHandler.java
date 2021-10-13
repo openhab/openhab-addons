@@ -100,7 +100,6 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     protected ReentrantLock lock;
 
     private final Gson gson = new Gson();
-    private final JsonParser parser = new JsonParser();
 
     private TokenResponse logonToken;
     private final Set<VehicleListener> vehicleListeners = new HashSet<>();
@@ -215,7 +214,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                 return null;
             }
 
-            JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+            JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
             Vehicle[] vehicleArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
 
             for (Vehicle vehicle : vehicleArray) {
@@ -343,7 +342,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             }
 
             try {
-                JsonObject jsonObject = parser.parse(response.readEntity(String.class)).getAsJsonObject();
+                JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
                 logger.trace("Request : {}:{}:{} yields {}", command, payLoad, target, jsonObject.get("response"));
                 return jsonObject.get("response").toString();
             } catch (Exception e) {

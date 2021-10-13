@@ -9,7 +9,8 @@
 		<label>Current Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>CurrentTemperature</tag>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -18,16 +19,14 @@
 		<label>Current Humidity</label>
 		<category>Humidity</category>
 		<tags>
-			<tag>CurrentHumidity</tag>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="masterSwitch">
 		<item-type>Switch</item-type>
 		<label>Master Switch</label>
-		<tags>
-			<tag>Switchable</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="timer">
 		<item-type>Number</item-type>

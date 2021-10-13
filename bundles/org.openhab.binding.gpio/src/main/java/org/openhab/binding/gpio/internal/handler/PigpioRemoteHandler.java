@@ -12,18 +12,21 @@
  */
 package org.openhab.binding.gpio.internal.handler;
 
-import static org.openhab.binding.gpio.internal.GPIOBindingConstants.CHANNEL_TYPE_DIGITAL_INPUT;
-import static org.openhab.binding.gpio.internal.GPIOBindingConstants.CHANNEL_TYPE_DIGITAL_OUTPUT;
+import static org.openhab.binding.gpio.internal.GPIOBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.gpio.internal.InvalidPullUpDownException;
 import org.openhab.binding.gpio.internal.NoGpioIdException;
 import org.openhab.binding.gpio.internal.configuration.GPIOInputConfiguration;
 import org.openhab.binding.gpio.internal.configuration.GPIOOutputConfiguration;
 import org.openhab.binding.gpio.internal.configuration.PigpioConfiguration;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
@@ -103,6 +106,8 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                 }
             } catch (PigpioException e) {
                 logger.warn("Failed to initialize {}: {}", channelUID, e.getMessage());
+            } catch (InvalidPullUpDownException e) {
+                logger.warn("Failed to initialize {}: Invalid Pull Up/Down resistor configuration", channelUID);
             } catch (NoGpioIdException e) {
                 logger.warn("Failed to initialize {}: GpioId is not set", channelUID);
             }

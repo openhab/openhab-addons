@@ -15,6 +15,7 @@ package org.openhab.binding.digitalstrom.internal.handler;
 import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -410,7 +411,7 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
         if (value <= 0 || max <= 0) {
             return 0;
         }
-        int percentValue = new BigDecimal(value * ((float) 100 / max)).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+        int percentValue = new BigDecimal(value * ((float) 100 / max)).setScale(0, RoundingMode.HALF_UP).intValue();
         return percentValue < 0 ? 0 : percentValue > 100 ? 100 : percentValue;
     }
 
@@ -457,7 +458,8 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
                 } else if (this.device.isBlind()) {
                     // load channel for set the angle of jalousie devices
                     String channelTypeID = DsChannelTypeProvider.getOutputChannelTypeID(
-                            ((Device) device).getFunctionalColorGroup(), ((Device) device).getOutputMode());
+                            ((Device) device).getFunctionalColorGroup().getColor(), ((Device) device).getOutputMode(),
+                            ((Device) device).getOutputChannels());
                     loadOutputChannel(new ChannelTypeUID(BINDING_ID, channelTypeID),
                             DsChannelTypeProvider.getItemType(channelTypeID));
                 }
@@ -711,10 +713,11 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
         if (!device.isDeviceWithOutput()) {
             loadOutputChannel(null, null);
         }
-        String channelTypeID = DsChannelTypeProvider.getOutputChannelTypeID(device.getFunctionalColorGroup(),
-                device.getOutputMode());
+        String channelTypeID = DsChannelTypeProvider.getOutputChannelTypeID(device.getFunctionalColorGroup().getColor(),
+                device.getOutputMode(), device.getOutputChannels());
         logger.debug("load channel: typeID={}, itemType={}",
-                DsChannelTypeProvider.getOutputChannelTypeID(device.getFunctionalColorGroup(), device.getOutputMode()),
+                DsChannelTypeProvider.getOutputChannelTypeID(device.getFunctionalColorGroup().getColor(),
+                        device.getOutputMode(), device.getOutputChannels()),
                 DsChannelTypeProvider.getItemType(channelTypeID));
         if (channelTypeID != null && (currentChannel == null || !currentChannel.equals(channelTypeID))) {
             loadOutputChannel(new ChannelTypeUID(BINDING_ID, channelTypeID),

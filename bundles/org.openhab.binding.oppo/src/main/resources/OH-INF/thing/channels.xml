@@ -46,11 +46,11 @@
 				<description>Choose Model of Oppo Player</description>
 				<limitToOptions>true</limitToOptions>
 				<options>
-					<option value="83">Oppo BDP-83 or BDP-93/95</option>
-					<option value="103">Oppo BDP-103/103D</option>
-					<option value="105">Oppo BDP-105/105D</option>
-					<option value="203">Oppo UDP-203</option>
-					<option value="205">Oppo UDP-205</option>
+					<option value="83">BDP-83 or BDP-93/95</option>
+					<option value="103">BDP-103/103D</option>
+					<option value="105">BDP-105/105D</option>
+					<option value="203">UDP-203</option>
+					<option value="205">UDP-205</option>
 				</options>
 			</parameter>
 			<parameter name="serialPort" type="text" required="false">
@@ -71,7 +71,7 @@
 			</parameter>
 			<parameter name="verboseMode" type="boolean" required="false">
 				<label>Verbose Mode</label>
-				<description>If true, the player will send time updates every second. If false, the binding polls the player evey 30
+				<description>If true, the player will send time updates every second. If false, the binding polls the player evey 10
 					seconds</description>
 				<default>false</default>
 				<advanced>true</advanced>
@@ -326,8 +326,18 @@
 				<option value="RPT">Repeat</option>
 				<option value="PIP">Picture in Picture</option>
 				<option value="HDM">HDMI Mode</option>
+				<option value="SUH">Subtitle</option>
 				<option value="NFX">Netflix</option>
+				<option value="VDU">Vudu</option>
+				<option value="OPT">Option Menu</option>
+				<option value="M3D">3D Menu</option>
+				<option value="SEH">Picture Adjustment</option>
+				<option value="DRB">Darbee Adjustment</option>
+				<option value="HDR">HDR Menu</option>
 				<option value="INH">Extended OSD</option>
+				<option value="RLH">Resolution Select</option>
+				<option value="AVS">A/V Sync Menu</option>
+				<option value="GPA">Gapless Play</option>
 			</options>
 		</state>
 	</channel-type>

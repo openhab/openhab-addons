@@ -166,15 +166,15 @@ public class ReadmeHelper {
         StateDescriptionDTO stateDescription = channel.getStateDescription();
         if (stateDescription != null && stateDescription.getOptions() != null) {
             final List<OptionsValueListDTO> options = stateDescription.getOptions();
-            if (options != null && options.size() > 0) {
+            if (options != null && !options.isEmpty()) {
                 StringBuilder mapping = new StringBuilder();
-                mapping.append("Value mapping [");
+                mapping.append("Value mapping `[");
                 options.forEach((option) -> {
                     mapping.append(String.format("\"%s\"=\"%s\",", String.valueOf(option.value),
                             String.valueOf(option.label)));
                 });
                 mapping.deleteCharAt(mapping.length() - 1);
-                mapping.append("]");
+                mapping.append("]`");
                 String newComment = mapping.toString();
                 if (!channel.getReadmeComment().contentEquals(newComment)) {
                     LOGGER.info("Channel {} - {} readme comment updated to '{}'", model, channel.getChannel(),
@@ -292,8 +292,7 @@ public class ReadmeHelper {
         JsonObject jsonObject = new JsonObject();
 
         try {
-            JsonParser parser = new JsonParser();
-            JsonElement jsonElement = parser.parse(new FileReader(fileName));
+            JsonElement jsonElement = JsonParser.parseReader(new FileReader(fileName));
             jsonObject = jsonElement.getAsJsonObject();
         } catch (FileNotFoundException e) {
             //

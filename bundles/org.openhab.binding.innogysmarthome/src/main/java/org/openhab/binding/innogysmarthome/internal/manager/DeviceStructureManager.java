@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
-import org.openhab.binding.innogysmarthome.internal.client.entity.capability.State;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
 import org.openhab.binding.innogysmarthome.internal.client.entity.link.Link;
 import org.openhab.binding.innogysmarthome.internal.client.entity.message.Message;
@@ -131,9 +130,7 @@ public class DeviceStructureManager {
                     if (d.isRadioDevice() && !d.isReachable()) {
                         logger.debug(">> CAP-State: unknown (device NOT REACHABLE).");
                     } else {
-                        if (c.hasState()) {
-                            final State state = c.getCapabilityState().getState();
-                        } else {
+                        if (!c.hasState()) {
                             logger.debug(">> CAP-State: unknown (NULL)");
                         }
                     }

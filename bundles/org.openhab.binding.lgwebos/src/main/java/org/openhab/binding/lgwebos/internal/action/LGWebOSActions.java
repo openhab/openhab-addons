@@ -154,8 +154,7 @@ public class LGWebOSActions implements ThingActions {
             @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId,
             @ActionInput(name = "params", label = "@text/actionLaunchApplicationInputParamsLabel", description = "@text/actionLaunchApplicationInputParamsDesc") String params) {
         try {
-            JsonParser parser = new JsonParser();
-            JsonObject payload = (JsonObject) parser.parse(params);
+            JsonObject payload = (JsonObject) JsonParser.parseString(params);
 
             Optional<AppInfo> appInfo = getAppInfos().stream().filter(a -> a.getId().equals(appId)).findFirst();
             if (appInfo.isPresent()) {

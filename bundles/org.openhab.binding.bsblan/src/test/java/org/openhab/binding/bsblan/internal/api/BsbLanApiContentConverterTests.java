@@ -61,8 +61,7 @@ public class BsbLanApiContentConverterTests {
         String serializedRequest = BsbLanApiContentConverter.toJson(request);
 
         // verify serialized content
-        JsonParser parser = new JsonParser();
-        JsonObject json = parser.parse(serializedRequest).getAsJsonObject();
+        JsonObject json = JsonParser.parseString(serializedRequest).getAsJsonObject();
 
         // Although specifying the parameter as int (which would be nicer) also seems to work,
         // we use a String here as this is the way it is noted in the documentation.

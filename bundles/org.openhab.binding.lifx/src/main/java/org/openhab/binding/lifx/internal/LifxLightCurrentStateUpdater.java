@@ -23,12 +23,16 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lifx.internal.LifxProduct.Features;
 import org.openhab.binding.lifx.internal.dto.GetColorZonesRequest;
+import org.openhab.binding.lifx.internal.dto.GetHevCycleRequest;
 import org.openhab.binding.lifx.internal.dto.GetLightInfraredRequest;
 import org.openhab.binding.lifx.internal.dto.GetRequest;
 import org.openhab.binding.lifx.internal.dto.GetTileEffectRequest;
 import org.openhab.binding.lifx.internal.dto.GetWifiInfoRequest;
+import org.openhab.binding.lifx.internal.dto.HevCycleState;
 import org.openhab.binding.lifx.internal.dto.Packet;
+import org.openhab.binding.lifx.internal.dto.StateHevCycleResponse;
 import org.openhab.binding.lifx.internal.dto.StateLightInfraredResponse;
 import org.openhab.binding.lifx.internal.dto.StateLightPowerResponse;
 import org.openhab.binding.lifx.internal.dto.StateMultiZoneResponse;
@@ -56,7 +60,7 @@ public class LifxLightCurrentStateUpdater {
     private final Logger logger = LoggerFactory.getLogger(LifxLightCurrentStateUpdater.class);
 
     private final String logId;
-    private final LifxProduct product;
+    private final Features features;
     private final CurrentLightState currentLightState;
     private final ScheduledExecutorService scheduler;
     private final LifxLightCommunicationHandler communicationHandler;
@@ -70,7 +74,7 @@ public class LifxLightCurrentStateUpdater {
 
     public LifxLightCurrentStateUpdater(LifxLightContext context, LifxLightCommunicationHandler communicationHandler) {
         this.logId = context.getLogId();
-        this.product = context.getProduct();
+        this.features = context.getFeatures();
         this.currentLightState = context.getCurrentLightState();
         this.scheduler = context.getScheduler();
         this.communicationHandler = communicationHandler;
@@ -132,13 +136,16 @@ public class LifxLightCurrentStateUpdater {
     private void sendLightStateRequests() {
         communicationHandler.sendPacket(new GetRequest());
 
-        if (product.hasFeature(INFRARED)) {
+        if (features.hasFeature(HEV)) {
+            communicationHandler.sendPacket(new GetHevCycleRequest());
+        }
+        if (features.hasFeature(INFRARED)) {
             communicationHandler.sendPacket(new GetLightInfraredRequest());
         }
-        if (product.hasFeature(MULTIZONE)) {
+        if (features.hasFeature(MULTIZONE)) {
             communicationHandler.sendPacket(new GetColorZonesRequest());
         }
-        if (product.hasFeature(TILE_EFFECT)) {
+        if (features.hasFeature(TILE_EFFECT)) {
             communicationHandler.sendPacket(new GetTileEffectRequest());
         }
         if (updateSignalStrength) {
@@ -156,14 +163,16 @@ public class LifxLightCurrentStateUpdater {
                 handlePowerStatus((StatePowerResponse) packet);
             } else if (packet instanceof StateLightPowerResponse) {
                 handleLightPowerStatus((StateLightPowerResponse) packet);
+            } else if (packet instanceof StateHevCycleResponse) {
+                handleHevCycleStatus((StateHevCycleResponse) packet);
             } else if (packet instanceof StateLightInfraredResponse) {
                 handleInfraredStatus((StateLightInfraredResponse) packet);
             } else if (packet instanceof StateMultiZoneResponse) {
                 handleMultiZoneStatus((StateMultiZoneResponse) packet);
-            } else if (packet instanceof StateWifiInfoResponse) {
-                handleWifiInfoStatus((StateWifiInfoResponse) packet);
             } else if (packet instanceof StateTileEffectResponse) {
                 handleTileEffectStatus((StateTileEffectResponse) packet);
+            } else if (packet instanceof StateWifiInfoResponse) {
+                handleWifiInfoStatus((StateWifiInfoResponse) packet);
             }
 
             currentLightState.setOnline();
@@ -191,6 +200,11 @@ public class LifxLightCurrentStateUpdater {
         currentLightState.setPowerState(packet.getState());
     }
 
+    private void handleHevCycleStatus(StateHevCycleResponse packet) {
+        HevCycleState hevCycleState = new HevCycleState(!packet.getRemaining().isZero(), packet.getDuration());
+        currentLightState.setHevCycleState(hevCycleState);
+    }
+
     private void handleInfraredStatus(StateLightInfraredResponse packet) {
         PercentType infrared = infraredToPercentType(packet.getInfrared());
         currentLightState.setInfrared(infrared);
@@ -208,11 +222,11 @@ public class LifxLightCurrentStateUpdater {
         currentLightState.setColors(colors);
     }
 
-    private void handleWifiInfoStatus(StateWifiInfoResponse packet) {
-        currentLightState.setSignalStrength(packet.getSignalStrength());
-    }
-
     private void handleTileEffectStatus(StateTileEffectResponse packet) {
         currentLightState.setTileEffect(packet.getEffect());
+    }
+
+    private void handleWifiInfoStatus(StateWifiInfoResponse packet) {
+        currentLightState.setSignalStrength(packet.getSignalStrength());
     }
 }

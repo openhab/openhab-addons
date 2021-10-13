@@ -33,14 +33,14 @@
 			</channel>
 		</channels>
 
-		<config-description-ref uri="module:address:config"/>
+		<config-description-ref uri="thing-type:nikobus:module"/>
 	</thing-type>
 
 	<channel-type id="rollershutter-output">
 		<item-type>Rollershutter</item-type>
 		<label>Output</label>
 		<description>Rollershutter Module's Output</description>
-		<config-description-ref uri="rollershutter-module:rollershutter-output:config"/>
+		<config-description-ref uri="channel-type:nikobus:rollershutter-output"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -72,7 +72,7 @@ public class TradfriVersionTest {
         assertTrue(VERSION.equals(new TradfriVersion(VERSION_STRING)));
 
         assertFalse(VERSION.equals((TradfriVersion) null));
-        assertFalse(VERSION.equals(new Integer("1")));
+        assertFalse(VERSION.equals(Integer.valueOf("1")));
         assertFalse(VERSION.equals(new TradfriVersion("1.2.5")));
     }
 

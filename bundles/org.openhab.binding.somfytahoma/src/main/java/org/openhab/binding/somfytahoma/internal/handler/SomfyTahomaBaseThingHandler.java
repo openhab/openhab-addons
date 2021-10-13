@@ -14,9 +14,11 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.measure.Unit;
 
@@ -45,6 +47,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -121,13 +124,15 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     private void createRSSIChannel() {
         if (thing.getChannel(RSSI) == null) {
             logger.debug("{} Creating a rssi channel", url);
-            createChannel(RSSI, "Number", "RSSI Level");
+            ChannelTypeUID rssi = new ChannelTypeUID(BINDING_ID, "rssi");
+            createChannel(RSSI, "Number", "RSSI Level", rssi);
         }
     }
 
-    private void createChannel(String name, String type, String label) {
+    private void createChannel(String name, String type, String label, ChannelTypeUID channelType) {
         ThingBuilder thingBuilder = editThing();
-        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), type).withLabel(label).build();
+        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), type).withLabel(label)
+                .withType(channelType).build();
         thingBuilder.withChannel(channel);
         updateThing(thingBuilder.build());
     }
@@ -144,16 +149,12 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         return logger;
     }
 
-    protected boolean isAlwaysOnline() {
-        return false;
-    }
-
     protected @Nullable SomfyTahomaBridgeHandler getBridgeHandler() {
         Bridge localBridge = this.getBridge();
         return localBridge != null ? (SomfyTahomaBridgeHandler) localBridge.getHandler() : null;
     }
 
-    private String getURL() {
+    protected String getURL() {
         return getThing().getConfiguration().get("url") != null ? getThing().getConfiguration().get("url").toString()
                 : "";
     }
@@ -165,7 +166,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     private void setUnavailable() {
-        if (ThingStatus.OFFLINE != thing.getStatus() && !isAlwaysOnline()) {
+        if (ThingStatus.OFFLINE != thing.getStatus()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, UNAVAILABLE);
         }
     }
@@ -178,6 +179,17 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         SomfyTahomaBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
             handler.sendCommand(url, cmd, param, EXEC_URL + "apply");
+        }
+    }
+
+    protected void sendCommandToSameDevicesInPlace(String cmd) {
+        sendCommandToSameDevicesInPlace(cmd, "[]");
+    }
+
+    protected void sendCommandToSameDevicesInPlace(String cmd, String param) {
+        SomfyTahomaBridgeHandler handler = getBridgeHandler();
+        if (handler != null) {
+            handler.sendCommandToSameDevicesInPlace(url, cmd, param, EXEC_URL + "apply");
         }
     }
 
@@ -229,6 +241,10 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         if (type > 0 && !typeTable.containsKey(stateName)) {
             typeTable.put(stateName, type);
         }
+    }
+
+    protected Unit<?> getTemperatureUnit() {
+        return Objects.requireNonNull(units.get("Number:Temperature"));
     }
 
     private void updateUnits(List<SomfyTahomaState> attributes) {
@@ -387,12 +403,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     private @Nullable SomfyTahomaState getStatusState(List<SomfyTahomaState> states) {
-        for (SomfyTahomaState state : states) {
-            if (STATUS_STATE.equals(state.getName()) && state.getType() == TYPE_STRING) {
-                return state;
-            }
-        }
-        return null;
+        return getState(states, STATUS_STATE, TYPE_STRING);
     }
 
     private void updateThingStatus(@Nullable SomfyTahomaState state) {
@@ -415,7 +426,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         Map<String, String> properties = new HashMap<>();
         for (SomfyTahomaState state : states) {
             logger.trace("{} processing state: {} with value: {}", url, state.getName(), state.getValue());
-            properties.put(state.getName(), state.getValue().toString());
+            properties.put(state.getName(), TYPE_NONE != state.getType() ? state.getValue().toString() : "");
             if (RSSI_LEVEL_STATE.equals(state.getName())) {
                 // RSSI channel is a dynamic one
                 updateRSSIChannel(state);
@@ -455,5 +466,30 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
     public int toInteger(Command command) {
         return (command instanceof DecimalType) ? ((DecimalType) command).intValue() : 0;
+    }
+
+    public @Nullable BigDecimal toTemperature(Command command) {
+        BigDecimal temperature = null;
+        if (command instanceof QuantityType<?>) {
+            QuantityType<?> quantity = (QuantityType<?>) command;
+            QuantityType<?> convertedQuantity = quantity.toUnit(getTemperatureUnit());
+            if (convertedQuantity != null) {
+                quantity = convertedQuantity;
+            }
+            temperature = quantity.toBigDecimal();
+        } else if (command instanceof DecimalType) {
+            temperature = ((DecimalType) command).toBigDecimal();
+        }
+        return temperature;
+    }
+
+    public static @Nullable SomfyTahomaState getState(List<SomfyTahomaState> states, String stateName,
+            @Nullable Integer stateType) {
+        for (SomfyTahomaState state : states) {
+            if (stateName.equals(state.getName()) && (stateType == null || stateType == state.getType())) {
+                return state;
+            }
+        }
+        return null;
     }
 }

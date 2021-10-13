@@ -32,6 +32,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyInputState;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyOtaCheckResult;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
@@ -100,8 +101,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private int skipUpdate = 0;
     private boolean refreshSettings = false;
 
-    private @Nullable ScheduledFuture<?> asyncButtonRelease;
-
     // delay before enabling channel
     private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
     protected final ShellyChannelCache cache;
@@ -110,6 +109,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private String localPort = "";
 
     private String lastWakeupReason = "";
+    private int vibrationFilter = 0;
 
     /**
      * Constructor
@@ -245,9 +245,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         }
         tmpPrf.auth = devInfo.auth; // missing in /settings
 
-        logger.debug("{}: Initializing device {}, type {}, Hardware: Rev: {}, batch {}; Firmware: {} / {} ({})",
-                thingName, tmpPrf.hostname, tmpPrf.deviceType, tmpPrf.hwRev, tmpPrf.hwBatchId, tmpPrf.fwVersion,
-                tmpPrf.fwDate, tmpPrf.fwId);
+        logger.debug("{}: Initializing device {}, type {}, Hardware: Rev: {}, batch {}; Firmware: {} / {}", thingName,
+                tmpPrf.hostname, tmpPrf.deviceType, tmpPrf.hwRev, tmpPrf.hwBatchId, tmpPrf.fwVersion, tmpPrf.fwDate);
         logger.debug("{}: Shelly settings info for {}: {}", thingName, tmpPrf.hostname, tmpPrf.settingsJson);
         logger.debug("{}: Device "
                 + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{})"
@@ -273,10 +272,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 } catch (ShellyApiException e) {
                     logger.debug("{}: Unable to set CoIoT peer: {}", thingName, e.toString());
                 }
-            } else if (!devpeer.equals(ourpeer)) {
-                logger.warn("{}: CoIoT peer in device settings does not point this to this host, disabling CoIoT",
-                        thingName);
-                config.eventsCoIoT = autoCoIoT = false;
+            } else if (!devpeer.isEmpty() && !devpeer.equals(ourpeer)) {
+                logger.warn("{}: CoIoT peer in device settings does not point this to this host", thingName);
             }
         }
         if (autoCoIoT) {
@@ -370,7 +367,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             if (res.isNotCalibrtated()) {
                 logger.warn("{}: {}", thingName, messages.get("roller.calibrating"));
             } else {
-                logger.info("{}: {} - {}", thingName, messages.get("command.failed", command, channelUID),
+                logger.warn("{}: {} - {}", thingName, messages.get("command.failed", command, channelUID),
                         e.toString());
             }
         } catch (IllegalArgumentException e) {
@@ -385,6 +382,12 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         try {
             boolean updated = false;
 
+            if (vibrationFilter > 0) {
+                vibrationFilter--;
+                logger.debug("{}: Vibration events are absorbed for {} more seconds", thingName,
+                        vibrationFilter * UPDATE_STATUS_INTERVAL_SECONDS);
+            }
+
             skipUpdate++;
             ThingStatus thingStatus = getThing().getStatus();
             if (refreshSettings || (scheduledUpdates > 0) || (skipUpdate % skipCount == 0)) {
@@ -396,9 +399,15 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 // Get profile, if refreshSettings == true reload settings from device
                 logger.trace("{}: Updating status (refreshSettings={})", thingName, refreshSettings);
                 ShellySettingsStatus status = api.getStatus();
-                profile = getProfile(refreshSettings || checkRestarted(status));
+                boolean restarted = checkRestarted(status);
+                profile = getProfile(refreshSettings || restarted);
                 profile.status = status;
                 profile.updateFromStatus(status);
+                if (restarted) {
+                    logger.debug("{}: Device restart #{} detected", thingName, stats.restarts);
+                    stats.restarts++;
+                    postEvent(ALARM_TYPE_RESTARTED, true);
+                }
 
                 // If status update was successful the thing must be online
                 setThingOnline();
@@ -477,7 +486,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             updateStatus(ThingStatus.ONLINE);
 
             // request 3 updates in a row (during the first 2+3*3 sec)
-            requestUpdates(profile.alwaysOn ? 3 : 1, channelsCreated == false);
+            requestUpdates(profile.alwaysOn ? 3 : 1, !channelsCreated);
         }
         restartWatchdog();
     }
@@ -519,7 +528,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
     private void fillDeviceStatus(ShellySettingsStatus status, boolean updated) {
         String alarm = "";
-        boolean force = false;
 
         // Update uptime and WiFi, internal temp
         ShellyComponents.updateDeviceStatus(this, status);
@@ -558,7 +566,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         stats.coiotErrors = coap.getErrorCount();
 
         if (!alarm.isEmpty()) {
-            postEvent(alarm, force);
+            postEvent(alarm, false);
         }
     }
 
@@ -569,11 +577,9 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      */
 
     private boolean checkRestarted(ShellySettingsStatus status) {
-        if (profile.isInitialized() && (status.uptime < stats.lastUptime || !profile.status.update.oldVersion.isEmpty()
-                && !status.update.oldVersion.equals(profile.status.update.oldVersion))) {
-            logger.debug("{}: Device restart #{} detected", thingName, stats.restarts);
-            stats.restarts++;
-            postEvent(ALARM_TYPE_RESTARTED, true);
+        if (profile.isInitialized() && profile.alwaysOn /* exclude battery powered devices */
+                && (status.uptime < stats.lastUptime || !profile.status.update.oldVersion.isEmpty()
+                        && !status.update.oldVersion.equals(profile.status.update.oldVersion))) {
             updateProperties(profile, status);
             return true;
         }
@@ -590,7 +596,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         State value = cache.getValue(channelId);
         String lastAlarm = value != UnDefType.NULL ? value.toString() : "";
 
-        if (force || !lastAlarm.equals(alarm) || (now() > (stats.lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC))) {
+        if (force || !lastAlarm.equals(alarm)
+                || (lastAlarm.equals(alarm) && now() > stats.lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC)) {
             if (alarm.isEmpty() || alarm.equals(ALARM_TYPE_NONE)) {
                 cache.updateChannel(channelId, getStringType(alarm));
             } else {
@@ -703,13 +710,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                         updateChannel(group, CHANNEL_SENSOR_ILLUM, getStringType(event));
                         break;
 
-                    case SHELLY_EVENT_VIBRATION:
-                        updateChannel(group, CHANNEL_SENSOR_VIBRATION, OnOffType.ON);
-                        break;
-
                     case SHELLY_EVENT_ALARM_MILD: // Shelly Gas
                     case SHELLY_EVENT_ALARM_HEAVY:
                     case SHELLY_EVENT_ALARM_OFF:
+                    case SHELLY_EVENT_VIBRATION: // DW2
                         channel = CHANNEL_SENSOR_ALARM_STATE;
                         payload = event.toUpperCase();
                         break;
@@ -799,12 +803,11 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         try {
             ShellyVersionDTO version = new ShellyVersionDTO();
             if (version.checkBeta(getString(prf.fwVersion))) {
-                logger.info("{}: {}", prf.hostname, messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate,
-                        prf.fwId, SHELLY_API_MIN_FWVERSION));
+                logger.info("{}: {}", prf.hostname, messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate));
             } else {
                 if ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWVERSION) < 0) && !profile.isMotion) {
-                    logger.warn("{}: {}", prf.hostname, messages.get("versioncheck.tooold", prf.fwVersion, prf.fwDate,
-                            prf.fwId, SHELLY_API_MIN_FWVERSION));
+                    logger.warn("{}: {}", prf.hostname,
+                            messages.get("versioncheck.tooold", prf.fwVersion, prf.fwDate, SHELLY_API_MIN_FWVERSION));
                 }
             }
             if (bindingConfig.autoCoIoT && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
@@ -947,7 +950,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
     public boolean updateWakeupReason(@Nullable List<Object> valueArray) {
         boolean changed = false;
-        if ((valueArray != null) && (valueArray.size() > 0)) {
+        if (valueArray != null && !valueArray.isEmpty()) {
             String reason = getString((String) valueArray.get(0));
             String newVal = valueArray.toString();
             changed = updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP, getStringType(reason));
@@ -1081,7 +1084,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             properties.put(PROPERTY_UPDATE_NEW_VERS, getString(status.update.newVersion));
         }
         properties.put(PROPERTY_COIOTAUTO, String.valueOf(autoCoIoT));
-        properties.put(PROPERTY_COIOTREFRESH, String.valueOf(autoCoIoT));
 
         Map<String, String> thingProperties = new TreeMap<>();
         for (Map.Entry<String, Object> property : properties.entrySet()) {
@@ -1142,8 +1144,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         if (profile.isInitialized()) {
             properties.put(PROPERTY_MODEL_ID, getString(profile.settings.device.type));
             properties.put(PROPERTY_MAC_ADDRESS, profile.mac);
-            properties.put(PROPERTY_FIRMWARE_VERSION,
-                    profile.fwVersion + "/" + profile.fwDate + "(" + profile.fwId + ")");
+            properties.put(PROPERTY_FIRMWARE_VERSION, profile.fwVersion + "/" + profile.fwDate);
             properties.put(PROPERTY_DEV_MODE, profile.mode);
             properties.put(PROPERTY_NUM_RELAYS, String.valueOf(profile.numRelays));
             properties.put(PROPERTY_NUM_ROLLERS, String.valueOf(profile.numRollers));
@@ -1195,7 +1196,21 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     }
 
     public void triggerChannel(String group, String channel, String payload) {
-        triggerChannel(mkChannelId(group, channel), payload);
+        String triggerCh = mkChannelId(group, channel);
+        logger.debug("{}: Send event {} to channel {}", thingName, triggerCh, payload);
+        if (EVENT_TYPE_VIBRATION.contentEquals(payload)) {
+            if (vibrationFilter == 0) {
+                vibrationFilter = VIBRATION_FILTER_SEC / UPDATE_STATUS_INTERVAL_SECONDS + 1;
+                logger.debug("{}: Duplicate vibration events will be absorbed for the next {} sec", thingName,
+                        vibrationFilter * UPDATE_STATUS_INTERVAL_SECONDS);
+            } else {
+                logger.debug("{}: Vibration event absorbed, {} sec remaining", thingName,
+                        vibrationFilter * UPDATE_STATUS_INTERVAL_SECONDS);
+                return;
+            }
+        }
+
+        triggerChannel(triggerCh, payload);
     }
 
     public void stop() {
@@ -1205,11 +1220,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             job.cancel(true);
             statusJob = null;
             logger.debug("{}: Shelly statusJob stopped", thingName);
-        }
-        job = asyncButtonRelease;
-        if (job != null) {
-            job.cancel(true);
-            asyncButtonRelease = null;
         }
 
         coap.stop();
@@ -1263,5 +1273,14 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
     public Map<String, String> getStatsProp() {
         return stats.asProperties();
+    }
+
+    public String checkForUpdate() {
+        try {
+            ShellyOtaCheckResult result = api.checkForUpdate();
+            return result.status;
+        } catch (ShellyApiException e) {
+            return "";
+        }
     }
 }

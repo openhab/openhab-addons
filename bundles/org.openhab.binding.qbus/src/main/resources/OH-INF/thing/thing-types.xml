@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="qbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>Qbus Bridge</label>
+		<description>This bridge represents a Qbus client</description>
+		<config-description>
+			<parameter name="addr" type="text" required="true">
+				<label>Hostname</label>
+				<description>IP address or hostname of Qbus server, usually 'localhost'</description>
+				<default>localhost</default>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="sn" type="text" required="true">
+				<label>Serial Number</label>
+				<description>Serial number of the CTD controller</description>
+			</parameter>
+			<parameter name="port" type="integer" required="false">
+				<label>Bridge Port</label>
+				<description>Port to communicate with Qbus server, default 8447</description>
+				<default>8447</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="serverCheck" type="integer" required="false" unit="min" min="1">
+				<label>Server Check</label>
+				<description>Time to check communication with Qbus Server (min), default 10. If set to 0 or left empty, no refresh
+					will be scheduled</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="onOff">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Switch</label>
+		<description>Bistabiel-Mono-Timer-Interval Output</description>
+		<channels>
+			<channel id="switch" typeId="system.power"/>
+		</channels>
+		<config-description>
+			<parameter name="bistabielId" type="integer" required="true">
+				<label>Qbus ID</label>
+				<description>Qbus Bistabiel ID</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="scene">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Scene</label>
+		<description>Qbus Scene</description>
+		<channels>
+			<channel id="scene" typeId="scene"/>
+		</channels>
+		<config-description>
+			<parameter name="sceneId" type="integer" required="true">
+				<label>Qbus Scene ID</label>
+				<description>Qbus Scene ID</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="co2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>CO2</label>
+		<description>Qbus CO2</description>
+		<channels>
+			<channel id="co2" typeId="co2"/>
+		</channels>
+		<config-description>
+			<parameter name="co2Id" type="integer" required="true">
+				<label>Qbus CO2 ID</label>
+				<description>Qbus CO2 ID</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="dimmer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Dimmer</label>
+		<description>Qbus Dimmer Output</description>
+		<channels>
+			<channel id="brightness" typeId="system.brightness"/>
+		</channels>
+		<config-description>
+			<parameter name="dimmerId" type="integer" required="true">
+				<label>Output ID</label>
+				<description>Qbus Dimmer ID</description>
+			</parameter>
+			<parameter name="step" type="integer" required="true">
+				<label>Step Value</label>
+				<description>Step value used for increase/decrease of dimmer brightness, default 10%</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="rollershutter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>RollerShutter</label>
+		<description>Qbus shutter (ROL02P) control</description>
+		<channels>
+			<channel id="rollershutter" typeId="rollershutter"/>
+		</channels>
+		<config-description>
+			<parameter name="rolId" type="integer" required="true">
+				<label>Rol ID</label>
+				<description>Qbus Rol Id</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="rollershutter_slats">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>RollerShutter (With Slats)</label>
+		<description>Qbus shutter with slats control</description>
+		<channels>
+			<channel id="rollershutter" typeId="rollershutter"/>
+			<channel id="slats" typeId="slats"/>
+		</channels>
+		<config-description>
+			<parameter name="rolId" type="integer" required="true">
+				<label>Rol ID</label>
+				<description>Qbus Rol Id</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="thermostat">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Thermostat</label>
+		<description>Qbus Thermostat</description>
+		<channels>
+			<channel id="measured" typeId="measured"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="setpoint" typeId="setpoint"/>
+		</channels>
+		<config-description>
+			<parameter name="thermostatId" type="integer" required="true">
+				<label>Thermostat ID</label>
+				<description>Qbus Thermostat ID</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="scene">
+		<item-type>Switch</item-type>
+		<label>Scene</label>
+		<description>Scene Control for Qbus</description>
+		<category>Scene</category>
+	</channel-type>
+
+	<channel-type id="measured">
+		<item-type>Number:Temperature</item-type>
+		<label>Measured</label>
+		<description>Temperature Measured by Thermostat</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint</label>
+		<description>Setpoint Temperature of Thermostat</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="0" max="100" step="0.5" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="mode">
+		<item-type>Number</item-type>
+		<label>Mode</label>
+		<description>Thermostat Mode</description>
+		<category>Number</category>
+		<state>
+			<options>
+				<option value="0">Manual</option>
+				<option value="1">Freeze</option>
+				<option value="2">Economic</option>
+				<option value="3">Comfort</option>
+				<option value="4">Night</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="co2">
+		<item-type>Number</item-type>
+		<label>CO2</label>
+		<description>CO2 value for Qbus</description>
+		<category>CO2</category>
+	</channel-type>
+
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter</label>
+		<description>Rollershutter Control for Qbus</description>
+		<category>Blinds</category>
+	</channel-type>
+
+	<channel-type id="slats">
+		<item-type>Dimmer</item-type>
+		<label>Slatcontrol</label>
+		<description>Slatcontrol for Qbus</description>
+		<category>Blinds</category>
+	</channel-type>
+
+</thing:thing-descriptions>

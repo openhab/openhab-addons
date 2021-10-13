@@ -5,12 +5,11 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="bridge-type:velbus:bridge">
-		<parameter name="port" type="text">
+		<parameter name="port" type="text" required="true">
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
 			<label>Serial Port</label>
 			<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
-			<required>true</required>
 		</parameter>
 		<parameter name="timeUpdateInterval" type="integer" unit="min">
 			<label>Time Update Interval</label>
@@ -33,12 +32,10 @@
 			<context>network-address</context>
 			<label>IP Address or Hostname</label>
 			<description>IP Address or hostname of Velbus server</description>
-			<required>true</required>
 		</parameter>
-		<parameter name="port" type="integer" required="false">
+		<parameter name="port" type="integer" required="true">
 			<label>Port</label>
 			<description>Network port to communicate with Velbus server</description>
-			<required>true</required>
 		</parameter>
 		<parameter name="timeUpdateInterval" type="integer" unit="min">
 			<label>Time Update Interval</label>

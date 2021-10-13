@@ -24,10 +24,11 @@ public class ItemTestHelper {
 
     public static NumberItem createNumberItem(String name, Number value) {
         NumberItem numberItem = new NumberItem(name);
-        if (value instanceof Integer || value instanceof Long)
+        if (value instanceof Integer || value instanceof Long) {
             numberItem.setState(new DecimalType(value.longValue()));
-        else
+        } else {
             numberItem.setState(new DecimalType(value.doubleValue()));
+        }
         return numberItem;
     }
 }

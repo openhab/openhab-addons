@@ -15,8 +15,11 @@ package org.openhab.binding.lutron.internal.radiora;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.TooManyListenersException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lutron.internal.radiora.protocol.RadioRAFeedback;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
@@ -34,16 +37,17 @@ import org.slf4j.LoggerFactory;
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class RS232Connection implements RadioRAConnection, SerialPortEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(RS232Connection.class);
 
     protected SerialPortManager serialPortManager;
-    protected SerialPort serialPort;
+    protected @Nullable SerialPort serialPort;
 
-    protected BufferedReader inputReader;
+    protected @Nullable BufferedReader inputReader;
 
-    protected RadioRAFeedbackListener listener;
+    protected @Nullable RadioRAFeedbackListener listener;
     protected RS232MessageParser parser = new RS232MessageParser();
 
     public RS232Connection(SerialPortManager serialPortManager) {
@@ -59,7 +63,8 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
         }
 
         try {
-            serialPort = portIdentifier.open("openhab", 5000);
+            SerialPort serialPort = portIdentifier.open("openhab", 5000);
+            this.serialPort = serialPort;
             serialPort.notifyOnDataAvailable(true);
             serialPort.setSerialPortParams(baud, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             serialPort.addEventListener(this);
@@ -78,8 +83,19 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
     @Override
     public void write(String command) {
         logger.debug("Writing to serial port: {}", command.toString());
+        SerialPort serialPort = this.serialPort;
+
         try {
-            serialPort.getOutputStream().write(command.getBytes());
+            if (serialPort != null) {
+                OutputStream outputStream = serialPort.getOutputStream();
+                if (outputStream != null) {
+                    outputStream.write(command.getBytes());
+                } else {
+                    logger.debug("Cannot write to serial port. outputStream is null.");
+                }
+            } else {
+                logger.debug("Cannot write to serial port. serialPort is null.");
+            }
         } catch (IOException e) {
             logger.debug("An error occurred writing to serial port", e);
         }
@@ -87,15 +103,19 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
 
     @Override
     public void disconnect() {
-        serialPort.close();
+        SerialPort serialPort = this.serialPort;
+        if (serialPort != null) {
+            serialPort.close();
+        }
     }
 
     @Override
     public void serialEvent(SerialPortEvent ev) {
         switch (ev.getEventType()) {
             case SerialPortEvent.DATA_AVAILABLE:
+                BufferedReader inputReader = this.inputReader;
                 try {
-                    if (!inputReader.ready()) {
+                    if (inputReader == null || !inputReader.ready()) {
                         logger.debug("Serial Data Available but input reader not ready");
                         return;
                     }
@@ -106,7 +126,12 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
 
                     if (feedback != null) {
                         logger.debug("Msg Parsed as {}", feedback.getClass().getName());
-                        listener.handleRadioRAFeedback(feedback);
+                        RadioRAFeedbackListener listener = this.listener;
+                        if (listener != null) {
+                            listener.handleRadioRAFeedback(feedback);
+                        } else {
+                            logger.debug("Cannot handle feedback message. Listener is null.");
+                        }
                     }
                     logger.debug("Finished handling feedback");
                 } catch (IOException e) {

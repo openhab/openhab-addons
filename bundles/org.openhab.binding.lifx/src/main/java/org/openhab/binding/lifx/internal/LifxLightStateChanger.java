@@ -29,17 +29,21 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lifx.internal.LifxProduct.Features;
 import org.openhab.binding.lifx.internal.dto.AcknowledgementResponse;
 import org.openhab.binding.lifx.internal.dto.ApplicationRequest;
 import org.openhab.binding.lifx.internal.dto.Effect;
 import org.openhab.binding.lifx.internal.dto.GetColorZonesRequest;
+import org.openhab.binding.lifx.internal.dto.GetHevCycleRequest;
 import org.openhab.binding.lifx.internal.dto.GetLightInfraredRequest;
 import org.openhab.binding.lifx.internal.dto.GetLightPowerRequest;
 import org.openhab.binding.lifx.internal.dto.GetRequest;
+import org.openhab.binding.lifx.internal.dto.HevCycleState;
 import org.openhab.binding.lifx.internal.dto.Packet;
 import org.openhab.binding.lifx.internal.dto.PowerState;
 import org.openhab.binding.lifx.internal.dto.SetColorRequest;
 import org.openhab.binding.lifx.internal.dto.SetColorZonesRequest;
+import org.openhab.binding.lifx.internal.dto.SetHevCycleRequest;
 import org.openhab.binding.lifx.internal.dto.SetLightInfraredRequest;
 import org.openhab.binding.lifx.internal.dto.SetLightPowerRequest;
 import org.openhab.binding.lifx.internal.dto.SetPowerRequest;
@@ -74,7 +78,7 @@ public class LifxLightStateChanger implements LifxLightStateListener {
     private final Logger logger = LoggerFactory.getLogger(LifxLightStateChanger.class);
 
     private final String logId;
-    private final LifxProduct product;
+    private final Features features;
     private final Duration fadeTime;
     private final LifxLightState pendingLightState;
     private final ScheduledExecutorService scheduler;
@@ -104,7 +108,7 @@ public class LifxLightStateChanger implements LifxLightStateListener {
 
     public LifxLightStateChanger(LifxLightContext context, LifxLightCommunicationHandler communicationHandler) {
         this.logId = context.getLogId();
-        this.product = context.getProduct();
+        this.features = context.getFeatures();
         this.fadeTime = context.getConfiguration().getFadeTime();
         this.pendingLightState = context.getPendingLightState();
         this.scheduler = context.getScheduler();
@@ -308,6 +312,17 @@ public class LifxLightStateChanger implements LifxLightStateListener {
     }
 
     @Override
+    public void handleHevCycleStateChange(@Nullable HevCycleState oldHevCycleState, HevCycleState newHevCycleState) {
+        // The change should be ignored when both the old and new state are disabled regardless of the cycle duration
+        if (!newHevCycleState.equals(oldHevCycleState)
+                && (oldHevCycleState == null || oldHevCycleState.isEnable() || newHevCycleState.isEnable())) {
+            SetHevCycleRequest packet = new SetHevCycleRequest(newHevCycleState.isEnable(),
+                    newHevCycleState.getDuration());
+            replacePacketsInMap(packet);
+        }
+    }
+
+    @Override
     public void handleInfraredChange(@Nullable PercentType oldInfrared, PercentType newInfrared) {
         PercentType infrared = pendingLightState.getInfrared();
         if (infrared != null) {
@@ -324,7 +339,7 @@ public class LifxLightStateChanger implements LifxLightStateListener {
 
     @Override
     public void handleTileEffectChange(@Nullable Effect oldEffect, Effect newEffect) {
-        if (oldEffect == null || !oldEffect.equals(newEffect)) {
+        if (!newEffect.equals(oldEffect)) {
             SetTileEffectRequest packet = new SetTileEffectRequest(newEffect);
             replacePacketsInMap(packet);
         }
@@ -359,6 +374,13 @@ public class LifxLightStateChanger implements LifxLightStateListener {
                     getZonesIfZonesAreSet();
                 } else if (sentPacket instanceof SetColorZonesRequest) {
                     getZonesIfZonesAreSet();
+                } else if (sentPacket instanceof SetHevCycleRequest) {
+                    scheduler.schedule(() -> {
+                        GetHevCycleRequest hevCyclePacket = new GetHevCycleRequest();
+                        communicationHandler.sendPacket(hevCyclePacket);
+                        GetLightPowerRequest powerPacket = new GetLightPowerRequest();
+                        communicationHandler.sendPacket(powerPacket);
+                    }, 600, TimeUnit.MILLISECONDS);
                 } else if (sentPacket instanceof SetLightInfraredRequest) {
                     GetLightInfraredRequest infraredPacket = new GetLightInfraredRequest();
                     communicationHandler.sendPacket(infraredPacket);
@@ -371,7 +393,7 @@ public class LifxLightStateChanger implements LifxLightStateListener {
     }
 
     private void getZonesIfZonesAreSet() {
-        if (product.hasFeature(MULTIZONE)) {
+        if (features.hasFeature(MULTIZONE)) {
             List<PendingPacket> pending = pendingPacketsMap.get(SetColorZonesRequest.TYPE);
             if (pending == null || pending.isEmpty()) {
                 GetColorZonesRequest zoneColorPacket = new GetColorZonesRequest();

@@ -1,0 +1,766 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="homeconnect"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Home Connect API Bridge -->
+	<bridge-type id="api_bridge">
+		<label>Home Connect API</label>
+		<description>This bridge represents the gateway to the Home Connect API.</description>
+		<config-description>
+			<parameter name="clientId" type="text" required="true">
+				<label>Client Id</label>
+				<description>Application client id</description>
+			</parameter>
+			<parameter name="clientSecret" type="text" required="true">
+				<label>Client Secret</label>
+				<description>Application client secret</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="simulator" type="boolean" required="true">
+				<label>Use Simulator Environment</label>
+				<description>Use simulated environment at https://developer.home-connect.com/simulator/</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Dishwasher -->
+	<thing-type id="dishwasher">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge"/>
+		</supported-bridge-type-refs>
+		<label>Dishwasher</label>
+		<description>Home Connect connected dishwasher (e.g. Bosch or Siemens).</description>
+		<channels>
+			<channel id="power_state" typeId="system.power"/>
+			<channel id="door_state" typeId="door_state"/>
+			<channel id="operation_state" typeId="operation_state"/>
+			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state"/>
+			<channel id="remote_control_active_state" typeId="remote_control_active_state"/>
+			<channel id="selected_program_state" typeId="selected_program_state"/>
+			<channel id="basic_actions_state" typeId="basic_actions_state"/>
+			<channel id="active_program_state" typeId="active_program_state"/>
+			<channel id="remaining_program_time_state" typeId="remaining_program_time_state"/>
+			<channel id="program_progress_state" typeId="program_progress_state"/>
+			<channel id="ambient_light_state" typeId="ambient_light_state"/>
+			<channel id="ambient_light_brightness_state" typeId="system.brightness"/>
+			<channel id="ambient_light_color_state" typeId="ambient_light_color_state"/>
+			<channel id="ambient_light_custom_color_state" typeId="ambient_light_custom_color_state"/>
+		</channels>
+		<representation-property>haId</representation-property>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Oven -->
+	<thing-type id="oven">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge"/>
+		</supported-bridge-type-refs>
+		<label>Oven</label>
+		<description>Home Connect connected oven (e.g. Bosch or Siemens).</description>
+		<channels>
+			<channel id="power_state" typeId="system.power"/>
+			<channel id="door_state" typeId="door_state"/>
+			<channel id="operation_state" typeId="operation_state"/>
+			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state"/>
+			<channel id="remote_control_active_state" typeId="remote_control_active_state"/>
+			<channel id="active_program_state" typeId="active_program_state"/>
+			<channel id="selected_program_state" typeId="selected_program_state"/>
+			<channel id="setpoint_temperature" typeId="setpoint_temperature"/>
+			<channel id="duration" typeId="duration"/>
+			<channel id="basic_actions_state" typeId="basic_actions_state"/>
+			<channel id="remaining_program_time_state" typeId="remaining_program_time_state"/>
+			<channel id="program_progress_state" typeId="program_progress_state"/>
+			<channel id="oven_current_cavity_temperature" typeId="oven_current_cavity_temperature"/>
+			<channel id="elapsed_program_time" typeId="elapsed_program_time"/>
+		</channels>
+		<representation-property>haId</representation-property>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Washer -->
+	<thing-type id="washer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge"/>
+		</supported-bridge-type-refs>
+		<label>Washer</label>
+		<description>Home Connect connected washing machine (e.g. Bosch or Siemens).</description>
+		<channels>
+			<channel id="door_state" typeId="door_state"/>
+			<channel id="operation_state" typeId="operation_state"/>
+			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state"/>
+			<channel id="remote_control_active_state" typeId="remote_control_active_state"/>
+			<channel id="local_control_active_state" typeId="local_control_active_state"/>
+			<channel id="active_program_state" typeId="active_program_state"/>
+			<channel id="selected_program_state" typeId="selected_program_state"/>
+			<channel id="laundry_care_washer_temperature" typeId="laundry_care_washer_temperature"/>
+			<channel id="laundry_care_washer_spin_speed" typeId="laundry_care_washer_spin_speed"/>
+			<channel id="laundry_care_washer_idos1_level" typeId="laundry_care_washer_idos1_level"/>
+			<channel id="laundry_care_washer_idos2_level" typeId="laundry_care_washer_idos2_level"/>
+			<channel id="laundry_care_washer_idos1" typeId="laundry_care_washer_idos1"/>
+			<channel id="laundry_care_washer_idos2" typeId="laundry_care_washer_idos2"/>
+			<channel id="laundry_care_washer_vario_perfect" typeId="laundry_care_washer_vario_perfect"/>
+			<channel id="laundry_care_washer_less_ironing" typeId="laundry_care_washer_less_ironing"/>
+			<channel id="laundry_care_washer_pre_wash" typeId="laundry_care_washer_pre_wash"/>
+			<channel id="laundry_care_washer_rinse_plus" typeId="laundry_care_washer_rinse_plus"/>
+			<channel id="laundry_care_washer_rinse_hold" typeId="laundry_care_washer_rinse_hold"/>
+			<channel id="laundry_care_washer_soak" typeId="laundry_care_washer_soak"/>
+			<channel id="laundry_care_washer_load_recommendation" typeId="laundry_care_washer_load_recommendation"/>
+			<channel id="program_energy" typeId="program_energy"/>
+			<channel id="program_water" typeId="program_water"/>
+			<channel id="basic_actions_state" typeId="basic_actions_state"/>
+			<channel id="remaining_program_time_state" typeId="remaining_program_time_state"/>
+			<channel id="program_progress_state" typeId="program_progress_state"/>
+		</channels>
+		<representation-property>haId</representation-property>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Washer dryer combination -->
+	<thing-type id="washerdryer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge"/>
+		</supported-bridge-type-refs>
+		<label>Washer Dryer Combination</label>
+		<description>Home Connect connected combined washer dryer appliance.</description>
+		<channels>
+			<channel id="door_state" typeId="door_state"/>
+			<channel id="operation_state" typeId="operation_state"/>
+			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state"/>
+			<channel id="remote_control_active_state" typeId="remote_control_active_state"/>
+			<channel id="local_control_active_state" typeId="local_control_active_state"/>
+			<channel id="active_program_state" typeId="active_program_state"/>
+			<channel id="selected_program_state" typeId="selected_program_state"/>
+			<channel id="laundry_care_washer_temperature" typeId="laundry_care_washer_temperature"/>
+			<channel id="laundry_care_washer_spin_speed" typeId="laundry_care_washer_spin_speed"/>
+			<channel id="laundry_care_washer_vario_perfect" typeId="laundry_care_washer_vario_perfect"/>
+			<channel id="laundry_care_washer_less_ironing" typeId="laundry_care_washer_less_ironing"/>
+			<channel id="laundry_care_washer_pre_wash" typeId="laundry_care_washer_pre_wash"/>
+			<channel id="laundry_care_washer_rinse_plus" typeId="laundry_care_washer_rinse_plus"/>
+			<channel id="laundry_care_washer_rinse_hold" typeId="laundry_care_washer_rinse_hold"/>
+			<channel id="laundry_care_washer_soak" typeId="laundry_care_washer_soak"/>
+			<channel id="laundry_care_washer_load_recommendation" typeId="laundry_care_washer_load_recommendation"/>
+			<channel id="program_energy" typeId="program_energy"/>
+			<channel id="program_water" typeId="program_water"/>
+			<channel id="dryer_drying_target" typeId="dryer_drying_target"/>
+			<channel id="basic_actions_state" typeId="basic_actions_state"/>
+			<channel id="remaining_program_time_state" typeId="remaining_program_time_state"/>
+			<channel id="program_progress_state" typeId="program_progress_state"/>
+		</channels>
+		<representation-property>haId</representation-property>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Dryer -->
+	<thing-type id="dryer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge"/>
+		</supported-bridge-type-refs>
+		<label>Dryer</label>
+		<description>Home Connect connected dryer (e.g. Bosch or Siemens).</description>
+		<channels>
+			<channel id="door_state" typeId="door_state"/>
+			<channel id="operation_state" typeId="operation_state"/>
+			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state"/>
+			<channel id="remote_control_active_state" typeId="remote_control_active_state"/>
+			<channel id="local_control_active_state" typeId="local_control_active_state"/>
+			<channel id="active_program_state" typeId="active_program_state"/>
+			<channel id="selected_program_state" typeId="selected_program_state"/>
+			<channel id="dryer_drying_target" typeId="dryer_drying_target"/>
+			<channel id="basic_actions_state" typeId="basic_actions_state"/>
+			<channel id="remaining_program_time_state" typeId="remaining_program_time_state"/>
+			<channel id="program_progress_state" typeId="program_progress_state"/>
+		</channels>
+		<representation-property>haId</representation-property>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Fridge Freezer -->
+	<thing-type id="fridgefreezer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge"/>
+		</supported-bridge-type-refs>
+		<label>Refrigerator / Freezer</label>
+		<description>Home Connect connected refrigerator/freezer (e.g. Bosch or Siemens).</description>
+		<channels>
+			<channel id="door_state" typeId="door_state"/>
+			<channel id="setpoint_temperature_refrigerator" typeId="setpoint_temperature_refrigerator"/>
+			<channel id="super_mode_refrigerator" typeId="super_mode_refrigerator"/>
+			<channel id="setpoint_temperature_freezer" typeId="setpoint_temperature_freezer"/>
+			<channel id="super_mode_freezer" typeId="super_mode_freezer"/>
+		</channels>
+		<representation-property>haId</representation-property>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Coffee Machine -->
+	<thing-type id="coffeemaker">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge"/>
+		</supported-bridge-type-refs>
+		<label>Coffee Machine</label>
+		<description>Home Connect connected coffee machine (e.g. Bosch or Siemens).</description>
+		<channels>
+			<channel id="power_state" typeId="system.power"/>
+			<channel id="operation_state" typeId="operation_state"/>
+			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state"/>
+			<channel id="local_control_active_state" typeId="local_control_active_state"/>
+			<channel id="active_program_state" typeId="active_program_state"/>
+			<channel id="selected_program_state" typeId="selected_program_state"/>
+			<channel id="basic_actions_state" typeId="basic_actions_state"/>
+			<channel id="program_progress_state" typeId="program_progress_state"/>
+			<channel id="coffeemaker_drip_tray_full_state" typeId="coffeemaker_drip_tray_full_state"/>
+			<channel id="coffeemaker_water_tank_empty_state" typeId="coffeemaker_water_tank_empty_state"/>
+			<channel id="coffeemaker_bean_container_empty_state" typeId="coffeemaker_bean_container_empty_state"/>
+		</channels>
+		<representation-property>haId</representation-property>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Hood -->
+	<thing-type id="hood">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge"/>
+		</supported-bridge-type-refs>
+		<label>Hood</label>
+		<description>Home Connect connected kitchen hood.</description>
+		<channels>
+			<channel id="power_state" typeId="system.power"/>
+			<channel id="operation_state" typeId="operation_state"/>
+			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state"/>
+			<channel id="remote_control_active_state" typeId="remote_control_active_state"/>
+			<channel id="local_control_active_state" typeId="local_control_active_state"/>
+			<channel id="active_program_state" typeId="active_program_state"/>
+			<channel id="hood_venting_level" typeId="hood_venting_level"/>
+			<channel id="hood_intensive_level" typeId="hood_intensive_level"/>
+			<channel id="hood_program_state" typeId="hood_program_state"/>
+			<channel id="ambient_light_state" typeId="ambient_light_state"/>
+			<channel id="ambient_light_brightness_state" typeId="system.brightness"/>
+			<channel id="ambient_light_color_state" typeId="ambient_light_color_state"/>
+			<channel id="ambient_light_custom_color_state" typeId="ambient_light_custom_color_state"/>
+			<channel id="functional_light_state" typeId="functional_light_state"/>
+			<channel id="functional_light_brightness_state" typeId="system.brightness"/>
+		</channels>
+		<representation-property>haId</representation-property>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Cooktop -->
+	<thing-type id="hob">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge"/>
+		</supported-bridge-type-refs>
+		<label>Cooktop</label>
+		<description>Home Connect connected kitchen cooktop (hob).</description>
+		<channels>
+			<channel id="power_state" typeId="system.power"/>
+			<channel id="operation_state" typeId="operation_state"/>
+			<channel id="remote_control_active_state" typeId="remote_control_active_state"/>
+			<channel id="local_control_active_state" typeId="local_control_active_state"/>
+			<channel id="active_program_state" typeId="active_program_state"/>
+			<channel id="selected_program_state" typeId="selected_program_state"/>
+		</channels>
+		<representation-property>haId</representation-property>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel types -->
+	<channel-type id="basic_actions_state">
+		<item-type>String</item-type>
+		<label>Program Actions</label>
+		<state>
+			<options>
+				<option value="start">Start program</option>
+				<option value="stop">Stop program</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="local_control_active_state">
+		<item-type>Switch</item-type>
+		<label>Local Control State</label>
+		<description>This status indicates whether the home appliance is currently manually controlled by the user operating
+			the home appliance, e.g. opening the door or pressing a button.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="coffeemaker_drip_tray_full_state">
+		<item-type>Switch</item-type>
+		<label>Drip Tray Full</label>
+		<description>Is coffee maker drip tray full?</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="coffeemaker_water_tank_empty_state">
+		<item-type>Switch</item-type>
+		<label>Water Tank Empty</label>
+		<description>Is coffee maker water tank empty?</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="coffeemaker_bean_container_empty_state">
+		<item-type>Switch</item-type>
+		<label>Bean Container Empty</label>
+		<description>Is coffee maker bean container is empty?</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="door_state">
+		<item-type>Contact</item-type>
+		<label>Door State</label>
+		<description>This status describes the door state of a home appliance. A status change is either triggered by the user
+			operating the home appliance locally (i.e. opening/closing door) or automatically by the home appliance (i.e. locking
+			the door).</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="operation_state">
+		<item-type>String</item-type>
+		<label>Operation State</label>
+		<description>This status describes the operation state of the home appliance.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="remote_start_allowance_state">
+		<item-type>Switch</item-type>
+		<label>Remote Start Allowance State</label>
+		<description>This status indicates whether the remote program start is enabled. This can happen due to a programmatic
+			change (only disabling), or manually by the user changing the flag locally on the home appliance, or automatically
+			after a certain duration - usually 24 hours.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="remote_control_active_state">
+		<item-type>Switch</item-type>
+		<label>Remote Control Activation State</label>
+		<description>This status indicates whether the allowance for remote controlling is enabled.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="active_program_state">
+		<item-type>String</item-type>
+		<label>Active Program</label>
+		<description>This status describes the active program of the home appliance.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="selected_program_state">
+		<item-type>String</item-type>
+		<label>Selected Program</label>
+		<description>This state describes the selected program of the home appliance.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="remaining_program_time_state">
+		<item-type>Number:Time</item-type>
+		<label>Remaining Program Time</label>
+		<description>This status indicates the remaining program time of the home appliance.</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="program_progress_state">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Progress State</label>
+		<description>This status describes the program progress of the home appliance.</description>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="oven_current_cavity_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Cavity Temperature</label>
+		<description>This status describes the oven cavity temperature of the home appliance.</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="elapsed_program_time">
+		<item-type>Number:Time</item-type>
+		<label>Elapsed Program Time</label>
+		<description>This status describes the elapsed program time of the home appliance.</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="setpoint_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint Temperature</label>
+		<description>This status describes the intended cooking compartment temperature of the home appliance.</description>
+		<state pattern="%.0f %unit%" step="1"/>
+	</channel-type>
+	<channel-type id="duration">
+		<item-type>Number:Time</item-type>
+		<label>Selected Duration</label>
+		<description>This status describes the duration of the program of the home appliance.</description>
+		<state pattern="%d %unit%" step="60" min="60"/>
+	</channel-type>
+	<channel-type id="laundry_care_washer_temperature">
+		<item-type>String</item-type>
+		<label>Washing Program Temperature</label>
+		<description>This status describes the temperature of the washing program of the home appliance.</description>
+		<state>
+			<options>
+				<option value="LaundryCare.Washer.EnumType.Temperature.Cold">Cold water</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.GC20">20 °C</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.GC30">30 °C</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.GC40">40 °C</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.GC50">50 °C</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.GC60">60 °C</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.GC70">70 °C</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.GC80">80 °C</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.GC90">90 °C</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.Auto">Auto</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.UlCold">Cold (US/CA)</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.UlWarm">Warm (US/CA)</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.UlHot">Hot (US/CA)</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.UlExtraHot">Extra hot (US/CA)</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="laundry_care_washer_spin_speed">
+		<item-type>String</item-type>
+		<label>Spin Speed</label>
+		<description>This status defines the spin speed of a washer program of the home appliance.</description>
+		<state>
+			<options>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.Off">No spinning</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.RPM400">400 rpm</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.RPM600">600 rpm</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.RPM800">800 rpm</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.RPM1000">1000 rpm</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.RPM1200">1200 rpm</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.RPM1400">1400 rpm</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.RPM1600">1600 rpm</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.Auto">Auto</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.UlNo">No spinning (US/CA)</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.UlLow">Low (US/CA)</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.UlMedium">Medium (US/CA)</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.UlHigh">High (US/CA)</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="laundry_care_washer_idos1_level">
+		<item-type>String</item-type>
+		<label>i-Dos 1 Dosing Level</label>
+		<description>This status defines the i-Dos dosing level of a washer program of the home appliance. (If appliance
+			supports i-Dos)</description>
+		<state>
+			<options>
+				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Off">Off</option>
+				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Light">Light</option>
+				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Normal">Normal</option>
+				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Strong">Strong</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="laundry_care_washer_idos2_level">
+		<item-type>String</item-type>
+		<label>i-Dos 2 Dosing Level</label>
+		<description>This status defines the i-Dos dosing level of a washer program of the home appliance. (If appliance
+			supports i-Dos)</description>
+		<state>
+			<options>
+				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Off">Off</option>
+				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Light">Light</option>
+				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Normal">Normal</option>
+				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Strong">Strong</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="laundry_care_washer_idos1" advanced="true">
+		<item-type>Switch</item-type>
+		<label>i-Dos 1</label>
+		<description>This status indicates whether i-Dos 1 is activated for a washer program of the home appliance. (If
+			appliance supports i-Dos)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="laundry_care_washer_idos2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>i-Dos 2</label>
+		<description>This status indicates whether i-Dos 2 is activated for a washer program of the home appliance. (If
+			appliance supports i-Dos)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="laundry_care_washer_vario_perfect" advanced="true">
+		<item-type>String</item-type>
+		<label>Vario Perfect</label>
+		<description>This status defines the vario perfect mode of a washer program of the home appliance.</description>
+		<state readOnly="true">
+			<options>
+				<option value="LaundryCare.Common.EnumType.VarioPerfect.Off">Off</option>
+				<option value="LaundryCare.Common.EnumType.VarioPerfect.SpeedPerfect">Vario Speed</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="laundry_care_washer_less_ironing" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Less Ironing</label>
+		<description>This status indicates whether less ironing is activated for a washer program of the home appliance.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="laundry_care_washer_pre_wash" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Pre-Wash</label>
+		<description>This status indicates whether the pre-wash is activated for a washer program of the home appliance.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="laundry_care_washer_rinse_plus" advanced="true">
+		<item-type>String</item-type>
+		<label>Rinse Plus</label>
+		<description>This status defines the number of additional rinses of a washer program of the home appliance.</description>
+		<state readOnly="true">
+			<options>
+				<option value="LaundryCare.Washer.EnumType.RinsePlus.Off">None</option>
+				<option value="LaundryCare.Washer.EnumType.RinsePlus.Plus1">+1</option>
+				<option value="LaundryCare.Washer.EnumType.RinsePlus.Plus2">+2</option>
+				<option value="LaundryCare.Washer.EnumType.RinsePlus.Plus3">+3</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="laundry_care_washer_rinse_hold" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Rinse Hold</label>
+		<description>This status indicates whether the spin function is deactivated for a washer program of the home appliance
+			(washing will remain in the water after the last rinse cycle).</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="laundry_care_washer_soak" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Soaking</label>
+		<description>This status indicates whether the soaking is activated for a washer program of the home appliance.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="laundry_care_washer_load_recommendation" advanced="true">
+		<item-type>Number:Mass</item-type>
+		<label>Load Recommendation</label>
+		<description>This channel indicates the maximum laundry load recommended for a program of the home appliance.</description>
+		<state readOnly="true" min="0" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="program_energy" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Program Energy</label>
+		<description>This channel provides the estimated energy required in percentage for a program of the home appliance.</description>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="program_water" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Program Water</label>
+		<description>This channel provides the estimated water required in percentage for a program of the home appliance.</description>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="setpoint_temperature_refrigerator">
+		<item-type>Number:Temperature</item-type>
+		<label>Refrigerator Temperature</label>
+		<description>Target temperature of the refrigerator compartment (Range depends on appliance - common range 2 to 8°C).</description>
+		<state step="1" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="setpoint_temperature_freezer">
+		<item-type>Number:Temperature</item-type>
+		<label>Freezer temperature</label>
+		<description>Target temperature of the freezer compartment (Range depends on appliance - common range -16 to -24°C).</description>
+		<state step="1" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="super_mode_refrigerator">
+		<item-type>Switch</item-type>
+		<label>Refrigerator Super Mode</label>
+		<description>The setting has no impact on setpoint temperatures but will make the fridge compartment cool to the
+			lowest possible temperature until it is disabled manually by the customer or by the HA because of a timeout.</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="super_mode_freezer">
+		<item-type>Switch</item-type>
+		<label>Freezer Super Mode</label>
+		<description>This setting has no impact on setpoint temperatures but will make the freezer compartment cool to the
+			lowest possible temperature until it is disabled manually by the customer or by the home appliance because of a
+			timeout.</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="dryer_drying_target">
+		<item-type>String</item-type>
+		<label>Drying Target</label>
+		<description>Specifies the desired dryness setting.</description>
+		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="hood_venting_level">
+		<item-type>String</item-type>
+		<label>Venting Level</label>
+		<description>Current venting level of the hood.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hood_intensive_level">
+		<item-type>String</item-type>
+		<label>Intensive level</label>
+		<description>Current venting intensive level of the hood.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hood_program_state">
+		<item-type>String</item-type>
+		<label>Program Actions</label>
+		<description>Start hood program.</description>
+	</channel-type>
+	<channel-type id="functional_light_state">
+		<item-type>Switch</item-type>
+		<label>Functional Light State</label>
+		<description>This setting describes the current functional light state of the home appliance.</description>
+	</channel-type>
+	<channel-type id="ambient_light_state">
+		<item-type>Switch</item-type>
+		<label>Ambient Light State</label>
+		<description>This setting describes the current ambient light state of the home appliance.</description>
+	</channel-type>
+	<channel-type id="ambient_light_color_state">
+		<item-type>String</item-type>
+		<label>Ambient Light Color</label>
+		<description>This setting describes the color state of the ambient light.</description>
+		<state readOnly="false">
+			<options>
+				<option value="BSH.Common.EnumType.AmbientLightColor.CustomColor">Custom Color</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color1">Color 1</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color2">Color 2</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color3">Color 3</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color4">Color 4</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color5">Color 5</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color6">Color 6</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color7">Color 7</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color8">Color 8</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color9">Color 9</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color10">Color 10</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color11">Color 11</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color12">Color 12</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color13">Color 13</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color14">Color 14</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color15">Color 15</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color16">Color 16</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color17">Color 17</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color18">Color 18</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color19">Color 19</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color20">Color 20</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color21">Color 21</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color22">Color 22</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color23">Color 23</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color24">Color 24</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color25">Color 25</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color26">Color 26</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color27">Color 27</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color28">Color 28</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color29">Color 29</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color30">Color 30</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color31">Color 31</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color32">Color 32</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color33">Color 33</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color34">Color 34</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color35">Color 35</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color36">Color 36</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color37">Color 37</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color38">Color 38</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color39">Color 39</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color40">Color 40</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color41">Color 41</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color42">Color 42</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color43">Color 43</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color44">Color 44</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color45">Color 45</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color46">Color 46</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color47">Color 47</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color48">Color 48</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color49">Color 49</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color50">Color 50</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color51">Color 51</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color52">Color 52</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color53">Color 53</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color54">Color 54</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color55">Color 55</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color56">Color 56</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color57">Color 57</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color58">Color 58</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color59">Color 59</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color60">Color 60</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color61">Color 61</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color62">Color 62</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color63">Color 63</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color64">Color 64</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color65">Color 65</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color66">Color 66</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color67">Color 67</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color68">Color 68</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color69">Color 69</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color70">Color 70</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color71">Color 71</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color72">Color 72</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color73">Color 73</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color74">Color 74</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color75">Color 75</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color76">Color 76</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color77">Color 77</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color78">Color 78</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color79">Color 79</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color80">Color 80</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color81">Color 81</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color82">Color 82</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color83">Color 83</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color84">Color 84</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color85">Color 85</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color86">Color 86</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color87">Color 87</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color88">Color 88</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color89">Color 89</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color90">Color 90</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color91">Color 91</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color92">Color 92</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color93">Color 93</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color94">Color 94</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color95">Color 95</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color96">Color 96</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color97">Color 97</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color98">Color 98</option>
+				<option value="BSH.Common.EnumType.AmbientLightColor.Color99">Color 99</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="ambient_light_custom_color_state">
+		<item-type>Color</item-type>
+		<label>Ambient Light (Custom)</label>
+		<description>This setting describes the custom color state of the ambient light.</description>
+		<category>Colorpicker</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
+		<state readOnly="false"/>
+	</channel-type>
+</thing:thing-descriptions>

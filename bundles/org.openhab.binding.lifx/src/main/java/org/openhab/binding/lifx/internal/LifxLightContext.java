@@ -15,6 +15,7 @@ package org.openhab.binding.lifx.internal;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.lifx.internal.LifxProduct.Features;
 import org.openhab.binding.lifx.internal.handler.LifxLightHandler;
 import org.openhab.binding.lifx.internal.handler.LifxLightHandler.CurrentLightState;
 
@@ -30,14 +31,14 @@ public class LifxLightContext {
     private final LifxLightConfig configuration;
     private final CurrentLightState currentLightState;
     private final LifxLightState pendingLightState;
-    private final LifxProduct product;
+    private final Features features;
     private final ScheduledExecutorService scheduler;
 
-    public LifxLightContext(String logId, LifxProduct product, LifxLightConfig configuration,
+    public LifxLightContext(String logId, Features features, LifxLightConfig configuration,
             CurrentLightState currentLightState, LifxLightState pendingLightState, ScheduledExecutorService scheduler) {
         this.logId = logId;
         this.configuration = configuration;
-        this.product = product;
+        this.features = features;
         this.currentLightState = currentLightState;
         this.pendingLightState = pendingLightState;
         this.scheduler = scheduler;
@@ -51,8 +52,8 @@ public class LifxLightContext {
         return configuration;
     }
 
-    public LifxProduct getProduct() {
-        return product;
+    public Features getFeatures() {
+        return features;
     }
 
     public CurrentLightState getCurrentLightState() {

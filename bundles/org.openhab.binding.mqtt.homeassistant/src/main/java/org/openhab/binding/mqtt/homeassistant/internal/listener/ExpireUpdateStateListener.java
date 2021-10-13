@@ -38,7 +38,7 @@ public class ExpireUpdateStateListener extends ChannelStateUpdateListenerProxy {
     private final AvailabilityTracker tracker;
     private final ScheduledExecutorService scheduler;
 
-    private AtomicReference<@Nullable ScheduledFuture<?>> expire = new AtomicReference<>();
+    private final AtomicReference<@Nullable ScheduledFuture<?>> expire = new AtomicReference<>();
 
     public ExpireUpdateStateListener(ChannelStateUpdateListener original, int expireAfter, Value value,
             AvailabilityTracker tracker, ScheduledExecutorService scheduler) {

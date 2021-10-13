@@ -46,6 +46,7 @@ public class MagentaTVPoweroffListener extends Thread {
     protected final MulticastSocket socket;
     protected @Nullable NetworkInterface networkInterface;
     protected byte[] buf = new byte[256];
+    private boolean started = false;
 
     public MagentaTVPoweroffListener(MagentaTVHandlerFactory handlerFactory,
             @Nullable NetworkInterface networkInterface) throws IOException {
@@ -61,6 +62,7 @@ public class MagentaTVPoweroffListener extends Thread {
     public void start() {
         if (!isStarted()) {
             logger.debug("Listening to SSDP shutdown messages");
+            started = true;
             super.start();
         }
     }
@@ -112,18 +114,19 @@ public class MagentaTVPoweroffListener extends Thread {
     }
 
     public boolean isStarted() {
-        return socket.isBound();
+        return started;
     }
 
     /**
      * Make sure the socket gets closed
      */
     public void close() {
-        if (isStarted()) {
+        if (started) { // if (isStarted()) {
             logger.debug("No longer listening to SSDP messages");
             if (!socket.isClosed()) {
                 socket.close();
             }
+            started = false;
         }
     }
 

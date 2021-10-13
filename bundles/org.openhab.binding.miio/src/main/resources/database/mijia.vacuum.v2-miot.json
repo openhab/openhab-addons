@@ -10,7 +10,6 @@
 				"property": "",
 				"friendlyName": "Vacuum Action",
 				"channel": "vacuumaction",
-				"channelType": "MijiaVacuumV2_action",
 				"type": "String",
 				"refresh": false,
 				"actions": [
@@ -82,7 +81,6 @@
 				"piid": 1,
 				"friendlyName": "Robot Cleaner - Status",
 				"channel": "status",
-				"channelType": "MijiaVacuumV2_status",
 				"type": "Number",
 				"stateDescription": {
 					"readOnly": true,
@@ -119,7 +117,7 @@
 				"tags": [
 					"Status"
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Idle\",\"2\"\u003d\"Sweeping\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Error\",\"5\"\u003d\"Charging\",\"6\"\u003d\"Go Charging\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Idle\",\"2\"\u003d\"Sweeping\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Error\",\"5\"\u003d\"Charging\",\"6\"\u003d\"Go Charging\"]`"
 			},
 			{
 				"property": "fault",
@@ -127,7 +125,6 @@
 				"piid": 2,
 				"friendlyName": "Robot Cleaner - Device Fault",
 				"channel": "fault",
-				"channelType": "MijiaVacuumV2_fault",
 				"type": "Number",
 				"stateDescription": {
 					"readOnly": true,
@@ -191,7 +188,7 @@
 				"tags": [
 					"Status"
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"No Faults\",\"1\"\u003d\"Left-wheel-error\",\"2\"\u003d\"Right-wheel-error\",\"3\"\u003d\"Cliff-error\",\"4\"\u003d\"Low-battery-error\",\"5\"\u003d\"Bump-error\",\"6\"\u003d\"Main-brush-error\",\"7\"\u003d\"Side-brush-error\",\"8\"\u003d\"Fan-motor-error\",\"9\"\u003d\"Dustbin-error\",\"10\"\u003d\"Charging-error\",\"11\"\u003d\"No-wate-error\",\"12\"\u003d\"Pick-up-error\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"Left-wheel-error\",\"2\"\u003d\"Right-wheel-error\",\"3\"\u003d\"Cliff-error\",\"4\"\u003d\"Low-battery-error\",\"5\"\u003d\"Bump-error\",\"6\"\u003d\"Main-brush-error\",\"7\"\u003d\"Side-brush-error\",\"8\"\u003d\"Fan-motor-error\",\"9\"\u003d\"Dustbin-error\",\"10\"\u003d\"Charging-error\",\"11\"\u003d\"No-wate-error\",\"12\"\u003d\"Pick-up-error\"]`"
 			},
 			{
 				"property": "mode",
@@ -199,7 +196,6 @@
 				"piid": 4,
 				"friendlyName": "Robot Cleaner - Mode",
 				"channel": "mode",
-				"channelType": "MijiaVacuumV2_mode",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -227,7 +223,7 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Auto-clean\",\"2\"\u003d\"Spot-clean\",\"3\"\u003d\"Wallflow-clean\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Auto-clean\",\"2\"\u003d\"Spot-clean\",\"3\"\u003d\"Wallflow-clean\"]`"
 			},
 			{
 				"property": "target-water-level",
@@ -235,7 +231,6 @@
 				"piid": 5,
 				"friendlyName": "Robot Cleaner - Target Water Level",
 				"channel": "target-water-level",
-				"channelType": "MijiaVacuumV2_target-water-level",
 				"type": "Number",
 				"stateDescription": {
 					"readOnly": true,
@@ -264,7 +259,7 @@
 				"tags": [
 					"Setpoint"
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]`"
 			},
 			{
 				"property": "fan-level",
@@ -272,7 +267,6 @@
 				"piid": 6,
 				"friendlyName": "Robot Cleaner - Fan Level",
 				"channel": "fan-level",
-				"channelType": "MijiaVacuumV2_fan-level",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -304,7 +298,7 @@
 				"tags": [
 					"Setpoint"
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Silence\",\"1\"\u003d\"Stanrd\",\"2\"\u003d\"Middle\",\"3\"\u003d\"Enchance\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Silence\",\"1\"\u003d\"Stanrd\",\"2\"\u003d\"Middle\",\"3\"\u003d\"Enchance\"]`"
 			},
 			{
 				"property": "battery-level",
@@ -312,8 +306,15 @@
 				"piid": 1,
 				"friendlyName": "Battery - Battery Level",
 				"channel": "battery-level",
-				"channelType": "miot_uint8",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -323,7 +324,6 @@
 				"piid": 2,
 				"friendlyName": "Battery - Charging State",
 				"channel": "charging-state",
-				"channelType": "MijiaVacuumV2_charging-state",
 				"type": "Number",
 				"stateDescription": {
 					"readOnly": true,
@@ -347,7 +347,7 @@
 				"tags": [
 					"Status"
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Not-charging\",\"1\"\u003d\"Charging\",\"2\"\u003d\"Charging-competely\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Not-charging\",\"1\"\u003d\"Charging\",\"2\"\u003d\"Charging-competely\"]`"
 			},
 			{
 				"property": "alarm",
@@ -355,7 +355,6 @@
 				"piid": 1,
 				"friendlyName": "Alarm - Alarm",
 				"channel": "alarm",
-				"channelType": "miot_bool",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -375,8 +374,14 @@
 				"piid": 2,
 				"friendlyName": "Alarm - Volume",
 				"channel": "volume",
-				"channelType": "miot_uint8",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -393,9 +398,16 @@
 				"siid": 11,
 				"piid": 1,
 				"friendlyName": "Filter - Filter Life Level",
-				"channel": "filter-life-level",
-				"channelType": "miot_uint8",
-				"type": "Number",
+				"channel": "filter_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": [],
 				"tags": [
@@ -408,8 +420,15 @@
 				"piid": 2,
 				"friendlyName": "Filter - Filter Left Time",
 				"channel": "filter-left-time",
-				"channelType": "miot_uint16",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 18000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": [],
 				"tags": [
@@ -422,8 +441,15 @@
 				"piid": 1,
 				"friendlyName": "Brush Cleaner - Brush Life Level",
 				"channel": "brush-life-level",
-				"channelType": "miot_uint8",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": [],
 				"tags": [
@@ -436,8 +462,15 @@
 				"piid": 2,
 				"friendlyName": "Brush Cleaner - Brush Left Time",
 				"channel": "brush-left-time",
-				"channelType": "miot_uint16",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "days",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 18000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": [],
 				"tags": [
@@ -450,8 +483,15 @@
 				"piid": 1,
 				"friendlyName": "Brush Cleaner - Brush Life Level",
 				"channel": "brush-life-level1",
-				"channelType": "miot_uint8",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": [],
 				"tags": [
@@ -464,8 +504,15 @@
 				"piid": 2,
 				"friendlyName": "Brush Cleaner - Brush Left Time",
 				"channel": "brush-left-time1",
-				"channelType": "miot_uint16",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 9000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": [],
 				"tags": [
@@ -473,13 +520,60 @@
 				]
 			},
 			{
+				"property": "direction-key",
+				"siid": 8,
+				"piid": 1,
+				"friendlyName": "Remote Control - Direction Key",
+				"channel": "direction_key",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "direction 0"
+						},
+						{
+							"value": "1",
+							"label": "direction 1"
+						},
+						{
+							"value": "2",
+							"label": "direction 2"
+						},
+						{
+							"value": "3",
+							"label": "direction 3"
+						},
+						{
+							"value": "4",
+							"label": "direction 4"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"direction 0\",\"1\"\u003d\"direction 1\",\"2\"\u003d\"direction 2\",\"3\"\u003d\"direction 3\",\"4\"\u003d\"direction 4\"]`"
+			},
+			{
 				"property": "clean-area",
 				"siid": 9,
 				"piid": 1,
 				"friendlyName": "Clean Record - Clean Area",
 				"channel": "clean-area",
-				"channelType": "miot_uint16",
 				"type": "Number:Area",
+				"unit": "square_metre",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": [],
 				"tags": [
@@ -491,10 +585,15 @@
 				"siid": 9,
 				"piid": 2,
 				"friendlyName": "Clean Record - Clean Time",
-				"channel": "clean-time",
-				"channelType": "miot_uint16",
-				"type": "Number:Time",
-				"unit": "hours",
+				"channel": "clean_time",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -504,8 +603,15 @@
 				"piid": 3,
 				"friendlyName": "Clean Record - Total Clean Area",
 				"channel": "total-clean-area",
-				"channelType": "miot_uint32",
-				"type": "Number",
+				"type": "Number:Area",
+				"unit": "square_metre",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": -1,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -515,7 +621,6 @@
 				"piid": 4,
 				"friendlyName": "Clean Record - Total Clean Time",
 				"channel": "total-clean-time",
-				"channelType": "miot_uint32",
 				"type": "Number",
 				"refresh": true,
 				"actions": []
@@ -526,8 +631,14 @@
 				"piid": 5,
 				"friendlyName": "Clean Record - Total Clean Count",
 				"channel": "total-clean-count",
-				"channelType": "miot_uint16",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -537,7 +648,6 @@
 				"piid": 1,
 				"friendlyName": "Language - Language",
 				"channel": "language",
-				"channelType": "MijiaVacuumV2_language",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -586,7 +696,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"English\",\"1\"\u003d\"简体中文\",\"2\"\u003d\"Español\",\"3\"\u003d\"Русский\",\"4\"\u003d\"Italiano\",\"5\"\u003d\"Français\",\"6\"\u003d\"Deutsch\",\"7\"\u003d\"한국어\",\"8\"\u003d\"Polski\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"English\",\"1\"\u003d\"简体中文\",\"2\"\u003d\"Español\",\"3\"\u003d\"Русский\",\"4\"\u003d\"Italiano\",\"5\"\u003d\"Français\",\"6\"\u003d\"Deutsch\",\"7\"\u003d\"한국어\",\"8\"\u003d\"Polski\"]`"
 			},
 			{
 				"property": "not-disturb-switch",
@@ -594,7 +704,6 @@
 				"piid": 2,
 				"friendlyName": "Language - Not Disturb Switch",
 				"channel": "not-disturb-switch",
-				"channelType": "miot_bool",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -610,7 +719,6 @@
 				"piid": 1,
 				"friendlyName": "Other Status - Mop Status",
 				"channel": "mop-status",
-				"channelType": "MijiaVacuumV2_mop-status",
 				"type": "Number",
 				"stateDescription": {
 					"readOnly": true,
@@ -627,7 +735,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Mop Uninstall\",\"1\"\u003d\"Mop Install\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Mop Uninstall\",\"1\"\u003d\"Mop Install\"]`"
 			}
 		],
 		"readmeComment": "This device may be overwhelmed if refresh is too frequent, slowing down the responses. Suggest to increase refresh time to 120 seconds"

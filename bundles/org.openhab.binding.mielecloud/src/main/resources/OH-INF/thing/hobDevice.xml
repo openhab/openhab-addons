@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mielecloud"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="hob">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>@text/thing-type.mielecloud.hob.label</label>
+		<description>@text/thing-type.mielecloud.hob.description</description>
+		<category>WhiteGood</category>
+
+		<channels>
+			<channel id="operation_state" typeId="operation_state"/>
+			<channel id="operation_state_raw" typeId="operation_state_raw"/>
+			<channel id="error_state" typeId="error_state"/>
+			<channel id="info_state" typeId="info_state"/>
+			<channel id="plate_1_power_step" typeId="plate_power_step"/>
+			<channel id="plate_1_power_step_raw" typeId="plate_power_step_raw"/>
+			<channel id="plate_2_power_step" typeId="plate_power_step"/>
+			<channel id="plate_2_power_step_raw" typeId="plate_power_step_raw"/>
+			<channel id="plate_3_power_step" typeId="plate_power_step"/>
+			<channel id="plate_3_power_step_raw" typeId="plate_power_step_raw"/>
+			<channel id="plate_4_power_step" typeId="plate_power_step"/>
+			<channel id="plate_4_power_step_raw" typeId="plate_power_step_raw"/>
+			<channel id="plate_5_power_step" typeId="plate_power_step"/>
+			<channel id="plate_5_power_step_raw" typeId="plate_power_step_raw"/>
+			<channel id="plate_6_power_step" typeId="plate_power_step"/>
+			<channel id="plate_6_power_step_raw" typeId="plate_power_step_raw"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Miele</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:mielecloud:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

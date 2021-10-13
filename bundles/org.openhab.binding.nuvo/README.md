@@ -9,14 +9,14 @@ The binding supports three different kinds of connections:
 
 * serial connection,
 * serial over IP connection,
-* direct IP connection via a Nuvo MPS4 music server
+* direct IP connection via a Nuvo MPS4 music server (experimental)
 
-For users without a serial connector on the server side, you can use a serial to USB adapter.
+For users without a serial connector on the server side, you can use a USB to serial adapter.
 
 If you are using the Nuvo MPS4 music server with your Grand Concerto or Essentia G, the binding can connect to the server's IP address on port 5006.
 
 You don't need to have your Grand Concerto or Essentia G whole house amplifier device directly connected to your openHAB server.
-You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
+You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on the LAN (serial over IP).
 
 ## Supported Things
 
@@ -97,21 +97,21 @@ The following channels are available:
 
 nuvo.things:
 
-```java
-//serial port connection
+```
+// serial port connection
 nuvo:amplifier:myamp "Nuvo WHA" [ serialPort="COM5", numZones=6, clockSync=false]
 
 // serial over IP connection
 nuvo:amplifier:myamp "Nuvo WHA" [ host="192.168.0.10", port=4444, numZones=6, clockSync=false]
 
-// MPS4 server IP connection
+// MPS4 server IP connection (experimental)
 nuvo:amplifier:myamp "Nuvo WHA" [ host="192.168.0.10", port=5006, numZones=6, clockSync=false]
 
 ```
 
 nuvo.items:
 
-```java
+```
 // system
 Switch nuvo_system_alloff "All Zones Off" { channel="nuvo:amplifier:myamp:system#alloff" }
 Switch nuvo_system_allmute "All Zones Mute" { channel="nuvo:amplifier:myamp:system#allmute" }
@@ -193,7 +193,7 @@ String nuvo_s6_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:sourc
 
 nuvo.sitemap:
 
-```perl
+```
 sitemap nuvo label="Audio Control" {
     Frame label="System" {
         Switch item=nuvo_system_alloff mappings=[ON=" "]
@@ -201,10 +201,10 @@ sitemap nuvo label="Audio Control" {
         Switch item=nuvo_system_page
     }
 
-    Frame label="Zone 1"
+    Frame label="Zone 1" {
         Switch item=nuvo_z1_power visibility=[nuvo_z1_lock!="1"]
         Selection item=nuvo_z1_source visibility=[nuvo_z1_power==ON] icon="player"
-        //Volume can be a Setpoint also
+        // Volume can be a Setpoint also
         Slider item=nuvo_z1_volume minValue=0 maxValue=100 step=1 visibility=[nuvo_z1_power==ON] icon="soundvolume"
         Switch item=nuvo_z1_mute visibility=[nuvo_z1_power==ON] icon="soundvolume_mute"
         // mappings is optional to override the default dropdown item labels
@@ -276,14 +276,14 @@ sitemap nuvo label="Audio Control" {
         Text item=nuvo_z1_lock label="Zone Locked: [%s]" icon="lock" visibility=[nuvo_z1_lock=="1"]
     }
     
-    //repeat for zones 2-20 (substitute z1)
+    // repeat for zones 2-20 (substitute z1)
 }
 
 ```
 
 nuvo.rules:
 
-```java
+```
 import java.text.Normalizer
 
 val actions = getActions("nuvo","nuvo:amplifier:myamp")

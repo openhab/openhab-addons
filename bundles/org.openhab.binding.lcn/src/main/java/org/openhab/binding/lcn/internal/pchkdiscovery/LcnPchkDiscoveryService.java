@@ -146,7 +146,6 @@ public class LcnPchkDiscoveryService extends AbstractDiscoveryService {
 
     ServicesResponse xmlToServiceResponse(String response) {
         XStream xstream = new XStream(new StaxDriver());
-        XStream.setupDefaultSecurity(xstream);
         xstream.allowTypesByWildcard(new String[] { ServicesResponse.class.getPackageName() + ".**" });
         xstream.setClassLoader(getClass().getClassLoader());
         xstream.autodetectAnnotations(true);
