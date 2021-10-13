@@ -77,7 +77,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 |---------------------------------|-------------|---------------|------------------------------|--------------------------------|-----------|
 | bridge                          | -           | -             | repeaterMode, setBaseId      | USB300, EnOceanPi              | -         |
 | pushButton                      | F6-01/D2-03 | 0x01/0x0A     | pushButton, doublePress,<br/>longPress, batteryLevel | NodOn soft button | Manually/Discovery  |
-| rockerSwitch                    | F6-02       | 0x01-02       | rockerswitchA, rockerswitchB | Eltako FT55                    | Discovery |
+| rockerSwitch                    | F6-02       | 0x01-02       | rockerswitchA, rockerswitchB,<br/>rockerSwitchAction | Eltako FT55                    | Discovery |
 | mechanicalHandle                | F6-10/D2-06 | 0x00-01/0x01    | windowHandleState, contact and a lot more for soda handles³   | Hoppe SecuSignal handles, Eltako TF-FGB, Soda handles | Discovery |
 | contact                         | D5-00       | 0x01          | contact                      | Eltako FTK(E) & TF-FKB            | Discovery |
 | temperatureSensor               | A5-02       | 0x01-30       | temperature                  | Thermokon SR65                 | Discovery |
@@ -108,6 +108,9 @@ Please see the manual of your particular model to check which channels should be
 Furthermore following supporting EEP family is available too: A5-11, types 0x03 (rollershutter position status), 0x04 (extended light status) and D0-06 (battery level indication).
 
 A `rockerSwitch` is used to receive messages from a physical EnOcean Rocker Switch.
+Channel `rockerswitchA` and `rockerswitchB` just react if corresponding rocker switch channel is pressed as single action.
+These channels do not emit an event if ChannelA and ChannelB are pressed simultaneously.
+To handle simultaneously pressed channels you have to use the `rockerSwitchAction` channel.
 A `classicDevice` is used for older EnOcean devices which react only on rocker switch messages (like Opus GN-A-R12V-SR-4).
 As these devices do not send their current status, you have to add additional listener channels for each physical Rocker Switch to your thing.
 In this way you can still sync your item status with the physical status of your device whenever it gets modified by a physical rocker switch.
@@ -265,6 +268,7 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | doublePress         | Trigger            | Channel type system:rawbutton, emits PRESSED |
 | longPress           | Trigger            | Channel type system:rawbutton, emits PRESSED and RELEASED events |
 | rockerswitchA/B     | Trigger            | Channel type system:rawrocker, emits DIR1_PRESSED, DIR1_RELEASED, DIR2_PRESSED, DIR2_RELEASED events |
+| rockerSwitchAction  | Trigger            | Emits combined rocker switch actions for channel A and B and RELEASED events |
 | windowHandleState   | String             | Textual representation of handle position (UP, DOWN, LEFT, RIGHT for the D2_06_01 EEP and OPEN, CLOSED, TILTED for all others) |
 | windowSashState     | String             | Textual representation of sash position (TILTED or NOT TILTED for the D2_06_01 EEP and OPEN, CLOSED, TILTED for all others) |
 | windowCalibrationState | String             | Textual representation of the calibration state (OK, ERROR, INVALID) |
@@ -381,6 +385,14 @@ then
 end
 ```
 
+If you also want to react to simultaneously pressed channels you have to use the `rockerSwitchAction` channel.
+This channel emits events in the following form "DirectionChannelA|DirectionChannelB" (for example "Dir1|Dir2").
+If a channel is not pressed a "-" is emitted.
+To bind this channel to an item you have to use the `rockerswitchaction-toggle-switch` or the `rockerswitchaction-toggle-player` profile.
+To define for which button press combination the linked item should toggle you have to set the configuration parameters `channelAFilter` and `channelBFilter` accordingly.
+The options for these parameters are "*" (any direction), "Dir1", "Dir2", "-" (corresponding channel not pressed at all).
+An example can be found below.
+
 ## Example
 
 ```xtend
@@ -408,6 +420,7 @@ Bridge enocean:bridge:gtwy "EnOcean Gateway" [ path="/dev/ttyAMA0" ] {
 
 ```xtend
 Player Kitchen_Sonos "Sonos" (Kitchen) {channel="sonos:PLAY1:ID:control", channel="enocean:rockerSwitch:gtwy:rs01:rockerswitchA" [profile="system:rawrocker-to-play-pause"]}
+Switch Light_Switch { channel="enocean:rockerSwitch:gtwy:rs01:rockerSwitchAction" [profile="enocean:rockerswitchaction-toggle-switch", channelAFilter="DIR1", channelBFilter="DIR1"]}
 Dimmer Kitchen_Hue "Hue" <light> {channel="enocean:rockerSwitch:gtwy:rs01:rockerswitchB" [profile="system:rawrocker-to-dimmer"], channel="hue:0220:0017884f6626:9:brightness"}
 Rollershutter Kitchen_Rollershutter "Roller shutter" <blinds> (Kitchen) {channel="enocean:rollershutter:gtwy:r01:rollershutter", autoupdate="false"}
 Switch Garage_Light "Switch" {
