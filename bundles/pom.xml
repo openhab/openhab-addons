@@ -106,6 +106,7 @@
     <module>org.openhab.binding.dwdunwetter</module>
     <module>org.openhab.binding.ecobee</module>
     <module>org.openhab.binding.ecotouch</module>
+    <module>org.openhab.binding.ekey</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.enigma2</module>
@@ -206,6 +207,7 @@
     <module>org.openhab.binding.mielecloud</module>
     <module>org.openhab.binding.mihome</module>
     <module>org.openhab.binding.miio</module>
+    <module>org.openhab.binding.mikrotik</module>
     <module>org.openhab.binding.millheat</module>
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.minecraft</module>
@@ -359,6 +361,7 @@
     <module>org.openhab.binding.windcentrale</module>
     <module>org.openhab.binding.wlanthermo</module>
     <module>org.openhab.binding.wled</module>
+    <module>org.openhab.binding.wolfsmartset</module>
     <module>org.openhab.binding.xmltv</module>
     <module>org.openhab.binding.xmppclient</module>
     <module>org.openhab.binding.yamahareceiver</module>

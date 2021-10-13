@@ -30,7 +30,26 @@ public class MieleBindingConstants {
     public static final String APPLIANCE_ID = "uid";
     public static final String DEVICE_CLASS = "dc";
     public static final String PROTOCOL_PROPERTY_NAME = "protocol";
+
+    // JSON-RPC property names
     public static final String SERIAL_NUMBER_PROPERTY_NAME = "serialNumber";
+    public static final String EXTENDED_DEVICE_STATE_PROPERTY_NAME = "extendedDeviceState";
+    public static final String STATE_PROPERTY_NAME = "state";
+    public static final String PROGRAM_ID_PROPERTY_NAME = "programId";
+    public static final String PHASE_PROPERTY_NAME = "phase";
+    public static final String RAW_PHASE_PROPERTY_NAME = "rawPhase";
+
+    // Shared Channel ID's
+    public static final String STATE_TEXT_CHANNEL_ID = "state";
+    public static final String STATE_CHANNEL_ID = "rawState";
+    public static final String PROGRAM_TEXT_CHANNEL_ID = "program";
+    public static final String PROGRAM_CHANNEL_ID = "rawProgram";
+    public static final String PHASE_TEXT_CHANNEL_ID = "phase";
+    public static final String PHASE_CHANNEL_ID = "rawPhase";
+    public static final String SUPERCOOL_CHANNEL_ID = "supercool";
+    public static final String SUPERFREEZE_CHANNEL_ID = "superfreeze";
+    public static final String POWER_CONSUMPTION_CHANNEL_ID = "powerConsumption";
+    public static final String WATER_CONSUMPTION_CHANNEL_ID = "waterConsumption";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_XGW3000 = new ThingTypeUID(BINDING_ID, "xgw3000");
@@ -43,6 +62,35 @@ public class MieleBindingConstants {
     public static final ThingTypeUID THING_TYPE_HOOD = new ThingTypeUID(BINDING_ID, "hood");
     public static final ThingTypeUID THING_TYPE_WASHINGMACHINE = new ThingTypeUID(BINDING_ID, "washingmachine");
     public static final ThingTypeUID THING_TYPE_COFFEEMACHINE = new ThingTypeUID(BINDING_ID, "coffeemachine");
+
+    // Miele devices classes
+    public static final String MIELE_DEVICE_CLASS_COFFEE_SYSTEM = "CoffeeSystem";
+    public static final String MIELE_DEVICE_CLASS_FRIDGE = "Fridge";
+    public static final String MIELE_DEVICE_CLASS_FRIDGE_FREEZER = "FridgeFreezer";
+
+    // Miele appliance states
+    public static final int STATE_UNKNOWN = 0;
+    public static final int STATE_OFF = 1;
+    public static final int STATE_STAND_BY = 2;
+    public static final int STATE_PROGRAMMED = 3;
+    public static final int STATE_WAITING_TO_START = 4;
+    public static final int STATE_RUNNING = 5;
+    public static final int STATE_PAUSED = 6;
+    public static final int STATE_END = 7;
+    public static final int STATE_FAILURE = 8;
+    public static final int STATE_ABORT = 9;
+    public static final int STATE_IDLE = 10;
+    public static final int STATE_RINSE_HOLD = 11;
+    public static final int STATE_SERVICE = 12;
+    public static final int STATE_SUPER_FREEZING = 13;
+    public static final int STATE_SUPER_COOLING = 14;
+    public static final int STATE_SUPER_HEATING = 15;
+    public static final int STATE_LOCKED = 145;
+    public static final int STATE_NOT_CONNECTED = 255;
+
+    // Miele missing string prefixes
+    public static final String MISSING_PROGRAM_TEXT_PREFIX = "program.";
+    public static final String MISSING_PHASE_TEXT_PREFIX = "phase.";
 
     // Bridge config properties
     public static final String HOST = "ipAddress";

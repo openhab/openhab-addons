@@ -153,19 +153,18 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
 
     private ThingUID getThingUID(HomeDevice appliance) {
         ThingUID bridgeUID = mieleBridgeHandler.getThing().getUID();
-        String modelID = null;
+        String modelId = null;
 
         for (JsonElement dc : appliance.DeviceClasses) {
             String dcStr = dc.getAsString();
             if (dcStr.contains(MIELE_CLASS) && !dcStr.equals(MIELE_APPLIANCE_CLASS)) {
-                modelID = dcStr.substring(MIELE_CLASS.length());
+                modelId = dcStr.substring(MIELE_CLASS.length());
                 break;
             }
         }
 
-        if (modelID != null) {
-            ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID,
-                    modelID.replaceAll("[^a-zA-Z0-9_]", "_").toLowerCase());
+        if (modelId != null) {
+            ThingTypeUID thingTypeUID = getThingTypeUidFromModelId(modelId);
 
             if (getSupportedThingTypes().contains(thingTypeUID)) {
                 ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, appliance.getApplianceIdentifier().getId());
@@ -176,5 +175,20 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
         } else {
             return null;
         }
+    }
+
+    private ThingTypeUID getThingTypeUidFromModelId(String modelId) {
+        /*
+         * Coffee machine CVA 6805 is reported as CoffeeSystem, but thing type is
+         * coffeemachine. At least until it is known if any models are actually reported
+         * as CoffeeMachine, we need this special mapping.
+         */
+        if (modelId.equals(MIELE_DEVICE_CLASS_COFFEE_SYSTEM)) {
+            return THING_TYPE_COFFEEMACHINE;
+        }
+
+        String thingTypeId = modelId.replaceAll("[^a-zA-Z0-9_]", "_").toLowerCase();
+
+        return new ThingTypeUID(BINDING_ID, thingTypeId);
     }
 }

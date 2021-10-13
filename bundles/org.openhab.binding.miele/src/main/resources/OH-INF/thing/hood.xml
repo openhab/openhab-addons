@@ -15,6 +15,7 @@
 
 		<channels>
 			<channel id="state" typeId="state"/>
+			<channel id="rawState" typeId="rawState"/>
 			<channel id="light" typeId="switch"/>
 			<channel id="ventilation" typeId="ventilation"/>
 			<channel id="stop" typeId="stop"/>

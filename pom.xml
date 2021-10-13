@@ -69,19 +69,19 @@
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
     <ohc.version>3.2.0-SNAPSHOT</ohc.version>
-    <bnd.version>5.3.0</bnd.version>
+    <bnd.version>6.0.0</bnd.version>
     <commons.net.version>3.7.2</commons.net.version>
     <eea.version>2.2.1</eea.version>
     <jackson.version>2.12.3</jackson.version>
     <karaf.version>4.3.3</karaf.version>
-    <netty.version>4.1.63.Final</netty.version>
+    <netty.version>4.1.68.Final</netty.version>
     <okhttp.version>3.14.9</okhttp.version>
     <sat.version>0.11.1</sat.version>
     <spotless.version>2.0.3</spotless.version>
 
     <bnd.importpackage/>
     <bnd.exportpackage/>
-    <bnd.fixupmessages/>
+    <bnd.fixupmessages>"Classes found in the wrong directory"; is:=warning</bnd.fixupmessages>
     <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>

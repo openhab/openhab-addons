@@ -15,9 +15,14 @@
 
 		<channels>
 			<channel id="state" typeId="state"/>
+			<channel id="rawState" typeId="rawState"/>
 			<channel id="supercool" typeId="supercool"/>
-			<channel id="current" typeId="current"/>
-			<channel id="target" typeId="target"/>
+			<channel id="current" typeId="currentTemperature">
+				<description>Current temperature in the fridge</description>
+			</channel>
+			<channel id="target" typeId="targetTemperature">
+				<description>Target temperature to be reached by the fridge</description>
+			</channel>
 			<channel id="door" typeId="door"/>
 			<channel id="start" typeId="switch"/>
 		</channels>

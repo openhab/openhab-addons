@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
+import static java.util.Map.entry;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
+
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
@@ -37,6 +41,7 @@ import com.google.gson.JsonElement;
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - Changed START_TIME to DateTimeType
+ * @author Jacob Laursen - Added raw channels
  */
 public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
 
@@ -44,10 +49,31 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
     BRAND_ID("brandId", "brandId", StringType.class, true),
     COMPANY_ID("companyId", "companyId", StringType.class, true),
-    STATE("state", "state", StringType.class, false),
-    PROGRAMID("programId", "program", StringType.class, false),
+    STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false),
+    STATE(null, STATE_CHANNEL_ID, DecimalType.class, false),
+    PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            State state = getTextState(s, dmd, programs, MISSING_PROGRAM_TEXT_PREFIX);
+            if (state != null) {
+                return state;
+            }
+            return super.getState(s, dmd);
+        }
+    },
+    PROGRAM(null, PROGRAM_CHANNEL_ID, DecimalType.class, false),
     PROGRAMTYPE("programType", "type", StringType.class, false),
-    PROGRAMPHASE("phase", "phase", StringType.class, false),
+    PROGRAM_PHASE_TEXT(PHASE_PROPERTY_NAME, PHASE_TEXT_CHANNEL_ID, StringType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            State state = getTextState(s, dmd, phases, MISSING_PHASE_TEXT_PREFIX);
+            if (state != null) {
+                return state;
+            }
+            return super.getState(s, dmd);
+        }
+    },
+    PROGRAM_PHASE(RAW_PHASE_PROPERTY_NAME, PHASE_CHANNEL_ID, DecimalType.class, false),
     START_TIME("startTime", "start", DateTimeType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
@@ -129,6 +155,21 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
 
     private final Logger logger = LoggerFactory.getLogger(TumbleDryerChannelSelector.class);
 
+    private final static Map<String, String> programs = Map.ofEntries(entry("10", "Automatic Plus"),
+            entry("23", "Cottons hygiene"), entry("30", "Minimum iron"), entry("31", "Gentle minimum iron"),
+            entry("40", "Woollens handcare"), entry("50", "Delicates"), entry("60", "Warm Air"),
+            entry("70", "Cool air"), entry("80", "Express"), entry("90", "Cottons"), entry("100", "Gentle smoothing"),
+            entry("120", "Proofing"), entry("130", "Denim"), entry("131", "Gentle denim"), entry("140", "Shirts"),
+            entry("141", "Gentle shirts"), entry("150", "Sportswear"), entry("160", "Outerwear"),
+            entry("170", "Silks handcare"), entry("190", "Standard pillows"), entry("220", "Basket programme"),
+            entry("240", "Smoothing"), entry("65000", "Cottons, auto load control"),
+            entry("65001", "Minimum iron, auto load control"));
+
+    private final static Map<String, String> phases = Map.ofEntries(entry("1", "Programme running"),
+            entry("2", "Drying"), entry("3", "Drying Machine iron"), entry("4", "Drying Hand iron"),
+            entry("5", "Drying Normal"), entry("6", "Drying Normal+"), entry("7", "Cooling down"),
+            entry("8", "Drying Hand iron"), entry("10", "Finished"));
+
     private final String mieleID;
     private final String channelID;
     private final Class<? extends Type> typeClass;
@@ -158,13 +199,13 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
-    public Class<? extends Type> getTypeClass() {
-        return typeClass;
+    public boolean isProperty() {
+        return isProperty;
     }
 
     @Override
-    public boolean isProperty() {
-        return isProperty;
+    public boolean isExtendedState() {
+        return false;
     }
 
     @Override
@@ -193,6 +234,24 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
             }
         } catch (Exception e) {
             logger.error("An exception occurred while converting '{}' into a State", s);
+        }
+
+        return null;
+    }
+
+    public State getTextState(String s, DeviceMetaData dmd, Map<String, String> valueMap, String prefix) {
+        if ("0".equals(s)) {
+            return UnDefType.UNDEF;
+        }
+
+        if (dmd == null || dmd.LocalizedValue == null || dmd.LocalizedValue.startsWith(prefix)) {
+            String text = valueMap.get(s);
+            if (text != null) {
+                return getState(text);
+            }
+            if (dmd == null || dmd.LocalizedValue == null) {
+                return getState(prefix + s);
+            }
         }
 
         return null;

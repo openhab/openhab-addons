@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ekey"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="cvlan">
+		<label>@text/thing-type.ekey.label</label>
+		<description>@text/thing-type.ekey.description</description>
+
+		<channels>
+			<channel id="userId" typeId="userId"/>
+			<channel id="fingerId" typeId="fingerId"/>
+			<channel id="fsSerial" typeId="fsSerial"/>
+			<channel id="action" typeId="action"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>@text/thing-type.config.ekey.ipAddress.label</label>
+				<description>@text/thing-type.config.ekey.ipAddress.description</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535" required="false">
+				<label>@text/thing-type.config.ekey.port.label</label>
+				<description>@text/thing-type.config.ekey.port.description</description>
+				<default>56000</default>
+			</parameter>
+			<parameter name="protocol" type="text" required="false">
+				<label>@text/thing-type.config.ekey.protocol.label</label>
+				<description>@text/thing-type.config.ekey.protocol.description</description>
+				<default>RARE</default>
+				<options>
+					<option value="RARE">RARE</option>
+					<option value="MULTI">MULTI</option>
+					<option value="HOME">HOME</option>
+				</options>
+			</parameter>
+			<parameter name="delimiter" type="text" required="false">
+				<label>@text/thing-type.config.ekey.delimiter.label</label>
+				<description>@text/thing-type.config.ekey.delimiter.description</description>
+				<default>_</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="userId">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.ekey.userId.label</label>
+		<description>@text/channel-type.ekey.userId.description</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="fingerId">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.ekey.fingerId.label</label>
+		<description>@text/channel-type.ekey.fingerId.description</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="fsSerial">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.ekey.fsSerial.label</label>
+		<description>@text/channel-type.ekey.fsSerial.description</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="action">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.ekey.action.label</label>
+		<description>@text/channel-type.ekey.action.description</description>
+		<state readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>

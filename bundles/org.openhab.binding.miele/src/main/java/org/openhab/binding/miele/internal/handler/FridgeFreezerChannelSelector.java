@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
+
 import java.lang.reflect.Method;
 import java.util.Map.Entry;
 
+import org.openhab.binding.miele.internal.ExtendedDeviceStateUtil;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
@@ -33,6 +37,7 @@ import com.google.gson.JsonElement;
  * a freezer compartment
  *
  * @author Karel Goderis - Initial contribution
+ * @author Jacob Laursen - Added UoM for temperatures, raw channels
  */
 public enum FridgeFreezerChannelSelector implements ApplianceChannelSelector {
 
@@ -40,33 +45,34 @@ public enum FridgeFreezerChannelSelector implements ApplianceChannelSelector {
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
     BRAND_ID("brandId", "brandId", StringType.class, true),
     COMPANY_ID("companyId", "companyId", StringType.class, true),
-    STATE("state", "state", StringType.class, false),
+    STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false),
+    STATE(null, STATE_CHANNEL_ID, DecimalType.class, false),
     FREEZERSTATE("freezerState", "freezerstate", StringType.class, false),
     FRIDGESTATE("fridgeState", "fridgestate", StringType.class, false),
-    SUPERCOOL(null, "supercool", OnOffType.class, false),
-    SUPERFREEZE(null, "superfreeze", OnOffType.class, false),
-    FREEZERCURRENTTEMP("freezerCurrentTemperature", "freezercurrent", DecimalType.class, false) {
+    SUPERCOOL(null, SUPERCOOL_CHANNEL_ID, OnOffType.class, false),
+    SUPERFREEZE(null, SUPERFREEZE_CHANNEL_ID, OnOffType.class, false),
+    FREEZERCURRENTTEMP("freezerCurrentTemperature", "freezercurrent", QuantityType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+            return getTemperatureState(s);
         }
     },
-    FREEZERTARGETTEMP("freezerTargetTemperature", "freezertarget", DecimalType.class, false) {
+    FREEZERTARGETTEMP("freezerTargetTemperature", "freezertarget", QuantityType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+            return getTemperatureState(s);
         }
     },
-    FRIDGECURRENTTEMP("fridgeCurrentTemperature", "fridgecurrent", DecimalType.class, false) {
+    FRIDGECURRENTTEMP("fridgeCurrentTemperature", "fridgecurrent", QuantityType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+            return getTemperatureState(s);
         }
     },
-    FRIDGETARGETTEMP("fridgeTargetTemperature", "fridgetarget", DecimalType.class, false) {
+    FRIDGETARGETTEMP("fridgeTargetTemperature", "fridgetarget", QuantityType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+            return getTemperatureState(s);
         }
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
@@ -117,13 +123,13 @@ public enum FridgeFreezerChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
-    public Class<? extends Type> getTypeClass() {
-        return typeClass;
+    public boolean isProperty() {
+        return isProperty;
     }
 
     @Override
-    public boolean isProperty() {
-        return isProperty;
+    public boolean isExtendedState() {
+        return false;
     }
 
     @Override
@@ -155,6 +161,15 @@ public enum FridgeFreezerChannelSelector implements ApplianceChannelSelector {
         }
 
         return null;
+    }
+
+    public State getTemperatureState(String s) {
+        try {
+            return ExtendedDeviceStateUtil.getTemperatureState(s);
+        } catch (NumberFormatException e) {
+            logger.warn("An exception occurred while converting '{}' into a State", s);
+            return UnDefType.UNDEF;
+        }
     }
 
     public String getMieleEnum(String s, DeviceMetaData dmd) {

@@ -758,7 +758,8 @@
 		<description>This setting describes the custom color state of the ambient light.</description>
 		<category>Colorpicker</category>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
