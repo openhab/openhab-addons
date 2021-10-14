@@ -122,10 +122,6 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
     @Override
     protected void refreshChannel(ChannelUID channelUID) {
         var wifiReg = this.wifiReg;
-        if (wifiReg == null) {
-            logger.warn("wifiReg is null in refreshChannel({})", channelUID);
-            return;
-        }
 
         String channelID = channelUID.getIdWithoutGroup();
         State oldState = currentState.getOrDefault(channelID, UnDefType.NULL);
@@ -137,7 +133,7 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
             newState = StateUtil.timeOrNull(lastSeen);
         } else if (channelID.equals(CHANNEL_CONTINUOUS)) {
             newState = StateUtil.boolOrNull(continuousConnection);
-        } else if (!online) {
+        } else if (!online || wifiReg == null) {
             newState = UnDefType.NULL;
         } else {
             switch (channelID) {
