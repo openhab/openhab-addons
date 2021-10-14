@@ -53,7 +53,7 @@ public class WakeOnLanPacketSenderTest {
         WakeOnLanPacketSender sender = new WakeOnLanPacketSender("6f:70:65:6e:48:41",
                 bytes -> System.arraycopy(bytes, 0, actualPacket, 0, bytes.length));
 
-        sender.sendPacket();
+        sender.sendPacket(true);
 
         assertValidMagicPacket(HexUtils.hexToBytes("6f:70:65:6e:48:41", ":"), actualPacket);
     }
@@ -65,7 +65,7 @@ public class WakeOnLanPacketSenderTest {
         WakeOnLanPacketSender sender = new WakeOnLanPacketSender("6F-70-65-6E-48-41",
                 bytes -> System.arraycopy(bytes, 0, actualPacket, 0, bytes.length));
 
-        sender.sendPacket();
+        sender.sendPacket(true);
 
         assertValidMagicPacket(HexUtils.hexToBytes("6F-70-65-6E-48-41", "-"), actualPacket);
     }
@@ -77,7 +77,7 @@ public class WakeOnLanPacketSenderTest {
         WakeOnLanPacketSender sender = new WakeOnLanPacketSender("6f70656e4841",
                 bytes -> System.arraycopy(bytes, 0, actualPacket, 0, bytes.length));
 
-        sender.sendPacket();
+        sender.sendPacket(true);
 
         assertValidMagicPacket(HexUtils.hexToBytes("6f70656e4841"), actualPacket);
     }
@@ -113,7 +113,7 @@ public class WakeOnLanPacketSenderTest {
         }
 
         WakeOnLanPacketSender sender = new WakeOnLanPacketSender("6f70656e4841", hostname, port);
-        sender.sendPacket();
+        sender.sendPacket(false);
 
         // This Test is only applicable for IP Requests
         if (hostname != null && port != null) {
@@ -127,21 +127,23 @@ public class WakeOnLanPacketSenderTest {
 
     @Test
     public void sendWithEmptyMacAddressThrowsException() {
-        assertThrows(IllegalStateException.class, () -> new WakeOnLanPacketSender("").sendPacket());
+        assertThrows(IllegalStateException.class, () -> new WakeOnLanPacketSender("").sendPacket(true));
     }
 
     @Test
     public void sendWithTooShortMacAddressThrowsException() {
-        assertThrows(IllegalStateException.class, () -> new WakeOnLanPacketSender("6f:70:65:6e:48").sendPacket());
+        assertThrows(IllegalStateException.class, () -> new WakeOnLanPacketSender("6f:70:65:6e:48").sendPacket(true));
     }
 
     @Test
     public void sendWithTooLongMacAddressThrowsException() {
-        assertThrows(IllegalStateException.class, () -> new WakeOnLanPacketSender("6f:70:65:6e:48:41:42").sendPacket());
+        assertThrows(IllegalStateException.class,
+                () -> new WakeOnLanPacketSender("6f:70:65:6e:48:41:42").sendPacket(true));
     }
 
     @Test
     public void sendWithUnsupportedSeparatorInMacAddressThrowsException() {
-        assertThrows(IllegalStateException.class, () -> new WakeOnLanPacketSender("6f=70=65=6e=48=41").sendPacket());
+        assertThrows(IllegalStateException.class,
+                () -> new WakeOnLanPacketSender("6f=70=65=6e=48=41").sendPacket(true));
     }
 }

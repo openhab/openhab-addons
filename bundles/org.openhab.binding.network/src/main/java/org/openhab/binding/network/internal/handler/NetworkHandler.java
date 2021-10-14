@@ -242,11 +242,11 @@ public class NetworkHandler extends BaseThingHandler
         return Collections.singletonList(NetworkActions.class);
     }
 
-    public void sendWakeOnLanPacket() {
-        if (handlerConfiguration.macAddress.isEmpty()) {
+    public void sendWakeOnLanPacket(boolean useMac) {
+        if (useMac && handlerConfiguration.macAddress.isEmpty()) {
             throw new IllegalStateException(
                     "Cannot send WoL packet because the 'macAddress' is not configured for " + thing.getUID());
         }
-        wakeOnLanPacketSender.sendPacket();
+        wakeOnLanPacketSender.sendPacket(useMac);
     }
 }
