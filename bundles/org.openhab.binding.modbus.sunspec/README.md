@@ -190,7 +190,7 @@ Supported by: all inverter things
 
 ```
 Bridge modbus:tcp:modbusBridgeName [ host="hostname|ip", port=502, id=1, enableDiscovery=true ]
-Thing modbus:inverter-single-phase:bridge:se4000h "SE4000h" (modbus:tcp:modbusBridgeName) [ address=40069, length=52, refresh=15 ]
+Thing modbus:inverter-single-phase:bridge:myInverter "SE4000h" (modbus:tcp:modbusBridgeName) [ address=40069, length=52, refresh=15 ]
 ```
 
 Note: Make sure that refresh, port and id values are numerical, without quotes.
