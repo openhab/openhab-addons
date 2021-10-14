@@ -1315,12 +1315,15 @@ public class IpCameraHandler extends BaseThingHandler {
         groupTracker.listOfOnlineCameraUID.add(getThing().getUID().getId());
         Future<?> localFuture = cameraConnectionJob;
         if (localFuture != null) {
-            localFuture.cancel(false);
+            localFuture.cancel(true);
+            cameraConnectionJob = null;
         }
-        if (cameraConfig.getGifPreroll() > 0 || cameraConfig.getUpdateImageWhen().contains("1")) {
-            snapshotPolling = true;
-            snapshotJob = threadPool.scheduleWithFixedDelay(this::snapshotRunnable, 1000, cameraConfig.getPollTime(),
-                    TimeUnit.MILLISECONDS);
+        if (!snapshotUri.isEmpty()) {
+            if (cameraConfig.getGifPreroll() > 0 || cameraConfig.getUpdateImageWhen().contains("1")) {
+                snapshotPolling = true;
+                snapshotJob = threadPool.scheduleWithFixedDelay(this::snapshotRunnable, 1000,
+                        cameraConfig.getPollTime(), TimeUnit.MILLISECONDS);
+            }
         }
 
         pollCameraJob = threadPool.scheduleWithFixedDelay(this::pollCameraRunnable, 1000, 8000, TimeUnit.MILLISECONDS);
@@ -1341,10 +1344,10 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     void snapshotIsFfmpeg() {
-        bringCameraOnline();
         snapshotUri = "";// ffmpeg is a valid option. Simplify further checks.
         logger.debug(
                 "Binding has no snapshot url. Will use your CPU and FFmpeg to create snapshots from the cameras RTSP.");
+        bringCameraOnline();
         if (!rtspUri.isEmpty()) {
             updateImageChannel = false;
             ffmpegSnapshotGeneration = true;
@@ -1494,6 +1497,13 @@ public class IpCameraHandler extends BaseThingHandler {
         // what needs to be done every poll//
         switch (thing.getThingTypeUID().getId()) {
             case GENERIC_THING:
+                // RTSP stream has stopped and we need it for snapshots
+                if (ffmpegSnapshotGeneration) {
+                    Ffmpeg localSnapshot = ffmpegSnapshot;
+                    if (localSnapshot != null && !localSnapshot.getIsAlive()) {
+                        localSnapshot.startConverting();
+                    }
+                }
                 break;
             case ONVIF_THING:
                 if (!onvifCamera.isConnected()) {
