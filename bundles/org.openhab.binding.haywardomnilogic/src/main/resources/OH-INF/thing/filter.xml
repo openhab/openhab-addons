@@ -54,7 +54,7 @@
 	</channel-type>
 
 	<channel-type id="filterSpeed">
-		<item-type>Dimmer</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Filter Speed</label>
 		<description>Filter Speed (%)</description>
 		<state min="0" max="100" step="5" pattern="%1.0f%%" readOnly="false"/>
