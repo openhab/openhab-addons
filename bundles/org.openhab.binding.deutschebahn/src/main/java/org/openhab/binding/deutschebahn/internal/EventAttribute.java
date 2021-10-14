@@ -281,7 +281,9 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
             final String messageTexts = messages //
                     .stream()//
                     .filter((Message message) -> message.getC() != null) //
-                    .map((Message message) -> MessageCodes.getMessage(message.getC())) //
+                    .map(Message::getC) //
+                    .distinct() //
+                    .map(MessageCodes::getMessage) //
                     .filter((String messageText) -> !messageText.isEmpty()) //
                     .collect(Collectors.joining(" - "));
 

@@ -255,4 +255,28 @@ public class EventAttributeTest {
         doTestEventAttribute("messages", null, (Event e) -> e.getM().addAll(messages), messages,
                 new StringType(expectedTwoMessages), EventType.DEPARTURE, true);
     }
+
+    @Test
+    public void testFilterDuplicateMessages() {
+        String expectedOneMessage = "andere Reihenfolge der Wagen - technische Störung am Zug - Zug verkehrt richtig gereiht";
+        List<Message> messages = new ArrayList<>();
+        Message m1 = new Message();
+        m1.setC(80);
+        messages.add(m1);
+        Message m2 = new Message();
+        m2.setC(80);
+        messages.add(m2);
+        Message m3 = new Message();
+        m3.setC(36);
+        messages.add(m3);
+        Message m4 = new Message();
+        m4.setC(80);
+        messages.add(m4);
+        Message m5 = new Message();
+        m5.setC(84);
+        messages.add(m5);
+
+        doTestEventAttribute("messages", null, (Event e) -> e.getM().addAll(messages), messages,
+                new StringType(expectedOneMessage), EventType.DEPARTURE, true);
+    }
 }
