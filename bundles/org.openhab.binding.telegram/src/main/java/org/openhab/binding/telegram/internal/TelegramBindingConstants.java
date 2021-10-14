@@ -41,4 +41,9 @@ public class TelegramBindingConstants {
     public static final String LASTMESSAGEUSERNAME = "lastMessageUsername";
     public static final String CHATID = "chatId";
     public static final String REPLYID = "replyId";
+    public static final String LONGPOLLINGTIME = "longPollingTime";
+    public static final String MESSAGEEVENT = "messageEvent";
+    public static final String MESSAGERAWEVENT = "messageRawEvent";
+    public static final String CALLBACKEVENT = "callbackEvent";
+    public static final String CALLBACKRAWEVENT = "callbackRawEvent";
 }

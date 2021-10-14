@@ -63,7 +63,6 @@ public class CcuGateway extends AbstractHomematicGateway {
             HttpClient httpClient) {
         super(id, config, gatewayAdapter, httpClient);
 
-        XStream.setupDefaultSecurity(xStream);
         xStream.allowTypesByWildcard(new String[] { HmDevice.class.getPackageName() + ".**" });
         xStream.setClassLoader(CcuGateway.class.getClassLoader());
         xStream.autodetectAnnotations(true);

@@ -32,17 +32,18 @@ Optional configuration:
 
 The binding supports following channels
 
-| Channel Type ID    | Item Type | Description                                         |
-|--------------------|-----------|-----------------------------------------------------|
-| latest-title       | String    | Contains the title of the last feed entry.          |
-| latest-description | String    | Contains the description of the last feed entry.    |
-| latest-date        | DateTime  | Contains the published date of the last feed entry. |
-| latest-link        | String    | Contains the link of the last feed entry.           |
-| author             | String    | The name of the feed author, if author is present.  |
-| title              | String    | The title of the feed.                              |
-| description        | String    | Description of the feed.                            |
-| last-update        | DateTime  | The last update date of the feed.                   |
-| number-of-entries  | Number    | Number of entries in the feed.                      |
+| Channel Type ID    | Item Type | Description                                                                                               |
+|--------------------|-----------|-----------------------------------------------------------------------------------------------------------|
+| latest-title       | String    | Contains the title of the last feed entry.                                                                |
+| latest-description | String    | Contains the description of the last feed entry.                                                          |
+| latest-date        | DateTime  | Contains the published date of the last feed entry.                                                       |
+| latest-link        | String    | Contains the link of the last feed entry.                                                                 |
+| latest-enclosure   | String    | Contains the enclosure link (podcast) of the last feed entry, if enclosure is present (used in podcasts). |
+| author             | String    | The name of the feed author, if author is present.                                                        |
+| title              | String    | The title of the feed.                                                                                    |
+| description        | String    | Description of the feed.                                                                                  |
+| last-update        | DateTime  | The last update date of the feed.                                                                         |
+| number-of-entries  | Number    | Number of entries in the feed.                                                                            |
 
 ## Example
 
@@ -60,6 +61,7 @@ String latest_title           {channel="feed:feed:bbc:latest-title"}
 String latest_description     {channel="feed:feed:bbc:latest-description"}
 DateTime latest_date          {channel="feed:feed:bbc:latest-date"}
 String latest_link            {channel="feed:feed:bbc:latest-link"}
+String latest_enclosure       {channel="feed:feed:bbc:latest-enclosure"}
 Number number_of_entries      {channel="feed:feed:bbc:number-of-entries"}
 String description            {channel="feed:feed:bbc:description"}
 String author                 {channel="feed:feed:bbc:author"}

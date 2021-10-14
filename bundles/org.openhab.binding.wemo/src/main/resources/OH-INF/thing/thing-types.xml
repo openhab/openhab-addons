@@ -236,43 +236,43 @@
 	</channel-type>
 
 	<channel-type id="averagePower" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Average Power</label>
 		<description>The average power consumption</description>
 		<category>Energy</category>
-		<state pattern="%.1f W"/>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="currentPower">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>The current power consumption</description>
 		<category>Energy</category>
-		<state pattern="%.1f W"/>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="energyToday" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Energy Today</label>
 		<description>Todays power consumption</description>
 		<category>Energy</category>
-		<state pattern="%.1f Wh"/>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="energyTotal" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Energy Total</label>
 		<description>Total power consumption</description>
 		<category>Energy</category>
-		<state pattern="%.1f Wh"/>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="standByLimit" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>StandBy Limit</label>
-		<description>Total power consumption</description>
+		<description>Minimum energy draw to register device as switched on</description>
 		<category>Energy</category>
-		<state pattern="%.1f W"/>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="onStandBy" advanced="true">
@@ -391,7 +391,6 @@
 		<label>Timer OFF/ON</label>
 		<description>Allows to switch the timer ON/OFF</description>
 	</channel-type>
-
 
 	<channel-type id="nightMode" advanced="true">
 		<item-type>Switch</item-type>

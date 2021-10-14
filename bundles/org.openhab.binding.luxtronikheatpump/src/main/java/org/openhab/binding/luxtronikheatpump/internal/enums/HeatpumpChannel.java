@@ -1299,6 +1299,13 @@ public enum HeatpumpChannel {
             true, HeatpumpVisibility.KUHLUNG),
 
     /**
+     * Temperature heating limit
+     * (original: Temperatur Heizgrenze)
+     */
+    CHANNEL_EINST_HEIZGRENZE_TEMP(700, "temperatureHeatingLimit", NumberItem.class, SIUnits.CELSIUS, true,
+            HeatpumpVisibility.HEIZUNG),
+
+    /**
      * AT Excess
      * (original: AT-Überschreitung)
      */

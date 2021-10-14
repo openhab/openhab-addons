@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lifx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="colorhevlight">
+		<label>LIFX Color HEV Light</label>
+		<channels>
+			<channel id="color" typeId="color"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="abstemperature" typeId="system.color-temperature-abs"/>
+			<channel id="hevcycle" typeId="hevcycle"/>
+			<channel id="signalstrength" typeId="system.signal-strength"/>
+		</channels>
+		<representation-property>macAddress</representation-property>
+		<config-description-ref uri="thing-type:lifx:light"/>
+	</thing-type>
+
+</thing:thing-descriptions>
