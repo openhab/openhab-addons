@@ -188,3 +188,158 @@ String Zug1_Departure_Transition "Übergang" (zug1Abfahrt) {channel="deutschebah
 String Zug1_Departure_Wings "Wings" (zug1Abfahrt) {channel="deutschebahn:train:timetableLehrte:lehrteZug1:departure#wings"}
 
 ```
+
+Example widget for displaying train details
+
+```
+uid: timetable_train_details
+tags:
+  - card
+props:
+  parameters:
+    - context: item
+      label: Geplante Zeit
+      name: planned_time
+      required: true
+      type: TEXT
+    - context: item
+      label: Geänderte Zeit
+      name: changed_time
+      required: true
+      type: TEXT
+    - context: item
+      label: Geplantes Gleis
+      name: planned_platform
+      required: true
+      type: TEXT
+    - context: item
+      label: Geändertes Gleis
+      name: changed_platform
+      required: true
+      type: TEXT
+    - context: item
+      label: Linie
+      name: line
+      required: true
+      type: TEXT
+    - context: item
+      label: Meldungen
+      name: messages
+      required: true
+      type: TEXT
+    - context: item
+      label: Geplanter Start-/Zielbahnhof
+      name: planned_final_station
+      required: true
+      type: TEXT
+    - context: item
+      label: Geplante Halte
+      name: planned_intermediate_stations
+      required: true
+      type: TEXT
+    - context: item
+      label: Geändeter Start-/Zielbahnhof
+      name: changed_final_station
+      required: true
+      type: TEXT
+    - context: item
+      label: Geänderte Halte
+      name: changed_intermediate_stations
+      required: true
+      type: TEXT
+    - context: item
+      label: Geänderter Status
+      name: changed_state
+      required: true
+      type: TEXT
+    - context: item
+      label: Kategorie
+      name: category
+      required: true
+      type: TEXT
+    - context: item
+      label: Nummer
+      name: number
+      required: true
+      type: TEXT
+  parameterGroups: []
+timestamp: Oct 14, 2021, 11:24:45 AM
+component: f7-card
+config:
+  style:
+    padding: 10px
+slots:
+  default:
+    - component: f7-row
+      slots:
+        default:
+          - component: f7-col
+            config:
+              width: 15
+            slots:
+              default:
+                - component: Label
+                  config:
+                    text: "=items[props.planned_time].displayState + (items[props.changed_time].state != 'NULL' && items[props.changed_time].state != items[props.planned_time].state ? ' (' + items[props.changed_time].displayState + ')' : '')"
+                    style:
+                      color: "=items[props.changed_time].state != 'NULL' && items[props.changed_time].state != items[props.planned_time].state ? 'red' : ''"
+          - component: f7-col
+            config:
+              width: 75
+            slots:
+              default:
+                - component: Label
+                  config:
+                    text: "=(items[props.changed_state].state == 'c' ? 'Zug fällt aus - ' : '') + (items[props.messages].state != 'NULL' ? items[props.messages].state : '')"
+                    style:
+                      color: red
+          - component: f7-col
+            config:
+              width: 10
+            slots:
+              default:
+                - component: Label
+                  config:
+                    text: "=items[props.changed_platform].state != 'NULL' ? items[props.changed_platform].state :  items[props.planned_platform].state"
+                    style:
+                      color: "=items[props.changed_platform].state != 'NULL' ? 'red' : ''"
+                      text-align: right
+    - component: f7-row
+      slots:
+        default:
+          - component: f7-col
+            config:
+              width: 15
+            slots:
+              default:
+                - component: Label
+                  config:
+                    text: "=items[props.line].state != 'NULL' ? (items[props.category].state + ' ' + items[props.line].state) : (items[props.category].state + ' ' + items[props.number].state)"
+          - component: f7-col
+            config:
+              width: 50
+            slots:
+              default:
+                - component: Label
+                  config:
+                    text: "=items[props.changed_intermediate_stations].state != 'NULL' ? items[props.changed_intermediate_stations].state : items[props.planned_intermediate_stations].state"
+                    style:
+                      color: "=items[props.changed_intermediate_stations].state != 'NULL' ? 'red' : ''"
+          - component: f7-col
+            config:
+              width: 35
+            slots:
+              default:
+                - component: Label
+                  config:
+                    text: "=items[props.changed_final_station].state != 'NULL' ? items[props.changed_final_station].state : items[props.planned_final_station].state"
+                    style:
+                      color: "=items[props.changed_final_station].state != 'NULL' ? 'red' : ''"
+                      font-weight: bold
+                      text-align: right
+```
+
+
+Using the widget for displaying the next four departures:
+
+![Departures Hannover HBF](doc/images/Abfahrten_HannoverHBF.png "openHAB page with four widgets displaying the next departures at Hannover HBF")
