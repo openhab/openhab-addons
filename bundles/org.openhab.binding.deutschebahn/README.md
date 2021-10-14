@@ -66,9 +66,10 @@ the [Timetables V1 API Description](https://developer.deutschebahn.com/store/api
 The informations are grouped into three channel-groups:
 The first group (trip) contains all informations for the trip of the train, for example the category (like ICE, RE, S).
 The second and third group contains informations about the the arrival and the departure of the train at the given station. 
-Both of the groups may provide an undefined channel value, when the train does not arrive / depart at this station
+Both of the groups may provide an 'UNDEF' channel value, when the train does not arrive / depart at this station
 (due it starts or ends at the given station). If you have configured your timetable to contain only departures (with property trainFilter) the departure channel values will always be defined 
 and if you have selected only arrivals the arrival channel values will always be defined.
+Channels will have an 'NULL' channel value, when corresponding attribute is not set.
 
 Basically most informations are available as planned and changed value. This allows to easy display changed values (for example the delay or changed platform).
 
