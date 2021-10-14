@@ -35,9 +35,9 @@ public class BrandCarNetSkoda extends CarNetApi implements BrandAuthenticator {
         properties.brand = "VW"; // it's "VW", not "Skoda"
         properties.xcountry = "CZ";
         properties.apiDefaultUrl = CNAPI_DEFAULT_API_URL;
-        properties.clientId = "7f045eee-7003-4379-9968-9355ed2adb06@apps_vw-dilab_com";
-        properties.xClientId = "28cd30c6-dee7-4529-a0e6-b1e07ff90b79";
-        properties.authScope = "openid profile mbb cars";
+        properties.clientId = "f9a2359a-b776-46d9-bd0c-db1904343117@apps_vw-dilab_com";
+        properties.xClientId = "afb0473b-6d82-42b8-bfea-cead338c46ef";
+        properties.authScope = "openid mbb profile";
         properties.apiDefaultUrl = CNAPI_DEFAULT_API_URL;
         properties.tokenUrl = CNAPI_VW_TOKEN_URL;
         properties.tokenRefreshUrl = properties.tokenUrl;
