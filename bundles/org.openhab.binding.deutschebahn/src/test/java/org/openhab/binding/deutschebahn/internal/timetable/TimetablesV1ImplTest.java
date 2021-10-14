@@ -51,4 +51,19 @@ public class TimetablesV1ImplTest implements TimetablesV1ImplTestHelper {
         assertNotNull(timeTable);
         assertEquals(0, timeTable.getS().size());
     }
+
+    @Test
+    public void testGetDataForHannoverHBF() throws Exception {
+        TimetablesV1Api timeTableApi = createApiWithTestdata().getApi();
+
+        Date time = new GregorianCalendar(2021, Calendar.OCTOBER, 14, 11, 00).getTime();
+
+        Timetable timeTable = timeTableApi.getPlan(EVA_HANNOVER_HBF, time);
+        assertNotNull(timeTable);
+        assertEquals(50, timeTable.getS().size());
+
+        Timetable changes = timeTableApi.getFullChanges(EVA_HANNOVER_HBF);
+        assertNotNull(changes);
+        assertEquals(730, changes.getS().size());
+    }
 }

@@ -68,7 +68,6 @@
     <xs:complexContent>
       <xs:extension base="jaxbEntity">
         <xs:sequence>
-          <xs:element ref="tl" minOccurs="0"/>
           <xs:element ref="conn" minOccurs="0" maxOccurs="unbounded"/>
           <xs:element ref="m" minOccurs="0" maxOccurs="unbounded"/>
           <xs:element name="ar" type="event" minOccurs="0"/>
@@ -76,6 +75,7 @@
           <xs:element name="hd" type="historicDelay" minOccurs="0" maxOccurs="unbounded"/>
           <xs:element name="hpc" type="historicPlatformChange" minOccurs="0" maxOccurs="unbounded"/>
           <xs:element name="rtr" type="referenceTripRelation" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element ref="tl" minOccurs="0"/>
           <xs:element name="ref" type="tripReference" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required"/>
@@ -147,8 +147,6 @@
         <xs:attribute name="pr" type="priority"/>
         <xs:attribute name="o" type="xs:string"/>
         <xs:attribute name="del" type="xs:int"/>
-        <!-- manually added, missing in provieded scheme. -->
-        <xs:attribute name="ts-tts" type="xs:string"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>

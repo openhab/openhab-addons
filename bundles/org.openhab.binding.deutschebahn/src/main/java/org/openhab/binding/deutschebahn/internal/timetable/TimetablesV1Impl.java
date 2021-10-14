@@ -16,19 +16,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -83,7 +80,7 @@ public final class TimetablesV1Impl implements TimetablesV1Api {
 
     private final Logger logger = LoggerFactory.getLogger(TimetablesV1Impl.class);
     private JAXBContext jaxbContext;
-    private Schema schema;
+    // private Schema schema;
 
     /**
      * Creates an new {@link TimetablesV1Impl}.
@@ -94,10 +91,17 @@ public final class TimetablesV1Impl implements TimetablesV1Api {
             throws JAXBException, SAXException, URISyntaxException {
         this.authToken = authToken;
         this.httpCallable = httpCallable;
-        final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        final URL schemaURL = getClass().getResource("/xsd/Timetables_REST.xsd");
-        assert schemaURL != null;
-        this.schema = schemaFactory.newSchema(schemaURL);
+
+        // The results from webservice does not conform to the schema provided. The triplabel-Element (tl) is expected
+        // to occour as
+        // last Element within an timetableStop (s) element. But it is the first element when requesting the plan.
+        // When requesting the changes it is the last element, so the schema can't just be corrected.
+        // If written to developer support, but got no response yet, so schema validation is disabled at the moment.
+
+        // final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        // final URL schemaURL = getClass().getResource("/xsd/Timetables_REST.xsd");
+        // assert schemaURL != null;
+        // this.schema = schemaFactory.newSchema(schemaURL);
         this.jaxbContext = JAXBContext.newInstance(Timetable.class.getPackageName(), Timetable.class.getClassLoader());
     }
 
@@ -163,7 +167,12 @@ public final class TimetablesV1Impl implements TimetablesV1Api {
     }
 
     private <T> T unmarshal(final String xmlContent, final Class<T> clazz) throws JAXBException, SAXException {
-        return unmarshal(jaxbContext, schema, xmlContent, clazz);
+        return unmarshal( //
+                jaxbContext, //
+                null, // Provide no schema, due webservice results are not schema-valid.
+                xmlContent, //
+                clazz //
+        );
     }
 
     @SuppressWarnings("unchecked")

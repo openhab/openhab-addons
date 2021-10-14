@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface TimetablesV1ImplTestHelper {
 
     public static final String EVA_LEHRTE = "8000226";
+    public static final String EVA_HANNOVER_HBF = "8000152";
     public static final String AUTH_TOKEN = "354c8161cd7fb0936c840240280c131e";
 
     /**
