@@ -333,7 +333,6 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                 new Object[] { variable, value, service, this.getThing().getUID() });
         updateStatus(ThingStatus.ONLINE);
         if (variable != null && value != null) {
-            @Nullable
             String oldBinaryState = this.stateMap.get("BinaryState");
             this.stateMap.put(variable, value);
             switch (variable) {
