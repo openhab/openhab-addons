@@ -333,16 +333,17 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                 new Object[] { variable, value, service, this.getThing().getUID() });
         updateStatus(ThingStatus.ONLINE);
         if (variable != null && value != null) {
+            String oldBinaryState = this.stateMap.get("BinaryState");
             this.stateMap.put(variable, value);
-        }
-        if (variable != null && value != null) {
             switch (variable) {
                 case "BinaryState":
-                    State state = value.equals("0") ? OnOffType.OFF : OnOffType.ON;
-                    logger.debug("State '{}' for device '{}' received", state, getThing().getUID());
-                    updateState(CHANNEL_BRIGHTNESS, state);
-                    if (state.equals(OnOffType.OFF)) {
-                        updateState(CHANNEL_TIMERSTART, OnOffType.OFF);
+                    if (oldBinaryState == null || !oldBinaryState.equals(value)) {
+                        State state = value.equals("0") ? OnOffType.OFF : OnOffType.ON;
+                        logger.debug("State '{}' for device '{}' received", state, getThing().getUID());
+                        updateState(CHANNEL_BRIGHTNESS, state);
+                        if (state.equals(OnOffType.OFF)) {
+                            updateState(CHANNEL_TIMERSTART, OnOffType.OFF);
+                        }
                     }
                     break;
                 case "brightness":
