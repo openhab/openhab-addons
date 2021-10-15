@@ -202,6 +202,8 @@
 
     <module>org.openhab.binding.ecotouch</module>
 
+    <module>org.openhab.binding.ekey</module>
+
     <module>org.openhab.binding.elerotransmitterstick</module>
 
     <module>org.openhab.binding.energenie</module>
