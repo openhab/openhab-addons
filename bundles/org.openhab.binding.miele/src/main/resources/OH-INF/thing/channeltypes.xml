@@ -159,7 +159,7 @@
 	<channel-type id="superfreeze">
 		<item-type>Switch</item-type>
 		<label>Super Freeze</label>
-		<description>Start Super Freezing</description>
+		<description>Start or stop Super Freezing</description>
 		<state readOnly="false"></state>
 	</channel-type>
 
