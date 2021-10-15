@@ -15,7 +15,6 @@ package org.openhab.binding.network.internal.action;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.network.internal.handler.NetworkHandler;
-import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -48,15 +47,32 @@ public class NetworkActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device.")
-    public void sendWakeOnLanPacket(
-            @ActionInput(name = "useMac", description = "Use Mac Address instead of IP") Boolean useMac) {
+    private void sendWakeOnLanPacket(Boolean useMac) {
         NetworkHandler localHandler = handler;
         if (localHandler != null) {
             localHandler.sendWakeOnLanPacket(useMac);
         } else {
             logger.warn("Failed to send Wake-on-LAN packet (handler null)");
         }
+    }
+
+    /**
+     * @deprecated Use sendWakeOnLanPacketViaMac or sendWakeOnLanPacketViaIp instead.
+     */
+    @Deprecated
+    @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device.")
+    public void sendWakeOnLanPacket() {
+        sendWakeOnLanPacket(true);
+    }
+
+    @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device.")
+    public void sendWakeOnLanPacketViaMac() {
+        sendWakeOnLanPacket(true);
+    }
+
+    @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device.")
+    public void sendWakeOnLanPacketViaIp() {
+        sendWakeOnLanPacket(false);
     }
 
     public static void sendWakeOnLanPacket(ThingActions actions) {

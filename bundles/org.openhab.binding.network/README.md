@@ -250,13 +250,10 @@ if (actions === null) {
     logInfo("actions", "Actions not found, check thing ID")
     return
 } else {
-    actions.sendWakeOnLanPacket(true)
+    // Send via MAC address
+    actions.sendWakeOnLanPacketViaMac()
+    
+    // Send via IP address
+    actions.sendWakeOnLanPacketViaIp()
 }
-```
-
-The Method accepts a boolean parameter, which allows selecting whether the request is sent to the Mac- or  
-IP-Address of the Network Binding: 
-```
-true = Use Mac Address
-false = Use IP Address
 ```
