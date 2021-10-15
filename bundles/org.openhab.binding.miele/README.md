@@ -150,6 +150,7 @@ Channels available for each appliance type are listed below.
 | 1796  | 4      | Rinses                       |
 | 1798  | 6      | Final rinse                  |
 | 1799  | 7      | Drying                       |
+| 1800  | 8      | Finished                     |
 
 #### Fridge
 
