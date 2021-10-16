@@ -137,6 +137,7 @@ import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_12;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_12_NodON;
 import org.openhab.binding.enocean.internal.eep.D2_03.D2_03_0A;
 import org.openhab.binding.enocean.internal.eep.D2_05.D2_05_00;
+import org.openhab.binding.enocean.internal.eep.D2_06.D2_06_01;
 import org.openhab.binding.enocean.internal.eep.D2_06.D2_06_50;
 import org.openhab.binding.enocean.internal.eep.D2_14.D2_14_30;
 import org.openhab.binding.enocean.internal.eep.D2_50.D2_50;
@@ -196,6 +197,10 @@ public enum EEPType {
             CHANNEL_WINDOWHANDLESTATE, CHANNEL_CONTACT, CHANNEL_BATTERY_VOLTAGE),
     MechanicalHandle03(RORG._4BS, 0x14, 0x0A, false, A5_14_0A.class, THING_TYPE_MECHANICALHANDLE,
             CHANNEL_WINDOWHANDLESTATE, CHANNEL_CONTACT, CHANNEL_VIBRATION, CHANNEL_BATTERY_VOLTAGE),
+    MechanicalHandle04(RORG.VLD, 0x06, 0x01, false, "Soda", 0x0043, D2_06_01.class, THING_TYPE_MECHANICALHANDLE,
+            CHANNEL_WINDOWHANDLESTATE, CHANNEL_WINDOWSASHSTATE, CHANNEL_MOTIONDETECTION, CHANNEL_INDOORAIRTEMPERATURE,
+            CHANNEL_HUMIDITY, CHANNEL_ILLUMINATION, CHANNEL_BATTERY_LEVEL, CHANNEL_WINDOWBREACHEVENT,
+            CHANNEL_PROTECTIONPLUSEVENT, CHANNEL_PUSHBUTTON, CHANNEL_PUSHBUTTON2, CHANNEL_VACATIONMODETOGGLEEVENT),
 
     ContactAndSwitch01(RORG._1BS, 0x00, 0x01, false, D5_00_01.class, THING_TYPE_CONTACT, CHANNEL_CONTACT),
     ContactAndSwitch02(RORG._4BS, 0x14, 0x01, false, A5_14_01.class, THING_TYPE_CONTACT, CHANNEL_BATTERY_VOLTAGE,
