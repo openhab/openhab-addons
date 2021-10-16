@@ -21,6 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorException;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorModel;
+import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConnectionException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
@@ -897,9 +899,8 @@ public abstract class SonyProjectorConnector {
             logger.debug("Get setting {} succeeded: result data: {}", item.getName(), HexUtils.bytesToHex(result));
 
             return result;
-        } catch (SonyProjectorException e) {
-            logger.debug("Get setting {} failed: {}", item.getName(), e.getMessage());
-            throw new SonyProjectorException("Get setting " + item.getName() + " failed: " + e.getMessage());
+        } catch (CommunicationException e) {
+            throw new SonyProjectorException("Get setting " + item.getName() + " failed", e);
         }
     }
 
@@ -916,9 +917,8 @@ public abstract class SonyProjectorConnector {
 
         try {
             executeCommand(item, false, data);
-        } catch (SonyProjectorException e) {
-            logger.debug("Set setting {} failed: {}", item.getName(), e.getMessage());
-            throw new SonyProjectorException("Set setting " + item.getName() + " failed: " + e.getMessage());
+        } catch (CommunicationException e) {
+            throw new SonyProjectorException("Set setting " + item.getName() + " failed", e);
         }
 
         logger.debug("Set setting {} succeeded", item.getName());
@@ -950,13 +950,11 @@ public abstract class SonyProjectorConnector {
             if (!runningSession) {
                 close();
             }
-        } catch (SonyProjectorException e) {
-            logger.debug("Send IR {} failed: {}", item.getName(), e.getMessage());
-            throw new SonyProjectorException("Send IR " + item.getName() + " failed: " + e.getMessage());
+        } catch (CommunicationException e) {
+            throw new SonyProjectorException("Send IR " + item.getName() + " failed", e);
         } catch (InterruptedException e) {
-            logger.debug("Send IR {} interrupted: {}", item.getName(), e.getMessage());
             Thread.currentThread().interrupt();
-            throw new SonyProjectorException("Send IR " + item.getName() + " interrupted: " + e.getMessage());
+            throw new SonyProjectorException("Send IR " + item.getName() + " interrupted", e);
         }
 
         logger.debug("Send IR {} succeeded", item.getName());
@@ -971,40 +969,37 @@ public abstract class SonyProjectorConnector {
      *
      * @return the buffer containing the returned message
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws ConnectionException - In case of any connection problem
+     * @throws CommunicationException - In case of any communication problem
      */
     private synchronized byte[] executeCommand(SonyProjectorItem item, boolean getCommand, byte[] data)
-            throws SonyProjectorException {
-        try {
-            boolean runningSession = connected;
+            throws ConnectionException, CommunicationException {
+        boolean runningSession = connected;
 
-            open();
+        open();
 
-            // Build the message and send it
-            writeCommand(buildMessage(item, getCommand, data));
+        // Build the message and send it
+        writeCommand(buildMessage(item, getCommand, data));
 
-            // Read the response
-            byte[] responseMessage = readResponse();
+        // Read the response
+        byte[] responseMessage = readResponse();
 
-            if (!runningSession) {
-                close();
-            }
-
-            // Validate the content of the response
-            validateResponse(responseMessage, item);
-
-            return responseMessage;
-        } catch (SonyProjectorException e) {
-            throw new SonyProjectorException(e.getMessage());
+        if (!runningSession) {
+            close();
         }
+
+        // Validate the content of the response
+        validateResponse(responseMessage, item);
+
+        return responseMessage;
     }
 
     /**
      * Open the connection with the projector if not yet opened
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws ConnectionException - In case of any problem
      */
-    public abstract void open() throws SonyProjectorException;
+    public abstract void open() throws ConnectionException;
 
     /**
      * Close the connection with the projector
@@ -1049,23 +1044,23 @@ public abstract class SonyProjectorConnector {
      * @param dataBuffer the buffer into which the data is read.
      * @return the total number of bytes read into the buffer, or -1 if there is no more data because the end of the
      *         stream has been reached.
-     * @throws SonyProjectorException - If the input stream is null, if the first byte cannot be read for any reason
+     * @throws CommunicationException - If the input stream is null, if the first byte cannot be read for any reason
      *             other than the end of the file, if the input stream has been closed, or if some other I/O error
      *             occurs.
      */
-    protected int readInput(byte[] dataBuffer) throws SonyProjectorException {
+    protected int readInput(byte[] dataBuffer) throws CommunicationException {
         if (simu) {
-            throw new SonyProjectorException("readInput failed: should not be called in simu mode");
+            throw new CommunicationException("readInput failed: should not be called in simu mode");
         }
         InputStream dataIn = this.dataIn;
         if (dataIn == null) {
-            throw new SonyProjectorException("readInput failed: input stream is null");
+            throw new CommunicationException("readInput failed: input stream is null");
         }
         try {
             return dataIn.read(dataBuffer);
         } catch (IOException e) {
             logger.debug("readInput failed: {}", e.getMessage());
-            throw new SonyProjectorException("readInput failed: " + e.getMessage());
+            throw new CommunicationException("readInput failed", e);
         }
     }
 
@@ -1074,23 +1069,23 @@ public abstract class SonyProjectorConnector {
      *
      * @param message the buffer containing the message to be sent
      *
-     * @throws SonyProjectorException - In case of any communication problem
+     * @throws CommunicationException - In case of any communication problem
      */
-    protected void writeCommand(byte[] message) throws SonyProjectorException {
+    protected void writeCommand(byte[] message) throws CommunicationException {
         logger.debug("writeCommand: {}", HexUtils.bytesToHex(message));
         if (simu) {
             return;
         }
         OutputStream dataOut = this.dataOut;
         if (dataOut == null) {
-            throw new SonyProjectorException("writeCommand failed: output stream is null");
+            throw new CommunicationException("writeCommand failed: output stream is null");
         }
         try {
             dataOut.write(message);
             dataOut.flush();
         } catch (IOException e) {
             logger.debug("writeCommand failed: {}", e.getMessage());
-            throw new SonyProjectorException("writeCommand failed: " + e.getMessage());
+            throw new CommunicationException("writeCommand failed", e);
         }
     }
 
@@ -1099,9 +1094,9 @@ public abstract class SonyProjectorConnector {
      *
      * @return the buffer containing the returned message
      *
-     * @throws SonyProjectorException - In case of any communication problem
+     * @throws CommunicationException - In case of any communication problem
      */
-    protected abstract byte[] readResponse() throws SonyProjectorException;
+    protected abstract byte[] readResponse() throws CommunicationException;
 
     /**
      * Validate the content of a returned message
@@ -1109,10 +1104,10 @@ public abstract class SonyProjectorConnector {
      * @param responseMessage the buffer containing the returned message
      * @param the projector setting to get or set
      *
-     * @throws SonyProjectorException - If the message has unexpected content
+     * @throws CommunicationException - If the message has unexpected content
      */
     protected abstract void validateResponse(byte[] responseMessage, SonyProjectorItem item)
-            throws SonyProjectorException;
+            throws CommunicationException;
 
     /**
      * Extract the value from the returned message
