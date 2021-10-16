@@ -331,7 +331,7 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
 ```xtend
 rule "CEN+ virtual pressure from OH button"
 /* This rule triggers when the proxy item iCENPlusProxyItem is activated, for example from a button on WebUI/sitemap.
-When activated it sends a "virtual short pressure" of where=212, button=5 on the BUS 
+When activated it sends a "virtual short pressure" event (where=212, button=5) on the BUS 
 */
 when 
     Item iCENPlusProxyItem received command

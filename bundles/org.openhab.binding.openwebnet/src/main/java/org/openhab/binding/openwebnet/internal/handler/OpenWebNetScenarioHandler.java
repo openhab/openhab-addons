@@ -249,7 +249,6 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
         }
 
         triggerChannel(channel.getUID(), pressureEv.toString());
-
     }
 
     private Channel buttonToChannel(int buttonNumber) {
