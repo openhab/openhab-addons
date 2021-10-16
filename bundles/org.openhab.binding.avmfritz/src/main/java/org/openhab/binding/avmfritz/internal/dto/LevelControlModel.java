@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "levelcontrol")
-public class LevelcontrolModel {
+public class LevelControlModel {
 
     @XmlElement(name = "level")
     private BigDecimal level;
@@ -52,7 +52,7 @@ public class LevelcontrolModel {
 
     @Override
     public String toString() {
-        return new StringBuilder().append("[level=").append(getLevel()).append(",levelpercentage=")
-                .append(getLevelPercentage()).append("]").toString();
+        return new StringBuilder("[level=").append(getLevel()).append(",levelpercentage=").append(getLevelPercentage())
+                .append("]").toString();
     }
 }

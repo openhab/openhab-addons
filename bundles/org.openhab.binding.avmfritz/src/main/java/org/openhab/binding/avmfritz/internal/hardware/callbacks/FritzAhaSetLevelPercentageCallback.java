@@ -22,14 +22,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Callback implementation for updating blind commands. Supports reauthorization
+ * Callback implementation for updating blind / levelpercentage commands. Supports reauthorization
  *
  * @author Ulrich Mertin - Initial contribution
  */
 @NonNullByDefault
-public class FritzAhaSetBlindLevelCallback extends FritzAhaReauthCallback {
+public class FritzAhaSetLevelPercentageCallback extends FritzAhaReauthCallback {
 
-    private final Logger logger = LoggerFactory.getLogger(FritzAhaSetBlindLevelCallback.class);
+    private final Logger logger = LoggerFactory.getLogger(FritzAhaSetLevelPercentageCallback.class);
 
     private final String ain;
 
@@ -40,8 +40,8 @@ public class FritzAhaSetBlindLevelCallback extends FritzAhaReauthCallback {
      * @param ain AIN of the device that should be switched
      * @param level Opening level percentage (0 ... 100)
      */
-    public FritzAhaSetBlindLevelCallback(FritzAhaWebInterface webIface, String ain, BigDecimal levelpercentage) {
-        super(WEBSERVICE_PATH, "switchcmd=setlevelpercentage&level=" + levelpercentage + "&ain=" + ain, webIface, GET,
+    public FritzAhaSetLevelPercentageCallback(FritzAhaWebInterface webIface, String ain, BigDecimal levelPercentage) {
+        super(WEBSERVICE_PATH, "switchcmd=setlevelpercentage&level=" + levelPercentage + "&ain=" + ain, webIface, GET,
                 1);
         this.ain = ain;
     }
