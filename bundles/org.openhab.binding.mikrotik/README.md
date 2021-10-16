@@ -106,6 +106,8 @@ At the moment the binding supports the following RouterOS interface types:
 * `wlan`
 * `cap`
 * `pppoe-out`
+* `ppp-out`
+* `lte`
 * `l2tp-in`
 * `l2tp-out`
 
