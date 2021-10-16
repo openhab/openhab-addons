@@ -5,6 +5,25 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Supported FRITZ! devices and features -->
+	<thing-type id="FRITZ_DECT_500">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox"/>
+		</supported-bridge-type-refs>
+
+		<label>FRITZ!DECT 500</label>
+		<description>FRITZ!DECT500 color light.</description>
+
+		<channels>
+			<channel id="onoffstate" typeId="system.power"/>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="color" typeId="system.color"/>
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice"/>
+	</thing-type>
+
 	<thing-type id="FRITZ_DECT_400">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox"/>
