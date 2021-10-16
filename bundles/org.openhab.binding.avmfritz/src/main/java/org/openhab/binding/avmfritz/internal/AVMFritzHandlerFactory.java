@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzButtonHandler;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzColorLightDeviceHandler;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingDeviceHandler;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingGroupHandler;
 import org.openhab.binding.avmfritz.internal.handler.BoxHandler;
@@ -76,6 +77,8 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
             return new BoxHandler((Bridge) thing, httpClient, commandDescriptionProvider);
         } else if (PL546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
             return new Powerline546EHandler((Bridge) thing, httpClient, commandDescriptionProvider);
+        } else if (SUPPORTED_LIGHTING_THING_TYPES.contains(thingTypeUID)) {
+            return new AVMFritzColorLightDeviceHandler(thing);
         } else if (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new AVMFritzButtonHandler(thing);
         } else if (SUPPORTED_HEATING_THING_TYPES.contains(thingTypeUID)) {

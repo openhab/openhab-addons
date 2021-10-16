@@ -137,7 +137,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
@@ -184,7 +184,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
@@ -231,7 +231,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
@@ -394,7 +394,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
@@ -464,7 +464,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
@@ -506,7 +506,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
@@ -549,7 +549,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
@@ -592,7 +592,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
@@ -635,7 +635,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        LevelcontrolModel levelcontrol = device.getLevelcontrol();
+        LevelControlModel levelcontrol = device.getLevelControlModel();
         assertNotNull(levelcontrol);
         assertEquals(BigDecimal.valueOf(26L), levelcontrol.getLevel());
         assertEquals(BigDecimal.valueOf(10L), levelcontrol.getLevelPercentage());
@@ -687,7 +687,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
