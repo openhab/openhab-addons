@@ -110,9 +110,9 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Refresh time is lower than min value of 10!");
         } else {
-            try {
-                authstring = "j_username=" + config.username;
-                scheduler.execute(() -> {
+            authstring = "j_username=" + config.username;
+            scheduler.execute(() -> {
+                try {
                     if (session == null) {
                         logger.debug("Session is null, let's create a new one");
                         session = new VerisureSession(this.httpClient);
@@ -123,15 +123,15 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                         if (!session.initialize(authstring, pinCode, config.username, config.password)) {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR,
                                     "Failed to login to Verisure, please check your account settings! Is MFA activated?");
-                            return;
                         }
-                        startAutomaticRefresh(config.refresh);
                     }
-                });
-            } catch (RuntimeException e) {
-                logger.warn("Failed to initialize: {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
+                } catch (RuntimeException e) {
+                    logger.warn("Failed to initialize: {}", e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                } finally {
+                    startAutomaticRefresh(config.refresh);
+                }
+            });
         }
     }
 

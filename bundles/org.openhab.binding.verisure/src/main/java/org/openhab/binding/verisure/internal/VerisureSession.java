@@ -109,7 +109,7 @@ public class VerisureSession {
 
     public boolean initialize(@Nullable String authstring, @Nullable String pinCode, String userName, String password) {
         if (authstring != null) {
-            this.authstring = authstring.substring(0);
+            this.authstring = authstring;
             this.pinCode = pinCode;
             this.userName = userName;
             this.password = password;
