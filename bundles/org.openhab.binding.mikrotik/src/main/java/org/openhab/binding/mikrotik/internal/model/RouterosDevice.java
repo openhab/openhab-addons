@@ -87,10 +87,14 @@ public class RouterosDevice {
                 return Optional.of(new RouterosWlanInterface(interfaceProps));
             case PPPOE_CLIENT:
                 return Optional.of(new RouterosPPPoECliInterface(interfaceProps));
+            case PPP_CLIENT:
+                return Optional.of(new RouterosPPPCliInterface(interfaceProps));
             case L2TP_SERVER:
                 return Optional.of(new RouterosL2TPSrvInterface(interfaceProps));
             case L2TP_CLIENT:
                 return Optional.of(new RouterosL2TPCliInterface(interfaceProps));
+            case LTE:
+                return Optional.of(new RouterosLTEInterface(interfaceProps));
             default:
                 return Optional.empty();
         }
