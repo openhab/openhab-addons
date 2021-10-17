@@ -8,7 +8,7 @@ For those not familiar with these weather stations, you can find out more at the
 
 If you already have this weather station, you will need to obtain an API authorization key at the [BloomSky Device Owners Portal](https://dashboard.bloomsky.com/) using the [Developers Link](https://dashboard.bloomsky.com/user#api) found on the left side of the screen after you log in.
 
- This binding's refresh rate cannot be set for less than 5 minutes (300 seconds); BloomSky posts updates every 5 minutes (this is not configurable and a drawback if you want real-time updates). 
+This binding's refresh rate cannot be set for less than 5 minutes (300 seconds); BloomSky posts updates every 5 minutes (this is not configurable and a drawback if you want real-time updates). 
 
 The [API Documentation](./doc/v1.6BloomskyDeviceOwnerAPIDocumentationforBusinessOwners.pdf) is bare-bones; it was last updated in 2017 along with the addition of the STORM weather station.  
 
@@ -31,9 +31,7 @@ The following thing types are supported:
 
 Once a Bridge thing is configured with a valid API key, the binding will auto-discover the _SKY1/SKY2_ and optionally (if you have one installed), a _STORM_ weather station thing associated with that account.  
 
-The binding will use the openHAB regional setting to determine if readings are to be returned in imperial or metric units.
-
-The regional settings (advanced box checked) can be used to select either Imperial or Metric units; the background discovery updates the configuration of the device sensor data automatically.
+The binding uses the openHAB [Units Of Measurement](https://www.openhab.org/docs/concepts/units-of-measurement.html) setting to determine if readings are to be returned in imperial or metric units(SI).
 
 If a bridge is correctly configured, the discovered thing will automatically go online.
 

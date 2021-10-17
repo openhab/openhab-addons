@@ -35,8 +35,7 @@ public class BloomSkyBridgeConfiguration {
     public @Nullable String apikey; // API Key from BloomSky Device Owner Account
     public int refreshInterval = 5; // Minimum interval is five minutes
 
-    // Initialize with default units based on country code
-    // public @Nullable String units = setDisplayUnits(countryCode.toUpperCase());
+    // Initialize with default units based on country the code, start with Imperial units
     public @Nullable String units = IMPERIAL_UNITS;
 
     /**
