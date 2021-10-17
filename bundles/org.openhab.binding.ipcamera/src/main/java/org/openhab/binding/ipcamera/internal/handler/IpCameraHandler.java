@@ -577,7 +577,7 @@ public class IpCameraHandler extends BaseThingHandler {
         if (!"PUT".equals(httpMethod) || (useDigestAuth && digestString == null)) {
             request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod(httpMethod), httpRequestURL);
             request.headers().set("Host", cameraConfig.getIp() + ":" + port);
-            request.headers().set("Connection", HttpHeaderValues.KEEP_ALIVE);
+            request.headers().set("Connection", HttpHeaderValues.CLOSE);
         } else {
             request = putRequestWithBody;
             request.headers().set("Connection", HttpHeaderValues.CLOSE);
@@ -596,13 +596,6 @@ public class IpCameraHandler extends BaseThingHandler {
             if (digestString != null) {
                 request.headers().set("Authorization", "Digest " + digestString);
             }
-        }
-
-        Channel oldChannel = findOpenChannel(httpRequestURL);
-        if (oldChannel != null && oldChannel.isWritable()) {
-            oldChannel.writeAndFlush(request);
-            logger.debug("Reused old channel");
-            return;
         }
 
         mainBootstrap.connect(new InetSocketAddress(cameraConfig.getIp(), port))
@@ -1505,12 +1498,12 @@ public class IpCameraHandler extends BaseThingHandler {
             checkCameraConnection();
         }
         // NOTE: Use lowPriorityRequests if get request is not needed every poll.
-        // if (!lowPriorityRequests.isEmpty()) {
-        // if (lowPriorityCounter >= lowPriorityRequests.size()) {
-        // lowPriorityCounter = 0;
-        // }
-        // sendHttpGET(lowPriorityRequests.get(lowPriorityCounter++));
-        // }
+        if (!lowPriorityRequests.isEmpty()) {
+            if (lowPriorityCounter >= lowPriorityRequests.size()) {
+                lowPriorityCounter = 0;
+            }
+            sendHttpGET(lowPriorityRequests.get(lowPriorityCounter++));
+        }
         // what needs to be done every poll//
         switch (thing.getThingTypeUID().getId()) {
             case GENERIC_THING:
@@ -1534,9 +1527,9 @@ public class IpCameraHandler extends BaseThingHandler {
                 break;
             case HIKVISION_THING:
                 if (streamIsStopped("/ISAPI/Event/notification/alertStream")) {
-                    // logger.info("The alarm stream was not running for camera {}, re-starting it now",
-                    // cameraConfig.getIp());
-                    // sendHttpGET("/ISAPI/Event/notification/alertStream");
+                    logger.info("The alarm stream was not running for camera {}, re-starting it now",
+                            cameraConfig.getIp());
+                    sendHttpGET("/ISAPI/Event/notification/alertStream");
                 }
                 break;
             case AMCREST_THING:
@@ -1569,7 +1562,7 @@ public class IpCameraHandler extends BaseThingHandler {
             localHLS.checkKeepAlive();
         }
         if (openChannels.size() > 6) {
-            logger.warn("There are {} open Channels being tracked.", openChannels.size());
+            logger.warn("There are {} open channels being tracked.", openChannels.size());
             cleanChannels();
         }
     }

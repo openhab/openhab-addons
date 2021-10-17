@@ -143,7 +143,6 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         if (msg == null || ctx == null) {
             return;
         }
-        boolean closeConnection = true;
         if (msg instanceof HttpResponse) {
             HttpResponse response = (HttpResponse) msg;
             if (response.status().code() == 401) {
@@ -154,16 +153,10 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                             if (name.toString().equalsIgnoreCase("WWW-Authenticate")) {
                                 authenticate = value.toString();
                             }
-                            if (name.toString().equalsIgnoreCase("Connection")
-                                    && value.toString().contains("keep-alive")) {
-                                closeConnection = false;
-                            }
                         }
                     }
-                    if (closeConnection) {
-                        ipCameraHandler.channelTrackingMap.remove(httpUrl);
-                        ctx.close();// needs to be here
-                    }
+                    ipCameraHandler.channelTrackingMap.remove(httpUrl);
+                    ctx.close();// needs to be here otherwise HIK with digest sends an extra byte
                     if (!authenticate.isEmpty()) {
                         processAuth(authenticate, httpMethod, httpUrl, true);
                     } else {
