@@ -25,8 +25,6 @@ import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.micrometer.core.lang.NonNull;
-
 /**
  * Read from Proteus EcoMeter S
  *
@@ -44,7 +42,6 @@ public class ProteusEcoMeterSService {
      * @return {@code true} if we can communicate with the device
      * @throws IOException
      */
-    @NonNull
     public Stream<ProteusEcoMeterSReply> read(final String portId, final SerialPortService serialPort)
             throws IOException {
         logger.trace("communicate");

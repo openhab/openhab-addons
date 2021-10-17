@@ -33,13 +33,13 @@ configuration:
 
 ## Channels
 
-| channel               | type              | description                                          |
-|-----------------------|-------------------|------------------------------------------------------|
-| temperature           | Number:CELSIUS    | Temperature measured by the sensor                   |
-| sensorLevel           | Number:centiMetre | Distance between sensor and water surface            |
-| usableLevelInLitre    | Number:LITRE      | How much liquid is usable                            |
-| usableLevelInPercent  | Number:LITRE      | How much liquid is usable relative to total capacity |
-| totalCapacity         | Number:LITRE      | Total capacity of measured cistern/tank              |
+| channel               | type                 | description                                          |
+|-----------------------|----------------------|------------------------------------------------------|
+| temperature           | Number:Temperature   | Temperature measured by the sensor                   |
+| sensorLevel           | Number:Length        | Distance between sensor and water surface            |
+| usableLevelInLitre    | Number:Volume        | How much liquid is usable                            |
+| usableLevelInPercent  | Number:Dimensionless | How much liquid is usable relative to total capacity |
+| totalCapacity         | Number:Volume        | Total capacity of measured cistern/tank              |
 
 ## Full Example
 

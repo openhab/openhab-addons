@@ -31,31 +31,35 @@ class ProteusEcoMeterSParser {
     private final Logger logger = LoggerFactory.getLogger(ProteusEcoMeterSParser.class);
 
     /**
-     * @param bytes
-     * @return
+     * @param bytes Raw bytes send from the device
+     * @return A structured version of the bytes, if possible
      */
     public Optional<ProteusEcoMeterSReply> parseFromBytes(final byte[] bytes) {
         return Optional.ofNullable(bytes).flatMap(b -> {
             final String hexString = HexUtils.bytesToHex(b);
             logger.trace("Received hex string: {}", hexString);
-            final String marker = hexString.substring(0, 4);
-            if (!"5349".equals(marker)) {
-                logger.trace("Marker is not {} but {}", "5349", marker);
-                return Optional.empty();
-            } else if (hexString.length() < 40) {
-                logger.trace("hexString ist of length {}, expected >= 40", hexString.length());
+
+            if (hexString.length() < 4) {
                 return Optional.empty();
             } else {
-                try {
-                    final int tempInFahrenheit = parseInt(hexString.substring(26, 28), "tempInFahrenheit");
-                    final double tempInCelsius = (tempInFahrenheit - 40 - 32) / 1.8;
-                    return Optional.of(new ProteusEcoMeterSReply(tempInCelsius,
-                            parseInt(hexString.substring(28, 32), "sensorLevelInCm"),
-                            parseInt(hexString.substring(32, 36), "usableLevelInLiter"),
-                            parseInt(hexString.substring(36, 40), "totalCapacityInLiter")));
-                } catch (final NumberFormatException e) {
-                    logger.debug("Error while parsing numbers", e);
+                final String marker = hexString.substring(0, 4);
+                if (!"5349".equals(marker)) {
+                    logger.trace("Marker is not {} but {}", "5349", marker);
                     return Optional.empty();
+                } else if (hexString.length() < 40) {
+                    logger.trace("hexString is of length {}, expected >= 40", hexString.length());
+                    return Optional.empty();
+                } else {
+                    try {
+                        return Optional
+                                .of(new ProteusEcoMeterSReply(parseInt(hexString.substring(26, 28), "tempInFahrenheit"),
+                                        parseInt(hexString.substring(28, 32), "sensorLevelInCm"),
+                                        parseInt(hexString.substring(32, 36), "usableLevelInLiter"),
+                                        parseInt(hexString.substring(36, 40), "totalCapacityInLiter")));
+                    } catch (final NumberFormatException e) {
+                        logger.debug("Error while parsing numbers", e);
+                        return Optional.empty();
+                    }
                 }
             }
         });

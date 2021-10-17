@@ -23,10 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class WrappedException extends RuntimeException {
     private static final long serialVersionUID = 1L;
-    public final Exception wrapped;
 
     public WrappedException(final Exception wrapped) {
         super(wrapped);
-        this.wrapped = wrapped;
     }
 }

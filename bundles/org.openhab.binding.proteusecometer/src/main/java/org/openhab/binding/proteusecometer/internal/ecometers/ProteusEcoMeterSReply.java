@@ -22,14 +22,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ProteusEcoMeterSReply {
-    public final double tempInCelsius;
+    public final double tempInFahrenheit;
     public final int sensorLevelInCm;
     public final int usableLevelInLiter;
     public final int totalCapacityInLiter;
 
-    public ProteusEcoMeterSReply(final double tempInCelsius, final int sensorLevelInCm, final int usableLevelInLiter,
+    public ProteusEcoMeterSReply(final double tempInFahrenheit, final int sensorLevelInCm, final int usableLevelInLiter,
             final int totalCapacityInLiter) {
-        this.tempInCelsius = tempInCelsius;
+        this.tempInFahrenheit = tempInFahrenheit;
         this.sensorLevelInCm = sensorLevelInCm;
         this.usableLevelInLiter = usableLevelInLiter;
         this.totalCapacityInLiter = totalCapacityInLiter;
@@ -37,7 +37,7 @@ public class ProteusEcoMeterSReply {
 
     @Override
     public String toString() {
-        return "ProteusEcoMeterSReply [sensorLevelInCm=" + sensorLevelInCm + ", tempInCelsius=" + tempInCelsius
+        return "ProteusEcoMeterSReply [sensorLevelInCm=" + sensorLevelInCm + ", tempInFahrenheit=" + tempInFahrenheit
                 + ", totalCapacityInLiter=" + totalCapacityInLiter + ", usableLevelInLiter=" + usableLevelInLiter + "]";
     }
 }
