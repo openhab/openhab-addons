@@ -67,7 +67,7 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
         super(thing);
     }
 
-    private boolean fetchModels() {
+    private void fetchModels() {
         var cfg = this.config;
         if (cfg != null) {
             RouterosDevice routeros = getRouterOs();
@@ -91,19 +91,15 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
                 }
             }
         }
-        return this.wifiReg != null;
     }
 
     @Override
     protected void refreshModels() {
-        this.online = fetchModels();
-        if (online) {
-            lastSeen = LocalDateTime.now();
-        } else {
-            continuousConnection = false;
-        }
+        fetchModels();
         var wifiReg = this.wifiReg;
         if (wifiReg != null) {
+            this.lastSeen = LocalDateTime.now();
+            this.online = true;
             var cfg = this.config;
             int considerContinuous = 180;
             if (cfg != null) {
@@ -116,28 +112,27 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
             LocalDateTime uptimeStart = wifiReg.getUptimeStart();
             continuousConnection = (uptimeStart != null)
                     && LocalDateTime.now().isAfter(uptimeStart.plusSeconds(considerContinuous));
+        } else {
+            this.online = false;
+            this.continuousConnection = false;
         }
     }
 
     @Override
     protected void refreshChannel(ChannelUID channelUID) {
         var wifiReg = this.wifiReg;
-        if (wifiReg == null) {
-            logger.warn("wifiReg is null in refreshChannel({})", channelUID);
-            return;
-        }
 
         String channelID = channelUID.getIdWithoutGroup();
         State oldState = currentState.getOrDefault(channelID, UnDefType.NULL);
         State newState = oldState;
 
         if (channelID.equals(CHANNEL_CONNECTED)) {
-            newState = StateUtil.boolOrNull(online);
+            newState = StateUtil.boolContactOrNull(this.online);
         } else if (channelID.equals(CHANNEL_LAST_SEEN)) {
             newState = StateUtil.timeOrNull(lastSeen);
         } else if (channelID.equals(CHANNEL_CONTINUOUS)) {
-            newState = StateUtil.boolOrNull(continuousConnection);
-        } else if (!online) {
+            newState = StateUtil.boolContactOrNull(this.continuousConnection);
+        } else if (!this.online || wifiReg == null) {
             newState = UnDefType.NULL;
         } else {
             switch (channelID) {
