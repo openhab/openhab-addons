@@ -237,14 +237,14 @@
 	</channel-type>
 
 	<channel-type id="connected">
-		<item-type>Switch</item-type>
+		<item-type>Contact</item-type>
 		<label>Connected</label>
 		<description>Reflects connected or disconnected state</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="continuous">
-		<item-type>Switch</item-type>
+		<item-type>Contact</item-type>
 		<label>Continuous</label>
 		<description>Connection is considered long-running</description>
 		<state readOnly="true"/>

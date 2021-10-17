@@ -127,10 +127,10 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
                     newState = StateUtil.stringOrNull(iface.getMacAddress());
                     break;
                 case MikrotikBindingConstants.CHANNEL_ENABLED:
-                    newState = StateUtil.boolOrNull(iface.isEnabled());
+                    newState = StateUtil.boolSwitchOrNull(iface.isEnabled());
                     break;
                 case MikrotikBindingConstants.CHANNEL_CONNECTED:
-                    newState = StateUtil.boolOrNull(iface.isConnected());
+                    newState = StateUtil.boolContactOrNull(iface.isConnected());
                     break;
                 case MikrotikBindingConstants.CHANNEL_LAST_LINK_DOWN_TIME:
                     newState = StateUtil.timeOrNull(iface.getLastLinkDownTime());
