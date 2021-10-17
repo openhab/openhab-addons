@@ -32,7 +32,7 @@ import org.openhab.core.test.java.JavaTest;
 /**
  * This class provides test cases for {@link DanfossAirUnit}
  * 
- * @author Jacob Laursen - Refactoring, bugfixes and enhancements
+ * @author Jacob Laursen - Initial contribution
  */
 public class DanfossAirUnitTest extends JavaTest {
 
