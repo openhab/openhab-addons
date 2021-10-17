@@ -236,7 +236,7 @@ public class DanfossAirUnit {
 
     private DecimalType setNumberTypeRegister(Command cmd, byte[] register) throws IOException {
         if (cmd instanceof DecimalType) {
-            byte value = (byte) ((((DecimalType) cmd).intValue()));
+            byte value = (byte) ((DecimalType) cmd).intValue();
             set(REGISTER_1_WRITE, register, value);
         }
         return new DecimalType(BigDecimal.valueOf(getByte(REGISTER_1_READ, register)));
