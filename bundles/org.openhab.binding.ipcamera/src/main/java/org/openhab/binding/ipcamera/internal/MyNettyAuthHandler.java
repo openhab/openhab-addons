@@ -165,7 +165,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                     }
                 }
             } else if (response.status().code() != 200) {
-                logger.debug("Camera at IP:{} gave a reply with a response code of :{}",
+                logger.info("Camera at IP:{} gave a reply with a response code of :{}",
                         ipCameraHandler.cameraConfig.getIp(), response.status().code());
                 ipCameraHandler.channelTrackingMap.remove(httpUrl);
                 ctx.close();

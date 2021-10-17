@@ -529,9 +529,9 @@ public class IpCameraHandler extends BaseThingHandler {
             mainBootstrap.channel(NioSocketChannel.class);
             mainBootstrap.option(ChannelOption.SO_KEEPALIVE, true);
             mainBootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 4500);
-            // mainBootstrap.option(ChannelOption.SO_SNDBUF, 1024 * 8);
-            // mainBootstrap.option(ChannelOption.SO_RCVBUF, 1024 * 1024);
-            // mainBootstrap.option(ChannelOption.TCP_NODELAY, true);
+            mainBootstrap.option(ChannelOption.SO_SNDBUF, 1024 * 8);
+            mainBootstrap.option(ChannelOption.SO_RCVBUF, 1024 * 1024);
+            mainBootstrap.option(ChannelOption.TCP_NODELAY, true);
             mainBootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
                 @Override
@@ -1571,7 +1571,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public void initialize() {
         cameraConfig = getConfigAs(CameraConfig.class);
         threadPool = Executors.newScheduledThreadPool(4);
-        mainEventLoopGroup = new NioEventLoopGroup();
+        mainEventLoopGroup = new NioEventLoopGroup(4);
         snapshotUri = getCorrectUrlFormat(cameraConfig.getSnapshotUrl());
         mjpegUri = getCorrectUrlFormat(cameraConfig.getMjpegUrl());
         rtspUri = cameraConfig.getFfmpegInput();
