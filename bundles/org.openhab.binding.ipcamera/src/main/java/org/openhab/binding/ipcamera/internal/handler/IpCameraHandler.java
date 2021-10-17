@@ -124,7 +124,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 public class IpCameraHandler extends BaseThingHandler {
     public final Logger logger = LoggerFactory.getLogger(getClass());
     public final IpCameraDynamicStateDescriptionProvider stateDescriptionProvider;
-    private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(4);
+    private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(2);
     private GroupTracker groupTracker;
     public CameraConfig cameraConfig = new CameraConfig();
 
@@ -511,7 +511,6 @@ public class IpCameraHandler extends BaseThingHandler {
                 return;
             }
         }
-        logger.debug("FAILED connection");
         cameraCommunicationError(
                 "Connection Timeout: Check your IP and PORT are correct and the camera can be reached.");
     }
@@ -612,7 +611,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             if (!isOnline) {
                                 bringCameraOnline();
                             }
-                            logger.debug("Sending camera: {}: http://{}:{}{}", httpMethod, cameraConfig.getIp(), port,
+                            logger.trace("Sending camera: {}: http://{}:{}{}", httpMethod, cameraConfig.getIp(), port,
                                     httpRequestURL);
 
                             openChannel(ch, httpRequestURL);
@@ -653,7 +652,6 @@ public class IpCameraHandler extends BaseThingHandler {
         } finally {
             lockCurrentSnapshot.unlock();
             currentSnapshotTime = Instant.now();
-            logger.debug("SNAPSHOT RECIEVED");
         }
 
         if (updateImageChannel) {
@@ -678,19 +676,11 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void openCamerasStream() {
-        threadPool.schedule(this::openMjpegStream, 500, TimeUnit.MILLISECONDS);
+        mainEventLoopGroup.schedule(this::openMjpegStream, 500, TimeUnit.MILLISECONDS);
     }
 
     private void openMjpegStream() {
         sendHttpGET(mjpegUri);
-    }
-
-    private @Nullable Channel findOpenChannel(String httpRequestURL) {
-        ChannelTracking tracker = channelTrackingMap.get(httpRequestURL);
-        if (tracker != null) {
-            return tracker.getChannel();
-        }
-        return null;
     }
 
     private void openChannel(Channel channel, String httpRequestURL) {
@@ -1192,7 +1182,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             return;
                         }
                         onvifCamera.setAbsolutePan(Float.valueOf(command.toString()));
-                        threadPool.schedule(this::sendPTZRequest, 500, TimeUnit.MILLISECONDS);
+                        mainEventLoopGroup.schedule(this::sendPTZRequest, 500, TimeUnit.MILLISECONDS);
                     }
                     return;
                 case CHANNEL_TILT:
@@ -1217,7 +1207,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             return;
                         }
                         onvifCamera.setAbsoluteTilt(Float.valueOf(command.toString()));
-                        threadPool.schedule(this::sendPTZRequest, 500, TimeUnit.MILLISECONDS);
+                        mainEventLoopGroup.schedule(this::sendPTZRequest, 500, TimeUnit.MILLISECONDS);
                     }
                     return;
                 case CHANNEL_ZOOM:
@@ -1242,7 +1232,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             return;
                         }
                         onvifCamera.setAbsoluteZoom(Float.valueOf(command.toString()));
-                        threadPool.schedule(this::sendPTZRequest, 500, TimeUnit.MILLISECONDS);
+                        mainEventLoopGroup.schedule(this::sendPTZRequest, 500, TimeUnit.MILLISECONDS);
                     }
                     return;
             }
@@ -1419,12 +1409,12 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
-    private void snapshot() {
+    private void takeSnapshot() {
         sendHttpGET(snapshotUri);
     }
 
     private void updateSnapshot() {
-        mainEventLoopGroup.schedule(this::snapshot, 0, TimeUnit.MILLISECONDS);
+        mainEventLoopGroup.schedule(this::takeSnapshot, 0, TimeUnit.MILLISECONDS);
     }
 
     public byte[] getSnapshot() {
@@ -1570,7 +1560,7 @@ public class IpCameraHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         cameraConfig = getConfigAs(CameraConfig.class);
-        threadPool = Executors.newScheduledThreadPool(4);
+        threadPool = Executors.newScheduledThreadPool(2);
         mainEventLoopGroup = new NioEventLoopGroup(4);
         snapshotUri = getCorrectUrlFormat(cameraConfig.getSnapshotUrl());
         mjpegUri = getCorrectUrlFormat(cameraConfig.getMjpegUrl());

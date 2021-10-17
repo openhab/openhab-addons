@@ -197,7 +197,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                         }
                         break;
                     default:
-                        logger.debug("Unhandled reply-{}.", content);
+                        logger.trace("Unhandled reply-{}.", content);
                         break;
                 }
             }

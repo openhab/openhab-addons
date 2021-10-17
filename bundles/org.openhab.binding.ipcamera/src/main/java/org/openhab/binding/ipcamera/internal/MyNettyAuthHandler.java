@@ -145,6 +145,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         }
         if (msg instanceof HttpResponse) {
             HttpResponse response = (HttpResponse) msg;
+            ChannelTracking tracker;
             if (response.status().code() == 401) {
                 if (!response.headers().isEmpty()) {
                     String authenticate = "";
@@ -155,8 +156,13 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                             }
                         }
                     }
-                    ipCameraHandler.channelTrackingMap.remove(httpUrl);
-                    ctx.close();// needs to be here otherwise HIK with digest sends an extra byte
+                    // needs to be here otherwise HIK with digest sends an extra byte
+                    tracker = ipCameraHandler.channelTrackingMap.get(httpUrl);
+                    if (tracker != null) {
+                        tracker.closeChannel();
+                    } else {
+                        ctx.close();
+                    }
                     if (!authenticate.isEmpty()) {
                         processAuth(authenticate, httpMethod, httpUrl, true);
                     } else {
@@ -165,10 +171,14 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                     }
                 }
             } else if (response.status().code() != 200) {
-                logger.info("Camera at IP:{} gave a reply with a response code of :{}",
+                logger.debug("Camera at IP:{} gave a reply with a response code of :{}",
                         ipCameraHandler.cameraConfig.getIp(), response.status().code());
-                ipCameraHandler.channelTrackingMap.remove(httpUrl);
-                ctx.close();
+                tracker = ipCameraHandler.channelTrackingMap.get(httpUrl);
+                if (tracker != null) {
+                    tracker.closeChannel();
+                } else {
+                    ctx.close();
+                }
             }
         }
         // Pass the Message back to the pipeline for the next handler to process//
