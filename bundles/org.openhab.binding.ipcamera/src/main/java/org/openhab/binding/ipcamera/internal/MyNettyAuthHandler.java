@@ -81,6 +81,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
             }
             logger.debug("Setting up the camera to use Basic Auth and resending last request with correct auth.");
             if (ipCameraHandler.setBasicAuth(true)) {
+                ipCameraHandler.channelTrackingMap.remove(httpUrl);
                 ipCameraHandler.sendHttpRequest(httpMethod, requestURI, null);
             }
             return;
@@ -142,6 +143,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         if (msg == null || ctx == null) {
             return;
         }
+        boolean closeConnection = true;
         if (msg instanceof HttpResponse) {
             HttpResponse response = (HttpResponse) msg;
             if (response.status().code() == 401) {
@@ -152,7 +154,15 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                             if (name.toString().equalsIgnoreCase("WWW-Authenticate")) {
                                 authenticate = value.toString();
                             }
+                            if (name.toString().equalsIgnoreCase("Connection")
+                                    && value.toString().contains("keep-alive")) {
+                                closeConnection = false;
+                            }
                         }
+                    }
+                    if (closeConnection) {
+                        ipCameraHandler.channelTrackingMap.remove(httpUrl);
+                        ctx.close();// needs to be here
                     }
                     if (!authenticate.isEmpty()) {
                         processAuth(authenticate, httpMethod, httpUrl, true);
@@ -160,23 +170,15 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                         ipCameraHandler.cameraConfigError(
                                 "Camera gave no WWW-Authenticate: Your login details must be wrong.");
                     }
-                    ctx.close();// needs to be here
-                    return;
                 }
             } else if (response.status().code() != 200) {
                 logger.debug("Camera at IP:{} gave a reply with a response code of :{}",
                         ipCameraHandler.cameraConfig.getIp(), response.status().code());
+                ipCameraHandler.channelTrackingMap.remove(httpUrl);
+                ctx.close();
             }
         }
         // Pass the Message back to the pipeline for the next handler to process//
         super.channelRead(ctx, msg);
-    }
-
-    @Override
-    public void handlerAdded(@Nullable ChannelHandlerContext ctx) {
-    }
-
-    @Override
-    public void handlerRemoved(@Nullable ChannelHandlerContext ctx) {
     }
 }

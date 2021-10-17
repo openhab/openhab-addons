@@ -863,7 +863,7 @@ public class OnvifConnection {
                 sendOnvifRequest(requestBuilder(RequestType.Unsubscribe, subscriptionXAddr));
             }
             // give time for the Unsubscribe request to be sent to the camera.
-            threadPool.schedule(this::cleanup, 100, TimeUnit.MILLISECONDS);
+            threadPool.schedule(this::cleanup, 50, TimeUnit.MILLISECONDS);
         } else {
             cleanup();
         }

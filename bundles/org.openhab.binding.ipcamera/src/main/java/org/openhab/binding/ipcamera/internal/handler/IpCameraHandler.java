@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -278,8 +279,6 @@ public class IpCameraHandler extends BaseThingHandler {
                             }
                             if (content instanceof LastHttpContent) {
                                 processSnapshot(incomingJpeg);
-                                // testing next line and if works need to do a full cleanup of this function.
-                                closeConnection = true;
                                 if (closeConnection) {
                                     ctx.close();
                                 } else {
@@ -351,18 +350,6 @@ public class IpCameraHandler extends BaseThingHandler {
             } finally {
                 ReferenceCountUtil.release(msg);
             }
-        }
-
-        @Override
-        public void channelReadComplete(@Nullable ChannelHandlerContext ctx) {
-        }
-
-        @Override
-        public void handlerAdded(@Nullable ChannelHandlerContext ctx) {
-        }
-
-        @Override
-        public void handlerRemoved(@Nullable ChannelHandlerContext ctx) {
         }
 
         @Override
@@ -524,6 +511,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 return;
             }
         }
+        logger.debug("FAILED connection");
         cameraCommunicationError(
                 "Connection Timeout: Check your IP and PORT are correct and the camera can be reached.");
     }
@@ -541,9 +529,9 @@ public class IpCameraHandler extends BaseThingHandler {
             mainBootstrap.channel(NioSocketChannel.class);
             mainBootstrap.option(ChannelOption.SO_KEEPALIVE, true);
             mainBootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 4500);
-            mainBootstrap.option(ChannelOption.SO_SNDBUF, 1024 * 8);
-            mainBootstrap.option(ChannelOption.SO_RCVBUF, 1024 * 1024);
-            mainBootstrap.option(ChannelOption.TCP_NODELAY, true);
+            // mainBootstrap.option(ChannelOption.SO_SNDBUF, 1024 * 8);
+            // mainBootstrap.option(ChannelOption.SO_RCVBUF, 1024 * 1024);
+            // mainBootstrap.option(ChannelOption.TCP_NODELAY, true);
             mainBootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
                 @Override
@@ -592,6 +580,7 @@ public class IpCameraHandler extends BaseThingHandler {
             request.headers().set("Connection", HttpHeaderValues.KEEP_ALIVE);
         } else {
             request = putRequestWithBody;
+            request.headers().set("Connection", HttpHeaderValues.CLOSE);
         }
 
         if (!basicAuth.isEmpty()) {
@@ -609,6 +598,13 @@ public class IpCameraHandler extends BaseThingHandler {
             }
         }
 
+        Channel oldChannel = findOpenChannel(httpRequestURL);
+        if (oldChannel != null && oldChannel.isWritable()) {
+            oldChannel.writeAndFlush(request);
+            logger.debug("Reused old channel");
+            return;
+        }
+
         mainBootstrap.connect(new InetSocketAddress(cameraConfig.getIp(), port))
                 .addListener(new ChannelFutureListener() {
 
@@ -623,7 +619,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             if (!isOnline) {
                                 bringCameraOnline();
                             }
-                            logger.trace("Sending camera: {}: http://{}:{}{}", httpMethod, cameraConfig.getIp(), port,
+                            logger.debug("Sending camera: {}: http://{}:{}{}", httpMethod, cameraConfig.getIp(), port,
                                     httpRequestURL);
 
                             openChannel(ch, httpRequestURL);
@@ -664,6 +660,7 @@ public class IpCameraHandler extends BaseThingHandler {
         } finally {
             lockCurrentSnapshot.unlock();
             currentSnapshotTime = Instant.now();
+            logger.debug("SNAPSHOT RECIEVED");
         }
 
         if (updateImageChannel) {
@@ -693,6 +690,14 @@ public class IpCameraHandler extends BaseThingHandler {
 
     private void openMjpegStream() {
         sendHttpGET(mjpegUri);
+    }
+
+    private @Nullable Channel findOpenChannel(String httpRequestURL) {
+        ChannelTracking tracker = channelTrackingMap.get(httpRequestURL);
+        if (tracker != null) {
+            return tracker.getChannel();
+        }
+        return null;
     }
 
     private void openChannel(Channel channel, String httpRequestURL) {
@@ -727,7 +732,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     channelTrackingMap.remove(channelTracking.getRequestUrl());
                 }
                 if (channelTracking.getChannel() == channel) {
-                    logger.trace("Open channel to camera is used for URL:{}", channelTracking.getRequestUrl());
+                    logger.debug("Open channel to camera is used for URL:{}", channelTracking.getRequestUrl());
                     oldChannel = false;
                 }
             }
@@ -1315,7 +1320,7 @@ public class IpCameraHandler extends BaseThingHandler {
         groupTracker.listOfOnlineCameraUID.add(getThing().getUID().getId());
         Future<?> localFuture = cameraConnectionJob;
         if (localFuture != null) {
-            localFuture.cancel(true);
+            localFuture.cancel(false);
             cameraConnectionJob = null;
         }
         if (!snapshotUri.isEmpty()) {
@@ -1366,7 +1371,7 @@ public class IpCameraHandler extends BaseThingHandler {
             if (snapshotUri.isEmpty() || "ffmpeg".equals(snapshotUri)) {
                 snapshotIsFfmpeg();
             } else {
-                sendHttpRequest("GET", snapshotUri, null);
+                updateSnapshot();
             }
             return;
         }
@@ -1378,7 +1383,7 @@ public class IpCameraHandler extends BaseThingHandler {
         if ("ffmpeg".equals(snapshotUri)) {
             snapshotIsFfmpeg();
         } else if (!snapshotUri.isEmpty()) {
-            sendHttpRequest("GET", snapshotUri, null);
+            mainEventLoopGroup.schedule(this::updateSnapshot, 0, TimeUnit.MILLISECONDS);
         } else if (!rtspUri.isEmpty()) {
             snapshotIsFfmpeg();
         } else {
@@ -1421,6 +1426,14 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
+    private void snapshot() {
+        sendHttpGET(snapshotUri);
+    }
+
+    private void updateSnapshot() {
+        mainEventLoopGroup.schedule(this::snapshot, 0, TimeUnit.MILLISECONDS);
+    }
+
     public byte[] getSnapshot() {
         if (!isOnline) {
             // Keep streams open when the camera goes offline so they dont stop.
@@ -1434,8 +1447,12 @@ public class IpCameraHandler extends BaseThingHandler {
                     (byte) 0xff, (byte) 0xcc, 0x00, 0x06, 0x00, 0x10, 0x10, 0x05, (byte) 0xff, (byte) 0xda, 0x00, 0x08,
                     0x01, 0x01, 0x00, 0x00, 0x3f, 0x00, (byte) 0xd2, (byte) 0xcf, 0x20, (byte) 0xff, (byte) 0xd9 };
         }
-        if (!snapshotPolling && !ffmpegSnapshotGeneration) {
-            sendHttpGET(snapshotUri);
+        // Most cameras will return a 503 busy error if snapshot is faster than 1 second
+        long lastUpdatedMs = Duration.between(currentSnapshotTime, Instant.now()).toMillis();
+        if (!snapshotPolling && !ffmpegSnapshotGeneration && lastUpdatedMs > 1500) {
+            updateSnapshot();
+        } else {
+            logger.trace("Snapshot already updated {}ms ago", lastUpdatedMs);
         }
         lockCurrentSnapshot.lock();
         try {
@@ -1488,12 +1505,12 @@ public class IpCameraHandler extends BaseThingHandler {
             checkCameraConnection();
         }
         // NOTE: Use lowPriorityRequests if get request is not needed every poll.
-        if (!lowPriorityRequests.isEmpty()) {
-            if (lowPriorityCounter >= lowPriorityRequests.size()) {
-                lowPriorityCounter = 0;
-            }
-            sendHttpGET(lowPriorityRequests.get(lowPriorityCounter++));
-        }
+        // if (!lowPriorityRequests.isEmpty()) {
+        // if (lowPriorityCounter >= lowPriorityRequests.size()) {
+        // lowPriorityCounter = 0;
+        // }
+        // sendHttpGET(lowPriorityRequests.get(lowPriorityCounter++));
+        // }
         // what needs to be done every poll//
         switch (thing.getThingTypeUID().getId()) {
             case GENERIC_THING:
@@ -1517,9 +1534,9 @@ public class IpCameraHandler extends BaseThingHandler {
                 break;
             case HIKVISION_THING:
                 if (streamIsStopped("/ISAPI/Event/notification/alertStream")) {
-                    logger.info("The alarm stream was not running for camera {}, re-starting it now",
-                            cameraConfig.getIp());
-                    sendHttpGET("/ISAPI/Event/notification/alertStream");
+                    // logger.info("The alarm stream was not running for camera {}, re-starting it now",
+                    // cameraConfig.getIp());
+                    // sendHttpGET("/ISAPI/Event/notification/alertStream");
                 }
                 break;
             case AMCREST_THING:
@@ -1551,8 +1568,8 @@ public class IpCameraHandler extends BaseThingHandler {
         if (localHLS != null) {
             localHLS.checkKeepAlive();
         }
-        if (openChannels.size() > 18) {
-            logger.debug("There are {} open Channels being tracked.", openChannels.size());
+        if (openChannels.size() > 6) {
+            logger.warn("There are {} open Channels being tracked.", openChannels.size());
             cleanChannels();
         }
     }
@@ -1561,7 +1578,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public void initialize() {
         cameraConfig = getConfigAs(CameraConfig.class);
         threadPool = Executors.newScheduledThreadPool(4);
-        mainEventLoopGroup = new NioEventLoopGroup(3);
+        mainEventLoopGroup = new NioEventLoopGroup();
         snapshotUri = getCorrectUrlFormat(cameraConfig.getSnapshotUrl());
         mjpegUri = getCorrectUrlFormat(cameraConfig.getMjpegUrl());
         rtspUri = cameraConfig.getFfmpegInput();
