@@ -47,7 +47,7 @@ The **bridge** thing has three (3) configuration parameters:
 
 The **sky** and **storm** things do not have configuration parameters, they will refresh and display units based on the bridge configuration.
 
-The refresh request for either the sky or storm things will also pull its associated device's information/observations.
+The refresh request for either the Sky or Storm things will also pull its associated device's information/observations.
 
 ## Channels
 
