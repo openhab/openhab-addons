@@ -43,96 +43,10 @@ configuration:
 
 ## Full Example
 
-```
-{
-  "statusInfo": {
-    "status": "ONLINE",
-    "statusDetail": "NONE"
-  },
-  "editable": true,
-  "label": "Proteus EcoMeter S",
-  "configuration": {
-    "usbPort": "/dev/ttyUSB0"
-  },
-  "properties": {},
-  "UID": "proteusecometer:EcoMeterS:e90705eaa4",
-  "thingTypeUID": "proteusecometer:EcoMeterS",
-  "channels": [
-    {
-      "linkedItems": [
-        "ProteusEcoMeterS_Temperature"
-      ],
-      "uid": "proteusecometer:EcoMeterS:e90705eaa4:temperature",
-      "id": "temperature",
-      "channelTypeUID": "proteusecometer:Temperature",
-      "itemType": "Number:CELSIUS",
-      "kind": "STATE",
-      "label": "Temperature",
-      "description": "Temperature measured by the sensor",
-      "defaultTags": [],
-      "properties": {},
-      "configuration": {}
-    },
-    {
-      "linkedItems": [
-        "ProteusEcoMeterS_SensorLevelCm"
-      ],
-      "uid": "proteusecometer:EcoMeterS:e90705eaa4:sensorLevel",
-      "id": "sensorLevel",
-      "channelTypeUID": "proteusecometer:SensorLevel",
-      "itemType": "Number:centiMetre",
-      "kind": "STATE",
-      "label": "Sensor Level",
-      "description": "The distance between the sensor and the water surface",
-      "defaultTags": [],
-      "properties": {},
-      "configuration": {}
-    },
-    {
-      "linkedItems": [
-        "ProteusEcoMeterS_UsableLevelinliter"
-      ],
-      "uid": "proteusecometer:EcoMeterS:e90705eaa4:usableLevelInLitre",
-      "id": "usableLevelInLitre",
-      "channelTypeUID": "proteusecometer:UsableLevelInLitre",
-      "itemType": "Number:LITRE",
-      "kind": "STATE",
-      "label": "Usable Level in litre",
-      "description": "The usable level in litre",
-      "defaultTags": [],
-      "properties": {},
-      "configuration": {}
-    },
-    {
-      "linkedItems": [
-        "ProteusEcoMeterS_UsableLevelinpercent"
-      ],
-      "uid": "proteusecometer:EcoMeterS:e90705eaa4:usableLevelInPercent",
-      "id": "usableLevelInPercent",
-      "channelTypeUID": "proteusecometer:UsableLevelInPercent",
-      "itemType": "Number:PERCENT",
-      "kind": "STATE",
-      "label": "Usable Level in percent",
-      "description": "The usable level in percent",
-      "defaultTags": [],
-      "properties": {},
-      "configuration": {}
-    },
-    {
-      "linkedItems": [
-        "ProteusEcoMeterS_TotalCapacityinliter"
-      ],
-      "uid": "proteusecometer:EcoMeterS:e90705eaa4:totalCapacity",
-      "id": "totalCapacity",
-      "channelTypeUID": "proteusecometer:TotalCapacity",
-      "itemType": "Number:LITRE",
-      "kind": "STATE",
-      "label": "Total Capacity",
-      "description": "The total capacity of your cistern/tank",
-      "defaultTags": [],
-      "properties": {},
-      "configuration": {}
-    }
-  ]
-}
-```
+Thing proteusecometer:EcoMeterS:e90705eaa4 "Proteus EcoMeter S" [ usbPort="/dev/ttyUSB0" ]
+
+Number:Temperature   Temperature          "Measured temperature [%.1f °C]" { channel="proteusecometer:EcoMeterS:e90705eaa4:temperature" }
+Number:Length        SensorLevelCm        "Sensor Level"                   { channel="proteusecometer:EcoMeterS:e90705eaa4:sensorLevel" }
+Number:Volume        UsableLevelinliter   "Usable Level"                   { channel="proteusecometer:EcoMeterS:e90705eaa4:usableLevelInLitre" }
+Number:Dimensionless UsableLevelinpercent "Usable Level"                   { channel="proteusecometer:EcoMeterS:e90705eaa4:usableLevelInPercent" }
+Number:Volume        TotalCapacityinliter "Total Capacity"                 { channel="proteusecometer:EcoMeterS:e90705eaa4:totalCapacity" }
