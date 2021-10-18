@@ -135,7 +135,7 @@ public class UniFiController {
         synchronized (this) {
             sitesCache = getSites();
             devicesCache = getDevices();
-            clientsCache = getClients();
+            updateClients();
             insightsCache = getInsights();
         }
     }
@@ -263,27 +263,23 @@ public class UniFiController {
         return cache;
     }
 
-    private UniFiClientCache getClients() throws UniFiException {
-        UniFiClientCache cache = new UniFiClientCache();
+    private void updateClients() throws UniFiException {
         Collection<UniFiSite> sites = sitesCache.values();
         for (UniFiSite site : sites) {
-            cache.putAll(getClients(site));
+            updateClients(site);
         }
-        return cache;
     }
 
-    private UniFiClientCache getClients(UniFiSite site) throws UniFiException {
+    private void updateClients(UniFiSite site) throws UniFiException {
         UniFiControllerRequest<UniFiClient[]> req = newRequest(UniFiClient[].class);
         req.setAPIPath("/api/s/" + site.getName() + "/stat/sta");
         UniFiClient[] clients = executeRequest(req);
-        UniFiClientCache cache = new UniFiClientCache();
         if (clients != null) {
             logger.debug("Found {} UniFi Client(s): {}", clients.length, lazyFormatAsList(clients));
             for (UniFiClient client : clients) {
-                cache.put(client);
+                clientsCache.put(client);
             }
         }
-        return cache;
     }
 
     private UniFiClientCache getInsights() throws UniFiException {
