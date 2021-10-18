@@ -15,11 +15,11 @@ package org.openhab.binding.enocean.internal.transceiver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Queue;
 import java.util.TooManyListenersException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
@@ -155,7 +155,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
             SerialPortManager serialPortManager) {
         requestQueue = new RequestQueue(scheduler);
 
-        listeners = new HashMap<>();
+        listeners = new ConcurrentHashMap<>();
         eventListeners = new HashSet<>();
         teachInListener = null;
 
