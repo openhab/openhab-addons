@@ -74,9 +74,14 @@ public class EnedisHttpApi {
     }
 
     public void initialize() throws LinkyException {
-        addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, config.internalAuthId);
+        String authId = config.internalAuthId;
+        String username = config.username;
+        if (authId == null || username == null) {
+            throw new LinkyException("username and internalAuthId are mandatory");
+        }
+        addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, authId);
 
-        logger.debug("Starting login process for user : {}", config.username);
+        logger.debug("Starting login process for user : {}", username);
 
         try {
             logger.debug("Step 1 : getting authentification");
@@ -109,14 +114,15 @@ public class EnedisHttpApi {
 
             logger.debug(
                     "Step 3 : auth1 - retrieve the template, thanks to cookie internalAuthId, user is already set");
-            result = httpClient.POST(url).send();
+            result = httpClient.POST(url).header("X-NoSession", "true").header("X-Password", "anonymous")
+                    .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous").send();
             if (result.getStatus() != 200) {
                 throw new LinkyException("Connection failed step 3 - auth1 : " + result.getContentAsString());
             }
 
             AuthData authData = gson.fromJson(result.getContentAsString(), AuthData.class);
-            if (authData.callbacks.size() < 2 || authData.callbacks.get(0).input.size() == 0
-                    || authData.callbacks.get(1).input.size() == 0 || !config.username
+            if (authData == null || authData.callbacks.size() < 2 || authData.callbacks.get(0).input.size() == 0
+                    || authData.callbacks.get(1).input.size() == 0 || !username
                             .equals(Objects.requireNonNull(authData.callbacks.get(0).input.get(0)).valueAsString())) {
                 throw new LinkyException("Authentication error, the authentication_cookie is probably wrong");
             }
@@ -128,12 +134,18 @@ public class EnedisHttpApi {
 
             logger.debug("Step 3 : auth2 - send the auth data");
             result = httpClient.POST(url).header(HttpHeader.CONTENT_TYPE, "application/json")
+                    .header("X-NoSession", "true").header("X-Password", "anonymous")
+                    .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous")
                     .content(new StringContentProvider(gson.toJson(authData))).send();
             if (result.getStatus() != 200) {
                 throw new LinkyException("Connection failed step 3 - auth2 : " + result.getContentAsString());
             }
 
             AuthResult authResult = gson.fromJson(result.getContentAsString(), AuthResult.class);
+            if (authResult == null) {
+                throw new LinkyException("Invalid authentication result data");
+            }
+
             logger.debug("Add the tokenId cookie");
             addCookie("enedisExt", authResult.tokenId);
 
@@ -155,11 +167,11 @@ public class EnedisHttpApi {
         }
     }
 
-    public String getLocation(ContentResponse response) {
+    private String getLocation(ContentResponse response) {
         return response.getHeaders().get(HttpHeader.LOCATION);
     }
 
-    public void disconnect() throws LinkyException {
+    private void disconnect() throws LinkyException {
         if (connected) {
             logger.debug("Logout process");
             try { // Three times in a row to get disconnected
@@ -220,6 +232,9 @@ public class EnedisHttpApi {
         }
         try {
             PrmInfo[] prms = gson.fromJson(data, PrmInfo[].class);
+            if (prms == null || prms.length < 1) {
+                throw new LinkyException("Invalid prms data received");
+            }
             return prms[0];
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
@@ -259,6 +274,9 @@ public class EnedisHttpApi {
         logger.trace("getData returned {}", data);
         try {
             ConsumptionReport report = gson.fromJson(data, ConsumptionReport.class);
+            if (report == null) {
+                throw new LinkyException("No report data received");
+            }
             return report.firstLevel.consumptions;
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching ConsumptionReport.class: {}", data);

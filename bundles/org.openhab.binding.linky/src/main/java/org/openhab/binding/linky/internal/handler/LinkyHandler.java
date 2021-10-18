@@ -64,10 +64,10 @@ import com.google.gson.Gson;
 
 @NonNullByDefault
 public class LinkyHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
-
     private static final int REFRESH_FIRST_HOUR_OF_DAY = 1;
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
+
+    private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
 
     private final HttpClient httpClient;
     private final Gson gson;
@@ -151,37 +151,33 @@ public class LinkyHandler extends BaseThingHandler {
         scheduler.submit(() -> {
             try {
                 EnedisHttpApi api = this.enedisApi;
-                if (api != null) {
-                    api.initialize();
-                    updateStatus(ThingStatus.ONLINE);
+                api.initialize();
+                updateStatus(ThingStatus.ONLINE);
 
-                    if (thing.getProperties().isEmpty()) {
-                        Map<String, String> properties = new HashMap<>();
-                        PrmInfo prmInfo = api.getPrmInfo();
-                        UserInfo userInfo = api.getUserInfo();
-                        properties.put(USER_ID, userInfo.userProperties.internId);
-                        properties.put(PUISSANCE, prmInfo.puissanceSouscrite + " kVA");
-                        properties.put(PRM_ID, prmInfo.prmId);
-                        updateProperties(properties);
-                    }
-
-                    prmId = thing.getProperties().get(PRM_ID);
-                    userId = thing.getProperties().get(USER_ID);
-
-                    updateData();
-
-                    disconnect();
-
-                    final LocalDateTime now = LocalDateTime.now();
-                    final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
-                            .truncatedTo(ChronoUnit.HOURS);
-
-                    refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
-                            ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
-                            REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
-                } else {
-                    throw new LinkyException("Enedis Api is not initialized");
+                if (thing.getProperties().isEmpty()) {
+                    Map<String, String> properties = new HashMap<>();
+                    PrmInfo prmInfo = api.getPrmInfo();
+                    UserInfo userInfo = api.getUserInfo();
+                    properties.put(USER_ID, userInfo.userProperties.internId);
+                    properties.put(PUISSANCE, prmInfo.puissanceSouscrite + " kVA");
+                    properties.put(PRM_ID, prmInfo.prmId);
+                    updateProperties(properties);
                 }
+
+                prmId = thing.getProperties().get(PRM_ID);
+                userId = thing.getProperties().get(USER_ID);
+
+                updateData();
+
+                disconnect();
+
+                final LocalDateTime now = LocalDateTime.now();
+                final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
+                        .truncatedTo(ChronoUnit.HOURS);
+
+                refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
+                        ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
+                        REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
             } catch (LinkyException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
@@ -470,7 +466,7 @@ public class LinkyHandler extends BaseThingHandler {
         return consumption;
     }
 
-    public void checkData(Consumption consumption) throws LinkyException {
+    private void checkData(Consumption consumption) throws LinkyException {
         if (consumption.aggregats.days.periodes.size() == 0) {
             throw new LinkyException("invalid consumptions data: no day period");
         }

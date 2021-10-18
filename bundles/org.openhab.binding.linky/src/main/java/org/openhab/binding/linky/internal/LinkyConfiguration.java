@@ -12,15 +12,19 @@
  */
 package org.openhab.binding.linky.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link LinkyConfiguration} is the class used to match the
  * thing configuration.
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class LinkyConfiguration {
     public static final String INTERNAL_AUTH_ID = "internalAuthId";
-    public String username;
-    public String password;
-    public String internalAuthId;
+    public @Nullable String username;
+    public @Nullable String password;
+    public @Nullable String internalAuthId;
 }
