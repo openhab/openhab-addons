@@ -141,7 +141,7 @@
 
 	<channel-type id="wind-direction">
 		<item-type>String</item-type>
-		<label>@text/windDirection</label>
+		<label>@text/windDirectionLabel</label>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -187,9 +187,6 @@
 		<label>@text/cloudinessLabel</label>
 		<description>@text/cloudinessDescription</description>
 		<category>Clouds</category>
-		<tags>
-			<tag>Measurement</tag>
-		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
