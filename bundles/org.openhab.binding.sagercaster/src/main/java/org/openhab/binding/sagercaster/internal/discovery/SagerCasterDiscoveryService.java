@@ -25,7 +25,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
@@ -56,9 +58,12 @@ public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
      * Creates a SagerCasterDiscoveryService with enabled autostart.
      */
     @Activate
-    public SagerCasterDiscoveryService(final @Reference LocationProvider locationProvider) {
+    public SagerCasterDiscoveryService(final @Reference LocaleProvider localeProvider,
+            final @Reference TranslationProvider i18nProvider, final @Reference LocationProvider locationProvider) {
         super(Set.of(THING_TYPE_SAGERCASTER), DISCOVER_TIMEOUT_SECONDS, true);
         this.locationProvider = locationProvider;
+        this.localeProvider = localeProvider;
+        this.i18nProvider = i18nProvider;
     }
 
     @Override
