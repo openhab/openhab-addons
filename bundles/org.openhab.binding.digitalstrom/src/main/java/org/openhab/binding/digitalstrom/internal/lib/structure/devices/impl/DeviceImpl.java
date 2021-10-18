@@ -62,7 +62,7 @@ import com.google.gson.JsonObject;
  */
 public class DeviceImpl extends AbstractGeneralDeviceInformations implements Device {
 
-    private final Logger logger = LoggerFactory.getLogger(DeviceImpl.class);
+    private Logger logger = LoggerFactory.getLogger(DeviceImpl.class);
 
     private Config config;
 
@@ -146,6 +146,13 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     // is fix 1.
     private final int switchPercentOff = 1;
 
+    private final List<Short> ignoredApplicationGroups;
+
+    protected DeviceImpl(JsonObject deviceJsonObject, Logger logger) {
+        this(deviceJsonObject);
+        this.logger = logger;
+    }
+
     /**
      * Creates a new {@link DeviceImpl} from the given DigitalSTROM-Device
      * {@link JsonObject}.
@@ -228,7 +235,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
         }
 
         outputChannels.addAll(DSJsonParser.getOutputChannels(deviceJsonObject));
-
+        ignoredApplicationGroups = new ArrayList<>();
         init();
     }
 
@@ -279,7 +286,12 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     private boolean addGroupToList(Short groupID) {
         ApplicationGroup group = ApplicationGroup.getGroup(groupID);
         if (ApplicationGroup.UNDEFINED.equals(group)) {
-            logger.warn("Unknown application group with ID '{}' found! Ignoring group", groupID);
+            if (!ignoredApplicationGroups.contains(groupID)) {
+                ignoredApplicationGroups.add(groupID);
+                logger.warn(
+                        "Unknown application group with ID '{}' found! Ignoring group. Further warn messages squelched",
+                        groupID);
+            }
         } else {
             if (!this.groupList.contains(group)) {
                 this.groupList.add(group);

@@ -13,7 +13,12 @@
 package org.openhab.binding.digitalstrom.internal.lib.structure.devices.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.*;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +32,7 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
 import org.openhab.binding.digitalstrom.internal.lib.util.JsonModel;
 import org.openhab.binding.digitalstrom.internal.lib.util.OutputChannel;
+import org.slf4j.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -157,5 +163,18 @@ class DeviceImplTest {
         String json = gson.toJson(model);
 
         return JsonParser.parseString(json).getAsJsonObject();
+    }
+
+    @Test
+    void logMissingApplicationGroupOnlyOnce() {
+        Logger loggerMock = mock(Logger.class);
+        DeviceImpl deviceImpl = new DeviceImpl(createJsonObject(OutputModeEnum.POSITION_CON, MIXED_SHADE_CHANNEL),
+                loggerMock);
+        deviceImpl.addGroup((short) 16);
+        deviceImpl.addGroup((short) 17);
+        deviceImpl.addGroup((short) 16);
+
+        verify(loggerMock, times(1)).warn(anyString(), eq((short) 16));
+        verify(loggerMock, times(1)).warn(anyString(), eq((short) 17));
     }
 }
