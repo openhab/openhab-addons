@@ -24,5 +24,12 @@
 			<description>Base URL for the openHAB Cloud server</description>
 			<default>https://myopenhab.org/</default>
 		</parameter>
+		<parameter name="apiToken" type="text" required="false">
+			<label>API Token</label>
+			<description>API Token for local openHAB server (might be neccessary when deactivated default user role for
+				unauthenticated users)</description>
+			<default></default>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

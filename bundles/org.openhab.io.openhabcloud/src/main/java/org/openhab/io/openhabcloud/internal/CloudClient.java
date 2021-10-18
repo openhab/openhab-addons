@@ -19,6 +19,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.BufferUtil;
@@ -84,6 +86,11 @@ public class CloudClient {
     private final String localBaseUrl;
 
     /*
+     * This variable holds local openHAB's API token for connecting to the local openHAB instance
+     */
+    private final String localApiToken;
+
+    /*
      * This variable holds instance of Jetty HTTP client to make requests to local openHAB
      */
     private final HttpClient jettyClient;
@@ -131,11 +138,12 @@ public class CloudClient {
      * @param exposedItems Items that are made available to apps connected to the openHAB Cloud
      */
     public CloudClient(HttpClient httpClient, String uuid, String secret, String baseURL, String localBaseUrl,
-            boolean remoteAccessEnabled, Set<String> exposedItems) {
+            String localApiToken, boolean remoteAccessEnabled, Set<String> exposedItems) {
         this.uuid = uuid;
         this.secret = secret;
         this.baseURL = baseURL;
         this.localBaseUrl = localBaseUrl;
+        this.localApiToken = localApiToken;
         this.remoteAccessEnabled = remoteAccessEnabled;
         this.exposedItems = exposedItems;
         this.jettyClient = httpClient;
@@ -315,6 +323,15 @@ public class CloudClient {
                 proto = data.getString("protocol");
             }
             request.header("X-Forwarded-Proto", proto);
+
+            // add token authentication when configured
+            if (localApiToken != null) {
+                String auth = localApiToken + ":";
+                byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes());
+                String authHeader = "Basic " + new String(encodedAuth);
+                request.header(HttpHeader.AUTHORIZATION, authHeader);
+            }
+
             HttpMethod method = HttpMethod.fromString(requestMethod);
             if (method == null) {
                 logger.debug("Unsupported request method {}", requestMethod);

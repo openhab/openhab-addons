@@ -72,6 +72,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
     private static final String CFG_EXPOSE = "expose";
     private static final String CFG_BASE_URL = "baseURL";
+    private static final String CFG_API_TOKEN = "apiToken";
     private static final String CFG_MODE = "mode";
     private static final String SECRET_FILE_NAME = "openhabcloud" + File.separator + "secret";
     private static final String DEFAULT_URL = "https://myopenhab.org/";
@@ -86,6 +87,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     public static String clientVersion = null;
     private CloudClient cloudClient;
     private String cloudBaseUrl = null;
+    private String localApiToken = null;
     private final HttpClient httpClient;
     protected final ItemRegistry itemRegistry;
     protected final EventPublisher eventPublisher;
@@ -207,6 +209,10 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             cloudBaseUrl = DEFAULT_URL;
         }
 
+        if (config.get(CFG_API_TOKEN) != null) {
+            localApiToken = (String) config.get(CFG_API_TOKEN);
+        }
+
         exposedItems = new HashSet<>();
         Object expCfg = config.get(CFG_EXPOSE);
         if (expCfg instanceof String) {
@@ -242,7 +248,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
         String localBaseUrl = "http://localhost:" + localPort;
         cloudClient = new CloudClient(httpClient, InstanceUUID.get(), getSecret(), cloudBaseUrl, localBaseUrl,
-                remoteAccessEnabled, exposedItems);
+                localApiToken, remoteAccessEnabled, exposedItems);
         cloudClient.setOpenHABVersion(OpenHAB.getVersion());
         cloudClient.connect();
         cloudClient.setListener(this);
