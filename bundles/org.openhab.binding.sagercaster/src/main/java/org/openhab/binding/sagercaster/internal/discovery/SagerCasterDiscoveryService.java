@@ -27,7 +27,6 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.PointType;
-import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -45,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
     private static final int LOCATION_CHANGED_CHECK_INTERVAL = 60;
-    private static final ThingUID sagerCasterThing = new ThingUID(THING_TYPE_SAGERCASTER, LOCAL);
+    private static final ThingUID SAGER_CASTER_THING = new ThingUID(THING_TYPE_SAGERCASTER, LOCAL);
 
     private final Logger logger = LoggerFactory.getLogger(SagerCasterDiscoveryService.class);
     private final LocationProvider locationProvider;
@@ -58,7 +57,7 @@ public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
      */
     @Activate
     public SagerCasterDiscoveryService(final @Reference LocationProvider locationProvider) {
-        super(Set.of(new ThingTypeUID(BINDING_ID, "-")), DISCOVER_TIMEOUT_SECONDS, true);
+        super(Set.of(THING_TYPE_SAGERCASTER), DISCOVER_TIMEOUT_SECONDS, true);
         this.locationProvider = locationProvider;
     }
 
@@ -114,7 +113,7 @@ public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
 
     public void createResults(PointType location) {
         String propGeolocation = String.format("%s,%s", location.getLatitude(), location.getLongitude());
-        thingDiscovered(DiscoveryResultBuilder.create(sagerCasterThing).withLabel("Local Weather Forecast")
+        thingDiscovered(DiscoveryResultBuilder.create(SAGER_CASTER_THING).withLabel("Local Weather Forecast")
                 .withRepresentationProperty(CONFIG_LOCATION).withProperty(CONFIG_LOCATION, propGeolocation).build());
     }
 }
