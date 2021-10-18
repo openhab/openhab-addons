@@ -387,7 +387,7 @@ public class WLedHandler extends BaseThingHandler {
                 break;
             case CHANNEL_SLEEP:
                 if (OnOffType.ON.equals(command)) {
-                    sendGetRequest("/win&NL=1");
+                    sendGetRequest("/win&ND");
                 } else {
                     sendGetRequest("/win&NL=0");
                 }
