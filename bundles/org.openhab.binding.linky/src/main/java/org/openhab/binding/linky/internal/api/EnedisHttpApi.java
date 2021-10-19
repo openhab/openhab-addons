@@ -79,8 +79,6 @@ public class EnedisHttpApi {
     }
 
     public void initialize() throws LinkyException {
-        // addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, authId);
-
         logger.debug("Starting login process for user : {}", username);
 
         try {
