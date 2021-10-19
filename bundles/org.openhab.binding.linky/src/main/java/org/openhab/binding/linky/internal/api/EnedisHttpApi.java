@@ -64,24 +64,22 @@ public class EnedisHttpApi {
     private final Logger logger = LoggerFactory.getLogger(EnedisHttpApi.class);
     private final Gson gson;
     private final HttpClient httpClient;
-    private final LinkyConfiguration config;
     private boolean connected = false;
-    private CookieStore cookieStore;
+    private final CookieStore cookieStore;
+    private final String password;
+    private final String username;
 
-    public EnedisHttpApi(LinkyConfiguration config, Gson gson, HttpClient httpClient) {
+    public EnedisHttpApi(String username, String password, String authId, Gson gson, HttpClient httpClient) {
         this.gson = gson;
         this.httpClient = httpClient;
-        this.config = config;
         this.cookieStore = httpClient.getCookieStore();
+        this.username = username;
+        this.password = password;
+        addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, authId);
     }
 
     public void initialize() throws LinkyException {
-        String authId = config.internalAuthId;
-        String username = config.username;
-        if (authId == null || username == null) {
-            throw new LinkyException("username and internalAuthId are mandatory");
-        }
-        addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, authId);
+        // addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, authId);
 
         logger.debug("Starting login process for user : {}", username);
 
@@ -128,7 +126,7 @@ public class EnedisHttpApi {
                 throw new LinkyException("Authentication error, the authentication_cookie is probably wrong");
             }
 
-            authData.callbacks.get(1).input.get(0).value = config.password;
+            authData.callbacks.get(1).input.get(0).value = password;
             url = URL_MON_COMPTE
                     + "/auth/json/authenticate?realm=/enedis&spEntityID=SP-ODW-PROD&goto=/auth/SSOPOST/metaAlias/enedis/providerIDP?ReqID%"
                     + reqId

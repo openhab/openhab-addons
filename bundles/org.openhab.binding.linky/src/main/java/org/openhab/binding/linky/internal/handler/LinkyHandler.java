@@ -146,42 +146,49 @@ public class LinkyHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
-        enedisApi = new EnedisHttpApi(config, gson, httpClient);
+        String authId = config.internalAuthId;
+        String username = config.username;
+        String password = config.password;
+        if (authId != null && username != null && password != null) {
+            enedisApi = new EnedisHttpApi(username, password, authId, gson, httpClient);
+            scheduler.submit(() -> {
+                try {
+                    EnedisHttpApi api = this.enedisApi;
+                    api.initialize();
+                    updateStatus(ThingStatus.ONLINE);
 
-        scheduler.submit(() -> {
-            try {
-                EnedisHttpApi api = this.enedisApi;
-                api.initialize();
-                updateStatus(ThingStatus.ONLINE);
+                    if (thing.getProperties().isEmpty()) {
+                        Map<String, String> properties = new HashMap<>();
+                        PrmInfo prmInfo = api.getPrmInfo();
+                        UserInfo userInfo = api.getUserInfo();
+                        properties.put(USER_ID, userInfo.userProperties.internId);
+                        properties.put(PUISSANCE, prmInfo.puissanceSouscrite + " kVA");
+                        properties.put(PRM_ID, prmInfo.prmId);
+                        updateProperties(properties);
+                    }
 
-                if (thing.getProperties().isEmpty()) {
-                    Map<String, String> properties = new HashMap<>();
-                    PrmInfo prmInfo = api.getPrmInfo();
-                    UserInfo userInfo = api.getUserInfo();
-                    properties.put(USER_ID, userInfo.userProperties.internId);
-                    properties.put(PUISSANCE, prmInfo.puissanceSouscrite + " kVA");
-                    properties.put(PRM_ID, prmInfo.prmId);
-                    updateProperties(properties);
+                    prmId = thing.getProperties().get(PRM_ID);
+                    userId = thing.getProperties().get(USER_ID);
+
+                    updateData();
+
+                    disconnect();
+
+                    final LocalDateTime now = LocalDateTime.now();
+                    final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
+                            .truncatedTo(ChronoUnit.HOURS);
+
+                    refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
+                            ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
+                            REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
+                } catch (LinkyException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
-
-                prmId = thing.getProperties().get(PRM_ID);
-                userId = thing.getProperties().get(USER_ID);
-
-                updateData();
-
-                disconnect();
-
-                final LocalDateTime now = LocalDateTime.now();
-                final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
-                        .truncatedTo(ChronoUnit.HOURS);
-
-                refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
-                        ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
-                        REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
-            } catch (LinkyException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-        });
+            });
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Username, password and authId are mandatory");
+        }
     }
 
     /**
