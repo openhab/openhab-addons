@@ -199,7 +199,6 @@ public class IpCameraHandler extends BaseThingHandler {
         private String boundary = "";
         private Object reply = new Object();
         private String requestUrl = "";
-        private boolean closeConnection = true;
         private boolean isChunked = false;
 
         public void setURL(String url) {
@@ -225,11 +224,6 @@ public class IpCameraHandler extends BaseThingHandler {
                                     case "content-length":
                                         bytesToRecieve = Integer.parseInt(response.headers().getAsString(name));
                                         break;
-                                    case "connection":
-                                        if (response.headers().getAsString(name).contains("keep-alive")) {
-                                            closeConnection = false;
-                                        }
-                                        break;
                                     case "transfer-encoding":
                                         if (response.headers().getAsString(name).contains("chunked")) {
                                             isChunked = true;
@@ -238,7 +232,6 @@ public class IpCameraHandler extends BaseThingHandler {
                                 }
                             }
                             if (contentType.contains("multipart")) {
-                                closeConnection = false;
                                 if (mjpegUri.equals(requestUrl)) {
                                     if (msg instanceof HttpMessage) {
                                         // very start of stream only
@@ -280,12 +273,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             }
                             if (content instanceof LastHttpContent) {
                                 processSnapshot(incomingJpeg);
-                                if (closeConnection) {
-                                    ctx.close();
-                                } else {
-                                    bytesToRecieve = 0;
-                                    bytesAlreadyRecieved = 0;
-                                }
+                                ctx.close();
                             }
                         } else { // incomingMessage that is not an IMAGE
                             if (incomingMessage.isEmpty()) {
@@ -516,7 +504,6 @@ public class IpCameraHandler extends BaseThingHandler {
                 return;
             }
         }
-        logger.info("Camera at {} went offline", cameraConfig.getIp());
         cameraCommunicationError(
                 "Connection Timeout: Check your IP and PORT are correct and the camera can be reached.");
     }
