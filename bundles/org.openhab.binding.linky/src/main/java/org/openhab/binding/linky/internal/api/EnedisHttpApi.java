@@ -66,11 +66,13 @@ public class EnedisHttpApi {
     private final HttpClient httpClient;
     private final LinkyConfiguration config;
     private boolean connected = false;
+    private CookieStore cookieStore;
 
     public EnedisHttpApi(LinkyConfiguration config, Gson gson, HttpClient httpClient) {
         this.gson = gson;
         this.httpClient = httpClient;
         this.config = config;
+        this.cookieStore = httpClient.getCookieStore();
     }
 
     public void initialize() throws LinkyException {
@@ -121,14 +123,14 @@ public class EnedisHttpApi {
             }
 
             AuthData authData = gson.fromJson(result.getContentAsString(), AuthData.class);
-            if (authData == null || authData.callbacks.size() < 2 || authData.callbacks.get(0).input.size() == 0
-                    || authData.callbacks.get(1).input.size() == 0 || !username
-                            .equals(Objects.requireNonNull(authData.callbacks.get(0).input.get(0)).valueAsString())) {
+            if (authData == null || authData.callbacks.size() < 2 || authData.callbacks.get(0).input.isEmpty()
+                    || authData.callbacks.get(1).input.isEmpty()) {
                 throw new LinkyException("Authentication error, the authentication_cookie is probably wrong");
             }
 
             authData.callbacks.get(1).input.get(0).value = config.password;
-            url = "https://mon-compte.enedis.fr/auth/json/authenticate?realm=/enedis&spEntityID=SP-ODW-PROD&goto=/auth/SSOPOST/metaAlias/enedis/providerIDP?ReqID%"
+            url = URL_MON_COMPTE
+                    + "/auth/json/authenticate?realm=/enedis&spEntityID=SP-ODW-PROD&goto=/auth/SSOPOST/metaAlias/enedis/providerIDP?ReqID%"
                     + reqId
                     + "%26index%3Dnull%26acsURL%3Dhttps://apps.lincs.enedis.fr/saml/SSO%26spEntityID%3DSP-ODW-PROD%26binding%3Durn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST&AMAuthCookie=";
 
@@ -178,7 +180,6 @@ public class EnedisHttpApi {
                 String location = getLocation(httpClient.GET(URL_APPS_LINCS + "/logout"));
                 location = getLocation(httpClient.GET(location));
                 location = getLocation(httpClient.GET(location));
-                CookieStore cookieStore = httpClient.getCookieStore();
                 cookieStore.removeAll();
                 connected = false;
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
@@ -196,7 +197,6 @@ public class EnedisHttpApi {
     }
 
     private void addCookie(String key, String value) {
-        CookieStore cookieStore = httpClient.getCookieStore();
         HttpCookie cookie = new HttpCookie(key, value);
         cookie.setDomain(".enedis.fr");
         cookie.setPath("/");
