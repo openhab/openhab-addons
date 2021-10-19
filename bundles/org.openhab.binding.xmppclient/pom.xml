@@ -44,6 +44,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-experimental</artifactId>
+      <version>${smack.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.minidns</groupId>
       <artifactId>minidns-core</artifactId>
       <version>0.3.3</version>
