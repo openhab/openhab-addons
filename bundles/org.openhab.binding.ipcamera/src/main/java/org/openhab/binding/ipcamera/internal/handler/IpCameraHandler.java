@@ -141,6 +141,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public @Nullable Ffmpeg ffmpegSnapshot = null;
     public boolean streamingAutoFps = false;
     public boolean motionDetected = false;
+    private Instant lastSnapshotRequest = Instant.now();
     public Instant currentSnapshotTime = Instant.now();
     private @Nullable ScheduledFuture<?> cameraConnectionJob = null;
     private @Nullable ScheduledFuture<?> pollCameraJob = null;
@@ -502,6 +503,10 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     private void checkCameraConnection() {
+        if (snapshotUri.isEmpty() || snapshotPolling) {
+            // Already polling or camera has RTSP only and no HTTP server
+            return;
+        }
         Bootstrap localBootstrap = mainBootstrap;
         if (localBootstrap != null) {
             ChannelFuture chFuture = localBootstrap
@@ -511,6 +516,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 return;
             }
         }
+        logger.info("Camera at {} went offline", cameraConfig.getIp());
         cameraCommunicationError(
                 "Connection Timeout: Check your IP and PORT are correct and the camera can be reached.");
     }
@@ -576,10 +582,9 @@ public class IpCameraHandler extends BaseThingHandler {
         if (!"PUT".equals(httpMethod) || (useDigestAuth && digestString == null)) {
             request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod(httpMethod), httpRequestURL);
             request.headers().set("Host", cameraConfig.getIp() + ":" + port);
-            request.headers().set("Connection", HttpHeaderValues.CLOSE);
+            request.headers().set("Connection", HttpHeaderValues.KEEP_ALIVE);
         } else {
             request = putRequestWithBody;
-            request.headers().set("Connection", HttpHeaderValues.CLOSE);
         }
 
         if (!basicAuth.isEmpty()) {
@@ -1414,12 +1419,13 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     private void updateSnapshot() {
+        lastSnapshotRequest = Instant.now();
         mainEventLoopGroup.schedule(this::takeSnapshot, 0, TimeUnit.MILLISECONDS);
     }
 
     public byte[] getSnapshot() {
         if (!isOnline) {
-            // Keep streams open when the camera goes offline so they dont stop.
+            // Single gray pixel JPG to keep streams open when the camera goes offline so they dont stop.
             return new byte[] { (byte) 0xff, (byte) 0xd8, (byte) 0xff, (byte) 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46,
                     0x00, 0x01, 0x01, 0x01, 0x00, 0x48, 0x00, 0x48, 0x00, 0x00, (byte) 0xff, (byte) 0xdb, 0x00, 0x43,
                     0x00, 0x03, 0x02, 0x02, 0x02, 0x02, 0x02, 0x03, 0x02, 0x02, 0x02, 0x03, 0x03, 0x03, 0x03, 0x04,
@@ -1431,11 +1437,9 @@ public class IpCameraHandler extends BaseThingHandler {
                     0x01, 0x01, 0x00, 0x00, 0x3f, 0x00, (byte) 0xd2, (byte) 0xcf, 0x20, (byte) 0xff, (byte) 0xd9 };
         }
         // Most cameras will return a 503 busy error if snapshot is faster than 1 second
-        long lastUpdatedMs = Duration.between(currentSnapshotTime, Instant.now()).toMillis();
-        if (!snapshotPolling && !ffmpegSnapshotGeneration && lastUpdatedMs > 1500) {
+        long lastUpdatedMs = Duration.between(lastSnapshotRequest, Instant.now()).toMillis();
+        if (!snapshotPolling && !ffmpegSnapshotGeneration && lastUpdatedMs > 950) {
             updateSnapshot();
-        } else {
-            logger.trace("Snapshot already updated {}ms ago", lastUpdatedMs);
         }
         lockCurrentSnapshot.lock();
         try {
@@ -1479,14 +1483,11 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     /**
-     * {@link pollCameraRunnable} Polls every 8 seconds, to check camera is still ONLINE and keep mjpeg and alarm
+     * {@link pollCameraRunnable} Polls every 8 seconds, to check camera is still ONLINE and keep alarm
      * streams open and more.
      *
      */
     void pollCameraRunnable() {
-        if (!snapshotUri.isEmpty() && !snapshotPolling) {// we need to check camera is still online.
-            checkCameraConnection();
-        }
         // NOTE: Use lowPriorityRequests if get request is not needed every poll.
         if (!lowPriorityRequests.isEmpty()) {
             if (lowPriorityCounter >= lowPriorityRequests.size()) {
@@ -1497,6 +1498,7 @@ public class IpCameraHandler extends BaseThingHandler {
         // what needs to be done every poll//
         switch (thing.getThingTypeUID().getId()) {
             case GENERIC_THING:
+                checkCameraConnection();
                 // RTSP stream has stopped and we need it for snapshots
                 if (ffmpegSnapshotGeneration) {
                     Ffmpeg localSnapshot = ffmpegSnapshot;
@@ -1506,18 +1508,20 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 break;
             case ONVIF_THING:
+                checkCameraConnection();
                 if (!onvifCamera.isConnected()) {
                     onvifCamera.connect(true);
                 }
                 break;
             case INSTAR_THING:
+                checkCameraConnection();
                 noMotionDetected(CHANNEL_MOTION_ALARM);
                 noMotionDetected(CHANNEL_PIR_ALARM);
                 noAudioDetected();
                 break;
             case HIKVISION_THING:
                 if (streamIsStopped("/ISAPI/Event/notification/alertStream")) {
-                    logger.info("The alarm stream was not running for camera {}, re-starting it now",
+                    logger.debug("The alarm stream was not running for camera {}, re-starting it now",
                             cameraConfig.getIp());
                     sendHttpGET("/ISAPI/Event/notification/alertStream");
                 }
@@ -1529,7 +1533,7 @@ public class IpCameraHandler extends BaseThingHandler {
             case DAHUA_THING:
                 // Check for alarms, channel for NVRs appears not to work at filtering.
                 if (streamIsStopped("/cgi-bin/eventManager.cgi?action=attach&codes=[All]")) {
-                    logger.info("The alarm stream was not running for camera {}, re-starting it now",
+                    logger.debug("The alarm stream was not running for camera {}, re-starting it now",
                             cameraConfig.getIp());
                     sendHttpGET("/cgi-bin/eventManager.cgi?action=attach&codes=[All]");
                 }
@@ -1537,7 +1541,7 @@ public class IpCameraHandler extends BaseThingHandler {
             case DOORBIRD_THING:
                 // Check for alarms, channel for NVRs appears not to work at filtering.
                 if (streamIsStopped("/bha-api/monitor.cgi?ring=doorbell,motionsensor")) {
-                    logger.info("The alarm stream was not running for camera {}, re-starting it now",
+                    logger.debug("The alarm stream was not running for camera {}, re-starting it now",
                             cameraConfig.getIp());
                     sendHttpGET("/bha-api/monitor.cgi?ring=doorbell,motionsensor");
                 }

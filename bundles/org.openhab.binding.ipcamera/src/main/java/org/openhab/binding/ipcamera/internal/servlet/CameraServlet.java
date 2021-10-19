@@ -161,7 +161,7 @@ public class CameraServlet extends IpCameraServlet {
                 do {
                     try {
                         output.sendSnapshotBasedFrame(handler.getSnapshot());
-                        Thread.sleep(1005);
+                        Thread.sleep(1000);
                     } catch (InterruptedException | IOException e) {
                         // Never stop streaming until IOException. Occurs when browser stops the stream.
                         openSnapshotStreams.removeStream(output);
