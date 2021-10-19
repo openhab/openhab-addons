@@ -189,9 +189,38 @@ public class RoombaHandler extends BaseThingHandler {
                         String[] params = cmds[1].split(";");
 
                         String mapId = params[0];
-                        String[] regionIds = params[1].split(",");
+                        String user_mapv_id;
+                        if (params.length >= 2) {
+                            user_mapv_id = params[2];
+                        } else {
+                            user_mapv_id = null;
+                        }
 
-                        MQTTProtocol.Request request = new MQTTProtocol.CleanRoomsRequest("start", mapId, regionIds);
+                        String[] ArrayRegions = params[1].split(",");
+                        String regionIds[] = new String[ArrayRegions.length];
+                        String regionType[] = new String[ArrayRegions.length];
+
+                        for (int i = 0; i < ArrayRegions.length; i++) {
+                            String[] ArrayRegionDetails = ArrayRegions[i].split("=");
+
+                            if (ArrayRegionDetails.length >= 2) {
+                                if (ArrayRegionDetails[0].equals("r")) {
+                                    regionIds[i] = ArrayRegionDetails[1];
+                                    regionType[i] = "rid";
+                                } else if (ArrayRegionDetails[0].equals("z")) {
+                                    regionIds[i] = ArrayRegionDetails[1];
+                                    regionType[i] = "zid";
+                                } else {
+                                    regionIds[i] = ArrayRegionDetails[0];
+                                    regionType[i] = "rid";
+                                }
+                            } else {
+                                regionIds[i] = ArrayRegionDetails[0];
+                                regionType[i] = "rid";
+                            }
+                        }
+                        MQTTProtocol.Request request = new MQTTProtocol.CleanRoomsRequest("start", mapId, regionIds,
+                                regionType, user_mapv_id);
                         connection.send(request.getTopic(), gson.toJson(request));
                     } else {
                         logger.warn("Invalid request: {}", cmd);
