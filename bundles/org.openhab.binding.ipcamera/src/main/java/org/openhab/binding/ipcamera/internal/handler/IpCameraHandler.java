@@ -1358,7 +1358,7 @@ public class IpCameraHandler extends BaseThingHandler {
         if ("ffmpeg".equals(snapshotUri)) {
             snapshotIsFfmpeg();
         } else if (!snapshotUri.isEmpty()) {
-            mainEventLoopGroup.schedule(this::updateSnapshot, 0, TimeUnit.MILLISECONDS);
+            updateSnapshot();
         } else if (!rtspUri.isEmpty()) {
             snapshotIsFfmpeg();
         } else {
@@ -1538,8 +1538,8 @@ public class IpCameraHandler extends BaseThingHandler {
         if (localHLS != null) {
             localHLS.checkKeepAlive();
         }
-        if (openChannels.size() > 6) {
-            logger.warn("There are {} open channels being tracked.", openChannels.size());
+        if (openChannels.size() > 10) {
+            logger.debug("There are {} open Channels being tracked.", openChannels.size());
             cleanChannels();
         }
     }
