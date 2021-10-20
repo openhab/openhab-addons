@@ -113,9 +113,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                         home.getKnownPersons().forEach(person -> createDiscoveredThing(homeUID, person));
                     });
 
-        } catch (
-
-        NetatmoException e) {
+        } catch (NetatmoException e) {
             logger.warn("Error getting Home List", e);
         }
 
@@ -165,8 +163,9 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     private void searchHomeCoach(AircareApi api) {
         try {
             NAStationDataResponse homeCoaches = api.getHomeCoachData(null);
-            homeCoaches.getBody().getElementsCollection().stream()
-                    .forEach(homeCoach -> createDiscoveredThing(null, homeCoach));
+            homeCoaches.getBody().getElementsCollection().stream().forEach(homeCoach -> {
+                createDiscoveredThing(null, homeCoach);
+            });
         } catch (NetatmoException e) {
             logger.warn("Error getting Home Coaches", e);
         }

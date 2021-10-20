@@ -30,7 +30,7 @@ The binding has the following configuration options:
 -   **clientSecret:**  Client Secret provided for the application you created.
 -   **username:** Your Netatmo API username (email).
 -   **password:** Your Netatmo API password.
--   **webHookUrl:** Protocol, public IP and port to access OH2 server from Internet.
+-   **webHookUrl:** Protocol, public IP and port to access openHAB server from Internet.
 -   **reconnectInterval:** The reconnection interval to Netatmo API (in s).
 -   **backgroundDiscovery:** If set to true, the device and its associated modules are updated in the discovery inbox at each API call run to refresh device data. Default is false.
 
@@ -187,7 +187,7 @@ Number Netatmo_Outdoor_Temperature "Temperature" { channel = "netatmo:NAModule1:
 | DateMaxTemp         | DateTime             | Date when maximum temperature was reached on current day |
 | timestamp           | DateTime             | Timestamp when data was measured                         |
 | last-message         | DateTime             | Last message emitted by the module                       |
-| LowBattery          | Switch               | Low battery                                              |
+| low-battery          | Switch               | Low battery                                              |
 | battery-level           | Number               | Battery level                                            |
 | signal-strength     | Number               | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
@@ -228,7 +228,7 @@ Number Netatmo_Indoor2_Temperature "Temperature" { channel = "netatmo:NAModule4:
 | ever-max         | DateTime             | Date when maximum temperature was reached on current day |
 | timestamp           | DateTime             | Timestamp when data was measured                         |
 | last-message         | DateTime             | Last message emitted by the module                       |
-| LowBattery          | Switch               | Low battery                                              |
+| low-battery          | Switch               | Low battery                                              |
 | battery-level           | Number               | Battery level                                            |
 | signal-strength     | Number               | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
@@ -252,7 +252,7 @@ Number Netatmo_Rain_Current "Rain [%.1f mm]" { channel = "netatmo:NAModule3:home
 | rain-sum-24           | Number:Length | Quantity of water on last day                            |
 | timestamp           | DateTime      | Timestamp when data was measured                         |
 | last-message         | DateTime      | Last message emitted by the module                       |
-| LowBattery          | Switch        | Low battery                                              |
+| low-battery          | Switch        | Low battery                                              |
 | battery-level           | Number        | Battery level                                            |
 | signal-strength     | Number        | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
@@ -277,7 +277,7 @@ Number Netatmo_Wind_Strength "Wind Strength [%.0f KPH]" { channel = "netatmo:NAM
 | GustStrength        | Number:Speed | Speed of the last 5 minutes highest gust wind            |
 | timestamp           | DateTime     | Timestamp when data was measured                         |
 | last-message         | DateTime     | Last message emitted by the module                       |
-| LowBattery          | Switch       | Low battery                                              |
+| low-battery          | Switch       | Low battery                                              |
 | battery-level           | Number       | Battery level                                            |
 | signal-strength     | Number       | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 | max-strength     | Number:Speed | Maximum wind strength recorded                           |
@@ -343,7 +343,7 @@ All these channels are read only.
 | timestamp           | DateTime           | Timestamp when data was measured                           |
 | setpoint-end     | DateTime           | Thermostat goes back to schedule after that timestamp      |
 | last-message         | DateTime           | Last message emitted by the module                         |
-| LowBattery          | Switch             | Low battery                                                |
+| low-battery          | Switch             | Low battery                                                |
 | battery-level           | Number             | Battery level                                              |
 | signal-strength     | Number             | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
 
@@ -483,9 +483,10 @@ All these channels except welcomePersonAtHome are read only.
 // Bridge configuration:
 Bridge netatmo:netatmoapi:home "Netatmo API" [ clientId="*********", clientSecret="**********", username = "mail@example.com", password = "******", readStation=true, readThermostat=false] {
     // Thing configuration:
-    Thing NAMain inside "Netatmo Inside"       [ id="aa:aa:aa:aa:aa:aa" ]
-    Thing NAModule1 outside "Netatmo Outside"  [ id="bb:bb:bb:bb:bb:bb", parentId="aa:aa:aa:aa:aa:aa" ]
-    Thing NAModule3 rain "Netatmo Rain"        [ id="cc:cc:cc:cc:cc:cc", parentId="aa:aa:aa:aa:aa:aa" ]
+    Bridge netatmo:NAMain:inside "Netatmo Inside"       [ id="aa:aa:aa:aa:aa:aa" ] {
+        NAModule1 outside "Netatmo Outside"  [ id="bb:bb:bb:bb:bb:bb" ]
+        NAModule3 rain "Netatmo Rain"        [ id="cc:cc:cc:cc:cc:cc" ]
+    }
 }
 ```
 
@@ -536,7 +537,7 @@ Number:Temperature   Outdoor_HeatIndex                 "heat-index [%.1f %unit%]
 Number:Temperature   Outdoor_Dewpoint                  "Dewpoint [%.1f %unit%]"                                     <temperature_cold> { channel = "netatmo:NAModule1:home:outside:Dewpoint" }
 Number:Temperature   Outdoor_DewpointDepression        "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:NAModule1:home:outside:dew-point-depression" }
 Number               Outdoor_RadioStatus               "RfStatus [%.0f / 5]"                                        <signal>           { channel = "netatmo:NAModule1:home:outside:signal-strength" }
-Switch               Outdoor_LowBattery                "LowBattery [%s]"                                            <siren>            { channel = "netatmo:NAModule1:home:outside:LowBattery" }
+Switch               Outdoor_LowBattery                "LowBattery [%s]"                                            <siren>            { channel = "netatmo:NAModule1:home:outside:low-battery" }
 Number               Outdoor_BatteryVP                 "BatteryVP [%.0f %%]"                                        <battery>          { channel = "netatmo:NAModule1:home:outside:battery-level" }
 DateTime             Outdoor_TimeStamp                 "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                  <calendar>         { channel = "netatmo:NAModule1:home:outside:timestamp" }
 DateTime             Outdoor_LastMessage               "LastMessage [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                <text>             { channel = "netatmo:NAModule1:home:outside:last-message" }

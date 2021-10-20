@@ -99,7 +99,7 @@ public class HomeHandler extends DeviceWithEventHandler {
             ThingBuilder builder = editThing().withoutChannels(toBeRemovedChannels);
             updateThing(builder.build());
         } catch (NetatmoException e) {
-            logger.warn("Error retreiving home detailed informations : {}", e);
+            logger.warn("Error retreiving home detailed informations : {}", e.getMessage());
         }
     }
 
@@ -130,7 +130,7 @@ public class HomeHandler extends DeviceWithEventHandler {
                 descriptionProvider.setStateOptions(channelUID, home.getThermSchedules().stream()
                         .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
             } catch (NetatmoException e) {
-                logger.warn("Error getting homestatus : {}", e);
+                logger.warn("Error getting homestatus : {}", e.getMessage());
             }
         });
         securityApi.ifPresent(api -> {

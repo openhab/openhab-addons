@@ -32,7 +32,7 @@
 
 		<parameter name="webHookUrl" type="text">
 			<label>Webhook Address</label>
-			<description>Protocol, public IP and port to access OH2 server from Internet.</description>
+			<description>Protocol, public IP and port to access openHAB server from Internet.</description>
 		</parameter>
 
 		<parameter name="reconnectInterval" type="integer" unit="s">

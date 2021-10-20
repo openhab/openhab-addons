@@ -108,7 +108,7 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
     public void statusChanged(ConnectionStatus connectionStatus) {
         if (connectionStatus == ConnectionStatus.SUCCESS) {
             updateStatus(ThingStatus.ONLINE);
-            scheduler.schedule(() -> scheduleRefreshJob(), 3, TimeUnit.SECONDS);
+            scheduler.schedule(() -> scheduleRefreshJob(), 2, TimeUnit.SECONDS);
         } else {
             freeRefreshJob();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, connectionStatus.getMessage());

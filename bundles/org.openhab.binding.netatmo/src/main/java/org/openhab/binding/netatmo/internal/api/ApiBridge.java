@@ -40,7 +40,6 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
@@ -210,22 +209,11 @@ public class ApiBridge {
             ContentResponse response = request.send();
 
             int statusCode = response.getStatus();
+            String responseBody = new String(response.getContent(), StandardCharsets.UTF_8);
             if (statusCode >= 200 && statusCode < 300) {
-                String responseBody = new String(response.getContent(), StandardCharsets.UTF_8);
                 return deserialize(classOfT, responseBody);
             }
-
-            switch (statusCode) {
-                case HttpStatus.NOT_FOUND_404:
-                    throw new NetatmoException(statusCode, "Target '" + response.getRequest().getURI()
-                            + "' seems unavailable : " + response.getContentAsString());
-                case HttpStatus.FORBIDDEN_403:
-                case HttpStatus.UNAUTHORIZED_401:
-                    throw new NetatmoException(statusCode,
-                            "Authorization exception : " + response.getContentAsString());
-                default:
-                    throw new NetatmoException(statusCode, response.getContentAsString());
-            }
+            throw new NetatmoException(statusCode, responseBody);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new NetatmoException("Exception while calling " + uri.toString(), e);
         }
