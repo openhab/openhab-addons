@@ -141,7 +141,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public @Nullable Ffmpeg ffmpegSnapshot = null;
     public boolean streamingAutoFps = false;
     public boolean motionDetected = false;
-    private Instant lastSnapshotRequest = Instant.now();
+    public Instant lastSnapshotRequest = Instant.now();
     public Instant currentSnapshotTime = Instant.now();
     private @Nullable ScheduledFuture<?> cameraConnectionJob = null;
     private @Nullable ScheduledFuture<?> pollCameraJob = null;
@@ -957,7 +957,7 @@ public class IpCameraHandler extends BaseThingHandler {
         if (cameraConfig.getUpdateImageWhen().contains("2")) {
             if (!firstMotionAlarm) {
                 if (!snapshotUri.isEmpty()) {
-                    sendHttpGET(snapshotUri);
+                    updateSnapshot();
                 }
                 firstMotionAlarm = true;// reset back to false when the jpg arrives.
             }
@@ -975,7 +975,7 @@ public class IpCameraHandler extends BaseThingHandler {
         if (cameraConfig.getUpdateImageWhen().contains("3")) {
             if (!firstAudioAlarm) {
                 if (!snapshotUri.isEmpty()) {
-                    sendHttpGET(snapshotUri);
+                    updateSnapshot();
                 }
                 firstAudioAlarm = true;// reset back to false when the jpg arrives.
             }
@@ -1141,7 +1141,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             updateImageChannel = false;
                         } else {
                             updateImageChannel = true;
-                            sendHttpGET(snapshotUri);// Allows this to change Image FPS on demand
+                            updateSnapshot();// Allows this to change Image FPS on demand
                         }
                     } else {
                         Ffmpeg localSnaps = ffmpegSnapshot;
@@ -1393,7 +1393,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
     void snapshotRunnable() {
         // Snapshot should be first to keep consistent time between shots
-        sendHttpGET(snapshotUri);
+        updateSnapshot();
         if (snapCount > 0) {
             if (--snapCount == 0) {
                 setupFfmpegFormat(FFmpegFormat.GIF);
@@ -1425,7 +1425,7 @@ public class IpCameraHandler extends BaseThingHandler {
         }
         // Most cameras will return a 503 busy error if snapshot is faster than 1 second
         long lastUpdatedMs = Duration.between(lastSnapshotRequest, Instant.now()).toMillis();
-        if (!snapshotPolling && !ffmpegSnapshotGeneration && lastUpdatedMs > 950) {
+        if (!snapshotPolling && !ffmpegSnapshotGeneration && lastUpdatedMs > 999) {
             updateSnapshot();
         }
         lockCurrentSnapshot.lock();
@@ -1458,13 +1458,9 @@ public class IpCameraHandler extends BaseThingHandler {
         if (snapshotPolling || ffmpegSnapshotGeneration) {
             return; // Already polling or creating with FFmpeg from RTSP
         }
-        if (streamingSnapshotMjpeg || streamingAutoFps) {
+        if (streamingSnapshotMjpeg || streamingAutoFps || cameraConfig.getUpdateImageWhen().contains("4")) {
             snapshotPolling = true;
-            snapshotJob = threadPool.scheduleWithFixedDelay(this::snapshotRunnable, 200, cameraConfig.getPollTime(),
-                    TimeUnit.MILLISECONDS);
-        } else if (cameraConfig.getUpdateImageWhen().contains("4")) { // During Motion Alarms
-            snapshotPolling = true;
-            snapshotJob = threadPool.scheduleWithFixedDelay(this::snapshotRunnable, 200, cameraConfig.getPollTime(),
+            snapshotJob = threadPool.scheduleWithFixedDelay(this::snapshotRunnable, 0, cameraConfig.getPollTime(),
                     TimeUnit.MILLISECONDS);
         }
     }
@@ -1552,7 +1548,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public void initialize() {
         cameraConfig = getConfigAs(CameraConfig.class);
         threadPool = Executors.newScheduledThreadPool(2);
-        mainEventLoopGroup = new NioEventLoopGroup(4);
+        mainEventLoopGroup = new NioEventLoopGroup(3);
         snapshotUri = getCorrectUrlFormat(cameraConfig.getSnapshotUrl());
         mjpegUri = getCorrectUrlFormat(cameraConfig.getMjpegUrl());
         rtspUri = cameraConfig.getFfmpegInput();

@@ -146,17 +146,13 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         if (msg instanceof HttpResponse) {
             HttpResponse response = (HttpResponse) msg;
             if (response.status().code() == 401) {
-                boolean closeConnection = true;
+                ctx.close();
                 if (!response.headers().isEmpty()) {
                     String authenticate = "";
                     for (CharSequence name : response.headers().names()) {
                         for (CharSequence value : response.headers().getAll(name)) {
                             if (name.toString().equalsIgnoreCase("WWW-Authenticate")) {
                                 authenticate = value.toString();
-                            } else if (name.toString().equalsIgnoreCase("Connection")
-                                    && value.toString().contains("keep-alive")) {
-                                // trial this for a while to see if it solves too many bytes with digest turned on.
-                                closeConnection = true;
                             }
                         }
                     }
@@ -166,12 +162,11 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                         ipCameraHandler.cameraConfigError(
                                 "Camera gave no WWW-Authenticate: Your login details must be wrong.");
                     }
-                }
-                if (closeConnection) {
-                    ctx.close();
+                    return;
                 }
             } else if (response.status().code() != 200) {
-                logger.info("Camera at IP:{} gave a reply with a response code of :{}",
+                ctx.close();
+                logger.debug("Camera at IP:{} gave a reply with a response code of :{}",
                         ipCameraHandler.cameraConfig.getIp(), response.status().code());
             }
         }
