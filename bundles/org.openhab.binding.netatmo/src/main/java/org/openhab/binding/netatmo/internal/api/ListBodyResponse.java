@@ -35,7 +35,7 @@ public class ListBodyResponse<T extends NAObject> {
         return elements.get(id);
     }
 
-    public Collection<T> getElementsCollection() {
+    public Collection<T> getElements() {
         return elements.values();
     }
 }

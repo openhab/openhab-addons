@@ -72,7 +72,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     }
 
     @Override
-    public void statusChanged(ConnectionStatus connectionStatus) {
+    public void apiConnectionStatusChanged(ConnectionStatus connectionStatus) {
         if (connectionStatus == ConnectionStatus.SUCCESS) {
             super.activate(null);
         } else {
@@ -163,7 +163,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     private void searchHomeCoach(AircareApi api) {
         try {
             NAStationDataResponse homeCoaches = api.getHomeCoachData(null);
-            homeCoaches.getBody().getElementsCollection().stream().forEach(homeCoach -> {
+            homeCoaches.getBody().getElements().stream().forEach(homeCoach -> {
                 createDiscoveredThing(null, homeCoach);
             });
         } catch (NetatmoException e) {
@@ -174,7 +174,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     private void searchFavoriteWeather(WeatherApi api) {
         try {
             NAStationDataResponse stations = api.getStationsData(null, true);
-            stations.getBody().getElementsCollection().stream().filter(NAMain::isReadOnly).forEach(station -> {
+            stations.getBody().getElements().stream().filter(NAMain::isReadOnly).forEach(station -> {
                 createDiscoveredThing(null, station);
                 station.getModules().values().stream().filter(module -> module.getBridge() == null)
                         .forEach(foundBridge -> {

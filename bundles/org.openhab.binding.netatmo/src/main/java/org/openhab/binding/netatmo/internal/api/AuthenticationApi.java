@@ -68,8 +68,7 @@ class AuthenticationApi extends RestManager {
             try {
                 requestToken(getPayload(REFRESH_TOKEN, Map.of(REFRESH_TOKEN, answer.getRefreshToken())));
             } catch (NetatmoException e) {
-                logger.warn("Unable to refresh access token : {}, trying to reopen connection.", e);
-                apiHandler.openConnection(null);
+                logger.warn("Unable to refresh access token : {}", e.getMessage());
             }
         }, Math.round(answer.getExpiresIn() * 0.8), TimeUnit.SECONDS);
     }

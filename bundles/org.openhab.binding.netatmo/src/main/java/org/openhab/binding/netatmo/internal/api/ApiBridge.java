@@ -130,17 +130,19 @@ public class ApiBridge {
     public void openConnection(@Nullable Map<String, Object> config) {
         try {
             configuration.update(
-                    config == null ? configuration : new Configuration(config).as(NetatmoBindingConfiguration.class));
+                    config != null ? new Configuration(config).as(NetatmoBindingConfiguration.class) : configuration);
             logger.debug("Updated binding configuration to {}", configuration);
             connectApi.authenticate();
-            connectionStatus = ConnectionStatus.SUCCESS;
+            setConnectionStatus(ConnectionStatus.SUCCESS);
         } catch (NetatmoException e) {
-            connectionStatus = ConnectionStatus.Failed("Will retry to connect Netatmo API, this one failed : %s", e);
-            logger.debug(connectionStatus.getMessage());
-            onAccessTokenResponse(null, List.of());
-            scheduler.schedule(() -> openConnection(config), configuration.reconnectInterval, TimeUnit.SECONDS);
+            prepareReconnection(e);
         }
-        listeners.forEach(listener -> listener.statusChanged(connectionStatus));
+    }
+
+    private void prepareReconnection(NetatmoException e) {
+        setConnectionStatus(ConnectionStatus.Failed("Will retry to connect Netatmo API, this one failed : %s", e));
+        onAccessTokenResponse(null, List.of());
+        scheduler.schedule(() -> openConnection(null), configuration.reconnectInterval, TimeUnit.SECONDS);
     }
 
     @SuppressWarnings("unchecked")
@@ -212,8 +214,11 @@ public class ApiBridge {
             String responseBody = new String(response.getContent(), StandardCharsets.UTF_8);
             if (statusCode >= 200 && statusCode < 300) {
                 return deserialize(classOfT, responseBody);
+            } else {
+                NetatmoException exception = new NetatmoException(statusCode, responseBody);
+                prepareReconnection(exception);
+                throw exception;
             }
-            throw new NetatmoException(statusCode, responseBody);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new NetatmoException("Exception while calling " + uri.toString(), e);
         }
@@ -238,10 +243,16 @@ public class ApiBridge {
 
     public void addConnectionListener(ConnectionListener listener) {
         listeners.add(listener);
-        listener.statusChanged(connectionStatus);
+        listener.apiConnectionStatusChanged(connectionStatus);
     }
 
     public void removeConnectionListener(ConnectionListener listener) {
         listeners.remove(listener);
+    }
+
+    private void setConnectionStatus(ConnectionStatus newStatus) {
+        connectionStatus = newStatus;
+        logger.debug(connectionStatus.getMessage());
+        listeners.forEach(l -> l.apiConnectionStatusChanged(connectionStatus));
     }
 }

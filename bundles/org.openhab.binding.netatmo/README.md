@@ -660,3 +660,20 @@ The following icons are used by original Netatmo web app:
 - https://my.netatmo.com/images/my/app/wifi_medium.png
 - https://my.netatmo.com/images/my/app/wifi_high.png
 - https://my.netatmo.com/images/my/app/wifi_full.png
+
+## Rule Action
+
+This binding includes rule action reconnecting the API - this action is valid for each type of thing (NAMain, NHC, NAHome...).
+
+Example:
+
+```
+val actions = getActions("netatmo","netatmo:NHC:xxyyddffvv")
+if(actions === null) {
+    logInfo("actions", "Actions is null")
+} else {
+    actions.reconnectApi()
+    logInfo("actions","Reconnecting")
+}
+
+```

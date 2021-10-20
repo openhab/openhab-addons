@@ -22,5 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface ConnectionListener {
 
-    void statusChanged(ConnectionStatus connectionStatus);
+    void apiConnectionStatusChanged(ConnectionStatus connectionStatus);
 }

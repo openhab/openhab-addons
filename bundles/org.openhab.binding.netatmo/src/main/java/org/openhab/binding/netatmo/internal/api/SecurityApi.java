@@ -73,6 +73,6 @@ public class SecurityApi extends RestManager {
         uriBuilder.queryParam(PARM_HOMEID, homeId);
         uriBuilder.queryParam(PARM_PERSONID, personId);
         NALastEventsDataResponse response = get(uriBuilder, NALastEventsDataResponse.class);
-        return response.getBody().getElementsCollection();
+        return response.getBody().getElements();
     }
 }

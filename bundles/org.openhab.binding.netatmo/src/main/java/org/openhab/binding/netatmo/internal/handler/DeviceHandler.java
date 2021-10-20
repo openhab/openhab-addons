@@ -105,10 +105,14 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
     }
 
     @Override
-    public void statusChanged(ConnectionStatus connectionStatus) {
+    public void apiConnectionStatusChanged(ConnectionStatus connectionStatus) {
         if (connectionStatus == ConnectionStatus.SUCCESS) {
-            updateStatus(ThingStatus.ONLINE);
-            scheduler.schedule(() -> scheduleRefreshJob(), 2, TimeUnit.SECONDS);
+            ThingStatus status = getThing().getStatus();
+            if (status != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+                // Wait a little bit before refreshing because a dispose maybe running in parallel
+                scheduler.schedule(() -> scheduleRefreshJob(), 3, TimeUnit.SECONDS);
+            }
         } else {
             freeRefreshJob();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, connectionStatus.getMessage());
@@ -118,9 +122,12 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
     @Override
     public void dispose() {
         logger.debug("Running dispose()");
+        refreshStrategy = null;
         freeRefreshJob();
         apiBridge.removeConnectionListener(this);
-        getBridgeHandler().ifPresent(handler -> handler.unregisterDataListener(this));
+        getBridgeHandler().ifPresent(handler -> {
+            handler.unregisterDataListener(this);
+        });
     }
 
     private void freeRefreshJob() {
@@ -133,12 +140,11 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
 
     private void scheduleRefreshJob() {
         RefreshStrategy strategy = refreshStrategy;
+        freeRefreshJob();
         if (strategy != null) {
             long delay = strategy.nextRunDelay().toSeconds();
             logger.debug("Scheduling update channel thread in {} s", delay);
-
             updateChannels(false);
-            freeRefreshJob();
             refreshJob = scheduler.schedule(() -> scheduleRefreshJob(), delay, TimeUnit.SECONDS);
         }
     }
