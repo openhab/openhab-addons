@@ -89,7 +89,9 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         /////// Fresh Digest Authenticate method follows as Basic is already handled and returned ////////
         realm = Helper.searchString(authenticate, "realm=\"");
         if (realm.isEmpty()) {
-            logger.warn("Could not find a valid WWW-Authenticate response in :{}", authenticate);
+            logger.warn(
+                    "No valid WWW-Authenticate in response. Has the camera activated the illegal login lock? Details:{}",
+                    authenticate);
             return;
         }
         nonce = Helper.searchString(authenticate, "nonce=\"");
@@ -165,8 +167,16 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                 }
             } else if (response.status().code() != 200) {
                 ctx.close();
-                logger.debug("Camera at IP:{} gave a reply with a response code of :{}",
-                        ipCameraHandler.cameraConfig.getIp(), response.status().code());
+                switch (response.status().code()) {
+                    case 403:
+                        logger.warn(
+                                "403 Forbidden: Check camera setup or has the camera activated the illegal login lock?");
+                        break;
+                    default:
+                        logger.debug("Camera at IP:{} gave a reply with a response code of :{}",
+                                ipCameraHandler.cameraConfig.getIp(), response.status().code());
+                        break;
+                }
             }
         }
         // Pass the Message back to the pipeline for the next handler to process//

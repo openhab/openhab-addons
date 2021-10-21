@@ -367,12 +367,6 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (e.state() == IdleState.READER_IDLE) {
                     String urlToKeepOpen = "";
                     switch (thing.getThingTypeUID().getId()) {
-                        case DAHUA_THING:
-                            urlToKeepOpen = "/cgi-bin/eventManager.cgi?action=attach&codes=[All]";
-                            break;
-                        case HIKVISION_THING:
-                            urlToKeepOpen = "/ISAPI/Event/notification/alertStream";
-                            break;
                         case DOORBIRD_THING:
                             urlToKeepOpen = "/bha-api/monitor.cgi?ring=doorbell,motionsensor";
                             break;

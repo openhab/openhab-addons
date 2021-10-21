@@ -189,7 +189,7 @@ public class CameraServlet extends IpCameraServlet {
                 } else {
                     ChannelTracking tracker = handler.channelTrackingMap.get(handler.mjpegUri);
                     if (tracker == null || !tracker.getChannel().isOpen()) {
-                        logger.warn("Not the first stream requested but the stream from camera was closed");
+                        logger.debug("Not the first stream requested but the stream from camera was closed");
                         handler.openCamerasStream();
                     }
                     output = new StreamOutput(resp, handler.mjpegContentType);
