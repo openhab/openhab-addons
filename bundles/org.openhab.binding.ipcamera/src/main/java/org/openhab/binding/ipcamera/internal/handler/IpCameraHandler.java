@@ -1425,7 +1425,7 @@ public class IpCameraHandler extends BaseThingHandler {
         }
         // Most cameras will return a 503 busy error if snapshot is faster than 1 second
         long lastUpdatedMs = Duration.between(lastSnapshotRequest, Instant.now()).toMillis();
-        if (!snapshotPolling && !ffmpegSnapshotGeneration && lastUpdatedMs > 999) {
+        if (!snapshotPolling && !ffmpegSnapshotGeneration && lastUpdatedMs >= cameraConfig.getPollTime()) {
             updateSnapshot();
         }
         lockCurrentSnapshot.lock();

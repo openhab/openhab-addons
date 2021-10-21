@@ -157,11 +157,10 @@ public class CameraServlet extends IpCameraServlet {
                 handler.startSnapshotPolling();
                 StreamOutput output = new StreamOutput(resp);
                 openSnapshotStreams.addStream(output);
-                logger.debug("There are {} snapshots.mjpeg streams open.", openSnapshotStreams.getNumberOfStreams());
                 do {
                     try {
                         output.sendSnapshotBasedFrame(handler.getSnapshot());
-                        Thread.sleep(1000);
+                        Thread.sleep(handler.cameraConfig.getPollTime());
                     } catch (InterruptedException | IOException e) {
                         // Never stop streaming until IOException. Occurs when browser stops the stream.
                         openSnapshotStreams.removeStream(output);
@@ -220,7 +219,6 @@ public class CameraServlet extends IpCameraServlet {
                 handler.streamingAutoFps = true;
                 output = new StreamOutput(resp);
                 openAutoFpsStreams.addStream(output);
-                logger.debug("There are {} autofps.mjpeg streams open.", openAutoFpsStreams.getNumberOfStreams());
                 int counter = 0;
                 do {
                     try {

@@ -81,7 +81,6 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
             }
             logger.debug("Setting up the camera to use Basic Auth and resending last request with correct auth.");
             if (ipCameraHandler.setBasicAuth(true)) {
-                ipCameraHandler.channelTrackingMap.remove(httpUrl);
                 ipCameraHandler.sendHttpRequest(httpMethod, requestURI, null);
             }
             return;
