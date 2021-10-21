@@ -268,5 +268,4 @@ public class MyRenaultHttpSession {
     public Car getCar() {
         return car;
     }
-    
 }

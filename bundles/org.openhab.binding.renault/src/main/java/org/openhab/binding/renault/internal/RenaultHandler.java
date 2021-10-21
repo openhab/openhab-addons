@@ -55,7 +55,7 @@ public class RenaultHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-    	// This binding only polls status data automatically.
+        // This binding only polls status data automatically.
     }
 
     @Override
@@ -65,8 +65,7 @@ public class RenaultHandler extends BaseThingHandler {
 
         // Background initialization:
         if (pollingJob == null || pollingJob.isCancelled()) {
-            pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, 0,
-                    config.refreshInterval, TimeUnit.MINUTES);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, 0, config.refreshInterval, TimeUnit.MINUTES);
         }
     }
 
