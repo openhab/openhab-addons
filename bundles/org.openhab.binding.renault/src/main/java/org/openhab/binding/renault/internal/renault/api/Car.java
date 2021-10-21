@@ -30,6 +30,8 @@ public class Car {
     public Boolean hvacstatus;
     public Double odometer;
     public String imageURL;
+    public Double gpsLatitude;
+    public Double gpsLongitude;
 
     public void setBatteryStatus(JsonObject responseJson) {
         try {
@@ -53,6 +55,17 @@ public class Car {
         try {
             odometer = responseJson.get("data").getAsJsonObject().get("attributes").getAsJsonObject()
                     .get("totalMileage").getAsDouble();
+        } catch (Exception e) {
+            logger.error("Error {} parsing Cockpit: {}", e, responseJson);
+        }
+    }
+
+    public void setLocation(JsonObject responseJson) {
+        try {
+            gpsLatitude = responseJson.get("data").getAsJsonObject().get("attributes").getAsJsonObject()
+                    .get("gpsLatitude").getAsDouble();
+            gpsLongitude = responseJson.get("data").getAsJsonObject().get("attributes").getAsJsonObject()
+                    .get("gpsLongitude").getAsDouble();
         } catch (Exception e) {
             logger.error("Error {} parsing Cockpit: {}", e, responseJson);
         }

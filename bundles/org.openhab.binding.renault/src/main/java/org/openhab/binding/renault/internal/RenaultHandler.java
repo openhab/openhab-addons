@@ -19,9 +19,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.renault.internal.renault.api.Car;
 import org.openhab.binding.renault.internal.renault.api.MyRenaultHttpSession;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -54,11 +56,23 @@ public class RenaultHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // if (CHANNEL_BATTERY_LEVEL.equals(channelUID.getId())) {
+
+        logger.info("ChannelUID: {}, Command: {}", channelUID, command);
         if (command instanceof RefreshType) {
-            getStatus();
+            // Do not update single channels. getStatus is polled automatically
+            return;
+        } else if (CHANNEL_HVAC_STATUS.equals(channelUID.getId())) {
+            MyRenaultHttpSession httpSession;
+            try {
+                httpSession = new MyRenaultHttpSession(this.config);
+                httpSession.toggleHVAC(this.config, command.toString());
+                updateState(CHANNEL_HVAC_STATUS, (httpSession.getCar().hvacstatus ? OnOffType.ON : OnOffType.OFF));
+            } catch (Exception e) {
+                httpSession = null;
+                logger.error("Error toggleing HVAC.", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
         }
-        // }
     }
 
     @Override
@@ -70,8 +84,10 @@ public class RenaultHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             getStatus();
         });
-        pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, config.refreshInterval, config.refreshInterval,
-                TimeUnit.MINUTES);
+        if (pollingJob == null || pollingJob.isCancelled()) {
+            pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, config.refreshInterval,
+                    config.refreshInterval, TimeUnit.MINUTES);
+        }
     }
 
     @Override
@@ -87,18 +103,22 @@ public class RenaultHandler extends BaseThingHandler {
         MyRenaultHttpSession httpSession;
         try {
             httpSession = new MyRenaultHttpSession(this.config);
-            updateStatus(ThingStatus.ONLINE);
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             httpSession.updateCarData(this.config);
-
-            updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(httpSession.getCar().batteryLevel));
-            updateState(CHANNEL_HVAC_STATUS, (httpSession.getCar().hvacstatus ? OnOffType.ON : OnOffType.OFF));
-            updateState(CHANNEL_ODOMETER, new DecimalType(httpSession.getCar().odometer));
-            updateState(CHANNEL_IMAGE, new StringType(httpSession.getCar().imageURL));
-
+            updateState(httpSession.getCar());
         } catch (Exception e) {
             httpSession = null;
             logger.error("Error initializing session.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+    }
+
+    private void updateState(Car car) {
+        updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(car.batteryLevel));
+        updateState(CHANNEL_HVAC_STATUS, (car.hvacstatus ? OnOffType.ON : OnOffType.OFF));
+        updateState(CHANNEL_IMAGE, new StringType(car.imageURL));
+        updateState(CHANNEL_LOCATION,
+                new PointType(new DecimalType(car.gpsLatitude), new DecimalType(car.gpsLongitude)));
+        updateState(CHANNEL_ODOMETER, new DecimalType(car.odometer));
     }
 }

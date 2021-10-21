@@ -18,8 +18,9 @@
 		<channels>
 			<channel id="batterylevel" typeId="batterylevel"/>
 			<channel id="hvacstatus" typeId="hvacstatus"/>
-			<channel id="odometer" typeId="odometer"/>
 			<channel id="image" typeId="image"/>
+			<channel id="location" typeId="location"/>
+			<channel id="odometer" typeId="odometer"/>
 		</channels>
 		<config-description>
 
@@ -91,17 +92,22 @@
 		<label>HVAC</label>
 		<description>HVAC status</description>
 	</channel-type>
+	<channel-type id="image">
+		<item-type>String</item-type>
+		<label>Image URL</label>
+		<description>Image URL of MyRenault</description>
+	</channel-type>
+	<channel-type id="location" advanced="false">
+		<item-type>Location</item-type>
+		<label>Location</label>
+		<description>The GPS position of the vehicle</description>
+		<state readOnly="true"></state>
+	</channel-type>
 	<channel-type id="odometer">
 		<item-type>Number</item-type>
 		<label>Odometer</label>
 		<description>Total distance travelled</description>
 		<state pattern="%.1f" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="image">
-		<item-type>String</item-type>
-		<label>Image URL</label>
-		<description>Image URL of MyRenault</description>
-	</channel-type>
-
 
 </thing:thing-descriptions>
