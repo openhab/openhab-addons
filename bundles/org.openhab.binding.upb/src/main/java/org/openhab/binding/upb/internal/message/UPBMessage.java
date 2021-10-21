@@ -48,7 +48,7 @@ public class UPBMessage {
         /**
          * Returns the message type for a message buffer.
          *
-         * @param prefix the byte array to check for a matching type prefix
+         * @param buf the byte array to check for a matching type prefix
          * @return the matching message type, or {@code NONE}
          */
         public static Type forPrefix(final byte[] buf) {
@@ -80,7 +80,7 @@ public class UPBMessage {
     /**
      * Converts a hex string into a {@link UPBMessage}.
      *
-     * @param commandString
+     * @param buf
      *            the string as returned by the modem.
      * @return a new UPBMessage.
      */
