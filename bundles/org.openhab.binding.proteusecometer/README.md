@@ -37,7 +37,7 @@ configuration:
 |-----------------------|----------------------|------------------------------------------------------|
 | temperature           | Number:Temperature   | Temperature measured by the sensor                   |
 | sensorLevel           | Number:Length        | Distance between sensor and water surface            |
-| usableLevelInLitre    | Number:Volume        | How much liquid is usable                            |
+| usableLevel           | Number:Volume        | How much liquid is usable                            |
 | usableLevelInPercent  | Number:Dimensionless | How much liquid is usable relative to total capacity |
 | totalCapacity         | Number:Volume        | Total capacity of measured cistern/tank              |
 
@@ -47,6 +47,6 @@ Thing proteusecometer:EcoMeterS:e90705eaa4 "Proteus EcoMeter S" [ usbPort="/dev/
 
 Number:Temperature   Temperature          "Measured temperature [%.1f °C]" { channel="proteusecometer:EcoMeterS:e90705eaa4:temperature" }
 Number:Length        SensorLevelCm        "Sensor Level"                   { channel="proteusecometer:EcoMeterS:e90705eaa4:sensorLevel" }
-Number:Volume        UsableLevelinliter   "Usable Level"                   { channel="proteusecometer:EcoMeterS:e90705eaa4:usableLevelInLitre" }
+Number:Volume        UsableLevel          "Usable Level"                   { channel="proteusecometer:EcoMeterS:e90705eaa4:usableLevel" }
 Number:Dimensionless UsableLevelinpercent "Usable Level"                   { channel="proteusecometer:EcoMeterS:e90705eaa4:usableLevelInPercent" }
 Number:Volume        TotalCapacityinliter "Total Capacity"                 { channel="proteusecometer:EcoMeterS:e90705eaa4:totalCapacity" }

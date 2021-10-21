@@ -122,7 +122,7 @@ public class ProteusEcoMeterSHandler extends BaseThingHandler {
 
             replyStream.forEach(reply -> {
                 updateState(SENSOR_LEVEL, new QuantityType<>(reply.sensorLevelInCm, MetricPrefix.CENTI(SIUnits.METRE)));
-                updateState(USABLE_LEVEL_IN_LITRE, new QuantityType<>(reply.usableLevelInLiter, Units.LITRE));
+                updateState(USABLE_LEVEL, new QuantityType<>(reply.usableLevelInLiter, Units.LITRE));
                 updateState(USABLE_LEVEL_IN_PERCENT, new QuantityType<>(
                         100d / reply.totalCapacityInLiter * reply.usableLevelInLiter, Units.PERCENT));
                 updateState(TEMPERATURE, new QuantityType<>(reply.tempInFahrenheit, ImperialUnits.FAHRENHEIT));

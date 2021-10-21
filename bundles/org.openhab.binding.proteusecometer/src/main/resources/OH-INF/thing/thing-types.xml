@@ -11,7 +11,7 @@
 		<channels>
 			<channel id="temperature" typeId="Temperature"/>
 			<channel id="sensorLevel" typeId="SensorLevel"/>
-			<channel id="usableLevelInLitre" typeId="UsableLevelInLitre"/>
+			<channel id="usableLevel" typeId="UsableLevelInLitre"/>
 			<channel id="usableLevelInPercent" typeId="UsableLevelInPercent"/>
 			<channel id="totalCapacity" typeId="TotalCapacity"/>
 		</channels>

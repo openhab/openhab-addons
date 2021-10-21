@@ -33,7 +33,7 @@ public class ProteusEcoMeterBindingConstants {
 
     public static final String SENSOR_LEVEL = "sensorLevel";
 
-    public static final String USABLE_LEVEL_IN_LITRE = "usableLevelInLitre";
+    public static final String USABLE_LEVEL = "usableLevel";
 
     public static final String USABLE_LEVEL_IN_PERCENT = "usableLevelInPercent";
 
