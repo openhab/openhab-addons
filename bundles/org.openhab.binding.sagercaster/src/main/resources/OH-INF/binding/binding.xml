@@ -3,7 +3,7 @@
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
-	<name>SagerCaster Binding</name>
-	<description>The Sager Weathercaster is a scientific instrument for accurate prediction of the weather.</description>
+	<name>@text/bindingName</name>
+	<description>@text/bindingDescription</description>
 
 </binding:binding>
