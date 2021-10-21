@@ -13,7 +13,6 @@
 package org.openhab.binding.linky.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link LinkyConfiguration} is the class used to match the
@@ -24,7 +23,11 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class LinkyConfiguration {
     public static final String INTERNAL_AUTH_ID = "internalAuthId";
-    public @Nullable String username;
-    public @Nullable String password;
-    public @Nullable String internalAuthId;
+    public String username = "";
+    public String password = "";
+    public String internalAuthId = "";
+
+    public boolean seemsValid() {
+        return !username.isBlank() && !password.isBlank() && !internalAuthId.isBlank();
+    }
 }

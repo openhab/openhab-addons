@@ -146,11 +146,8 @@ public class LinkyHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
-        String authId = config.internalAuthId;
-        String username = config.username;
-        String password = config.password;
-        if (authId != null && username != null && password != null) {
-            enedisApi = new EnedisHttpApi(username, password, authId, gson, httpClient);
+        if (config.seemsValid()) {
+            enedisApi = new EnedisHttpApi(config, gson, httpClient);
             scheduler.submit(() -> {
                 try {
                     EnedisHttpApi api = this.enedisApi;
