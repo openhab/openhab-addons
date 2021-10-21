@@ -13,7 +13,7 @@
 		-->
 
 		<label>Renault Binding</label>
-		<description>Renault Binding for MyRenault registered Car</description>
+		<description>Renault Binding for MyRenault registered car</description>
 
 		<channels>
 			<channel id="batterylevel" typeId="batterylevel"/>
@@ -91,11 +91,13 @@
 		<item-type>Switch</item-type>
 		<label>HVAC</label>
 		<description>HVAC status</description>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="image">
 		<item-type>String</item-type>
 		<label>Image URL</label>
 		<description>Image URL of MyRenault</description>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="location" advanced="false">
 		<item-type>Location</item-type>

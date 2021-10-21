@@ -15,7 +15,6 @@ package org.openhab.binding.renault.internal.renault.api;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -258,22 +257,6 @@ public class MyRenaultHttpSession {
         return request;
     }
 
-    private Request getKamereonActionRequest(String path, String body) {
-        Request request = this.httpClient.newRequest(this.constants.getKamereonRootUrl() + path);
-        request.method(HttpMethod.POST);
-        request.getHeaders().put(new HttpField("Content-type", "application/vnd.api+json"));
-        request.getHeaders().put(new HttpField("apikey", this.constants.getKamereonApiKey()));
-        request.getHeaders().put(new HttpField("x-kamereon-authorization", "Bearer " + kamereonToken));
-        request.getHeaders().put(new HttpField("x-gigya-id_token", jwt));
-
-        StringContentProvider contentProvider = new StringContentProvider(body, "UTF-8");
-        request.content(contentProvider, "application/vnd.api+json");
-        request.getHeaders().put(new HttpField("Content-Length", String.valueOf(body.length())));
-
-        logger.debug("Kamereon Request: {}", request.getURI().toString());
-        return request;
-    }
-
     private String getCountry(RenaultConfiguration config) {
         String country = "XX";
         if (config.locale.length() == 5) {
@@ -285,38 +268,5 @@ public class MyRenaultHttpSession {
     public Car getCar() {
         return car;
     }
-
-    public void toggleHVAC(RenaultConfiguration config, String command) throws Exception {
-        logger.debug("Toggle HVAC command: {}", command);
-       
-        if ("ON".equals(command)) {
-        	 Request request = getKamereonActionRequest(
-                     "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kca/car-adapter/v1/cars/" + config.vin
-                             + "/actions/hvac-start?country=" + getCountry(config),
-                     "{\"data\":{\"type\":\"HvacStart\",\"attributes\":{\"action\":\"start\",\"targetTemperature\":21}}}");
-
-            ContentResponse response = request.send();
-            if (HttpStatus.OK_200 == response.getStatus()) {
-                car.hvacstatus = true;
-            } else {
-                logger.error("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
-                        response.getContentAsString());
-                throw new Exception("HVAC Start Error: " + response.getReason());
-            }
-        } else if ("OFF".equals(command)) {
-        	Request request = getKamereonActionRequest(
-                 "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kca/car-adapter/v1/cars/" + config.vin
-                         + "/actions/hvac-start?country=" + getCountry(config),
-                 "{\"data\":{\"type\":\"HvacStart\",\"attributes\":{\"action\":\"cancel\"}}}");
-
-        	 ContentResponse response = request.send();
-             if (HttpStatus.OK_200 == response.getStatus()) {
-                 car.hvacstatus = true;
-             } else {
-                 logger.error("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
-                         response.getContentAsString());
-                 throw new Exception("HVAC Start Error: " + response.getReason());
-             }
-        }
-    }
+    
 }

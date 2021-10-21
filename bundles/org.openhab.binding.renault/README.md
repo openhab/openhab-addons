@@ -32,14 +32,14 @@ The thing has these configuration parameters:
 
 ## Channels
 
-Currently available channels are 
+Currently all available channels are read only:
 
-| Channel ID   | Type     | Description                     | Read Only |
-|--------------|----------|---------------------------------|-----------|
-| batterylevel | Number   | State of the battery in %       |     X     |
-| hvacstatus   | Switch   | HVAC status switch              |     X     |
-| image        | String   | Image URL of MyRenault          |     X     |
-| location     | Location | The GPS position of the vehicle |     X     |
-| odometer     | Number   | Total distance travelled        |     X     |
+| Channel ID   | Type     | Description                     |
+|--------------|----------|---------------------------------|
+| batterylevel | Number   | State of the battery in %       |
+| hvacstatus   | Switch   | HVAC status switch              |
+| image        | String   | Image URL of MyRenault          |
+| location     | Location | The GPS position of the vehicle |
+| odometer     | Number   | Total distance travelled        |
 
 

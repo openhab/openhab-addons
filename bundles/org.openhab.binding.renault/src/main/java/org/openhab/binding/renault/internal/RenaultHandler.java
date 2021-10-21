@@ -31,7 +31,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,23 +55,7 @@ public class RenaultHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
-        logger.info("ChannelUID: {}, Command: {}", channelUID, command);
-        if (command instanceof RefreshType) {
-            // Do not update single channels. getStatus is polled automatically
-            return;
-        } else if (CHANNEL_HVAC_STATUS.equals(channelUID.getId())) {
-            MyRenaultHttpSession httpSession;
-            try {
-                httpSession = new MyRenaultHttpSession(this.config);
-                httpSession.toggleHVAC(this.config, command.toString());
-                updateState(CHANNEL_HVAC_STATUS, (httpSession.getCar().hvacstatus ? OnOffType.ON : OnOffType.OFF));
-            } catch (Exception e) {
-                httpSession = null;
-                logger.error("Error toggleing HVAC.", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-        }
+    	// This binding only polls status data automatically.
     }
 
     @Override
@@ -81,11 +64,8 @@ public class RenaultHandler extends BaseThingHandler {
         this.config = getConfigAs(RenaultConfiguration.class);
 
         // Background initialization:
-        scheduler.execute(() -> {
-            getStatus();
-        });
         if (pollingJob == null || pollingJob.isCancelled()) {
-            pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, config.refreshInterval,
+            pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, 0,
                     config.refreshInterval, TimeUnit.MINUTES);
         }
     }
@@ -108,7 +88,7 @@ public class RenaultHandler extends BaseThingHandler {
             updateState(httpSession.getCar());
         } catch (Exception e) {
             httpSession = null;
-            logger.error("Error initializing session.", e);
+            logger.error("Error My Renault Http Session.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
