@@ -59,7 +59,9 @@ public enum Channel {
 
     // service channels
     CHANNEL_BATTERY_LIFE("battery_life", ChannelGroup.SERVICE, DanfossAirUnit::getBatteryLife),
-    CHANNEL_FILTER_LIFE("filter_life", ChannelGroup.SERVICE, DanfossAirUnit::getFilterLife);
+    CHANNEL_FILTER_LIFE("filter_life", ChannelGroup.SERVICE, DanfossAirUnit::getFilterLife),
+    CHANNEL_FILTER_PERIOD("filter_period", ChannelGroup.SERVICE, DanfossAirUnit::getFilterPeriod,
+            DanfossAirUnit::setFilterPeriod);
 
     private final String channelName;
     private final ChannelGroup group;
