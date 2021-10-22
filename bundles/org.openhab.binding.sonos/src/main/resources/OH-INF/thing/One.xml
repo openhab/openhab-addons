@@ -8,7 +8,7 @@
 	<thing-type id="One" listed="false">
 		<!-- Label without column (:) because of device pairing name restrictions -->
 		<label>One</label>
-		<description>Represents SONOS One Zone Player</description>
+		<description>Represents SONOS One speaker</description>
 
 		<channels>
 			<channel id="add" typeId="add"/>

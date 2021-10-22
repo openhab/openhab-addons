@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants;
@@ -419,7 +420,8 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     @Override
     public synchronized ApplicationGroup getFunctionalColorGroup() {
-        return groupList.stream().findFirst().get();
+        Optional<ApplicationGroup> applicationGroup = groupList.stream().findFirst();
+        return applicationGroup.isPresent() ? applicationGroup.get() : null;
     }
 
     @Override

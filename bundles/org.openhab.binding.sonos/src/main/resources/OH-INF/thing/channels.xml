@@ -160,7 +160,7 @@
 	<channel-type id="playlist" advanced="true">
 		<item-type>String</item-type>
 		<label>Play Playlist</label>
-		<description>Play the given playlist. The playlist has to predefined in the Sonos Controller app</description>
+		<description>Play the given playlist. The playlist has to be predefined in the Sonos Controller app</description>
 	</channel-type>
 
 	<channel-type id="playqueue" advanced="true">

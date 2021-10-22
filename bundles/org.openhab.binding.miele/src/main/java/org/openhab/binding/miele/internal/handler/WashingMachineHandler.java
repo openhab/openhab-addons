@@ -46,7 +46,7 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
 
     private static final int POWER_CONSUMPTION_BYTE_POSITION = 51;
     private static final int WATER_CONSUMPTION_BYTE_POSITION = 53;
-    private static final int EXTENDED_STATE_SIZE_BYTES = 59;
+    private static final int EXTENDED_STATE_MIN_SIZE_BYTES = 54;
 
     private final Logger logger = LoggerFactory.getLogger(WashingMachineHandler.class);
 
@@ -98,8 +98,8 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
     }
 
     public void onApplianceExtendedStateChanged(byte[] extendedDeviceState) {
-        if (extendedDeviceState.length != EXTENDED_STATE_SIZE_BYTES) {
-            logger.error("Unexpected size of extended state: {}", extendedDeviceState);
+        if (extendedDeviceState.length < EXTENDED_STATE_MIN_SIZE_BYTES) {
+            logger.warn("Unexpected size of extended state: {}", extendedDeviceState);
             return;
         }
 

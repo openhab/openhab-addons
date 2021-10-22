@@ -124,6 +124,7 @@
 				<label>Remaining Filter Life</label>
 				<description>Remaining life of filter until exchange is necessary</description>
 			</channel>
+			<channel id="filter_period" typeId="filterPeriod"/>
 		</channels>
 	</channel-group-type>
 
@@ -189,6 +190,12 @@
 		<description>Current step setting of the fan extracting air from the rooms</description>
 		<category>Fan</category>
 		<state step="10" min="0" max="100" readOnly="true"/>
+	</channel-type>
+	<channel-type id="filterPeriod" advanced="true">
+		<item-type>Number</item-type>
+		<label>Filter Period</label>
+		<description>Number of months between filter replacements</description>
+		<state pattern="%d" min="3" max="12"/>
 	</channel-type>
 	<channel-type id="percentage">
 		<item-type>Number</item-type>
