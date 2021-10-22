@@ -23,6 +23,7 @@ import java.time.ZonedDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -31,7 +32,7 @@ import org.openhab.core.test.java.JavaTest;
 /**
  * This class provides test cases for {@link DanfossAirUnit}
  * 
- * @author Jacob Laursen - Refactoring, bugfixes and enhancements
+ * @author Jacob Laursen - Initial contribution
  */
 public class DanfossAirUnitTest extends JavaTest {
 
@@ -152,5 +153,13 @@ public class DanfossAirUnitTest extends JavaTest {
                 .thenReturn(response);
         var airUnit = new DanfossAirUnit(communicationController);
         assertThrows(UnexpectedResponseValueException.class, () -> airUnit.getManualFanStep());
+    }
+
+    @Test
+    public void getFilterLifeWhenNearestNeighborIsBelowRoundsDown() throws IOException {
+        byte[] response = new byte[] { (byte) 0xf0 };
+        when(this.communicationController.sendRobustRequest(REGISTER_1_READ, FILTER_LIFE)).thenReturn(response);
+        var airUnit = new DanfossAirUnit(communicationController);
+        assertEquals(new DecimalType("94.1"), airUnit.getFilterLife());
     }
 }

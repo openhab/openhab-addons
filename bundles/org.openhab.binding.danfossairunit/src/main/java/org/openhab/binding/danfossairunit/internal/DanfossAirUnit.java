@@ -213,7 +213,16 @@ public class DanfossAirUnit {
     }
 
     public DecimalType getFilterLife() throws IOException {
-        return new DecimalType(BigDecimal.valueOf(asPercentByte(getByte(REGISTER_1_READ, FILTER_LIFE))));
+        BigDecimal value = BigDecimal.valueOf(asPercentByte(getByte(REGISTER_1_READ, FILTER_LIFE)));
+        return new DecimalType(value.setScale(1, RoundingMode.HALF_UP));
+    }
+
+    public DecimalType getFilterPeriod() throws IOException {
+        return new DecimalType(BigDecimal.valueOf(getByte(REGISTER_1_READ, FILTER_PERIOD)));
+    }
+
+    public DecimalType setFilterPeriod(Command cmd) throws IOException {
+        return setNumberTypeRegister(cmd, FILTER_PERIOD);
     }
 
     public DateTimeType getCurrentTime() throws IOException, UnexpectedResponseValueException {
@@ -223,6 +232,14 @@ public class DanfossAirUnit {
 
     public PercentType setManualFanStep(Command cmd) throws IOException {
         return setPercentTypeRegister(cmd, MANUAL_FAN_SPEED_STEP);
+    }
+
+    private DecimalType setNumberTypeRegister(Command cmd, byte[] register) throws IOException {
+        if (cmd instanceof DecimalType) {
+            byte value = (byte) ((DecimalType) cmd).intValue();
+            set(REGISTER_1_WRITE, register, value);
+        }
+        return new DecimalType(BigDecimal.valueOf(getByte(REGISTER_1_READ, register)));
     }
 
     private PercentType setPercentTypeRegister(Command cmd, byte[] register) throws IOException {
