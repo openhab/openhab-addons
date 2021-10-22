@@ -69,16 +69,14 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
     @Override
     protected synchronized void initialize(UniFiClientThingConfig config) {
         // mgb: called when the config changes
-        if (thing.getStatus() == INITIALIZING) {
-            logger.debug("Initializing the UniFi Client Handler with config = {}", config);
-            if (!config.isValid()) {
-                updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                        "You must define a MAC address, IP address, hostname or alias for this thing.");
-                return;
-            }
-            this.config = config;
-            updateStatus(ONLINE);
+        logger.debug("Initializing the UniFi Client Handler with config = {}", config);
+        if (!config.isValid()) {
+            updateStatus(OFFLINE, CONFIGURATION_ERROR,
+                    "You must define a MAC address, IP address, hostname or alias for this thing.");
+            return;
         }
+        this.config = config;
+        updateStatus(ONLINE);
     }
 
     private static boolean belongsToSite(UniFiClient client, String siteName) {
