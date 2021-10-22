@@ -173,47 +173,40 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
     // the channel
     public void channelLinked(ChannelUID channelUID) {
         NikoHomeControlCommunication nhcComm = getCommunication();
-        if (nhcComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error");
-            return;
+        if (nhcComm != null) {
+            // This can be expensive, therefore do it in a job.
+            scheduler.submit(() -> {
+                if (!nhcComm.communicationActive()) {
+                    restartCommunication(nhcComm);
+                }
+
+                if (nhcComm.communicationActive()) {
+                    nhcComm.startEnergyMeter(energyMeterId);
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            });
         }
-
-        // This can be expensive, therefore do it in a job.
-        scheduler.submit(() -> {
-            if (!nhcComm.communicationActive()) {
-                restartCommunication(nhcComm);
-            }
-
-            if (nhcComm.communicationActive()) {
-                nhcComm.startEnergyMeter(energyMeterId);
-                updateStatus(ThingStatus.ONLINE);
-            }
-        });
     }
 
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
         NikoHomeControlCommunication nhcComm = getCommunication();
-        if (nhcComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error");
-            return;
+        if (nhcComm != null) {
+            // This can be expensive, therefore do it in a job.
+            scheduler.submit(() -> {
+                if (!nhcComm.communicationActive()) {
+                    restartCommunication(nhcComm);
+                }
+
+                if (nhcComm.communicationActive()) {
+                    nhcComm.stopEnergyMeter(energyMeterId);
+                    // as this is momentary power production/consumption, we set it UNDEF as we do not get readings
+                    // anymore
+                    updateState(CHANNEL_POWER, UnDefType.UNDEF);
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            });
         }
-
-        // This can be expensive, therefore do it in a job.
-        scheduler.submit(() -> {
-            if (!nhcComm.communicationActive()) {
-                restartCommunication(nhcComm);
-            }
-
-            if (nhcComm.communicationActive()) {
-                nhcComm.stopEnergyMeter(energyMeterId);
-                // as this is momentary power production/consumption, we set it UNDEF as we do not get readings anymore
-                updateState(CHANNEL_POWER, UnDefType.UNDEF);
-                updateStatus(ThingStatus.ONLINE);
-            }
-        });
     }
 
     private void restartCommunication(NikoHomeControlCommunication nhcComm) {
@@ -230,28 +223,19 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
         NikoHomeControlBridgeHandler nhcBridgeHandler = getBridgeHandler();
         if (nhcBridgeHandler != null) {
             nhcBridgeHandler.bridgeOnline();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "@text/offline.bridge-unitialized");
         }
     }
 
     private @Nullable NikoHomeControlCommunication getCommunication() {
         NikoHomeControlBridgeHandler nhcBridgeHandler = getBridgeHandler();
-        if (nhcBridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "@text/offline.bridge-unitialized");
-            return null;
-        }
-        NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
-        return nhcComm;
+        return nhcBridgeHandler != null ? nhcBridgeHandler.getCommunication() : null;
     }
 
     private @Nullable NikoHomeControlBridgeHandler getBridgeHandler() {
         Bridge nhcBridge = getBridge();
-        if (nhcBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "@text/offline.bridge-unitialized");
-            return null;
-        }
-        NikoHomeControlBridgeHandler nhcBridgeHandler = (NikoHomeControlBridgeHandler) nhcBridge.getHandler();
-        return nhcBridgeHandler;
+        return nhcBridge != null ? (NikoHomeControlBridgeHandler) nhcBridge.getHandler() : null;
     }
 }

@@ -92,7 +92,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
         logger.debug("handle command {} for {}", command, channelUID);
 
-        if (command == REFRESH) {
+        if (REFRESH.equals(command)) {
             actionEvent(nhcAction.getState());
             return;
         }
@@ -112,7 +112,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
                 updateStatus(ThingStatus.ONLINE);
                 break;
             default:
-                logger.debug("channel unknown {}", channelUID.getId());
+                logger.debug("unexpected command for channel {}", channelUID.getId());
         }
     }
 
@@ -344,28 +344,19 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         NikoHomeControlBridgeHandler nhcBridgeHandler = getBridgeHandler();
         if (nhcBridgeHandler != null) {
             nhcBridgeHandler.bridgeOnline();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "@text/offline.bridge-unitialized");
         }
     }
 
     private @Nullable NikoHomeControlCommunication getCommunication() {
         NikoHomeControlBridgeHandler nhcBridgeHandler = getBridgeHandler();
-        if (nhcBridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "@text/offline.bridge-unitialized");
-            return null;
-        }
-        NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
-        return nhcComm;
+        return nhcBridgeHandler != null ? nhcBridgeHandler.getCommunication() : null;
     }
 
     private @Nullable NikoHomeControlBridgeHandler getBridgeHandler() {
         Bridge nhcBridge = getBridge();
-        if (nhcBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "@text/offline.bridge-unitialized");
-            return null;
-        }
-        NikoHomeControlBridgeHandler nhcBridgeHandler = (NikoHomeControlBridgeHandler) nhcBridge.getHandler();
-        return nhcBridgeHandler;
+        return nhcBridge != null ? (NikoHomeControlBridgeHandler) nhcBridge.getHandler() : null;
     }
 }
