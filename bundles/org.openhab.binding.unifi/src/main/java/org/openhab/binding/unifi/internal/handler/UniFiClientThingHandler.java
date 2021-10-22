@@ -76,9 +76,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
             return;
         }
         this.config = config;
-        if (thing.getStatus() == INITIALIZING) {
-            updateStatus(ONLINE);
-        }
+        updateStatus(ONLINE);
     }
 
     private static boolean belongsToSite(UniFiClient client, String siteName) {
