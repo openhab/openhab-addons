@@ -11,7 +11,7 @@
 		<channels>
 			<channel id="temperature" typeId="Temperature"/>
 			<channel id="sensorLevel" typeId="SensorLevel"/>
-			<channel id="usableLevel" typeId="UsableLevelInLitre"/>
+			<channel id="usableLevel" typeId="UsableLevel"/>
 			<channel id="usableLevelInPercent" typeId="UsableLevelInPercent"/>
 			<channel id="totalCapacity" typeId="TotalCapacity"/>
 		</channels>
@@ -39,7 +39,7 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="UsableLevelInLitre">
+	<channel-type id="UsableLevel">
 		<item-type>Number:Volume</item-type>
 		<label>Usable Level in litre</label>
 		<description>The usable level in litre</description>
