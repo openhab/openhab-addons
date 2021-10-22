@@ -50,7 +50,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Usable Level in percent</label>
 		<description>The usable level in percent</description>
-		<state readOnly="true" pattern="%.2f%%"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="TotalCapacity">
