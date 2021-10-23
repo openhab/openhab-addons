@@ -13,6 +13,7 @@
 package org.openhab.binding.dbquery.internal;
 
 import static org.openhab.binding.dbquery.internal.DBQueryBindingConstants.THING_TYPE_INFLUXDB2_BRIDGE;
+import static org.openhab.binding.dbquery.internal.DBQueryBindingConstants.THING_TYPE_JDBC_BRIDGE;
 import static org.openhab.binding.dbquery.internal.DBQueryBindingConstants.THING_TYPE_QUERY;
 
 import java.util.Set;
@@ -36,7 +37,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.dbquery", service = ThingHandlerFactory.class)
 public class DBQueryHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_INFLUXDB2_BRIDGE,
-            THING_TYPE_QUERY);
+            THING_TYPE_JDBC_BRIDGE, THING_TYPE_QUERY);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -51,6 +52,8 @@ public class DBQueryHandlerFactory extends BaseThingHandlerFactory {
             return new QueryHandler(thing);
         } else if (THING_TYPE_INFLUXDB2_BRIDGE.equals(thingTypeUID)) {
             return new InfluxDB2BridgeHandler((Bridge) thing);
+        } else if (THING_TYPE_JDBC_BRIDGE.equals(thingTypeUID)) {
+            return new JDBCBridgeHandler((Bridge) thing);
         } else {
             return null;
         }

@@ -24,7 +24,7 @@ import org.openhab.binding.dbquery.internal.error.DatabaseException;
  */
 @NonNullByDefault
 public interface Database {
-    boolean isConnected();
+    CompletableFuture<Boolean> isConnected();
 
     CompletableFuture<Boolean> connect();
 
@@ -36,8 +36,8 @@ public interface Database {
 
     Database EMPTY = new Database() {
         @Override
-        public boolean isConnected() {
-            return false;
+        public CompletableFuture<Boolean> isConnected() {
+            return CompletableFuture.completedFuture(false);
         }
 
         @Override

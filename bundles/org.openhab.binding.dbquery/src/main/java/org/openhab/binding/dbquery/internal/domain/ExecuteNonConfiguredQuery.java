@@ -41,13 +41,15 @@ public class ExecuteNonConfiguredQuery {
 
     public CompletableFuture<QueryResult> execute(String queryString, Map<String, @Nullable Object> parameters,
             Duration timeout) {
-        if (!database.isConnected()) {
-            return CompletableFuture.completedFuture(QueryResult.ofIncorrectResult("Database not connected"));
-        }
-
-        Query query = database.queryFactory().createQuery(queryString, new QueryParameters(parameters),
-                createConfiguration(queryString, timeout));
-        return database.executeQuery(query);
+        return database.isConnected().thenComposeAsync(connected -> {
+            if (connected) {
+                Query query = database.queryFactory().createQuery(queryString, new QueryParameters(parameters),
+                        createConfiguration(queryString, timeout));
+                return database.executeQuery(query);
+            } else {
+                return CompletableFuture.completedFuture(QueryResult.ofIncorrectResult("Database not connected"));
+            }
+        });
     }
 
     public QueryResult executeSynchronously(String queryString, Map<String, @Nullable Object> parameters,

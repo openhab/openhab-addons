@@ -13,27 +13,32 @@
 package org.openhab.binding.dbquery.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.dbquery.internal.config.JdbcBridgeConfiguration;
+import org.openhab.binding.dbquery.internal.dbimpl.jdbc.JdbcClientFacadeImpl;
+import org.openhab.binding.dbquery.internal.dbimpl.jdbc.JdbcDatabase;
+import org.openhab.binding.dbquery.internal.domain.Database;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.types.Command;
 
 /**
- * Concrete implementation of {@link DatabaseBridgeHandler} for Influx2
+ * Concrete implementation of {@link DatabaseBridgeHandler} for Jdbc
  *
  * @author Joan Pujol - Initial contribution
  */
 @NonNullByDefault
-public class JDBCBridgeHandler extends BaseBridgeHandler {
+public class JDBCBridgeHandler extends DatabaseBridgeHandler {
+    private JdbcBridgeConfiguration config = new JdbcBridgeConfiguration();
+
     public JDBCBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 
     @Override
-    public void initialize() {
+    Database createDatabase() {
+        return new JdbcDatabase(config, new JdbcClientFacadeImpl(config));
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    protected void initConfig() {
+        config = getConfig().as(JdbcBridgeConfiguration.class);
     }
 }
