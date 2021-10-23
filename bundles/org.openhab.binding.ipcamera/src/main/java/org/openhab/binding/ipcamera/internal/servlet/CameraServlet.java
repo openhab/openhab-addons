@@ -128,7 +128,7 @@ public class CameraServlet extends IpCameraServlet {
                 // Use cached image if recent. Cameras can take > 1sec to send back a reply.
                 // Example an Image item/widget may have a 1 second refresh.
                 if (handler.ffmpegSnapshotGeneration
-                        || Duration.between(handler.currentSnapshotTime, Instant.now()).toMillis() < 1200) {
+                        || Duration.between(handler.currentSnapshotTime, Instant.now()).toMillis() <= 1200) {
                     sendSnapshotImage(resp, "image/jpg", handler.getSnapshot());
                 } else {
                     handler.getSnapshot();
@@ -189,8 +189,9 @@ public class CameraServlet extends IpCameraServlet {
                 } else {
                     ChannelTracking tracker = handler.channelTrackingMap.get(handler.mjpegUri);
                     if (tracker == null || !tracker.getChannel().isOpen()) {
-                        logger.debug("Not the first stream requested but the stream from camera was closed");
                         handler.openCamerasStream();
+                        logger.debug("Multiple streams are open, but the source from the camera was closed");
+                        openStreams.closeAllStreams();
                     }
                     output = new StreamOutput(resp, handler.mjpegContentType);
                     openStreams.addStream(output);
@@ -201,6 +202,7 @@ public class CameraServlet extends IpCameraServlet {
                     } catch (InterruptedException | IOException e) {
                         // Never stop streaming until IOException. Occurs when browser stops the stream.
                         openStreams.removeStream(output);
+                        logger.debug("Now there are {} ipcamera.mjpeg streams open.", openStreams.getNumberOfStreams());
                         if (openStreams.isEmpty()) {
                             if (output.isSnapshotBased) {
                                 Ffmpeg localMjpeg = handler.ffmpegMjpeg;
@@ -210,7 +212,7 @@ public class CameraServlet extends IpCameraServlet {
                             } else {
                                 handler.closeChannel(handler.getTinyUrl(handler.mjpegUri));
                             }
-                            logger.debug("All ipcamera.mjpeg streams have stopped.");
+                            logger.debug("Closed source stream from camera.");
                         }
                         return;
                     }

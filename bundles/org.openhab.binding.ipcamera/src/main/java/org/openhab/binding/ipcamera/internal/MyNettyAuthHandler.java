@@ -163,7 +163,6 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                         ipCameraHandler.cameraConfigError(
                                 "Camera gave no WWW-Authenticate: Your login details must be wrong.");
                     }
-                    return;
                 }
             } else if (response.status().code() != 200) {
                 ctx.close();

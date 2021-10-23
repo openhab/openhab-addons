@@ -367,8 +367,8 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (e.state() == IdleState.READER_IDLE) {
                     String urlToKeepOpen = "";
                     switch (thing.getThingTypeUID().getId()) {
-                        case DOORBIRD_THING:
-                            urlToKeepOpen = "/bha-api/monitor.cgi?ring=doorbell,motionsensor";
+                        case DAHUA_THING:
+                            urlToKeepOpen = "/cgi-bin/eventManager.cgi?action=attach&codes=[All]";
                             break;
                     }
                     ChannelTracking channelTracking = channelTrackingMap.get(urlToKeepOpen);
@@ -377,6 +377,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             return; // don't auto close this as it is for the alarms.
                         }
                     }
+                    logger.debug("Closing an idle channel for camera:{}", cameraConfig.getIp());
                     ctx.close();
                 }
             }
@@ -662,7 +663,8 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void openCamerasStream() {
-        mainEventLoopGroup.schedule(this::openMjpegStream, 500, TimeUnit.MILLISECONDS);
+        closeChannel(getTinyUrl(mjpegUri));
+        mainEventLoopGroup.schedule(this::openMjpegStream, 0, TimeUnit.MILLISECONDS);
     }
 
     private void openMjpegStream() {
@@ -693,7 +695,7 @@ public class IpCameraHandler extends BaseThingHandler {
      * open large amounts of channels. This may help to keep it under control and WARN the user every 8 seconds this is
      * still occurring.
      */
-    void cleanChannels() {
+    private void cleanChannels() {
         for (Channel channel : openChannels) {
             boolean oldChannel = true;
             for (ChannelTracking channelTracking : channelTrackingMap.values()) {
