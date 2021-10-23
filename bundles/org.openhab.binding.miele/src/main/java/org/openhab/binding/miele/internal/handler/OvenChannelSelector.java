@@ -12,17 +12,23 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
+import static java.util.Map.entry;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
+
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
+import org.openhab.binding.miele.internal.ExtendedDeviceStateUtil;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
@@ -37,6 +43,7 @@ import com.google.gson.JsonElement;
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - Changed START_TIME to DateTimeType
+ * @author Jacob Laursen - Added UoM for temperatures, raw channels
  */
 public enum OvenChannelSelector implements ApplianceChannelSelector {
 
@@ -44,9 +51,22 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
     BRAND_ID("brandId", "brandId", StringType.class, true),
     COMPANY_ID("companyId", "companyId", StringType.class, true),
-    STATE("state", "state", StringType.class, false),
-    PROGRAMID("programId", "program", StringType.class, false),
-    PROGRAMPHASE("phase", "phase", StringType.class, false),
+    STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false),
+    STATE(null, STATE_CHANNEL_ID, DecimalType.class, false),
+    PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false),
+    PROGRAM(null, PROGRAM_CHANNEL_ID, DecimalType.class, false),
+    PROGRAMTYPE("programType", "type", StringType.class, false),
+    PROGRAM_PHASE_TEXT(PHASE_PROPERTY_NAME, PHASE_TEXT_CHANNEL_ID, StringType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd) {
+            State state = getTextState(s, dmd, phases, MISSING_PHASE_TEXT_PREFIX);
+            if (state != null) {
+                return state;
+            }
+            return super.getState(s, dmd);
+        }
+    },
+    PROGRAM_PHASE(RAW_PHASE_PROPERTY_NAME, PHASE_CHANNEL_ID, DecimalType.class, false),
     START_TIME("startTime", "start", DateTimeType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
@@ -103,28 +123,28 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
             return getState(dateFormatter.format(date));
         }
     },
-    TARGET_TEMP("targetTemperature", "target", DecimalType.class, false) {
+    TARGET_TEMP("targetTemperature", "target", QuantityType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+            return getTemperatureState(s);
         }
     },
-    MEASURED_TEMP("measuredTemperature", "measured", DecimalType.class, false) {
+    MEASURED_TEMP("measuredTemperature", "measured", QuantityType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+            return getTemperatureState(s);
         }
     },
-    DEVICE_TEMP_ONE("deviceTemperature1", "temp1", DecimalType.class, false) {
+    DEVICE_TEMP_ONE("deviceTemperature1", "temp1", QuantityType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+            return getTemperatureState(s);
         }
     },
-    DEVICE_TEMP_TWO("deviceTemperature2", "temp2", DecimalType.class, false) {
+    DEVICE_TEMP_TWO("deviceTemperature2", "temp2", QuantityType.class, false) {
         @Override
         public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+            return getTemperatureState(s);
         }
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
@@ -146,6 +166,10 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
     SWITCH(null, "switch", OnOffType.class, false);
 
     private final Logger logger = LoggerFactory.getLogger(OvenChannelSelector.class);
+
+    private final static Map<String, String> phases = Map.ofEntries(entry("1", "Heating"), entry("2", "Temp. hold"),
+            entry("3", "Door Open"), entry("4", "Pyrolysis"), entry("7", "Lighting"), entry("8", "Searing phase"),
+            entry("10", "Defrost"), entry("11", "Cooling down"), entry("12", "Energy save phase"));
 
     private final String mieleID;
     private final String channelID;
@@ -175,13 +199,13 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
-    public Class<? extends Type> getTypeClass() {
-        return typeClass;
+    public boolean isProperty() {
+        return isProperty;
     }
 
     @Override
-    public boolean isProperty() {
-        return isProperty;
+    public boolean isExtendedState() {
+        return false;
     }
 
     @Override
@@ -210,6 +234,33 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
             }
         } catch (Exception e) {
             logger.error("An exception occurred while converting '{}' into a State", s);
+        }
+
+        return null;
+    }
+
+    public State getTemperatureState(String s) {
+        try {
+            return ExtendedDeviceStateUtil.getTemperatureState(s);
+        } catch (NumberFormatException e) {
+            logger.warn("An exception occurred while converting '{}' into a State", s);
+            return UnDefType.UNDEF;
+        }
+    }
+
+    public State getTextState(String s, DeviceMetaData dmd, Map<String, String> valueMap, String prefix) {
+        if ("0".equals(s)) {
+            return UnDefType.UNDEF;
+        }
+
+        if (dmd == null || dmd.LocalizedValue == null || dmd.LocalizedValue.startsWith(prefix)) {
+            String text = valueMap.get(s);
+            if (text != null) {
+                return getState(text);
+            }
+            if (dmd == null || dmd.LocalizedValue == null) {
+                return getState(prefix + s);
+            }
         }
 
         return null;

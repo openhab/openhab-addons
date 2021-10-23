@@ -347,7 +347,7 @@ public abstract class RotelConnector {
             return dataIn.read(dataBuffer);
         } catch (IOException e) {
             logger.debug("readInput failed: {}", e.getMessage());
-            throw new RotelException("readInput failed: " + e.getMessage());
+            throw new RotelException("readInput failed", e);
         }
     }
 
@@ -489,7 +489,7 @@ public abstract class RotelConnector {
             dataOut.flush();
         } catch (IOException e) {
             logger.debug("Send command \"{}\" failed: {}", cmd.getName(), e.getMessage());
-            throw new RotelException("Send command \"" + cmd.getName() + "\" failed: " + e.getMessage());
+            throw new RotelException("Send command \"" + cmd.getName() + "\" failed", e);
         }
         logger.debug("Send command \"{}\" succeeded", cmd.getName());
     }

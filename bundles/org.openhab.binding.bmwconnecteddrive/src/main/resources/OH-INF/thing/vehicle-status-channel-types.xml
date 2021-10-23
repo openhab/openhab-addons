@@ -38,6 +38,11 @@
 		<label>Charging Status</label>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="plug-connection-channel">
+		<item-type>String</item-type>
+		<label>Plug Connection Status</label>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="charging-remaining-channel">
 		<item-type>Number:Time</item-type>
 		<label>Remaining Charging Time</label>
@@ -47,5 +52,9 @@
 		<item-type>DateTime</item-type>
 		<label>Last Status Timestamp</label>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
+	</channel-type>
+	<channel-type id="last-update-reason-channel">
+		<item-type>String</item-type>
+		<label>Last Status Timestamp Reason</label>
 	</channel-type>
 </thing:thing-descriptions>

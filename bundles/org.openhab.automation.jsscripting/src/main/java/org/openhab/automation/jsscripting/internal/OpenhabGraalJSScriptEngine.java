@@ -70,6 +70,7 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
                         .option("js.commonjs-require-cwd", MODULE_DIR).option("js.nashorn-compat", "true") // to ease
                                                                                                            // migration
                         .option("js.commonjs-require", "true") // enable CommonJS module support
+                        .hostClassLoader(getClass().getClassLoader())
                         .fileSystem(new DelegatingFileSystem(FileSystems.getDefault().provider()) {
                             @Override
                             public SeekableByteChannel newByteChannel(Path path, Set<? extends OpenOption> options,

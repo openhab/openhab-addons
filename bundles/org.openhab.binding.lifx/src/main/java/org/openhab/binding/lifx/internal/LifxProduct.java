@@ -91,7 +91,7 @@ public enum LifxProduct {
     PRODUCT_64(64, "LIFX A19 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
     PRODUCT_65(65, "LIFX BR30 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
     PRODUCT_66(66, "LIFX Mini White", new Features(TR_2700_2700)),
-    PRODUCT_68(68, "LIFX Candle", new Features(TR_1500_9000, MATRIX)),
+    PRODUCT_68(68, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
     PRODUCT_70(70, "LIFX Switch", new Features(BUTTONS, RELAYS)),
     PRODUCT_71(71, "LIFX Switch", new Features(BUTTONS, RELAYS)),
     PRODUCT_81(81, "LIFX Candle White to Warm", new Features(TR_2200_6500)),
@@ -100,19 +100,23 @@ public enum LifxProduct {
     PRODUCT_87(87, "LIFX Mini White", new Features(TR_2700_2700)),
     PRODUCT_88(88, "LIFX Mini White", new Features(TR_2700_2700)),
     PRODUCT_89(89, "LIFX Switch", new Features(BUTTONS, RELAYS)),
-    PRODUCT_90(90, "LIFX Clean", new Features(TR_1500_9000, HEV)),
+    PRODUCT_90(90, "LIFX Clean", new Features(TR_1500_9000, COLOR, HEV)),
     PRODUCT_91(91, "LIFX Color", new Features(TR_1500_9000, COLOR)),
     PRODUCT_92(92, "LIFX Color", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_93(93, "LIFX A19", new Features(TR_1500_9000, COLOR)),
     PRODUCT_94(94, "LIFX BR30", new Features(TR_1500_9000, COLOR)),
     PRODUCT_96(96, "LIFX Candle White to Warm", new Features(TR_2200_6500)),
     PRODUCT_97(97, "LIFX A19", new Features(TR_1500_9000, COLOR)),
     PRODUCT_98(98, "LIFX BR30", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_99(99, "LIFX Clean", new Features(TR_1500_9000, HEV)),
+    PRODUCT_99(99, "LIFX Clean", new Features(TR_1500_9000, COLOR, HEV)),
     PRODUCT_100(100, "LIFX Filament Clear", new Features(TR_2100_2100)),
     PRODUCT_101(101, "LIFX Filament Amber", new Features(TR_2000_2000)),
     PRODUCT_109(109, "LIFX A19 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
     PRODUCT_110(110, "LIFX BR30 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
-    PRODUCT_111(111, "LIFX A19 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED));
+    PRODUCT_111(111, "LIFX A19 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
+    PRODUCT_112(112, "LIFX BR30 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
+    PRODUCT_113(113, "LIFX Mini White to Warm", new Features(TR_1500_9000)),
+    PRODUCT_114(114, "LIFX Mini White to Warm", new Features(TR_1500_9000));
 
     /**
      * Enumerates the product features.
@@ -371,12 +375,14 @@ public enum LifxProduct {
 
     public ThingTypeUID getThingTypeUID() {
         if (hasFeature(COLOR)) {
-            if (hasFeature(TILE_EFFECT)) {
-                return LifxBindingConstants.THING_TYPE_TILELIGHT;
+            if (hasFeature(HEV)) {
+                return LifxBindingConstants.THING_TYPE_COLORHEVLIGHT;
             } else if (hasFeature(INFRARED)) {
                 return LifxBindingConstants.THING_TYPE_COLORIRLIGHT;
             } else if (hasFeature(MULTIZONE)) {
                 return LifxBindingConstants.THING_TYPE_COLORMZLIGHT;
+            } else if (hasFeature(TILE_EFFECT)) {
+                return LifxBindingConstants.THING_TYPE_TILELIGHT;
             } else {
                 return LifxBindingConstants.THING_TYPE_COLORLIGHT;
             }

@@ -24,23 +24,24 @@ These are the available configuration parameters:
 |---|---|---|---|---|
 | current_time | main | DateTime | RO | Current time reported by the air unit.  |
 | mode | main | String | RW | Value to control the operation mode of the air unit. One of DEMAND, PROGRAM, MANUAL and OFF  |
-| manual_fan_speed | main | Dimmer | RW | Value to control the fan speed when in MANUAL mode (10 steps) |
+| manual_fan_step | main | Dimmer | RW | Value to control the fan step when in MANUAL mode (10 steps) |
 | supply_fan_speed | main | Number | RO | Current rotation of the fan supplying air to the rooms (in rpm) |
 | extract_fan_speed | main | Number | RO | Current rotation of the fan extracting air from the rooms (in rpm) |
-| supply_fan_step | main | Dimmer | RO | Current 10-step setting of the fan supplying air to the rooms |
-| extract_fan_step | main | Dimmer | RO | Current 10-step setting of the fan extracting air from the rooms |
+| supply_fan_step | main | Dimmer | RO | Current step setting of the fan supplying air to the rooms |
+| extract_fan_step | main | Dimmer | RO | Current step setting of the fan extracting air from the rooms |
 | boost | main | Switch | RW | Enables fan boost  |
 | night_cooling | main | Switch | RW | Enables night cooling  |
-| room_temp | temps | Number | RO | Temperature of the air in the room of the Air Dial  |
-| room_temp_calculated | temps | Number | RO | Calculated Room Temperature  |
-| outdoor_temp | temps | Number | RO | Temperature of the air outside  |
-| humidity | humidity | Number | RO | Humidity  |
+| room_temp | temps | Number:Temperature | RO | Temperature of the air in the room of the Air Dial  |
+| room_temp_calculated | temps | Number:Temperature | RO | Calculated Room Temperature  |
+| outdoor_temp | temps | Number:Temperature | RO | Temperature of the air outside  |
+| humidity | humidity | Number:Dimensionless | RO | Current relative humidity measured by the air unit  |
 | bypass | recuperator | Switch | RW | Disables the heat exchange. Useful in summer when room temperature is above target and outside temperature is below target.  |
 | supply_temp | recuperator | Number | RO | Temperature of air which is passed to the rooms  |
 | extract_temp | recuperator | Number | RO | Temperature of the air as extracted from the rooms  |
 | exhaust_temp | recuperator | Number | RO | Temperature of the air when pushed outside  |
 | battery_life | service | Number | RO | Remaining Air Dial Battery Level (percentage) |
 | filter_life | service | Number | RO | Remaining life of filter until exchange is necessary (percentage) |
+| filter_period | service | Number | RW | Number of months between filter replacements (between 3 and 12). This value affects calculation of filter_life by the unit, and might get overwritten by Air Dial or Link CC Controller. |
 
 
 ## Full Example
@@ -63,21 +64,47 @@ updateUnchangedValuesEveryMillis=30000]
 ### Items
 
 ```
-Dimmer Lueftung_Drehzahl_Manuell "Drehzahl Lüftung %" (All,Lueftung) {channel = "danfossairunit:airunit:myairunit:main#manual_fan_speed"}
-Number Lueftung_Drehzahl_Supply "Drehzahl Lüftung Zuluft (rpm)" (All,Lueftung) {channel = "danfossairunit:airunit:myairunit:main#supply_fan_speed"}
-Number Lueftung_Drehzahl_Extract "Drehzahl Lüftung Abluft (rpm)" (All,Lueftung) {channel = "danfossairunit:airunit:myairunit:main#extract_fan_speed"}
-String Lueftung_Mode "Betriebsart Lüftung" (All,Lueftung) {channel = "danfossairunit:airunit:myairunit:main#mode"}
-Switch Lueftung_Boost "Stoßlüftung" (All,Lueftung) {channel = "danfossairunit:airunit:myairunit:main#boost"}
-Switch Lueftung_Bypass "Lüftung Bypass" (All,Lueftung) {channel = "danfossairunit:airunit:myairunit:recuperator#bypass"}
+Dimmer DanfossHRV_ManualFanStep "Manual Fan Step [%s]" {channel = "danfossairunit:airunit:myairunit:main#manual_fan_step"}
+Number DanfossHRV_SupplyFanSpeed "Supply Fan Speed" {channel = "danfossairunit:airunit:myairunit:main#supply_fan_speed"}
+Number DanfossHRV_ExtractFanSpeed "Extract Fan Speed" {channel = "danfossairunit:airunit:myairunit:main#extract_fan_speed"}
+String DanfossHRV_Mode "Operation Mode" {channel = "danfossairunit:airunit:myairunit:main#mode"}
+Switch DanfossHRV_Boost "Boost" {channel = "danfossairunit:airunit:myairunit:main#boost"}
+Switch DanfossHRV_Bypass "Bypass" {channel = "danfossairunit:airunit:myairunit:recuperator#bypass"}
+Number:Dimensionless DanfossHRV_Humidity "Relative humidity" <humidity> { channel = "danfossairunit:airunit:myairunit:humidity#humidity" }
+Number:Temperature DanfossHRV_RoomTemperature "Room air temperatuyre" <temperature> { channel = "danfossairunit:airunit:myairunit:temps#room_temp" }
+Number:Temperature DanfossHRV_OutdoorTemperature "Outdoor air temperature" <temperature> { channel = "danfossairunit:airunit:myairunit:temps#outdoor_temp" }
+Number:Temperature DanfossHRV_SupplyAirTemperature "Supply air temperature" <temperature> { channel = "danfossairunit:airunit:myairunit:recuperator#supply_temp" }
+Number:Temperature DanfossHRV_ExtractAirTemperature "Extract air temperature" <temperature> { channel = "danfossairunit:airunit:myairunit:recuperator#extract_temp" }
+Number:Temperature DanfossHRV_ExhaustAirTemperature "Exhaust air temperature" <temperature> { channel = "danfossairunit:airunit:myairunit:recuperator#exhaust_temp" }
+Number DanfossHRV_RemainingFilterLife "Remaining filter life" { channel = "danfossairunit:airunit:myairunit:service#filter_life" }
+Number DanfossHRV_FilterPeriod "Filter period" { channel = "danfossairunit:airunit:myairunit:service#filter_period" }
 ```
 
 ### Sitemap
 
 ```
-Slider item=Lueftung_Drehzahl_Manuell
-Text item=Lueftung_Drehzahl_Supply
-Text item=Lueftung_Drehzahl_Extract
-Selection item=Lueftung_Mode mappings=[DEMAND="Bedarfslüftung", OFF="Aus", PROGRAM="Programm", MANUAL="manuell"]
-Switch item=Lueftung_Boost
-Switch item=Lueftung_Bypass
+sitemap danfoss label="Danfoss" {
+    Frame label="Control" {
+        Selection item=DanfossHRV_Mode mappings=[DEMAND="Demand", OFF="Off", PROGRAM="Program", MANUAL="Manual"]
+        Slider item=DanfossHRV_ManualFanStep step=10 visibility=[DanfossHRV_Mode=="MANUAL"]
+        Switch item=DanfossHRV_Bypass
+        Switch item=DanfossHRV_Boost
+    }
+    Frame label="Measurements" {
+        Text item=DanfossHRV_Humidity
+        Text item=DanfossHRV_RoomTemperature
+        Text item=DanfossHRV_OutdoorTemperature
+        Text item=DanfossHRV_SupplyAirTemperature
+        Text item=DanfossHRV_ExtractAirTemperature
+        Text item=DanfossHRV_ExhaustAirTemperature
+    }
+    Frame label="Fan" {
+        Text item=DanfossHRV_SupplyFanSpeed
+        Text item=DanfossHRV_ExtractFanSpeed
+    }
+    Frame label="Filter" {
+         Text item=DanfossHRV_RemainingFilterLife
+         Slider item=DanfossHRV_FilterPeriod minValue=3 maxValue=12
+    }
+}
 ```

@@ -25,15 +25,17 @@ public class MetricsConfiguration {
     public boolean influxMetricsEnabled = false;
     public String influxURL = "http://localhost:8086";
     public String influxDB = "openhab";
-    public @Nullable String influxPassword = null;
-    public @Nullable String influxUsername = null;
+    public @Nullable String influxPassword;
+    public @Nullable String influxUsername;
     public Integer influxUpdateIntervalInSeconds = 300;
+
+    public boolean jmxMetricsEnabled = false;
 
     @Override
     public String toString() {
         return "MetricsConfiguration{" + "influxMetricsEnabled=" + influxMetricsEnabled + ", influxURL='" + influxURL
                 + '\'' + ", influxDB='" + influxDB + '\'' + ", influxPassword='" + influxPassword + '\''
                 + ", influxUsername='" + influxUsername + '\'' + ", influxUpdateIntervalInSeconds="
-                + influxUpdateIntervalInSeconds + '}';
+                + influxUpdateIntervalInSeconds + ", jmxMetricsEnabled=" + jmxMetricsEnabled + '}';
     }
 }

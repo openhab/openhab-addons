@@ -48,7 +48,7 @@ public enum MiIoQuantiyTypes {
     MILLI_AMPERE(MILLI(Units.AMPERE), "mA"),
     VOLT(Units.VOLT),
     MILLI_VOLT(MILLI(Units.VOLT), "mV"),
-    WATT(Units.WATT),
+    WATT(Units.WATT, "W", "w"),
     LITRE(Units.LITRE, "liter"),
     LUX(Units.LUX),
     RADIANS(Units.RADIAN, "radians"),

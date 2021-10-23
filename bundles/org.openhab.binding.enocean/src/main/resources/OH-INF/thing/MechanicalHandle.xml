@@ -26,6 +26,7 @@
 					<option value="F6_10_01">F6-10-01</option>
 					<option value="A5_14_09">A5-14-09</option>
 					<option value="A5_14_0A">A5-14-0A</option>
+					<option value="D2_06_01_Soda">D2_06_01 (Soda handle)</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 			</parameter>

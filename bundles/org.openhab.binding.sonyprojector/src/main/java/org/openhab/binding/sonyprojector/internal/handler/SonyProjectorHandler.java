@@ -304,10 +304,10 @@ public class SonyProjectorHandler extends BaseThingHandler {
             logger.debug("Ethernet config community {}", config.community);
             if (config.host == null || config.host.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "host configuration setting undefined");
+                        "@text/offline.config-error-unknown-host");
             } else if (configModel == null || configModel.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "model configuration setting undefined");
+                        "@text/offline.config-error-unknown-model");
             } else {
                 configOk = true;
 
@@ -325,13 +325,13 @@ public class SonyProjectorHandler extends BaseThingHandler {
             logger.debug("Serial config model {}", configModel);
             if (config.port == null || config.port.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "port configuration setting undefined");
+                        "@text/offline.config-error-unknown-port");
             } else if (config.port.toLowerCase().startsWith("rfc2217")) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "use Serial over IP connection thing type");
+                        "@text/offline.config-error-invalid-thing-type");
             } else if (configModel == null || configModel.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "model configuration setting undefined");
+                        "@text/offline.config-error-unknown-model");
             } else {
                 configOk = true;
 
@@ -350,16 +350,16 @@ public class SonyProjectorHandler extends BaseThingHandler {
             logger.debug("Serial over IP config model {}", configModel);
             if (config.host == null || config.host.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "host configuration setting undefined");
+                        "@text/offline.config-error-unknown-host");
             } else if (config.port == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "port configuration setting undefined");
+                        "@text/offline.config-error-unknown-port");
             } else if (config.port <= 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "port configuration setting invalid");
+                        "@text/offline.config-error-invalid-port");
             } else if (configModel == null || configModel.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "model configuration setting undefined");
+                        "@text/offline.config-error-unknown-model");
             } else {
                 configOk = true;
 
@@ -522,7 +522,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
             SonyProjectorStatusPower value = connector.getStatusPower();
             logger.debug("Get Status Power returned {}", value);
             on = value.isOn();
-            state = new StringType(value.getName());
+            state = new StringType(value.name());
         } catch (SonyProjectorException e) {
             logger.debug("Get Status Power failed: {}", e.getMessage());
         }
@@ -608,7 +608,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
                             state = connector.getStatusPower().isOn() ? OnOffType.ON : OnOffType.OFF;
                             break;
                         case CHANNEL_POWERSTATE:
-                            state = new StringType(connector.getStatusPower().getName());
+                            state = new StringType(connector.getStatusPower().name());
                             break;
                         case CHANNEL_INPUT:
                             state = new StringType(connector.getInput());

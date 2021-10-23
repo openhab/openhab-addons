@@ -72,7 +72,7 @@ This list is just an example how the mapping looks like for some of the devices,
 |--------------------------|----------------|-------------------------|--------------|--------------|-----------|----------|--------------|--------------|-----------|-----------|--------|
 | Hama IR100               | Internet Radio | Spotify                 | Music Player | AUX in       | -         | -        | -            | -            | -          | -         |-       |
 | Hama IR110               | Internet Radio | Spotify                 | Music Player | AUX in       | -         | -        | -            | -            | -          | -         |-       |
-| Hama DIR3100             | Internet Radio | Spotify                 | Music Player | DAB Radio    | FM Radio  | AUX in   | -            | -            | -          | -         |-       |
+| Hama DIR3100             | Internet Radio | Spotify                 | -            | Music Player | DAB Radio | FM Radio  | AUX in      | -            | -          | -          | -         |
 | Medion MD87180           | Internet Radio | Music Player (USB, LAN) | DAB Radio    | FM Radio     | AUX in    | -        | -            | -            | -          | -         |-       |
 | Medion MD 86988          | Internet Radio | Music Player            | FM Radio     | AUX in       | -         | -        | -            | -            | -          | -         |-       |
 | Technisat DigitRadio 580 | Internet Radio | Spotify                 | -            | Music Player | DAB Radio | FM Radio | AUX in       | CD           | Bluetooth | -         |-       |
@@ -80,7 +80,8 @@ This list is just an example how the mapping looks like for some of the devices,
 | Silvercrest SIRD 14 C1   | -              | Napster                 | Deezer       | Qobuz        | Spotify   | TIDAL    | Spotify      | Music Player | DAB Radio | FM Radio  | AUX in |
 | Silvercrest SIRD 14 C2   | Internet Radio | TIDAL                   | Deezer       | Qobuz        | Spotify   | -        | Music Player | DAB Radio    | FM Radio  | AUX in    |-       |
 | Auna KR200 Kitchen Radio | Internet Radio | Spotify                 | -            | Music Player | DAB Radio | FM Radio | AUX in       | -            | -          | -         |-       |
-| Auna Connect CD          | Internet Radio | Spotify                 | Music Player | Music Player | DAB Radio | FM Radio | CD | Bluetooth | AUX in       | -        | -         |-       |
+| Auna Connect CD          | Internet Radio | Spotify                 | -            | Music Player | DAB Radio | FM Radio | CD           | Bluetooth    | AUX in    | -         | -      |
+| Teufel 3sixty            | Internet Radio | Spotify                 | -            | USB/Network  | DAB Radio | FM Radio | Bluetooth    | AUX in       | -          | -         | -      |
 
 
 ## Full Example

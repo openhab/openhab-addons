@@ -52,6 +52,7 @@
     <module>org.openhab.binding.amazondashbutton</module>
     <module>org.openhab.binding.amazonechocontrol</module>
     <module>org.openhab.binding.ambientweather</module>
+    <module>org.openhab.binding.amplipi</module>
     <module>org.openhab.binding.androiddebugbridge</module>
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.atlona</module>
@@ -91,6 +92,7 @@
     <module>org.openhab.binding.dali</module>
     <module>org.openhab.binding.danfossairunit</module>
     <module>org.openhab.binding.darksky</module>
+    <module>org.openhab.binding.dbquery</module>
     <module>org.openhab.binding.deconz</module>
     <module>org.openhab.binding.denonmarantz</module>
     <module>org.openhab.binding.digiplex</module>
@@ -105,6 +107,7 @@
     <module>org.openhab.binding.dwdunwetter</module>
     <module>org.openhab.binding.ecobee</module>
     <module>org.openhab.binding.ecotouch</module>
+    <module>org.openhab.binding.ekey</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.enigma2</module>
@@ -203,6 +206,7 @@
     <module>org.openhab.binding.mielecloud</module>
     <module>org.openhab.binding.mihome</module>
     <module>org.openhab.binding.miio</module>
+    <module>org.openhab.binding.mikrotik</module>
     <module>org.openhab.binding.millheat</module>
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.minecraft</module>
@@ -254,6 +258,7 @@
     <module>org.openhab.binding.openweathermap</module>
     <module>org.openhab.binding.openwebnet</module>
     <module>org.openhab.binding.oppo</module>
+    <module>org.openhab.binding.orbitbhyve</module>
     <module>org.openhab.binding.orvibo</module>
     <module>org.openhab.binding.paradoxalarm</module>
     <module>org.openhab.binding.pentair</module>
@@ -267,6 +272,7 @@
     <module>org.openhab.binding.plugwise</module>
     <module>org.openhab.binding.plugwiseha</module>
     <module>org.openhab.binding.powermax</module>
+    <module>org.openhab.binding.proteusecometer</module>
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.pushbullet</module>
     <module>org.openhab.binding.pushover</module>
@@ -330,6 +336,7 @@
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tr064</module>
     <module>org.openhab.binding.tradfri</module>
+    <module>org.openhab.binding.twitter</module>
     <module>org.openhab.binding.unifi</module>
     <module>org.openhab.binding.unifiedremote</module>
     <module>org.openhab.binding.upnpcontrol</module>
@@ -355,6 +362,7 @@
     <module>org.openhab.binding.windcentrale</module>
     <module>org.openhab.binding.wlanthermo</module>
     <module>org.openhab.binding.wled</module>
+    <module>org.openhab.binding.wolfsmartset</module>
     <module>org.openhab.binding.xmltv</module>
     <module>org.openhab.binding.xmppclient</module>
     <module>org.openhab.binding.yamahareceiver</module>

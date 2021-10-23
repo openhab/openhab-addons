@@ -646,7 +646,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     String volumeStringValue = decode(messageParts[3]);
                     updatePlayer(listener -> {
                         try {
-                            int volume = Integer.parseInt(volumeStringValue);
+                            int volume = Math.round(Float.parseFloat(volumeStringValue));
 
                             // Check if we received a relative volume change, or an absolute
                             // volume value.

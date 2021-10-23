@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.sagercaster.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -35,7 +37,6 @@ public class SagerCasterBindingConstants {
     public static final String CONFIG_PERIOD = "observation-period";
 
     // List of all Channel Groups Group Channel ids
-    public static final String GROUP_INPUT = "input";
     public static final String GROUP_OUTPUT = "output";
 
     // Output channel ids
@@ -55,4 +56,8 @@ public class SagerCasterBindingConstants {
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_PRESSURE = "pressure";
     public static final String CHANNEL_WIND_ANGLE = "wind-angle";
+
+    // Some algorythms constants
+    public final static String FORECAST_PENDING = "0";
+    public final static Set<String> SHOWERS = Set.of("G", "K", "L", "R", "S", "T", "U", "W");
 }
