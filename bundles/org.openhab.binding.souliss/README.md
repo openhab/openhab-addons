@@ -300,6 +300,7 @@ Text label="Termostato soggiorno" icon="temperature" {
  }
 }
 ```
+
 ## Community
 
 Souliss is a small community and doesn't have sufficient human resources to be more active on openHAB official community.

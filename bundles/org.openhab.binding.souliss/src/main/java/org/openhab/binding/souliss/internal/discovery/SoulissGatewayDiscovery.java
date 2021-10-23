@@ -48,7 +48,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService
 
     private @Nullable SoulissDiscoverJob soulissDiscoverRunnableClass = null;
 
-    private @Nullable SoulissGatewayHandler soulissGwHandler;
+    private @Nullable SoulissGatewayHandler soulissGwHandler = null;
 
     public SoulissGatewayDiscovery() {
         super(SoulissBindingConstants.SUPPORTED_THING_TYPES_UIDS, SoulissBindingConstants.DISCOVERY_TIMEOUT_IN_SECONDS,
@@ -264,8 +264,9 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService
     @Override
     public void setThingHandler(ThingHandler handler) {
         if (handler instanceof SoulissGatewayHandler) {
-            var localGwHandler = this.soulissGwHandler;
-            localGwHandler = (SoulissGatewayHandler) handler;
+            // SoulissGatewayHandler localGwHandler = this.soulissGwHandler;
+            SoulissGatewayHandler localGwHandler = (SoulissGatewayHandler) handler;
+            this.soulissGwHandler = localGwHandler;
             localGwHandler.discoverResult = this;
         }
     }
