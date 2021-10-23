@@ -343,6 +343,9 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     }
 
     protected boolean isResultProcessable(JsonElement result) {
-        return result != null && !result.isJsonNull();
+        if (result == null) {
+            throw new IllegalArgumentException("Provided result is null");
+        }
+        return !result.isJsonNull();
     }
 }

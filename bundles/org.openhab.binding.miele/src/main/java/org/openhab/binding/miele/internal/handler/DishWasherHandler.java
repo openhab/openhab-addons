@@ -82,7 +82,7 @@ public class DishWasherHandler extends MieleApplianceHandler<DishwasherChannelSe
                 }
             }
             // process result
-            if (isResultProcessable(result)) {
+            if (result != null && isResultProcessable(result)) {
                 logger.debug("Result of operation is {}", result.getAsString());
             }
         } catch (IllegalArgumentException e) {
