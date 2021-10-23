@@ -50,8 +50,6 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
 
     PRODUCT_TYPE("productTypeId", "productType", StringType.class, true, false),
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true, false),
-    BRAND_ID("brandId", "brandId", StringType.class, true, false),
-    COMPANY_ID("companyId", "companyId", StringType.class, true, false),
     STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false, false),
     STATE(null, STATE_CHANNEL_ID, DecimalType.class, false, false),
     PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false, false) {
