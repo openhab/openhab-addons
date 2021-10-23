@@ -149,8 +149,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     public void onApplianceStateChanged(FullyQualifiedApplianceIdentifier applicationIdentifier,
             DeviceClassObject dco) {
         String myApplianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
-        String modelID = StringUtils.right(dco.DeviceClass,
-                dco.DeviceClass.length() - new String("com.miele.xgw3000.gateway.hdm.deviceclasses.Miele").length());
+        String modelID = DeviceUtil.getDeviceClassFromFullyQualifiedString(dco.DeviceClass);
 
         if (myApplianceId.equals(applicationIdentifier.getApplianceId())) {
             if (modelID.equals(this.modelID)) {
