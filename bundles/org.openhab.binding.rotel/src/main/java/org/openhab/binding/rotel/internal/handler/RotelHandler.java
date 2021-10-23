@@ -41,6 +41,8 @@ import org.openhab.binding.rotel.internal.communication.RotelSerialConnector;
 import org.openhab.binding.rotel.internal.communication.RotelSimuConnector;
 import org.openhab.binding.rotel.internal.communication.RotelSource;
 import org.openhab.binding.rotel.internal.configuration.RotelThingConfiguration;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -59,6 +61,8 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +89,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
 
     private RotelStateDescriptionOptionProvider stateDescriptionProvider;
     private SerialPortManager serialPortManager;
+    private TranslationProvider i18nProvider;
+    private LocaleProvider localeProvider;
+    private Bundle bundle;
 
     private RotelConnector connector = new RotelSimuConnector(DEFAULT_MODEL, RotelProtocol.HEX, new HashMap<>(),
             "OH-binding-rotel");
@@ -132,10 +139,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * Constructor
      */
     public RotelHandler(Thing thing, RotelStateDescriptionOptionProvider stateDescriptionProvider,
-            SerialPortManager serialPortManager) {
+            SerialPortManager serialPortManager, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.serialPortManager = serialPortManager;
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
+        this.bundle = FrameworkUtil.getBundle(this.getClass()).getBundleContext().getBundle();
     }
 
     @Override
@@ -290,6 +300,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         }
         logger.debug("rotelProtocol {}", rotelProtocol.getName());
 
+        Map<RotelSource, String> sourcesCustomLabels = new HashMap<>();
         Map<RotelSource, String> sourcesLabels = new HashMap<>();
 
         String readerThreadName = "OH-binding-" + getThing().getUID().getAsString();
@@ -316,16 +327,16 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         String configError = null;
         if ((config.serialPort == null || config.serialPort.isEmpty())
                 && (config.host == null || config.host.isEmpty())) {
-            configError = "undefined serialPort and host configuration settings; please set one of them";
+            configError = "@text/offline.config-error-unknown-serialport-and-host";
         } else if (config.host == null || config.host.isEmpty()) {
             if (config.serialPort.toLowerCase().startsWith("rfc2217")) {
-                configError = "use host and port configuration settings for a serial over IP connection";
+                configError = "@text/offline.config-error-invalid-serial-over-ip";
             }
         } else {
             if (config.port == null) {
-                configError = "undefined port configuration setting";
+                configError = "@text/offline.config-error-unknown-port";
             } else if (config.port <= 0) {
-                configError = "invalid port configuration setting";
+                configError = "@text/offline.config-error-invalid-port";
             }
         }
 
@@ -375,6 +386,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     default:
                         break;
                 }
+                if (label != null && !label.isEmpty()) {
+                    sourcesCustomLabels.put(src, label);
+                }
                 sourcesLabels.put(src, (label == null || label.isEmpty()) ? src.getLabel() : label);
             }
 
@@ -390,24 +404,24 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
 
             if (rotelModel.hasSourceControl()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SOURCE),
-                        getStateOptions(rotelModel.getSources(), sourcesLabels));
+                        getStateOptions(rotelModel.getSources(), sourcesCustomLabels));
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_MAIN_SOURCE),
-                        getStateOptions(rotelModel.getSources(), sourcesLabels));
+                        getStateOptions(rotelModel.getSources(), sourcesCustomLabels));
                 stateDescriptionProvider.setStateOptions(
                         new ChannelUID(getThing().getUID(), CHANNEL_MAIN_RECORD_SOURCE),
-                        getStateOptions(rotelModel.getRecordSources(), sourcesLabels));
+                        getStateOptions(rotelModel.getRecordSources(), sourcesCustomLabels));
             }
             if (rotelModel.hasZone2SourceControl()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ZONE2_SOURCE),
-                        getStateOptions(rotelModel.getZone2Sources(), sourcesLabels));
+                        getStateOptions(rotelModel.getZone2Sources(), sourcesCustomLabels));
             }
             if (rotelModel.hasZone3SourceControl()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ZONE3_SOURCE),
-                        getStateOptions(rotelModel.getZone3Sources(), sourcesLabels));
+                        getStateOptions(rotelModel.getZone3Sources(), sourcesCustomLabels));
             }
             if (rotelModel.hasZone4SourceControl()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ZONE4_SOURCE),
-                        getStateOptions(rotelModel.getZone4Sources(), sourcesLabels));
+                        getStateOptions(rotelModel.getZone4Sources(), sourcesCustomLabels));
             }
             if (rotelModel.hasDspControl()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_DSP),
@@ -441,7 +455,12 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         List<StateOption> options = new ArrayList<>();
         for (RotelSource item : list) {
             String label = sourcesLabels.get(item);
-            options.add(new StateOption(item.getName(), label == null ? item.getLabel() : label));
+            String key = "source." + item.getName();
+            String label2 = i18nProvider.getText(bundle, key, key, localeProvider.getLocale());
+            if (label2 == null || label2.isEmpty()) {
+                label2 = key;
+            }
+            options.add(new StateOption(item.getName(), label == null ? label2 : label));
         }
         return options;
     }
@@ -853,7 +872,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 }
             } catch (RotelException e) {
                 logger.debug("Command {} from channel {} failed: {}", command, channel, e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Sending command failed");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error-sending-command");
                 closeConnection();
                 scheduleReconnectJob();
             } catch (InterruptedException e) {
@@ -1066,7 +1086,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         try {
             connector.open();
         } catch (RotelException e) {
-            logger.debug("openConnection() failed: {}", e.getMessage());
+            logger.debug("openConnection() failed", e);
         }
         logger.debug("openConnection(): {}", connector.isConnected() ? "connected" : "disconnected");
         return connector.isConnected();
@@ -1097,7 +1117,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             switch (key) {
                 case RotelConnector.KEY_ERROR:
                     logger.debug("Reading feedback message failed");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Reading thread ended");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/offline.comm-error-reading-thread");
                     closeConnection();
                     break;
                 case RotelConnector.KEY_LINE1:
@@ -1683,7 +1704,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     }
                 } catch (RotelException e) {
                     logger.debug("Init sequence failed: {}", e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Init sequence failed");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/offline.comm-error-init-sequence");
                     closeConnection();
                 } catch (InterruptedException e) {
                     logger.debug("Init sequence interrupted: {}", e.getMessage());
@@ -1727,7 +1749,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 } catch (RotelException e) {
                     logger.debug("Init sequence zone 2 failed: {}", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Init sequence zone 2 failed");
+                            "@text/offline.comm-error-init-sequence-zone [\"2\"]");
                     closeConnection();
                 } catch (InterruptedException e) {
                     logger.debug("Init sequence zone 2 interrupted: {}", e.getMessage());
@@ -1771,7 +1793,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 } catch (RotelException e) {
                     logger.debug("Init sequence zone 3 failed: {}", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Init sequence zone 3 failed");
+                            "@text/offline.comm-error-init-sequence-zone [\"3\"]");
                     closeConnection();
                 } catch (InterruptedException e) {
                     logger.debug("Init sequence zone 3 interrupted: {}", e.getMessage());
@@ -1815,7 +1837,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 } catch (RotelException e) {
                     logger.debug("Init sequence zone 4 failed: {}", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Init sequence zone 4 failed");
+                            "@text/offline.comm-error-init-sequence-zone [\"4\"]");
                     closeConnection();
                 } catch (InterruptedException e) {
                     logger.debug("Init sequence zone 4 interrupted: {}", e.getMessage());
@@ -1854,14 +1876,14 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         try {
                             connector.sendCommand(connector.getModel().getPowerStateCmd());
                         } catch (RotelException e) {
-                            error = "First command after connection failed";
-                            logger.debug("{}: {}", error, e.getMessage());
+                            error = "@text/offline.comm-error-first-command-after-reconnection";
+                            logger.debug("First command after connection failed", e);
                             cancelPowerOffJob();
                             closeConnection();
                         }
                     }
                 } else {
-                    error = "Reconnection failed";
+                    error = "@text/offline.comm-error-reconnection";
                 }
                 if (error != null) {
                     handlePowerOff();
