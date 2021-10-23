@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.miele.internal.DeviceUtil;
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceClassObject;
@@ -263,7 +264,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                 } else {
                     logger.debug("Updating the property '{}' of '{}' to '{}'", selector.getChannelID(),
                             getThing().getUID(), selector.getState(dpValue, dmd).toString());
-                    Map<String, String> properties = editProperties();
+                    @NonNull
+                    Map<@NonNull String, @NonNull String> properties = editProperties();
                     properties.put(selector.getChannelID(), selector.getState(dpValue, dmd).toString());
                     updateProperties(properties);
                 }
@@ -329,7 +331,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
         FullyQualifiedApplianceIdentifier applianceIdentifier = appliance.getApplianceIdentifier();
 
         if (applianceId.equals(applianceIdentifier.getApplianceId())) {
-            Map<String, String> properties = editProperties();
+            @NonNull
+            Map<@NonNull String, @NonNull String> properties = editProperties();
             properties.put(MODEL_PROPERTY_NAME, appliance.getApplianceModel());
             String deviceClass = appliance.getDeviceClass();
             if (deviceClass != null) {
