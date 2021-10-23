@@ -107,6 +107,10 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
             properties.put(PROTOCOL_ADAPTER_PROPERTY_NAME, appliance.ProtocolAdapterName);
             properties.put(APPLIANCE_ID, applianceIdentifier.getApplianceId());
             properties.put(SERIAL_NUMBER_PROPERTY_NAME, appliance.getSerialNumber());
+            String connectionType = appliance.getConnectionType();
+            if (connectionType != null) {
+                properties.put(CONNECTION_TYPE_PROPERTY_NAME, connectionType);
+            }
 
             for (JsonElement dc : appliance.DeviceClasses) {
                 String dcStr = dc.getAsString();

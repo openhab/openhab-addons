@@ -134,6 +134,14 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         public String getSerialNumber() {
             return Properties.get("serial.number").getAsString();
         }
+
+        public String getConnectionType() {
+            JsonElement connectionType = Properties.get("connection.type");
+            if (connectionType == null) {
+                return null;
+            }
+            return connectionType.getAsString();
+        }
     }
 
     public class DeviceClassObject {

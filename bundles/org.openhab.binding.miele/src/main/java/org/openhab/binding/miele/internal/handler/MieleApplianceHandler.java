@@ -320,6 +320,10 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
             Map<String, String> properties = editProperties();
             properties.put(PROTOCOL_ADAPTER_PROPERTY_NAME, appliance.ProtocolAdapterName);
             properties.put(SERIAL_NUMBER_PROPERTY_NAME, appliance.getSerialNumber());
+            String connectionType = appliance.getConnectionType();
+            if (connectionType != null) {
+                properties.put(CONNECTION_TYPE_PROPERTY_NAME, connectionType);
+            }
             updateProperties(properties);
             updateStatus(ThingStatus.ONLINE);
         }

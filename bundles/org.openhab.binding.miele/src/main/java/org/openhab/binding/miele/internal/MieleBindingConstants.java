@@ -30,6 +30,7 @@ public class MieleBindingConstants {
     public static final String APPLIANCE_ID = "uid";
     public static final String DEVICE_CLASS = "dc";
     public static final String PROTOCOL_ADAPTER_PROPERTY_NAME = "protocolAdapter";
+    public static final String CONNECTION_TYPE_PROPERTY_NAME = "connectionType";
 
     // JSON-RPC property names
     public static final String SERIAL_NUMBER_PROPERTY_NAME = "serialNumber";
