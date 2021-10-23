@@ -31,10 +31,13 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,6 +48,7 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.thing.Bridge;
@@ -76,7 +80,8 @@ import com.google.gson.JsonParser;
  **/
 public class MieleBridgeHandler extends BaseBridgeHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_XGW3000);
+    @NonNull
+    public static final Set<@NonNull ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_XGW3000);
 
     private static final Pattern IP_PATTERN = Pattern
             .compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
@@ -97,7 +102,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     protected ExecutorService executor;
     protected Future<?> eventListenerJob;
 
-    protected List<HomeDevice> previousHomeDevices = new CopyOnWriteArrayList<>();
+    @NonNull
+    protected Map<String, HomeDevice> cachedHomeDevices = new ConcurrentHashMap<String, HomeDevice>();
 
     protected URL url;
     protected Map<String, String> headers;
@@ -206,95 +212,94 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private Runnable pollingRunnable = new Runnable() {
         @Override
         public void run() {
-            if (IP_PATTERN.matcher((String) getConfig().get(HOST)).matches()) {
-                try {
-                    if (isReachable((String) getConfig().get(HOST))) {
-                        currentBridgeConnectionState = true;
-                    } else {
-                        currentBridgeConnectionState = false;
-                        lastBridgeConnectionState = false;
-                        onConnectionLost();
+            if (!IP_PATTERN.matcher((String) getConfig().get(HOST)).matches()) {
+                logger.debug("Invalid IP address for the Miele@Home gateway : '{}'", getConfig().get(HOST));
+                return;
+            }
+
+            try {
+                if (isReachable((String) getConfig().get(HOST))) {
+                    currentBridgeConnectionState = true;
+                } else {
+                    currentBridgeConnectionState = false;
+                    lastBridgeConnectionState = false;
+                    onConnectionLost();
+                }
+
+                if (!lastBridgeConnectionState && currentBridgeConnectionState) {
+                    logger.debug("Connection to Miele Gateway {} established.", getConfig().get(HOST));
+                    lastBridgeConnectionState = true;
+                    onConnectionResumed();
+                }
+
+                if (!currentBridgeConnectionState || getThing().getStatus() != ThingStatus.ONLINE) {
+                    return;
+                }
+
+                List<HomeDevice> homeDevices = getHomeDevices();
+                for (HomeDevice hd : homeDevices) {
+                    String key = hd.getApplianceIdentifier().getApplianceId();
+                    if (!cachedHomeDevices.containsKey(key)) {
+                        logger.debug("A new appliance with ID '{}' has been added", hd.UID);
+                        for (ApplianceStatusListener listener : applianceStatusListeners) {
+                            listener.onApplianceAdded(hd);
+                        }
                     }
+                    cachedHomeDevices.put(key, hd);
+                }
 
-                    if (!lastBridgeConnectionState && currentBridgeConnectionState) {
-                        logger.debug("Connection to Miele Gateway {} established.", getConfig().get(HOST));
-                        lastBridgeConnectionState = true;
-                        onConnectionResumed();
+                @NonNull
+                Set<@NonNull Entry<String, HomeDevice>> cachedEntries = cachedHomeDevices.entrySet();
+                @NonNull
+                Iterator<@NonNull Entry<String, HomeDevice>> iterator = cachedEntries.iterator();
+
+                while (iterator.hasNext()) {
+                    Entry<String, HomeDevice> cachedEntry = iterator.next();
+                    HomeDevice cachedHomeDevice = cachedEntry.getValue();
+                    if (!homeDevices.stream().anyMatch(d -> d.UID.equals(cachedHomeDevice.UID))) {
+                        logger.debug("The appliance with ID '{}' has been removed", cachedHomeDevice.UID);
+                        for (ApplianceStatusListener listener : applianceStatusListeners) {
+                            listener.onApplianceRemoved(cachedHomeDevice);
+                        }
+                        iterator.remove();
                     }
+                }
 
-                    if (currentBridgeConnectionState) {
-                        if (getThing().getStatus() == ThingStatus.ONLINE) {
-                            List<HomeDevice> currentHomeDevices = getHomeDevices();
-                            for (HomeDevice hd : currentHomeDevices) {
-                                boolean isExisting = false;
-                                for (HomeDevice phd : previousHomeDevices) {
-                                    if (phd.UID.equals(hd.UID)) {
-                                        isExisting = true;
-                                        break;
-                                    }
-                                }
-                                if (!isExisting) {
-                                    logger.debug("A new appliance with ID '{}' has been added", hd.UID);
+                for (Thing appliance : getThing().getThings()) {
+                    if (appliance.getStatus() == ThingStatus.ONLINE) {
+                        String applianceId = (String) appliance.getConfiguration().getProperties().get(APPLIANCE_ID);
+                        FullyQualifiedApplianceIdentifier applianceIdentifier = getApplianceIdentifierFromApplianceId(
+                                applianceId);
+
+                        if (applianceIdentifier == null) {
+                            logger.error("The appliance with ID '{}' was not found in appliance list from bridge.",
+                                    applianceId);
+                            continue;
+                        }
+
+                        Object[] args = new Object[2];
+                        args[0] = applianceIdentifier.getUid();
+                        args[1] = true;
+                        JsonElement result = invokeRPC("HDAccess/getDeviceClassObjects", args);
+
+                        if (result != null) {
+                            for (JsonElement obj : result.getAsJsonArray()) {
+                                try {
+                                    DeviceClassObject dco = gson.fromJson(obj, DeviceClassObject.class);
+
                                     for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                        listener.onApplianceAdded(hd);
+                                        listener.onApplianceStateChanged(applianceIdentifier, dco);
                                     }
-                                }
-                            }
-
-                            for (HomeDevice hd : previousHomeDevices) {
-                                boolean isCurrent = false;
-                                for (HomeDevice chd : currentHomeDevices) {
-                                    if (chd.UID.equals(hd.UID)) {
-                                        isCurrent = true;
-                                        break;
-                                    }
-                                }
-                                if (!isCurrent) {
-                                    logger.debug("The appliance with ID '{}' has been removed", hd);
-                                    for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                        listener.onApplianceRemoved(hd);
-                                    }
-                                }
-                            }
-
-                            previousHomeDevices = currentHomeDevices;
-
-                            for (Thing appliance : getThing().getThings()) {
-                                if (appliance.getStatus() == ThingStatus.ONLINE) {
-                                    String applianceId = (String) appliance.getConfiguration().getProperties()
-                                            .get(APPLIANCE_ID);
-                                    String protocol = appliance.getProperties().get(PROTOCOL_PROPERTY_NAME);
-                                    var applianceIdentifier = new FullyQualifiedApplianceIdentifier(applianceId,
-                                            protocol);
-
-                                    Object[] args = new Object[2];
-                                    args[0] = applianceIdentifier.getUid();
-                                    args[1] = true;
-                                    JsonElement result = invokeRPC("HDAccess/getDeviceClassObjects", args);
-
-                                    if (result != null) {
-                                        for (JsonElement obj : result.getAsJsonArray()) {
-                                            try {
-                                                DeviceClassObject dco = gson.fromJson(obj, DeviceClassObject.class);
-
-                                                for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                                    listener.onApplianceStateChanged(applianceIdentifier, dco);
-                                                }
-                                            } catch (Exception e) {
-                                                logger.debug("An exception occurred while querying an appliance : '{}'",
-                                                        e.getMessage());
-                                            }
-                                        }
-                                    }
+                                } catch (Exception e) {
+                                    logger.debug("An exception occurred while querying an appliance : '{}'",
+                                            e.getMessage());
                                 }
                             }
                         }
                     }
-                } catch (Exception e) {
-                    logger.debug("An exception occurred while polling an appliance :'{}'", e.getMessage());
                 }
-            } else {
-                logger.debug("Invalid IP address for the Miele@Home gateway : '{}'", getConfig().get(HOST));
+            } catch (Exception e) {
+                logger.debug("An exception occurred while polling an appliance :'{}'", e.getMessage());
             }
         }
 
@@ -337,6 +342,15 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             }
         }
         return devices;
+    }
+
+    private FullyQualifiedApplianceIdentifier getApplianceIdentifierFromApplianceId(String applianceId) {
+        HomeDevice homeDevice = this.cachedHomeDevices.get(applianceId);
+        if (homeDevice == null) {
+            return null;
+        }
+
+        return homeDevice.getApplianceIdentifier();
     }
 
     private Runnable eventListenerRunnable = () -> {
@@ -445,19 +459,27 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
     };
 
-    public JsonElement invokeOperation(FullyQualifiedApplianceIdentifier applianceIdentifier, String modelID,
-            String methodName) {
-        if (getThing().getStatus() == ThingStatus.ONLINE) {
-            Object[] args = new Object[4];
-            args[0] = applianceIdentifier.getUid();
-            args[1] = "com.miele.xgw3000.gateway.hdm.deviceclasses.Miele" + modelID;
-            args[2] = methodName;
-            args[3] = null;
-            return invokeRPC("HDAccess/invokeDCOOperation", args);
-        } else {
+    public JsonElement invokeOperation(String applianceId, String modelID, String methodName) {
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
             logger.debug("The Bridge is offline - operations can not be invoked.");
             return null;
         }
+
+        FullyQualifiedApplianceIdentifier applianceIdentifier = getApplianceIdentifierFromApplianceId(applianceId);
+        if (applianceIdentifier == null) {
+            logger.error(
+                    "The appliance with ID '{}' was not found in appliance list from bridge - operations can not be invoked.",
+                    applianceId);
+            return null;
+        }
+
+        Object[] args = new Object[4];
+        args[0] = applianceIdentifier.getUid();
+        args[1] = "com.miele.xgw3000.gateway.hdm.deviceclasses.Miele" + modelID;
+        args[2] = methodName;
+        args[3] = null;
+
+        return invokeRPC("HDAccess/invokeDCOOperation", args);
     }
 
     protected JsonElement invokeRPC(String methodName, Object[] args) {

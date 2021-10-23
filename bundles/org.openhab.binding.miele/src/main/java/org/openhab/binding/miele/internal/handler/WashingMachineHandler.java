@@ -14,12 +14,10 @@ package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.POWER_CONSUMPTION_CHANNEL_ID;
-import static org.openhab.binding.miele.internal.MieleBindingConstants.PROTOCOL_PROPERTY_NAME;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.WATER_CONSUMPTION_CHANNEL_ID;
 
 import java.math.BigDecimal;
 
-import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -60,8 +58,6 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
 
         String channelID = channelUID.getId();
         String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
-        String protocol = getThing().getProperties().get(PROTOCOL_PROPERTY_NAME);
-        var applianceIdentifier = new FullyQualifiedApplianceIdentifier(applianceId, protocol);
 
         WashingMachineChannelSelector selector = (WashingMachineChannelSelector) getValueSelectorFromChannelID(
                 channelID);
@@ -72,9 +68,9 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
                 switch (selector) {
                     case SWITCH: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "start");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "start");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "stop");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "stop");
                         }
                         break;
                     }

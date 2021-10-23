@@ -13,9 +13,7 @@
 package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
-import static org.openhab.binding.miele.internal.MieleBindingConstants.PROTOCOL_PROPERTY_NAME;
 
-import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -48,8 +46,6 @@ public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
 
         String channelID = channelUID.getId();
         String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
-        String protocol = getThing().getProperties().get(PROTOCOL_PROPERTY_NAME);
-        var applianceIdentifier = new FullyQualifiedApplianceIdentifier(applianceId, protocol);
 
         HoodChannelSelector selector = (HoodChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
@@ -59,15 +55,15 @@ public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
                 switch (selector) {
                     case LIGHT: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "startLighting");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "startLighting");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "stopLighting");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "stopLighting");
                         }
                         break;
                     }
                     case STOP: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "stop");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "stop");
                         }
                         break;
                     }

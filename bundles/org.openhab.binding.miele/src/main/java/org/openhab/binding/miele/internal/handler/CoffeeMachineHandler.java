@@ -14,9 +14,7 @@ package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_COFFEE_SYSTEM;
-import static org.openhab.binding.miele.internal.MieleBindingConstants.PROTOCOL_PROPERTY_NAME;
 
-import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -49,8 +47,6 @@ public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineCha
 
         String channelID = channelUID.getId();
         String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
-        String protocol = getThing().getProperties().get(PROTOCOL_PROPERTY_NAME);
-        var applianceIdentifier = new FullyQualifiedApplianceIdentifier(applianceId, protocol);
 
         CoffeeMachineChannelSelector selector = (CoffeeMachineChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
@@ -60,9 +56,9 @@ public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineCha
                 switch (selector) {
                     case SWITCH: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "switchOn");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "switchOn");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "switchOff");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "switchOff");
                         }
                         break;
                     }
