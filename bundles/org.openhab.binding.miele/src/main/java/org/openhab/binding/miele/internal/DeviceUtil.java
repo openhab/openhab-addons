@@ -14,7 +14,6 @@ package org.openhab.binding.miele.internal;
 
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
@@ -69,7 +68,8 @@ public class DeviceUtil {
      * Get device class from fully qualified string
      */
     public static String getDeviceClassFromFullyQualifiedString(String fullString) {
-        return StringUtils.right(fullString,
-                fullString.length() - new String("com.miele.xgw3000.gateway.hdm.deviceclasses.Miele").length());
+        // com.miele.xgw3000.gateway.hdm.deviceclasses.MieleWashingMachine
+        // Position of "WashingMachine" in above string:
+        return fullString.substring(49);
     }
 }

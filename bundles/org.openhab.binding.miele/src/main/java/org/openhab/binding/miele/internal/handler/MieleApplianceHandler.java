@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.miele.internal.DeviceUtil;
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceClassObject;
@@ -157,8 +156,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                     try {
                         DeviceProperty dp = gson.fromJson(prop, DeviceProperty.class);
                         if (!dp.Name.equals(EXTENDED_DEVICE_STATE_PROPERTY_NAME)) {
-                            dp.Value = StringUtils.trim(dp.Value);
-                            dp.Value = StringUtils.strip(dp.Value);
+                            dp.Value = dp.Value.trim();
+                            dp.Value = dp.Value.strip();
                         }
 
                         onAppliancePropertyChanged(applicationIdentifier, dp);
@@ -208,7 +207,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                 }
             }
             if (dp.Metadata != null) {
-                String metadata = StringUtils.replace(dp.Metadata.toString(), "enum", "MieleEnum");
+                String metadata = dp.Metadata.toString().replace("enum", "MieleEnum");
                 JsonObject jsonMetaData = (JsonObject) JsonParser.parseString(metadata);
                 dmd = gson.fromJson(jsonMetaData, DeviceMetaData.class);
                 metaDataCache.put(new StringBuilder().append(dp.Name).toString().trim(), metadata);
@@ -233,7 +232,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                 logger.trace("{} is not a valid channel for a {}", dp.Name, modelID);
             }
 
-            String dpValue = StringUtils.trim(StringUtils.strip(dp.Value));
+            String dpValue = dp.Value.strip().trim();
 
             if (selector != null) {
                 if (!selector.isProperty()) {

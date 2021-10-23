@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openhab.binding.miele.internal.DeviceUtil;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.core.library.types.DateTimeType;
@@ -96,7 +95,7 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
             try {
-                date.setTime(Long.valueOf(StringUtils.trim(s)) * 60000);
+                date.setTime(Long.valueOf(s.trim()) * 60000);
             } catch (Exception e) {
                 date.setTime(0);
             }

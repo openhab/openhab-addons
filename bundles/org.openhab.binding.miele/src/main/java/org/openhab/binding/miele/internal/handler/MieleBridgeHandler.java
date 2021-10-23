@@ -47,7 +47,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.core.common.NamedThreadFactory;
@@ -423,16 +422,16 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                 DeviceProperty dp = new DeviceProperty();
                                 String id = null;
 
-                                String[] parts = StringUtils.split(event, "&");
+                                String[] parts = event.split("&");
                                 for (String p : parts) {
-                                    String[] subparts = StringUtils.split(p, "=");
+                                    String[] subparts = p.split("=");
                                     switch (subparts[0]) {
                                         case "property": {
                                             dp.Name = subparts[1];
                                             break;
                                         }
                                         case "value": {
-                                            dp.Value = StringUtils.trim(StringUtils.strip(subparts[1]));
+                                            dp.Value = subparts[1].strip().trim();
                                             break;
                                         }
                                         case "id": {
