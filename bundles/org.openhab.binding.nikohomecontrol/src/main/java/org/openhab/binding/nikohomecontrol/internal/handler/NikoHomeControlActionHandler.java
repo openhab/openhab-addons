@@ -312,7 +312,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
                 break;
             default:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.configuration-error.actionType " + actionType);
+                        "@text/offline.configuration-error.actionType");
         }
     }
 
