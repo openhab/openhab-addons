@@ -778,8 +778,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             mqttConnection.connectionPublish(topic, gsonMessage);
 
         } catch (MqttException e) {
-            String message = e.getMessage();
-            message = (message != null) ? message : "Communication error";
+            String message = e.getLocalizedMessage();
 
             logger.debug("sending command failed, trying to restart communication");
             restartCommunication();
@@ -791,12 +790,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                     logger.debug("failed to restart communication");
                 }
             } catch (MqttException e1) {
-                message = e1.getMessage();
-                message = (message != null) ? message : "Communication error";
+                message = e1.getLocalizedMessage();
 
                 logger.debug("error resending device command");
             }
             if (!communicationActive()) {
+                message = (message != null) ? message : "@text/offline.communication-error";
                 connectionLost(message);
             }
         }
@@ -862,8 +861,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
         if (error != null) {
             logger.debug("Connection state: {}", state, error);
-            String message = error.getMessage();
-            message = (message != null) ? message : "Error communicating with the controller";
+            String message = error.getLocalizedMessage();
+            message = (message != null) ? message : "@text/offline.communication-error";
             if (!MqttConnectionState.CONNECTING.equals(state)) {
                 // This is a connection loss, try to restart
                 restartCommunication();

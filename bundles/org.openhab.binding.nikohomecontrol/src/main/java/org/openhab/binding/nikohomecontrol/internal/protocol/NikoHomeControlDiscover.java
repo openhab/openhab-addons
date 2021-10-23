@@ -105,10 +105,7 @@ public final class NikoHomeControlDiscover {
      */
     private boolean isNhc(DatagramPacket packet) {
         byte[] packetData = packet.getData();
-        if ((packet.getLength() > 2) && (packetData[0] == 0x44)) {
-            return true;
-        }
-        return false;
+        return ((packet.getLength() > 2) && (packetData[0] == 0x44));
     }
 
     /**
