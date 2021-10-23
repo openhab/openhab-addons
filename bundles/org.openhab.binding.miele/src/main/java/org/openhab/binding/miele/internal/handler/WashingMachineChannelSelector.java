@@ -172,7 +172,7 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
 
     private final Logger logger = LoggerFactory.getLogger(WashingMachineChannelSelector.class);
 
-    private final static Map<String, String> programs = Map.ofEntries(entry("1", "Cottons"), entry("3", "Minimum iron"),
+    private static final Map<String, String> programs = Map.ofEntries(entry("1", "Cottons"), entry("3", "Minimum iron"),
             entry("4", "Delicates"), entry("8", "Woollens"), entry("9", "Silks"), entry("17", "Starch"),
             entry("18", "Rinse"), entry("21", "Drain/Spin"), entry("22", "Curtains"), entry("23", "Shirts"),
             entry("24", "Denim"), entry("27", "Proofing"), entry("29", "Sportswear"), entry("31", "Automatic Plus"),
@@ -181,7 +181,7 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
             entry("95", "Down duvets"), entry("122", "Express 20"), entry("129", "Down filled items"),
             entry("133", "Cottons Eco"), entry("146", "QuickPowerWash"), entry("65532", "Mix"));
 
-    private final static Map<String, String> phases = Map.ofEntries(entry("1", "Pre-wash"), entry("4", "Washing"),
+    private static final Map<String, String> phases = Map.ofEntries(entry("1", "Pre-wash"), entry("4", "Washing"),
             entry("5", "Rinses"), entry("7", "Clean"), entry("9", "Drain"), entry("10", "Spin"),
             entry("11", "Anti-crease"), entry("12", "Finished"));
 

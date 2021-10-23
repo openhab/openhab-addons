@@ -165,7 +165,7 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
 
     private final Logger logger = LoggerFactory.getLogger(OvenChannelSelector.class);
 
-    private final static Map<String, String> phases = Map.ofEntries(entry("1", "Heating"), entry("2", "Temp. hold"),
+    private static final Map<String, String> phases = Map.ofEntries(entry("1", "Heating"), entry("2", "Temp. hold"),
             entry("3", "Door Open"), entry("4", "Pyrolysis"), entry("7", "Lighting"), entry("8", "Searing phase"),
             entry("10", "Defrost"), entry("11", "Cooling down"), entry("12", "Energy save phase"));
 

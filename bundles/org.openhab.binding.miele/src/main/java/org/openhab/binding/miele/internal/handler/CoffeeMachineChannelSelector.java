@@ -86,9 +86,9 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
 
     private final Logger logger = LoggerFactory.getLogger(CoffeeMachineChannelSelector.class);
 
-    private final static Map<String, String> programs = Collections.<String, String> emptyMap();
+    private static final Map<String, String> programs = Collections.<String, String> emptyMap();
 
-    private final static Map<String, String> phases = Collections.<String, String> emptyMap();
+    private static final Map<String, String> phases = Collections.<String, String> emptyMap();
 
     private final String mieleID;
     private final String channelID;
