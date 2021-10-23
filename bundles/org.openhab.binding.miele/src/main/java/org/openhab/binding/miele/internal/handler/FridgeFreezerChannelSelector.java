@@ -17,7 +17,7 @@ import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 import java.lang.reflect.Method;
 import java.util.Map.Entry;
 
-import org.openhab.binding.miele.internal.ExtendedDeviceStateUtil;
+import org.openhab.binding.miele.internal.DeviceUtil;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -163,7 +163,7 @@ public enum FridgeFreezerChannelSelector implements ApplianceChannelSelector {
 
     public State getTemperatureState(String s) {
         try {
-            return ExtendedDeviceStateUtil.getTemperatureState(s);
+            return DeviceUtil.getTemperatureState(s);
         } catch (NumberFormatException e) {
             logger.warn("An exception occurred while converting '{}' into a State", s);
             return UnDefType.UNDEF;

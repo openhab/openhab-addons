@@ -20,12 +20,12 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link ExtendedDeviceStateUtil} class contains utility methods for parsing
- * ExtendedDeviceState information
+ * The {@link DeviceUtil} class contains utility methods for extracting
+ * and parsing device information, for example from ExtendedDeviceState.
  *
  * @author Jacob Laursen - Initial contribution
  */
-public class ExtendedDeviceStateUtil {
+public class DeviceUtil {
     private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
     private static final String TEMPERATURE_UNDEFINED = "32768";
 

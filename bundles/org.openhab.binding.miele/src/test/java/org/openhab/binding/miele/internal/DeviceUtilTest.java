@@ -22,17 +22,16 @@ import org.openhab.core.types.UnDefType;
 
 /**
  * This class provides test cases for {@link
- * org.openhab.binding.miele.internal.ExtendedDeviceStateUtil}
+ * org.openhab.binding.miele.internal.DeviceUtil}
  *
  * @author Jacob Laursen - Initial contribution
  */
 
-public class ExtendedDeviceStateUtilTest extends JavaTest {
+public class DeviceUtilTest extends JavaTest {
 
     @Test
     public void bytesToHexWhenTopBitIsUsedReturnsCorrectString() {
-        String actual = ExtendedDeviceStateUtil
-                .bytesToHex(new byte[] { (byte) 0xde, (byte) 0xad, (byte) 0xbe, (byte) 0xef });
+        String actual = DeviceUtil.bytesToHex(new byte[] { (byte) 0xde, (byte) 0xad, (byte) 0xbe, (byte) 0xef });
         assertEquals("DEADBEEF", actual);
     }
 
@@ -45,27 +44,27 @@ public class ExtendedDeviceStateUtilTest extends JavaTest {
     @Test
     public void stringToBytesWhenTopBitIsUsedReturnsSingleByte() {
         byte[] expected = new byte[] { (byte) 0x00, (byte) 0x80, (byte) 0x00 };
-        byte[] actual = ExtendedDeviceStateUtil.stringToBytes("\u0000\u0080\u0000");
+        byte[] actual = DeviceUtil.stringToBytes("\u0000\u0080\u0000");
         assertArrayEquals(expected, actual);
     }
 
     @Test
     public void getTemperatureStateWellFormedValueReturnsQuantityType() throws NumberFormatException {
-        assertEquals(new QuantityType<>(42, SIUnits.CELSIUS), ExtendedDeviceStateUtil.getTemperatureState("42"));
+        assertEquals(new QuantityType<>(42, SIUnits.CELSIUS), DeviceUtil.getTemperatureState("42"));
     }
 
     @Test
     public void getTemperatureStateMagicValueReturnsUndefined() throws NumberFormatException {
-        assertEquals(UnDefType.UNDEF, ExtendedDeviceStateUtil.getTemperatureState("32768"));
+        assertEquals(UnDefType.UNDEF, DeviceUtil.getTemperatureState("32768"));
     }
 
     @Test
     public void getTemperatureStateNonNumericValueThrowsNumberFormatException() {
-        assertThrows(NumberFormatException.class, () -> ExtendedDeviceStateUtil.getTemperatureState("A"));
+        assertThrows(NumberFormatException.class, () -> DeviceUtil.getTemperatureState("A"));
     }
 
     @Test
     public void getTemperatureStateNullValueThrowsNumberFormatException() {
-        assertThrows(NumberFormatException.class, () -> ExtendedDeviceStateUtil.getTemperatureState(null));
+        assertThrows(NumberFormatException.class, () -> DeviceUtil.getTemperatureState(null));
     }
 }

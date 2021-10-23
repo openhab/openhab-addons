@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openhab.binding.miele.internal.ExtendedDeviceStateUtil;
+import org.openhab.binding.miele.internal.DeviceUtil;
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceClassObject;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
@@ -217,9 +217,9 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
             if (dp.Name.equals(EXTENDED_DEVICE_STATE_PROPERTY_NAME)) {
                 if (!dp.Value.isEmpty()) {
-                    byte[] extendedStateBytes = ExtendedDeviceStateUtil.stringToBytes(dp.Value);
+                    byte[] extendedStateBytes = DeviceUtil.stringToBytes(dp.Value);
                     logger.trace("Extended device state for {}: {}", getThing().getUID(),
-                            ExtendedDeviceStateUtil.bytesToHex(extendedStateBytes));
+                            DeviceUtil.bytesToHex(extendedStateBytes));
                     if (this instanceof ExtendedDeviceStateListener) {
                         ((ExtendedDeviceStateListener) this).onApplianceExtendedStateChanged(extendedStateBytes);
                     }

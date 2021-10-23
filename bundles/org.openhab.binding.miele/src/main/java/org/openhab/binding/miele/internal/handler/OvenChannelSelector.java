@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import org.openhab.binding.miele.internal.ExtendedDeviceStateUtil;
+import org.openhab.binding.miele.internal.DeviceUtil;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -239,7 +239,7 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
 
     public State getTemperatureState(String s) {
         try {
-            return ExtendedDeviceStateUtil.getTemperatureState(s);
+            return DeviceUtil.getTemperatureState(s);
         } catch (NumberFormatException e) {
             logger.warn("An exception occurred while converting '{}' into a State", s);
             return UnDefType.UNDEF;
