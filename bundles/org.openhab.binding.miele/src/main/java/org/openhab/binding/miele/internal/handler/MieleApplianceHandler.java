@@ -83,8 +83,13 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     public ApplianceChannelSelector getValueSelectorFromChannelID(String valueSelectorText)
             throws IllegalArgumentException {
-        for (ApplianceChannelSelector c : selectorType.getEnumConstants()) {
-            if (c.getChannelID() != null && c.getChannelID().equals(valueSelectorText)) {
+        E[] enumConstants = selectorType.getEnumConstants();
+        if (enumConstants == null) {
+            throw new IllegalArgumentException(
+                    String.format("Could not get enum constants for value selector: %s", valueSelectorText));
+        }
+        for (ApplianceChannelSelector c : enumConstants) {
+            if (c != null && c.getChannelID() != null && c.getChannelID().equals(valueSelectorText)) {
                 return c;
             }
         }
@@ -94,8 +99,13 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     public ApplianceChannelSelector getValueSelectorFromMieleID(String valueSelectorText)
             throws IllegalArgumentException {
-        for (ApplianceChannelSelector c : selectorType.getEnumConstants()) {
-            if (c.getMieleID() != null && c.getMieleID().equals(valueSelectorText)) {
+        E[] enumConstants = selectorType.getEnumConstants();
+        if (enumConstants == null) {
+            throw new IllegalArgumentException(
+                    String.format("Could not get enum constants for value selector: %s", valueSelectorText));
+        }
+        for (ApplianceChannelSelector c : enumConstants) {
+            if (c != null && c.getMieleID() != null && c.getMieleID().equals(valueSelectorText)) {
                 return c;
             }
         }
@@ -109,16 +119,14 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
         final String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
         if (applianceId != null) {
             this.applianceId = applianceId;
-            if (getMieleBridgeHandler() != null) {
-                ThingStatusInfo statusInfo = getBridge().getStatusInfo();
-                updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
-            }
+            this.onBridgeConnectionResumed();
         }
     }
 
     public void onBridgeConnectionResumed() {
-        if (getMieleBridgeHandler() != null) {
-            ThingStatusInfo statusInfo = getBridge().getStatusInfo();
+        Bridge bridge = getBridge();
+        if (bridge != null && getMieleBridgeHandler() != null) {
+            ThingStatusInfo statusInfo = bridge.getStatusInfo();
             updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
         }
     }
@@ -148,23 +156,28 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     public void onApplianceStateChanged(FullyQualifiedApplianceIdentifier applicationIdentifier,
             DeviceClassObject dco) {
         String myApplianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        if (myApplianceId == null || !myApplianceId.equals(applicationIdentifier.getApplianceId())) {
+            return;
+        }
+
         String modelID = DeviceUtil.getDeviceClassFromFullyQualifiedString(dco.DeviceClass);
+        if (!modelID.equals(this.modelID)) {
+            return;
+        }
 
-        if (myApplianceId.equals(applicationIdentifier.getApplianceId())) {
-            if (modelID.equals(this.modelID)) {
-                for (JsonElement prop : dco.Properties.getAsJsonArray()) {
-                    try {
-                        DeviceProperty dp = gson.fromJson(prop, DeviceProperty.class);
-                        if (!dp.Name.equals(EXTENDED_DEVICE_STATE_PROPERTY_NAME)) {
-                            dp.Value = dp.Value.trim();
-                            dp.Value = dp.Value.strip();
-                        }
-
-                        onAppliancePropertyChanged(applicationIdentifier, dp);
-                    } catch (Exception p) {
-                        // Ignore - this is due to an unrecognized and not yet reverse-engineered array property
-                    }
+        for (JsonElement prop : dco.Properties.getAsJsonArray()) {
+            try {
+                DeviceProperty dp = gson.fromJson(prop, DeviceProperty.class);
+                if (dp == null) {
+                    continue;
                 }
+                if (!EXTENDED_DEVICE_STATE_PROPERTY_NAME.equals(dp.Name)) {
+                    dp.Value = dp.Value.trim();
+                    dp.Value = dp.Value.strip();
+                }
+                onAppliancePropertyChanged(applicationIdentifier, dp);
+            } catch (Exception p) {
+                // Ignore - this is due to an unrecognized and not yet reverse-engineered array property
             }
         }
     }
@@ -172,10 +185,9 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     @Override
     public void onAppliancePropertyChanged(String serialNumber, DeviceProperty dp) {
         String mySerialNumber = getThing().getProperties().get(SERIAL_NUMBER_PROPERTY_NAME);
-        if (!mySerialNumber.equals(serialNumber)) {
+        if (mySerialNumber == null || !mySerialNumber.equals(serialNumber)) {
             return;
         }
-
         this.onAppliancePropertyChanged(dp);
     }
 
@@ -183,7 +195,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     public void onAppliancePropertyChanged(FullyQualifiedApplianceIdentifier applicationIdentifier, DeviceProperty dp) {
         String myApplianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
-        if (!myApplianceId.equals(applicationIdentifier.getApplianceId())) {
+        if (myApplianceId == null || !myApplianceId.equals(applicationIdentifier.getApplianceId())) {
             return;
         }
 
@@ -200,10 +212,12 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                     dmd = gson.fromJson(jsonMetaData, DeviceMetaData.class);
                     // only keep the enum, if any - that's all we care for events we receive via multicast
                     // all other fields are nulled
-                    dmd.LocalizedID = null;
-                    dmd.LocalizedValue = null;
-                    dmd.Filter = null;
-                    dmd.description = null;
+                    if (dmd != null) {
+                        dmd.LocalizedID = null;
+                        dmd.LocalizedValue = null;
+                        dmd.Filter = null;
+                        dmd.description = null;
+                    }
                 }
             }
             if (dp.Metadata != null) {
