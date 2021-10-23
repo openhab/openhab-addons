@@ -111,6 +111,9 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     // Data structures to de-JSONify whatever Miele appliances are sending us
     public class HomeDevice {
 
+        private static final String MIELE_APPLIANCE_CLASS = "com.miele.xgw3000.gateway.hdm.deviceclasses.MieleAppliance";
+        private static final String MIELE_CLASS = "com.miele.xgw3000.gateway.hdm.deviceclasses.Miele";
+
         public String Name;
         public String Status;
         public String ParentUID;
@@ -151,6 +154,16 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 return "";
             }
             return model.getAsString();
+        }
+
+        public String getDeviceClass() {
+            for (JsonElement dc : DeviceClasses) {
+                String dcStr = dc.getAsString();
+                if (dcStr.contains(MIELE_CLASS) && !dcStr.equals(MIELE_APPLIANCE_CLASS)) {
+                    return dcStr.substring(MIELE_CLASS.length());
+                }
+            }
+            return null;
         }
     }
 

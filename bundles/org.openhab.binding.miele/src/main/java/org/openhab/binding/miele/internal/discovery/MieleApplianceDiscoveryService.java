@@ -35,8 +35,6 @@ import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonElement;
-
 /**
  * The {@link MieleApplianceDiscoveryService} tracks appliances that are
  * associated with the Miele@Home gateway
@@ -46,9 +44,6 @@ import com.google.gson.JsonElement;
  * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
 public class MieleApplianceDiscoveryService extends AbstractDiscoveryService implements ApplianceStatusListener {
-
-    private static final String MIELE_APPLIANCE_CLASS = "com.miele.xgw3000.gateway.hdm.deviceclasses.MieleAppliance";
-    private static final String MIELE_CLASS = "com.miele.xgw3000.gateway.hdm.deviceclasses.Miele";
 
     private final Logger logger = LoggerFactory.getLogger(MieleApplianceDiscoveryService.class);
 
@@ -105,20 +100,16 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
 
             FullyQualifiedApplianceIdentifier applianceIdentifier = appliance.getApplianceIdentifier();
             properties.put(MODEL_PROPERTY_NAME, appliance.getApplianceModel());
+            String deviceClass = appliance.getDeviceClass();
+            if (deviceClass != null) {
+                properties.put(DEVICE_CLASS, deviceClass);
+            }
             properties.put(PROTOCOL_ADAPTER_PROPERTY_NAME, appliance.ProtocolAdapterName);
             properties.put(APPLIANCE_ID, applianceIdentifier.getApplianceId());
             properties.put(SERIAL_NUMBER_PROPERTY_NAME, appliance.getSerialNumber());
             String connectionType = appliance.getConnectionType();
             if (connectionType != null) {
                 properties.put(CONNECTION_TYPE_PROPERTY_NAME, connectionType);
-            }
-
-            for (JsonElement dc : appliance.DeviceClasses) {
-                String dcStr = dc.getAsString();
-                if (dcStr.contains(MIELE_CLASS) && !dcStr.equals(MIELE_APPLIANCE_CLASS)) {
-                    properties.put(DEVICE_CLASS, dcStr.substring(MIELE_CLASS.length()));
-                    break;
-                }
             }
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
@@ -158,15 +149,7 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
 
     private ThingUID getThingUID(HomeDevice appliance) {
         ThingUID bridgeUID = mieleBridgeHandler.getThing().getUID();
-        String modelId = null;
-
-        for (JsonElement dc : appliance.DeviceClasses) {
-            String dcStr = dc.getAsString();
-            if (dcStr.contains(MIELE_CLASS) && !dcStr.equals(MIELE_APPLIANCE_CLASS)) {
-                modelId = dcStr.substring(MIELE_CLASS.length());
-                break;
-            }
-        }
+        String modelId = appliance.getDeviceClass();
 
         if (modelId != null) {
             ThingTypeUID thingTypeUID = getThingTypeUidFromModelId(modelId);
