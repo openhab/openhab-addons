@@ -18,14 +18,16 @@ import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.file.AccessMode;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -36,6 +38,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.graalvm.polyglot.Context;
 import org.openhab.automation.jsscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChannel;
+import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayChannel;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocable;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
@@ -56,7 +59,10 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
     private static final String MODULE_DIR = String.join(File.separator, OpenHAB.getConfigFolder(), "automation", "lib",
             "javascript", "personal");
-
+    // final CommonJS search path for our library
+    private static final Path OH_NODE_PATH = Paths.get("/node_modules/@oh.js");
+    // resource path of our oh js library
+    private static final Path OH_FILE_PATH = Paths.get("/oh.js");
     // these fields start as null because they are populated on first use
     private @NonNullByDefault({}) String engineIdentifier;
     private @NonNullByDefault({}) Consumer<String> scriptDependencyListener;
@@ -69,60 +75,65 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
      */
     public OpenhabGraalJSScriptEngine() {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
-
-        try {
-            File tmpDir = Files.createTempDirectory(null).toFile();
-            tmpDir.deleteOnExit();
-            InputStream is = getClass().getResourceAsStream("/oh.js");
-            if (is != null) {
-                File ohFile = new File(tmpDir, "oh.js");
-                ohFile.deleteOnExit();
-                LOGGER.debug("writing globals to {}", ohFile);
-                Files.write(ohFile.toPath(), is.readAllBytes());
-            }
-
-            delegate = GraalJSScriptEngine.create(null,
-                    Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true)
-                            .option("js.commonjs-require-cwd", MODULE_DIR).option("js.nashorn-compat", "true") // to
-                            // ease
-                            // migration
-                            .option("js.commonjs-require", "true") // enable CommonJS module support
-                            .hostClassLoader(getClass().getClassLoader())
-                            .fileSystem(new DelegatingFileSystem(FileSystems.getDefault().provider()) {
-                                @Override
-                                public SeekableByteChannel newByteChannel(Path path, Set<? extends OpenOption> options,
-                                        FileAttribute<?>... attrs) throws IOException {
-                                    if (scriptDependencyListener != null) {
-                                        scriptDependencyListener.accept(path.toString());
-                                    }
-
-                                    if (path.toString().endsWith(".js")) {
-                                        return new PrefixedSeekableByteChannel(
-                                                ("require=" + REQUIRE_WRAPPER_NAME + "(require);").getBytes(),
-                                                super.newByteChannel(path, options, attrs));
-                                    } else {
-                                        return super.newByteChannel(path, options, attrs);
-                                    }
+        delegate = GraalJSScriptEngine.create(null,
+                Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true)
+                        .option("js.commonjs-require-cwd", MODULE_DIR).option("js.nashorn-compat", "true") // to
+                        // ease
+                        // migration
+                        .option("js.commonjs-require", "true") // enable CommonJS module support
+                        .hostClassLoader(getClass().getClassLoader())
+                        .fileSystem(new DelegatingFileSystem(FileSystems.getDefault().provider()) {
+                            @Override
+                            public SeekableByteChannel newByteChannel(Path path, Set<? extends OpenOption> options,
+                                    FileAttribute<?>... attrs) throws IOException {
+                                LOGGER.debug("SeekableByteChannel {}", path);
+                                if (scriptDependencyListener != null) {
+                                    scriptDependencyListener.accept(path.toString());
                                 }
 
-                                @Override
-                                public Path parsePath(URI uri) {
-                                    return parsePath(uri.toString());
-                                }
-
-                                @Override
-                                public Path parsePath(String path) {
-                                    if (path.indexOf(tmpDir.getPath()) != 0
-                                            && path.indexOf(MODULE_DIR.toString()) != 0) {
-                                        return tmpDir.toPath();
+                                if (path.toString().endsWith(".js")) {
+                                    SeekableByteChannel sbc = null;
+                                    if (OH_FILE_PATH.equals(path)) {
+                                        InputStream is = getClass().getResourceAsStream(OH_FILE_PATH.toString());
+                                        if (is != null) {
+                                            sbc = new ReadOnlySeekableByteArrayChannel(is.readAllBytes());
+                                        }
                                     }
-                                    return Paths.get(path);
+                                    if (sbc == null) {
+                                        sbc = super.newByteChannel(path, options, attrs);
+                                    }
+                                    return new PrefixedSeekableByteChannel(
+                                            ("require=" + REQUIRE_WRAPPER_NAME + "(require);").getBytes(), sbc);
+                                } else {
+                                    return super.newByteChannel(path, options, attrs);
                                 }
-                            }));
-        } catch (IOException e) {
-            LOGGER.error("Could not load gloabls", e);
-            throw new RuntimeException("Could not load gloabls", e);
-        }
+                            }
+
+                            @Override
+                            public void checkAccess(Path path, Set<? extends AccessMode> modes,
+                                    LinkOption... linkOptions) throws IOException {
+                                if (!OH_NODE_PATH.equals(path)) {
+                                    super.checkAccess(path, modes, linkOptions);
+                                }
+                            }
+
+                            @Override
+                            public Map<String, Object> readAttributes(Path path, String attributes,
+                                    LinkOption... options) throws IOException {
+                                if (OH_NODE_PATH.equals(path)) {
+                                    return Collections.singletonMap("isRegularFile", true);
+                                }
+                                return super.readAttributes(path, attributes, options);
+                            }
+
+                            @Override
+                            public Path toRealPath(Path path, LinkOption... linkOptions) throws IOException {
+                                if (OH_NODE_PATH.equals(path)) {
+                                    return OH_FILE_PATH;
+                                }
+                                return super.toRealPath(path, linkOptions);
+                            }
+                        }));
     }
 
     @Override
