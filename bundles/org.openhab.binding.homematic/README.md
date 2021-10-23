@@ -157,6 +157,9 @@ The port number of the HMIP server (default = 2010)
 - **cuxdPort**
 The port number of the CUxD daemon (default = 8701)
 
+- **groupPort**
+The port number of the Group daemon (default = 9292)
+
 - **retryConnects**
 Maximum number of retries to connect to the Homematic Gateway and register a callback.
 
