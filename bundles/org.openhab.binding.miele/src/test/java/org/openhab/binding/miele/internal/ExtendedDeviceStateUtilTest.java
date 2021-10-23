@@ -24,7 +24,7 @@ import org.openhab.core.types.UnDefType;
  * This class provides test cases for {@link
  * org.openhab.binding.miele.internal.ExtendedDeviceStateUtil}
  *
- * @author Jacob Laursen - Added power/water consumption channels
+ * @author Jacob Laursen - Initial contribution
  */
 
 public class ExtendedDeviceStateUtilTest extends JavaTest {

@@ -23,7 +23,7 @@ import org.openhab.core.types.UnDefType;
  * The {@link ExtendedDeviceStateUtil} class contains utility methods for parsing
  * ExtendedDeviceState information
  *
- * @author Jacob Laursen - Added power/water consumption channels
+ * @author Jacob Laursen - Initial contribution
  */
 public class ExtendedDeviceStateUtil {
     private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
