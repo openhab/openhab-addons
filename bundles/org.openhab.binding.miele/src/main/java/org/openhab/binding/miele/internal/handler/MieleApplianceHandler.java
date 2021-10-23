@@ -318,6 +318,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
         if (applianceId.equals(applianceIdentifier.getApplianceId())) {
             Map<String, String> properties = editProperties();
+            properties.put(MODEL_PROPERTY_NAME, appliance.getApplianceModel());
             properties.put(PROTOCOL_ADAPTER_PROPERTY_NAME, appliance.ProtocolAdapterName);
             properties.put(SERIAL_NUMBER_PROPERTY_NAME, appliance.getSerialNumber());
             String connectionType = appliance.getConnectionType();

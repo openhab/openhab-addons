@@ -131,6 +131,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             return new FullyQualifiedApplianceIdentifier(this.UID);
         }
 
+        @NonNull
         public String getSerialNumber() {
             return Properties.get("serial.number").getAsString();
         }
@@ -141,6 +142,15 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 return null;
             }
             return connectionType.getAsString();
+        }
+
+        @NonNull
+        public String getApplianceModel() {
+            JsonElement model = Properties.get("miele.model");
+            if (model == null) {
+                return "";
+            }
+            return model.getAsString();
         }
     }
 

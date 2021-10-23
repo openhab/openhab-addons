@@ -104,6 +104,7 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
             Map<String, Object> properties = new HashMap<>(2);
 
             FullyQualifiedApplianceIdentifier applianceIdentifier = appliance.getApplianceIdentifier();
+            properties.put(MODEL_PROPERTY_NAME, appliance.getApplianceModel());
             properties.put(PROTOCOL_ADAPTER_PROPERTY_NAME, appliance.ProtocolAdapterName);
             properties.put(APPLIANCE_ID, applianceIdentifier.getApplianceId());
             properties.put(SERIAL_NUMBER_PROPERTY_NAME, appliance.getSerialNumber());
