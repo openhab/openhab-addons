@@ -86,7 +86,6 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
                             @Override
                             public SeekableByteChannel newByteChannel(Path path, Set<? extends OpenOption> options,
                                     FileAttribute<?>... attrs) throws IOException {
-                                LOGGER.debug("SeekableByteChannel {}", path);
                                 if (scriptDependencyListener != null) {
                                     scriptDependencyListener.accept(path.toString());
                                 }
