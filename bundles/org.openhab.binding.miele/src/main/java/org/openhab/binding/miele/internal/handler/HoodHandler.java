@@ -13,6 +13,7 @@
 package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_HOOD;
 
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -37,7 +38,7 @@ public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
     private final Logger logger = LoggerFactory.getLogger(HoodHandler.class);
 
     public HoodHandler(Thing thing) {
-        super(thing, HoodChannelSelector.class, "Hood");
+        super(thing, HoodChannelSelector.class, MIELE_DEVICE_CLASS_HOOD);
     }
 
     @Override

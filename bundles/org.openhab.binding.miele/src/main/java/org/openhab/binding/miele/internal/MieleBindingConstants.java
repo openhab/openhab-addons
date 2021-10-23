@@ -67,8 +67,14 @@ public class MieleBindingConstants {
 
     // Miele devices classes
     public static final String MIELE_DEVICE_CLASS_COFFEE_SYSTEM = "CoffeeSystem";
+    public static final String MIELE_DEVICE_CLASS_DISHWASHER = "Dishwasher";
     public static final String MIELE_DEVICE_CLASS_FRIDGE = "Fridge";
     public static final String MIELE_DEVICE_CLASS_FRIDGE_FREEZER = "FridgeFreezer";
+    public static final String MIELE_DEVICE_CLASS_HOB = "Hob";
+    public static final String MIELE_DEVICE_CLASS_HOOD = "Hood";
+    public static final String MIELE_DEVICE_CLASS_OVEN = "Oven";
+    public static final String MIELE_DEVICE_CLASS_TUMBLE_DRYER = "TumbleDryer";
+    public static final String MIELE_DEVICE_CLASS_WASHING_MACHINE = "WashingMachine";
 
     // Miele appliance states
     public static final int STATE_UNKNOWN = 0;

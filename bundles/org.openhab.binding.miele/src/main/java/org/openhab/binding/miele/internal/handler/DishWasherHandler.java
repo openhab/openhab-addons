@@ -13,6 +13,7 @@
 package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_DISHWASHER;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.POWER_CONSUMPTION_CHANNEL_ID;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.WATER_CONSUMPTION_CHANNEL_ID;
 
@@ -49,7 +50,7 @@ public class DishWasherHandler extends MieleApplianceHandler<DishwasherChannelSe
     private final Logger logger = LoggerFactory.getLogger(DishWasherHandler.class);
 
     public DishWasherHandler(Thing thing) {
-        super(thing, DishwasherChannelSelector.class, "Dishwasher");
+        super(thing, DishwasherChannelSelector.class, MIELE_DEVICE_CLASS_DISHWASHER);
     }
 
     @Override

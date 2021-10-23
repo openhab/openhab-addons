@@ -13,6 +13,7 @@
 package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_OVEN;
 
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -38,7 +39,7 @@ public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
     private final Logger logger = LoggerFactory.getLogger(OvenHandler.class);
 
     public OvenHandler(Thing thing) {
-        super(thing, OvenChannelSelector.class, "Oven");
+        super(thing, OvenChannelSelector.class, MIELE_DEVICE_CLASS_OVEN);
     }
 
     @Override

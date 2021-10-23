@@ -13,6 +13,7 @@
 package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_TUMBLE_DRYER;
 
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -38,7 +39,7 @@ public class TumbleDryerHandler extends MieleApplianceHandler<TumbleDryerChannel
     private final Logger logger = LoggerFactory.getLogger(TumbleDryerHandler.class);
 
     public TumbleDryerHandler(Thing thing) {
-        super(thing, TumbleDryerChannelSelector.class, "TumbleDryer");
+        super(thing, TumbleDryerChannelSelector.class, MIELE_DEVICE_CLASS_TUMBLE_DRYER);
     }
 
     @Override

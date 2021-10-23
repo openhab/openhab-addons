@@ -13,6 +13,7 @@
 package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_WASHING_MACHINE;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.POWER_CONSUMPTION_CHANNEL_ID;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.WATER_CONSUMPTION_CHANNEL_ID;
 
@@ -49,7 +50,7 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
     private final Logger logger = LoggerFactory.getLogger(WashingMachineHandler.class);
 
     public WashingMachineHandler(Thing thing) {
-        super(thing, WashingMachineChannelSelector.class, "WashingMachine");
+        super(thing, WashingMachineChannelSelector.class, MIELE_DEVICE_CLASS_WASHING_MACHINE);
     }
 
     @Override
