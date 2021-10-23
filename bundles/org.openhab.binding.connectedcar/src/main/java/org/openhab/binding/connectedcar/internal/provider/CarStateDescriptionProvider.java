@@ -74,7 +74,7 @@ public class CarStateDescriptionProvider implements DynamicStateDescriptionProvi
         if (options != null) {
             return builder.withOptions(options).build().toStateDescription();
         } else {
-            return builder.build().toStateDescription();
+            return null;
         }
     }
 
