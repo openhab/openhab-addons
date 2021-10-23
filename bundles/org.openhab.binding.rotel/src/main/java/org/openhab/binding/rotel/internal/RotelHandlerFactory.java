@@ -22,6 +22,8 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rotel.internal.handler.RotelHandler;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -54,14 +56,18 @@ public class RotelHandlerFactory extends BaseThingHandlerFactory {
             .collect(Collectors.toSet()));
 
     private final SerialPortManager serialPortManager;
-
     private final RotelStateDescriptionOptionProvider stateDescriptionProvider;
+    private final TranslationProvider i18nProvider;
+    private final LocaleProvider localeProvider;
 
     @Activate
     public RotelHandlerFactory(final @Reference SerialPortManager serialPortManager,
-            final @Reference RotelStateDescriptionOptionProvider stateDescriptionProvider) {
+            final @Reference RotelStateDescriptionOptionProvider stateDescriptionProvider,
+            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider) {
         this.serialPortManager = serialPortManager;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -74,7 +80,7 @@ public class RotelHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new RotelHandler(thing, stateDescriptionProvider, serialPortManager);
+            return new RotelHandler(thing, stateDescriptionProvider, serialPortManager, i18nProvider, localeProvider);
         }
 
         return null;

@@ -23,10 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class RotelException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    public RotelException() {
-    }
-
     public RotelException(String message) {
         super(message);
+    }
+
+    public RotelException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
