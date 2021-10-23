@@ -184,7 +184,7 @@ public class LinkyHandler extends BaseThingHandler {
             });
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Username, password and authId are mandatory");
+                    "@text/offline.config-error-mandatory-settings");
         }
     }
 
