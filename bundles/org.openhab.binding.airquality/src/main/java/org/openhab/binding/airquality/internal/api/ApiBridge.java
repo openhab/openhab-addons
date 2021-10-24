@@ -106,7 +106,7 @@ public class ApiBridge {
             if (result != null && result.getStatus() == ResponseStatus.OK) {
                 return result.getData();
             } else if (retryCounter == 0) {
-                logger.warn("Error in aqicn.org, retrying once");
+                logger.debug("Error in aqicn.org, retrying once");
                 return getData(stationId, location, retryCounter + 1);
             }
             throw new AirQualityException("Error in aqicn.org response: Missing data sub-object");
