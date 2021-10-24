@@ -96,7 +96,7 @@ public class Ffmpeg {
     }
 
     private class IpCameraFfmpegThread extends Thread {
-        private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(2);
+        private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(1);
         public int countOfMotions;
 
         IpCameraFfmpegThread() {
@@ -220,6 +220,7 @@ public class Ffmpeg {
             Process localProcess = process;
             if (localProcess != null) {
                 localProcess.destroyForcibly();
+                process = null;
             }
             if (format.equals(FFmpegFormat.HLS)) {
                 ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.OFF);

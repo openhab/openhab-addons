@@ -160,10 +160,12 @@ public class CameraServlet extends IpCameraServlet {
                 do {
                     try {
                         output.sendSnapshotBasedFrame(handler.getSnapshot());
-                        Thread.sleep(1005);
+                        Thread.sleep(handler.cameraConfig.getPollTime());
                     } catch (InterruptedException | IOException e) {
                         // Never stop streaming until IOException. Occurs when browser stops the stream.
                         openSnapshotStreams.removeStream(output);
+                        logger.debug("Now there are {} snapshots.mjpeg streams open.",
+                                openSnapshotStreams.getNumberOfStreams());
                         if (openSnapshotStreams.isEmpty()) {
                             handler.streamingSnapshotMjpeg = false;
                             handler.stopSnapshotPolling();
@@ -187,8 +189,9 @@ public class CameraServlet extends IpCameraServlet {
                 } else {
                     ChannelTracking tracker = handler.channelTrackingMap.get(handler.mjpegUri);
                     if (tracker == null || !tracker.getChannel().isOpen()) {
-                        logger.warn("Not the first stream requested but the stream from camera was closed");
+                        logger.debug("Not the first stream requested but the stream from camera was closed");
                         handler.openCamerasStream();
+                        openStreams.closeAllStreams();
                     }
                     output = new StreamOutput(resp, handler.mjpegContentType);
                     openStreams.addStream(output);
@@ -199,6 +202,7 @@ public class CameraServlet extends IpCameraServlet {
                     } catch (InterruptedException | IOException e) {
                         // Never stop streaming until IOException. Occurs when browser stops the stream.
                         openStreams.removeStream(output);
+                        logger.debug("Now there are {} ipcamera.mjpeg streams open.", openStreams.getNumberOfStreams());
                         if (openStreams.isEmpty()) {
                             if (output.isSnapshotBased) {
                                 Ffmpeg localMjpeg = handler.ffmpegMjpeg;
@@ -231,6 +235,8 @@ public class CameraServlet extends IpCameraServlet {
                     } catch (InterruptedException | IOException e) {
                         // Never stop streaming until IOException. Occurs when browser stops the stream.
                         openAutoFpsStreams.removeStream(output);
+                        logger.debug("Now there are {} autofps.mjpeg streams open.",
+                                openAutoFpsStreams.getNumberOfStreams());
                         if (openAutoFpsStreams.isEmpty()) {
                             handler.streamingAutoFps = false;
                             logger.debug("All autofps.mjpeg streams have stopped.");
