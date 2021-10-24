@@ -76,7 +76,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
         BridgeConfiguration config = getConfigAs(BridgeConfiguration.class);
         if (config.apikey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Parameter 'apikey' must be configured.");
+                    "@text/offline.config-error-unknown-apikey");
             return;
         }
         header.put("x-access-token", config.apikey);
@@ -127,9 +127,8 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                 LocalDate tomorrow = today.plusDays(1);
                 LocalDateTime tomorrowMidnight = tomorrow.atStartOfDay().plusMinutes(2);
 
-                String message = "Quota Exceeded, going OFFLINE for today, will retry at : "
-                        + tomorrowMidnight.toString();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
+                        .format("@text/offline.comm-error-quota-exceeded [ \"%s\" ]", tomorrowMidnight.toString()));
 
                 reconnectJob = scheduler.schedule(this::initiateConnexion,
                         Duration.between(LocalDateTime.now(), tomorrowMidnight).toMinutes(), TimeUnit.MINUTES);
