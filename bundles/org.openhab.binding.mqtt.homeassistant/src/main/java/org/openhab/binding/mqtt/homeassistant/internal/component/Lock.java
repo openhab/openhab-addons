@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -53,7 +54,7 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
 
         // We do not support all HomeAssistant quirks
         if (channelConfiguration.optimistic && !channelConfiguration.stateTopic.isBlank()) {
-            throw new UnsupportedOperationException("Component:Lock does not support forced optimistic mode");
+            throw new ConfigurationException("Component:Lock does not support forced optimistic mode");
         }
 
         buildChannel(SWITCH_CHANNEL_ID,

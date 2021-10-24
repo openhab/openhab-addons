@@ -22,6 +22,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -151,5 +152,35 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         verify(channelTypeProvider, times(7)).removeChannelType(any());
         // Expect channel group types removed, 1 for each component
         verify(channelTypeProvider, times(2)).removeChannelGroupType(any());
+    }
+
+    @Test
+    public void testProcessMessageFromUnsupportedComponent() {
+        thingHandler.initialize();
+        thingHandler.discoverComponents.processMessage("homeassistant/unsupportedType/id_zigbee2mqtt/config",
+                "{}".getBytes(StandardCharsets.UTF_8));
+        // Ignore unsupported component
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(haThing.getChannels().size(), CoreMatchers.is(0));
+    }
+
+    @Test
+    public void testProcessMessageWithEmptyConfig() {
+        thingHandler.initialize();
+        thingHandler.discoverComponents.processMessage("homeassistant/sensor/id_zigbee2mqtt/config",
+                "".getBytes(StandardCharsets.UTF_8));
+        // Ignore component with empty config
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(haThing.getChannels().size(), CoreMatchers.is(0));
+    }
+
+    @Test
+    public void testProcessMessageWithBadFormatConfig() {
+        thingHandler.initialize();
+        thingHandler.discoverComponents.processMessage("homeassistant/sensor/id_zigbee2mqtt/config",
+                "{bad format}}".getBytes(StandardCharsets.UTF_8));
+        // Ignore component with bad format config
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(haThing.getChannels().size(), CoreMatchers.is(0));
     }
 }

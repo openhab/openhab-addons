@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -65,7 +66,7 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
                 : channelConfiguration.stateTopic.isBlank();
 
         if (optimistic && !channelConfiguration.stateTopic.isBlank()) {
-            throw new UnsupportedOperationException("Component:Switch does not support forced optimistic mode");
+            throw new ConfigurationException("Component:Switch does not support forced optimistic mode");
         }
 
         String stateOn = channelConfiguration.stateOn != null ? channelConfiguration.stateOn
