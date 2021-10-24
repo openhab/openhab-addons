@@ -142,11 +142,6 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
         // nothing to do
     }
 
-    @Override
-    public void onAppliancePropertyChanged(String serialNumber, DeviceProperty dp) {
-        // nothing to do
-    }
-
     private ThingUID getThingUID(HomeDevice appliance) {
         ThingUID bridgeUID = mieleBridgeHandler.getThing().getUID();
         String modelId = appliance.getDeviceClass();
@@ -171,7 +166,7 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
          * coffeemachine. At least until it is known if any models are actually reported
          * as CoffeeMachine, we need this special mapping.
          */
-        if (modelId.equals(MIELE_DEVICE_CLASS_COFFEE_SYSTEM)) {
+        if (MIELE_DEVICE_CLASS_COFFEE_SYSTEM.equals(modelId)) {
             return THING_TYPE_COFFEEMACHINE;
         }
 

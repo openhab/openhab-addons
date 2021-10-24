@@ -102,7 +102,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     protected Future<?> eventListenerJob;
 
     @NonNull
-    protected Map<String, HomeDevice> cachedHomeDevices = new ConcurrentHashMap<String, HomeDevice>();
+    protected Map<String, HomeDevice> cachedHomeDevicesByApplianceId = new ConcurrentHashMap<String, HomeDevice>();
+    protected Map<String, HomeDevice> cachedHomeDevicesByRemoteUid = new ConcurrentHashMap<String, HomeDevice>();
 
     protected URL url;
     protected Map<String, String> headers;
@@ -136,6 +137,18 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         @NonNull
         public String getSerialNumber() {
             return Properties.get("serial.number").getAsString();
+        }
+
+        @NonNull
+        public String getRemoteUid() {
+            JsonElement remoteUid = Properties.get("remote.uid");
+            if (remoteUid == null) {
+                // remote.uid and serial.number seems to be the same. If remote.uid
+                // is missing for some reason, it makes sense to provide fallback
+                // to serial number.
+                return getSerialNumber();
+            }
+            return remoteUid.getAsString();
         }
 
         public String getConnectionType() {
@@ -269,17 +282,18 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 List<HomeDevice> homeDevices = getHomeDevices();
                 for (HomeDevice hd : homeDevices) {
                     String key = hd.getApplianceIdentifier().getApplianceId();
-                    if (!cachedHomeDevices.containsKey(key)) {
+                    if (!cachedHomeDevicesByApplianceId.containsKey(key)) {
                         logger.debug("A new appliance with ID '{}' has been added", hd.UID);
                         for (ApplianceStatusListener listener : applianceStatusListeners) {
                             listener.onApplianceAdded(hd);
                         }
                     }
-                    cachedHomeDevices.put(key, hd);
+                    cachedHomeDevicesByApplianceId.put(key, hd);
+                    cachedHomeDevicesByRemoteUid.put(hd.getRemoteUid(), hd);
                 }
 
                 @NonNull
-                Set<@NonNull Entry<String, HomeDevice>> cachedEntries = cachedHomeDevices.entrySet();
+                Set<@NonNull Entry<String, HomeDevice>> cachedEntries = cachedHomeDevicesByApplianceId.entrySet();
                 @NonNull
                 Iterator<@NonNull Entry<String, HomeDevice>> iterator = cachedEntries.iterator();
 
@@ -375,7 +389,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     }
 
     private FullyQualifiedApplianceIdentifier getApplianceIdentifierFromApplianceId(String applianceId) {
-        HomeDevice homeDevice = this.cachedHomeDevices.get(applianceId);
+        HomeDevice homeDevice = this.cachedHomeDevicesByApplianceId.get(applianceId);
         if (homeDevice == null) {
             return null;
         }
@@ -447,15 +461,19 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
                                 // In XGW 3000 firmware 2.03 this was changed from UID (hdm:ZigBee:0123456789abcdef#210)
                                 // to serial number (001234567890)
+                                FullyQualifiedApplianceIdentifier applianceIdentifier;
                                 if (id.startsWith("hdm:")) {
-                                    for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                        listener.onAppliancePropertyChanged(new FullyQualifiedApplianceIdentifier(id),
-                                                dp);
-                                    }
+                                    applianceIdentifier = new FullyQualifiedApplianceIdentifier(id);
                                 } else {
-                                    for (ApplianceStatusListener listener : applianceStatusListeners) {
-                                        listener.onAppliancePropertyChanged(id, dp);
+                                    HomeDevice device = cachedHomeDevicesByRemoteUid.get(id);
+                                    if (device == null) {
+                                        logger.debug("Multicast event not handled as id {} is unknown.", id);
+                                        continue;
                                     }
+                                    applianceIdentifier = device.getApplianceIdentifier();
+                                }
+                                for (ApplianceStatusListener listener : applianceStatusListeners) {
+                                    listener.onAppliancePropertyChanged(applianceIdentifier, dp);
                                 }
                             } catch (SocketTimeoutException e) {
                                 try {

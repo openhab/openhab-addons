@@ -184,15 +184,6 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     }
 
     @Override
-    public void onAppliancePropertyChanged(String serialNumber, DeviceProperty dp) {
-        String mySerialNumber = getThing().getProperties().get(SERIAL_NUMBER_PROPERTY_NAME);
-        if (mySerialNumber == null || !mySerialNumber.equals(serialNumber)) {
-            return;
-        }
-        this.onAppliancePropertyChanged(dp);
-    }
-
-    @Override
     public void onAppliancePropertyChanged(FullyQualifiedApplianceIdentifier applicationIdentifier, DeviceProperty dp) {
         String myApplianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 

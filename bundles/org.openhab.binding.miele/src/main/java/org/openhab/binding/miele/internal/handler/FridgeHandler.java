@@ -92,7 +92,7 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
     protected void onAppliancePropertyChanged(DeviceProperty dp) {
         super.onAppliancePropertyChanged(dp);
 
-        if (!dp.Name.equals(STATE_PROPERTY_NAME)) {
+        if (!STATE_PROPERTY_NAME.equals(dp.Name)) {
             return;
         }
 
