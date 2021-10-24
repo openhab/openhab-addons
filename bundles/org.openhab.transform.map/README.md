@@ -19,7 +19,7 @@ key=value
 0=OFF
 ON=1
 OFF=0
-white\ space=showing escape
+white\ space=using escape
 =default
 ```
 
