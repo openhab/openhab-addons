@@ -66,9 +66,6 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
             initThingStatus();
         } catch (UnknownHostException ignored) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname wrong or unknown!");
-        } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Configuration (hostname, port) is invalid and cannot be parsed.");
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error connecting to flicd: " + e.getMessage());
