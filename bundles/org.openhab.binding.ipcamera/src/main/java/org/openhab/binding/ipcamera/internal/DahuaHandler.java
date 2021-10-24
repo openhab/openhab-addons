@@ -49,7 +49,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
     }
 
     private void processEvent(String content) {
-        int startIndex = content.indexOf("Code=", 12) + 5;// skip --myboundary
+        int startIndex = content.indexOf("Code=", 12) + 5;// skip --myboundary and Code=
         int endIndex = content.indexOf(";", startIndex + 1);
         if (startIndex == -1 || endIndex == -1) {
             ipCameraHandler.logger.debug("Code= not found in Dahua event. Content was:{}", content);
@@ -177,7 +177,9 @@ public class DahuaHandler extends ChannelDuplexHandler {
             case "LensMaskClose":
                 ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.OFF);
                 break;
+            // Skip these so they are not logged.
             case "TimeChange":
+            case "IntelliFrame":
             case "NTPAdjustTime":
             case "StorageChange":
             case "Reboot":
