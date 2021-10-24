@@ -67,18 +67,18 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DeviceHandler extends BaseBridgeHandler implements ConnectionListener {
-    private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
 
-    protected final Map<String, DeviceHandler> dataListeners = new ConcurrentHashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
     private final List<AbstractChannelHelper> channelHelpers;
 
+    protected final Map<String, DeviceHandler> dataListeners = new ConcurrentHashMap<>();
     protected final NetatmoDescriptionProvider descriptionProvider;
     protected final ApiBridge apiBridge;
 
-    protected @NonNullByDefault({}) NetatmoThingConfiguration config;
-
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable RefreshStrategy refreshStrategy;
+
+    protected @NonNullByDefault({}) NetatmoThingConfiguration config;
 
     public DeviceHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             NetatmoDescriptionProvider descriptionProvider) {
@@ -125,9 +125,7 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
         refreshStrategy = null;
         freeRefreshJob();
         apiBridge.removeConnectionListener(this);
-        getBridgeHandler().ifPresent(handler -> {
-            handler.unregisterDataListener(this);
-        });
+        getBridgeHandler().ifPresent(handler -> handler.unregisterDataListener(this));
     }
 
     private void freeRefreshJob() {
@@ -140,11 +138,11 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
 
     private void scheduleRefreshJob() {
         RefreshStrategy strategy = refreshStrategy;
-        freeRefreshJob();
         if (strategy != null) {
             long delay = strategy.nextRunDelay().toSeconds();
             logger.debug("Scheduling update channel thread in {} s", delay);
             updateChannels(false);
+            freeRefreshJob();
             refreshJob = scheduler.schedule(() -> scheduleRefreshJob(), delay, TimeUnit.SECONDS);
         }
     }
@@ -219,10 +217,8 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
         if (firmware != -1) {
             Map<String, String> properties = editProperties();
             ModuleType modelId = naThing.getType();
-            // TODO : These properties will never change
             properties.put(Thing.PROPERTY_VENDOR, VENDOR);
             properties.put(Thing.PROPERTY_MODEL_ID, modelId.name());
-            // TODO : These properties can change
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, Integer.toString(firmware));
             PointType point = null;
             if (naThing instanceof NAHome) {

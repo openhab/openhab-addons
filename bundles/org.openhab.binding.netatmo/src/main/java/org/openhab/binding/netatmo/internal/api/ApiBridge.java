@@ -40,6 +40,8 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.http.HttpStatus.Code;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
@@ -210,12 +212,12 @@ public class ApiBridge {
 
             ContentResponse response = request.send();
 
-            int statusCode = response.getStatus();
+            Code statusCode = HttpStatus.getCode(response.getStatus());
             String responseBody = new String(response.getContent(), StandardCharsets.UTF_8);
-            if (statusCode >= 200 && statusCode < 300) {
+            if (statusCode == Code.OK) {
                 return deserialize(classOfT, responseBody);
             } else {
-                NetatmoException exception = new NetatmoException(statusCode, responseBody);
+                NetatmoException exception = new NetatmoException(statusCode.getCode(), responseBody);
                 prepareReconnection(exception);
                 throw exception;
             }
