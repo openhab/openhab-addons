@@ -11,6 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Volvo Vehicle</label>
+		<description>Provides all data available on a Volvo vehicle.</description>
 
 		<channel-groups>
 			<channel-group id="doors" typeId="doors"/>
