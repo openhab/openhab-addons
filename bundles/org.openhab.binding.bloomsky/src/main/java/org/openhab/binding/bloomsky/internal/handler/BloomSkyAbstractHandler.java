@@ -412,4 +412,20 @@ public abstract class BloomSkyAbstractHandler extends BaseThingHandler {
     public HttpClient getHttpClient() {
         return httpClient;
     }
+
+    /**
+     * The convertHttpToHttps method returns a url converted from using HTTP to HTTPS.
+     *
+     * @return - Modified url to use HTTPS instead of HTTP.
+     */
+    protected @Nullable String convertHttpToHttps(String url) {
+        StringBuffer result = new StringBuffer();
+        if (url.startsWith("http://")) {
+            String strColon = url.substring(7);
+            result.append("https://" + strColon);
+        } else {
+            result.append(url);
+        }
+        return result.toString();
+    }
 }

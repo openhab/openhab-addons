@@ -343,7 +343,8 @@ public class BloomSkySKYHandler extends BloomSkyAbstractHandler {
                         calcDewPoint(obs.getData().getTemperature(), obs.getData().getHumidity()), getTempUnit()));
                 break;
             case CH_SKY_IMAGE_URL:
-                updateChannel(channelUID, undefOrString(obs.getData().getImageURL()));
+                // The URL is sent from the API as HTTP and needs to be converted to HTTPS
+                updateChannel(channelUID, undefOrString(convertHttpToHttps(obs.getData().getImageURL())));
                 break;
             case CH_SKY_CURRENT_IMAGE:
                 String url = obs.getData().getImageURL();
@@ -406,31 +407,31 @@ public class BloomSkySKYHandler extends BloomSkyAbstractHandler {
         String url = null;
         int obsArraySize = obs.getPreviewImageList().size();
         // The most recent image (yesterday) is always last element in array: Image_1 is oldest, Image_5 is newest
-        // These are associated with the time lapse videos.
+        // These are associated with the time lapse videos. The url is sent grom the API as HTTP and needs to be HTTPS
         switch (channelId) {
             case CH_SKY_SKY_PREVIEW_IMAGE_1:
                 if (obsArraySize >= 5) {
-                    url = obs.getPreviewImageList().get(4);
+                    url = convertHttpToHttps(obs.getPreviewImageList().get(4));
                 }
                 break;
             case CH_SKY_SKY_PREVIEW_IMAGE_2:
                 if (obsArraySize >= 4) {
-                    url = obs.getPreviewImageList().get(3);
+                    url = convertHttpToHttps(obs.getPreviewImageList().get(3));
                 }
                 break;
             case CH_SKY_SKY_PREVIEW_IMAGE_3:
                 if (obsArraySize >= 3) {
-                    url = obs.getPreviewImageList().get(2);
+                    url = convertHttpToHttps(obs.getPreviewImageList().get(2));
                 }
                 break;
             case CH_SKY_SKY_PREVIEW_IMAGE_4:
                 if (obsArraySize >= 2) {
-                    url = obs.getPreviewImageList().get(1);
+                    url = convertHttpToHttps(obs.getPreviewImageList().get(1));
                 }
                 break;
             case CH_SKY_SKY_PREVIEW_IMAGE_5:
                 if (obsArraySize >= 1) {
-                    url = obs.getPreviewImageList().get(0);
+                    url = convertHttpToHttps(obs.getPreviewImageList().get(0));
                 }
                 break;
         }
@@ -463,27 +464,27 @@ public class BloomSkySKYHandler extends BloomSkyAbstractHandler {
         switch (channelId) {
             case CH_SKY_SKY_VIDEO_DAY_1:
                 if (obsArraySize >= 5) {
-                    updateChannel(channelUID, undefOrString(obs.getVideoList().get(4)));
+                    updateChannel(channelUID, undefOrString(convertHttpToHttps(obs.getVideoList().get(4))));
                 }
                 break;
             case CH_SKY_SKY_VIDEO_DAY_2:
                 if (obsArraySize >= 4) {
-                    updateChannel(channelUID, undefOrString(obs.getVideoList().get(3)));
+                    updateChannel(channelUID, undefOrString(convertHttpToHttps(obs.getVideoList().get(3))));
                 }
                 break;
             case CH_SKY_SKY_VIDEO_DAY_3:
                 if (obsArraySize >= 3) {
-                    updateChannel(channelUID, undefOrString(obs.getVideoList().get(2)));
+                    updateChannel(channelUID, undefOrString(convertHttpToHttps(obs.getVideoList().get(2))));
                 }
                 break;
             case CH_SKY_SKY_VIDEO_DAY_4:
                 if (obsArraySize >= 2) {
-                    updateChannel(channelUID, undefOrString(obs.getVideoList().get(1)));
+                    updateChannel(channelUID, undefOrString(convertHttpToHttps(obs.getVideoList().get(1))));
                 }
                 break;
             case CH_SKY_SKY_VIDEO_DAY_5:
                 if (obsArraySize >= 1) {
-                    updateChannel(channelUID, undefOrString(obs.getVideoList().get(0)));
+                    updateChannel(channelUID, undefOrString(convertHttpToHttps(obs.getVideoList().get(0))));
                 }
                 break;
         }
@@ -506,27 +507,27 @@ public class BloomSkySKYHandler extends BloomSkyAbstractHandler {
         switch (channelId) {
             case CH_SKY_SKY_VIDEO_C_DAY_1:
                 if (obsArraySize >= 5) {
-                    updateChannel(channelUID, undefOrString(obs.getVideoListC().get(4)));
+                    updateChannel(channelUID, undefOrString(convertHttpToHttps(obs.getVideoListC().get(4))));
                 }
                 break;
             case CH_SKY_SKY_VIDEO_C_DAY_2:
                 if (obsArraySize >= 4) {
-                    updateChannel(channelUID, undefOrString(obs.getVideoListC().get(3)));
+                    updateChannel(channelUID, undefOrString(convertHttpToHttps(obs.getVideoListC().get(3))));
                 }
                 break;
             case CH_SKY_SKY_VIDEO_C_DAY_3:
                 if (obsArraySize >= 3) {
-                    updateChannel(channelUID, undefOrString(obs.getVideoListC().get(2)));
+                    updateChannel(channelUID, undefOrString(convertHttpToHttps(obs.getVideoListC().get(2))));
                 }
                 break;
             case CH_SKY_SKY_VIDEO_C_DAY_4:
                 if (obsArraySize >= 2) {
-                    updateChannel(channelUID, undefOrString(obs.getVideoListC().get(1)));
+                    updateChannel(channelUID, undefOrString(convertHttpToHttps(obs.getVideoListC().get(1))));
                 }
                 break;
             case CH_SKY_SKY_VIDEO_C_DAY_5:
                 if (obsArraySize >= 1) {
-                    updateChannel(channelUID, undefOrString(obs.getVideoListC().get(0)));
+                    updateChannel(channelUID, undefOrString(convertHttpToHttps(obs.getVideoListC().get(0))));
                 }
                 break;
         }
