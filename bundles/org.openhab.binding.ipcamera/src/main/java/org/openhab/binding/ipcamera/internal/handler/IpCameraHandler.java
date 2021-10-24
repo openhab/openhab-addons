@@ -370,6 +370,9 @@ public class IpCameraHandler extends BaseThingHandler {
                         case DAHUA_THING:
                             urlToKeepOpen = "/cgi-bin/eventManager.cgi?action=attach&codes=[All]";
                             break;
+                        case DOORBIRD_THING:
+                            urlToKeepOpen = "/bha-api/monitor.cgi?ring=doorbell,motionsensor";
+                            break;
                     }
                     ChannelTracking channelTracking = channelTrackingMap.get(urlToKeepOpen);
                     if (channelTracking != null) {
@@ -1477,7 +1480,9 @@ public class IpCameraHandler extends BaseThingHandler {
         // what needs to be done every poll//
         switch (thing.getThingTypeUID().getId()) {
             case GENERIC_THING:
-                checkCameraConnection();
+                if (!snapshotUri.isEmpty() && !snapshotPolling) {
+                    checkCameraConnection();
+                }
                 // RTSP stream has stopped and we need it for snapshots
                 if (ffmpegSnapshotGeneration) {
                     Ffmpeg localSnapshot = ffmpegSnapshot;
@@ -1487,20 +1492,24 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 break;
             case ONVIF_THING:
-                checkCameraConnection();
+                if (!snapshotPolling) {
+                    checkCameraConnection();
+                }
                 if (!onvifCamera.isConnected()) {
                     onvifCamera.connect(true);
                 }
                 break;
             case INSTAR_THING:
-                checkCameraConnection();
+                if (!snapshotPolling) {
+                    checkCameraConnection();
+                }
                 noMotionDetected(CHANNEL_MOTION_ALARM);
                 noMotionDetected(CHANNEL_PIR_ALARM);
                 noAudioDetected();
                 break;
             case HIKVISION_THING:
                 if (streamIsStopped("/ISAPI/Event/notification/alertStream")) {
-                    logger.debug("The alarm stream was not running for camera {}, re-starting it now",
+                    logger.info("The alarm stream was not running for camera {}, re-starting it now",
                             cameraConfig.getIp());
                     sendHttpGET("/ISAPI/Event/notification/alertStream");
                 }
@@ -1510,17 +1519,23 @@ public class IpCameraHandler extends BaseThingHandler {
                 sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation");
                 break;
             case DAHUA_THING:
+                if (!snapshotPolling) {
+                    checkCameraConnection();
+                }
                 // Check for alarms, channel for NVRs appears not to work at filtering.
                 if (streamIsStopped("/cgi-bin/eventManager.cgi?action=attach&codes=[All]")) {
-                    logger.debug("The alarm stream was not running for camera {}, re-starting it now",
+                    logger.info("The alarm stream was not running for camera {}, re-starting it now",
                             cameraConfig.getIp());
                     sendHttpGET("/cgi-bin/eventManager.cgi?action=attach&codes=[All]");
                 }
                 break;
             case DOORBIRD_THING:
+                if (!snapshotPolling) {
+                    checkCameraConnection();
+                }
                 // Check for alarms, channel for NVRs appears not to work at filtering.
                 if (streamIsStopped("/bha-api/monitor.cgi?ring=doorbell,motionsensor")) {
-                    logger.debug("The alarm stream was not running for camera {}, re-starting it now",
+                    logger.info("The alarm stream was not running for camera {}, re-starting it now",
                             cameraConfig.getIp());
                     sendHttpGET("/bha-api/monitor.cgi?ring=doorbell,motionsensor");
                 }
