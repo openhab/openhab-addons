@@ -146,7 +146,7 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
     }
 
     protected void setOnline() {
-        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Button connected.");
+        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
     }
 
     protected void setOffline() {
