@@ -99,6 +99,8 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
             discoverAttributes(stations, configuration.stationId);
         }
 
+        updateStatus(ThingStatus.UNKNOWN);
+
         executionJob = scheduler.scheduleWithFixedDelay(this::updateSynopChannels, 0, configuration.refreshInterval,
                 TimeUnit.MINUTES);
     }
