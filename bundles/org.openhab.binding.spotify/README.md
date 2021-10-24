@@ -109,7 +109,21 @@ __Common Channels:__
 | playlistName    | String    | Read-write | The currently playing playlist. Or empty if no playing list is playing.                          |
 | albumName       | String    | Read-only  | Album Name of the currently playing track.                                                       |
 | albumImage      | RawType   | Read-only  | Album Image of the currently playing track.                                                      |
+| albumImageUrl   | String    | Read-only  | Url to the album Image of the currently playing track.                                           |
 | artistName      | String    | Read-only  | Artist Name of the currently playing track.                                                      |
+
+The `playlists` channel has 2 parameters:
+
+| Parameter | Description                                                                |
+|-----------|----------------------------------------------------------------------------|
+| offset    | The index of the first playlist to return. Default `0`, max `100.000`      |
+| limit     | The maximum number of playlists to return. Default `20`, min `1`, max `50` |
+
+The `albumImage` and `albumImageUrl` channels has 1 parameter:
+
+| Parameter  | Description                                                                                |
+|------------|--------------------------------------------------------------------------------------------|
+| imageIndex | Index in list of to select size of the image to show. 0:large (default), 1:medium, 2:small |
 
 Note: The `deviceName` and `playlist` channels are Selection channels.
 They are dynamically populated by the binding with the user specific devices and playlists.
@@ -163,6 +177,19 @@ __Advanced Channels:__
 | deviceActive     | Switch    | Read-only  | Indicates if the device is active or not. Should be the same as Thing status ONLINE/OFFLINE.               |
 | deviceRestricted | Switch    | Read-only  | Indicates if this device allows to be controlled by the API or not. If restricted it cannot be controlled. |
 
+### Actions
+
+The bridge supports an action to play a track or other context uri.
+The following actions are supported:
+
+```
+play(String context_uri)
+play(String context_uri, int offset, int position_ms)
+play(String context_uri, String device_id)
+play(String context_uri, String device_id, int offset, int position_ms)
+```
+
+
 ## Full Example
 
 In this example there is a bridge configured with Thing ID __user1__ and illustrating that the bridge is authorized to play in the context of the Spotify user account __user1__.
@@ -174,24 +201,27 @@ Bridge spotify:player:user1 "Me" [clientId="<your client id>", clientSecret="<yo
   Things:
     device device1 "Device 1" [deviceName="<spotify device name>"]
     device device2 "Device 2" [deviceName="<spotify device name>"]
+  Channels:
+    String : playlists     [limit=50]
+    String : albumImageUrl [imageIndex=1]
 }
 ```
 
 spotify.items:
 
 ```
-Player spotifyTrackPlayer   "Player"               {channel="spotify:player:user1:trackPlayer"}
-String spotifyDevices       "Active device [%s]"   {channel="spotify:player:user1:devices"}
-Switch spotifyDeviceShuffle "Shuffle mode"         {channel="spotify:player:user1:deviceShuffle"}
-String spotifyTrackRepeat   "Repeat mode: [%s]"    {channel="spotify:player:user1:trackRepeat"}
-String spotifyTrackProgress "Track progress: [%s]" {channel="spotify:player:user1:trackProgress"}
-String spotifyTrackDuration "Track duration: [%s]" {channel="spotify:player:user1:trackDuration"}
-String spotifyTrackName     "Track Name: [%s]"     {channel="spotify:player:user1:trackName"}
-String spotifyAlbumName     "Album Name: [%s]"     {channel="spotify:player:user1:albumName"}
-String spotifyArtistName    "Artist Name: [%s]"    {channel="spotify:player:user1:artistName"}
-Image  spotifyAlbumImage    "Album Art"            {channel="spotify:player:user1:albumImage"}
-String spotifyPlaylists     "Playlists [%s]"       {channel="spotify:player:user1:playlists"}
-String spotifyPlayName      "Playlist [%s]"        {channel="spotify:player:user1:playlistName"}
+Player spotifyTrackPlayer    "Player"               {channel="spotify:player:user1:trackPlayer"}
+String spotifyDevices        "Active device [%s]"   {channel="spotify:player:user1:devices"}
+Switch spotifyDeviceShuffle  "Shuffle mode"         {channel="spotify:player:user1:deviceShuffle"}
+String spotifyTrackRepeat    "Repeat mode: [%s]"    {channel="spotify:player:user1:trackRepeat"}
+String spotifyTrackProgress  "Track progress: [%s]" {channel="spotify:player:user1:trackProgress"}
+String spotifyTrackDuration  "Track duration: [%s]" {channel="spotify:player:user1:trackDuration"}
+String spotifyTrackName      "Track Name: [%s]"     {channel="spotify:player:user1:trackName"}
+String spotifyAlbumName      "Album Name: [%s]"     {channel="spotify:player:user1:albumName"}
+String spotifyArtistName     "Artist Name: [%s]"    {channel="spotify:player:user1:artistName"}
+String  spotifyAlbumImageUrl "Album Art"            {channel="spotify:player:user1:albumImageUrl"}
+String spotifyPlaylists      "Playlists [%s]"       {channel="spotify:player:user1:playlists"}
+String spotifyPlayName       "Playlist [%s]"        {channel="spotify:player:user1:playlistName"}
 
 String device1DeviceName    {channel="spotify:device:user1:device1:deviceName"}
 Player device1Player        {channel="spotify:device:user1:device1:devicePlayer"}
@@ -217,7 +247,7 @@ sitemap spotify label="Spotify Sitemap" {
     Text      item=spotifyTrackProgress label="Track progress: [%s]"
     Text      item=spotifyTrackDuration label="Track duration: [%s]"
     Text      item=spotifyTrackName     label="Track Name: [%s]"
-    Image     item=spotifyAlbumImage    label="Album Art"
+    Image     item=spotifyAlbumImageUrl label="Album Art"
     Text      item=spotifyAlbumName     label="Currently Played Album Name: [%s]"
     Text      item=spotifyArtistName    label="Currently Played Artist Name: [%s]"
     Selection item=spotifyPlaylists     label="Playlist" icon="music"
@@ -237,6 +267,14 @@ sitemap spotify label="Spotify Sitemap" {
     Switch  item=device2DeviceShuffle
   }
 }
+```
+
+spotify.rules
+
+```
+val spotifyActions = getActions("spotify", "spotify:player:user1")
+// play the song
+spotifyActions.play("spotify:track:4cOdK2wGLETKBW3PvgPWqT")
 ```
 
 ## Binding model and Spotify Web API
