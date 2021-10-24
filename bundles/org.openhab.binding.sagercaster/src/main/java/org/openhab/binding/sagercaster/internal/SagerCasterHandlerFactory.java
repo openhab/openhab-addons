@@ -58,9 +58,8 @@ public class SagerCasterHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAGERCASTER)) {
-            return new SagerCasterHandler(thing, stateDescriptionProvider, sagerWeatherCaster);
-        }
-        return null;
+        return thingTypeUID.equals(THING_TYPE_SAGERCASTER)
+                ? new SagerCasterHandler(thing, stateDescriptionProvider, sagerWeatherCaster)
+                : null;
     }
 }

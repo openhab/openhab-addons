@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.upb.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * An enum of possible commands.
  *
  * @author cvanorman - Initial contribution
  */
+@NonNullByDefault
 public enum Command {
     NULL(0),
     ACTIVATE(0x20),

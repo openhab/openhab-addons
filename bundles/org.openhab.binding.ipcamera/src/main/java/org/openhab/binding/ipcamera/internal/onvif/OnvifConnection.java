@@ -333,8 +333,6 @@ public class OnvifConnection {
             }
         } else if (message.contains("GetEventPropertiesResponse")) {
             sendOnvifRequest(requestBuilder(RequestType.CreatePullPointSubscription, eventXAddr));
-        } else if (message.contains("SubscribeResponse")) {
-            logger.info("Onvif Subscribe appears to be working for Alarms/Events.");
         } else if (message.contains("CreatePullPointSubscriptionResponse")) {
             subscriptionXAddr = removeIPfromUrl(Helper.fetchXML(message, "SubscriptionReference>", "Address>"));
             logger.debug("subscriptionXAddr={}", subscriptionXAddr);
@@ -863,7 +861,7 @@ public class OnvifConnection {
                 sendOnvifRequest(requestBuilder(RequestType.Unsubscribe, subscriptionXAddr));
             }
             // give time for the Unsubscribe request to be sent to the camera.
-            threadPool.schedule(this::cleanup, 100, TimeUnit.MILLISECONDS);
+            threadPool.schedule(this::cleanup, 50, TimeUnit.MILLISECONDS);
         } else {
             cleanup();
         }

@@ -123,7 +123,7 @@ class SpotifyHandleCommands {
             case CHANNEL_TRACKPLAY:
             case CHANNEL_PLAYLISTS:
                 if (command instanceof StringType) {
-                    spotifyApi.playTrack(deviceId, command.toString());
+                    spotifyApi.playTrack(deviceId, command.toString(), 0, 0);
                     commandRun = true;
                 }
                 break;
@@ -132,7 +132,7 @@ class SpotifyHandleCommands {
                     final String newName = command.toString();
 
                     playlists.stream().filter(pl -> pl.getName().equals(newName)).findFirst()
-                            .ifPresent(pl -> spotifyApi.playTrack(deviceId, pl.getUri()));
+                            .ifPresent(pl -> spotifyApi.playTrack(deviceId, pl.getUri(), 0, 0));
                     commandRun = true;
                 }
                 break;
