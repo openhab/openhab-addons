@@ -107,7 +107,7 @@ public class FlicSimpleclientDiscoveryServiceImpl extends AbstractDiscoveryServi
         flicClient.setGeneralCallbacks(new GeneralCallbacks() {
             @Override
             public void onNewVerifiedButton(Bdaddr bdaddr) throws IOException {
-                logger.info("A new Flic button was added by an external flicd client: {}", bdaddr);
+                logger.debug("A new Flic button was added by an external flicd client: {}", bdaddr);
                 flicButtonDiscovered(bdaddr);
             }
         });
@@ -123,7 +123,7 @@ public class FlicSimpleclientDiscoveryServiceImpl extends AbstractDiscoveryServi
 
     @Override
     public ThingUID flicButtonDiscovered(Bdaddr bdaddr) {
-        logger.info("Flic Button {} discovered!", bdaddr);
+        logger.debug("Flic Button {} discovered!", bdaddr);
         ThingUID flicButtonUID = FlicButtonUtils.getThingUIDFromBdAddr(bdaddr, bridgeUID);
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(flicButtonUID).withBridge(bridgeUID)
