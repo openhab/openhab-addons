@@ -14,14 +14,15 @@ package org.openhab.binding.mqtt.homeassistant.internal.config.dto;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.util.UIDUtils;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -199,6 +200,15 @@ public abstract class AbstractChannelConfiguration {
      */
     public static <C extends AbstractChannelConfiguration> C fromString(final String configJSON, final Gson gson,
             final Class<C> clazz) {
-        return Objects.requireNonNull(gson.fromJson(configJSON, clazz));
+        try {
+            @Nullable
+            final C config = gson.fromJson(configJSON, clazz);
+            if (config == null) {
+                throw new ConfigurationException("Channel configuration is empty");
+            }
+            return config;
+        } catch (JsonSyntaxException e) {
+            throw new ConfigurationException("Cannot parse channel configuration JSON", e);
+        }
     }
 }
