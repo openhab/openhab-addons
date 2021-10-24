@@ -68,14 +68,22 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
                 return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
             case "Number:Dimensionless":
                 switch (channelID) {
-                    case "chlorTimedPercent":
-                    case "filterSpeed":
-                    case "pumpSpeed":
-                    case "filterLastSpeed":
-                        return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
-                    case "chlorAvgSaltLevel":
-                    case "chlorInstantSaltLevel":
+                    case HaywardBindingConstants.CHANNEL_CHLORINATOR_AVGSALTLEVEL:
                         return new QuantityType<>(Integer.parseInt(value), Units.PARTS_PER_MILLION);
+                    case HaywardBindingConstants.CHANNEL_CHLORINATOR_INSTANTSALTLEVEL:
+                        return new QuantityType<>(Integer.parseInt(value), Units.PARTS_PER_MILLION);
+                    case HaywardBindingConstants.CHANNEL_CHLORINATOR_TIMEDPERCENT:
+                        return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
+                    case HaywardBindingConstants.CHANNEL_FILTER_LASTSPEED:
+                        return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
+                    case HaywardBindingConstants.CHANNEL_FILTER_SPEEDPERCENT:
+                        return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
+                    case HaywardBindingConstants.CHANNEL_FILTER_SPEEDRPM:
+                    case HaywardBindingConstants.CHANNEL_PUMP_LASTSPEED:
+                        return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
+                    case HaywardBindingConstants.CHANNEL_PUMP_SPEEDPERCENT:
+                        return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
+                    case HaywardBindingConstants.CHANNEL_PUMP_SPEEDRPM:
                 }
                 return StringType.valueOf(value);
             case "Number:Temperature":

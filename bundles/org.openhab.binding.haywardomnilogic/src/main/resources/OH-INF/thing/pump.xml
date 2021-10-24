@@ -13,7 +13,8 @@
 		<description>Pump</description>
 		<channels>
 			<channel id="pumpEnable" typeId="system.power"/>
-			<channel id="pumpSpeed" typeId="pumpSpeed"/>
+			<channel id="pumpSpeedPercent" typeId="pumpSpeedPercent"/>
+			<channel id="pumpSpeedRpm" typeId="pumpSpeedRpm"/>
 			<channel id="pumpSpeedSelect" typeId="pumpSpeedSelect"/>
 			<channel id="pumpState" typeId="pumpState"/>
 			<channel id="pumpLastSpeed" typeId="pumpLastSpeed"/>
@@ -37,11 +38,18 @@
 
 	</thing-type>
 
-	<channel-type id="pumpSpeed">
+	<channel-type id="pumpSpeedPercent">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Pump Speed</label>
+		<label>Pump Speed %</label>
 		<description>Pump Speed (%)</description>
-		<state min="0" max="100" step="1" pattern="%1.0f%%" readOnly="false"/>
+		<state min="0" max="100" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="pumpSpeedRpm">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Pump Speed RPM</label>
+		<description>Pump Speed (RPM)</description>
+		<state min="0" max="3600" step="200" pattern="%d" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="pumpSpeedSelect">

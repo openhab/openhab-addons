@@ -67,8 +67,8 @@ public class HaywardFilterHandler extends HaywardThingHandler {
         if (bridge != null) {
             HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
             if (bridgehandler != null) {
-                // Set Filter min and max speeds
-                Channel ch = thing.getChannel(HaywardBindingConstants.CHANNEL_FILTER_SPEED);
+                // Set Filter Speed % min and max speeds
+                Channel ch = thing.getChannel(HaywardBindingConstants.CHANNEL_FILTER_SPEEDPERCENT);
                 if (ch != null) {
                     StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
                             .withMinimum(new BigDecimal(
@@ -79,9 +79,22 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                     bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
                 }
 
+                // Set Filter Speed RPM min and max speeds
+                ch = thing.getChannel(HaywardBindingConstants.CHANNEL_FILTER_SPEEDRPM);
+                if (ch != null) {
+                    StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
+                            .withMinimum(new BigDecimal(
+                                    getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MINRPM)))
+                            .withMaximum(new BigDecimal(
+                                    getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MAXRPM)))
+                            .build();
+                    bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
+                }
+
                 // Set Filter Speed States
                 ch = thing.getChannel(HaywardBindingConstants.CHANNEL_FILTER_SPEEDSELECT);
                 if (ch != null) {
+                    options.add(new StateOption("0", "Off"));
                     option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_LOWSPEED);
                     if (option != null) {
                         options.add(new StateOption(option, "Low"));
@@ -124,9 +137,17 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                         data = bridgehandler.evaluateXPath("//Filter/@valvePosition", xmlResponse);
                         updateData(HaywardBindingConstants.CHANNEL_FILTER_VALVEPOSITION, data.get(i));
 
-                        // Speed
+                        // Speed percent
                         data = bridgehandler.evaluateXPath("//Filter/@filterSpeed", xmlResponse);
-                        updateData(HaywardBindingConstants.CHANNEL_FILTER_SPEED, data.get(i));
+                        updateData(HaywardBindingConstants.CHANNEL_FILTER_SPEEDPERCENT, data.get(i));
+
+                        // Speed rpm
+                        String filterMaxRpm = getThing().getProperties()
+                                .get(HaywardBindingConstants.PROPERTY_FILTER_MAXRPM);
+                        if (filterMaxRpm != null) {
+                            Integer rpmSpeed = (Integer.parseInt(data.get(i))) * (Integer.parseInt(filterMaxRpm)) / 100;
+                            updateData(HaywardBindingConstants.CHANNEL_FILTER_SPEEDRPM, rpmSpeed.toString());
+                        }
 
                         if (data.get(i).equals("0")) {
                             updateData(HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "0");
@@ -164,6 +185,7 @@ public class HaywardFilterHandler extends HaywardThingHandler {
         String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
         String filterMinSpeed = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MINSPEED);
         String filterMaxSpeed = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MAXSPEED);
+        String filterMaxRpm = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MAXRPM);
 
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -179,8 +201,21 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                                 cmdString = "0";
                             }
                             break;
-                        case HaywardBindingConstants.CHANNEL_FILTER_SPEED:
+                        case HaywardBindingConstants.CHANNEL_FILTER_SPEEDPERCENT:
                             if (filterMinSpeed != null && filterMaxSpeed != null) {
+                                if (Integer.parseInt(cmdString) > 0
+                                        && Integer.parseInt(cmdString) < Integer.parseInt(filterMinSpeed)) {
+                                    cmdString = filterMinSpeed;
+                                } else if (Integer.parseInt(cmdString) > Integer.parseInt(filterMaxSpeed)) {
+                                    cmdString = filterMaxSpeed;
+                                }
+                            }
+                            break;
+                        case HaywardBindingConstants.CHANNEL_FILTER_SPEEDRPM:
+                            // Convert cmdString from RPM to Percent
+                            if (filterMaxRpm != null && filterMaxSpeed != null && filterMinSpeed != null) {
+                                cmdString = Integer
+                                        .toString((Integer.parseInt(cmdString) * 100 / Integer.parseInt(filterMaxRpm)));
                                 if (Integer.parseInt(cmdString) > 0
                                         && Integer.parseInt(cmdString) < Integer.parseInt(filterMinSpeed)) {
                                     cmdString = filterMinSpeed;
