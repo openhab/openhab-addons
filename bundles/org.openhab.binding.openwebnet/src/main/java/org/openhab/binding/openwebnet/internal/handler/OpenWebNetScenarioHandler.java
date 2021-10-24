@@ -176,7 +176,6 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
     }
 
     private void triggerChannel(CEN cenMsg) {
-        logger.debug("triggerChannel() for thing: {}", thing.getUID());
         Integer buttonNumber;
         try {
             buttonNumber = cenMsg.getButtonNumber();
