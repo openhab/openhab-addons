@@ -334,7 +334,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                     DeviceClassObject dco = gson.fromJson(obj, DeviceClassObject.class);
 
                                     // Skip com.prosyst.mbs.services.zigbee.hdm.deviceclasses.ReportingControl
-                                    if (!dco.DeviceClass.startsWith(MIELE_CLASS)) {
+                                    if (dco == null || !dco.DeviceClass.startsWith(MIELE_CLASS)) {
                                         continue;
                                     }
 
