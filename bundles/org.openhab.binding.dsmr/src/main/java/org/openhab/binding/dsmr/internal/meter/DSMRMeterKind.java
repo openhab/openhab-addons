@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.dsmr.internal.meter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This class describes the kind of meters the binding supports
  *
  * @author M. Volaart - Initial contribution
  */
+@NonNullByDefault
 public enum DSMRMeterKind {
     INVALID,
     DEVICE(false),
@@ -37,7 +40,7 @@ public enum DSMRMeterKind {
         this(true);
     }
 
-    private DSMRMeterKind(boolean channelRelevant) {
+    private DSMRMeterKind(final boolean channelRelevant) {
         this.channelRelevant = channelRelevant;
     }
 

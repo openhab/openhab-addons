@@ -39,12 +39,12 @@ public class OBISIdentifier {
     private static final Pattern OBIS_ID_PATTERN = Pattern.compile(OBISID_REGEX);
 
     /* the six individual group values of the OBIS ID */
-    private int groupA;
-    private @Nullable Integer channel;
-    private int groupC;
-    private int groupD;
-    private @Nullable Integer groupE;
-    private @Nullable Integer groupF;
+    private final int groupA;
+    private final @Nullable Integer channel;
+    private final int groupC;
+    private final int groupD;
+    private final @Nullable Integer groupE;
+    private final @Nullable Integer groupF;
 
     private boolean conflict;
 
@@ -56,7 +56,7 @@ public class OBISIdentifier {
      * @param groupD D value
      * @param groupE E value
      */
-    public OBISIdentifier(int groupA, int groupC, int groupD, @Nullable Integer groupE) {
+    public OBISIdentifier(final int groupA, final int groupC, final int groupD, @Nullable final Integer groupE) {
         this(groupA, groupC, groupD, groupE, false);
     }
 
@@ -69,11 +69,14 @@ public class OBISIdentifier {
      * @param groupE E value
      * @param conflict if true indicates this OBIS Identifier is used for different types of data.
      */
-    public OBISIdentifier(int groupA, int groupC, int groupD, @Nullable Integer groupE, boolean conflict) {
+    public OBISIdentifier(final int groupA, final int groupC, final int groupD, @Nullable final Integer groupE,
+            final boolean conflict) {
         this.groupA = groupA;
+        this.channel = null;
         this.groupC = groupC;
         this.groupD = groupD;
         this.groupE = groupE;
+        this.groupF = null;
         this.conflict = conflict;
     }
 
@@ -83,33 +86,25 @@ public class OBISIdentifier {
      * @param obisIDString the OBIS String ID
      * @throws ParseException if obisIDString is not a valid OBIS Identifier
      */
-    public OBISIdentifier(String obisIDString) throws ParseException {
-        Matcher m = OBIS_ID_PATTERN.matcher(obisIDString);
+    public OBISIdentifier(final String obisIDString) throws ParseException {
+        final Matcher m = OBIS_ID_PATTERN.matcher(obisIDString);
 
         if (m.matches()) {
             // Optional value A
-            if (m.group(2) != null) {
-                this.groupA = Integer.parseInt(m.group(2));
-            }
+            this.groupA = m.group(2) == null ? null : Integer.parseInt(m.group(2));
 
             // Optional value B
-            if (m.group(4) != null) {
-                this.channel = Integer.valueOf(m.group(4));
-            }
+            this.channel = m.group(4) == null ? null : Integer.valueOf(m.group(4));
 
             // Required value C & D
             this.groupC = Integer.parseInt(m.group(6));
             this.groupD = Integer.parseInt(m.group(7));
 
             // Optional value E
-            if (m.group(9) != null) {
-                this.groupE = Integer.valueOf(m.group(9));
-            }
+            this.groupE = m.group(9) == null ? null : Integer.valueOf(m.group(9));
 
             // Optional value F
-            if (m.group(11) != null) {
-                this.groupF = Integer.valueOf(m.group(11));
-            }
+            this.groupF = m.group(11) == null ? null : Integer.valueOf(m.group(11));
         } else {
             throw new ParseException("Invalid OBIS identifier:" + obisIDString, 0);
         }
@@ -176,7 +171,7 @@ public class OBISIdentifier {
      * @return true if both OBISIdentifiers match, false otherwise
      */
     @Override
-    public boolean equals(@Nullable Object other) {
+    public boolean equals(@Nullable final Object other) {
         OBISIdentifier o;
         if (other != null && other instanceof OBISIdentifier) {
             o = (OBISIdentifier) other;
@@ -214,7 +209,7 @@ public class OBISIdentifier {
      *
      * @return true if identifiers match fully or against a wildcard, false otherwise
      */
-    public boolean equalsWildCard(OBISIdentifier o) {
+    public boolean equalsWildCard(final OBISIdentifier o) {
         boolean result = true;
 
         result &= groupA == o.groupA;
