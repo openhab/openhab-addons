@@ -63,13 +63,4 @@ public class DeviceUtil {
         int temperature = Integer.parseInt(s);
         return new QuantityType<>(temperature, SIUnits.CELSIUS);
     }
-
-    /**
-     * Get device class from fully qualified string
-     */
-    public static String getDeviceClassFromFullyQualifiedString(String fullString) {
-        // com.miele.xgw3000.gateway.hdm.deviceclasses.MieleWashingMachine
-        // Position of "WashingMachine" in above string:
-        return fullString.substring(49);
-    }
 }

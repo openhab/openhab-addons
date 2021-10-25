@@ -67,10 +67,4 @@ public class DeviceUtilTest extends JavaTest {
     public void getTemperatureStateNullValueThrowsNumberFormatException() {
         assertThrows(NumberFormatException.class, () -> DeviceUtil.getTemperatureState(null));
     }
-
-    @Test
-    public void getDeviceClassFromFullyQualifiedStringReturnsCorrectDeviceClass() {
-        assertEquals("WashingMachine", DeviceUtil.getDeviceClassFromFullyQualifiedString(
-                "com.miele.xgw3000.gateway.hdm.deviceclasses.MieleWashingMachine"));
-    }
 }

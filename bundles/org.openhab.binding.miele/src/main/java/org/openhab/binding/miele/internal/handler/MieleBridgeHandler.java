@@ -82,6 +82,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     @NonNull
     public static final Set<@NonNull ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_XGW3000);
 
+    private static final String MIELE_CLASS = "com.miele.xgw3000.gateway.hdm.deviceclasses.Miele";
+
     private static final Pattern IP_PATTERN = Pattern
             .compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
@@ -112,7 +114,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     public class HomeDevice {
 
         private static final String MIELE_APPLIANCE_CLASS = "com.miele.xgw3000.gateway.hdm.deviceclasses.MieleAppliance";
-        private static final String MIELE_CLASS = "com.miele.xgw3000.gateway.hdm.deviceclasses.Miele";
 
         public String Name;
         public String Status;
@@ -331,6 +332,11 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                 try {
                                     DeviceClassObject dco = gson.fromJson(obj, DeviceClassObject.class);
 
+                                    // Skip com.prosyst.mbs.services.zigbee.hdm.deviceclasses.ReportingControl
+                                    if (!dco.DeviceClass.startsWith(MIELE_CLASS)) {
+                                        continue;
+                                    }
+
                                     for (ApplianceStatusListener listener : applianceStatusListeners) {
                                         listener.onApplianceStateChanged(applianceIdentifier, dco);
                                     }
@@ -523,7 +529,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
         Object[] args = new Object[4];
         args[0] = applianceIdentifier.getUid();
-        args[1] = "com.miele.xgw3000.gateway.hdm.deviceclasses.Miele" + modelID;
+        args[1] = MIELE_CLASS + modelID;
         args[2] = methodName;
         args[3] = null;
 

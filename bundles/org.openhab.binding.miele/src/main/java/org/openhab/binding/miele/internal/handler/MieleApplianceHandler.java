@@ -161,11 +161,6 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
             return;
         }
 
-        String modelID = DeviceUtil.getDeviceClassFromFullyQualifiedString(dco.DeviceClass);
-        if (!modelID.equals(this.modelID)) {
-            return;
-        }
-
         for (JsonElement prop : dco.Properties.getAsJsonArray()) {
             try {
                 DeviceProperty dp = gson.fromJson(prop, DeviceProperty.class);
