@@ -46,9 +46,8 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService
     private @Nullable ScheduledFuture<?> discoveryJob = null;
     private final Logger logger = LoggerFactory.getLogger(SoulissGatewayDiscovery.class);
 
-    private @Nullable SoulissDiscoverJob soulissDiscoverRunnableClass = null;
-
-    private @Nullable SoulissGatewayHandler soulissGwHandler = null;
+    private @Nullable SoulissDiscoverJob soulissDiscoverRunnableClass;
+    private @Nullable SoulissGatewayHandler soulissGwHandler;
 
     public SoulissGatewayDiscovery() {
         super(SoulissBindingConstants.SUPPORTED_THING_TYPES_UIDS, SoulissBindingConstants.DISCOVERY_TIMEOUT_IN_SECONDS,
@@ -264,9 +263,9 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService
     @Override
     public void setThingHandler(ThingHandler handler) {
         if (handler instanceof SoulissGatewayHandler) {
-            SoulissGatewayHandler localGwHandler = (SoulissGatewayHandler) handler;
-            this.soulissGwHandler = localGwHandler;            
-            localGwHandler.discoverResult = this;
+            // SoulissGatewayHandler localGwHandler = (SoulissGatewayHandler) handler;
+            this.soulissGwHandler = (SoulissGatewayHandler) handler;
+            this.soulissGwHandler.discoverResult = this;
         }
     }
 
