@@ -306,6 +306,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                         for (ApplianceStatusListener listener : applianceStatusListeners) {
                             listener.onApplianceRemoved(cachedHomeDevice);
                         }
+                        cachedHomeDevicesByRemoteUid.remove(cachedHomeDevice.getRemoteUid());
                         iterator.remove();
                     }
                 }
