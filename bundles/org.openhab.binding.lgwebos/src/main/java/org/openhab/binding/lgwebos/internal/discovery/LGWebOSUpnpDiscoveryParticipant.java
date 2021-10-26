@@ -63,7 +63,7 @@ public class LGWebOSUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant
         return DiscoveryResultBuilder.create(thingUID).withLabel(device.getDetails().getFriendlyName())
                 .withProperty(PROPERTY_DEVICE_ID, device.getIdentity().getUdn().getIdentifierString())
                 .withProperty(CONFIG_HOST, device.getIdentity().getDescriptorURL().getHost())
-                .withLabel(device.getDetails().getFriendlyName()).withProperty(Thing.PROPERTY_MODEL_ID, modelName)
+                .withProperty(Thing.PROPERTY_MODEL_ID, modelName)
                 .withProperty(Thing.PROPERTY_VENDOR, device.getDetails().getManufacturerDetails().getManufacturer())
                 .withRepresentationProperty(PROPERTY_DEVICE_ID).withThingType(THING_TYPE_WEBOSTV).build();
     }
