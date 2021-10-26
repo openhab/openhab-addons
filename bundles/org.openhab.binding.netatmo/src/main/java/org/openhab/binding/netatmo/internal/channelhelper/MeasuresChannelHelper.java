@@ -13,7 +13,6 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,7 +32,7 @@ public class MeasuresChannelHelper extends AbstractChannelHelper {
     private @Nullable Map<String, State> measures;
 
     public MeasuresChannelHelper() {
-        super(Set.of());
+        super();
     }
 
     @Override

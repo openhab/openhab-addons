@@ -13,31 +13,35 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-
-import java.util.Set;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toDateTimeType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils;
 import org.openhab.core.types.State;
 
 /**
- * The {@link DeviceChannelHelper} handle specific behavior
+ * The {@link TimestampChannelHelper} handle specific behavior
  * of modules using batteries
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class DeviceChannelHelper extends AbstractChannelHelper {
+public class TimestampChannelHelper extends AbstractChannelHelper {
 
-    public DeviceChannelHelper() {
-        super(Set.of(GROUP_DEVICE));
+    public TimestampChannelHelper() {
+        super(GROUP_TIMESTAMP);
     }
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
-        return CHANNEL_LAST_SEEN.equals(channelId) ? ChannelTypeUtils.toDateTimeType(naThing.getLastSeen()) : null;
+        return CHANNEL_LAST_SEEN.equals(channelId) ? toDateTimeType(naThing.getLastSeen()) : null;
+    }
+
+    @Override
+    protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
+        return CHANNEL_LAST_SEEN.equals(channelId) ? toDateTimeType(dashboard.getTimeUtc()) : null;
     }
 }

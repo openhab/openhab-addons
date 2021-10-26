@@ -16,8 +16,6 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.utils.NetatmoCalendarUtils.*;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
@@ -42,7 +40,7 @@ import org.openhab.core.types.UnDefType;
 public class HomeEnergyChannelHelper extends AbstractChannelHelper {
 
     public HomeEnergyChannelHelper() {
-        super(Set.of(GROUP_HOME_ENERGY));
+        super(GROUP_HOME_ENERGY);
     }
 
     @Override

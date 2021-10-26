@@ -14,8 +14,6 @@ package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAThermostat;
@@ -33,7 +31,7 @@ import org.openhab.core.types.State;
 public class Therm1ChannelHelper extends AbstractChannelHelper {
 
     public Therm1ChannelHelper() {
-        super(Set.of(GROUP_TH_PROPERTIES));
+        super(GROUP_TH_PROPERTIES);
     }
 
     @Override

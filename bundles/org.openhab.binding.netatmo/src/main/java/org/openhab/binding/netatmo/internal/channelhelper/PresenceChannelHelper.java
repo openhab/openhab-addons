@@ -14,8 +14,6 @@ package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.PresenceLightMode;
@@ -37,7 +35,7 @@ public class PresenceChannelHelper extends AbstractChannelHelper {
     private @NonNullByDefault({}) FloodLightModeHolder modeHolder;
 
     public PresenceChannelHelper() {
-        super(Set.of(GROUP_PRESENCE));
+        super(GROUP_PRESENCE);
     }
 
     public void setFloodLightMode(FloodLightModeHolder modeHolder) {

@@ -27,7 +27,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class NADashboard {
-    private long timeUtc;
+    private @Nullable ZonedDateTime timeUtc;
 
     @SerializedName("BoilerOn")
     private int boilerOn;
@@ -83,7 +83,7 @@ public class NADashboard {
 
     private int healthIdx;
 
-    public long getTimeUtc() {
+    public @Nullable ZonedDateTime getTimeUtc() {
         return timeUtc;
     }
 

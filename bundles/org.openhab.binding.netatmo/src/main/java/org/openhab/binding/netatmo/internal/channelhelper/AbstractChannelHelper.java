@@ -31,10 +31,10 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public abstract class AbstractChannelHelper {
     private @Nullable NAThing data;
-    private final Set<String> providedGroup;
+    private final Set<String> channelGroups;
 
-    public AbstractChannelHelper(Set<String> providedGroup) {
-        this.providedGroup = providedGroup;
+    public AbstractChannelHelper(String... providedGroup) {
+        this.channelGroups = Set.of(providedGroup);
     }
 
     public void setNewData(NAThing data) {
@@ -47,7 +47,7 @@ public abstract class AbstractChannelHelper {
         if (currentData != null) {
             String channelId = channelUID.getIdWithoutGroup();
             String groupId = channelUID.getGroupId();
-            if (providedGroup.isEmpty() || (groupId != null && providedGroup.contains(groupId))) {
+            if (channelGroups.isEmpty() || (groupId != null && channelGroups.contains(groupId))) {
                 result = internalGetProperty(channelId, currentData);
                 if (result == null) {
                     NADashboard dashboard = currentData.getDashboardData();
@@ -66,5 +66,9 @@ public abstract class AbstractChannelHelper {
 
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
         return null;
+    }
+
+    public Set<String> getChannelGroups() {
+        return channelGroups;
     }
 }

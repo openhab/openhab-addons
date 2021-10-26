@@ -15,8 +15,6 @@ package org.openhab.binding.netatmo.internal.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAModule;
@@ -37,7 +35,7 @@ import org.openhab.core.types.UnDefType;
 public class BatteryChannelHelper extends AbstractChannelHelper {
 
     public BatteryChannelHelper() {
-        super(Set.of(GROUP_BATTERY, GROUP_ENERGY_BATTERY));
+        super(GROUP_BATTERY, GROUP_ENERGY_BATTERY);
     }
 
     @Override

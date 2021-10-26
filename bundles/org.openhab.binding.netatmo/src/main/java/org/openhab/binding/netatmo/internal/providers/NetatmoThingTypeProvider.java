@@ -16,20 +16,18 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.ModuleType.RefreshPolicy;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -52,49 +50,41 @@ import org.slf4j.LoggerFactory;
 
 @Component(service = ThingTypeProvider.class)
 @NonNullByDefault
-public class NetatmoDeviceThingTypeProvider extends BaseDsI18n implements ThingTypeProvider {
-    private final Logger logger = LoggerFactory.getLogger(NetatmoDeviceThingTypeProvider.class);
+public class NetatmoThingTypeProvider extends BaseDsI18n implements ThingTypeProvider {
+    private final Logger logger = LoggerFactory.getLogger(NetatmoThingTypeProvider.class);
 
     @Activate
-    public NetatmoDeviceThingTypeProvider(@Reference TranslationProvider translationProvider) {
+    public NetatmoThingTypeProvider(final @Reference TranslationProvider translationProvider) {
         super(translationProvider);
     }
 
     @Override
     public Collection<ThingType> getThingTypes(@Nullable Locale locale) {
-        List<ThingType> thingTypes = new LinkedList<>();
-        for (ModuleType supportedThingType : ModuleType.values()) {
-            ThingType thingType = getThingType(supportedThingType.getThingTypeUID(), locale);
-            if (thingType != null) {
-                thingTypes.add(thingType);
-            }
-        }
-        return thingTypes;
+        return ModuleType.asSet.stream().map(mt -> Optional.ofNullable(getThingType(mt.getThingTypeUID(), locale)))
+                .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
 
     @Override
     public @Nullable ThingType getThingType(ThingTypeUID thingTypeUID, @Nullable Locale locale) {
         if (BINDING_ID.equalsIgnoreCase(thingTypeUID.getBindingId())) {
             try {
-                ModuleType supportedThingType = ModuleType.valueOf(thingTypeUID.getId());
-                String configDescription = BINDING_ID + ":"
-                        + (supportedThingType.getSignalLevels() == NetatmoConstants.NO_RADIO ? "virtual"
-                                : supportedThingType.getRefreshPeriod() == RefreshPolicy.CONFIG ? "configurable"
-                                        : "device");
+                ModuleType moduleType = ModuleType.valueOf(thingTypeUID.getId());
+                String configDescription = BINDING_ID + ":" + (!moduleType.isPhysicalEquipment() ? "virtual"
+                        : moduleType.getRefreshPeriod() == RefreshPolicy.CONFIG ? "configurable" : "device");
 
                 ThingTypeBuilder thingTypeBuilder = ThingTypeBuilder
                         .instance(thingTypeUID, getLabelText(thingTypeUID.getId(), locale))
                         .withDescription(getDescText(thingTypeUID.getId(), locale))
-                        .withProperties(getProperties(supportedThingType)).withRepresentationProperty(EQUIPMENT_ID)
-                        .withChannelGroupDefinitions(getGroupDefinitions(supportedThingType))
+                        .withProperties(getProperties(moduleType)).withRepresentationProperty(EQUIPMENT_ID)
+                        .withChannelGroupDefinitions(getGroupDefinitions(moduleType))
                         .withConfigDescriptionURI(new URI(configDescription));
 
-                List<String> extensions = supportedThingType.getExtensions();
+                List<String> extensions = moduleType.getExtensions();
                 if (!extensions.isEmpty()) {
                     thingTypeBuilder.withExtensibleChannelTypeIds(extensions);
                 }
 
-                ThingTypeUID thingType = supportedThingType.getBridgeThingType();
+                ThingTypeUID thingType = moduleType.getBridgeThingType();
                 if (thingType != null) {
                     thingTypeBuilder.withSupportedBridgeTypeUIDs(Arrays.asList(thingType.getAsString()));
                 }
@@ -107,23 +97,15 @@ public class NetatmoDeviceThingTypeProvider extends BaseDsI18n implements ThingT
         return null;
     }
 
-    private List<ChannelGroupDefinition> getGroupDefinitions(ModuleType supportedThingType) {
-        List<ChannelGroupDefinition> groupDefinitions = new ArrayList<>();
-        for (String group : supportedThingType.getGroups()) {
-            ChannelGroupTypeUID groupType = new ChannelGroupTypeUID(BINDING_ID, group);
-            groupDefinitions.add(new ChannelGroupDefinition(group, groupType));
-        }
-        return groupDefinitions;
+    private List<ChannelGroupDefinition> getGroupDefinitions(ModuleType validThingType) {
+        return validThingType.getGroups().stream()
+                .map(group -> new ChannelGroupDefinition(group, new ChannelGroupTypeUID(BINDING_ID, group)))
+                .collect(Collectors.toList());
     }
 
     private Map<String, String> getProperties(ModuleType supportedThingType) {
-        Map<String, String> properties = new HashMap<>();
-
-        if (supportedThingType.getSignalLevels() != NetatmoConstants.NO_RADIO) {
-            properties.put(Thing.PROPERTY_VENDOR, VENDOR);
-            properties.put(Thing.PROPERTY_MODEL_ID, supportedThingType.name());
-        }
-
-        return properties;
+        return supportedThingType.isPhysicalEquipment()
+                ? Map.of(Thing.PROPERTY_VENDOR, VENDOR, Thing.PROPERTY_MODEL_ID, supportedThingType.name())
+                : Map.of();
     }
 }

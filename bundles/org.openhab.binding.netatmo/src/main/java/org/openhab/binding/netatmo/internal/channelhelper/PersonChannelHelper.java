@@ -15,8 +15,6 @@ package org.openhab.binding.netatmo.internal.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAPerson;
@@ -36,7 +34,7 @@ import org.openhab.core.types.State;
 public class PersonChannelHelper extends AbstractChannelHelper {
 
     public PersonChannelHelper() {
-        super(Set.of(GROUP_PERSON));
+        super(GROUP_PERSON);
     }
 
     @Override

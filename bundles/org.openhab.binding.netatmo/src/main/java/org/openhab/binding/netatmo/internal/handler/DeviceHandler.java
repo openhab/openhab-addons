@@ -200,15 +200,15 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
             NAThing localNaThing = (NAThing) newData;
             if (localNaThing.isReachable()) {
                 updateStatus(ThingStatus.ONLINE);
-                channelHelpers.forEach(helper -> helper.setNewData(localNaThing));
-                getThing().getChannels().stream()
-                        .filter(channel -> !ChannelKind.TRIGGER.equals(channel.getKind()) && isLinked(channel.getUID()))
-                        .map(channel -> channel.getUID()).forEach(channelUID -> {
-                            updateState(channelUID, getNAThingProperty(channelUID));
-                        });
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device is not connected");
             }
+            channelHelpers.forEach(helper -> helper.setNewData(localNaThing));
+            getThing().getChannels().stream()
+                    .filter(channel -> !ChannelKind.TRIGGER.equals(channel.getKind()) && isLinked(channel.getUID()))
+                    .map(channel -> channel.getUID()).forEach(channelUID -> {
+                        updateState(channelUID, getNAThingProperty(channelUID));
+                    });
         }
     }
 

@@ -57,8 +57,8 @@ public class NetatmoConstants {
         PRESSURE(new Measure(260, 1260, 1, HECTO(SIUnits.PASCAL))),
         CO2(new Measure(0, 5000, 50, Units.PARTS_PER_MILLION)),
         NOISE(new Measure(35, 120, 1, Units.DECIBEL)),
-        RAIN_QTTY(new Measure(0.2, 150, 0.1, MILLI(SIUnits.METRE))),
-        RAIN_INTENSITY(new Measure(0.2, 150, 0.1, Units.MILLIMETRE_PER_HOUR)),
+        RAIN_QTTY(new Measure(0, 150, 0.1, MILLI(SIUnits.METRE))),
+        RAIN_INTENSITY(new Measure(0, 150, 0.1, Units.MILLIMETRE_PER_HOUR)),
         WIND_SPEED(new Measure(0, 160, 1.8, SIUnits.KILOMETRE_PER_HOUR)),
         WIND_ANGLE(new Measure(0, 360, 5, Units.DEGREE_ANGLE)),
         HUMIDITY(new Measure(0, 100, 3, Units.PERCENT)),
@@ -201,7 +201,6 @@ public class NetatmoConstants {
     // Radio signal quality thresholds
     static final int[] WIFI_SIGNAL_LEVELS = new int[] { 99, 84, 69, 54 }; // Resp : bad, average, good, full
     static final int[] RADIO_SIGNAL_LEVELS = new int[] { 90, 80, 70, 60 }; // Resp : low, medium, high, full
-    public static final int[] NO_RADIO = new int[0]; // No radio => no levels
 
     public static enum FeatureArea {
         AIR_CARE(Set.of(Scope.READ_HOMECOACH)),

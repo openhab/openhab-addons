@@ -43,7 +43,7 @@ public class NetatmoBindingConstants {
     public static final String GROUP_CO2 = "co2";
     public static final String GROUP_NOISE = "noise";
     public static final String GROUP_PRESSURE = "pressure";
-    public static final String GROUP_DEVICE = "device";
+    public static final String GROUP_TIMESTAMP = "timestamp";
     public static final String GROUP_RAIN = "rain";
     public static final String GROUP_WIND = "wind";
     public static final String GROUP_HEALTH = "health";
@@ -125,4 +125,5 @@ public class NetatmoBindingConstants {
 
     // URI for the EventServlet
     public static final String NETATMO_CALLBACK_URI = "/netatmo";
+
 }

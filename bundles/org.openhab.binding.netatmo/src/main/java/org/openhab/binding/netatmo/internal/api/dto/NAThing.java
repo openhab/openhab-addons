@@ -57,9 +57,9 @@ public class NAThing extends NAObject {
         return type;
     }
 
-    public void setType(ModuleType type) {
-        this.type = type;
-    }
+    // public void setType(ModuleType type) {
+    // this.type = type;
+    // }
 
     public int getFirmware() {
         return firmware;
@@ -73,6 +73,13 @@ public class NAThing extends NAObject {
         return Optional.ofNullable(lastSeen);
     }
 
+    /**
+     * @return true if the equipment has no parent, meaning its a device.
+     */
+    public boolean isDevice() {
+        return bridge == null;
+    }
+
     public @Nullable String getBridge() {
         return bridge;
     }
@@ -81,7 +88,7 @@ public class NAThing extends NAObject {
         return roomId;
     }
 
-    public void setReachable(Boolean localReachable) {
-        this.reachable = localReachable;
-    }
+    // public void setReachable(Boolean localReachable) {
+    // this.reachable = localReachable;
+    // }
 }

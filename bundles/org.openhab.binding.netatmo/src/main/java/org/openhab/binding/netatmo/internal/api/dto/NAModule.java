@@ -24,15 +24,13 @@ import org.openhab.binding.netatmo.internal.api.NetatmoConstants.BatteryState;
 @NonNullByDefault
 public class NAModule extends NAThing {
     private BatteryState batteryState = BatteryState.UNKNOWN;
-
     private int batteryPercent = -1;
 
     public int getBatteryPercent() {
-        return batteryPercent != -1 ? batteryPercent
-                : batteryState != BatteryState.UNKNOWN ? batteryState.getLevel() : -1;
+        return batteryPercent != -1 ? batteryPercent : batteryState.getLevel();
     }
 
     public BatteryState getBatteryState() {
-        return this.batteryState;
+        return batteryState;
     }
 }

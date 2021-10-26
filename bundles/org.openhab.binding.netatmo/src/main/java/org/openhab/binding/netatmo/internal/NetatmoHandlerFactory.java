@@ -23,9 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.ModuleType;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
-import org.openhab.binding.netatmo.internal.channelhelper.SignalChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.DeviceWithEventHandler;
 import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 import org.openhab.core.thing.Bridge;
@@ -86,10 +84,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private @Nullable BaseThingHandler buildThing(Bridge bridge, ModuleType moduleType) {
-        List<@Nullable AbstractChannelHelper> helpers = new ArrayList<>();
-        if (moduleType.getSignalLevels() != NetatmoConstants.NO_RADIO) {
-            helpers.add(new SignalChannelHelper(moduleType.getSignalLevels()));
-        }
+        List<AbstractChannelHelper> helpers = new ArrayList<>();
         try {
             Constructor<?> handlerConstructor = moduleType.getHandlerConstructor();
             if (handlerConstructor != null) {

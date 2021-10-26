@@ -20,8 +20,8 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="device">
-		<label>Device Info</label>
+	<channel-group-type id="timestamp">
+		<label>Timestamp</label>
 		<channels>
 			<channel id="last-seen" typeId="timestamp">
 				<label>Last Seen</label>

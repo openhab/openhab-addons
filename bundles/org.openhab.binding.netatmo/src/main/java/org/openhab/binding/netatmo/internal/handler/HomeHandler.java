@@ -134,6 +134,8 @@ public class HomeHandler extends DeviceWithEventHandler {
             }
         });
         securityApi.ifPresent(api -> {
+            homeData.getPersons().keySet().forEach(id -> home.getModules().remove(id));
+            homeData.getCameras().keySet().forEach(id -> home.getModules().remove(id));
             home.getPersons().putAll(homeData.getPersons());
             home.getCameras().putAll(homeData.getCameras());
         });
