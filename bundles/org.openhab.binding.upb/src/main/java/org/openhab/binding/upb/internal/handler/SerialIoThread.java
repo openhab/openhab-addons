@@ -152,7 +152,7 @@ public class SerialIoThread extends Thread {
             return;
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("UPB Message: {}", HexUtils.bytesToHex(buf));
+            logger.debug("UPB Message: {}", formatMessage(buf));
         }
         final UPBMessage msg;
         try {
@@ -241,6 +241,24 @@ public class SerialIoThread extends Thread {
             serialPort.close();
         } catch (final RuntimeException e) {
             logger.warn("failed to close serial port", e);
+        }
+    }
+
+    // format a message for debug logging, include only printable characters
+    private static String formatMessage(byte[] buf) {
+        final int len;
+        // omit the final newline
+        if (buf[buf.length - 1] == '\r') {
+            len = buf.length - 1;
+        } else {
+            len = buf.length;
+        }
+        final String s = new String(buf, 0, len, US_ASCII);
+        if (s.chars().allMatch(c -> c >= 32 && c < 127)) {
+            return s;
+        } else {
+            // presence of non-printable characters is either noise or a misconfiguration, log it in hex
+            return HexUtils.bytesToHex(buf);
         }
     }
 

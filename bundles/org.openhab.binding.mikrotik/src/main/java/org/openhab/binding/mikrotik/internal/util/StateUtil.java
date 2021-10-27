@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -63,11 +64,18 @@ public class StateUtil {
         return value == null ? UnDefType.NULL : new DecimalType(value);
     }
 
-    public static State boolOrNull(@Nullable Boolean value) {
+    public static State boolSwitchOrNull(@Nullable Boolean value) {
         if (value == null) {
             return UnDefType.NULL;
         }
         return value ? OnOffType.ON : OnOffType.OFF;
+    }
+
+    public static State boolContactOrNull(@Nullable Boolean value) {
+        if (value == null) {
+            return UnDefType.NULL;
+        }
+        return value ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
     }
 
     public static State timeOrNull(@Nullable LocalDateTime value) {

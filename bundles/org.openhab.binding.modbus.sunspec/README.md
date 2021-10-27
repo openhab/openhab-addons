@@ -35,7 +35,7 @@ You can set the `enableDiscovery=true` parameter in your bridge.
 A typical bridge configuration would look like this:
 
 ```
-Bridge modbus:tcp:bridge [ host="10.0.0.2", port=502, id=1, enableDiscovery=true ]
+Bridge modbus:tcp:modbusBridgeName [ host="10.0.0.2", port=502, id=1, enableDiscovery=true ]
 ```
 
 ## Thing Configuration
@@ -189,8 +189,8 @@ Supported by: all inverter things
 ### Thing Configuration
 
 ```
-Bridge modbus:tcp:bridge [ host="hostname|ip", port=502, id=1, enableDiscovery=true ]
-Thing modbus:inverter-single-phase:bridge:se4000h "SE4000h" (modbus:tcp:modbusbridge) [ address=40069, length=52, refresh=15 ]
+Bridge modbus:tcp:modbusBridgeName [ host="hostname|ip", port=502, id=1, enableDiscovery=true ]
+Thing modbus:inverter-single-phase:bridge:myInverter "SE4000h" (modbus:tcp:modbusBridgeName) [ address=40069, length=52, refresh=15 ]
 ```
 
 Note: Make sure that refresh, port and id values are numerical, without quotes.
