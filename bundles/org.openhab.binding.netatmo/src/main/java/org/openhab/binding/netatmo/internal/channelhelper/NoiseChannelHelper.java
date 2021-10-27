@@ -32,7 +32,7 @@ import org.openhab.core.types.State;
 public class NoiseChannelHelper extends AbstractChannelHelper {
 
     public NoiseChannelHelper() {
-        super(GROUP_NOISE);
+        super(GROUP_NOISE, MeasureClass.NOISE);
     }
 
     @Override

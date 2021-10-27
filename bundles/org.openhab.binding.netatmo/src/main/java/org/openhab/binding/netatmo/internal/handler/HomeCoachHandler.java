@@ -15,12 +15,12 @@ package org.openhab.binding.netatmo.internal.handler;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.NetatmoDescriptionProvider;
 import org.openhab.binding.netatmo.internal.api.AircareApi;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
+import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.thing.Bridge;
 
 /**
@@ -30,7 +30,7 @@ import org.openhab.core.thing.Bridge;
  *
  */
 @NonNullByDefault
-public class HomeCoachHandler extends DeviceHandler {
+public class HomeCoachHandler extends DeviceWithMeasureHandler {
 
     public HomeCoachHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             NetatmoDescriptionProvider descriptionProvider) {

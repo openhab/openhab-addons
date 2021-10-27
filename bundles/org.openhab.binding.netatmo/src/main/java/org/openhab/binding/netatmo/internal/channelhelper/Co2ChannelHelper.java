@@ -32,7 +32,7 @@ import org.openhab.core.types.State;
 public class Co2ChannelHelper extends AbstractChannelHelper {
 
     public Co2ChannelHelper() {
-        super(GROUP_CO2);
+        super(GROUP_CO2, MeasureClass.CO2);
     }
 
     @Override

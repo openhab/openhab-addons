@@ -60,17 +60,17 @@ public class NAHomeEvent extends NAEvent {
     public Optional<EventSubType> getSubTypeDescription() {
         // Blend extra informations provided by this kind of event in subcategories...
         if (isArrival && type == EventType.PERSON) {
-            this.subType = EventSubType.ARRIVAL.getSubType();
+            this.subType = EventSubType.ARRIVAL.subType;
         } else {
             switch (category) {
                 case ANIMAL:
-                    this.subType = EventSubType.ANIMAL.getSubType();
+                    this.subType = EventSubType.ANIMAL.subType;
                     break;
                 case HUMAN:
-                    this.subType = EventSubType.HUMAN.getSubType();
+                    this.subType = EventSubType.HUMAN.subType;
                     break;
                 case VEHICLE:
-                    this.subType = EventSubType.VEHICLE.getSubType();
+                    this.subType = EventSubType.VEHICLE.subType;
                     break;
                 default:
                     break;

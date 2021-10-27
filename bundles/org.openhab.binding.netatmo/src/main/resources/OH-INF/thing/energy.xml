@@ -16,11 +16,9 @@
 		<channels>
 			<channel id="value" typeId="system.outdoor-temperature">
 				<label>Temperature</label>
-				<description>Temperature of the room</description>
 			</channel>
 			<channel id="timestamp" typeId="timestamp">
 				<label>Measurement Time</label>
-				<description>Timestamp when data was measured</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -30,7 +28,6 @@
 		<channels>
 			<channel id="value" typeId="system.outdoor-temperature">
 				<label>Measured Temperature</label>
-				<description>Measured temperature of the room</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -40,7 +37,6 @@
 		<channels>
 			<channel id="window-open" typeId="contact">
 				<label>Window Status</label>
-				<description>Indicates whether window open detected or not</description>
 			</channel>
 			<channel id="anticipating" typeId="contact">
 				<label>Anticipated heating</label>
@@ -58,11 +54,9 @@
 			<channel id="mode" typeId="th-mode"/>
 			<channel id="start" typeId="timestamp">
 				<label>Setpoint Start</label>
-				<description>Timestamp a manual setpoint began</description>
 			</channel>
 			<channel id="end" typeId="timestamp">
 				<label>Setpoint End</label>
-				<description>Thermostat goes back to schedule after that timestamp.</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -72,7 +66,6 @@
 		<channels>
 			<channel id="relay-status" typeId="contact">
 				<label>Heating Status</label>
-				<description>Indicates whether the furnace is heating or not (CLOSED = heating, OPEN = stopped)</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -83,15 +76,12 @@
 			<channel id="setpoint-duration" typeId="setpoint-duration"/>
 			<channel id="planning" typeId="string-rw">
 				<label>Planning</label>
-				<description>Heat planning currently used</description>
 			</channel>
 			<channel id="mode" typeId="energy-mode">
 				<label>Mode</label>
-				<description>Current mode (eg. frost-guard or away)</description>
 			</channel>
 			<channel id="end" typeId="timestamp">
 				<label>Mode End</label>
-				<description>Timestamp until current mode is active</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -102,7 +92,6 @@
 			<channel id="value" typeId="system.battery-level"/>
 			<channel id="status" typeId="string-ro">
 				<label>Status</label>
-				<description>Status of battery</description>
 			</channel>
 			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>

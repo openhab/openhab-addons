@@ -44,16 +44,14 @@ import org.openhab.core.types.UnDefType;
 public class ChannelTypeUtils {
 
     public static @Nullable QuantityType<?> commandToQuantity(Command command, MeasureClass measureClass) {
-        Measure measureDef = measureClass.getMeasureDefinition();
-        if (measureDef != null) {
-            if (command instanceof QuantityType<?>) {
-                return ((QuantityType<?>) command).toUnit(measureDef.unit);
-            }
-            try {
-                double value = Double.parseDouble(command.toString());
-                return QuantityType.valueOf(value, measureDef.unit);
-            } catch (NumberFormatException ignore) {
-            }
+        Measure measureDef = measureClass.measureDefinition;
+        if (command instanceof QuantityType<?>) {
+            return ((QuantityType<?>) command).toUnit(measureDef.unit);
+        }
+        try {
+            double value = Double.parseDouble(command.toString());
+            return QuantityType.valueOf(value, measureDef.unit);
+        } catch (NumberFormatException ignore) {
         }
         return null;
     }
@@ -77,13 +75,10 @@ public class ChannelTypeUtils {
     public static State toQuantityType(@Nullable Double value, @Nullable MeasureClass measureClass) {
         if (value != null && !value.isNaN()) {
             if (measureClass != null) {
-                Measure measureDef = measureClass.getMeasureDefinition();
-                if (measureDef != null) {
-                    BigDecimal measure = new BigDecimal(
-                            Math.min(measureDef.maxValue, Math.max(measureDef.minValue, value)))
-                                    .setScale(measureDef.scale, RoundingMode.HALF_UP);
-                    return new QuantityType<>(measure, measureDef.unit);
-                }
+                Measure measureDef = measureClass.measureDefinition;
+                BigDecimal measure = new BigDecimal(Math.min(measureDef.maxValue, Math.max(measureDef.minValue, value)))
+                        .setScale(measureDef.scale, RoundingMode.HALF_UP);
+                return new QuantityType<>(measure, measureDef.unit);
             } else {
                 return new DecimalType(value);
             }

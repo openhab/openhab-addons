@@ -10,27 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.netatmo.internal.api.dto;
+package org.openhab.binding.netatmo.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.BatteryState;
 
 /**
+ * The {@link ApiError} models an errored response from API
  *
  * @author Gaël L'hopital - Initial contribution
- *
  */
-
 @NonNullByDefault
-public class NAModule extends NAThing {
-    private BatteryState batteryState = BatteryState.UNKNOWN;
-    private int batteryPercent = -1;
+public class ApiError {
+    private @NonNullByDefault({}) String message;
+    private int code;
 
-    public int getBatteryPercent() {
-        return batteryPercent != -1 ? batteryPercent : batteryState.level;
+    public String getMessage() {
+        return message;
     }
 
-    public BatteryState getBatteryState() {
-        return batteryState;
+    public int getCode() {
+        return code;
     }
 }

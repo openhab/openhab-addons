@@ -25,7 +25,6 @@
 		<channels>
 			<channel id="last-seen" typeId="timestamp">
 				<label>Last Seen</label>
-				<description>Last time this element has been seen</description>
 			</channel>
 		</channels>
 	</channel-group-type>

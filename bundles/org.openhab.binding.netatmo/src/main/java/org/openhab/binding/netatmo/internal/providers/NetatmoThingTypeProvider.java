@@ -14,8 +14,6 @@ package org.openhab.binding.netatmo.internal.providers;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -27,15 +25,16 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.ModuleType;
-import org.openhab.binding.netatmo.internal.api.ModuleType.RefreshPolicy;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingTypeProvider;
+import org.openhab.core.thing.i18n.ThingTypeI18nLocalizationService;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ThingType;
 import org.openhab.core.thing.type.ThingTypeBuilder;
+import org.osgi.framework.Bundle;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -50,18 +49,24 @@ import org.slf4j.LoggerFactory;
 
 @Component(service = ThingTypeProvider.class)
 @NonNullByDefault
-public class NetatmoThingTypeProvider extends BaseDsI18n implements ThingTypeProvider {
+public class NetatmoThingTypeProvider implements ThingTypeProvider {
     private final Logger logger = LoggerFactory.getLogger(NetatmoThingTypeProvider.class);
+    private final ThingTypeI18nLocalizationService localizationService;
+    private final Bundle bundle;
 
     @Activate
-    public NetatmoThingTypeProvider(final @Reference TranslationProvider translationProvider) {
-        super(translationProvider);
+    public NetatmoThingTypeProvider(final @Reference ThingTypeI18nLocalizationService localizationService,
+            ComponentContext componentContext) {
+        super();
+        this.bundle = componentContext.getBundleContext().getBundle();
+        this.localizationService = localizationService;
     }
 
     @Override
     public Collection<ThingType> getThingTypes(@Nullable Locale locale) {
-        return ModuleType.asSet.stream().map(mt -> Optional.ofNullable(getThingType(mt.getThingTypeUID(), locale)))
-                .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+        return ModuleType.asSet.stream().filter(mt -> mt != ModuleType.UNKNOWN)
+                .map(mt -> Optional.ofNullable(getThingType(mt.thingTypeUID, locale))).map(Optional::get)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -69,28 +74,19 @@ public class NetatmoThingTypeProvider extends BaseDsI18n implements ThingTypePro
         if (BINDING_ID.equalsIgnoreCase(thingTypeUID.getBindingId())) {
             try {
                 ModuleType moduleType = ModuleType.valueOf(thingTypeUID.getId());
-                String configDescription = BINDING_ID + ":" + (!moduleType.isPhysicalEquipment() ? "virtual"
-                        : moduleType.getRefreshPeriod() == RefreshPolicy.CONFIG ? "configurable" : "device");
 
-                ThingTypeBuilder thingTypeBuilder = ThingTypeBuilder
-                        .instance(thingTypeUID, getLabelText(thingTypeUID.getId(), locale))
-                        .withDescription(getDescText(thingTypeUID.getId(), locale))
+                ThingTypeBuilder thingTypeBuilder = ThingTypeBuilder.instance(thingTypeUID, thingTypeUID.toString())
                         .withProperties(getProperties(moduleType)).withRepresentationProperty(EQUIPMENT_ID)
                         .withChannelGroupDefinitions(getGroupDefinitions(moduleType))
-                        .withConfigDescriptionURI(new URI(configDescription));
-
-                List<String> extensions = moduleType.getExtensions();
-                if (!extensions.isEmpty()) {
-                    thingTypeBuilder.withExtensibleChannelTypeIds(extensions);
-                }
-
-                ThingTypeUID thingType = moduleType.getBridgeThingType();
+                        .withConfigDescriptionURI(moduleType.getConfigDescription())
+                        .withExtensibleChannelTypeIds(moduleType.extensions);
+                // TODO : vérifier si l'on peut passer une liste vide ou s'il faut la tester avant
+                ThingTypeUID thingType = moduleType.getBridgeUID();
                 if (thingType != null) {
                     thingTypeBuilder.withSupportedBridgeTypeUIDs(Arrays.asList(thingType.getAsString()));
                 }
-
-                return thingTypeBuilder.buildBridge();
-            } catch (IllegalArgumentException | URISyntaxException e) {
+                return localizationService.createLocalizedThingType(bundle, thingTypeBuilder.buildBridge(), locale);
+            } catch (IllegalArgumentException e) {
                 logger.warn("Unable to define ModuleType for thingType {} : {}", thingTypeUID.getId(), e.getMessage());
             }
         }
@@ -98,14 +94,13 @@ public class NetatmoThingTypeProvider extends BaseDsI18n implements ThingTypePro
     }
 
     private List<ChannelGroupDefinition> getGroupDefinitions(ModuleType validThingType) {
-        return validThingType.getGroups().stream()
+        return validThingType.groups.stream()
                 .map(group -> new ChannelGroupDefinition(group, new ChannelGroupTypeUID(BINDING_ID, group)))
                 .collect(Collectors.toList());
     }
 
     private Map<String, String> getProperties(ModuleType supportedThingType) {
-        return supportedThingType.isPhysicalEquipment()
-                ? Map.of(Thing.PROPERTY_VENDOR, VENDOR, Thing.PROPERTY_MODEL_ID, supportedThingType.name())
-                : Map.of();
+        return supportedThingType.isLogical() ? Map.of()
+                : Map.of(Thing.PROPERTY_VENDOR, VENDOR, Thing.PROPERTY_MODEL_ID, supportedThingType.name());
     }
 }

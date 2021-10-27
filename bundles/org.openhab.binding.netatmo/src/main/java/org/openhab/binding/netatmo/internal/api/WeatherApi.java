@@ -22,9 +22,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureLimit;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureScale;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureType;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAMeasureBodyElem;
 
@@ -81,23 +79,38 @@ public class WeatherApi extends RestManager {
         throw new NetatmoException(String.format("Unexpected answer cherching device '%s' : not found.", deviceId));
     }
 
-    public @Nullable Object getMeasurements(String deviceId, @Nullable String moduleId, MeasureScale scale,
-            MeasureType type, MeasureLimit limit) throws NetatmoException {
-        String queryLimit = (limit != MeasureLimit.NONE) ? limit.toString() + "_" : "";
-        queryLimit += type.toString();
+    public @Nullable Object getMeasurements(String deviceId, @Nullable String moduleId, @Nullable String scale,
+            MeasureClass measureClass, String limit) throws NetatmoException {
+        String queryLimit = limit;
+        if (!measureClass.apiDescriptor.contains("_")) {
+            queryLimit += "_" + measureClass.apiDescriptor;
+        }
 
         NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, queryLimit.toLowerCase(), 0, 0);
         return result.getSingleValue();
     }
 
-    private NAMeasureBodyElem<?> getmeasure(String deviceId, @Nullable String moduleId, MeasureScale scale,
+    /*
+     * public @Nullable Object getMeasurements(String deviceId, @Nullable String moduleId, MeasureScale scale,
+     * MeasureType type, MeasureLimit limit) throws NetatmoException {
+     * String queryLimit = (limit != MeasureLimit.NONE) ? limit.toString() + "_" : "";
+     * queryLimit += type.toString();
+     *
+     * NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, queryLimit.toLowerCase(), 0, 0);
+     * return result.getSingleValue();
+     * }
+     */
+
+    private NAMeasureBodyElem<?> getmeasure(String deviceId, @Nullable String moduleId, @Nullable String scale,
             String measureType, long dateBegin, long dateEnd) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_GETMEASURE).queryParam(PARM_DEVICEID, deviceId)
-                .queryParam("scale", scale.getDescriptor()).queryParam("real_time", true)
+                .queryParam("real_time", true)
                 .queryParam("date_end", (dateEnd > 0 && dateEnd > dateBegin) ? dateEnd : "last")
                 .queryParam("optimize", true) // NAMeasuresResponse is not designed for optimize=false
                 .queryParam("type", measureType);
-
+        if (scale != null) {
+            uriBuilder.queryParam("scale", scale.toLowerCase());
+        }
         if (moduleId != null) {
             uriBuilder.queryParam(PARM_MODULEID, moduleId);
         }

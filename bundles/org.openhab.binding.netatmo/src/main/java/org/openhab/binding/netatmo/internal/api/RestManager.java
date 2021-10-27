@@ -42,7 +42,7 @@ public abstract class RestManager {
 
     public RestManager(ApiBridge apiHandler, FeatureArea features) {
         this.apiHandler = apiHandler;
-        this.requiredScopes = features.getScopes();
+        this.requiredScopes = features.scopes;
     }
 
     public <T extends ApiResponse<?>> T get(UriBuilder uriBuilder, Class<T> classOfT) throws NetatmoException {

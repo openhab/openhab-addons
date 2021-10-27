@@ -17,7 +17,6 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.SERVI
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -157,8 +156,7 @@ public class ApiBridge {
                     throw new NetatmoException("Required scopes missing to access : " + typeOfRest);
                 }
                 managers.put(typeOfRest, tentative);
-            } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-                    | InvocationTargetException | NetatmoException e) {
+            } catch (SecurityException | ReflectiveOperationException | NetatmoException e) {
                 logger.error("Error invoking RestManager constructor for class {} : {}", typeOfRest, e.getMessage());
             }
         }
@@ -217,8 +215,14 @@ public class ApiBridge {
             if (statusCode == Code.OK) {
                 return deserialize(classOfT, responseBody);
             } else {
-                NetatmoException exception = new NetatmoException(statusCode.getCode(), responseBody);
-                prepareReconnection(exception);
+                NetatmoException exception;
+                if (statusCode == Code.BAD_REQUEST) {
+                    ApiError error = deserialize(ApiError.class, responseBody);
+                    exception = new NetatmoException(error.getCode(), error.getMessage());
+                } else {
+                    exception = new NetatmoException(statusCode.getCode(), responseBody);
+                    prepareReconnection(exception);
+                }
                 throw exception;
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {

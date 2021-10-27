@@ -125,5 +125,4 @@ public class NetatmoBindingConstants {
 
     // URI for the EventServlet
     public static final String NETATMO_CALLBACK_URI = "/netatmo";
-
 }

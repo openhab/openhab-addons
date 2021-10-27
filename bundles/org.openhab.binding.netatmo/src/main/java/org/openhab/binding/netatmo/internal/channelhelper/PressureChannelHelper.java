@@ -32,7 +32,7 @@ import org.openhab.core.types.State;
 public class PressureChannelHelper extends AbstractChannelHelper {
 
     public PressureChannelHelper() {
-        super(GROUP_PRESSURE);
+        super(GROUP_PRESSURE, MeasureClass.PRESSURE);
     }
 
     @Override

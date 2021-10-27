@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
 
 import org.junit.jupiter.api.Test;
@@ -26,10 +27,10 @@ public class MeasureTest {
     @Test
     public void testMeasurePrecision() {
         State value = toQuantityType(25.0, MeasureClass.INTERIOR_TEMPERATURE);
-        // assertEquals("25 °C", value.toString());
+        assertEquals("25 °C", value.toString());
         value = toQuantityType(52.0, MeasureClass.INTERIOR_TEMPERATURE);
-        // assertEquals("50 °C", value.toString());
+        assertEquals("50 °C", value.toString());
         value = toQuantityType(-10.0, MeasureClass.INTERIOR_TEMPERATURE);
-        // assertEquals("0 °C", value.toString());
+        assertEquals("0 °C", value.toString());
     }
 }

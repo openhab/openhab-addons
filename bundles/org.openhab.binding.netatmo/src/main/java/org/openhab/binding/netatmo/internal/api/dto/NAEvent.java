@@ -53,7 +53,7 @@ public abstract class NAEvent extends NAObject {
     public abstract Optional<NASnapshot> getSnapshot();
 
     public Optional<EventSubType> getSubTypeDescription() {
-        return Stream.of(EventSubType.values()).filter(v -> v.getType() == getEventType() && v.getSubType() == subType)
+        return Stream.of(EventSubType.values()).filter(v -> v.type == getEventType() && v.subType == subType)
                 .findFirst();
     }
 

@@ -63,7 +63,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     public NetatmoDiscoveryService(@Reference ApiBridge apiBridge, @Reference LocaleProvider localeProvider,
             @Reference TranslationProvider translationProvider) {
 
-        super(ModuleType.asSet.stream().filter(mt -> mt != ModuleType.UNKNOWN).map(ModuleType::getThingTypeUID)
+        super(ModuleType.asSet.stream().filter(mt -> mt != ModuleType.UNKNOWN).map(mt -> mt.thingTypeUID)
                 .collect(Collectors.toSet()), DISCOVER_TIMEOUT_SECONDS);
         this.apiBridge = apiBridge;
         this.localeProvider = localeProvider;
@@ -90,15 +90,15 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
                         home.getModules().values().stream().filter(NAThing::isDevice).forEach(foundDevice -> {
                             ModuleType deviceType = foundDevice.getType();
                             ThingUID bridgeUID = createDiscoveredThing(
-                                    deviceType.getBridgeType() == ModuleType.NAHome ? homeUID : null, foundDevice);
+                                    deviceType.getBridge() == ModuleType.NAHome ? homeUID : null, foundDevice);
                             home.getModules().values().stream()
                                     .filter(module -> foundDevice.getId().equalsIgnoreCase(module.getBridge()))
                                     .forEach(foundChild -> {
                                         ModuleType childType = foundChild.getType();
                                         createDiscoveredThing(
-                                                childType.getBridgeType() == ModuleType.NAHome ? homeUID : bridgeUID,
+                                                childType.getBridge() == ModuleType.NAHome ? homeUID : bridgeUID,
                                                 foundChild);
-                                        if ((foundChild.getType().getFeatures() == FeatureArea.ENERGY)
+                                        if ((foundChild.getType().features == FeatureArea.ENERGY)
                                                 && (foundChild.getRoomId() != null)) {
                                             roomsWithEnergyModules.add(foundChild.getRoomId());
                                         }

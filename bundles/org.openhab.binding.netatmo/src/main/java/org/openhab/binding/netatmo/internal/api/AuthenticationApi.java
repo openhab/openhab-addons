@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class AuthenticationApi extends RestManager {
-    private static final String ALL_SCOPES = EnumSet.allOf(FeatureArea.class).stream().map(FeatureArea::getScopes)
+    private static final String ALL_SCOPES = EnumSet.allOf(FeatureArea.class).stream().map(f -> f.scopes)
             .flatMap(Set::stream).map(Scope::name).map(String::toLowerCase).collect(Collectors.joining(" "));
 
     private final Logger logger = LoggerFactory.getLogger(AuthenticationApi.class);

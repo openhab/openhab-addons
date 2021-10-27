@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.NetatmoDescriptionProvider;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.EnergyApi;
 import org.openhab.binding.netatmo.internal.api.HomeApi;
@@ -43,6 +42,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NARoom;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.api.dto.NAWelcome;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
+import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -81,7 +81,7 @@ public class HomeHandler extends DeviceWithEventHandler {
         homeApi = apiBridge.getHomeApi();
         try {
             home = homeApi.getHomeList(config.id, null).iterator().next();
-            Set<FeatureArea> capabilities = home.getModules().values().stream().map(m -> m.getType().getFeatures())
+            Set<FeatureArea> capabilities = home.getModules().values().stream().map(m -> m.getType().features)
                     .collect(Collectors.toSet());
             logger.debug("Home {} will use : {}", config.id, capabilities);
             List<Channel> toBeRemovedChannels = new ArrayList<>();
@@ -230,7 +230,7 @@ public class HomeHandler extends DeviceWithEventHandler {
 
     private void callSetThermMode(String homeId, SetpointMode targetMode) {
         energyApi.ifPresent(api -> {
-            tryApiCall(() -> api.setThermMode(homeId, targetMode.getDescriptor()));
+            tryApiCall(() -> api.setThermMode(homeId, targetMode.apiDescriptor));
         });
     }
 

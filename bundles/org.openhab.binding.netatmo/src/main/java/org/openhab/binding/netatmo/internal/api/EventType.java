@@ -118,7 +118,7 @@ public enum EventType {
     // @SerializedName("siren_tampered")
     // SIREN_TAMPERED(Set.of(ModuleType.NIS));
 
-    private Set<ModuleType> appliesTo;
+    private final Set<ModuleType> appliesTo;
 
     EventType(Set<ModuleType> appliesTo) {
         this.appliesTo = appliesTo;

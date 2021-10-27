@@ -16,7 +16,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -28,21 +27,20 @@ import org.openhab.core.types.UnDefType;
 
 @NonNullByDefault
 public class MeasuresChannelHelper extends AbstractChannelHelper {
-
     private @Nullable Map<String, State> measures;
 
     public MeasuresChannelHelper() {
         super();
     }
 
-    @Override
-    protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
-        Map<String, State> localMeasures = measures;
-        return localMeasures != null ? localMeasures.containsKey(channelId) ? localMeasures.get(channelId) : null
-                : UnDefType.UNDEF;
-    }
-
     public void setMeasures(Map<String, State> measures) {
         this.measures = measures;
+    }
+
+    @Override
+    protected @Nullable State internalGetOther(String channelId) {
+        Map<String, State> localMeasures = measures;
+        return localMeasures == null ? UnDefType.UNDEF
+                : localMeasures.containsKey(channelId) ? localMeasures.get(channelId) : null;
     }
 }

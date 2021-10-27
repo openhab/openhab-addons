@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.NetatmoDescriptionProvider;
 import org.openhab.binding.netatmo.internal.action.DeviceActions;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.ConnectionListener;
@@ -41,6 +40,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAPlace;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.config.NetatmoThingConfiguration;
+import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -95,9 +95,8 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
         config = getThing().getConfiguration().as(NetatmoThingConfiguration.class);
 
         ModuleType supportedThingType = ModuleType.valueOf(getThing().getThingTypeUID().getId());
-        refreshStrategy = supportedThingType.getRefreshPeriod() == RefreshPolicy.AUTO ? new RefreshStrategy(-1)
-                : supportedThingType.getRefreshPeriod() == RefreshPolicy.CONFIG
-                        ? new RefreshStrategy(config.refreshInterval)
+        refreshStrategy = supportedThingType.refreshPeriod == RefreshPolicy.AUTO ? new RefreshStrategy(-1)
+                : supportedThingType.refreshPeriod == RefreshPolicy.CONFIG ? new RefreshStrategy(config.refreshInterval)
                         : null;
 
         getBridgeHandler().ifPresentOrElse(handler -> handler.registerDataListener(config.id, this),

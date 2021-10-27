@@ -21,11 +21,11 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.NetatmoDescriptionProvider;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
+import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 import org.openhab.core.thing.Bridge;
 
@@ -40,7 +40,7 @@ import org.openhab.core.thing.Bridge;
 @NonNullByDefault
 public abstract class DeviceWithEventHandler extends DeviceHandler {
 
-    class LastEventTimeHelper {
+    private class LastEventTimeHelper {
         private @Nullable ZonedDateTime maxEventTime;
 
         protected ZonedDateTime get() {
@@ -53,7 +53,7 @@ public abstract class DeviceWithEventHandler extends DeviceHandler {
             return eventTime;
         }
 
-        void set(ZonedDateTime maxEventTime) {
+        private void set(ZonedDateTime maxEventTime) {
             this.maxEventTime = maxEventTime;
             updateProperty(PROPERTY_MAX_EVENT_TIME, maxEventTime.toString());
         }

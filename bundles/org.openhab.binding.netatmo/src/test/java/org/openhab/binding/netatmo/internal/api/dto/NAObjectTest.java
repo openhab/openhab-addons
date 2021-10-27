@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import java.time.ZoneId;
@@ -22,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
+import org.openhab.binding.netatmo.internal.api.NetatmoConstants.TrendDescription;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -47,8 +49,8 @@ public class NAObjectTest {
     public void testNAObject() throws Exception {
         String naObject = "{id:\"5954e7f249c75f97428b7b23\",name:\"Your House\"}";
         NAObject object = apiBridge.deserialize(NAObject.class, naObject);
-        // assertEquals(object.getName(), "Your House");
-        // assertEquals(object.getId(), "5954e7f249c75f97428b7b23");
+        assertEquals(object.getName(), "Your House");
+        assertEquals(object.getId(), "5954e7f249c75f97428b7b23");
     }
 
     @Test
@@ -63,7 +65,7 @@ public class NAObjectTest {
                 + "  \"push_type\": \"NACamera-movement\"" + "}";
         NAWebhookEvent object = apiBridge.deserialize(NAWebhookEvent.class, event);
         Optional<@NonNull NASnapshot> snap = object.getSnapshot();
-        // snap.ifPresent(snaphot -> assertEquals("5d19bxxxxxx6380342", snaphot.getId()));
+        snap.ifPresent(snaphot -> assertEquals("5d19bxxxxxx6380342", snaphot.getId()));
     }
 
     @Test
@@ -73,8 +75,8 @@ public class NAObjectTest {
                 + "min_temp:20,max_temp:22.4,date_max_temp:1623147932,"
                 + "Sdate_min_temp:1623125249,pressure_trend:\"nonexistent\",temp_trend:\"stable\"}";
         NADashboard object = apiBridge.deserialize(NADashboard.class, dashboard);
-        // assertEquals(511, object.getCo2(), 0);
-        // assertEquals(TrendDescription.UNKNOWN, object.getPressureTrend());
-        // assertEquals(TrendDescription.STABLE, object.getTempTrend());
+        assertEquals(511, object.getCo2(), 0);
+        assertEquals(TrendDescription.UNKNOWN, object.getPressureTrend());
+        assertEquals(TrendDescription.STABLE, object.getTempTrend());
     }
 }

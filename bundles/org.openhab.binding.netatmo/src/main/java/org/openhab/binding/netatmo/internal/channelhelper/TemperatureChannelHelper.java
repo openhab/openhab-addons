@@ -32,7 +32,7 @@ import org.openhab.core.types.State;
 public class TemperatureChannelHelper extends AbstractChannelHelper {
 
     public TemperatureChannelHelper() {
-        super(GROUP_TEMPERATURE);
+        super(GROUP_TEMPERATURE, MeasureClass.EXTERIOR_TEMPERATURE);
     }
 
     @Override

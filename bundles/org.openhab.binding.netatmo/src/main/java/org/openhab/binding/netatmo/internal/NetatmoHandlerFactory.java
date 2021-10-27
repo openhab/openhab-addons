@@ -15,7 +15,6 @@ package org.openhab.binding.netatmo.internal;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.SERVICE_PID;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +24,7 @@ import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.DeviceWithEventHandler;
+import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.binding.netatmo.internal.webhook.NetatmoServlet;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -58,9 +58,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final NetatmoServlet webhookServlet;
 
     @Activate
-    public NetatmoHandlerFactory(@Reference HttpService httpService,
-            @Reference NetatmoDescriptionProvider stateDescriptionProvider, @Reference ApiBridge apiBridge,
-            @Reference NetatmoServlet webhookServlet) {
+    public NetatmoHandlerFactory(@Reference HttpService httpService, @Reference ApiBridge apiBridge,
+            @Reference NetatmoDescriptionProvider stateDescriptionProvider, @Reference NetatmoServlet webhookServlet) {
         this.webhookServlet = webhookServlet;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.apiBridge = apiBridge;
@@ -87,17 +86,14 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         List<AbstractChannelHelper> helpers = new ArrayList<>();
         try {
             Constructor<?> handlerConstructor = moduleType.getHandlerConstructor();
-            if (handlerConstructor != null) {
-                for (Class<?> helperClass : moduleType.getChannelHelpers()) {
-                    Constructor<?> helperConstructor = helperClass.getConstructor();
-                    AbstractChannelHelper helper = (AbstractChannelHelper) helperConstructor.newInstance();
-                    helpers.add(helper);
-                }
-                return (BaseThingHandler) handlerConstructor.newInstance(bridge, helpers, apiBridge,
-                        stateDescriptionProvider);
+            for (Class<?> helperClass : moduleType.channelHelpers) {
+                Constructor<?> helperConstructor = helperClass.getConstructor();
+                AbstractChannelHelper helper = (AbstractChannelHelper) helperConstructor.newInstance();
+                helpers.add(helper);
             }
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException e) {
+            return (BaseThingHandler) handlerConstructor.newInstance(bridge, helpers, apiBridge,
+                    stateDescriptionProvider);
+        } catch (ReflectiveOperationException | IllegalArgumentException e) {
             logger.warn("Error creating calling constructor : {}", e.getMessage());
         }
         return null;

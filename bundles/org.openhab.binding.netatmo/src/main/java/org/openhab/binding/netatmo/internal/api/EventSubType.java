@@ -59,19 +59,11 @@ public enum EventSubType {
     // WIFI_ERROR(EventType.WIFI_STATUS, 0),
     // WIFI_OK(EventType.WIFI_STATUS, 1);
 
-    EventType type;
-    int subType;
+    public final EventType type;
+    public final int subType;
 
     EventSubType(EventType sd, int i) {
         this.type = sd;
         this.subType = i;
-    }
-
-    public EventType getType() {
-        return type;
-    }
-
-    public int getSubType() {
-        return subType;
     }
 }

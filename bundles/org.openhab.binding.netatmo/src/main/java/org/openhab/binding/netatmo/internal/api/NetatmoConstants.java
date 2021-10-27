@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.api;
 import static org.openhab.core.library.unit.MetricPrefix.*;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,7 +23,6 @@ import java.util.stream.Stream;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 
@@ -42,36 +42,51 @@ public class NetatmoConstants {
         public final int scale;
         public final Unit<?> unit;
 
-        public Measure(double minValue, int maxValue, double precision, Unit<?> unit) {
+        private Measure(double minValue, int maxValue, double precision, Unit<?> unit) {
             this.minValue = minValue;
             this.maxValue = maxValue;
             this.unit = unit;
             String[] splitter = Double.valueOf(precision).toString().split("\\.");
-            this.scale = splitter.length > 1 ? splitter[1].length() : 0;
+            if (splitter.length > 1) {
+                int dec = Integer.parseInt(splitter[1]);
+                if (dec > 0) {
+                    this.scale = Integer.toString(dec).length();
+                } else {
+                    this.scale = 0;
+                }
+            } else {
+                this.scale = 0;
+            }
         }
     }
 
     public enum MeasureClass {
-        INTERIOR_TEMPERATURE(new Measure(0, 50, 0.3, SIUnits.CELSIUS)),
-        EXTERIOR_TEMPERATURE(new Measure(-40, 65, 0.3, SIUnits.CELSIUS)),
-        PRESSURE(new Measure(260, 1260, 1, HECTO(SIUnits.PASCAL))),
-        CO2(new Measure(0, 5000, 50, Units.PARTS_PER_MILLION)),
-        NOISE(new Measure(35, 120, 1, Units.DECIBEL)),
-        RAIN_QTTY(new Measure(0, 150, 0.1, MILLI(SIUnits.METRE))),
-        RAIN_INTENSITY(new Measure(0, 150, 0.1, Units.MILLIMETRE_PER_HOUR)),
-        WIND_SPEED(new Measure(0, 160, 1.8, SIUnits.KILOMETRE_PER_HOUR)),
-        WIND_ANGLE(new Measure(0, 360, 5, Units.DEGREE_ANGLE)),
-        HUMIDITY(new Measure(0, 100, 3, Units.PERCENT)),
-        UNKNOWN(null);
+        INTERIOR_TEMPERATURE(new Measure(0, 50, 0.3, SIUnits.CELSIUS), true, "TEMP", "Temperature", "Temperature"),
+        EXTERIOR_TEMPERATURE(new Measure(-40, 65, 0.3, SIUnits.CELSIUS), true, "TEMP", "Temperature", "Temperature"),
+        PRESSURE(new Measure(260, 1260, 1, HECTO(SIUnits.PASCAL)), true, "PRESSURE", "Pressure", "Pressure"),
+        CO2(new Measure(0, 5000, 50, Units.PARTS_PER_MILLION), true, "CO2", "CO2", "Dimensionless"),
+        NOISE(new Measure(35, 120, 1, Units.DECIBEL), true, "NOISE", "Noise", "Dimensionless"),
+        RAIN_QTTY(new Measure(0, 150, 0.1, MILLI(SIUnits.METRE)), false, "SUM_RAIN", "Rain", "Length"),
+        RAIN_INTENSITY(new Measure(0, 150, 0.1, Units.MILLIMETRE_PER_HOUR), false, "", "Rain", "Speed"),
+        WIND_SPEED(new Measure(0, 160, 1.8, SIUnits.KILOMETRE_PER_HOUR), false, "", "Wind", "Speed"),
+        WIND_ANGLE(new Measure(0, 360, 5, Units.DEGREE_ANGLE), false, "", "Wind", "Angle"),
+        HUMIDITY(new Measure(0, 100, 3, Units.PERCENT), true, "HUM", "Humidity", "Dimensionless");
 
-        private @Nullable Measure measure;
+        public static final EnumSet<MeasureClass> asSet = EnumSet.allOf(MeasureClass.class);
 
-        public @Nullable Measure getMeasureDefinition() {
-            return measure;
-        }
+        public final Measure measureDefinition;
+        public final String apiDescriptor;
+        public final boolean isScalable;
+        public final String tagName;
+        public final String dimension;
 
-        MeasureClass(@Nullable Measure measure) {
-            this.measure = measure;
+        MeasureClass(Measure measureDefinition, boolean isScalable, String apiDescriptor, String tagName,
+                String dimension) {
+            this.measureDefinition = measureDefinition;
+            this.isScalable = isScalable;
+            this.apiDescriptor = apiDescriptor;
+            this.tagName = tagName;
+            this.dimension = dimension;
         }
     }
 
@@ -111,55 +126,6 @@ public class NetatmoConstants {
     public static final String PARM_URL = "url";
     public static final String PARM_CHANGESTATUS = "changestatus";
     public static final String PARM_FLOODLIGHTSET = "floodlight_set_config";
-
-    public enum MeasureType {
-        SUM_RAIN(MeasureClass.RAIN_QTTY),
-        TEMP(MeasureClass.EXTERIOR_TEMPERATURE),
-        HUM(MeasureClass.EXTERIOR_TEMPERATURE),
-        CO2(MeasureClass.CO2),
-        NOISE(MeasureClass.NOISE),
-        PRESSURE(MeasureClass.PRESSURE),
-        WIND(MeasureClass.WIND_SPEED),
-        UNKNOWN(MeasureClass.UNKNOWN);
-
-        private MeasureClass unit;
-
-        MeasureType(MeasureClass unit) {
-            this.unit = unit;
-        }
-
-        public MeasureClass getUnit() {
-            return unit;
-        }
-    }
-
-    public enum MeasureLimit {
-        MIN,
-        MAX,
-        DATE_MIN,
-        DATE_MAX,
-        NONE;
-    }
-
-    public enum MeasureScale {
-        THIRTY_MINUTES("30min"),
-        ONE_HOUR("1hour"),
-        THREE_HOURS("3hours"),
-        ONE_DAY("1day"),
-        ONE_WEEK("1week"),
-        ONE_MONTH("1month"),
-        UNKNOWN("");
-
-        private final String apiDescriptor;
-
-        MeasureScale(String value) {
-            this.apiDescriptor = value;
-        }
-
-        public String getDescriptor() {
-            return apiDescriptor;
-        }
-    }
 
     // Token scopes
     public static enum Scope {
@@ -210,14 +176,10 @@ public class NetatmoConstants {
                 .collect(Collectors.toSet())),
         NONE(Set.of());
 
-        private Set<Scope> scopes;
+        public final Set<Scope> scopes;
 
         FeatureArea(Set<Scope> scopes) {
             this.scopes = scopes;
-        }
-
-        public Set<Scope> getScopes() {
-            return scopes;
         }
     }
 
@@ -240,14 +202,10 @@ public class NetatmoConstants {
         SCHEDULE("schedule"),
         HOME("home");
 
-        String apiDescriptor;
+        public final String apiDescriptor;
 
         SetpointMode(String descriptor) {
             this.apiDescriptor = descriptor;
-        }
-
-        public String getDescriptor() {
-            return apiDescriptor;
         }
     }
 
@@ -268,7 +226,7 @@ public class NetatmoConstants {
         COMFORT("8"),
         UNKNOWN("");
 
-        String zoneId;
+        public final String zoneId;
 
         private ThermostatZoneType(String id) {
             zoneId = id;
@@ -330,14 +288,10 @@ public class NetatmoConstants {
         LOW(15),
         UNKNOWN(-1);
 
-        private int level;
+        public final int level;
 
         BatteryState(int i) {
             this.level = i;
-        }
-
-        public int getLevel() {
-            return level;
         }
     }
 }

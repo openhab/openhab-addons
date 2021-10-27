@@ -103,7 +103,7 @@ public class EnergyApi extends RestManager {
     public boolean setRoomThermpoint(String homeId, String roomId, SetpointMode mode, long endtime, double temp)
             throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_SETROOMTHERMPOINT).queryParam(PARM_HOMEID, homeId)
-                .queryParam(PARM_ROOMID, roomId).queryParam(PARM_MODE, mode.getDescriptor());
+                .queryParam(PARM_ROOMID, roomId).queryParam(PARM_MODE, mode.apiDescriptor);
         if (mode == SetpointMode.MANUAL || mode == SetpointMode.MAX) {
             uriBuilder.queryParam("endtime", endtime);
             if (mode == SetpointMode.MANUAL) {

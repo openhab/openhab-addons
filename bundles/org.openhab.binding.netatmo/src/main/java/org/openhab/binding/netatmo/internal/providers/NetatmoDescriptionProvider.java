@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.netatmo.internal;
+package org.openhab.binding.netatmo.internal.providers;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.events.EventPublisher;

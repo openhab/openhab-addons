@@ -32,7 +32,7 @@ import org.openhab.core.types.State;
 public class RainChannelHelper extends AbstractChannelHelper {
 
     public RainChannelHelper() {
-        super(GROUP_RAIN);
+        super(GROUP_RAIN, MeasureClass.RAIN_QTTY);
     }
 
     @Override
