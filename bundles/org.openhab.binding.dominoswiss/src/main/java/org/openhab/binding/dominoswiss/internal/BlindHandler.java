@@ -48,15 +48,15 @@ public class BlindHandler extends BaseThingHandler {
     }
 
     @Override
-    @SuppressWarnings("null")
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Blind got command: {} and ChannelUID: {} ", command.toFullString(),
                 channelUID.getIdWithoutGroup());
         Bridge bridge = getBridge();
+        EGateHandler localDominoswissHandler = dominoswissHandler;
         if (bridge != null) {
-            dominoswissHandler = (EGateHandler) bridge.getHandler();
+            localDominoswissHandler = (EGateHandler) bridge.getHandler();
         }
-        if (dominoswissHandler == null) {
+        if (localDominoswissHandler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "EGate not available");
             logger.debug("Blind thing {} has no server configured, ignoring command: {}", getThing().getUID(), command);
             return;
@@ -69,46 +69,46 @@ public class BlindHandler extends BaseThingHandler {
         switch (channelUID.getIdWithoutGroup()) {
             case CHANNEL_PULSEUP:
                 if (command instanceof Number) {
-                    dominoswissHandler.pulseUp(id);
+                    localDominoswissHandler.pulseUp(id);
                 }
                 break;
             case CHANNEL_PULSEDOWN:
                 if (command instanceof Number) {
-                    dominoswissHandler.pulseDown(id);
+                    localDominoswissHandler.pulseDown(id);
                 }
                 break;
             case CHANNEL_CONTINOUSUP:
                 if (command instanceof Number) {
-                    dominoswissHandler.continuousUp(id);
+                    localDominoswissHandler.continuousUp(id);
                 }
                 break;
             case CHANNEL_CONTINOUSDOWN:
                 if (command instanceof Number) {
-                    dominoswissHandler.continuousDown(id);
+                    localDominoswissHandler.continuousDown(id);
                 }
                 break;
             case CHANNEL_STOP:
                 if (command instanceof Number) {
-                    dominoswissHandler.stop(id);
+                    localDominoswissHandler.stop(id);
                 }
                 break;
             case UP:
                 if (command instanceof Number) {
-                    dominoswissHandler.continuousUp(id);
+                    localDominoswissHandler.continuousUp(id);
                 }
                 break;
             case DOWN:
                 if (command instanceof Number) {
-                    dominoswissHandler.continuousDown(id);
+                    localDominoswissHandler.continuousDown(id);
                 }
                 break;
             case SHUTTER:
                 if (command.toFullString() == DOWN) {
-                    dominoswissHandler.continuousDown(id);
+                    localDominoswissHandler.continuousDown(id);
                 } else if (command.toFullString() == UP) {
-                    dominoswissHandler.continuousUp(id);
+                    localDominoswissHandler.continuousUp(id);
                 } else if (command.toFullString() == CHANNEL_STOP) {
-                    dominoswissHandler.stop(id);
+                    localDominoswissHandler.stop(id);
                 } else {
                     logger.debug("Blind got command but nothing executed: {}  and ChannelUID: {}",
                             command.toFullString(), channelUID.getIdWithoutGroup());
@@ -117,7 +117,7 @@ public class BlindHandler extends BaseThingHandler {
             case TILTDOWN:
                 if (command instanceof Number) {
                     try {
-                        dominoswissHandler.tiltDown(id);
+                        localDominoswissHandler.tiltDown(id);
                     } catch (InterruptedException e) {
                         logger.debug("EGate tiltDown error: {} ", e.toString());
                     }
@@ -127,7 +127,7 @@ public class BlindHandler extends BaseThingHandler {
             case TILTUP:
                 if (command instanceof Number) {
                     try {
-                        dominoswissHandler.tiltUp(id);
+                        localDominoswissHandler.tiltUp(id);
                     } catch (InterruptedException e) {
                         logger.debug("EGate tiltUP error: {} ", e.toString());
                     }
@@ -136,11 +136,11 @@ public class BlindHandler extends BaseThingHandler {
 
             case SHUTTERTILT:
                 if (command.toFullString() == UP) {
-                    dominoswissHandler.pulseUp(id);
+                    localDominoswissHandler.pulseUp(id);
                 } else if (command.toFullString() == DOWN) {
-                    dominoswissHandler.pulseDown(id);
+                    localDominoswissHandler.pulseDown(id);
                 } else if (command.toFullString() == CHANNEL_STOP) {
-                    dominoswissHandler.stop(id);
+                    localDominoswissHandler.stop(id);
                 } else {
                     logger.debug("Blind got command but nothing executed: {}  and ChannelUID: {}",
                             command.toFullString(), channelUID.getIdWithoutGroup());
@@ -151,26 +151,28 @@ public class BlindHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         this.id = getConfig().as(BlindConfig.class).id;
         Bridge bridge = getBridge();
         if (bridge != null) {
             dominoswissHandler = (EGateHandler) bridge.getHandler();
-            dominoswissHandler.registerBlind(this.id, getThing().getUID());
-            try {
-                ThingStatus bridgeStatus = getBridge().getStatus();
-                if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-                    dominoswissHandler = (EGateHandler) getBridge().getHandler();
-                } else if (bridgeStatus == ThingStatus.OFFLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                }
-            } catch (Exception e) {
-                logger.debug("Could not update ThingStatus ", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.toString());
+            EGateHandler localDominoswissHandler = dominoswissHandler;
+            if (localDominoswissHandler != null) {
+                localDominoswissHandler.registerBlind(this.id, getThing().getUID());
+                try {
+                    ThingStatus bridgeStatus = bridge.getStatus();
+                    if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
+                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                        localDominoswissHandler = (EGateHandler) bridge.getHandler();
+                    } else if (bridgeStatus == ThingStatus.OFFLINE) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                    }
+                } catch (Exception e) {
+                    logger.debug("Could not update ThingStatus ", e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.toString());
 
+                }
             }
         }
     }
