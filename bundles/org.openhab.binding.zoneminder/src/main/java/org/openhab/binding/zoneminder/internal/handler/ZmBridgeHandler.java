@@ -100,6 +100,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
     private @Nullable Future<?> refreshMonitorsJob;
 
     private List<Monitor> savedMonitors = new ArrayList<>();
+    private List<StateOption> savedStateOptions = new ArrayList<>();
 
     private String host = "";
     private boolean useSSL;
@@ -318,11 +319,8 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
                         monitorList.add(monitor);
                         options.add(new StateOption(monitorDTO.id, "Monitor " + monitorDTO.id));
                     }
-                    stateDescriptionProvider
-                            .setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_IMAGE_MONITOR_ID), options);
-                    stateDescriptionProvider
-                            .setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_VIDEO_MONITOR_ID), options);
                 }
+                updateStateOptions(options);
                 // Only update alarm and event info for monitors whose handlers are initialized
                 Set<String> ids = monitorHandlers.keySet();
                 for (Monitor m : monitorList) {
@@ -336,6 +334,17 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
             logger.debug("Bridge: JsonSyntaxException: {}", e.getMessage(), e);
         }
         return monitorList;
+    }
+
+    private void updateStateOptions(List<StateOption> options) {
+        // Only update state options if they've changed
+        if (!savedStateOptions.equals(options)) {
+            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_IMAGE_MONITOR_ID),
+                    options);
+            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_VIDEO_MONITOR_ID),
+                    options);
+        }
+        savedStateOptions = options;
     }
 
     private void extractEventCounts(Monitor monitor, MonitorItemDTO monitorItemDTO) {
