@@ -257,14 +257,13 @@ public abstract class WeatherCompanyAbstractHandler extends BaseThingHandler {
                     break;
             }
         } catch (TimeoutException e) {
-            errorMsg = "TimeoutException: Call to Weather Company API timed out";
+            errorMsg = "@text/offline.comm-error-timeout";
         } catch (ExecutionException e) {
             errorMsg = String.format("ExecutionException: %s", e.getMessage());
         } catch (InterruptedException e) {
             errorMsg = String.format("InterruptedException: %s", e.getMessage());
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
-        logger.debug("{}", errorMsg);
         return null;
     }
 
