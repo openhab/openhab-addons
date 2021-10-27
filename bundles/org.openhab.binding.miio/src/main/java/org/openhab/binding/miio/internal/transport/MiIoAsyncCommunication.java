@@ -93,7 +93,6 @@ public class MiIoAsyncCommunication {
         this.timeout = timeout;
         this.cloudConnector = cloudConnector;
         setId(id);
-        startReceiver();
     }
 
     protected List<MiIoMessageListener> getListeners() {
@@ -249,7 +248,7 @@ public class MiIoAsyncCommunication {
     public synchronized void startReceiver() {
         MessageSenderThread senderThread = this.senderThread;
         if (senderThread == null || !senderThread.isAlive()) {
-            senderThread = new MessageSenderThread(deviceId);
+            senderThread = new MessageSenderThread(deviceId.isBlank() ? "?" + ip : deviceId);
             senderThread.start();
             this.senderThread = senderThread;
         }
@@ -435,7 +434,7 @@ public class MiIoAsyncCommunication {
         if (socket == null || socket.isClosed()) {
             socket = new DatagramSocket();
             socket.setSoTimeout(timeout);
-            logger.debug("Opening socket on port: {} ", socket.getLocalPort());
+            logger.debug("Opening socket on port: {} ({} {})", socket.getLocalPort(), deviceId, ip);
             this.socket = socket;
             return socket;
         } else {
@@ -497,6 +496,10 @@ public class MiIoAsyncCommunication {
 
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
+        MessageSenderThread senderThread = this.senderThread;
+        if (senderThread != null) {
+            senderThread.setName("OH-binding-miio-MessageSenderThread-" + deviceId);
+        }
     }
 
     public int getQueueLength() {
