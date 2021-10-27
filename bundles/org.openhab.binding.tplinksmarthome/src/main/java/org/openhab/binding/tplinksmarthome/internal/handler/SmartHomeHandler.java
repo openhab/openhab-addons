@@ -16,6 +16,8 @@ import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindin
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -38,6 +40,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -80,8 +83,8 @@ public class SmartHomeHandler extends BaseThingHandler {
      * @param type The device type
      * @param ipAddressService Cache keeping track of ip addresses of tp link devices
      */
-    public SmartHomeHandler(Thing thing, SmartHomeDevice smartHomeDevice, TPLinkSmartHomeThingType type,
-            TPLinkIpAddressService ipAddressService) {
+    public SmartHomeHandler(final Thing thing, final SmartHomeDevice smartHomeDevice,
+            final TPLinkSmartHomeThingType type, final TPLinkIpAddressService ipAddressService) {
         super(thing);
         this.smartHomeDevice = smartHomeDevice;
         this.ipAddressService = ipAddressService;
@@ -91,7 +94,16 @@ public class SmartHomeHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUid, Command command) {
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(TPLinkSmartHomeActions.class);
+    }
+
+    Connection getConnection() {
+        return connection;
+    }
+
+    @Override
+    public void handleCommand(final ChannelUID channelUid, final Command command) {
         try {
             if (command instanceof RefreshType) {
                 updateChannelState(channelUid, fastCache.getValue());
@@ -101,7 +113,7 @@ public class SmartHomeHandler extends BaseThingHandler {
             } else {
                 logger.debug("Command {} is not supported for channel: {}", command, channelUid.getId());
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -144,7 +156,7 @@ public class SmartHomeHandler extends BaseThingHandler {
      * @param config configuration to be used by the connection
      * @return new Connection object
      */
-    Connection createConnection(TPLinkSmartHomeConfiguration config) {
+    Connection createConnection(final TPLinkSmartHomeConfiguration config) {
         return new Connection(config.ipAddress);
     }
 
@@ -200,10 +212,10 @@ public class SmartHomeHandler extends BaseThingHandler {
             // The device id is needed to get the ip address so if not known no need to continue.
             return;
         }
-        String lastKnownIpAddress = ipAddressService.getLastKnownIpAddress(configuration.deviceId);
+        final String lastKnownIpAddress = ipAddressService.getLastKnownIpAddress(configuration.deviceId);
 
         if (lastKnownIpAddress != null && !lastKnownIpAddress.equals(configuration.ipAddress)) {
-            Configuration editConfig = editConfiguration();
+            final Configuration editConfig = editConfiguration();
             editConfig.put(CONFIG_IP, lastKnownIpAddress);
             updateConfiguration(editConfig);
             configuration.ipAddress = lastKnownIpAddress;
@@ -219,9 +231,9 @@ public class SmartHomeHandler extends BaseThingHandler {
      * @throws IllegalArgumentException if the configured device id doesn't match with the id reported by the device
      *             itself.
      */
-    private void updateDeviceId(String actualDeviceId) {
+    private void updateDeviceId(final String actualDeviceId) {
         if (StringUtil.isBlank(configuration.deviceId)) {
-            Configuration editConfig = editConfiguration();
+            final Configuration editConfig = editConfiguration();
             editConfig.put(CONFIG_DEVICE_ID, actualDeviceId);
             updateConfiguration(editConfig);
             configuration.deviceId = actualDeviceId;
@@ -235,7 +247,7 @@ public class SmartHomeHandler extends BaseThingHandler {
     /**
      * Starts the background refresh thread.
      */
-    private void startAutomaticRefresh(TPLinkSmartHomeConfiguration config) {
+    private void startAutomaticRefresh(final TPLinkSmartHomeConfiguration config) {
         if (refreshJob == null || refreshJob.isCancelled()) {
             refreshJob = scheduler.scheduleWithFixedDelay(this::refreshChannels, config.refresh, config.refresh,
                     TimeUnit.SECONDS);
@@ -257,11 +269,11 @@ public class SmartHomeHandler extends BaseThingHandler {
      * @param deviceState the state object containing the value to set of the channel
      *
      */
-    private void updateChannelState(ChannelUID channelUID, @Nullable DeviceState deviceState) {
+    private void updateChannelState(final ChannelUID channelUID, @Nullable final DeviceState deviceState) {
         if (!isLinked(channelUID)) {
             return;
         }
-        String channelId = channelUID.isInGroup() ? channelUID.getIdWithoutGroup() : channelUID.getId();
+        final String channelId = channelUID.isInGroup() ? channelUID.getIdWithoutGroup() : channelUID.getId();
         final State state;
 
         if (deviceState == null) {

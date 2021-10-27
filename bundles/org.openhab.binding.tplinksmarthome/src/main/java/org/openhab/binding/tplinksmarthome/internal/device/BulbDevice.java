@@ -28,7 +28,6 @@ import org.openhab.binding.tplinksmarthome.internal.Commands;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType;
 import org.openhab.binding.tplinksmarthome.internal.model.HasErrorResponse;
 import org.openhab.binding.tplinksmarthome.internal.model.LightState;
-import org.openhab.binding.tplinksmarthome.internal.model.TransitionLightStateResponse;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -69,9 +68,9 @@ public class BulbDevice extends SmartHomeDevice {
         final int transitionPeriod = configuration.transitionPeriod;
         final HasErrorResponse response;
 
-        if (command instanceof OnOffType) {
+        if (command instanceof OnOffType && CHANNELS_BULB_SWITCH.contains(channelId)) {
             response = handleOnOffType(channelId, (OnOffType) command, transitionPeriod);
-        } else if (command instanceof HSBType) {
+        } else if (command instanceof HSBType && CHANNEL_COLOR.equals(channelId)) {
             response = handleHSBType(channelId, (HSBType) command, transitionPeriod);
         } else if (command instanceof DecimalType) {
             response = handleDecimalType(channelId, (DecimalType) command, transitionPeriod);
@@ -82,42 +81,42 @@ public class BulbDevice extends SmartHomeDevice {
         return response != null;
     }
 
-    private @Nullable HasErrorResponse handleOnOffType(final String channelID, final OnOffType onOff,
+    protected @Nullable HasErrorResponse handleOnOffType(final String channelID, final OnOffType onOff,
             final int transitionPeriod) throws IOException {
-        if (CHANNELS_BULB_SWITCH.contains(channelID)) {
-            return commands.setTransitionLightStateResponse(
-                    connection.sendCommand(commands.setLightState(onOff, transitionPeriod)));
-        }
-        return null;
+        return commands.setTransitionLightStateResponse(
+                connection.sendCommand(commands.setTransitionLightState(onOff, transitionPeriod)));
     }
 
     private @Nullable HasErrorResponse handleDecimalType(final String channelID, final DecimalType command,
             final int transitionPeriod) throws IOException {
+        final int intValue = command.intValue();
+
         if (CHANNEL_COLOR.equals(channelID) || CHANNEL_BRIGHTNESS.equals(channelID)) {
-            return commands.setTransitionLightStateResponse(
-                    connection.sendCommand(commands.setBrightness(command.intValue(), transitionPeriod)));
+            return handleBrightness(intValue, transitionPeriod);
         } else if (CHANNEL_COLOR_TEMPERATURE.equals(channelID)) {
-            return handleColorTemperature(convertPercentageToKelvin(command.intValue()), transitionPeriod);
+            return handleColorTemperature(convertPercentageToKelvin(intValue), transitionPeriod);
         } else if (CHANNEL_COLOR_TEMPERATURE_ABS.equals(channelID)) {
-            return handleColorTemperature(guardColorTemperature(command.intValue()), transitionPeriod);
+            return handleColorTemperature(guardColorTemperature(intValue), transitionPeriod);
         }
         return null;
     }
 
-    private @Nullable TransitionLightStateResponse handleColorTemperature(final int colorTemperature,
-            final int transitionPeriod) throws IOException {
+    protected @Nullable HasErrorResponse handleBrightness(final int brightness, final int transitionPeriod)
+            throws IOException {
+        return commands.setTransitionLightStateResponse(
+                connection.sendCommand(commands.setTransitionLightStateBrightness(brightness, transitionPeriod)));
+    }
+
+    protected @Nullable HasErrorResponse handleColorTemperature(final int colorTemperature, final int transitionPeriod)
+            throws IOException {
         return commands.setTransitionLightStateResponse(
                 connection.sendCommand(commands.setColorTemperature(colorTemperature, transitionPeriod)));
     }
 
-    @Nullable
-    private HasErrorResponse handleHSBType(final String channelID, final HSBType command, final int transitionPeriod)
-            throws IOException {
-        if (CHANNEL_COLOR.equals(channelID)) {
-            return commands.setTransitionLightStateResponse(
-                    connection.sendCommand(commands.setColor(command, transitionPeriod)));
-        }
-        return null;
+    protected @Nullable HasErrorResponse handleHSBType(final String channelID, final HSBType command,
+            final int transitionPeriod) throws IOException {
+        return commands.setTransitionLightStateResponse(
+                connection.sendCommand(commands.setTransitionLightStateColor(command, transitionPeriod)));
     }
 
     @Override
