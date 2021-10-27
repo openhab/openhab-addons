@@ -129,7 +129,7 @@ public class CloudConnector {
         if (cl == null || !isConnected()) {
             throw new MiCloudException("Cannot execute request. Cloud service not available");
         }
-        return cl.request(urlPart, country, parameters);
+        return cl.request(urlPart.startsWith("/") ? urlPart : "/" + urlPart, country, parameters);
     }
 
     public @Nullable RawType getMap(String mapId, String country) throws MiCloudException {
