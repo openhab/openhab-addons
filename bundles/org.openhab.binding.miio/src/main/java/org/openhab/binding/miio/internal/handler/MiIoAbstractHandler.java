@@ -90,6 +90,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected @Nullable MiIoAsyncCommunication miioCom;
     protected CloudConnector cloudConnector;
     protected String cloudServer = "";
+    protected String deviceId = "";
     protected int lastId;
 
     protected Map<Integer, String> cmds = new ConcurrentHashMap<>();
@@ -153,6 +154,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             return;
         }
         this.cloudServer = configuration.cloudServer;
+        this.deviceId = configuration.deviceId;
         isIdentified = false;
         deviceVariables.put(TIMESTAMP, Instant.now().getEpochSecond());
         deviceVariables.put(PROPERTY_DID, configuration.deviceId);
@@ -372,63 +374,62 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         if (configuration.host.isBlank()) {
             return null;
         }
-        @Nullable
-        String deviceId = configuration.deviceId;
+        if (deviceId.isBlank() && !getCloudServer().isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Cloud communication requires defined deviceId in the config");
+            return null;
+        }
         if (deviceId.length() == 8 && deviceId.matches("^.*[a-zA-Z]+.*$")) {
             logger.warn(
                     "As per openHAB version 3.2 the deviceId is no longer a string with hexadecimals, instead it is a string with the numeric respresentation of the deviceId. If you continue seeing this message, update deviceId in your thing configuration. Expected change for thing '{}': Update current deviceId: '{}' to '{}'",
                     getThing().getUID(), deviceId, Utils.fromHEX(deviceId));
-            deviceId = "";
-        }
-        try {
-            if (!deviceId.isBlank() && tokenCheckPass(configuration.token)) {
-                final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token, deviceId,
-                        lastId, configuration.timeout, cloudConnector);
-                if (getCloudServer().isBlank()) {
-                    logger.debug("Ping Mi deviceId '{}' at {}", deviceId, configuration.host);
-                    Message miIoResponse = miioCom.sendPing(configuration.host);
-                    if (miIoResponse != null) {
-                        logger.debug("Ping response from deviceId '{}' at {}. Time stamp: {}, OH time {}, delta {}",
-                                Utils.fromHEX(Utils.getHex(miIoResponse.getDeviceId())), configuration.host,
-                                miIoResponse.getTimestamp(), LocalDateTime.now(), miioCom.getTimeDelta());
-                        miioCom.registerListener(this);
-                        this.miioCom = miioCom;
-                        return miioCom;
-                    } else {
-                        miioCom.close();
-                    }
-                } else {
-                    miioCom.registerListener(this);
-                    this.miioCom = miioCom;
-                    return miioCom;
-                }
+            if (getCloudServer().isBlank()) {
+                deviceId = "";
             } else {
-                logger.debug("No deviceId defined. Retrieving Mi deviceId");
-                final MiIoAsyncCommunication miioCom = new MiIoAsyncCommunication(configuration.host, token, "", lastId,
-                        configuration.timeout, cloudConnector);
-                Message miIoResponse = miioCom.sendPing(configuration.host);
+                final String id = Utils.fromHEX(deviceId);
+                deviceId = id;
+                miIoScheduler.execute(() -> updateDeviceIdConfig(id));
+            }
+        }
+
+        if (!deviceId.isBlank() && (tokenCheckPass(configuration.token) || !getCloudServer().isBlank())) {
+            final MiIoAsyncCommunication miioComF = new MiIoAsyncCommunication(configuration.host, token, deviceId,
+                    lastId, configuration.timeout, cloudConnector);
+            miioComF.registerListener(this);
+            this.miioCom = miioComF;
+            return miioComF;
+        } else {
+            logger.debug("No deviceId defined. Retrieving Mi deviceId");
+            final MiIoAsyncCommunication miioComF = new MiIoAsyncCommunication(configuration.host, token, "", lastId,
+                    configuration.timeout, cloudConnector);
+            try {
+                Message miIoResponse = miioComF.sendPing(configuration.host);
                 if (miIoResponse != null) {
                     deviceId = Utils.fromHEX(Utils.getHex(miIoResponse.getDeviceId()));
                     logger.debug("Ping response from deviceId '{}' at {}. Time stamp: {}, OH time {}, delta {}",
                             deviceId, configuration.host, miIoResponse.getTimestamp(), LocalDateTime.now(),
-                            miioCom.getTimeDelta());
-                    miioCom.setDeviceId(deviceId);
+                            miioComF.getTimeDelta());
+                    miioComF.setDeviceId(deviceId);
                     logger.debug("Using retrieved Mi deviceId: {}", deviceId);
-                    updateDeviceIdConfig(deviceId);
-                    miioCom.registerListener(this);
-                    this.miioCom = miioCom;
-                    return miioCom;
+                    miioComF.registerListener(this);
+                    this.miioCom = miioComF;
+                    final String id = deviceId;
+                    miIoScheduler.execute(() -> updateDeviceIdConfig(id));
+                    return miioComF;
                 } else {
-                    miioCom.close();
+                    miioComF.close();
+                    logger.debug("Ping response from deviceId '{}' at {} FAILED", configuration.deviceId,
+                            configuration.host);
+                    disconnectedNoResponse();
+                    return null;
                 }
+            } catch (IOException e) {
+                miioComF.close();
+                logger.debug("Could not connect to {} at {}", getThing().getUID().toString(), configuration.host);
+                disconnected(e.getMessage());
+                return null;
             }
-            logger.debug("Ping response from deviceId '{}' at {} FAILED", configuration.deviceId, configuration.host);
-            disconnectedNoResponse();
-            return null;
-        } catch (IOException e) {
-            logger.debug("Could not connect to {} at {}", getThing().getUID().toString(), configuration.host);
-            disconnected(e.getMessage());
-            return null;
+
         }
     }
 
