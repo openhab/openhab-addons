@@ -252,6 +252,7 @@ if (actions === null) {
 } else {
     // Send via MAC address
     actions.sendWakeOnLanPacketViaMac()
+    actions.sendWakeOnLanPacket() // deprecated
     
     // Send via IP address
     actions.sendWakeOnLanPacketViaIp()

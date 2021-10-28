@@ -47,35 +47,36 @@ public class NetworkActions implements ThingActions {
         return handler;
     }
 
-    private void sendWakeOnLanPacket(Boolean useMac) {
-        NetworkHandler localHandler = handler;
-        if (localHandler != null) {
-            localHandler.sendWakeOnLanPacket(useMac);
-        } else {
-            logger.warn("Failed to send Wake-on-LAN packet (handler null)");
-        }
-    }
-
     /**
      * @deprecated Use sendWakeOnLanPacketViaMac or sendWakeOnLanPacketViaIp instead.
      */
     @Deprecated
     @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device.")
     public void sendWakeOnLanPacket() {
-        sendWakeOnLanPacket(true);
+        sendWakeOnLanPacketViaMac();
     }
 
-    @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device.")
+    @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device via Mac.")
     public void sendWakeOnLanPacketViaMac() {
-        sendWakeOnLanPacket(true);
+        NetworkHandler localHandler = handler;
+        if (localHandler != null) {
+            localHandler.sendWakeOnLanPacketViaMac();
+        } else {
+            logger.warn("Failed to send Wake-on-LAN packet (handler null)");
+        }
     }
 
-    @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device.")
+    @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device via IP.")
     public void sendWakeOnLanPacketViaIp() {
-        sendWakeOnLanPacket(false);
+        NetworkHandler localHandler = handler;
+        if (localHandler != null) {
+            localHandler.sendWakeOnLanPacketViaIp();
+        } else {
+            logger.warn("Failed to send Wake-on-LAN packet (handler null)");
+        }
     }
 
     public static void sendWakeOnLanPacket(ThingActions actions) {
-        ((NetworkActions) actions).sendWakeOnLanPacket(true);
+        ((NetworkActions) actions).sendWakeOnLanPacketViaMac();
     }
 }
