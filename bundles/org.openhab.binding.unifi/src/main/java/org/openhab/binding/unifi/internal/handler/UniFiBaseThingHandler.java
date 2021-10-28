@@ -59,6 +59,7 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
         }
         if (bridge.getStatus() == OFFLINE) {
             updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "The UniFi Controller is currently offline.");
+            return;
         }
         // mgb: derive the config class from the generic type
         Class<?> clazz = (Class<?>) (((ParameterizedType) getClass().getGenericSuperclass())

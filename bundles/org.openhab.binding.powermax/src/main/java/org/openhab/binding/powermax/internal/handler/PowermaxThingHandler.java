@@ -83,23 +83,24 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
         if (bridgeHandler != null && bridgeStatus != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
                 boolean validConfig = false;
-                String errorMsg = "Unexpected thing type " + getThing().getThingTypeUID();
+                String errorMsg = String.format("@text/offline.config-error-unexpected-thing-type [ \"%s\" ]",
+                        getThing().getThingTypeUID().getAsString());
 
                 if (getThing().getThingTypeUID().equals(THING_TYPE_ZONE)) {
                     PowermaxZoneConfiguration config = getConfigAs(PowermaxZoneConfiguration.class);
                     if (config.zoneNumber >= ZONE_NR_MIN && config.zoneNumber <= ZONE_NR_MAX) {
                         validConfig = true;
                     } else {
-                        errorMsg = "zoneNumber setting must be defined in thing configuration and set between "
-                                + ZONE_NR_MIN + " and " + ZONE_NR_MAX;
+                        errorMsg = String.format("@text/offline.config-error-invalid-zone-number [ \"%d\", \"%d\" ]",
+                                ZONE_NR_MIN, ZONE_NR_MAX);
                     }
                 } else if (getThing().getThingTypeUID().equals(THING_TYPE_X10)) {
                     PowermaxX10Configuration config = getConfigAs(PowermaxX10Configuration.class);
                     if (config.deviceNumber >= X10_NR_MIN && config.deviceNumber <= X10_NR_MAX) {
                         validConfig = true;
                     } else {
-                        errorMsg = "deviceNumber setting must be defined in thing configuration and set between "
-                                + X10_NR_MIN + " and " + X10_NR_MAX;
+                        errorMsg = String.format("@text/offline.config-error-invalid-device-number [ \"%d\", \"%d\" ]",
+                                X10_NR_MIN, X10_NR_MAX);
                     }
                 }
 
@@ -226,7 +227,7 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
                 }
             } else if (deviceSettings == null || !deviceSettings.isEnabled()) {
                 if (getThing().getStatus() != ThingStatus.OFFLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Disabled device");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.disabled-device");
                     logger.debug("Set handler status to OFFLINE for thing {} (X10 device {} disabled)",
                             getThing().getUID(), config.deviceNumber);
                 }
@@ -256,7 +257,7 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
                     }
                 } else if (zoneSettings == null) {
                     if (getThing().getStatus() != ThingStatus.OFFLINE) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Zone not paired");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.zone-not-paired");
                         logger.debug("Set handler status to OFFLINE for thing {} (zone number {} not paired)",
                                 getThing().getUID(), config.zoneNumber);
                     }

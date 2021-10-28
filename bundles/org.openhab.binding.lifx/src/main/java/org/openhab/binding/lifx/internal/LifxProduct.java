@@ -103,6 +103,7 @@ public enum LifxProduct {
     PRODUCT_90(90, "LIFX Clean", new Features(TR_1500_9000, COLOR, HEV)),
     PRODUCT_91(91, "LIFX Color", new Features(TR_1500_9000, COLOR)),
     PRODUCT_92(92, "LIFX Color", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_93(93, "LIFX A19", new Features(TR_1500_9000, COLOR)),
     PRODUCT_94(94, "LIFX BR30", new Features(TR_1500_9000, COLOR)),
     PRODUCT_96(96, "LIFX Candle White to Warm", new Features(TR_2200_6500)),
     PRODUCT_97(97, "LIFX A19", new Features(TR_1500_9000, COLOR)),
@@ -112,7 +113,10 @@ public enum LifxProduct {
     PRODUCT_101(101, "LIFX Filament Amber", new Features(TR_2000_2000)),
     PRODUCT_109(109, "LIFX A19 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
     PRODUCT_110(110, "LIFX BR30 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
-    PRODUCT_111(111, "LIFX A19 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED));
+    PRODUCT_111(111, "LIFX A19 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
+    PRODUCT_112(112, "LIFX BR30 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
+    PRODUCT_113(113, "LIFX Mini White to Warm", new Features(TR_1500_9000)),
+    PRODUCT_114(114, "LIFX Mini White to Warm", new Features(TR_1500_9000));
 
     /**
      * Enumerates the product features.
