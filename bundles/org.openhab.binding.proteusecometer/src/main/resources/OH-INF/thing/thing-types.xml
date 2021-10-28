@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="proteusecometer"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="EcoMeterS">
+		<label>Proteus EcoMeter S</label>
+		<description>Sensor for measuring water level of a cistern. Connected via USB</description>
+
+		<channels>
+			<channel id="temperature" typeId="Temperature"/>
+			<channel id="sensorLevel" typeId="SensorLevel"/>
+			<channel id="usableLevel" typeId="UsableLevel"/>
+			<channel id="usableLevelInPercent" typeId="UsableLevelInPercent"/>
+			<channel id="totalCapacity" typeId="TotalCapacity"/>
+		</channels>
+
+		<config-description>
+			<parameter name="usbPort" type="text" required="true">
+				<context>serial-port</context>
+				<label>USB Port</label>
+				<description>USB port the device is connected to i.e. /dev/ttyUSB0</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="Temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature measured by the sensor</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="SensorLevel">
+		<item-type>Number:Length</item-type>
+		<label>Sensor Level</label>
+		<description>The distance between the sensor and the water surface</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="UsableLevel">
+		<item-type>Number:Volume</item-type>
+		<label>Usable Level in litre</label>
+		<description>The usable level in litre</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="UsableLevelInPercent">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Usable Level in percent</label>
+		<description>The usable level in percent</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="TotalCapacity">
+		<item-type>Number:Volume</item-type>
+		<label>Total Capacity</label>
+		<description>The total capacity of your cistern/tank</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>

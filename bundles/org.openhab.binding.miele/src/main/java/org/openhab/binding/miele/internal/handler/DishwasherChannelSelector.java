@@ -158,7 +158,7 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
             entry("37", "SaniWash"), entry("38", "QuickPowerWash"), entry("42", "Tall items"));
 
     private final static Map<String, String> phases = Map.ofEntries(entry("2", "Pre-Wash"), entry("3", "Main Wash"),
-            entry("4", "Rinses"), entry("6", "Final rinse"), entry("7", "Drying"));
+            entry("4", "Rinses"), entry("6", "Final rinse"), entry("7", "Drying"), entry("8", "Finished"));
 
     private final String mieleID;
     private final String channelID;

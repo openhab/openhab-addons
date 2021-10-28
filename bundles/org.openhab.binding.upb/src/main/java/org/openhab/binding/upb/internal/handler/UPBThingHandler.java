@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.upb.internal.handler;
 
-import static org.openhab.binding.upb.internal.message.Command.*;
+import static org.openhab.binding.upb.internal.message.Command.ACTIVATE;
+import static org.openhab.binding.upb.internal.message.Command.DEACTIVATE;
+import static org.openhab.binding.upb.internal.message.Command.GOTO;
+import static org.openhab.binding.upb.internal.message.Command.NULL;
+import static org.openhab.binding.upb.internal.message.Command.REPORT_STATE;
 
 import java.math.BigDecimal;
 
@@ -165,6 +169,7 @@ public class UPBThingHandler extends BaseThingHandler {
 
     private void handleDirectMessage(final UPBMessage msg) {
         final State state;
+        byte[] args = msg.getArguments();
         switch (msg.getCommand()) {
             case ACTIVATE:
                 state = OnOffType.ON;
@@ -175,12 +180,12 @@ public class UPBThingHandler extends BaseThingHandler {
                 break;
 
             case GOTO:
-                if (msg.getArguments().length == 0) {
-                    logger.warn("DEV {}: malformed GOTO cmd", unitId);
+            case DEVICE_STATE:
+                if (args.length == 0) {
+                    logger.warn("DEV {}: malformed {} cmd", unitId, msg.getCommand());
                     return;
                 }
-                final int level = msg.getArguments()[0];
-                state = new PercentType(level);
+                state = new PercentType(args[0]);
                 break;
 
             default:

@@ -28,6 +28,8 @@ import org.openhab.binding.mikrotik.internal.model.RouterosEthernetInterface;
 import org.openhab.binding.mikrotik.internal.model.RouterosInterfaceBase;
 import org.openhab.binding.mikrotik.internal.model.RouterosL2TPCliInterface;
 import org.openhab.binding.mikrotik.internal.model.RouterosL2TPSrvInterface;
+import org.openhab.binding.mikrotik.internal.model.RouterosLTEInterface;
+import org.openhab.binding.mikrotik.internal.model.RouterosPPPCliInterface;
 import org.openhab.binding.mikrotik.internal.model.RouterosPPPoECliInterface;
 import org.openhab.binding.mikrotik.internal.model.RouterosWlanInterface;
 import org.openhab.binding.mikrotik.internal.util.RateCalculator;
@@ -92,7 +94,7 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
             RouterosInterfaceBase rosInterface = routeros.findInterface(cfg.name);
             this.iface = rosInterface;
             if (rosInterface == null) {
-                String statusMsg = String.format("Interface %s is not found in RouterOS for thing %s", cfg.name,
+                String statusMsg = String.format("RouterOS interface %s is not found for thing %s", cfg.name,
                         getThing().getUID());
                 updateStatus(OFFLINE, GONE, statusMsg);
             } else {
@@ -127,10 +129,10 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
                     newState = StateUtil.stringOrNull(iface.getMacAddress());
                     break;
                 case MikrotikBindingConstants.CHANNEL_ENABLED:
-                    newState = StateUtil.boolOrNull(iface.isEnabled());
+                    newState = StateUtil.boolSwitchOrNull(iface.isEnabled());
                     break;
                 case MikrotikBindingConstants.CHANNEL_CONNECTED:
-                    newState = StateUtil.boolOrNull(iface.isConnected());
+                    newState = StateUtil.boolContactOrNull(iface.isConnected());
                     break;
                 case MikrotikBindingConstants.CHANNEL_LAST_LINK_DOWN_TIME:
                     newState = StateUtil.timeOrNull(iface.getLastLinkDownTime());
@@ -184,12 +186,16 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
                         newState = getCapIterfaceChannelState(channelID);
                     } else if (iface instanceof RouterosWlanInterface) {
                         newState = getWlanIterfaceChannelState(channelID);
+                    } else if (iface instanceof RouterosPPPCliInterface) {
+                        newState = getPPPCliChannelState(channelID);
                     } else if (iface instanceof RouterosPPPoECliInterface) {
                         newState = getPPPoECliChannelState(channelID);
                     } else if (iface instanceof RouterosL2TPSrvInterface) {
                         newState = getL2TPSrvChannelState(channelID);
                     } else if (iface instanceof RouterosL2TPCliInterface) {
                         newState = getL2TPCliChannelState(channelID);
+                    } else if (iface instanceof RouterosLTEInterface) {
+                        newState = getLTEChannelState(channelID);
                     }
             }
         }
@@ -274,6 +280,22 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
         }
     }
 
+    protected State getPPPCliChannelState(String channelID) {
+        RouterosPPPCliInterface pppCli = (RouterosPPPCliInterface) this.iface;
+        if (pppCli == null) {
+            return UnDefType.UNDEF;
+        }
+
+        switch (channelID) {
+            case MikrotikBindingConstants.CHANNEL_STATE:
+                return StateUtil.stringOrNull(pppCli.getStatus());
+            case MikrotikBindingConstants.CHANNEL_UP_SINCE:
+                return StateUtil.timeOrNull(pppCli.getUptimeStart());
+            default:
+                return UnDefType.UNDEF;
+        }
+    }
+
     protected State getL2TPSrvChannelState(String channelID) {
         RouterosL2TPSrvInterface vpnSrv = (RouterosL2TPSrvInterface) this.iface;
         if (vpnSrv == null) {
@@ -301,6 +323,22 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
                 return StateUtil.stringOrNull(vpnCli.getEncoding());
             case MikrotikBindingConstants.CHANNEL_UP_SINCE:
                 return StateUtil.timeOrNull(vpnCli.getUptimeStart());
+            default:
+                return UnDefType.UNDEF;
+        }
+    }
+
+    protected State getLTEChannelState(String channelID) {
+        RouterosLTEInterface lte = (RouterosLTEInterface) this.iface;
+        if (lte == null) {
+            return UnDefType.UNDEF;
+        }
+
+        switch (channelID) {
+            case MikrotikBindingConstants.CHANNEL_STATE:
+                return StateUtil.stringOrNull(lte.getStatus());
+            case MikrotikBindingConstants.CHANNEL_UP_SINCE:
+                return StateUtil.timeOrNull(lte.getUptimeStart());
             default:
                 return UnDefType.UNDEF;
         }

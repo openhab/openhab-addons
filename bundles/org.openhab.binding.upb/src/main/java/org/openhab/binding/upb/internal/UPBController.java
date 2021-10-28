@@ -67,7 +67,7 @@ public class UPBController {
             return;
         }
 
-        if (msg.getControlWord().isLink() || srcId == dstId) {
+        if (msg.getControlWord().isLink() || dstId == 0 || srcId == dstId) {
             thingHnd.onMessageReceived(msg);
         }
 
