@@ -254,7 +254,7 @@ public class BoschHttpClient extends HttpClient {
 
         if (content != null) {
             String body = GSON.toJson(content);
-            logger.trace("create request for {} and content {}", url, body);
+            logger.trace("create request for {} and content {}", url, content.toString());
             request = request.content(new StringContentProvider(body));
         } else {
             logger.trace("create request for {}", url);

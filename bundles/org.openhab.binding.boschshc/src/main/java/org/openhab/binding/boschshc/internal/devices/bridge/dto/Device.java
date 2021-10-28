@@ -45,7 +45,7 @@ public class Device {
 
     public String rootDeviceId;
     public String id;
-    public List<String> deviceSerivceIDs;
+    public List<String> deviceServiceIds;
     public String manufacturer;
     public String roomId;
     public String deviceModel;
@@ -57,5 +57,15 @@ public class Device {
 
     public static Boolean isValid(Device obj) {
         return obj != null && obj.id != null;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "Type %s; RootDeviceId: %s; Id: %s; Device Service Ids: %s; Manufacturer: %s; Room Id: %s; Device Model: %s; Serial: %s; Profile: %s; Name: %s; Status: %s; Child Device Ids: %s ",
+                this.type, this.rootDeviceId, this.id,
+                this.deviceServiceIds != null ? String.join(", ", this.deviceServiceIds) : "null", this.manufacturer,
+                this.roomId, this.deviceModel, this.serial, this.profile, this.name, this.status,
+                this.childDeviceIds != null ? String.join(", ", this.childDeviceIds) : "null");
     }
 }

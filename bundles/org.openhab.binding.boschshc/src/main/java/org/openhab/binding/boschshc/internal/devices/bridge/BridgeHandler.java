@@ -274,8 +274,8 @@ public class BridgeHandler extends BaseBridgeHandler {
                 for (Device d : devices) {
                     // Write found devices into openhab.log until we have implemented auto discovery
                     logger.info("Found device: name={} id={}", d.name, d.id);
-                    if (d.deviceSerivceIDs != null) {
-                        for (String s : d.deviceSerivceIDs) {
+                    if (d.deviceServiceIds != null) {
+                        for (String s : d.deviceServiceIds) {
                             logger.info(".... service: {}", s);
                         }
                     }

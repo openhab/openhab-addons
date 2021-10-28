@@ -109,7 +109,8 @@ public class LongPolling {
             String url = httpClient.getBoschShcUrl("remote/json-rpc");
             JsonRpcRequest request = new JsonRpcRequest("2.0", "RE/subscribe",
                     new String[] { "com/bosch/sh/remote/*", null });
-            logger.debug("Subscribe: Sending request: {} - using httpClient {}", gson.toJson(request), httpClient);
+            logger.debug("Subscribe: Sending request: {} - using httpClient {}", request.toString(),
+                    httpClient.toString());
             Request httpRequest = httpClient.createRequest(url, POST, request);
             SubscribeResult response = httpClient.sendRequest(httpRequest, SubscribeResult.class,
                     SubscribeResult::isValid, null);
