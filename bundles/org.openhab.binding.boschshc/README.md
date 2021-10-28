@@ -20,21 +20,6 @@ Binding for the Bosch Smart Home.
   - [Thing Configuration](#thing-configuration)
   - [Item Configuration](#item-configuration)
 
-## Changelog
-
-### Version 1.2
-
-- Unify names of handlers by removing Bosch prefix [#46](https://github.com/stefan-kaestle/openhab2-addons/issues/46)
-- Use new service architecture in all device handlers [#40](https://github.com/stefan-kaestle/openhab2-addons/issues/40)
-- Detect incorrect device ID instead of showing the thing as "Online" [#34](https://github.com/stefan-kaestle/openhab2-addons/issues/34)
-- Add information to each channel in `README.md` if it is writeable [#83](https://github.com/stefan-kaestle/openhab2-addons/issues/83)
-- Add a short description for each device/thing to `README.md` [#84](https://github.com/stefan-kaestle/openhab2-addons/issues/84)
-- Add handler for "Wall thermostat" (temperature + humidity) [#25](https://github.com/stefan-kaestle/openhab2-addons/issues/25)
-- Enhance robustness of TwinGuard measurment handling on weak wireless connections [#66](https://github.com/stefan-kaestle/openhab2-addons/issues/66)
-- Parental controls on ash thermostats [#41](https://github.com/stefan-kaestle/openhab2-addons/issues/41)
-- Received invalid - State within openhab not updated properly [#101](https://github.com/stefan-kaestle/openhab2-addons/issues/101)
-- Prevent creation of Thing without assigning a parent bridge [#63](https://github.com/stefan-kaestle/openhab2-addons/issues/63)
-
 ## Supported Things
 
 ### In-Wall switches & Smart Plugs
