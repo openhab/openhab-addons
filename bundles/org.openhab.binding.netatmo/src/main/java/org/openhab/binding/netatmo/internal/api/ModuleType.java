@@ -189,7 +189,8 @@ public enum ModuleType {
     }
 
     public ModuleType getBridge() {
-        return bridgeType != null ? bridgeType : ModuleType.UNKNOWN;
+        ModuleType bridge = bridgeType;
+        return bridge != null ? bridge : ModuleType.UNKNOWN;
     }
 
     public @Nullable ThingTypeUID getBridgeUID() {

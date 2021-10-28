@@ -49,11 +49,7 @@ public class NetatmoConstants {
             String[] splitter = Double.valueOf(precision).toString().split("\\.");
             if (splitter.length > 1) {
                 int dec = Integer.parseInt(splitter[1]);
-                if (dec > 0) {
-                    this.scale = Integer.toString(dec).length();
-                } else {
-                    this.scale = 0;
-                }
+                this.scale = dec > 0 ? Integer.toString(dec).length() : 0;
             } else {
                 this.scale = 0;
             }
@@ -197,10 +193,10 @@ public class NetatmoConstants {
         OFF("off"),
         @SerializedName("max")
         MAX("max"),
-        UNKNOWN(""),
         @SerializedName("schedule")
         SCHEDULE("schedule"),
-        HOME("home");
+        HOME("home"),
+        UNKNOWN("");
 
         public final String apiDescriptor;
 

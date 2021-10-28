@@ -19,8 +19,8 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
-import org.openhab.binding.netatmo.internal.api.WeatherApi.NAStationDataResponse;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
+import org.openhab.binding.netatmo.internal.api.dto.NAMain.NAStationDataResponse;
 
 /**
  * Base class for all Air Care related rest manager
@@ -36,13 +36,11 @@ public class AircareApi extends RestManager {
 
     /**
      *
-     * The method gethomecoachsdata Returns data from a user Healthy Home Coach Station (measures and device specific
-     * data).
+     * Returns data from Healthy Home Coach Station (measures and device specific data.
      *
      * @param deviceId Id of the device you want to retrieve information of (optional)
      * @return NAStationDataResponse
-     * @throws NetatmoException If fail to call the API, e.g. server error or cannot deserialize the
-     *             response body
+     * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
     public NAStationDataResponse getHomeCoachData(@Nullable String deviceId) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_HOMECOACH);
@@ -58,6 +56,6 @@ public class AircareApi extends RestManager {
         if (station != null) {
             return station;
         }
-        throw new NetatmoException(String.format("Unexpected answer cherching device '%s' : not found.", deviceId));
+        throw new NetatmoException(String.format("Unexpected answer querying device '%s' : not found.", deviceId));
     }
 }

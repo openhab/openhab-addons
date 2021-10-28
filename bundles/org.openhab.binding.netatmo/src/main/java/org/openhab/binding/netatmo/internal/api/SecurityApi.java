@@ -22,6 +22,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
+import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent.NALastEventsDataResponse;
 
 /**
  *
@@ -63,9 +64,6 @@ public class SecurityApi extends RestManager {
         uriBuilder.queryParam(PARM_URL, uri.toString());
         post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
-    }
-
-    private class NALastEventsDataResponse extends ApiResponse<ListBodyResponse<NAHomeEvent>> {
     }
 
     public Collection<NAHomeEvent> getLastEventsOf(String homeId, String personId) throws NetatmoException {

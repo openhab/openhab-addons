@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
+import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.NAHomeStatusResponse;
 
 /**
  *
@@ -30,9 +30,6 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
 
 @NonNullByDefault
 public class EnergyApi extends RestManager {
-
-    private class NAHomeStatusResponse extends ApiResponse<NAHomeStatus> {
-    }
 
     public EnergyApi(ApiBridge apiClient) {
         super(apiClient, FeatureArea.ENERGY);

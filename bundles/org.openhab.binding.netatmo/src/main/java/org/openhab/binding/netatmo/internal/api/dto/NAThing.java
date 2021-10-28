@@ -57,10 +57,6 @@ public class NAThing extends NAObject {
         return type;
     }
 
-    // public void setType(ModuleType type) {
-    // this.type = type;
-    // }
-
     public int getFirmware() {
         return firmware;
     }
@@ -88,7 +84,4 @@ public class NAThing extends NAObject {
         return roomId;
     }
 
-    // public void setReachable(Boolean localReachable) {
-    // this.reachable = localReachable;
-    // }
 }

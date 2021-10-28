@@ -13,6 +13,8 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.netatmo.internal.api.ApiResponse;
+import org.openhab.binding.netatmo.internal.api.ListBodyResponse;
 
 /**
  *
@@ -22,6 +24,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public class NAMain extends NADevice {
+    public class NAStationDataResponse extends ApiResponse<ListBodyResponse<NAMain>> {
+    }
+
     private boolean readOnly;
 
     /**

@@ -88,13 +88,15 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             Constructor<?> handlerConstructor = moduleType.getHandlerConstructor();
             for (Class<?> helperClass : moduleType.channelHelpers) {
                 Constructor<?> helperConstructor = helperClass.getConstructor();
-                AbstractChannelHelper helper = (AbstractChannelHelper) helperConstructor.newInstance();
-                helpers.add(helper);
+                Object helper = helperConstructor.newInstance();
+                if (helper instanceof AbstractChannelHelper) {
+                    helpers.add((AbstractChannelHelper) helper);
+                }
             }
             return (BaseThingHandler) handlerConstructor.newInstance(bridge, helpers, apiBridge,
                     stateDescriptionProvider);
         } catch (ReflectiveOperationException | IllegalArgumentException e) {
-            logger.warn("Error creating calling constructor : {}", e.getMessage());
+            logger.warn("Error creating or intializing constructor : {}", e.getMessage());
         }
         return null;
     }

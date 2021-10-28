@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import org.openhab.binding.netatmo.internal.api.ApiResponse;
+
 /**
  *
  * @author Gaël L'hopital - Initial contribution
@@ -19,6 +21,9 @@ package org.openhab.binding.netatmo.internal.api.dto;
  */
 
 public class NAHomeStatus {
+    public class NAHomeStatusResponse extends ApiResponse<NAHomeStatus> {
+    }
+
     private NAHome home;
 
     public NAHome getHome() {

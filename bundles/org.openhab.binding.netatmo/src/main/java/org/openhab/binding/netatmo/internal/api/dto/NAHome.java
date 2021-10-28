@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.ApiResponse;
+import org.openhab.binding.netatmo.internal.api.ListBodyResponse;
 import org.openhab.binding.netatmo.internal.api.ModuleType;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
@@ -32,6 +34,9 @@ import org.openhab.core.library.types.PointType;
 
 @NonNullByDefault
 public class NAHome extends NADevice {
+    public class NAHomesDataResponse extends ApiResponse<ListBodyResponse<NAHome>> {
+    }
+
     // Common part
     private double[] coordinates = {};
     private double altitude;

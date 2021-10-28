@@ -28,16 +28,11 @@ public class NAPlace {
     private @NonNullByDefault({}) String city;
     private @NonNullByDefault({}) String country;
     private @NonNullByDefault({}) String timezone;
-    private @Nullable String street;
     private double altitude;
     private double[] location = {};
 
     public String getCity() {
         return city;
-    }
-
-    public @Nullable String getStreet() {
-        return street;
     }
 
     public String getCountry() {
@@ -49,9 +44,8 @@ public class NAPlace {
     }
 
     public @Nullable PointType getLocation() {
-        if (location.length == 2) {
-            return new PointType(new DecimalType(location[1]), new DecimalType(location[0]), new DecimalType(altitude));
-        }
-        return null;
+        return location.length == 2
+                ? new PointType(new DecimalType(location[1]), new DecimalType(location[0]), new DecimalType(altitude))
+                : null;
     }
 }

@@ -24,7 +24,6 @@ import org.openhab.binding.netatmo.internal.deserialization.NAThingMap;
 @NonNullByDefault
 public class NADevice extends NAThing {
     private NAThingMap modules = new NAThingMap();
-    private boolean co2Calibrating;
     private long dateSetup;
     private long lastUpgrade;
     private @Nullable NAPlace place;
@@ -47,9 +46,5 @@ public class NADevice extends NAThing {
 
     public void setPlace(@Nullable NAPlace place) {
         this.place = place;
-    }
-
-    public boolean isCo2Calibrating() {
-        return co2Calibrating;
     }
 }

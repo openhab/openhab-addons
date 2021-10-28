@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
+import org.openhab.binding.netatmo.internal.api.dto.NAMain.NAStationDataResponse;
 import org.openhab.binding.netatmo.internal.api.dto.NAMeasureBodyElem;
 
 /**
@@ -34,15 +35,6 @@ import org.openhab.binding.netatmo.internal.api.dto.NAMeasureBodyElem;
 
 @NonNullByDefault
 public class WeatherApi extends RestManager {
-    public class NAStationDataResponse extends ApiResponse<ListBodyResponse<NAMain>> {
-    }
-
-    private class NAMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem<Double>>> {
-    }
-
-    private class NADateMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem<ZonedDateTime>>> {
-    }
-
     public WeatherApi(ApiBridge apiClient) {
         super(apiClient, FeatureArea.WEATHER);
     }
@@ -86,20 +78,9 @@ public class WeatherApi extends RestManager {
             queryLimit += "_" + measureClass.apiDescriptor;
         }
 
-        NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, queryLimit.toLowerCase(), 0, 0);
+        NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, queryLimit, 0, 0);
         return result.getSingleValue();
     }
-
-    /*
-     * public @Nullable Object getMeasurements(String deviceId, @Nullable String moduleId, MeasureScale scale,
-     * MeasureType type, MeasureLimit limit) throws NetatmoException {
-     * String queryLimit = (limit != MeasureLimit.NONE) ? limit.toString() + "_" : "";
-     * queryLimit += type.toString();
-     *
-     * NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, queryLimit.toLowerCase(), 0, 0);
-     * return result.getSingleValue();
-     * }
-     */
 
     private NAMeasureBodyElem<?> getmeasure(String deviceId, @Nullable String moduleId, @Nullable String scale,
             String measureType, long dateBegin, long dateEnd) throws NetatmoException {
@@ -107,7 +88,7 @@ public class WeatherApi extends RestManager {
                 .queryParam("real_time", true)
                 .queryParam("date_end", (dateEnd > 0 && dateEnd > dateBegin) ? dateEnd : "last")
                 .queryParam("optimize", true) // NAMeasuresResponse is not designed for optimize=false
-                .queryParam("type", measureType);
+                .queryParam("type", measureType.toLowerCase());
         if (scale != null) {
             uriBuilder.queryParam("scale", scale.toLowerCase());
         }
@@ -129,5 +110,11 @@ public class WeatherApi extends RestManager {
             }
         }
         throw new NetatmoException("Empty response while getting measurements");
+    }
+
+    public class NAMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem<Double>>> {
+    }
+
+    public class NADateMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem<ZonedDateTime>>> {
     }
 }
