@@ -50,22 +50,22 @@ public class OpenWebNetCENActions implements ThingActions {
         return scenarioHandler;
     }
 
-    @RuleAction(label = "virtualPress", description = "Virtual pressure of the push button")
+    @RuleAction(label = "virtualPress", description = "Virtual press of the push button")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean virtualPress(
-            @ActionInput(name = "pressure", label = "pressure", description = "Type of pressure") @Nullable String pressure,
+            @ActionInput(name = "press", label = "press", description = "Type of press") @Nullable String press,
             @ActionInput(name = "button", label = "button", description = "Button number") int button) {
         OpenWebNetScenarioHandler handler = scenarioHandler;
         if (handler == null) {
             logger.warn("openwebnet OpenWebNetCENActions: scenarioHandler is null!");
             return false;
         }
-        if (pressure == null) {
-            logger.warn("openwebnet OpenWebNetCENActions: pressure parameter is null!");
+        if (press == null) {
+            logger.warn("openwebnet OpenWebNetCENActions: press parameter is null!");
             return false;
         }
         CEN msg = null;
         try {
-            msg = handler.pressureStrToMessage(pressure, button);
+            msg = handler.pressStrToMessage(press, button);
             Response res = handler.send(msg);
             if (res != null) {
                 logger.debug("Sent virtualPress '{}' to gateway. Response: {}", msg, res.getResponseMessages());
@@ -83,9 +83,9 @@ public class OpenWebNetCENActions implements ThingActions {
     }
 
     // legacy delegate methods
-    public static void virtualPress(@Nullable ThingActions actions, @Nullable String pressure, int button) {
+    public static void virtualPress(@Nullable ThingActions actions, @Nullable String press, int button) {
         if (actions instanceof OpenWebNetCENActions) {
-            ((OpenWebNetCENActions) actions).virtualPress(pressure, button);
+            ((OpenWebNetCENActions) actions).virtualPress(press, button);
         } else {
             throw new IllegalArgumentException("Instance is not an OpenWebNetCENActions class.");
         }

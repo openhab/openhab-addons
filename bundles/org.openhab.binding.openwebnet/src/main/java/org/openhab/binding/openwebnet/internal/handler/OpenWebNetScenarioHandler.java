@@ -61,56 +61,54 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetScenarioHandler.class);
 
-    private interface PressureEvent {
+    private interface PressEvent {
         @Override
         public String toString();
     }
 
-    private enum CENPressureEvent implements PressureEvent {
-        CEN_EVENT_START_PRESSURE("START_PRESSURE"),
-        CEN_EVENT_SHORT_PRESSURE("SHORT_PRESSURE"),
-        CEN_EVENT_EXTENDED_PRESSURE("EXTENDED_PRESSURE"),
-        CEN_EVENT_RELEASE_EXTENDED_PRESSURE("RELEASE_EXTENDED_PRESSURE");
+    private enum CENPressEvent implements PressEvent {
+        CEN_EVENT_START_PRESS("START_PRESS"),
+        CEN_EVENT_SHORT_PRESS("SHORT_PRESS"),
+        CEN_EVENT_EXTENDED_PRESS("EXTENDED_PRESS"),
+        CEN_EVENT_RELEASE_EXTENDED_PRESS("RELEASE_EXTENDED_PRESS");
 
-        private final String pressure;
+        private final String press;
 
-        CENPressureEvent(final String pr) {
-            this.pressure = pr;
+        CENPressEvent(final String pr) {
+            this.press = pr;
         }
 
-        public static @Nullable CENPressureEvent fromValue(String s) {
-            Optional<CENPressureEvent> event = Arrays.stream(values()).filter(val -> s.equals(val.pressure))
-                    .findFirst();
+        public static @Nullable CENPressEvent fromValue(String s) {
+            Optional<CENPressEvent> event = Arrays.stream(values()).filter(val -> s.equals(val.press)).findFirst();
             return event.orElse(null);
         }
 
         @Override
         public String toString() {
-            return pressure;
+            return press;
         }
     }
 
-    private enum CENPlusPressureEvent implements PressureEvent {
-        CENPLUS_EVENT_SHORT_PRESSURE("SHORT_PRESSURE"),
-        CENPLUS_EVENT_START_EXTENDED_PRESSURE("START_EXTENDED_PRESSURE"),
-        CENPLUS_EVENT_EXTENDED_PRESSURE("EXTENDED_PRESSURE"),
-        CENPLUS_EVENT_RELEASE_EXTENDED_PRESSURE("RELEASE_EXTENDED_PRESSURE");
+    private enum CENPlusPressEvent implements PressEvent {
+        CENPLUS_EVENT_SHORT_PRESS("SHORT_PRESS"),
+        CENPLUS_EVENT_START_EXTENDED_PRESS("START_EXTENDED_PRESS"),
+        CENPLUS_EVENT_EXTENDED_PRESS("EXTENDED_PRESS"),
+        CENPLUS_EVENT_RELEASE_EXTENDED_PRESS("RELEASE_EXTENDED_PRESS");
 
-        private final String pressure;
+        private final String press;
 
-        CENPlusPressureEvent(final String pr) {
-            this.pressure = pr;
+        CENPlusPressEvent(final String pr) {
+            this.press = pr;
         }
 
-        public static @Nullable CENPlusPressureEvent fromValue(String s) {
-            Optional<CENPlusPressureEvent> event = Arrays.stream(values()).filter(val -> s.equals(val.pressure))
-                    .findFirst();
+        public static @Nullable CENPlusPressEvent fromValue(String s) {
+            Optional<CENPlusPressEvent> event = Arrays.stream(values()).filter(val -> s.equals(val.press)).findFirst();
             return event.orElse(null);
         }
 
         @Override
         public String toString() {
-            return pressure;
+            return press;
         }
     }
 
@@ -196,58 +194,58 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
             logger.info("added new channel {} to thing {}", ch.getUID(), getThing().getUID());
         }
         final Channel channel = ch;
-        PressureEvent pressureEv = null;
-        Pressure pressure = null;
+        PressEvent pressEv = null;
+        Pressure press = null;
         try {
-            pressure = cenMsg.getButtonPressure();
+            press = cenMsg.getButtonPressure();
         } catch (FrameException e) {
-            logger.warn("invalid CEN/CEN+ Pressure. Ignoring message {}", cenMsg);
+            logger.warn("invalid CEN/CEN+ Press. Ignoring message {}", cenMsg);
             return;
         }
-        if (pressure == null) {
-            logger.warn("invalid CEN/CEN+ Pressure. Ignoring message {}", cenMsg);
+        if (press == null) {
+            logger.warn("invalid CEN/CEN+ Press. Ignoring message {}", cenMsg);
             return;
         }
 
         if (cenMsg instanceof CENScenario) {
-            switch ((CENPressure) pressure) {
+            switch ((CENPressure) press) {
                 case START_PRESSURE:
-                    pressureEv = CENPressureEvent.CEN_EVENT_START_PRESSURE;
+                    pressEv = CENPressEvent.CEN_EVENT_START_PRESS;
                     break;
                 case RELEASE_SHORT_PRESSURE:
-                    pressureEv = CENPressureEvent.CEN_EVENT_SHORT_PRESSURE;
+                    pressEv = CENPressEvent.CEN_EVENT_SHORT_PRESS;
                     break;
                 case EXTENDED_PRESSURE:
-                    pressureEv = CENPressureEvent.CEN_EVENT_EXTENDED_PRESSURE;
+                    pressEv = CENPressEvent.CEN_EVENT_EXTENDED_PRESS;
                     break;
                 case RELEASE_EXTENDED_PRESSURE:
-                    pressureEv = CENPressureEvent.CEN_EVENT_RELEASE_EXTENDED_PRESSURE;
+                    pressEv = CENPressEvent.CEN_EVENT_RELEASE_EXTENDED_PRESS;
                     break;
                 default:
-                    logger.warn("unsupported CENPressure. Ignoring message {}", cenMsg);
+                    logger.warn("unsupported CENPress. Ignoring message {}", cenMsg);
                     return;
             }
         } else {
-            switch ((CENPlusPressure) pressure) {
+            switch ((CENPlusPressure) press) {
                 case SHORT_PRESSURE:
-                    pressureEv = CENPlusPressureEvent.CENPLUS_EVENT_SHORT_PRESSURE;
+                    pressEv = CENPlusPressEvent.CENPLUS_EVENT_SHORT_PRESS;
                     break;
                 case START_EXTENDED_PRESSURE:
-                    pressureEv = CENPlusPressureEvent.CENPLUS_EVENT_START_EXTENDED_PRESSURE;
+                    pressEv = CENPlusPressEvent.CENPLUS_EVENT_START_EXTENDED_PRESS;
                     break;
                 case EXTENDED_PRESSURE:
-                    pressureEv = CENPlusPressureEvent.CENPLUS_EVENT_EXTENDED_PRESSURE;
+                    pressEv = CENPlusPressEvent.CENPLUS_EVENT_EXTENDED_PRESS;
                     break;
                 case RELEASE_EXTENDED_PRESSURE:
-                    pressureEv = CENPlusPressureEvent.CENPLUS_EVENT_RELEASE_EXTENDED_PRESSURE;
+                    pressEv = CENPlusPressEvent.CENPLUS_EVENT_RELEASE_EXTENDED_PRESS;
                     break;
                 default:
-                    logger.warn("unsupported CENPlusPressure. Ignoring message {}", cenMsg);
+                    logger.warn("unsupported CENPlusPress. Ignoring message {}", cenMsg);
                     return;
             }
         }
 
-        triggerChannel(channel.getUID(), pressureEv.toString());
+        triggerChannel(channel.getUID(), pressEv.toString());
     }
 
     private Channel buttonToChannel(int buttonNumber) {
@@ -263,53 +261,53 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Construct a CEN/CEN+ virtual pressure message for this device given a pressureString and button number
+     * Construct a CEN/CEN+ virtual press message for this device given a pressString and button number
      *
-     * @param pressureString one START_PRESSURE, SHORT_PRESSURE etc.
+     * @param pressString one START_PRESS, SHORT_PRESS etc.
      * @param button number [0-31]
      * @return CEN message
-     * @throws IllegalArgumentException if button number or pressureString are invalid
+     * @throws IllegalArgumentException if button number or pressString are invalid
      */
-    public CEN pressureStrToMessage(String pressureString, int button) throws IllegalArgumentException {
+    public CEN pressStrToMessage(String pressString, int button) throws IllegalArgumentException {
         Where w = deviceWhere;
         if (w == null) {
-            throw new IllegalArgumentException("pressureStrToMessage: deviceWhere is null");
+            throw new IllegalArgumentException("pressStrToMessage: deviceWhere is null");
         }
         if (isCENPlus) {
-            CENPlusPressureEvent prEvent = CENPlusPressureEvent.fromValue(pressureString);
+            CENPlusPressEvent prEvent = CENPlusPressEvent.fromValue(pressString);
             if (prEvent != null) {
                 switch (prEvent) {
-                    case CENPLUS_EVENT_SHORT_PRESSURE:
+                    case CENPLUS_EVENT_SHORT_PRESS:
                         return CENPlusScenario.virtualShortPressure(w.value(), button);
-                    case CENPLUS_EVENT_START_EXTENDED_PRESSURE:
+                    case CENPLUS_EVENT_START_EXTENDED_PRESS:
                         return CENPlusScenario.virtualStartExtendedPressure(w.value(), button);
-                    case CENPLUS_EVENT_EXTENDED_PRESSURE:
+                    case CENPLUS_EVENT_EXTENDED_PRESS:
                         return CENPlusScenario.virtualExtendedPressure(w.value(), button);
-                    case CENPLUS_EVENT_RELEASE_EXTENDED_PRESSURE:
+                    case CENPLUS_EVENT_RELEASE_EXTENDED_PRESS:
                         return CENPlusScenario.virtualReleaseExtendedPressure(w.value(), button);
                     default:
-                        throw new IllegalArgumentException("unsupported pressure type: " + pressureString);
+                        throw new IllegalArgumentException("unsupported press type: " + pressString);
                 }
             } else {
-                throw new IllegalArgumentException("unsupported pressure type: " + pressureString);
+                throw new IllegalArgumentException("unsupported press type: " + pressString);
             }
         } else {
-            CENPressureEvent prEvent = CENPressureEvent.fromValue(pressureString);
+            CENPressEvent prEvent = CENPressEvent.fromValue(pressString);
             if (prEvent != null) {
                 switch (prEvent) {
-                    case CEN_EVENT_START_PRESSURE:
+                    case CEN_EVENT_START_PRESS:
                         return CENScenario.virtualStartPressure(w.value(), button);
-                    case CEN_EVENT_SHORT_PRESSURE:
+                    case CEN_EVENT_SHORT_PRESS:
                         return CENScenario.virtualReleaseShortPressure(w.value(), button);
-                    case CEN_EVENT_EXTENDED_PRESSURE:
+                    case CEN_EVENT_EXTENDED_PRESS:
                         return CENScenario.virtualExtendedPressure(w.value(), button);
-                    case CEN_EVENT_RELEASE_EXTENDED_PRESSURE:
+                    case CEN_EVENT_RELEASE_EXTENDED_PRESS:
                         return CENScenario.virtualReleaseExtendedPressure(w.value(), button);
                     default:
-                        throw new IllegalArgumentException("unsupported pressure type: " + pressureString);
+                        throw new IllegalArgumentException("unsupported press type: " + pressString);
                 }
             } else {
-                throw new IllegalArgumentException("unsupported pressure type: " + pressureString);
+                throw new IllegalArgumentException("unsupported press type: " + pressString);
             }
         }
     }
@@ -328,7 +326,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void handleChannelCommand(ChannelUID channel, Command command) {
-        logger.info("CEN/CEN+ channels are trigger channels and do not handle commands");
+        logger.warn("CEN/CEN+ channels are trigger channels and do not handle commands");
     }
 
     @Override

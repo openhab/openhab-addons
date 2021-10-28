@@ -198,22 +198,22 @@ CEN/CEN+ are [TRIGGER channels](https://www.openhab.org/docs/configuration/rules
 A powerful feature is to be able to assign CEN or CEN+ commands to your physical wall switches and use the events they generate to trigger rules in openHAB: this way openHAB becomes a very powerful scenario manager activated by physical BTicino switches.
 See [openwebnet.rules](#openwebnet-rules) for an example on how to define rules that trigger on CEN/CEN+ buttons events.
 
-It's also possible to send *virtual pressure* events on the BUS, for example to enable the activation of MH202 scenarios from openHAB.
+It's also possible to send *virtual press* events on the BUS, for example to enable the activation of MH202 scenarios from openHAB.
 See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-rules) sections for an example on how to use the `virtualPress` action connected to a pushbutton on a sitemap.
 
 - channels are named `button#X` where `X` is the button number on the Scenario Control device
 - in the .thing file configuration you can specify the `buttons` parameter to define a comma-separated list of buttons numbers [0-31] configured for the scenario device, example: `buttons=1,2,4`
 - possible events are:
     - for CEN:
-        - `START_PRESSURE` - sent when you start pressing the button
-        - `SHORT_PRESSURE` - sent if you pressed the button shorter than 0,5sec (sent at the moment when you release it)
-        - `EXTENDED_PRESSURE` - sent if you keep the button pressed longer than 0,5sec; will be sent again every 0,5sec as long as you hold pressed (good for dimming rules)
-        - `RELEASE_EXTENDED_PRESSURE` - sent once when you finally release the button after having it pressed longer than 0,5sec
+        - `START_PRESS` - sent when you start pressing the button
+        - `SHORT_PRESS` - sent if you pressed the button shorter than 0,5sec (sent at the moment when you release it)
+        - `EXTENDED_PRESS` - sent if you keep the button pressed longer than 0,5sec; will be sent again every 0,5sec as long as you hold pressed (good for dimming rules)
+        - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0,5sec
     - for CEN+:
-        - `SHORT_PRESSURE` - sent if you pressed the button shorter than 0,5sec (sent at the moment when you release it)
-        - `START_EXTENDED_PRESSURE` - sent once as soon as you keep the button pressed longer than 0,5sec
-        - `EXTENDED_PRESSURE` - sent after `START_EXTENDED_PRESSURE` if you keep the button pressed longer; will be sent again every 0,5sec as long as you hold pressed (good for dimming rules)
-        - `RELEASE_EXTENDED_PRESSURE` - sent once when you finally release the button after having it pressed longer than 0,5sec
+        - `SHORT_PRESS` - sent if you pressed the button shorter than 0,5sec (sent at the moment when you release it)
+        - `START_EXTENDED_PRESS` - sent once as soon as you keep the button pressed longer than 0,5sec
+        - `EXTENDED_PRESS` - sent after `START_EXTENDED_PRESS` if you keep the button pressed longer; will be sent again every 0,5sec as long as you hold pressed (good for dimming rules)
+        - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0,5sec
 
 
 ## Full Example
@@ -329,31 +329,31 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
 ### openwebnet.rules
 
 ```xtend
-rule "CEN+ virtual pressure from OH button"
+rule "CEN+ virtual press from OH button"
 /* This rule triggers when the proxy item iCENPlusProxyItem is activated, for example from a button on WebUI/sitemap.
-When activated it sends a "virtual short pressure" event (where=212, button=5) on the BUS 
+When activated it sends a "virtual short press" event (where=212, button=5) on the BUS 
 */
 when 
     Item iCENPlusProxyItem received command
 then
     val actions = getActions("openwebnet","openwebnet:bus_cenplus_scenario_control:mybridge:212")
-    actions.virtualPress("SHORT_PRESSURE", 5)
+    actions.virtualPress("SHORT_PRESS", 5)
 end
 
 
 rule "CEN dimmer increase"
-// A "start pressure" event on CEN where=51, button=4 will increase dimmer%
+// A "start press" event on CEN where=51, button=4 will increase dimmer%
 when
-    Channel "openwebnet:bus_cen_scenario_control:mybridge:51:button#4" triggered START_PRESSURE
+    Channel "openwebnet:bus_cen_scenario_control:mybridge:51:button#4" triggered START_PRESS
 then
     sendCommand(iLR_dimmer, INCREASE)  
 end
 
 
 rule "CEN dimmer decrease"
-// A "release extended pressure" event on CEN where=51, button=4 will decrease dimmer%
+// A "release extended press" event on CEN where=51, button=4 will decrease dimmer%
 when
-    Channel "openwebnet:bus_cen_scenario_control:mybridge:51:button#4" triggered RELEASE_EXTENDED_PRESSURE
+    Channel "openwebnet:bus_cen_scenario_control:mybridge:51:button#4" triggered RELEASE_EXTENDED_PRESS
 then
     sendCommand(iLR_dimmer, DECREASE)  
 end
