@@ -48,6 +48,7 @@ import org.openwebnet4j.OpenGateway;
 import org.openwebnet4j.USBGateway;
 import org.openwebnet4j.communication.OWNAuthException;
 import org.openwebnet4j.communication.OWNException;
+import org.openwebnet4j.message.Alarm;
 import org.openwebnet4j.message.Automation;
 import org.openwebnet4j.message.Auxiliary;
 import org.openwebnet4j.message.BaseOpenMessage;
@@ -501,7 +502,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         // let's try to get the Thing associated with this message...
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof EnergyManagement
                 || baseMsg instanceof Thermoregulation || baseMsg instanceof CEN || baseMsg instanceof Auxiliary
-                || baseMsg instanceof Scenario) {
+                || baseMsg instanceof Scenario || baseMsg instanceof Alarm) {
             String ownId = ownIdFromMessage(baseMsg);
             logger.debug("ownIdFromMessage({}) --> {}", baseMsg, ownId);
             OpenWebNetThingHandler deviceHandler = registeredDevices.get(ownId);

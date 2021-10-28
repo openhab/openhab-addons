@@ -72,6 +72,8 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL = "CEN+ Scenario Control";
     public static final ThingTypeUID THING_TYPE_BUS_SCENARIO = new ThingTypeUID(BINDING_ID, "bus_scenario_control");
     public static final String THING_LABEL_BUS_SCENARIO = "Scenario Control";
+    public static final ThingTypeUID THING_TYPE_BUS_ALARM_CENTRAL_UNIT = new ThingTypeUID(BINDING_ID, "bus_alarm");
+    public static final String THING_LABEL_BUS_ALARM_CENTRAL_UNIT = "Alarm Central Unit";
     public static final ThingTypeUID THING_TYPE_BUS_AUX = new ThingTypeUID(BINDING_ID, "bus_aux");
     public static final String THING_LABEL_BUS_AUX = "Auxiliary";
     // ZIGBEE
@@ -157,6 +159,8 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_SCENARIO = "scenario";
     // aux
     public static final String CHANNEL_AUX = "aux";
+    // alarm central unit
+    public static final String CHANNEL_ALARM = "alarm";
 
     // devices config properties
     public static final String CONFIG_PROPERTY_WHERE = "where";
