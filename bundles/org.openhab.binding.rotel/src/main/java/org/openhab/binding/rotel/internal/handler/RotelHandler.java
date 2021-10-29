@@ -41,8 +41,6 @@ import org.openhab.binding.rotel.internal.communication.RotelSerialConnector;
 import org.openhab.binding.rotel.internal.communication.RotelSimuConnector;
 import org.openhab.binding.rotel.internal.communication.RotelSource;
 import org.openhab.binding.rotel.internal.configuration.RotelThingConfiguration;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -61,8 +59,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,9 +85,6 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
 
     private RotelStateDescriptionOptionProvider stateDescriptionProvider;
     private SerialPortManager serialPortManager;
-    private TranslationProvider i18nProvider;
-    private LocaleProvider localeProvider;
-    private Bundle bundle;
 
     private RotelConnector connector = new RotelSimuConnector(DEFAULT_MODEL, RotelProtocol.HEX, new HashMap<>(),
             "OH-binding-rotel");
@@ -139,13 +132,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
      * Constructor
      */
     public RotelHandler(Thing thing, RotelStateDescriptionOptionProvider stateDescriptionProvider,
-            SerialPortManager serialPortManager, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
+            SerialPortManager serialPortManager) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.serialPortManager = serialPortManager;
-        this.i18nProvider = i18nProvider;
-        this.localeProvider = localeProvider;
-        this.bundle = FrameworkUtil.getBundle(this.getClass()).getBundleContext().getBundle();
     }
 
     @Override
@@ -455,12 +445,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         List<StateOption> options = new ArrayList<>();
         for (RotelSource item : list) {
             String label = sourcesLabels.get(item);
-            String key = "source." + item.getName();
-            String label2 = i18nProvider.getText(bundle, key, key, localeProvider.getLocale());
-            if (label2 == null || label2.isEmpty()) {
-                label2 = key;
-            }
-            options.add(new StateOption(item.getName(), label == null ? label2 : label));
+            options.add(new StateOption(item.getName(), label == null ? ("@text/source." + item.getName()) : label));
         }
         return options;
     }
