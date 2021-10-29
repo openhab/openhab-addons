@@ -17,7 +17,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.dbquery.internal.config.JdbcBridgeConfiguration;
 import org.openhab.binding.dbquery.internal.dbimpl.jdbc.JdbcQueryFactory.JdbcQuery;
 import org.openhab.binding.dbquery.internal.domain.Database;
 import org.openhab.binding.dbquery.internal.domain.Query;
@@ -32,13 +31,11 @@ import org.openhab.binding.dbquery.internal.error.DatabaseException;
  */
 @NonNullByDefault
 public class JdbcDatabase implements Database {
-    private final JdbcBridgeConfiguration config;
     private final JdbcClientFacade client;
     private final ExecutorService executors;
     private final JdbcQueryFactory queryFactory;
 
-    public JdbcDatabase(JdbcBridgeConfiguration config, JdbcClientFacade jdbcClient) {
-        this.config = config;
+    public JdbcDatabase(JdbcClientFacade jdbcClient) {
         this.client = jdbcClient;
         executors = Executors.newSingleThreadScheduledExecutor();
         queryFactory = new JdbcQueryFactory();

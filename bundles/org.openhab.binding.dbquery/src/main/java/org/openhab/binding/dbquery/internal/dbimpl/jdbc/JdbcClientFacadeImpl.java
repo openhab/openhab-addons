@@ -13,7 +13,6 @@
 package org.openhab.binding.dbquery.internal.dbimpl.jdbc;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jdbi.v3.core.Jdbi;
 import org.openhab.binding.dbquery.internal.config.JdbcBridgeConfiguration;
 import org.openhab.binding.dbquery.internal.dbimpl.jdbc.JdbcQueryFactory.JdbcQuery;
+import org.openhab.binding.dbquery.internal.error.DatabaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @NonNullByDefault
 public class JdbcClientFacadeImpl implements JdbcClientFacade {
     private static final int CONNECTION_VALID_TIMEOUT_IN_SECONDS = 5;
-    private static final Logger logger = LoggerFactory.getLogger(JdbcClientFacadeImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(JdbcClientFacadeImpl.class);
 
     @Nullable
     private HikariDataSource dataSource;
@@ -116,9 +116,7 @@ public class JdbcClientFacadeImpl implements JdbcClientFacade {
                 return jdbiQuery.mapToMap().list();
             });
         } else {
-            logger.warn("Can run query because database is currently disconnected");
-            // TODO: Better throw
-            return Collections.emptyList();
+            throw new DatabaseException("Can't run query because database is currently disconnected");
         }
     }
 }

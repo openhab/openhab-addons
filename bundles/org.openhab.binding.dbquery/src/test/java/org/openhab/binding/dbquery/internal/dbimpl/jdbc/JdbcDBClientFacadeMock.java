@@ -15,6 +15,7 @@ package org.openhab.binding.dbquery.internal.dbimpl.jdbc;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jdbi.v3.core.statement.UnableToCreateStatementException;
 import org.openhab.binding.dbquery.internal.error.DatabaseException;
@@ -23,6 +24,7 @@ import org.openhab.binding.dbquery.internal.error.DatabaseException;
  *
  * @author Joan Pujol - Initial contribution
  */
+@NonNullByDefault
 public class JdbcDBClientFacadeMock implements JdbcClientFacade {
     public static final String INVALID_QUERY = "invalid";
     public static final String EMPTY_QUERY = "empty";
@@ -52,8 +54,9 @@ public class JdbcDBClientFacadeMock implements JdbcClientFacade {
 
     @Override
     public List<Map<String, @Nullable Object>> query(JdbcQueryFactory.JdbcQuery query) {
-        if (!connected)
+        if (!connected) {
             throw new DatabaseException("Client not connected");
+        }
 
         if (INVALID_QUERY.equals(query.getQuery())) {
             throw new UnableToCreateStatementException("Unable");

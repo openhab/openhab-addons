@@ -163,13 +163,6 @@ public class ParseJDBCUrl {
     }
 
     /**
-     * Returns a String after the first occurrence of a substring
-     */
-    private static String stringAfterSubstr(String s, String substr) {
-        return s.substring(s.indexOf(substr) + 1);
-    }
-
-    /**
      * Returns a String after the n occurrence of a substring
      */
     private static String stringAfterSubstr(String s, String substr, int n) {

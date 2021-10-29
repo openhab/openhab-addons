@@ -34,7 +34,7 @@ public class JDBCBridgeHandler extends DatabaseBridgeHandler {
 
     @Override
     Database createDatabase() {
-        return new JdbcDatabase(config, new JdbcClientFacadeImpl(config));
+        return new JdbcDatabase(new JdbcClientFacadeImpl(config));
     }
 
     @Override

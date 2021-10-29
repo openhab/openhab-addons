@@ -1,7 +1,7 @@
 # DBQuery Binding
 
 This binding allows creating items from the result of native database queries.
-It currently only supports InfluxDB 2.X.
+It currently supports InfluxDB 2.X and several relational databases databases through JDBC.
 
 You can use the addon in any situation where you want to create an item from a native query.
 The source of the query can be any supported database, and doesn't need to be the one you use as the persistence service in openHAB.
@@ -13,7 +13,7 @@ Some use cases can be:
 
 ## Supported Things
 
-There are two types of supported things: `influxdb2` and a `query`.
+There are three types of supported things: `influxdb2`, `jdbc` and `query`.
 For each different database you want to connect to, you must define a `Bridge` thing for that database.
 Then each `Bridge` can define as many `Query` things that you want to execute.
 
@@ -32,6 +32,27 @@ Defines a connection to an Influx2 database and allows creating queries on it.
 | token        | Yes      | token to authenticate to the database  ([Intructions about how to create one](https://v2.docs.influxdata.com/v2.0/security/tokens/create-token/)) |
 | organization | Yes      | database organization name                |
 | bucket       | Yes      | database bucket name                      |
+
+#### jdbc
+
+Defines a connection to a relational database through JDBC connection and allows creating queries on it.
+
+| Parameter    | Required | Description                               |
+|--------------|----------|-----------------------------------------  |
+| url          | Yes      | database url                              |
+| user         | Yes      | name of the database user                 |
+| password     | Yes      | password of the database user             |
+| maxPoolSize  | No       | maximum number of connections             |
+| minimumIdle  | No       | minimum number of connections that the pool will maintain idle to serve queries|
+
+Currently, supported databases are:
+- *PostgreSQL*  (with driver version 42.2.18)
+- *Derby* (with driver version 10.12.1.1)
+- *H2* (with driver version 1.4.191)
+- *HSQLDB* (with driver version 2.3.3)
+- *MariaDB* (with driver version 1.3.5)
+- *MySQL* (with driver version 8.0.26)
+- *Sqlite* (with driver version 3.16.1)
 
 ### query
 
@@ -182,10 +203,12 @@ Example (using Jython script):
 
 ## Examples
 
-### The Simplest case 
+### The Simplest case InfluxDB2
 
-Define a InfluxDB2 database thing and a query with an interval execution.
-That executes the query every 15 seconds and punts the result in `myItem`.
+Define a InfluxDB2 or JDBC database thing and a query with an interval execution.
+That executes the query every 15 seconds and puts the result in `myItem`.
+
+#### InfluxDB2
 
     # Bridge Thing definition
     Bridge dbquery:influxdb2:mydatabase "InfluxDB2 Bridge" [ bucket="default", user="admin", url="http://localhost:8086", organization="openhab", token="*******" ]
@@ -196,9 +219,22 @@ That executes the query every 15 seconds and punts the result in `myItem`.
     # Item definition
     Number myItem "QueryResult" {channel="dbquery:query:myquery:resultNumber"}
 
+#### JDBC
+
+    # Bridge Thing definition
+    Bridge dbquery:jdbc:mydatabase2 "JDBC Bridge" [ url="jdbc:postgresql://localhost:5432/openhab", user="openhab", password="openhab" ]
+    
+    # Query Thing definition
+    Thing dbquery:query:myquery2 "My Query2" [ interval=15, hasParameters=false, scalarResult=true, timeout=0, query="select avg(value) from temperatures where time >= current_date - 1"]
+    
+    # Item definition
+    Number myItem2 "QueryResult" {channel="dbquery:query:myquery2:resultNumber"}
+
 ### A query with parameters
 
-Using the previous example you change the `range(start:-1h)` for `range(start:${time})`
+#### InfluxDB2
+Parameters are set using `${parameterName}`.
+Using the previous example (at simplest case) you change the `range(start:-1h)` for `range(start:${time})`. 
 
 Create a rule that is fired 
 
@@ -208,3 +244,16 @@ Create a rule that is fired
             map = {"time" : "-2h"}   
             dbquery = actions.get("dbquery","dbquery:query:myquery")   
             dbquery.setQueryParameters(map)
+
+#### JDBC
+Parameters are set using `:parameterName`
+Using the previous example (at simplest case) you change the `time >= current_date - 1` for `time >= current_date - :days`
+
+Create a rule that is fired
+
+- **When** `calculateParameters` is triggered in `myquery2`
+- **Then** executes the following script action (in that example Jython):
+
+           map = {"days" : "2"}   
+           dbquery = actions.get("dbquery","dbquery:query:myquery2")   
+           dbquery.setQueryParameters(map)

@@ -24,13 +24,13 @@
 				<context>password</context>
 				<description>Password to authenticate to the database</description>
 			</parameter>
-			<parameter name="maxPoolSize" type="integer" required="true">
+			<parameter name="maxPoolSize" type="integer" required="false">
 				<label>Maximum Connections</label>
 				<context>maxPoolSize</context>
 				<default>3</default>
 				<description>Maximum number of connections for the connection pool</description>
 			</parameter>
-			<parameter name="minimumIdle" type="integer" required="true">
+			<parameter name="minimumIdle" type="integer" required="false">
 				<label>Minimum Idle Connections</label>
 				<context>minimumIdle</context>
 				<default>1</default>

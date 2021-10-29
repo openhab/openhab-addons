@@ -2,16 +2,50 @@
 <features name="org.openhab.binding.dbquery-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
 	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
 
-	<feature name="openhab-binding-dbquery-influx2" description="DBQuery Binding" version="${project.version}">
-		<feature>openhab-runtime-base</feature>
+	<feature name="openhab-binding-dbquery-influx2" description="DBQuery Binding InfluxDB 2" version="${project.version}">
+		<feature prerequisite="false" dependency="false">openhab-runtime-base</feature>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.dbquery/${project.version}</bundle>
+	</feature>
+
+	<feature name="openhab-binding-dbquery-postgresql" description="DBQuery Binding PostgreSQL" version="${project.version}">
+		<feature prerequisite="false" dependency="false">openhab-runtime-base</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.dbquery/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.postgresql/postgresql/42.2.18</bundle>
 	</feature>
 
-	<feature name="openhab-binding-dbquery-postgresql" description="DBQuery Binding" version="${project.version}">
-		<feature>openhab-runtime-base</feature>
+	<feature name="openhab-binding-dbquery-postgresql" description="DBQuery Binding Derby" version="${project.version}">
+		<feature prerequisite="false" dependency="false">openhab-runtime-base</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.dbquery/${project.version}</bundle>
-		<bundle start-level="80">mvn:org.postgresql/postgresql/42.2.18</bundle>
+		<bundle start-level="80">mvn:org.apache.derby/derby/10.12.1.1</bundle>
 	</feature>
 
+	<feature name="openhab-binding-dbquery-postgresql" description="DBQuery Binding H2" version="${project.version}">
+		<feature prerequisite="false" dependency="false">openhab-runtime-base</feature>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.dbquery/${project.version}</bundle>
+		<bundle start-level="80">mvn:com.h2database/h2/1.4.191</bundle>
+	</feature>
+
+	<feature name="openhab-binding-dbquery-postgresql" description="DBQuery Binding HSQLDB" version="${project.version}">
+		<feature prerequisite="false" dependency="false">openhab-runtime-base</feature>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.dbquery/${project.version}</bundle>
+		<bundle start-level="80">mvn:org.hsqldb/hsqldb/2.3.3</bundle>
+	</feature>
+
+	<feature name="openhab-binding-dbquery-postgresql" description="DBQuery Binding MariaDB" version="${project.version}">
+		<feature prerequisite="false" dependency="false">openhab-runtime-base</feature>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.dbquery/${project.version}</bundle>
+		<bundle start-level="80">mvn:org.mariadb.jdbc/mariadb-java-client/1.3.5</bundle>
+	</feature>
+
+	<feature name="openhab-binding-dbquery-postgresql" description="DBQuery Binding MySQL" version="${project.version}">
+		<feature prerequisite="false" dependency="false">openhab-runtime-base</feature>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.dbquery/${project.version}</bundle>
+		<bundle start-level="80">mvn:mysql/mysql-connector-java/8.0.26</bundle>
+	</feature>
+
+	<feature name="openhab-binding-dbquery-postgresql" description="DBQuery Binding SQLite" version="${project.version}">
+		<feature prerequisite="false" dependency="false">openhab-runtime-base</feature>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.dbquery/${project.version}</bundle>
+		<bundle start-level="80">mvn:org.xerial/sqlite-jdbc/3.16.1</bundle>
+	</feature>
 </features>

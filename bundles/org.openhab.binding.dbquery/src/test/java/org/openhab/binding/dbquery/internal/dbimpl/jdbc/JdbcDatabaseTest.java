@@ -27,7 +27,6 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.dbquery.internal.config.JdbcBridgeConfiguration;
 import org.openhab.binding.dbquery.internal.domain.Query;
 import org.openhab.binding.dbquery.internal.domain.QueryParameters;
 
@@ -41,7 +40,7 @@ class JdbcDatabaseTest {
 
     @BeforeEach
     public void setup() {
-        instance = new JdbcDatabase(new JdbcBridgeConfiguration(), new JdbcDBClientFacadeMock());
+        instance = new JdbcDatabase(new JdbcDBClientFacadeMock());
     }
 
     @AfterEach
@@ -50,7 +49,7 @@ class JdbcDatabaseTest {
     }
 
     @Test
-    public void given_query_that_returns_scalar_result_get_valid_scalar_result() throws Exception {
+    public void givenQueryThatReturnsScalarResultGetValidScalarResult() throws Exception {
         instance.connect().get();
         Query query = instance.queryFactory().createQuery(JdbcDBClientFacadeMock.SCALAR_QUERY, QueryParameters.EMPTY,
                 null);
@@ -64,7 +63,7 @@ class JdbcDatabaseTest {
     }
 
     @Test
-    public void given_query_that_returns_multiple_rows_get_valid_query_result() throws Exception {
+    public void givenQueryThatReturnsMultipleRowsGetValidQueryResult() throws Exception {
         instance.connect().get();
         Query query = instance.queryFactory().createQuery(JdbcDBClientFacadeMock.MULTIPLE_ROWS_QUERY,
                 QueryParameters.EMPTY, null);
@@ -82,7 +81,7 @@ class JdbcDatabaseTest {
     }
 
     @Test
-    public void given_query_that_returns_error_get_erroneus_result() throws Exception {
+    public void givenQueryThatReturnsErrorGetErroneusResult() throws Exception {
         instance.connect().get();
         Query query = instance.queryFactory().createQuery(JdbcDBClientFacadeMock.INVALID_QUERY, QueryParameters.EMPTY,
                 null);
@@ -92,7 +91,7 @@ class JdbcDatabaseTest {
     }
 
     @Test
-    public void given_query_that_returns_no_rows_get_empty_result() throws Exception {
+    public void givenQueryThatReturnsNoRowsGetEmptyResult() throws Exception {
         instance.connect().get();
         Query query = instance.queryFactory().createQuery(JdbcDBClientFacadeMock.EMPTY_QUERY, QueryParameters.EMPTY,
                 null);
@@ -105,7 +104,7 @@ class JdbcDatabaseTest {
     }
 
     @Test
-    public void given_not_connected_client_should_get_incorrect_query() {
+    public void givenNotConnectedClientShouldGetIncorrectQuery() {
         Query query = instance.queryFactory().createQuery(JdbcDBClientFacadeMock.SCALAR_QUERY, QueryParameters.EMPTY,
                 null);
         var future = instance.executeQuery(query);
