@@ -13,7 +13,7 @@
 package org.openhab.binding.venstarthermostat.internal.dto;
 
 /**
- * The {@link VenstarSystemMode} represents the value of the system mode returned
+ * The {@link VenstarFanState} represents the state of the fan returned
  * from the REST API.
  *
  * @author Matthew Davies - Initial contribution

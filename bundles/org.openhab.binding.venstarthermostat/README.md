@@ -66,7 +66,9 @@ After adding the Inbox item, enter the user name and password from the physical 
 
 ### Runtime data
 
-The Venstar thermostat provides data about how many minutes the system has been running in each of the different modes (heat1, heat2, cool1, cool2, aux1, aux2, free cool) every day for the last 7 days. A time stamp is provided with each run time data set which represents the end of each day. The binding reads the runtime data and time stamps and provides them all as separate channels.
+The Venstar thermostat provides data about how many minutes the system has been running in each of the different modes (heat1, heat2, cool1, cool2, aux1, aux2, free cool) every day for the last 7 days. 
+A time stamp is provided with each runtime data set which represents the end of each day. 
+The binding reads the runtime data and time stamps and provides them all as separate channels.
 
 | Channel                | Type                 | Description                                  | Notes                                                      |
 |------------------------|----------------------|----------------------------------------------|------------------------------------------------------------|
@@ -112,11 +114,11 @@ Thing venstarthermostat:colorTouchThermostat:001122334455 "Venstar Thermostat (G
 Number:Temperature Guest_HVAC_Temperature   "Temperature [%d °F]"   {channel="venstarthermostat:colorTouchThermostat:001122334455:temperature"}
 Number:Temperature Guest_HVAC_HeatSetpoint  "Heat Setpoint [%d °F]" {channel="venstarthermostat:colorTouchThermostat:001122334455:heatingSetpoint"}
 Number:Temperature Guest_HVAC_CoolSetpoint  "Cool Setpoint [%d °F]" {channel="venstarthermostat:colorTouchThermostat:001122334455:coolingSetpoint"}
-String Guest_HVAC_Mode                      "Mode [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:systemMode"}
+String Guest_HVAC_Mode                      "System Mode [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:systemMode"}
 Number Guest_HVAC_Humidity                  "Humidity [%d %%]"      {channel="venstarthermostat:colorTouchThermostat:001122334455:humidity"}
 String Guest_HVAC_State                     "State [%s]"            {channel="venstarthermostat:colorTouchThermostat:001122334455:systemState"}
-String Guest_Away_Mode                      "Mode [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:awayMode"}
-String Guest_Fan_Mode                      "Mode [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:fanMode"}
+String Guest_Away_Mode                      "Away Mode [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:awayMode"}
+String Guest_Fan_Mode                      "Fan Mode [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:fanMode"}
 String Guest_Fan_State                      "Fan State [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:fanState"}
 String Guest_Schedule_Mode                      "Schedule Mode [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:scheduleMode"}
 String Guest_Schedule_Part                      "Schedule Part [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:schedulePart"}
@@ -143,7 +145,7 @@ sitemap demo label="Venstar Color Thermostat Demo"
     Text item=Guest_HVAC_State
     Switch item=Guest_Fan_Mode mappings=[auto=Auto, on=On]
     Text item=Guest_Fan_State
-    Switch item=Guest_Schedule_Mode=[enabled=Enabled,disabled=Disabled]
+    Switch item=Guest_Schedule_Mode mappings=[enabled=Enabled,disabled=Disabled]
     Text item=Guest_Schedule_Part
     Text item=Guest_timestampDay0
     Text item=Guest_heat1RuntimeDay0
