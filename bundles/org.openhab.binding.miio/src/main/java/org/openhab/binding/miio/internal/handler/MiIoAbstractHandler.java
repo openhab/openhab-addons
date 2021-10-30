@@ -14,8 +14,11 @@ package org.openhab.binding.miio.internal.handler;
 
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -39,6 +42,7 @@ import org.openhab.binding.miio.internal.MiIoInfoApDTO;
 import org.openhab.binding.miio.internal.MiIoInfoDTO;
 import org.openhab.binding.miio.internal.MiIoMessageListener;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
+import org.openhab.binding.miio.internal.SavedDeviceInfoDTO;
 import org.openhab.binding.miio.internal.Utils;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
@@ -62,6 +66,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
@@ -158,6 +163,17 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         isIdentified = false;
         deviceVariables.put(TIMESTAMP, Instant.now().getEpochSecond());
         deviceVariables.put(PROPERTY_DID, configuration.deviceId);
+        try {
+            URL url = new File(BINDING_USERDATA_PATH, "info_" + getThing().getUID().getId() + ".json").toURI().toURL();
+            SavedDeviceInfoDTO lastIdInfo = GSON.fromJson(Utils.convertFileToJSON(url), SavedDeviceInfoDTO.class);
+            if (lastIdInfo != null) {
+                lastId = lastIdInfo.getLastId();
+                logger.debug("Last Id set to {} for {}", lastId, getThing().getUID());
+            }
+        } catch (JsonParseException | IOException | URISyntaxException e) {
+            logger.debug("Could not read last connection id for {} : {}", getThing().getUID(), e.getMessage());
+        }
+
         miIoScheduler.schedule(this::initializeData, 1, TimeUnit.SECONDS);
         int pollingPeriod = configuration.refreshInterval;
         if (pollingPeriod > 0) {
@@ -221,6 +237,11 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             this.miioCom = null;
         }
         miIoScheduler.shutdownNow();
+        logger.debug("Last Id saved for {}: {} -> {} ", getThing().getUID(), lastId,
+                GSON.toJson(new SavedDeviceInfoDTO(lastId,
+                        (String) deviceVariables.getOrDefault(PROPERTY_DID, getThing().getUID().getId()))));
+        Utils.saveToFile("info_" + getThing().getUID().getId() + ".json", GSON.toJson(new SavedDeviceInfoDTO(lastId,
+                (String) deviceVariables.getOrDefault(PROPERTY_DID, getThing().getUID().getId()))), logger);
     }
 
     protected int sendCommand(MiIoCommand command) {
@@ -237,13 +258,11 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
     /**
      * This is used to execute arbitrary commands by sending to the commands channel. Command parameters to be added
-     * between
-     * [] brackets. This to allow for unimplemented commands to be executed (e.g. get detailed historical cleaning
-     * records)
+     * between [] brackets. This to allow for unimplemented commands to be executed
      *
      * @param commandString command to be executed
      * @param cloud server to be used or empty string for direct sending to the device
-     * @return vacuum response
+     * @return message id
      */
     protected int sendCommand(String commandString, String cloudServer) {
         String command = commandString.trim();
@@ -284,7 +303,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         return 0;
     }
 
-    String getCloudServer() {
+    public String getCloudServer() {
         // This can be improved in the future with additional / more advanced options like e.g. directFirst which would
         // use direct communications and in case of failures fall back to cloud communication. For now we keep it
         // simple and only have the option for cloud or direct.
