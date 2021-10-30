@@ -165,7 +165,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     /**
      * Helper method to send OWN messages from ThingHandlers
      */
-    protected @Nullable Response send(OpenMessage msg) throws OWNException {
+    public @Nullable Response send(OpenMessage msg) throws OWNException {
         OpenWebNetBridgeHandler bh = bridgeHandler;
         if (bh != null) {
             OpenGateway gw = bh.gateway;
