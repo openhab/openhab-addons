@@ -322,7 +322,7 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
         List<Channel> channels = getThing().getChannels();
 
         for (Channel ch : channels) {
-            if (channelUID == ch.getUID()) {
+            if (ch.getUID().equals(channelUID)) {
                 channel = ch;
                 break;
             }

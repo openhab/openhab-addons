@@ -93,6 +93,7 @@ public class SystemBrokerHandler extends AbstractBrokerHandler implements MqttSe
      * is no connection established yet.
      */
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void brokerAdded(String connectionName, MqttBrokerConnection addedConnection) {
         if (!connectionName.equals(brokerID) || connection == addedConnection) {
             return;

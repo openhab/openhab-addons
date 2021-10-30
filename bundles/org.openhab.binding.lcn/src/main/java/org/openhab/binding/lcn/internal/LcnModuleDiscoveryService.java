@@ -99,6 +99,7 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     protected void startScan() {
         synchronized (this) {
             PckGatewayHandler localBridgeHandler = bridgeHandler;

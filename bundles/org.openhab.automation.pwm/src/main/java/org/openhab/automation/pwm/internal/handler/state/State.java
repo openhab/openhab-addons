@@ -50,6 +50,7 @@ public abstract class State {
     /**
      * Sets a new state in the state machine.
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public synchronized void nextState(Function<StateMachine, ? extends State> nextState) {
         if (context.getState() != this) { // compare identity
             return;

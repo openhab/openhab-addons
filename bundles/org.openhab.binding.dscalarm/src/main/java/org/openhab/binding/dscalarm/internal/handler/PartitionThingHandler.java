@@ -184,6 +184,7 @@ public class PartitionThingHandler extends DSCAlarmBaseThingHandler {
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void dscAlarmEventReceived(EventObject event, Thing thing) {
         if (thing != null) {
             if (getThing() == thing) {
