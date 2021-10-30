@@ -61,9 +61,9 @@ import com.google.gson.reflect.TypeToken;
  * @author Christian Oeing - refactorings of e.g. server registration
  */
 @NonNullByDefault
-public class BoschSHCBridgeHandler extends BaseBridgeHandler {
+public class BridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(BoschSHCBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
 
     /**
      * gson instance to convert a class to json string and back.
@@ -79,7 +79,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable ScheduledFuture<?> scheduledPairing;
 
-    public BoschSHCBridgeHandler(Bridge bridge) {
+    public BridgeHandler(Bridge bridge) {
         super(bridge);
 
         this.longPolling = new LongPolling(this.scheduler, this::handleLongPollResult, this::handleLongPollFailure);
@@ -91,7 +91,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 FrameworkUtil.getBundle(getClass()).getVersion());
 
         // Read configuration
-        BoschSHCBridgeConfiguration config = getConfigAs(BoschSHCBridgeConfiguration.class);
+        BridgeConfiguration config = getConfigAs(BridgeConfiguration.class);
 
         String ipAddress = config.ipAddress.trim();
         if (ipAddress.isEmpty()) {
@@ -274,8 +274,8 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 for (Device d : devices) {
                     // Write found devices into openhab.log until we have implemented auto discovery
                     logger.info("Found device: name={} id={}", d.name, d.id);
-                    if (d.deviceSerivceIDs != null) {
-                        for (String s : d.deviceSerivceIDs) {
+                    if (d.deviceServiceIds != null) {
+                        for (String s : d.deviceServiceIds) {
                             logger.info(".... service: {}", s);
                         }
                     }
@@ -300,7 +300,14 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     private void handleLongPollResult(LongPollResult result) {
         for (DeviceStatusUpdate update : result.result) {
             if (update != null && update.state != null) {
-                logger.debug("Got update for {}", update.deviceId);
+                logger.debug("Got update of type {}: {}", update.type, update.state);
+
+                var updateDeviceId = update.deviceId;
+                if (updateDeviceId == null) {
+                    continue;
+                }
+
+                logger.debug("Got update for {}", updateDeviceId);
 
                 boolean handled = false;
 
@@ -315,10 +322,11 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                         String deviceId = handler.getBoschID();
 
                         handled = true;
-                        logger.debug("Registered device: {} - looking for {}", deviceId, update.deviceId);
+                        logger.debug("Registered device: {} - looking for {}", deviceId, updateDeviceId);
 
-                        if (deviceId != null && update.deviceId.equals(deviceId)) {
-                            logger.debug("Found child: {} - calling processUpdate with {}", handler, update.state);
+                        if (deviceId != null && updateDeviceId.equals(deviceId)) {
+                            logger.debug("Found child: {} - calling processUpdate (id: {}) with {}", handler, update.id,
+                                    update.state);
                             handler.processUpdate(update.id, update.state);
                         }
                     } else {
@@ -327,7 +335,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 }
 
                 if (!handled) {
-                    logger.debug("Could not find a thing for device ID: {}", update.deviceId);
+                    logger.debug("Could not find a thing for device ID: {}", updateDeviceId);
                 }
             }
         }
@@ -400,6 +408,34 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    public Device getDeviceInfo(String deviceId)
+            throws BoschSHCException, InterruptedException, TimeoutException, ExecutionException {
+        @Nullable
+        BoschHttpClient httpClient = this.httpClient;
+        if (httpClient == null) {
+            throw new BoschSHCException("HTTP client not initialized");
+        }
+
+        String url = httpClient.getBoschSmartHomeUrl(String.format("devices/%s", deviceId));
+        Request request = httpClient.createRequest(url, GET);
+
+        return httpClient.sendRequest(request, Device.class, Device::isValid, (Integer statusCode, String content) -> {
+            JsonRestExceptionResponse errorResponse = gson.fromJson(content, JsonRestExceptionResponse.class);
+            if (errorResponse != null && JsonRestExceptionResponse.isValid(errorResponse)) {
+                if (errorResponse.errorCode.equals(JsonRestExceptionResponse.ENTITY_NOT_FOUND)) {
+                    return new BoschSHCException("@text/offline.conf-error.invalid-device-id");
+                } else {
+                    return new BoschSHCException(
+                            String.format("Request for info of device %s failed with status code %d and error code %s",
+                                    deviceId, errorResponse.statusCode, errorResponse.errorCode));
+                }
+            } else {
+                return new BoschSHCException(String.format("Request for info for device %s failed with status code %d",
+                        deviceId, statusCode));
+            }
+        });
+    }
+
     /**
      * Query the Bosch Smart Home Controller for the state of the given thing.
      *
@@ -445,7 +481,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         }
 
         @Nullable
-        T state = gson.fromJson(content, stateClass);
+        T state = BoschSHCServiceState.fromJson(content, stateClass);
         if (state == null) {
             throw new BoschSHCException(String.format("Received invalid, expected type %s", stateClass.getName()));
         }
