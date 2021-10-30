@@ -104,9 +104,16 @@ public class CloudConnector {
     }
 
     public boolean isConnected() {
+        return isConnected(false);
+    }
+
+    public boolean isConnected(boolean force) {
         final MiCloudConnector cl = cloudConnector;
         if (cl != null && cl.hasLoginToken()) {
             return true;
+        }
+        if (force) {
+            logonCache.invalidateValue();
         }
         final @Nullable Boolean c = logonCache.getValue();
         if (c != null && c.booleanValue()) {
