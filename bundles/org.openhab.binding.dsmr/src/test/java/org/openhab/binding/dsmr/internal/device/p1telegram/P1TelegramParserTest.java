@@ -38,8 +38,10 @@ public class P1TelegramParserTest {
             { "dsmr_40", 39, 0},
             { "dsmr_42", 39, 0},
             { "dsmr_50", 41, 0},
-            { "flu5_invalid_gasmeter", 19, 1},
+            { "dsmr_50_austria", 18, 0},
             { "flu5", 21, 0},
+            { "flu5_extra", 31, 0},
+            { "flu5_invalid_gasmeter", 19, 1},
             { "Iskra_AM550", 41, 0},
             { "Landis_Gyr_E350", 10, 0},
             { "Landis_Gyr_ZCF110", 25, 0},
@@ -53,7 +55,7 @@ public class P1TelegramParserTest {
     @ParameterizedTest
     @MethodSource("data")
     public void testParsing(final String telegramName, final int numberOfCosemObjects, final int unknownObjects) {
-        P1Telegram telegram = TelegramReaderUtil.readTelegram(telegramName, TelegramState.OK);
+        final P1Telegram telegram = TelegramReaderUtil.readTelegram(telegramName, TelegramState.OK);
         assertEquals(unknownObjects, telegram.getUnknownCosemObjects().size(),
                 "Should not have other than " + unknownObjects + " unknown cosem objects");
         assertEquals(numberOfCosemObjects,
