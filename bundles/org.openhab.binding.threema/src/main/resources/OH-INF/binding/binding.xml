@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<binding:binding id="threema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<binding:binding id="threema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
@@ -12,11 +13,8 @@
 				Basic mode (server-based encryption)
 				<ul>
 					<li>The server handles all encryption for you.</li>
-					<li>
-						The server needs to know the private key associated with your
-						Threema API identity.
-						<li>Incoming messages and delivery receipts are not supported.</li>
-					</li>
+					<li>The server needs to know the private key associated with your Threema API identity.</li>
+					<li>Incoming messages and delivery receipts are not supported.</li>
 				</ul>
 				<li>End-to-end encrypted mode (yet not supported by this binding)</li>
 				<ul>
