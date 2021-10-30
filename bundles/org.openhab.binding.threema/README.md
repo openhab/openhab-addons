@@ -4,17 +4,15 @@ This is the binding allows to send text messages via the Threema.Gateway (https:
 
 There are two main modes of operation:
 
-** Basic mode (server-based encryption) **
+**1. Basic mode (server-based encryption)**
+- The server handles all encryption for you.
+- The server needs to know the private key associated with your Threema API identity.
+- Incoming messages and delivery receipts are not supported.
 
-* The server handles all encryption for you.
-* The server needs to know the private key associated with your Threema API identity.
-* Incoming messages and delivery receipts are not supported.
-
-** End-to-end encrypted mode (yet not supported by this binding) **
-
-* The server doesn't know your private key.
-* Incoming messages and delivery receipts are supported.
-* You need to run software on your side to encrypt each message before it can be sent, and to decrypt any incoming messages or delivery receipts.
+**2. End-to-end encrypted mode (yet not supported by this binding)**
+- The server doesn't know your private key.
+- Incoming messages and delivery receipts are supported.
+- You need to run software on your side to encrypt each message before it can be sent, and to decrypt any incoming messages or delivery receipts.
 
 ## Supported Things
 
