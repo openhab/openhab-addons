@@ -17,11 +17,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ChannelUID;
 
 /**
  * @author Markus Pfleger - Initial contribution
  */
+@NonNullByDefault
 public enum AutomowerCommand {
     START("Start", "mower#start"),
     RESUME_SCHEDULE("ResumeSchedule", "mower#resume_schedule"),
