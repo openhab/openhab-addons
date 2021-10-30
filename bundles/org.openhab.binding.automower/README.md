@@ -40,87 +40,91 @@ With the default value of 10min this would mean ~4300 requests per month per sin
 
 ## Channels
 
-### Channel Group 'Mower Status'
+### Status Channels
 
-| channel                        | type     | access mode | description                                                                                                                                                                 |
-|--------------------------------|----------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| status#mode                    | String   | R | The current mode (MAIN_AREA, SECONDARY_AREA, HOME, DEMO, UNKNOWN)                                                                                                |
-| status#activity                | String   | R | The current activity (UNKNOWN, NOT_APPLICABLE, MOWING, GOING_HOME, CHARGING, LEAVING, PARKED_IN_CS, STOPPED_IN_GARDEN)                                           |
-| status#state                   | String   | R | The current state (UNKNOWN, NOT_APPLICABLE, PAUSED, IN_OPERATION, WAIT_UPDATING, WAIT_POWER_UP, RESTRICTED_NONE, RESTRICTED_WEEK_SCHEDULE, RESTRICTED_PARK_OVERRIDE, RESTRICTED_SENSOR, RESTRICTED_DAILY_LIMIT, OFF, STOPPED, ERROR, FATAL_ERROR, ERROR_AT_POWER_UP)  |
-| status#last-update             | DateTime | R | The time when the automower updated its states                                                                                                                   |
-| status#battery                 | Number   | R | The battery state of charge in percent                                                                                                                           |
-| status#error-code              | Number   | R | The current error code                                                                                                                                           |
-| status#error-timestamp         | DateTime | R | The timestamp when the current error occurred                                                                                                                    |
-| status#planner-next-start      | DateTime | R | The time for the next auto start. If the mower is charging then the value is the estimated time when it will be leaving the charging station. If the mower is about to start now, the value is NULL.                                                                  |
-| status#planner-override-action | String   | R | The action that overrides current planner operation.                                                                                                                                                                                                                  |
-| status#calendar-tasks          | String   | R | The JSON with the information about Automower planner.                                                                                                    |
+| channel                 | type     | access mode | description                                                                                                                                                                 |
+|-------------------------|----------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| mode                    | String   | R | The current mode (MAIN_AREA, SECONDARY_AREA, HOME, DEMO, UNKNOWN)                                                                                                |
+| activity                | String   | R | The current activity (UNKNOWN, NOT_APPLICABLE, MOWING, GOING_HOME, CHARGING, LEAVING, PARKED_IN_CS, STOPPED_IN_GARDEN)                                           |
+| state                   | String   | R | The current state (UNKNOWN, NOT_APPLICABLE, PAUSED, IN_OPERATION, WAIT_UPDATING, WAIT_POWER_UP, RESTRICTED_NONE, RESTRICTED_WEEK_SCHEDULE, RESTRICTED_PARK_OVERRIDE, RESTRICTED_SENSOR, RESTRICTED_DAILY_LIMIT, OFF, STOPPED, ERROR, FATAL_ERROR, ERROR_AT_POWER_UP)  |
+| last-update             | DateTime | R | The time when the automower updated its states                                                                                                                   |
+| battery                 | Number   | R | The battery state of charge in percent                                                                                                                           |
+| error-code              | Number   | R | The current error code                                                                                                                                           |
+| error-timestamp         | DateTime | R | The timestamp when the current error occurred                                                                                                                    |
+| planner-next-start      | DateTime | R | The time for the next auto start. If the mower is charging then the value is the estimated time when it will be leaving the charging station. If the mower is about to start now, the value is NULL.                                                                  |
+| planner-override-action | String   | R | The action that overrides current planner operation.                                                                                                                                                                                                                  |
+| calendar-tasks          | String   | R | The JSON with the information about Automower planner.                                                                                                    |
 
-### Channel Group 'Mower Commmands'
+### Command Channels
 
-| channel                              | type     | access mode | description                                                                                                                                                                 |
-|--------------------------------------|----------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| commands#start                       | Number   | W | Starts the automower for a duration                     |
-| commands#resume_schedule             | Switch   | W | Resumes the Automower schedule                          |
-| commands#pause                       | Switch   | W | Pause the Automower                                     |
-| commands#park                        | Number   | W | Park the Automower for a duration                       |
-| commands#park_until_next_schedule    | Switch   | W | Park the Automower until next schedule                  |
-| commands#park_until_further_notice   | Switch   | W | Park the Automower until further notice.                |
+| channel                     | type     | access mode | description                                                                                                                                                                 |
+|-----------------------------|----------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| start                       | Number   | W | Starts the automower for a duration                     |
+| resume_schedule             | Switch   | W | Resumes the Automower schedule                          |
+| pause                       | Switch   | W | Pause the Automower                                     |
+| park                        | Number   | W | Park the Automower for a duration                       |
+| park_until_next_schedule    | Switch   | W | Park the Automower until next schedule                  |
+| park_until_further_notice   | Switch   | W | Park the Automower until further notice.                |
 
-### Channel Group 'Mower Positions'
+### Position Channels
 
-| channel              | type     | access mode | description                                                                                                                                                                 |
-|----------------------|----------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| positions#position01 | Location | R | GPS Position 01 |
-| positions#position02 | Location | R | GPS Position 02 |
-| positions#position03 | Location | R | GPS Position 03 |
-| positions#position04 | Location | R | GPS Position 04 |
-| positions#position05 | Location | R | GPS Position 05 |
-| positions#position06 | Location | R | GPS Position 06 |
-| positions#position07 | Location | R | GPS Position 07 |
-| positions#position08 | Location | R | GPS Position 08 |
-| positions#position09 | Location | R | GPS Position 09 |
-| positions#position10 | Location | R | GPS Position 10 |
-| positions#position11 | Location | R | GPS Position 11 |
-| positions#position12 | Location | R | GPS Position 12 |
-| positions#position13 | Location | R | GPS Position 13 |
-| positions#position14 | Location | R | GPS Position 14 |
-| positions#position15 | Location | R | GPS Position 15 |
-| positions#position16 | Location | R | GPS Position 16 |
-| positions#position17 | Location | R | GPS Position 17 |
-| positions#position18 | Location | R | GPS Position 18 |
-| positions#position19 | Location | R | GPS Position 19 |
-| positions#position20 | Location | R | GPS Position 20 |
-| positions#position21 | Location | R | GPS Position 21 |
-| positions#position22 | Location | R | GPS Position 22 |
-| positions#position23 | Location | R | GPS Position 23 |
-| positions#position24 | Location | R | GPS Position 24 |
-| positions#position25 | Location | R | GPS Position 25 |
-| positions#position26 | Location | R | GPS Position 26 |
-| positions#position27 | Location | R | GPS Position 27 |
-| positions#position28 | Location | R | GPS Position 28 |
-| positions#position29 | Location | R | GPS Position 29 |
-| positions#position30 | Location | R | GPS Position 30 |
-| positions#position31 | Location | R | GPS Position 31 |
-| positions#position32 | Location | R | GPS Position 32 |
-| positions#position33 | Location | R | GPS Position 33 |
-| positions#position34 | Location | R | GPS Position 34 |
-| positions#position35 | Location | R | GPS Position 35 |
-| positions#position36 | Location | R | GPS Position 36 |
-| positions#position37 | Location | R | GPS Position 37 |
-| positions#position38 | Location | R | GPS Position 38 |
-| positions#position39 | Location | R | GPS Position 39 |
-| positions#position40 | Location | R | GPS Position 40 |
-| positions#position41 | Location | R | GPS Position 41 |
-| positions#position42 | Location | R | GPS Position 42 |
-| positions#position43 | Location | R | GPS Position 43 |
-| positions#position44 | Location | R | GPS Position 44 |
-| positions#position45 | Location | R | GPS Position 45 |
-| positions#position46 | Location | R | GPS Position 46 |
-| positions#position47 | Location | R | GPS Position 47 |
-| positions#position48 | Location | R | GPS Position 48 |
-| positions#position49 | Location | R | GPS Position 49 |
-| positions#position50 | Location | R | GPS Position 50 |
-| positions#last-position | Location | R | Last GPS Position |
+These channels hold the last 50 GPS positions recorded by the Automower, thus describing the path it followed.
+Position 01 is the latest recorded position, the other positions are pushed back, thus removing the previous position 50 from the list because it is replaced by the previous position 49.
+Channel `last-position` is always identical with channel `position01` and thus provides more convenient access if only the latest GPS information is required by the user.
+
+| channel    | type     | access mode | description                                                                                                                                                                 |
+|------------|----------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| position01 | Location | R | GPS Position 01 |
+| position02 | Location | R | GPS Position 02 |
+| position03 | Location | R | GPS Position 03 |
+| position04 | Location | R | GPS Position 04 |
+| position05 | Location | R | GPS Position 05 |
+| position06 | Location | R | GPS Position 06 |
+| position07 | Location | R | GPS Position 07 |
+| position08 | Location | R | GPS Position 08 |
+| position09 | Location | R | GPS Position 09 |
+| position10 | Location | R | GPS Position 10 |
+| position11 | Location | R | GPS Position 11 |
+| position12 | Location | R | GPS Position 12 |
+| position13 | Location | R | GPS Position 13 |
+| position14 | Location | R | GPS Position 14 |
+| position15 | Location | R | GPS Position 15 |
+| position16 | Location | R | GPS Position 16 |
+| position17 | Location | R | GPS Position 17 |
+| position18 | Location | R | GPS Position 18 |
+| position19 | Location | R | GPS Position 19 |
+| position20 | Location | R | GPS Position 20 |
+| position21 | Location | R | GPS Position 21 |
+| position22 | Location | R | GPS Position 22 |
+| position23 | Location | R | GPS Position 23 |
+| position24 | Location | R | GPS Position 24 |
+| position25 | Location | R | GPS Position 25 |
+| position26 | Location | R | GPS Position 26 |
+| position27 | Location | R | GPS Position 27 |
+| position28 | Location | R | GPS Position 28 |
+| position29 | Location | R | GPS Position 29 |
+| position30 | Location | R | GPS Position 30 |
+| position31 | Location | R | GPS Position 31 |
+| position32 | Location | R | GPS Position 32 |
+| position33 | Location | R | GPS Position 33 |
+| position34 | Location | R | GPS Position 34 |
+| position35 | Location | R | GPS Position 35 |
+| position36 | Location | R | GPS Position 36 |
+| position37 | Location | R | GPS Position 37 |
+| position38 | Location | R | GPS Position 38 |
+| position39 | Location | R | GPS Position 39 |
+| position40 | Location | R | GPS Position 40 |
+| position41 | Location | R | GPS Position 41 |
+| position42 | Location | R | GPS Position 42 |
+| position43 | Location | R | GPS Position 43 |
+| position44 | Location | R | GPS Position 44 |
+| position45 | Location | R | GPS Position 45 |
+| position46 | Location | R | GPS Position 46 |
+| position47 | Location | R | GPS Position 47 |
+| position48 | Location | R | GPS Position 48 |
+| position49 | Location | R | GPS Position 49 |
+| position50 | Location | R | GPS Position 50 |
+| last-position | Location | R | Last GPS Position (identical with positions#position01) |
 
 
 ## Actions
@@ -149,25 +153,25 @@ The following actions are available for `automower`things:
 
 ### automower.items
 
-	String Automower_Mode               "Mode [%s]"                   { channel="automower:automower:mybridge:myAutomower:status#mode" }
-	String Automower_Activity           "Activity [%s]"         	     { channel="automower:automower:mybridge:myAutomower:status#activity" }
-	String Automower_State              "State [%s]"            	     { channel="automower:automower:mybridge:myAutomower:status#state" }
-	DateTime Automower_Last_Update      "Last Update"    	     { channel="automower:automower:mybridge:myAutomower:status#last-update" }
-	Number Automower_Battery            "Battery [%d %%]"                { channel="automower:automower:mybridge:myAutomower:status#battery" }
-	Number Automower_Error_Code         "Error Code [%d]"             { channel="automower:automower:mybridge:myAutomower:status#error-code" }
-	DateTime Automower_Error_Time       "Error Time"             { channel="automower:automower:mybridge:myAutomower:status#error-timestamp" }
-	String Automower_Override_Action    "Override Action [%s]"        { channel="automower:automower:mybridge:myAutomower:status#planner-override-action" }
-	DateTime Automower_Next_Start_Time  "Next Start Time"        { channel="automower:automower:mybridge:myAutomower:status#planner-next-start" }
-	String Automower_Calendar_Tasks     "Planned Tasks [%s]"          { channel="automower:automower:mybridge:myAutomower:status#calendar-tasks" }
+	String Automower_Mode               "Mode [%s]"                   { channel="automower:automower:mybridge:myAutomower:mode" }
+	String Automower_Activity           "Activity [%s]"         	     { channel="automower:automower:mybridge:myAutomower:activity" }
+	String Automower_State              "State [%s]"            	     { channel="automower:automower:mybridge:myAutomower:state" }
+	DateTime Automower_Last_Update      "Last Update"    	     { channel="automower:automower:mybridge:myAutomower:last-update" }
+	Number Automower_Battery            "Battery [%d %%]"                { channel="automower:automower:mybridge:myAutomower:battery" }
+	Number Automower_Error_Code         "Error Code [%d]"             { channel="automower:automower:mybridge:myAutomower:error-code" }
+	DateTime Automower_Error_Time       "Error Time"             { channel="automower:automower:mybridge:myAutomower:error-timestamp" }
+	String Automower_Override_Action    "Override Action [%s]"        { channel="automower:automower:mybridge:myAutomower:planner-override-action" }
+	DateTime Automower_Next_Start_Time  "Next Start Time"        { channel="automower:automower:mybridge:myAutomower:planner-next-start" }
+	String Automower_Calendar_Tasks     "Planned Tasks [%s]"          { channel="automower:automower:mybridge:myAutomower:calendar-tasks" }
 
-	Number Automower_Command_Start               "Start mowing for duration [%d min]"    { channel="automower:automower:mybridge:myAutomower:commands#start" }
-	Switch Automower_Command_Resume              "Resume the schedule"          { channel="automower:automower:mybridge:myAutomower:commands#resume_schedule" }
-	Switch Automower_Command_Pause               "Pause the automower"          { channel="automower:automower:mybridge:myAutomower:commands#pause" }
-	Number Automower_Command_Park                "Park for duration [%d min]"            { channel="automower:automower:mybridge:myAutomower:commands#park" }
-	Switch Automower_Command_Park_Next_Schedule  "Park until next schedule"     { channel="automower:automower:mybridge:myAutomower:commands#park_until_next_schedule" }
-	Switch Automower_Command_Park_Notice         "Park until further notice"    { channel="automower:automower:mybridge:myAutomower:commands#park_until_further_notice" }
+	Number Automower_Command_Start               "Start mowing for duration [%d min]"    { channel="automower:automower:mybridge:myAutomower:start" }
+	Switch Automower_Command_Resume              "Resume the schedule"          { channel="automower:automower:mybridge:myAutomower:resume_schedule" }
+	Switch Automower_Command_Pause               "Pause the automower"          { channel="automower:automower:mybridge:myAutomower:pause" }
+	Number Automower_Command_Park                "Park for duration [%d min]"            { channel="automower:automower:mybridge:myAutomower:park" }
+	Switch Automower_Command_Park_Next_Schedule  "Park until next schedule"     { channel="automower:automower:mybridge:myAutomower:park_until_next_schedule" }
+	Switch Automower_Command_Park_Notice         "Park until further notice"    { channel="automower:automower:mybridge:myAutomower:park_until_further_notice" }
 
-    Location Automower_Last_Position    "Last Position" { channel="automower:automower:mybridge:myAutomower:positions#last-position" }
+    Location Automower_Last_Position    "Last Position" { channel="automower:automower:mybridge:myAutomower:last-position" }
    
 
 ### automower.sitemap

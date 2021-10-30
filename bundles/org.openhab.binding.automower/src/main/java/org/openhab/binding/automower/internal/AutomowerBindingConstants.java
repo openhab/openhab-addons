@@ -35,7 +35,8 @@ public class AutomowerBindingConstants {
     public static final ThingTypeUID THING_TYPE_AUTOMOWER = new ThingTypeUID(BINDING_ID, "automower");
 
     // List of all status Channel ids
-    public static final String GROUP_STATUS = "status#";
+    public static final String GROUP_STATUS = ""; // no channel group in use at the moment, we'll possibly introduce
+                                                  // this in a future release
     public static final String CHANNEL_STATUS_NAME = GROUP_STATUS + "name";
     public static final String CHANNEL_STATUS_MODE = GROUP_STATUS + "mode";
     public static final String CHANNEL_STATUS_ACTIVITY = GROUP_STATUS + "activity";
@@ -49,7 +50,9 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_CALENDAR_TASKS = GROUP_STATUS + "calendar-tasks";
 
     // Position Channels ids
-    public static final String GROUP_POSITIONS = "positions#";
+    public static final String GROUP_POSITIONS = ""; // no channel group in use at the moment, we'll possibly
+                                                     // introduce
+    // this in a future release
     public static final String LAST_POSITION = GROUP_POSITIONS + "last-position";
     public static final ArrayList<String> CHANNEL_POSITIONS = new ArrayList<String>(
             List.of(GROUP_POSITIONS + "position01", GROUP_POSITIONS + "position02", GROUP_POSITIONS + "position03",
@@ -71,7 +74,8 @@ public class AutomowerBindingConstants {
                     GROUP_POSITIONS + "position49", GROUP_POSITIONS + "position50"));
 
     // Command Channel ids
-    public static final String GROUP_COMMANDS = "commands#";
+    public static final String GROUP_COMMANDS = ""; // no channel group in use at the moment, we'll possibly introduce
+                                                    // this in a future release
     public static final String CHANNEL_COMMAND_START = GROUP_COMMANDS + "start";
     public static final String CHANNEL_COMMAND_RESUME_SCHEDULE = GROUP_COMMANDS + "resume_schedule";
     public static final String CHANNEL_COMMAND_PAUSE = GROUP_COMMANDS + "pause";
