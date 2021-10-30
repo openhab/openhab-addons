@@ -79,6 +79,23 @@ public class JavaScriptEngineManager {
     }
 
     /**
+     * Get compiled script {@link CompiledScript} from raw script.
+     *
+     * @param script JavaScript which should be returned as a pre compiled
+     * @return a pre compiled script {@link CompiledScript}
+     * @throws TransformationException if compile of JavaScript failed
+     */
+    protected CompiledScript compileScript(final String script) throws TransformationException {
+        logger.debug("Compiling script {}", script);
+        try {
+            final ScriptEngine engine = manager.getEngineByName("javascript");
+            return ((Compilable) engine).compile(script);
+        } catch (ScriptException e) {
+            throw new TransformationException("An error occurred while loading JavaScript. " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * remove a pre compiled script from cache.
      *
      * @param fileName name of the script file to remove
