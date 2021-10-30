@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.motiondetector.dto;
+package org.openhab.binding.boschshc.internal.services.latestmotion.dto;
 
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
@@ -33,9 +33,9 @@ import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
  *
  * @author Stefan Kästle - Initial contribution
  */
-public class LatestMotionState extends BoschSHCServiceState {
+public class LatestMotionServiceState extends BoschSHCServiceState {
 
-    public LatestMotionState() {
+    public LatestMotionServiceState() {
         super("latestMotionState");
     }
 
