@@ -45,8 +45,7 @@ public class MiIoSendCommand {
         this.sender = sender;
     }
 
-    public MiIoSendCommand(int id, MiIoCommand command, JsonObject fullCommand, String cloudServer,
-            String sender) {
+    public MiIoSendCommand(int id, MiIoCommand command, JsonObject fullCommand, String cloudServer, String sender) {
         this.id = id;
         this.command = command;
         this.commandJson = fullCommand;
