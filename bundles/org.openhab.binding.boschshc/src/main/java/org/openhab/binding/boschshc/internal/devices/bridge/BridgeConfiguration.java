@@ -15,12 +15,12 @@ package org.openhab.binding.boschshc.internal.devices.bridge;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link BoschSHCBridgeConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link BridgeConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Stefan Kästle - Initial contribution
  */
 @NonNullByDefault
-public class BoschSHCBridgeConfiguration {
+public class BridgeConfiguration {
 
     /**
      * IP address of the Bosch Smart Home Controller
