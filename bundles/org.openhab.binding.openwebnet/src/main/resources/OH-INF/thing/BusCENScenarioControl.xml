@@ -4,32 +4,36 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Thing for BUS Thermo Sensor -->
-	<thing-type id="bus_thermo_sensor">
+	<!-- Thing for BUS CEN Scenario Control (BTicino HC/HD/HS/L/N/NT4680) -->
+	<thing-type id="bus_cen_scenario_control">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bus_gateway"/>
 		</supported-bridge-type-refs>
-		<label>Thermo Sensor</label>
-		<description>A OpenWebNet BUS/SCS thermo sensor (probe) for measuring temperature in a zone. BTicino models:
-			L/N/NT4577 etc.</description>
 
-		<channels>
-			<channel id="temperature" typeId="temperature"/>
-		</channels>
+		<label>CEN Scenario Control</label>
+		<description>A OpenWebNet BUS/SCS CEN Scenario Control device. BTicino models: HC/HD/HS/L/N/NT4680</description>
+
+		<!-- channels are created dynamically based on configured buttons -->
 
 		<properties>
 			<property name="vendor">BTicino/Legrand</property>
-			<property name="model">BTI-L/N/NT4577 etc.</property>
-			<property name="ownDeviceType">---</property>
+			<property name="model">BTI-HC/HD/HS/L/N/NT4680</property>
+			<property name="ownDeviceType">2</property>
 		</properties>
 
 		<representation-property>ownId</representation-property>
 
 		<config-description>
+			<parameter name="buttons" type="text">
+				<label>Configured Buttons</label>
+				<description>List (comma separated) of buttons numbers [0-31] configured for this scenario device. Example:
+					buttons=1,2,4</description>
+			</parameter>
 			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>Example: sensor 3 of zone 2 --> where=302. Sensor 5 of external zone 00 --> where=500</description>
+				<description>Example: A/PL address: A=1 PL=3 --> WHERE=13. On local bus: WHERE=13#4#01</description>
 			</parameter>
+
 		</config-description>
 
 	</thing-type>

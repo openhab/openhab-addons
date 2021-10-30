@@ -153,6 +153,18 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 deviceWho = Who.ENERGY_MANAGEMENT;
                 break;
             }
+            case SCENARIO_CONTROL: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_CEN_SCENARIO_CONTROL;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_CEN_SCENARIO_CONTROL;
+                deviceWho = Who.CEN_SCENARIO_SCHEDULER;
+                break;
+            }
+            case MULTIFUNCTION_SCENARIO_CONTROL: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL;
+                deviceWho = Who.CEN_PLUS_SCENARIO_SCHEDULER;
+                break;
+            }
             default:
                 logger.warn("Device type {} is not supported, default to GENERIC device (WHERE={})", deviceType, where);
                 if (where instanceof WhereZigBee) {
