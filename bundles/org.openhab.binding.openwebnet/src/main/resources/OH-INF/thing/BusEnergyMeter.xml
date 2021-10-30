@@ -27,7 +27,7 @@
 
 		<config-description>
 			<parameter name="where" type="text" required="true">
-				<label>OpenWebNet Address</label>
+				<label>OpenWebNet Address (where)</label>
 				<description>Example: 5N with N=[1-255]</description>
 			</parameter>
 		</config-description>
