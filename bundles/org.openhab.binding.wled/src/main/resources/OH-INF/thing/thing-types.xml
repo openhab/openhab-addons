@@ -36,11 +36,11 @@
 				<description>Time in seconds of how often to fetch the state of the LEDs.</description>
 				<default>10</default>
 			</parameter>
-			<parameter name="segmentIndex" type="integer" required="true" min="-1">
+			<parameter name="segmentIndex" type="integer" required="true" min="0">
 				<label>Segment Index</label>
-				<description>Leave this as -1 if you are not using segments, otherwise set this to the segment index number that you
+				<description>Leave this as 0 if you are not using segments, otherwise set this to the segment index number that you
 					wish to control.</description>
-				<default>-1</default>
+				<default>0</default>
 			</parameter>
 			<parameter name="saturationThreshold" type="integer" required="true" min="0" max="99">
 				<label>Saturation Threshold</label>

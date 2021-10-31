@@ -16,8 +16,7 @@ import static org.openhab.binding.wled.internal.WLedBindingConstants.SUPPORTED_T
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.binding.wled.internal.api.WledApiFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -36,13 +35,13 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.wled", service = ThingHandlerFactory.class)
 public class WLedHandlerFactory extends BaseThingHandlerFactory {
-    private final HttpClient httpClient;
     private final WledDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final WledApiFactory apiFactory;
 
     @Activate
-    public WLedHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+    public WLedHandlerFactory(@Reference WledApiFactory apiFactory,
             final @Reference WledDynamicStateDescriptionProvider stateDescriptionProvider) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.apiFactory = apiFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -58,7 +57,7 @@ public class WLedHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new WLedHandler(thing, httpClient, stateDescriptionProvider);
+            return new WLedHandler(thing, apiFactory, stateDescriptionProvider);
         }
         return null;
     }

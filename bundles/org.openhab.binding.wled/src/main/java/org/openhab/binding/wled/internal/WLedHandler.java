@@ -16,29 +16,22 @@ import static org.openhab.binding.wled.internal.WLedBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.wled.internal.api.ApiException;
+import org.openhab.binding.wled.internal.api.WledApi;
+import org.openhab.binding.wled.internal.api.WledApiFactory;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -49,7 +42,6 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,8 +55,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WLedHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final HttpClient httpClient;
-    private final WledDynamicStateDescriptionProvider stateDescriptionProvider;
+    public final WledDynamicStateDescriptionProvider stateDescriptionProvider;
+    private WledApiFactory apiFactory;
+    private @Nullable WledApi wledApi;
     private @Nullable ScheduledFuture<?> pollingFuture = null;
     private BigDecimal hue65535 = BigDecimal.ZERO;
     private BigDecimal saturation255 = BigDecimal.ZERO;
@@ -74,45 +67,16 @@ public class WLedHandler extends BaseThingHandler {
     private HSBType secondaryColor = new HSBType();
     private BigDecimal secondaryWhite = BigDecimal.ZERO;
     private boolean hasWhite = false;
-    private WLedConfiguration config = new WLedConfiguration();
+    public WLedConfiguration config = new WLedConfiguration();
 
-    public WLedHandler(Thing thing, HttpClient httpClient,
+    public WLedHandler(Thing thing, WledApiFactory apiFactory,
             WledDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
-        this.httpClient = httpClient;
+        this.apiFactory = apiFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     private void sendGetRequest(String url) {
-        Request request;
-        if (url.contains("json") || config.segmentIndex == -1) {
-            request = httpClient.newRequest(config.address + url);
-        } else {
-            request = httpClient.newRequest(config.address + url + "&SM=" + config.segmentIndex);
-        }
-        request.timeout(3, TimeUnit.SECONDS);
-        request.method(HttpMethod.GET);
-        request.header(HttpHeader.ACCEPT_ENCODING, "gzip");
-        logger.trace("Sending WLED GET:{}", url);
-        String errorReason = "";
-        try {
-            ContentResponse contentResponse = request.send();
-            if (contentResponse.getStatus() == 200) {
-                processState(contentResponse.getContentAsString());
-                return;
-            } else {
-                errorReason = String.format("WLED request failed with %d: %s", contentResponse.getStatus(),
-                        contentResponse.getReason());
-            }
-        } catch (TimeoutException e) {
-            errorReason = "TimeoutException: WLED was not reachable on your network";
-        } catch (ExecutionException e) {
-            errorReason = String.format("ExecutionException: %s", e.getMessage());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            errorReason = String.format("InterruptedException: %s", e.getMessage());
-        }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorReason);
     }
 
     private HSBType parseToHSBType(String message, String element) {
@@ -162,84 +126,6 @@ public class WLedHandler extends BaseThingHandler {
         } catch (IllegalArgumentException e) {
             logger.warn("IllegalArgumentException when parsing the WLED colour and white fields:{}", e.getMessage());
         }
-    }
-
-    /**
-     *
-     * This function should prevent the need to keep updating the binding as more FX and Palettes are added to the
-     * firmware.
-     */
-    private void scrapeChannelOptions(String message) {
-        List<StateOption> fxOptions = new ArrayList<>();
-        List<StateOption> palleteOptions = new ArrayList<>();
-        int counter = 0;
-        for (String value : WLedHelper.getValue(message, "\"effects\":[", "]").replace("\"", "").split(",")) {
-            fxOptions.add(new StateOption(Integer.toString(counter++), value));
-        }
-        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_FX), fxOptions);
-        counter = 0;
-        for (String value : (WLedHelper.getValue(message, "\"palettes\":[", "]").replace("\"", "")).split(",")) {
-            palleteOptions.add(new StateOption(Integer.toString(counter++), value));
-        }
-        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_PALETTES), palleteOptions);
-    }
-
-    private void processState(String message) {
-        logger.trace("WLED states are:{}", message);
-        if (thing.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-            sendGetRequest("/json"); // fetch FX and Pallete names
-        }
-        if (message.contains("\"effects\":[")) {// JSON API reply
-            scrapeChannelOptions(message);
-            return;
-        }
-        if (message.contains("<ac>0</ac>")) {
-            updateState(CHANNEL_MASTER_CONTROLS, OnOffType.OFF);
-        } else {
-            masterBrightness255 = new BigDecimal(WLedHelper.getValue(message, "<ac>", "<"));
-            updateState(CHANNEL_MASTER_CONTROLS,
-                    new PercentType(masterBrightness255.divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
-        }
-        if (message.contains("<ix>0</ix>")) {
-            updateState(CHANNEL_INTENSITY, OnOffType.OFF);
-        } else {
-            BigDecimal bigTemp = new BigDecimal(WLedHelper.getValue(message, "<ix>", "<")).divide(BIG_DECIMAL_2_55,
-                    RoundingMode.HALF_UP);
-            updateState(CHANNEL_INTENSITY, new PercentType(bigTemp));
-        }
-        if (message.contains("<cy>1</cy>")) {
-            updateState(CHANNEL_PRESET_CYCLE, OnOffType.ON);
-        } else {
-            updateState(CHANNEL_PRESET_CYCLE, OnOffType.OFF);
-        }
-        if (message.contains("<nl>1</nl>")) {
-            updateState(CHANNEL_SLEEP, OnOffType.ON);
-        } else {
-            updateState(CHANNEL_SLEEP, OnOffType.OFF);
-        }
-        if (message.contains("<ns>1</ns>")) {
-            updateState(CHANNEL_SYNC_SEND, OnOffType.ON);
-        } else {
-            updateState(CHANNEL_SYNC_SEND, OnOffType.OFF);
-        }
-        if (message.contains("<nr>1</nr>")) {
-            updateState(CHANNEL_SYNC_RECEIVE, OnOffType.ON);
-        } else {
-            updateState(CHANNEL_SYNC_RECEIVE, OnOffType.OFF);
-        }
-        if (message.contains("<fx>")) {
-            updateState(CHANNEL_FX, new StringType(WLedHelper.getValue(message, "<fx>", "<")));
-        }
-        if (message.contains("<sx>")) {
-            BigDecimal bigTemp = new BigDecimal(WLedHelper.getValue(message, "<sx>", "<")).divide(BIG_DECIMAL_2_55,
-                    RoundingMode.HALF_UP);
-            updateState(CHANNEL_SPEED, new PercentType(bigTemp));
-        }
-        if (message.contains("<fp>")) {
-            updateState(CHANNEL_PALETTES, new StringType(WLedHelper.getValue(message, "<fp>", "<")));
-        }
-        parseColours(message);
     }
 
     private void sendWhite() {
@@ -431,8 +317,23 @@ public class WLedHandler extends BaseThingHandler {
         sendGetRequest("/win&PS=" + presetIndex);
     }
 
-    private void pollLED() {
-        sendGetRequest("/win");
+    public void update(String channelID, State state) {
+        updateState(channelID, state);
+    }
+
+    private void pollState() {
+        WledApi localApi = wledApi;
+        try {
+            if (localApi == null) {
+                wledApi = apiFactory.getApi(this, config);
+            } else {
+                localApi.update();
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } catch (ApiException e) {
+            wledApi = null;// recheck the firmware as it may have been updated
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
     }
 
     @Override
@@ -442,7 +343,7 @@ public class WLedHandler extends BaseThingHandler {
             logger.debug("Address was not entered in correct format, it may be the raw IP so adding http:// to start");
             config.address = "http://" + config.address;
         }
-        pollingFuture = scheduler.scheduleWithFixedDelay(this::pollLED, 1, config.pollTime, TimeUnit.SECONDS);
+        pollingFuture = scheduler.scheduleWithFixedDelay(this::pollState, 1, config.pollTime, TimeUnit.SECONDS);
     }
 
     @Override
@@ -450,6 +351,7 @@ public class WLedHandler extends BaseThingHandler {
         Future<?> future = pollingFuture;
         if (future != null) {
             future.cancel(true);
+            pollingFuture = null;
         }
     }
 

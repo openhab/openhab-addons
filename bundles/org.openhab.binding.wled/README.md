@@ -24,7 +24,7 @@ For additional segments, you can add them manually and set the `segmentIndex` co
 |-|-|-|-|
 | `address`| The full URL to your WLED device. Example is `http://192.168.0.2:80` | Y | |
 | `pollTime`| How often in seconds you want the states of the LED fetched in case you make changes with a non openHAB app, web browser, or the light is auto changing FX or presets. | Y | 10 |
-| `segmentIndex` | The index number to the LED segment you wish these channels to control. Leave on -1 if you do not know what a segment is. | Y | -1 |
+| `segmentIndex` | The index number to the LED segment you wish these channels to control. Leave on 0 if you do not know what a segment is. | Y | 0 |
 | `saturationThreshold` | Allows you to use a colorpicker control linked to the `masterControls` channel to trigger only using the pure white LEDs instead of creating fake white light from the RGB channels. Try setting the value to 12 or leave this on 0 for RGB strings. | Y | 0 |
 
 ## Channels
