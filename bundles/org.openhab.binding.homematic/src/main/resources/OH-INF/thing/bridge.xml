@@ -95,17 +95,17 @@
 				<advanced>true</advanced>
 				<default>9292</default>
 			</parameter>
-			<parameter name="retryConnects" type="integer" min="1">
-				<label>Number of Connection Retries </label>
-				<description>Maximum number of retries to connect to the Homematic Gateway and register a callback.</description>
+			<parameter name="callbackRegistrationRetries" type="integer" min="1">
+				<label>Number of Callback Registration Retries </label>
+				<description>Maximum number of retries to connect to register a callback in the Homematic gateway.</description>
 				<advanced>true</advanced>
 				<default>20</default>
 			</parameter>
 			<parameter name="retryWaitTime" type="integer" min="1" unit="s">
 				<label>Retry Wait Time</label>
-				<description>Time in seconds between two connection retries.</description>
+				<description>Time in seconds between two callback registration retries.</description>
 				<advanced>true</advanced>
-				<default>3</default>
+				<default>5</default>
 			</parameter>
 			<parameter name="installModeDuration" type="integer" min="10" max="300" unit="s">
 				<label>Install Mode Duration</label>

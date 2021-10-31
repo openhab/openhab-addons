@@ -160,8 +160,8 @@ The port number of the CUxD daemon (default = 8701)
 - **groupPort**
 The port number of the Group daemon (default = 9292)
 
-- **retryConnects**
-Maximum number of retries to connect to the Homematic Gateway and register a callback.
+- **callbackRegistrationRetries**
+Maximum number of retries to register a callback in the Homematic gateway.
 
 - **retryWaitTime**
 Time in seconds between two connection retries (default = 30s)

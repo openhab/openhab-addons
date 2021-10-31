@@ -58,7 +58,7 @@ public class HomematicConfig {
     private int bufferSize = 2048;
 
     private HmGatewayInfo gatewayInfo;
-    private int retryConnects;
+    private int callbackRegistrationRetries;
     private int retryWaitTime;
 
     /**
@@ -120,15 +120,15 @@ public class HomematicConfig {
     /**
      * Sets the number of retry connects.
      */
-    public void setRetryConnects(int retryConnectCtr) {
-        this.retryConnects = retryConnectCtr;
+    public void setCallbackRegistrationRetries(int retries) {
+        this.callbackRegistrationRetries = retries;
     }
 
     /**
      * Returns the number of retry connects.
      */
-    public int getRetryConnects() {
-        return retryConnects;
+    public int getCallbackRegistrationRetries() {
+        return callbackRegistrationRetries;
     }
 
     /**

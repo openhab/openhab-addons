@@ -92,7 +92,7 @@ public abstract class RpcClient<T> {
         if (config.getGatewayInfo().isHomegear()) {
             request.addArg(Integer.valueOf(0x22));
         }
-        int maxRetryAttempts = config.getRetryConnects();
+        int maxRetryAttempts = config.getCallbackRegistrationRetries();
         int waitTime = config.getRetryWaitTime() * 1000;
         for (int attempt = 1; attempt <= maxRetryAttempts; attempt++) {
             try {
