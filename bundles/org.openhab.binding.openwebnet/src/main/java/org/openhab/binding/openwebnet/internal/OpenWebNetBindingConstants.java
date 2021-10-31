@@ -74,6 +74,8 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_BUS_SCENARIO = "Scenario Control";
     public static final ThingTypeUID THING_TYPE_BUS_ALARM_CENTRAL_UNIT = new ThingTypeUID(BINDING_ID, "bus_alarm");
     public static final String THING_LABEL_BUS_ALARM_CENTRAL_UNIT = "Alarm Central Unit";
+    public static final ThingTypeUID THING_TYPE_BUS_ALARM_ZONE = new ThingTypeUID(BINDING_ID, "bus_alarm_zone");
+    public static final String THING_LABEL_BUS_ALARM_ZONE = "Alarm Zone";
     public static final ThingTypeUID THING_TYPE_BUS_AUX = new ThingTypeUID(BINDING_ID, "bus_aux");
     public static final String THING_LABEL_BUS_AUX = "Auxiliary";
     // ZIGBEE
@@ -109,11 +111,15 @@ public class OpenWebNetBindingConstants {
     public static final Set<ThingTypeUID> SCENARIO_BASIC_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_SCENARIO);
     // ## Aux
     public static final Set<ThingTypeUID> AUX_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_AUX);
+    // ## Alarm
+    public static final Set<ThingTypeUID> ALARM_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_ALARM_CENTRAL_UNIT,
+            THING_TYPE_BUS_ALARM_ZONE);
+
     // ## Groups
     public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Stream
             .of(LIGHTING_SUPPORTED_THING_TYPES, AUTOMATION_SUPPORTED_THING_TYPES,
                     THERMOREGULATION_SUPPORTED_THING_TYPES, ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES,
-                    SCENARIO_SUPPORTED_THING_TYPES, SCENARIO_BASIC_SUPPORTED_THING_TYPES, AUX_SUPPORTED_THING_TYPES,
+                    SCENARIO_SUPPORTED_THING_TYPES, SCENARIO_BASIC_SUPPORTED_THING_TYPES, AUX_SUPPORTED_THING_TYPES, ALARM_SUPPORTED_THING_TYPES,
                     GENERIC_SUPPORTED_THING_TYPES)
             .flatMap(Collection::stream).collect(Collectors.toCollection(HashSet::new));
     public static final Set<ThingTypeUID> BRIDGE_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ZB_GATEWAY,
@@ -160,6 +166,7 @@ public class OpenWebNetBindingConstants {
     // aux
     public static final String CHANNEL_AUX = "aux";
     // alarm central unit
+    // alarm
     public static final String CHANNEL_ALARM = "alarm";
 
     // devices config properties
