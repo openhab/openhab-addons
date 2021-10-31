@@ -112,25 +112,19 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
         } else {
             authstring = "j_username=" + config.username;
             scheduler.execute(() -> {
-                try {
-                    if (session == null) {
-                        logger.debug("Session is null, let's create a new one");
-                        session = new VerisureSession(this.httpClient);
-                    }
-                    VerisureSession session = this.session;
-                    updateStatus(ThingStatus.UNKNOWN);
-                    if (session != null) {
-                        if (!session.initialize(authstring, pinCode, config.username, config.password)) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR,
-                                    "Failed to login to Verisure, please check your account settings! Is MFA activated?");
-                        }
-                    }
-                } catch (RuntimeException e) {
-                    logger.warn("Failed to initialize: {}", e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                } finally {
-                    startAutomaticRefresh(config.refresh);
+                if (session == null) {
+                    logger.debug("Session is null, let's create a new one");
+                    session = new VerisureSession(this.httpClient);
                 }
+                VerisureSession session = this.session;
+                updateStatus(ThingStatus.UNKNOWN);
+                if (session != null) {
+                    if (!session.initialize(authstring, pinCode, config.username, config.password)) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Failed to login to Verisure, please check your account settings! Is MFA activated?");
+                    }
+                }
+                startAutomaticRefresh(config.refresh);
             });
         }
     }
@@ -172,8 +166,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
         logger.debug("Refresh and update status!");
         VerisureSession session = this.session;
         if (session != null) {
-            boolean success = session.refresh();
-            if (success) {
+            if (session.refresh()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
