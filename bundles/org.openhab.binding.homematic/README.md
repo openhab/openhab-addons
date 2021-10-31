@@ -685,6 +685,13 @@ Examples: HmIP-BROLL, HmIP-FROLL, HmIP-BBL, HmIP-FBL and HmIP-DRBLI4
 | openHAB | 0%   | 100%   |
 | CCU     | 100% | 0%     |
 
+** The binding does not receive any status changes from the Homematic gateway**
+
+First of all, make sure that none of the ports needed to receive status changes from the gateway are blocked by firewall settings.
+
+If the computer running openHAB has more than one IP address, a wrong one may have been set as receiver for status changes.
+In this case change the setting for `callbackHost` to the correct address.
+
 ### Debugging and Tracing
 
 If you want to see what's going on in the binding, switch the log level to DEBUG in the Karaf console
