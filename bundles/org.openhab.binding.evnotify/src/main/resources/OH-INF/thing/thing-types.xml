@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="evnotify"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- EVNotify Account -->
+	<thing-type id="evnotify">
+		<label>EVNotify Account</label>
+		<description>The EVNotify account represents a connection to the EVNotify online service</description>
+
+		<channels>
+			<channel id="soh" typeId="soh"/>
+			<channel id="charging" typeId="cha"/>
+			<channel id="rapid_charge_port" typeId="rcp"/>
+			<channel id="normal_charge_port" typeId="ncp"/>
+			<channel id="slow_charge_port" typeId="scp"/>
+			<channel id="aux_battery_voltage" typeId="abv"/>
+			<channel id="dc_battery_voltage" typeId="dbv"/>
+			<channel id="dc_battery_current" typeId="dbc"/>
+			<channel id="dc_battery_power" typeId="dbp"/>
+			<channel id="cumulative_energy_charged" typeId="cec"/>
+			<channel id="cumulative_energy_discharged" typeId="ced"/>
+			<channel id="battery_min_temperature" typeId="bmit"/>
+			<channel id="battery_max_temperature" typeId="bmat"/>
+			<channel id="battery_inlet_temperature" typeId="bit"/>
+			<channel id="external_temperature" typeId="et"/>
+			<channel id="last_extended" typeId="le"/>
+		</channels>
+
+		<config-description>
+			<parameter name="akey" type="text" required="true">
+				<label>AKey</label>
+				<description>AKey used for EVNotify API access</description>
+			</parameter>
+
+			<parameter name="token" type="text" required="true">
+				<label>Token</label>
+				<description>Token used for EVNotify API access. It is like a password. Do not share this with people you do not
+					trust!</description>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="soh">
+		<item-type>Number</item-type>
+		<label>State of Health</label>
+		<description>State of Health</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="cha">
+		<item-type>Switch</item-type>
+		<label>Charging</label>
+		<description>ON if charging</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="rcp">
+		<item-type>Switch</item-type>
+		<label>Rapid Charging Port</label>
+		<description>ON if connected to rapid charging</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ncp">
+		<item-type>Switch</item-type>
+		<label>Normal Charging Port</label>
+		<description>ON if connected to normal charging</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="scp">
+		<item-type>Switch</item-type>
+		<label>Slow Charging Port</label>
+		<description>ON if connected to slow charging</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="abv">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>AUX Battery Voltage</label>
+		<description>AUX Battery Voltage</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="dbv">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>DC Battery Voltage</label>
+		<description>DC Battery Voltage</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="dbp">
+		<item-type>Number:Power</item-type>
+		<label>DC Battery Power</label>
+		<description>DC Battery Power</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="cec">
+		<item-type>Number:Energy</item-type>
+		<label>Cumulative Energy Charged</label>
+		<description>Amount of energy that has been charged</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="ced">
+		<item-type>Number:Energy</item-type>
+		<label>Cumulative Energy Discharged</label>
+		<description>Amount of energy that has been discharged</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="ced">
+		<item-type>Number:Temperature</item-type>
+		<label>External Temperature</label>
+		<description>External Temperature</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="bmit">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Min Temperature</label>
+		<description>Battery Min Temperature</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="bmat">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Max Temperature</label>
+		<description>Battery Max Temperature</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="bit">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Inlet Temperature</label>
+		<description>Battery Inlet Temperature</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="et">
+		<item-type>Number:Temperature</item-type>
+		<label>External Temperature</label>
+		<description>External Temperature</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="le">
+		<item-type>String</item-type>
+		<label>Latest export</label>
+		<description>Timestamp of the latest export</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
