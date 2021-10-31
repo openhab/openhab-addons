@@ -4,10 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- EVNotify Account -->
-	<thing-type id="evnotify">
-		<label>EVNotify Account</label>
-		<description>The EVNotify account represents a connection to the EVNotify online service</description>
+	<!-- EVNotify Car -->
+	<thing-type id="car">
+		<label>EVNotify Car</label>
+		<description>The EVNotify car (account) represents a connection to the EVNotify online service</description>s
 
 		<channels>
 			<channel id="soh" typeId="soh"/>
