@@ -11,9 +11,10 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.evnotify.api;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Test cases for the {@link ApiVersion} class
@@ -56,5 +57,4 @@ class ApiVersionTest {
 
         // then
     }
-
 }
