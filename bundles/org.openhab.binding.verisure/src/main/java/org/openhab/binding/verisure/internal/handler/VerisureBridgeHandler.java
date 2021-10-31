@@ -110,28 +110,22 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Refresh time is lower than min value of 10!");
         } else {
-            try {
-                authstring = "j_username=" + config.username;
-                scheduler.execute(() -> {
-                    if (session == null) {
-                        logger.debug("Session is null, let's create a new one");
-                        session = new VerisureSession(this.httpClient);
+            authstring = "j_username=" + config.username;
+            scheduler.execute(() -> {
+                if (session == null) {
+                    logger.debug("Session is null, let's create a new one");
+                    session = new VerisureSession(this.httpClient);
+                }
+                VerisureSession session = this.session;
+                updateStatus(ThingStatus.UNKNOWN);
+                if (session != null) {
+                    if (!session.initialize(authstring, pinCode, config.username, config.password)) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Failed to login to Verisure, please check your account settings! Is MFA activated?");
                     }
-                    VerisureSession session = this.session;
-                    updateStatus(ThingStatus.UNKNOWN);
-                    if (session != null) {
-                        if (!session.initialize(authstring, pinCode, config.username, config.password)) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR,
-                                    "Failed to login to Verisure, please check your account settings! Is MFA activated?");
-                            return;
-                        }
-                        startAutomaticRefresh(config.refresh);
-                    }
-                });
-            } catch (RuntimeException e) {
-                logger.warn("Failed to initialize: {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
+                }
+                startAutomaticRefresh(config.refresh);
+            });
         }
     }
 
@@ -172,8 +166,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
         logger.debug("Refresh and update status!");
         VerisureSession session = this.session;
         if (session != null) {
-            boolean success = session.refresh();
-            if (success) {
+            if (session.refresh()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
