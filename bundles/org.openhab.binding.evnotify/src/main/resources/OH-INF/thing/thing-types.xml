@@ -40,6 +40,12 @@
 					trust!</description>
 				<context>password</context>
 			</parameter>
+
+			<parameter name="refreshInterval" type="integer" required="false" unit="s">
+				<label>Refresh Interval</label>
+				<description>Refresh interval for acquiring data from EVNotify online service in seconds</description>
+				<unitLabel>s</unitLabel>
+			</parameter>
 		</config-description>
 	</thing-type>
 
