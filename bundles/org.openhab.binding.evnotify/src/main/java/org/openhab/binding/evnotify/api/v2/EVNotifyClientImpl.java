@@ -18,7 +18,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import org.openhab.binding.evnotify.api.CarChargingData;
+import org.openhab.binding.evnotify.api.ChargingData;
 import org.openhab.binding.evnotify.api.EVNotifyClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ import com.google.gson.Gson;
  */
 public class EVNotifyClientImpl implements EVNotifyClient {
 
-    public static String DEFAULT_API_URL_PATTERN = "hhttps://app.evnotify.de/soc?akey=%s&token=%s";
+    public static String BASIC_API_URL_PATTERN = "https://app.evnotify.de/soc?akey=%s&token=%s";
     public static String EXTENDED_API_URL_PATTERN = "https://app.evnotify.de/extended?akey=%s&token=%s";
 
     private final Logger logger = LoggerFactory.getLogger(EVNotifyClientImpl.class);
@@ -50,19 +50,26 @@ public class EVNotifyClientImpl implements EVNotifyClient {
     }
 
     @Override
-    public CarChargingData getCarChargingData() throws IOException, InterruptedException {
+    public ChargingData getCarChargingData() throws IOException, InterruptedException {
 
-        // create a request
-        var request = HttpRequest.newBuilder(URI.create(String.format(EXTENDED_API_URL_PATTERN, aKey, token)))
+        // create the requests
+        var basicRequest = HttpRequest.newBuilder(URI.create(String.format(BASIC_API_URL_PATTERN, aKey, token)))
+                .header("accept", "application/json").build();
+
+        var extendedRequest = HttpRequest.newBuilder(URI.create(String.format(EXTENDED_API_URL_PATTERN, aKey, token)))
                 .header("accept", "application/json").build();
 
         try {
-            // use the client to send the request
-            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            // use the client to send the requests
+            var basicResponse = client.send(basicRequest, HttpResponse.BodyHandlers.ofString());
+            BasicChargingDataDTO basicChargingDataDTO = new Gson().fromJson(basicResponse.body(),
+                    BasicChargingDataDTO.class);
 
-            CarChargingData carChargingData = new Gson().fromJson(response.body(), CarChargingDataDTO.class);
+            var extendedResponse = client.send(extendedRequest, HttpResponse.BodyHandlers.ofString());
+            ExtendedChargingDataDTO extendedChargingData = new Gson().fromJson(extendedResponse.body(),
+                    ExtendedChargingDataDTO.class);
 
-            return carChargingData;
+            return new ChargingDataDTO(basicChargingDataDTO, extendedChargingData);
         } catch (Exception e) {
             logger.error("Could not retrieve state of car", e);
             throw e;
