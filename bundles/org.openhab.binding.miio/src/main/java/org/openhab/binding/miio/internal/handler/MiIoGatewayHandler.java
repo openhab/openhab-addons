@@ -77,5 +77,4 @@ public class MiIoGatewayHandler extends MiIoBasicHandler implements BridgeHandle
     public @Nullable BridgeHandler getHandler() {
         return this;
     }
-
 }

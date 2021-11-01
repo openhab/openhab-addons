@@ -5,10 +5,10 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="lumi">
-<supported-bridge-type-refs>
-            <bridge-type-ref id="gateway"/>
-        </supported-bridge-type-refs>
-        
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
 		<label>Xiaomi Mi Lumi Gateway subdevice</label>
 
 		<channel-groups>

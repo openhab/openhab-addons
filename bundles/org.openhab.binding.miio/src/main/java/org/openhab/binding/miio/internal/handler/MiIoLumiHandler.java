@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
@@ -87,7 +86,8 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
                     if (!bridgeHandler.childDevices.containsKey(getThing())) {
                         logger.warn(("Adding child device {} to bridge {}. We should not see this"),
                                 getThing().getUID(), bridgeHandler.getThing().getUID());
-                        // bridgeHandler.childHandlerInitialized(this, getThing());
+                        bridgeHandler.childDevices.forEach((k, v) -> logger.debug("Devices in bridge: {} : {}", k, v));
+                        bridgeHandler.childHandlerInitialized(this, getThing());
                     }
                     this.bridgeHandler = bridgeHandler;
                     return bridgeHandler;
@@ -145,11 +145,10 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
                 logger.debug("Refresh Custom for lumidevice {}", getThing().getLabel());
                 refreshCustomProperties(midevice, false);
             } else {
-                logger.debug("Null value occured.", midevice, config);
+                logger.debug("Null value occured for device {}: {}", midevice, config);
             }
         } catch (Exception e) {
             logger.debug("Error while updating '{}': ", getThing().getUID().toString(), e);
         }
     }
 }
-
