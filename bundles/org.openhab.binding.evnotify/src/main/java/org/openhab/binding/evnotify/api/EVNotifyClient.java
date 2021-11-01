@@ -22,9 +22,9 @@ import java.io.IOException;
 public interface EVNotifyClient {
 
     /**
-     * returns a {@link CarChargingData}
+     * returns a {@link ChargingData}
      *
      * @return state of a car
      */
-    CarChargingData getCarChargingData() throws IOException, InterruptedException;
+    ChargingData getCarChargingData() throws IOException, InterruptedException;
 }
