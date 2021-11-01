@@ -36,8 +36,8 @@ public class EVNotifyBindingConstants {
     // .unmodifiableSet(Set.of(THING_TYPE_BRIDGE));
 
     // List of all Thing Type UIDs
-    public static final String THING_TYPE_EVNOTIFY_ID = "evnotify";
-    public static final ThingTypeUID THING_TYPE_EVNOTIFY = new ThingTypeUID(BINDING_ID, THING_TYPE_EVNOTIFY_ID);
+    public static final String THING_TYPE_CAR_ID = "car";
+    public static final ThingTypeUID THING_TYPE_CAR = new ThingTypeUID(BINDING_ID, THING_TYPE_CAR_ID);
 
     // List of all Channel ids
     public static final String STATE_OF_HEALTH = "soh";
@@ -59,7 +59,7 @@ public class EVNotifyBindingConstants {
 
     // Collection of all supported thing types
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Set.of(THING_TYPE_EVNOTIFY));
+            .unmodifiableSet(Set.of(THING_TYPE_CAR));
 
     // Collections.unmodifiableSet(
     // Stream.concat(
