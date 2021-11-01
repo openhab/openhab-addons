@@ -16,13 +16,11 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
-import org.openhab.binding.evnotify.api.CarChargingData;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Represents the data that is returned by evnotify v2 API.
- *
+ * Represents the extended data that is returned by evnotify v2 API.
+ * 
  * e.g.
  *
  * {
@@ -47,7 +45,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Michael Schmidt - Initial contribution
  */
-public class CarChargingDataDTO implements CarChargingData {
+public class ExtendedChargingDataDTO {
 
     @SerializedName("charging")
     public Integer charging;
@@ -97,83 +95,67 @@ public class CarChargingDataDTO implements CarChargingData {
     @SerializedName("dc_battery_power")
     public Float dcBatteryPower;
 
-    @Override
     public Float getCumulativeEnergyCharged() {
         return cumulativeEnergyCharged;
     }
 
-    @Override
     public Float getCumulativeEnergyDischarged() {
         return cumulativeEnergyDischarged;
     }
 
-    @Override
     public Float getBatteryMinTemperature() {
         return batteryMinTemperature;
     }
 
-    @Override
     public Float getBatteryMaxTemperature() {
         return batteryMaxTemperature;
     }
 
-    @Override
     public Float getBatteryInletTemperature() {
         return batteryInletTemperature;
     }
 
-    @Override
     public Float getExternalTemperature() {
         return externalTemperature;
     }
 
-    @Override
     public OffsetDateTime getLastExtended() {
         return lastExtended == null ? null
                 : OffsetDateTime.from(Instant.ofEpochMilli(lastExtended).atZone(ZoneId.of("Europe/Berlin")));
     }
 
-    @Override
     public Float getAuxBatteryVoltage() {
         return auxBatteryVoltage;
     }
 
-    @Override
     public Float getDcBatteryVoltage() {
         return dcBatteryVoltage;
     }
 
-    @Override
     public Float getDcBatteryCurrent() {
         return dcBatteryCurrent;
     }
 
-    @Override
     public Float getDcBatteryPower() {
         return dcBatteryPower;
     }
 
-    @Override
     public Boolean isCharging() {
         return charging != null && charging == 1;
     }
 
-    @Override
     public Boolean isRapidChargePort() {
         return rapidChargePort != null && rapidChargePort == 1;
     }
 
-    @Override
     public Boolean isNormalChargePort() {
         return normalChargePort != null && normalChargePort == 1;
     }
 
-    @Override
     public Boolean isSlowChargePort() {
         return slowChargePort != null && slowChargePort == 1;
     }
 
-    @Override
     public Float getStateOfHealth() {
         return stateOfHealth;
     }
