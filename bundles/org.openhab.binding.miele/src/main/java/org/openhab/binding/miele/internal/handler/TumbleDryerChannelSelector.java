@@ -47,8 +47,6 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
 
     PRODUCT_TYPE("productTypeId", "productType", StringType.class, true),
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
-    BRAND_ID("brandId", "brandId", StringType.class, true),
-    COMPANY_ID("companyId", "companyId", StringType.class, true),
     STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false),
     STATE(null, STATE_CHANNEL_ID, DecimalType.class, false),
     PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false) {
@@ -155,7 +153,7 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
 
     private final Logger logger = LoggerFactory.getLogger(TumbleDryerChannelSelector.class);
 
-    private final static Map<String, String> programs = Map.ofEntries(entry("10", "Automatic Plus"),
+    private static final Map<String, String> programs = Map.ofEntries(entry("10", "Automatic Plus"),
             entry("23", "Cottons hygiene"), entry("30", "Minimum iron"), entry("31", "Gentle minimum iron"),
             entry("40", "Woollens handcare"), entry("50", "Delicates"), entry("60", "Warm Air"),
             entry("70", "Cool air"), entry("80", "Express"), entry("90", "Cottons"), entry("100", "Gentle smoothing"),
@@ -165,7 +163,7 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
             entry("240", "Smoothing"), entry("65000", "Cottons, auto load control"),
             entry("65001", "Minimum iron, auto load control"));
 
-    private final static Map<String, String> phases = Map.ofEntries(entry("1", "Programme running"),
+    private static final Map<String, String> phases = Map.ofEntries(entry("1", "Programme running"),
             entry("2", "Drying"), entry("3", "Drying Machine iron"), entry("4", "Drying Hand iron"),
             entry("5", "Drying Normal"), entry("6", "Drying Normal+"), entry("7", "Cooling down"),
             entry("8", "Drying Hand iron"), entry("10", "Finished"));

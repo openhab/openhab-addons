@@ -28,8 +28,10 @@ public class MieleBindingConstants {
 
     public static final String BINDING_ID = "miele";
     public static final String APPLIANCE_ID = "uid";
-    public static final String DEVICE_CLASS = "dc";
-    public static final String PROTOCOL_PROPERTY_NAME = "protocol";
+    public static final String DEVICE_CLASS = "deviceClass";
+    public static final String MODEL_PROPERTY_NAME = "model";
+    public static final String PROTOCOL_ADAPTER_PROPERTY_NAME = "protocolAdapter";
+    public static final String CONNECTION_TYPE_PROPERTY_NAME = "connectionType";
 
     // JSON-RPC property names
     public static final String SERIAL_NUMBER_PROPERTY_NAME = "serialNumber";
@@ -65,8 +67,14 @@ public class MieleBindingConstants {
 
     // Miele devices classes
     public static final String MIELE_DEVICE_CLASS_COFFEE_SYSTEM = "CoffeeSystem";
+    public static final String MIELE_DEVICE_CLASS_DISHWASHER = "Dishwasher";
     public static final String MIELE_DEVICE_CLASS_FRIDGE = "Fridge";
     public static final String MIELE_DEVICE_CLASS_FRIDGE_FREEZER = "FridgeFreezer";
+    public static final String MIELE_DEVICE_CLASS_HOB = "Hob";
+    public static final String MIELE_DEVICE_CLASS_HOOD = "Hood";
+    public static final String MIELE_DEVICE_CLASS_OVEN = "Oven";
+    public static final String MIELE_DEVICE_CLASS_TUMBLE_DRYER = "TumbleDryer";
+    public static final String MIELE_DEVICE_CLASS_WASHING_MACHINE = "WashingMachine";
 
     // Miele appliance states
     public static final int STATE_UNKNOWN = 0;
