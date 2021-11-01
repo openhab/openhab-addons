@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import org.openhab.binding.miele.internal.ExtendedDeviceStateUtil;
+import org.openhab.binding.miele.internal.DeviceUtil;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -49,8 +49,6 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
 
     PRODUCT_TYPE("productTypeId", "productType", StringType.class, true),
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
-    BRAND_ID("brandId", "brandId", StringType.class, true),
-    COMPANY_ID("companyId", "companyId", StringType.class, true),
     STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false),
     STATE(null, STATE_CHANNEL_ID, DecimalType.class, false),
     PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false),
@@ -167,7 +165,7 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
 
     private final Logger logger = LoggerFactory.getLogger(OvenChannelSelector.class);
 
-    private final static Map<String, String> phases = Map.ofEntries(entry("1", "Heating"), entry("2", "Temp. hold"),
+    private static final Map<String, String> phases = Map.ofEntries(entry("1", "Heating"), entry("2", "Temp. hold"),
             entry("3", "Door Open"), entry("4", "Pyrolysis"), entry("7", "Lighting"), entry("8", "Searing phase"),
             entry("10", "Defrost"), entry("11", "Cooling down"), entry("12", "Energy save phase"));
 
@@ -241,7 +239,7 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
 
     public State getTemperatureState(String s) {
         try {
-            return ExtendedDeviceStateUtil.getTemperatureState(s);
+            return DeviceUtil.getTemperatureState(s);
         } catch (NumberFormatException e) {
             logger.warn("An exception occurred while converting '{}' into a State", s);
             return UnDefType.UNDEF;
