@@ -73,7 +73,8 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService implements 
             if (location != null) {
                 ThingUID bridgeUID = bridge.getThing().getUID();
                 thingDiscovered(DiscoveryResultBuilder
-                        .create(new ThingUID(LOCATION_REPORT_THING_TYPE, bridgeUID, LOCAL)).withLabel("Local UV Report")
+                        .create(new ThingUID(LOCATION_REPORT_THING_TYPE, bridgeUID, LOCAL))
+                        .withLabel("@text/discovery.openuv.uvreport.local.label")
                         .withProperty(ReportConfiguration.LOCATION, location.toString())
                         .withRepresentationProperty(ReportConfiguration.LOCATION).withBridge(bridgeUID).build());
             } else {
