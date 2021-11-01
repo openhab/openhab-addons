@@ -7,7 +7,7 @@
 	<!-- EVNotify Car -->
 	<thing-type id="car">
 		<label>EVNotify Car</label>
-		<description>The EVNotify car (account) represents a connection to the EVNotify online service</description>s
+		<description>The EVNotify car (account) represents a connection to the EVNotify online service</description>
 
 		<channels>
 			<channel id="soh" typeId="soh"/>
@@ -89,6 +89,12 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>DC Battery Voltage</label>
 		<description>DC Battery Voltage</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="dbc">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>DC Battery Current</label>
+		<description>DC Battery Current</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="dbp">
