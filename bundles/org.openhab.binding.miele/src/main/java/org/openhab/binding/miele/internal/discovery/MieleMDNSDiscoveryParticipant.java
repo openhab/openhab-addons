@@ -26,7 +26,6 @@ import org.openhab.binding.miele.internal.MieleBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
-import org.openhab.core.config.discovery.mdns.internal.MDNSDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;

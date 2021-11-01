@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
+import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_HOB;
+
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -26,7 +28,7 @@ import org.openhab.core.types.Command;
 public class HobHandler extends MieleApplianceHandler<HobChannelSelector> {
 
     public HobHandler(Thing thing) {
-        super(thing, HobChannelSelector.class, "Hob");
+        super(thing, HobChannelSelector.class, MIELE_DEVICE_CLASS_HOB);
     }
 
     @Override

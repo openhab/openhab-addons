@@ -48,8 +48,6 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
 
     PRODUCT_TYPE("productTypeId", "productType", StringType.class, true, false),
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true, false),
-    BRAND_ID("brandId", "brandId", StringType.class, true, false),
-    COMPANY_ID("companyId", "companyId", StringType.class, true, false),
     STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false, false),
     STATE(null, STATE_CHANNEL_ID, DecimalType.class, false, false),
     PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false, false) {
@@ -152,12 +150,12 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
 
     private final Logger logger = LoggerFactory.getLogger(DishwasherChannelSelector.class);
 
-    private final static Map<String, String> programs = Map.ofEntries(entry("26", "Pots & Pans"),
+    private static final Map<String, String> programs = Map.ofEntries(entry("26", "Pots & Pans"),
             entry("27", "Clean Machine"), entry("28", "Economy"), entry("30", "Normal"), entry("32", "Sensor Wash"),
             entry("34", "Energy Saver"), entry("35", "China & Crystal"), entry("36", "Extra Quiet"),
             entry("37", "SaniWash"), entry("38", "QuickPowerWash"), entry("42", "Tall items"));
 
-    private final static Map<String, String> phases = Map.ofEntries(entry("2", "Pre-Wash"), entry("3", "Main Wash"),
+    private static final Map<String, String> phases = Map.ofEntries(entry("2", "Pre-Wash"), entry("3", "Main Wash"),
             entry("4", "Rinses"), entry("6", "Final rinse"), entry("7", "Drying"), entry("8", "Finished"));
 
     private final String mieleID;

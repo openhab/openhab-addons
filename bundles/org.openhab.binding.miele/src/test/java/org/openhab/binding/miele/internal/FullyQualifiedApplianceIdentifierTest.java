@@ -21,7 +21,7 @@ import org.openhab.core.test.java.JavaTest;
  * This class provides test cases for {@link
  * org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier}
  *
- * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
+ * @author Jacob Laursen - Initial contribution
  */
 public class FullyQualifiedApplianceIdentifierTest extends JavaTest {
 

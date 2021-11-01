@@ -42,8 +42,6 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
 
     PRODUCT_TYPE("productTypeId", "productType", StringType.class, true),
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
-    BRAND_ID("brandId", "brandId", StringType.class, true),
-    COMPANY_ID("companyId", "companyId", StringType.class, true),
     STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false),
     STATE(null, STATE_CHANNEL_ID, DecimalType.class, false),
     PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false) {
@@ -88,9 +86,9 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
 
     private final Logger logger = LoggerFactory.getLogger(CoffeeMachineChannelSelector.class);
 
-    private final static Map<String, String> programs = Collections.<String, String> emptyMap();
+    private static final Map<String, String> programs = Collections.<String, String> emptyMap();
 
-    private final static Map<String, String> phases = Collections.<String, String> emptyMap();
+    private static final Map<String, String> phases = Collections.<String, String> emptyMap();
 
     private final String mieleID;
     private final String channelID;

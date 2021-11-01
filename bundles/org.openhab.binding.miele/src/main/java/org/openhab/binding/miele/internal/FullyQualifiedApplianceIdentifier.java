@@ -16,7 +16,7 @@ package org.openhab.binding.miele.internal;
  * The {@link FullyQualifiedApplianceIdentifier} class represents a fully qualified appliance identifier.
  * Example: "hdm:ZigBee:0123456789abcdef#210"
  *
- * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
+ * @author Jacob Laursen - Initial contribution
  */
 public class FullyQualifiedApplianceIdentifier {
     private String uid;
