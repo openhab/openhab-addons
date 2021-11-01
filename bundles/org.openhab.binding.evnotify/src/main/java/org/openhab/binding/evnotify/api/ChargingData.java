@@ -19,7 +19,13 @@ import java.time.OffsetDateTime;
  *
  * @author Michael Schmidt - Initial contribution
  */
-public interface CarChargingData {
+public interface ChargingData {
+
+    Float getStateOfChargeDisplay();
+
+    Float getStateOfChargeBms();
+
+    OffsetDateTime getLastStateOfCharge();
 
     Boolean isCharging();
 
