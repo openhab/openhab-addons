@@ -17,8 +17,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -29,11 +27,11 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class WledState {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     protected final Gson gson = new Gson();
     public JsonResponse jsonResponse = new JsonResponse();
     public StateResponse stateResponse = new StateResponse();
     public InfoResponse infoResponse = new InfoResponse();
+    public LedInfo ledInfo = new LedInfo();
     public NightLightState nightLightState = new NightLightState();
     public UdpnState udpnState = new UdpnState();
     public SegmentState segmentState = new SegmentState();
@@ -106,5 +104,10 @@ public class WledState {
     public class InfoResponse {
         public String ver = "00000";
         public String mac = "";
+        public Object leds = "{}";
+    }
+
+    public class LedInfo {
+        public boolean rgbw = false;
     }
 }

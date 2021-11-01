@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -35,6 +36,7 @@ import org.openhab.binding.wled.internal.WLedHelper;
 import org.openhab.binding.wled.internal.WledState;
 import org.openhab.binding.wled.internal.WledState.InfoResponse;
 import org.openhab.binding.wled.internal.WledState.JsonResponse;
+import org.openhab.binding.wled.internal.WledState.LedInfo;
 import org.openhab.binding.wled.internal.WledState.StateResponse;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -50,6 +52,7 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link WledApiV084} is the json Api methods for firmware version 0.8.4 and newer
+ * as newer firmwares come out with breaking changes, extend this class into a newer firmware version class.
  *
  * @author Matthew Skinner - Initial contribution
  */
@@ -74,6 +77,13 @@ public class WledApiV084 implements WledApi {
         state.jsonResponse = getJson();
         getUpdatedFxList();
         getUpdatedPaletteList();
+
+        @Nullable
+        LedInfo localLedInfo = gson.fromJson(state.infoResponse.leds.toString(), LedInfo.class);
+        if (localLedInfo != null) {
+            state.ledInfo = localLedInfo;
+        }
+        handler.hasWhite = state.ledInfo.rgbw;
     }
 
     @Override
@@ -108,7 +118,7 @@ public class WledApiV084 implements WledApi {
     }
 
     protected void sendPostRequest(String url, String json) throws ApiException {
-        logger.trace("Sending WLED POST:{} Message:{}", url, json);
+        logger.debug("Sending WLED POST:{} Message:{}", url, json);
         Request request = httpClient.POST(config.address + url);
         request.timeout(3, TimeUnit.SECONDS);
         request.header(HttpHeader.CONTENT_TYPE, "application/json");
@@ -215,20 +225,21 @@ public class WledApiV084 implements WledApi {
                 WLedHelper.parseToHSBType(state.stateResponse.seg[handler.config.segmentIndex].col[1].toString()));
         handler.update(CHANNEL_THIRD_COLOR,
                 WLedHelper.parseToHSBType(state.stateResponse.seg[handler.config.segmentIndex].col[2].toString()));
-        // white LEDs for RGBW strings
-        handler.update(CHANNEL_PRIMARY_WHITE,
-                WLedHelper.parseWhitePercent(state.stateResponse.seg[handler.config.segmentIndex].col[0].toString()));
-        handler.update(CHANNEL_SECONDARY_WHITE,
-                WLedHelper.parseWhitePercent(state.stateResponse.seg[handler.config.segmentIndex].col[1].toString()));
-        handler.update(CHANNEL_THIRD_WHITE,
-                WLedHelper.parseWhitePercent(state.stateResponse.seg[handler.config.segmentIndex].col[2].toString()));
+        if (state.ledInfo.rgbw) {
+            handler.update(CHANNEL_PRIMARY_WHITE, WLedHelper
+                    .parseWhitePercent(state.stateResponse.seg[handler.config.segmentIndex].col[0].toString()));
+            handler.update(CHANNEL_SECONDARY_WHITE, WLedHelper
+                    .parseWhitePercent(state.stateResponse.seg[handler.config.segmentIndex].col[1].toString()));
+            handler.update(CHANNEL_THIRD_WHITE, WLedHelper
+                    .parseWhitePercent(state.stateResponse.seg[handler.config.segmentIndex].col[2].toString()));
+        }
+
         if (!state.stateResponse.on) {
             // global ch needs adding
         } else {
             // global ch needs adding
         }
 
-        // state can say it is on but the lights are off due to 0,0,0 for r,g,b
         if (!state.stateResponse.seg[handler.config.segmentIndex].on) {
             handler.update(CHANNEL_MASTER_CONTROLS, OnOffType.OFF);
         }
@@ -349,8 +360,8 @@ public class WledApiV084 implements WledApi {
     }
 
     @Override
-    public void setSleep(boolean b) throws ApiException {
-        postState("{\"nl\":{\"on\":" + b + "}}");
+    public void setSleep(boolean bool) throws ApiException {
+        postState("{\"nl\":{\"on\":" + bool + "}}");
     }
 
     @Override
@@ -399,5 +410,11 @@ public class WledApiV084 implements WledApi {
                 + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}");
+    }
+
+    @Override
+    public void setWhiteOnly(PercentType percentType) throws ApiException {
+        postState("{\"seg\":[{\"on\":true,\"id\":" + handler.config.segmentIndex + ",\"fx\":0,\"col\":[[0,0,0,"
+                + percentType.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}");
     }
 }

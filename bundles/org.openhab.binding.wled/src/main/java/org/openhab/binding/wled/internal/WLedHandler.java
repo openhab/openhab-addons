@@ -122,20 +122,16 @@ public class WLedHandler extends BaseThingHandler {
                             }
                         }
                     } else if (command instanceof HSBType) {
-                        if ((((HSBType) command).getBrightness()) == PercentType.ZERO) {
+                        if ((((HSBType) command).getBrightness()).equals(PercentType.ZERO)) {
                             localApi.setMasterOn(false);
+                            return;
                         }
-                        // PercentType savedLevel = primaryColor.getBrightness();
                         primaryColor = (HSBType) command;
-                        // hue65535 = primaryColor.getHue().toBigDecimal().multiply(BIG_DECIMAL_182_04);
-                        // saturation255 = primaryColor.getSaturation().toBigDecimal().multiply(BIG_DECIMAL_2_55);
-                        // masterBrightness255 = primaryColor.getBrightness().toBigDecimal().multiply(BIG_DECIMAL_2_55);
-                        if (primaryColor.getSaturation().intValue() < config.saturationThreshold) {
-                            // sendWhite();
+                        if (primaryColor.getSaturation().intValue() < config.saturationThreshold && hasWhite) {
+                            localApi.setWhiteOnly((PercentType) command);
                         } else if (primaryColor.getSaturation().intValue() == 32
                                 && primaryColor.getHue().intValue() == 36 && hasWhite) {
-                            // Google sends this when it wants white
-                            // sendWhite();
+                            localApi.setWhiteOnly((PercentType) command);
                         } else {
                             localApi.setMasterHSB((HSBType) command);
                         }

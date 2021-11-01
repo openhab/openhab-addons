@@ -49,7 +49,7 @@ public interface WledApi {
 
     public abstract void setFxSpeed(PercentType percentType) throws ApiException;
 
-    public abstract void setSleep(boolean b) throws ApiException;
+    public abstract void setSleep(boolean bool) throws ApiException;
 
     public abstract void setUdpSend(boolean bool) throws ApiException;
 
@@ -66,4 +66,6 @@ public interface WledApi {
     public abstract void setTertiaryColor(HSBType hsbType) throws ApiException;
 
     public abstract String sendGetRequest(String string) throws ApiException;
+
+    public abstract void setWhiteOnly(PercentType percentType) throws ApiException;
 }
