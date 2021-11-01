@@ -22,6 +22,7 @@ import org.openhab.core.thing.Bridge;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.Where;
+import org.openwebnet4j.message.WhereAlarm;
 import org.openwebnet4j.message.WhereAuxiliary;
 import org.openwebnet4j.message.WhereCEN;
 import org.openwebnet4j.message.WhereEnergyManagement;
@@ -68,6 +69,7 @@ public class OwnIdTest {
      * BUS DryContact       399             399                 25.399          399
      * BUS AUX              4               4                   9.4             4
      * BUS Scenario         05              05                  0.05            05
+     * BUS Alarm Zone       #2 or 2         2                   5.2             2
      */
 // @formatter:on
 
@@ -88,9 +90,13 @@ public class OwnIdTest {
         bus_cen_plus(new WhereCEN("212"), Who.fromValue(25), "*25*21#31*212##", "212", "25.212", "212"),
         bus_drycontact(new WhereCEN("399"), Who.fromValue(25), "*25*32#1*399##", "399", "25.399", "399"),
         bus_aux(new WhereAuxiliary("4"), Who.fromValue(9), "*9*1*4##","4","9.4","4"),
+<<<<<<< HEAD
         bus_scenario(new WhereLightAutom("05"), Who.fromValue(0), "*0*2*05##","05","0.05","05");
 
 
+=======
+        bus_alarm_z(new WhereAlarm("#2"), Who.fromValue(5), "*#5*#2##", "2", "5.2", "2");
+>>>>>>> 310d4cd20c ([openwebnet] added ownIdTest for Alarm)
 
         // @formatter:on
 
