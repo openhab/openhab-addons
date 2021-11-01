@@ -199,6 +199,11 @@ public class EVNotifyHandler extends BaseThingHandler {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(carChargingData.getBatteryInletTemperature(), SIUnits.CELSIUS);
+            case EXTERNAL_TEMPERATURE:
+                if (carChargingData.getExternalTemperature() == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(carChargingData.getExternalTemperature(), SIUnits.CELSIUS);
             case LAST_EXTENDED:
                 if (carChargingData.getLastExtended() == null) {
                     return UnDefType.UNDEF;
