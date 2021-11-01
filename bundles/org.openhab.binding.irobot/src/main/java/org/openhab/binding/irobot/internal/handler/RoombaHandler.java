@@ -190,7 +190,7 @@ public class RoombaHandler extends BaseThingHandler {
 
                         String mapId = params[0];
                         String user_mapv_id;
-                        if (params.length >= 2) {
+                        if (params.length >= 3) {
                             user_mapv_id = params[2];
                         } else {
                             user_mapv_id = null;
