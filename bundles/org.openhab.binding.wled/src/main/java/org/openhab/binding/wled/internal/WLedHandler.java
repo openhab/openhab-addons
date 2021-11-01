@@ -58,12 +58,11 @@ public class WLedHandler extends BaseThingHandler {
     private WledApiFactory apiFactory;
     private @Nullable WledApi api;
     private @Nullable ScheduledFuture<?> pollingFuture = null;
-    private BigDecimal hue65535 = BigDecimal.ZERO;
-    private BigDecimal saturation255 = BigDecimal.ZERO;
     private BigDecimal masterBrightness255 = BigDecimal.ZERO;
+    public boolean hasWhite = false;
     private HSBType primaryColor = new HSBType();
     private HSBType secondaryColor = new HSBType();
-    private boolean hasWhite = false;
+    private HSBType thirdColor = new HSBType();
     public WLedConfiguration config = new WLedConfiguration();
 
     public WLedHandler(Thing thing, WledApiFactory apiFactory,
@@ -73,123 +72,128 @@ public class WLedHandler extends BaseThingHandler {
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
-    private void sendGetRequest(String url) {
-    }
-
-    private void sendWhite() {
-        if (hasWhite) {
-            sendGetRequest("/win&TT=1000&FX=0&CY=0&CL=hFF000000" + "&A=" + masterBrightness255);
-        } else {
-            sendGetRequest("/win&TT=1000&FX=0&CY=0&CL=hFFFFFF" + "&A=" + masterBrightness255);
-        }
-    }
-
-    /**
-     *
-     * @param hsb
-     * @return WLED needs the letter h followed by 2 digit HEX code for RRGGBB
-     */
-    private String createColorHex(HSBType hsb) {
-        return String.format("h%06X", hsb.getRGB() & 0x00FFFFFF);
-    }
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        WledApi localApi = api;
+        if (localApi == null) {
+            return;
+        }
         BigDecimal bigTemp;
-        PercentType localPercentType;
         if (command instanceof RefreshType) {
-            switch (channelUID.getId()) {
-                case CHANNEL_MASTER_CONTROLS:
-                    sendGetRequest("/win");
-            }
             return;// no need to check for refresh below
         }
         logger.debug("command {} sent to {}", command, channelUID.getId());
         try {
             switch (channelUID.getId()) {
                 case CHANNEL_SYNC_SEND:
-                    api.setUdpSend(OnOffType.ON.equals(command));
+                    localApi.setUdpSend(OnOffType.ON.equals(command));
                     break;
                 case CHANNEL_SYNC_RECEIVE:
-                    api.setUdpRecieve(OnOffType.ON.equals(command));
+                    localApi.setUdpRecieve(OnOffType.ON.equals(command));
                     break;
                 case CHANNEL_PRIMARY_WHITE:
                     if (command instanceof PercentType) {
-                        sendGetRequest("/win&W=" + ((PercentType) command).toBigDecimal().multiply(BIG_DECIMAL_2_55));
+                        localApi.sendGetRequest(
+                                "/win&W=" + ((PercentType) command).toBigDecimal().multiply(BIG_DECIMAL_2_55));
                     }
                     break;
                 case CHANNEL_SECONDARY_WHITE:
                     if (command instanceof PercentType) {
-                        sendGetRequest("/win&W2=" + ((PercentType) command).toBigDecimal().multiply(BIG_DECIMAL_2_55));
+                        localApi.sendGetRequest(
+                                "/win&W2=" + ((PercentType) command).toBigDecimal().multiply(BIG_DECIMAL_2_55));
                     }
                     break;
                 case CHANNEL_MASTER_CONTROLS:
                     if (command instanceof OnOffType) {
-                        api.setMasterOn(OnOffType.ON.equals(command));
+                        localApi.setMasterOn(OnOffType.ON.equals(command));
                     } else if (command instanceof IncreaseDecreaseType) {
                         if (IncreaseDecreaseType.INCREASE.equals(command)) {
                             if (masterBrightness255.intValue() < 240) {
-                                sendGetRequest("/win&TT=1000&A=~15"); // 255 divided by 15 = 17 different levels
+                                localApi.sendGetRequest("/win&TT=1000&A=~15"); // 255 divided by 15 = 17 different
+                                                                               // levels
                             } else {
-                                sendGetRequest("/win&TT=1000&A=255");
+                                localApi.sendGetRequest("/win&TT=1000&A=255");
                             }
                         } else {
                             if (masterBrightness255.intValue() > 15) {
-                                sendGetRequest("/win&TT=1000&A=~-15");
+                                localApi.sendGetRequest("/win&TT=1000&A=~-15");
                             } else {
-                                sendGetRequest("/win&TT=1000&A=0");
+                                localApi.sendGetRequest("/win&TT=1000&A=0");
                             }
                         }
                     } else if (command instanceof HSBType) {
-                        api.setMasterHSB((HSBType) command);
+                        if ((((HSBType) command).getBrightness()) == PercentType.ZERO) {
+                            localApi.setMasterOn(false);
+                        }
+                        // PercentType savedLevel = primaryColor.getBrightness();
+                        primaryColor = (HSBType) command;
+                        // hue65535 = primaryColor.getHue().toBigDecimal().multiply(BIG_DECIMAL_182_04);
+                        // saturation255 = primaryColor.getSaturation().toBigDecimal().multiply(BIG_DECIMAL_2_55);
+                        // masterBrightness255 = primaryColor.getBrightness().toBigDecimal().multiply(BIG_DECIMAL_2_55);
+                        if (primaryColor.getSaturation().intValue() < config.saturationThreshold) {
+                            // sendWhite();
+                        } else if (primaryColor.getSaturation().intValue() == 32
+                                && primaryColor.getHue().intValue() == 36 && hasWhite) {
+                            // Google sends this when it wants white
+                            // sendWhite();
+                        } else {
+                            localApi.setMasterHSB((HSBType) command);
+                        }
                     } else if (command instanceof PercentType) {
-                        api.setMasterBrightness((PercentType) command);
+                        localApi.setMasterBrightness((PercentType) command);
                     }
                     return;
                 case CHANNEL_PRIMARY_COLOR:
                     if (command instanceof HSBType) {
                         primaryColor = (HSBType) command;
-                        sendGetRequest("/win&CL=" + createColorHex(primaryColor));
                     } else if (command instanceof PercentType) {
                         primaryColor = new HSBType(primaryColor.getHue(), primaryColor.getSaturation(),
                                 ((PercentType) command));
-                        sendGetRequest("/win&CL=" + createColorHex(primaryColor));
                     }
+                    localApi.setPrimaryColor(primaryColor);
                     return;
                 case CHANNEL_SECONDARY_COLOR:
                     if (command instanceof HSBType) {
                         secondaryColor = (HSBType) command;
-                        sendGetRequest("/win&C2=" + createColorHex(secondaryColor));
                     } else if (command instanceof PercentType) {
                         secondaryColor = new HSBType(secondaryColor.getHue(), secondaryColor.getSaturation(),
                                 ((PercentType) command));
-                        sendGetRequest("/win&C2=" + createColorHex(secondaryColor));
                     }
+                    localApi.setSecondaryColor(secondaryColor);
+                    return;
+                case CHANNEL_THIRD_COLOR:
+                    if (command instanceof HSBType) {
+                        thirdColor = (HSBType) command;
+                    } else if (command instanceof PercentType) {
+                        thirdColor = new HSBType(thirdColor.getHue(), thirdColor.getSaturation(),
+                                ((PercentType) command));
+                    }
+                    localApi.setTertiaryColor(thirdColor);
                     return;
                 case CHANNEL_PALETTES:
-                    api.setPalette(command.toString());
+                    localApi.setPalette(command.toString());
                     break;
                 case CHANNEL_FX:
-                    api.setPreset(command.toString());
+                    localApi.setEffect(command.toString());
                     break;
                 case CHANNEL_SPEED:
-                    api.setFxSpeed((PercentType) command);
+                    localApi.setFxSpeed((PercentType) command);
                     break;
                 case CHANNEL_INTENSITY:
-                    api.setFxIntencity((PercentType) command);
+                    localApi.setFxIntencity((PercentType) command);
                     break;
                 case CHANNEL_SLEEP:
-                    api.setSleep(OnOffType.ON.equals(command));
+                    localApi.setSleep(OnOffType.ON.equals(command));
                     break;
                 case CHANNEL_PRESETS:
-                    sendGetRequest("/win&PL=" + command);
+                    localApi.setPreset(command.toString());
                     break;
                 case CHANNEL_PRESET_DURATION:
                     if (command instanceof QuantityType) {
                         QuantityType<?> seconds = ((QuantityType<?>) command).toUnit(Units.SECOND);
                         if (seconds != null) {
                             bigTemp = new BigDecimal(seconds.intValue()).multiply(new BigDecimal(1000));
-                            sendGetRequest("/win&PT=" + bigTemp.intValue());
+                            localApi.sendGetRequest("/win&PT=" + bigTemp.intValue());
                         }
                     }
                     break;
@@ -197,14 +201,14 @@ public class WLedHandler extends BaseThingHandler {
                     if (command instanceof QuantityType) {
                         QuantityType<?> seconds = ((QuantityType<?>) command).toUnit(Units.SECOND);
                         if (seconds != null) {
-                            api.setTransitionTime(
+                            localApi.setTransitionTime(
                                     new BigDecimal(seconds.intValue()).multiply(new BigDecimal(1000)).intValue());
                         }
                     }
                     break;
                 case CHANNEL_PRESET_CYCLE:
                     if (command instanceof OnOffType) {
-                        api.setPresetCycle(OnOffType.ON.equals(command));
+                        localApi.setPresetCycle(OnOffType.ON.equals(command));
                     }
                     break;
             }
@@ -218,7 +222,7 @@ public class WLedHandler extends BaseThingHandler {
             logger.warn("Presets above 16 do not exist, and the action sent {}", presetIndex);
             return;
         }
-        sendGetRequest("/win&PS=" + presetIndex);
+        // sendGetRequest("/win&PS=" + presetIndex);
     }
 
     public void update(String channelID, State state) {
@@ -236,7 +240,7 @@ public class WLedHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (ApiException e) {
-            api = null;// recheck the firmware as it may have been updated
+            api = null;// recheck the firmware was not just updated
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

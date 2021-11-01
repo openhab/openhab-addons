@@ -29,11 +29,17 @@ public interface WledApi {
 
     public abstract int getFirmwareVersion() throws ApiException;
 
+    public abstract void setGlobalOn(boolean bool) throws ApiException;
+
     public abstract void setMasterOn(boolean bool) throws ApiException;
+
+    public abstract void setGlobalBrightness(PercentType percent) throws ApiException;
 
     public abstract void setMasterBrightness(PercentType percent) throws ApiException;
 
     public abstract void setMasterHSB(HSBType hsbType) throws ApiException;
+
+    public abstract void setEffect(String string) throws ApiException;
 
     public abstract void setPreset(String string) throws ApiException;
 
@@ -52,4 +58,12 @@ public interface WledApi {
     public abstract void setTransitionTime(int milliseconds) throws ApiException;
 
     public abstract void setPresetCycle(boolean bool) throws ApiException;
+
+    public abstract void setPrimaryColor(HSBType hsbType) throws ApiException;
+
+    public abstract void setSecondaryColor(HSBType hsbType) throws ApiException;
+
+    public abstract void setTertiaryColor(HSBType hsbType) throws ApiException;
+
+    public abstract String sendGetRequest(String string) throws ApiException;
 }
