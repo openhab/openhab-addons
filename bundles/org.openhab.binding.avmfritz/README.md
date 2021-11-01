@@ -67,6 +67,10 @@ The FRITZ!DECT 400 supports a configurable button to trigger short or long press
 Beside four customizable buttons the FRITZ!DECT 440 supports temperature readings.
 ** NOTE: ** FRITZ!DECT 440 now uses Channel Groups to group its Channels like `device#battery_level`, `device#battery_low` for device information, `sensors#temperature` for sensor data and `top-left`, `bottom-left`, `top-right` and `bottom-right` combined with `press` and `last_change` (see [Full Example](#full-example))
 
+### FRITZ!DECT 500
+
+The [FRITZ!DECT 500](https://avm.de/produkte/fritzdect/fritzdect-500/) is a dimmable colorized light bulb.
+
 #### Supported Channel Groups
 
 | Channel Group ID                                       | Description         | Available on thing |
@@ -178,7 +182,7 @@ The AIN (actor identification number) can be found in the FRITZ!Box interface ->
 | power           | Number:Power             | Current power consumption                                                                                                                          | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                                |
 | voltage         | Number:ElectricPotential | Current voltage - FRITZ!OS 7                                                                                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                                |
 | outlet          | Switch                   | Switchable outlet (ON/OFF)                                                                                                                         | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                                |
-| on_off          | Switch                   | Switchable device (ON/OFF)                                                                                                                         | HAN_FUN_ON_OFF                                                                                      |
+| on_off          | Switch                   | Switchable device (ON/OFF)                                                                                                                         | FRITZ!DECT 500, HAN_FUN_ON_OFF                                                                                      |
 | actual_temp     | Number:Temperature       | Current temperature of heating thermostat                                                                                                          | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                                          |
 | set_temp        | Number:Temperature       | Set Temperature of heating thermostat                                                                                                              | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                                          |
 | eco_temp        | Number:Temperature       | Eco Temperature of heating thermostat                                                                                                              | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                                          |

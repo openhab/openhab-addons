@@ -19,8 +19,8 @@
 		<parameter name="macAddress" type="text" required="false">
 			<label>MAC Address</label>
 			<description>If MAC Address of TV is entered here, the binding will attempt to power on the device via Wake On Lan
-				(WOL), when it receives command ON on channel power. Accepted value is six groups of two hexadecimal digits,
-				separated by hyphens or colons, e.g '3c:cd:93:c2:20:e0'.)</description>
+				(WOL) when it receives command ON on channel power. Accepted value is six groups of two hexadecimal digits,
+				separated by hyphens or colons, e.g '3c:cd:93:c2:20:e0'.</description>
 		</parameter>
 	</config-description>
 

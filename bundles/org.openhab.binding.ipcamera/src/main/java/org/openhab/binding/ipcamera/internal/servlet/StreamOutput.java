@@ -73,7 +73,12 @@ public class StreamOutput {
     }
 
     public void queueFrame(byte[] frame) {
-        fifo.add(frame);
+        try {
+            fifo.add(frame);
+        } catch (IllegalStateException e) {
+            fifo.remove();
+            fifo.add(frame);
+        }
     }
 
     public void updateContentType(String contentType) {

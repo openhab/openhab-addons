@@ -250,6 +250,11 @@ if (actions === null) {
     logInfo("actions", "Actions not found, check thing ID")
     return
 } else {
-    actions.sendWakeOnLanPacket()
+    // Send via MAC address
+    actions.sendWakeOnLanPacketViaMac()
+    actions.sendWakeOnLanPacket() // deprecated
+    
+    // Send via IP address
+    actions.sendWakeOnLanPacketViaIp()
 }
 ```

@@ -15,6 +15,7 @@ package org.openhab.binding.smhi.internal;
 import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -218,7 +219,7 @@ public class SmhiHandler extends BaseThingHandler {
                     newState = new QuantityType<>(value.get(), MetricPrefix.MILLI(SIUnits.METRE));
                     break;
                 default:
-                    newState = new DecimalType(value.get());
+                    newState = new DecimalType(value.get().setScale(0, RoundingMode.DOWN));
             }
         }
 

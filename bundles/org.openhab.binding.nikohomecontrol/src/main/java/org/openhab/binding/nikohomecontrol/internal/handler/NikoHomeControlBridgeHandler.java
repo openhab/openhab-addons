@@ -77,6 +77,8 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
             return;
         }
 
+        updateStatus(ThingStatus.UNKNOWN);
+
         scheduler.submit(() -> {
             comm.startCommunication();
             if (!comm.communicationActive()) {
@@ -141,7 +143,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
      */
     protected void bridgeOffline() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                "Error with bridge connection");
+                "@text/offline.communication-error");
     }
 
     /**
