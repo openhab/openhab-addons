@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evnotify.api.ApiVersion;
-import org.openhab.binding.evnotify.api.CarChargingData;
+import org.openhab.binding.evnotify.api.ChargingData;
 import org.openhab.binding.evnotify.api.EVNotifyClient;
 import org.openhab.binding.evnotify.api.v2.EVNotifyClientImpl;
 import org.openhab.core.library.types.OnOffType;
@@ -117,98 +117,98 @@ public class EVNotifyHandler extends BaseThingHandler {
         logger.debug("Finished initializing!");
     }
 
-    private void updateChannelsAndStatus(@Nullable CarChargingData carChargingData, @Nullable String message) {
-        if (carChargingData == null) {
+    private void updateChannelsAndStatus(@Nullable ChargingData chargingData, @Nullable String message) {
+        if (chargingData == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
             allChannels.forEach(channel -> updateState(channel, UnDefType.UNDEF));
         } else {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-            allChannels.forEach(channel -> updateState(channel, getValue(channel, carChargingData)));
+            allChannels.forEach(channel -> updateState(channel, getValue(channel, chargingData)));
         }
     }
 
-    private State getValue(String channelId, CarChargingData carChargingData) {
+    private State getValue(String channelId, ChargingData chargingData) {
         switch (channelId) {
             case STATE_OF_HEALTH:
-                if (carChargingData.getStateOfHealth() == null) {
+                if (chargingData.getStateOfHealth() == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(carChargingData.getStateOfHealth(), Units.PERCENT);
+                return new QuantityType<>(chargingData.getStateOfHealth(), Units.PERCENT);
             case CHARGING:
-                if (carChargingData.isCharging() == null) {
+                if (chargingData.isCharging() == null) {
                     return UnDefType.UNDEF;
                 }
-                return carChargingData.isCharging() ? OnOffType.ON : OnOffType.OFF;
+                return chargingData.isCharging() ? OnOffType.ON : OnOffType.OFF;
             case RAPID_CHARING_PORT:
-                if (carChargingData.isRapidChargePort() == null) {
+                if (chargingData.isRapidChargePort() == null) {
                     return UnDefType.UNDEF;
                 }
-                return carChargingData.isRapidChargePort() ? OnOffType.ON : OnOffType.OFF;
+                return chargingData.isRapidChargePort() ? OnOffType.ON : OnOffType.OFF;
             case NORMAL_CHARING_PORT:
-                if (carChargingData.isNormalChargePort() == null) {
+                if (chargingData.isNormalChargePort() == null) {
                     return UnDefType.UNDEF;
                 }
-                return carChargingData.isNormalChargePort() ? OnOffType.ON : OnOffType.OFF;
+                return chargingData.isNormalChargePort() ? OnOffType.ON : OnOffType.OFF;
             case SLOW_CHARING_PORT:
-                if (carChargingData.isSlowChargePort() == null) {
+                if (chargingData.isSlowChargePort() == null) {
                     return UnDefType.UNDEF;
                 }
-                return carChargingData.isSlowChargePort() ? OnOffType.ON : OnOffType.OFF;
+                return chargingData.isSlowChargePort() ? OnOffType.ON : OnOffType.OFF;
             case AUX_BATTERY_VOLTAGE:
-                if (carChargingData.getAuxBatteryVoltage() == null) {
+                if (chargingData.getAuxBatteryVoltage() == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(carChargingData.getAuxBatteryVoltage(), Units.VOLT);
+                return new QuantityType<>(chargingData.getAuxBatteryVoltage(), Units.VOLT);
             case DC_BATTERY_VOLTAGE:
-                if (carChargingData.getDcBatteryVoltage() == null) {
+                if (chargingData.getDcBatteryVoltage() == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(carChargingData.getDcBatteryVoltage(), Units.VOLT);
+                return new QuantityType<>(chargingData.getDcBatteryVoltage(), Units.VOLT);
             case DC_BATTERY_CURRENT:
-                if (carChargingData.getDcBatteryCurrent() == null) {
+                if (chargingData.getDcBatteryCurrent() == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(carChargingData.getDcBatteryCurrent(), Units.AMPERE);
+                return new QuantityType<>(chargingData.getDcBatteryCurrent(), Units.AMPERE);
             case DC_BATTERY_POWER:
-                if (carChargingData.getDcBatteryPower() == null) {
+                if (chargingData.getDcBatteryPower() == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(carChargingData.getDcBatteryPower(), Units.WATT);
+                return new QuantityType<>(chargingData.getDcBatteryPower(), Units.WATT);
             case CUMULATIVE_ENERGY_CHARGED:
-                if (carChargingData.getCumulativeEnergyCharged() == null) {
+                if (chargingData.getCumulativeEnergyCharged() == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(carChargingData.getCumulativeEnergyCharged(), Units.KILOWATT_HOUR);
+                return new QuantityType<>(chargingData.getCumulativeEnergyCharged(), Units.KILOWATT_HOUR);
             case CUMULATIVE_ENERGY_DISCHARGED:
-                if (carChargingData.getCumulativeEnergyDischarged() == null) {
+                if (chargingData.getCumulativeEnergyDischarged() == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(carChargingData.getCumulativeEnergyDischarged(), Units.KILOWATT_HOUR);
+                return new QuantityType<>(chargingData.getCumulativeEnergyDischarged(), Units.KILOWATT_HOUR);
             case BATTERY_MAX_TEMPERATURE:
-                if (carChargingData.getBatteryMaxTemperature() == null) {
+                if (chargingData.getBatteryMaxTemperature() == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(carChargingData.getBatteryMaxTemperature(), SIUnits.CELSIUS);
+                return new QuantityType<>(chargingData.getBatteryMaxTemperature(), SIUnits.CELSIUS);
             case BATTERY_MIN_TEMPERATURE:
-                if (carChargingData.getBatteryMinTemperature() == null) {
+                if (chargingData.getBatteryMinTemperature() == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(carChargingData.getBatteryMinTemperature(), SIUnits.CELSIUS);
+                return new QuantityType<>(chargingData.getBatteryMinTemperature(), SIUnits.CELSIUS);
             case BATTERY_INLET_TEMPERATURE:
-                if (carChargingData.getBatteryInletTemperature() == null) {
+                if (chargingData.getBatteryInletTemperature() == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(carChargingData.getBatteryInletTemperature(), SIUnits.CELSIUS);
+                return new QuantityType<>(chargingData.getBatteryInletTemperature(), SIUnits.CELSIUS);
             case EXTERNAL_TEMPERATURE:
-                if (carChargingData.getExternalTemperature() == null) {
+                if (chargingData.getExternalTemperature() == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(carChargingData.getExternalTemperature(), SIUnits.CELSIUS);
+                return new QuantityType<>(chargingData.getExternalTemperature(), SIUnits.CELSIUS);
             case LAST_EXTENDED:
-                if (carChargingData.getLastExtended() == null) {
+                if (chargingData.getLastExtended() == null) {
                     return UnDefType.UNDEF;
                 }
-                return new StringType(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(carChargingData.getLastExtended()));
+                return new StringType(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(chargingData.getLastExtended()));
         }
         return UnDefType.UNDEF;
     }
@@ -217,8 +217,8 @@ public class EVNotifyHandler extends BaseThingHandler {
         // Request new EVNotify data
         try {
             if (client != null) {
-                CarChargingData carChargingData = client.getCarChargingData();
-                updateChannelsAndStatus(carChargingData, null);
+                ChargingData chargingData = client.getCarChargingData();
+                updateChannelsAndStatus(chargingData, null);
             }
 
         } catch (InterruptedException | IOException e) {
