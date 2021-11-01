@@ -4,10 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- EVNotify Car -->
-	<thing-type id="car">
-		<label>EVNotify Car</label>
-		<description>The EVNotify car (account) represents a connection to the EVNotify online service</description>
+	<!-- EVNotify Vehicle -->
+	<thing-type id="vehicle">
+		<label>EVNotify Vehicle</label>
+		<description>The EVNotify vehicle (account) represents a connection to the EVNotify online service</description>
 
 		<channels>
 			<channel id="soh" typeId="soh"/>
@@ -43,7 +43,7 @@
 
 			<parameter name="refreshInterval" type="integer" required="false" unit="s">
 				<label>Refresh Interval</label>
-				<description>Refresh interval for acquiring data from EVNotify online service (in seconds)</description>
+				<description>Refresh interval for reading data from EVNotify online service (in seconds)</description>
 				<unitLabel>s</unitLabel>
 			</parameter>
 		</config-description>

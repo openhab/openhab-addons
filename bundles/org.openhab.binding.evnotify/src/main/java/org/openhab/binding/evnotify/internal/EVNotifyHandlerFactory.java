@@ -13,7 +13,7 @@
 package org.openhab.binding.evnotify.internal;
 
 import static org.openhab.binding.evnotify.internal.EVNotifyBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-import static org.openhab.binding.evnotify.internal.EVNotifyBindingConstants.THING_TYPE_CAR;
+import static org.openhab.binding.evnotify.internal.EVNotifyBindingConstants.THING_TYPE_VEHICLE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,7 +52,7 @@ public class EVNotifyHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_CAR.equals(thingTypeUID)) {
+        if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {
             return new EVNotifyHandler(thing);
         }
 
