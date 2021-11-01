@@ -41,13 +41,14 @@ public class WledApiFactory {
     }
 
     public WledApi getApi(WLedHandler wLedHandler, WLedConfiguration config) throws ApiException {
-        // json api was first introduced in ver 0.8.4
         WledApi lowestSupportedApi = new WledApiV084(wLedHandler, config, httpClient);
         int version = lowestSupportedApi.getFirmwareVersion();
-        logger.debug("Firmware is {}", version);
-        if (version < 135) {
+        logger.debug("Treating firmware as int:{}", version);
+        // json api was in ver 0.8.4 but may lack testing until 0.10.0 aka 100
+        if (version > 100) {
             return new WledApiV084(wLedHandler, config, httpClient);
         }
+        logger.warn("Your WLED firmware is very old, upgrade to at least 0.10.0");
         return lowestSupportedApi;
     }
 }

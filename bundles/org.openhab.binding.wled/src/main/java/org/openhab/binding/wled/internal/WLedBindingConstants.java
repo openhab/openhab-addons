@@ -45,8 +45,10 @@ public class WLedBindingConstants {
     public static final String CHANNEL_MASTER_CONTROLS = "masterControls";
     public static final String CHANNEL_PRIMARY_COLOR = "primaryColor";
     public static final String CHANNEL_SECONDARY_COLOR = "secondaryColor";
+    public static final String CHANNEL_THIRD_COLOR = "tertiaryColor";
     public static final String CHANNEL_PRIMARY_WHITE = "primaryWhite";
     public static final String CHANNEL_SECONDARY_WHITE = "secondaryWhite";
+    public static final String CHANNEL_THIRD_WHITE = "tertiaryWhite";
     public static final String CHANNEL_PALETTES = "palettes";
     public static final String CHANNEL_PRESETS = "presets";
     public static final String CHANNEL_PRESET_DURATION = "presetDuration";

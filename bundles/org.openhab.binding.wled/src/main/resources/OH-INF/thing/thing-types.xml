@@ -14,6 +14,8 @@
 			<channel id="primaryWhite" typeId="primaryWhite"/>
 			<channel id="secondaryColor" typeId="secondaryColor"/>
 			<channel id="secondaryWhite" typeId="secondaryWhite"/>
+			<channel id="tertiaryColor" typeId="tertiaryColor"/>
+			<channel id="tertiaryWhite" typeId="tertiaryWhite"/>
 			<channel id="presets" typeId="presets"/>
 			<channel id="presetDuration" typeId="presetDuration"/>
 			<channel id="transformTime" typeId="transformTime"/>
@@ -87,6 +89,20 @@
 		<item-type>Dimmer</item-type>
 		<label>Secondary White</label>
 		<description>Changes the brightness of the secondary white LED</description>
+		<category>DimmableLight</category>
+	</channel-type>
+
+	<channel-type id="tertiaryColor" advanced="true">
+		<item-type>Color</item-type>
+		<label>Tertiary Color</label>
+		<description>Allows you to change the third color used in FX</description>
+		<category>ColorLight</category>
+	</channel-type>
+
+	<channel-type id="tertiaryWhite" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Tertiary White</label>
+		<description>Changes the brightness of the third white LED</description>
 		<category>DimmableLight</category>
 	</channel-type>
 
