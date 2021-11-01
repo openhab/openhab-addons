@@ -43,7 +43,7 @@
 
 			<parameter name="refreshInterval" type="integer" required="false" unit="s">
 				<label>Refresh Interval</label>
-				<description>Refresh interval for acquiring data from EVNotify online service in seconds</description>
+				<description>Refresh interval for acquiring data from EVNotify online service (in seconds)</description>
 				<unitLabel>s</unitLabel>
 			</parameter>
 		</config-description>
@@ -64,43 +64,43 @@
 	<channel-type id="rcp">
 		<item-type>Switch</item-type>
 		<label>Rapid Charging Port</label>
-		<description>ON if connected to rapid charging</description>
+		<description>ON if connected to a rapid charging port</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="ncp">
 		<item-type>Switch</item-type>
 		<label>Normal Charging Port</label>
-		<description>ON if connected to normal charging</description>
+		<description>ON if connected to a normal charging port</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="scp">
 		<item-type>Switch</item-type>
 		<label>Slow Charging Port</label>
-		<description>ON if connected to slow charging</description>
+		<description>ON if connected to a slow charging port</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="abv">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>AUX Battery Voltage</label>
-		<description>AUX Battery Voltage</description>
+		<description>Voltage of the aux battery</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="dbv">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>DC Battery Voltage</label>
-		<description>DC Battery Voltage</description>
+		<description>Voltage of the DC battery</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="dbc">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>DC Battery Current</label>
-		<description>DC Battery Current</description>
+		<description>Current of the DC battery</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="dbp">
 		<item-type>Number:Power</item-type>
 		<label>DC Battery Power</label>
-		<description>DC Battery Power</description>
+		<description>Power of the DC battery</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="cec">
