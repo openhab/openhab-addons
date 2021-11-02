@@ -181,7 +181,7 @@ public class OpenUVReportHandler extends BaseThingHandler {
             });
         } else if (ELEVATION.equals(channelUID.getId()) && command instanceof QuantityType) {
             QuantityType<?> qtty = (QuantityType<?>) command;
-            if (qtty.getUnit() == Units.DEGREE_ANGLE) {
+            if (Units.DEGREE_ANGLE.equals(qtty.getUnit())) {
                 suspendUpdates = qtty.doubleValue() < 0;
             } else {
                 logger.info("The OpenUV Report handles Sun Elevation of Number:Angle type, {} does not fit.", command);

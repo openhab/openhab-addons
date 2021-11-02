@@ -170,7 +170,7 @@ public class HaywardDiscoveryService extends AbstractDiscoveryService implements
         List<String> names;
 
         // Set Virtual Heater Name
-        if (thingType == HaywardBindingConstants.THING_TYPE_VIRTUALHEATER) {
+        if (HaywardBindingConstants.THING_TYPE_VIRTUALHEATER.equals(thingType)) {
             names = new ArrayList<>(systemIDs);
             Collections.fill(names, "Heater");
         } else {

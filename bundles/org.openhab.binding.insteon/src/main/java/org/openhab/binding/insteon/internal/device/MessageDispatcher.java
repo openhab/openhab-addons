@@ -107,6 +107,7 @@ public abstract class MessageDispatcher {
      * @param msg
      * @return true;
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     boolean isMyDirectAck(Msg msg) {
         return msg.isAckOfDirect() && (feature.getQueryStatus() == DeviceFeature.QueryStatus.QUERY_PENDING)
                 && feature.getDevice().getFeatureQueried() == feature;
