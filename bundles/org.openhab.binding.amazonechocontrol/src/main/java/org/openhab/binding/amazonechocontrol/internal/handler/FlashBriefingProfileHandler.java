@@ -157,6 +157,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
         }
     }
 
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public boolean initialize(AccountHandler handler, String currentConfigurationJson) {
         updateState(CHANNEL_SAVE, OnOffType.OFF);
         if (updatePlayOnDevice) {

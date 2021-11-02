@@ -314,7 +314,7 @@ public class TunableWhiteThingHandler extends DmxThingHandler {
 
     private void updateCurrentBrightnessAndTemperature() {
         currentBrightness = Util.toPercentValue(Util.toDmxValue(currentValues.get(0) + currentValues.get(1)));
-        if (currentBrightness != PercentType.ZERO) {
+        if (!PercentType.ZERO.equals(currentBrightness)) {
             currentColorTemperature = new PercentType(
                     100 * currentValues.get(1) / (currentValues.get(0) + currentValues.get(1)));
         }

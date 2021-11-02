@@ -173,7 +173,7 @@ public class AccountServlet extends HttpServlet {
                     + uri.substring(PROXY_URI_PART.length());
 
             String postData = null;
-            if (verb == "POST" || verb == "PUT") {
+            if ("POST".equals(verb) || "PUT".equals(verb)) {
                 postData = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             }
 

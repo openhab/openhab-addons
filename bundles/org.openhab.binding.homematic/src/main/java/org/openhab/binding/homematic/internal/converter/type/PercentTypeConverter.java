@@ -71,9 +71,9 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
         Double number = (type.doubleValue() / 100) * maxValue;
 
         if (MetadataUtils.isRollerShutter(dp)) {
-            if (type == PercentType.HUNDRED) { // means DOWN
+            if (PercentType.HUNDRED.equals(type)) { // means DOWN
                 return dp.getMinValue().doubleValue();
-            } else if (type == PercentType.ZERO) { // means UP
+            } else if (PercentType.ZERO.equals(type)) { // means UP
                 return maxValue;
             }
             return maxValue - number;

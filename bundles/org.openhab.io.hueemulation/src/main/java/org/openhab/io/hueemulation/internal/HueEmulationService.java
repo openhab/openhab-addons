@@ -87,7 +87,7 @@ public class HueEmulationService implements EventHandler {
              * Jetty returns 415 on any GET request if a client sends the Content-Type header.
              * This is a workaround - stripping it away in the preMatching stage.
              */
-            if (requestContext.getMethod() == HttpMethod.GET
+            if (HttpMethod.GET.equals(requestContext.getMethod())
                     && requestContext.getHeaders().containsKey(HttpHeader.CONTENT_TYPE.asString())) {
                 requestContext.getHeaders().remove(HttpHeader.CONTENT_TYPE.asString());
             }

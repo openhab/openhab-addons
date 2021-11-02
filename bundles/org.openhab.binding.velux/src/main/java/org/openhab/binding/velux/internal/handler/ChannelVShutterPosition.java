@@ -107,6 +107,7 @@ final class ChannelVShutterPosition extends ChannelHandlerTemplate {
      *            information for this channel.
      * @return newValue ...
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     static @Nullable Command handleCommand(ChannelUID channelUID, String channelId, Command command,
             VeluxBridgeHandler thisBridgeHandler) {
         LOGGER.debug("handleCommand({},{},{},{}) called.", channelUID, channelId, command, thisBridgeHandler);
