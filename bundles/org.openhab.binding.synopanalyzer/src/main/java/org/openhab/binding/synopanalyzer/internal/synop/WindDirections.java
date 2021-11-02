@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.synopanalyser.internal.synop;
+package org.openhab.binding.synopanalyzer.internal.synop;
 
 /**
  * The {@link WindDirections} enum possible wind directions
