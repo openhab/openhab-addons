@@ -96,7 +96,7 @@
 				<default>9292</default>
 			</parameter>
 			<parameter name="callbackRegistrationRetries" type="integer" min="1">
-				<label>Number of Callback Registration Retries </label>
+				<label>Callback Reg. Retries</label>
 				<description>Maximum number of retries to connect to register a callback in the Homematic gateway.</description>
 				<advanced>true</advanced>
 				<default>20</default>
