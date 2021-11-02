@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.synopanalyser.internal.discovery;
+package org.openhab.binding.synopanalyzer.internal.discovery;
 
 import static org.openhab.binding.synopanalyzer.internal.SynopAnalyzerBindingConstants.THING_SYNOP;
 
@@ -23,9 +23,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.synopanalyser.internal.synop.StationDB;
-import org.openhab.binding.synopanalyser.internal.synop.StationDB.Station;
 import org.openhab.binding.synopanalyzer.internal.config.SynopAnalyzerConfiguration;
+import org.openhab.binding.synopanalyzer.internal.synop.StationDB;
+import org.openhab.binding.synopanalyzer.internal.synop.StationDB.Station;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.i18n.LocationProvider;
