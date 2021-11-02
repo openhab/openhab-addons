@@ -54,6 +54,7 @@ public class LcnModuleRvarSetpointSubHandler extends AbstractLcnModuleVariableSu
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void handleStatusMessage(Matcher matcher) throws LcnException {
         Variable variable;
         if (matcher.pattern() == PATTERN) {

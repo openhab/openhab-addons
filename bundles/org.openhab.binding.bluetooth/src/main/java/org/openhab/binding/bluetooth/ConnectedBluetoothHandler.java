@@ -109,6 +109,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void dispose() {
         cancel(reconnectJob, true);
         reconnectJob = null;
@@ -181,6 +182,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
         return characteristic;
     }
 
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     private <T> CompletableFuture<T> executeWithConnection(UUID serviceUUID, UUID characteristicUUID,
             Function<BluetoothCharacteristic, CompletableFuture<T>> callable) {
         if (connectionTaskExecutor == scheduler) {

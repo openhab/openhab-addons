@@ -318,7 +318,7 @@ public class WLedHandler extends BaseThingHandler {
                         }
                     }
                 } else if (command instanceof HSBType) {
-                    if ((((HSBType) command).getBrightness()) == PercentType.ZERO) {
+                    if (PercentType.ZERO.equals(((HSBType) command).getBrightness())) {
                         sendGetRequest("/win&TT=500&T=0");
                     }
                     primaryColor = (HSBType) command;
