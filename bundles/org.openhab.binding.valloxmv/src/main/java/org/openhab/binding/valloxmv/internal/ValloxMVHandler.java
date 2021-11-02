@@ -124,7 +124,7 @@ public class ValloxMVHandler extends BaseThingHandler {
                 // Not writable channel
                 return;
             }
-            if (strUpdateValue != "") {
+            if (!strUpdateValue.isEmpty()) {
                 if (readDataJob != null) {
                     // Re-schedule readDataJob to read device values after data write
                     // Avoid re-scheduling job several times in case of subsequent data writes

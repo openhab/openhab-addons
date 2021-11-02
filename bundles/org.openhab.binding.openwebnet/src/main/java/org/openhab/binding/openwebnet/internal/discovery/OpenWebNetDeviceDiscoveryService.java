@@ -176,7 +176,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
         }
 
         String ownId = bridgeHandler.ownIdFromWhoWhere(deviceWho, where);
-        if (thingTypeUID == OpenWebNetBindingConstants.THING_TYPE_BUS_ON_OFF_SWITCH) {
+        if (OpenWebNetBindingConstants.THING_TYPE_BUS_ON_OFF_SWITCH.equals(thingTypeUID)) {
             if (bridgeHandler.getRegisteredDevice(ownId) != null) {
                 logger.debug("dimmer/switch with WHERE={} already registered, skipping this discovery result", where);
                 return;
@@ -204,7 +204,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
         Map<String, Object> properties = new HashMap<>(2);
         properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_WHERE, whereConfig);
         properties.put(OpenWebNetBindingConstants.PROPERTY_OWNID, ownId);
-        if (thingTypeUID == OpenWebNetBindingConstants.THING_TYPE_GENERIC_DEVICE) {
+        if (OpenWebNetBindingConstants.THING_TYPE_GENERIC_DEVICE.equals(thingTypeUID)) {
             thingLabel = thingLabel + " (WHO=" + deviceWho + ", WHERE=" + whereConfig + ")";
         } else {
             thingLabel = thingLabel + " (WHERE=" + whereConfig + ")";

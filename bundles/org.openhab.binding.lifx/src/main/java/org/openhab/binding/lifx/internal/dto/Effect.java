@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lifx.internal.dto;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lifx.internal.LifxBindingConstants;
@@ -153,7 +155,7 @@ public class Effect {
         }
         Effect n = (Effect) o;
         return n.getType().equals(this.getType()) && n.duration.equals(this.duration) && n.speed.equals(this.speed)
-                && n.palette == this.palette;
+                && Arrays.equals(n.palette, this.palette);
     }
 
     @Override
