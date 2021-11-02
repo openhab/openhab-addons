@@ -17,6 +17,7 @@ import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -458,13 +459,13 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             logger.info("---- CONNECTED to BUS gateway bridge '{}' ({}:{})", thing.getUID(),
                     ((BUSGateway) gw).getHost(), ((BUSGateway) gw).getPort());
             // update serial number property (with MAC address)
-            if (properties.get(PROPERTY_SERIAL_NO) != gw.getMACAddr().toUpperCase()) {
+            if (!Objects.equals(properties.get(PROPERTY_SERIAL_NO), gw.getMACAddr().toUpperCase())) {
                 properties.put(PROPERTY_SERIAL_NO, gw.getMACAddr().toUpperCase());
                 propertiesChanged = true;
                 logger.debug("updated property gw serialNumber: {}", properties.get(PROPERTY_SERIAL_NO));
             }
         }
-        if (properties.get(PROPERTY_FIRMWARE_VERSION) != gw.getFirmwareVersion()) {
+        if (!Objects.equals(properties.get(PROPERTY_FIRMWARE_VERSION), gw.getFirmwareVersion())) {
             properties.put(PROPERTY_FIRMWARE_VERSION, gw.getFirmwareVersion());
             propertiesChanged = true;
             logger.debug("updated property gw firmware version: {}", properties.get(PROPERTY_FIRMWARE_VERSION));

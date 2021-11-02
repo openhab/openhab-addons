@@ -41,14 +41,14 @@ public class MiscUtils {
      * Returns true, if the value is not null and true.
      */
     public static boolean isTrueValue(Object value) {
-        return value != null && value == Boolean.TRUE;
+        return Boolean.TRUE.equals(value);
     }
 
     /**
      * Returns true, if the value is not null and false.
      */
     public static boolean isFalseValue(Object value) {
-        return value != null && value == Boolean.FALSE;
+        return Boolean.FALSE.equals(value);
     }
 
     /**
