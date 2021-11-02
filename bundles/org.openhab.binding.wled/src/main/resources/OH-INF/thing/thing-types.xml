@@ -24,6 +24,8 @@
 			<channel id="fx" typeId="fx"/>
 			<channel id="speed" typeId="speed"/>
 			<channel id="intensity" typeId="intensity"/>
+			<channel id="mirror" typeId="mirror"/>
+			<channel id="reverse" typeId="reverse"/>
 			<channel id="sleep" typeId="sleep"/>
 			<channel id="syncSend" typeId="syncSend"/>
 			<channel id="syncReceive" typeId="syncReceive"/>
@@ -172,6 +174,18 @@
 		<description>Change the intensity of the FX</description>
 	</channel-type>
 
+    <channel-type id="mirror" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Mirror Effect</label>
+        <description>Mirror the effect for this segment</description>
+    </channel-type>
+    
+        <channel-type id="reverse" advanced="true">
+        <item-type>Switch</item-type>
+        <label>Reverse Direction</label>
+        <description>Reverse the direction of the current segment</description>
+    </channel-type>
+    
 	<channel-type id="sleep" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Sleep Timer</label>

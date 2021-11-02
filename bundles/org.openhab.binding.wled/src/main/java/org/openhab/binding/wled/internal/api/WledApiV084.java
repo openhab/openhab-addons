@@ -263,6 +263,16 @@ public class WledApiV084 implements WledApi {
         } else {
             handler.update(CHANNEL_SYNC_SEND, OnOffType.OFF);
         }
+        if (state.stateResponse.seg[handler.config.segmentIndex].mi) {
+            handler.update(CHANNEL_MIRROR, OnOffType.ON);
+        } else {
+            handler.update(CHANNEL_MIRROR, OnOffType.OFF);
+        }
+        if (state.stateResponse.seg[handler.config.segmentIndex].rev) {
+            handler.update(CHANNEL_REVERSE, OnOffType.ON);
+        } else {
+            handler.update(CHANNEL_REVERSE, OnOffType.OFF);
+        }
         handler.update(CHANNEL_TRANS_TIME, new PercentType(
                 new BigDecimal(state.stateResponse.transition).divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
         handler.update(CHANNEL_PRESETS, new StringType("" + state.stateResponse.ps));
@@ -416,5 +426,15 @@ public class WledApiV084 implements WledApi {
     public void setWhiteOnly(PercentType percentType) throws ApiException {
         postState("{\"seg\":[{\"on\":true,\"id\":" + handler.config.segmentIndex + ",\"fx\":0,\"col\":[[0,0,0,"
                 + percentType.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}");
+    }
+
+    @Override
+    public void setMirror(boolean bool) throws ApiException {
+        postState("{\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"mi\":" + bool + "}]}");
+    }
+
+    @Override
+    public void setReverse(boolean bool) throws ApiException {
+        postState("{\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"rev\":" + bool + "}]}");
     }
 }

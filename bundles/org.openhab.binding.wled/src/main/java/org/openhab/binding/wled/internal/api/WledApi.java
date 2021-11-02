@@ -68,4 +68,8 @@ public interface WledApi {
     public abstract String sendGetRequest(String string) throws ApiException;
 
     public abstract void setWhiteOnly(PercentType percentType) throws ApiException;
+
+    public abstract void setMirror(boolean bool) throws ApiException;
+
+    public abstract void setReverse(boolean bool) throws ApiException;
 }

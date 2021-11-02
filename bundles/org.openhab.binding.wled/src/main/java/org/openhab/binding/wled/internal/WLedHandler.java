@@ -85,6 +85,12 @@ public class WLedHandler extends BaseThingHandler {
         logger.debug("command {} sent to {}", command, channelUID.getId());
         try {
             switch (channelUID.getId()) {
+                case CHANNEL_MIRROR:
+                    localApi.setMirror(OnOffType.ON.equals(command));
+                    break;
+                case CHANNEL_REVERSE:
+                    localApi.setReverse(OnOffType.ON.equals(command));
+                    break;
                 case CHANNEL_SYNC_SEND:
                     localApi.setUdpSend(OnOffType.ON.equals(command));
                     break;
@@ -109,8 +115,7 @@ public class WLedHandler extends BaseThingHandler {
                     } else if (command instanceof IncreaseDecreaseType) {
                         if (IncreaseDecreaseType.INCREASE.equals(command)) {
                             if (masterBrightness255.intValue() < 240) {
-                                localApi.sendGetRequest("/win&TT=1000&A=~15"); // 255 divided by 15 = 17 different
-                                                                               // levels
+                                localApi.sendGetRequest("/win&TT=1000&A=~15"); // 255 divided by 15 = 17 levels
                             } else {
                                 localApi.sendGetRequest("/win&TT=1000&A=255");
                             }
@@ -218,7 +223,13 @@ public class WLedHandler extends BaseThingHandler {
             logger.warn("Presets above 16 do not exist, and the action sent {}", presetIndex);
             return;
         }
-        // sendGetRequest("/win&PS=" + presetIndex);
+        try {
+            if (api != null) {
+                api.sendGetRequest("/win&PS=" + presetIndex);
+            }
+        } catch (ApiException e) {
+            logger.warn("Preset failed to save due to:{}", e.getMessage());
+        }
     }
 
     public void update(String channelID, State state) {
@@ -231,10 +242,12 @@ public class WLedHandler extends BaseThingHandler {
             if (localApi == null) {
                 api = apiFactory.getApi(this, config);
                 api.initialize();
-            } else {
-                localApi.update();
-                updateStatus(ThingStatus.ONLINE);
             }
+            if (localApi == null) {
+                return;
+            }
+            localApi.update();
+            updateStatus(ThingStatus.ONLINE);
         } catch (ApiException e) {
             api = null;// recheck the firmware was not just updated
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -244,14 +257,14 @@ public class WLedHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(WLedConfiguration.class);
-        if (config.segmentIndex == -1) {
+        if (config.segmentIndex < 0) {
             config.segmentIndex = 0;
         }
         if (!config.address.contains("://")) {
             logger.debug("Address was not entered in correct format, it may be the raw IP so adding http:// to start");
             config.address = "http://" + config.address;
         }
-        pollingFuture = scheduler.scheduleWithFixedDelay(this::pollState, 1, config.pollTime, TimeUnit.SECONDS);
+        pollingFuture = scheduler.scheduleWithFixedDelay(this::pollState, 0, config.pollTime, TimeUnit.SECONDS);
     }
 
     @Override
