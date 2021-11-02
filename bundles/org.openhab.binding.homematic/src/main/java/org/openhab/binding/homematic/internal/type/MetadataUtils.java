@@ -175,7 +175,7 @@ public class MetadataUtils {
         if ("%%".equals(unit)) {
             return "%d %%";
         }
-        if (unit != null && unit != "") {
+        if (unit != null && !unit.isEmpty()) {
             String pattern = getPattern(dp);
             if (pattern != null) {
                 return String.format("%s %s", pattern, "%unit%");

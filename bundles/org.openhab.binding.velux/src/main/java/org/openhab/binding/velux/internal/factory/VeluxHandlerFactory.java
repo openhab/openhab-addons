@@ -125,6 +125,7 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
         });
     }
 
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     private void updateLocalization() {
         if (localization == Localization.UNKNOWN && localeProvider != null && i18nProvider != null) {
             logger.trace("updateLocalization(): creating Localization based on locale={},translation={}).",

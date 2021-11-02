@@ -252,12 +252,15 @@ public class IpCameraHandler extends BaseThingHandler {
                                 incomingJpeg = new byte[bytesToRecieve];
                             }
                         }
+                    } else {
+                        // 401 errors already handled in pipeline by MyNettyAuthHandler.java
+                        return;
                     }
                 }
                 if (msg instanceof HttpContent) {
-                    if (mjpegUri.equals(requestUrl)) {
+                    HttpContent content = (HttpContent) msg;
+                    if (mjpegUri.equals(requestUrl) && !(content instanceof LastHttpContent)) {
                         // multiple MJPEG stream packets come back as this.
-                        HttpContent content = (HttpContent) msg;
                         byte[] chunkedFrame = new byte[content.content().readableBytes()];
                         content.content().getBytes(content.content().readerIndex(), chunkedFrame);
                         CameraServlet localServlet = servlet;
@@ -265,7 +268,6 @@ public class IpCameraHandler extends BaseThingHandler {
                             localServlet.openStreams.queueFrame(chunkedFrame);
                         }
                     } else {
-                        HttpContent content = (HttpContent) msg;
                         // Found some cameras use Content-Type: image/jpg instead of image/jpeg
                         if (contentType.contains("image/jp")) {
                             for (int i = 0; i < content.content().capacity(); i++) {
@@ -357,6 +359,7 @@ public class IpCameraHandler extends BaseThingHandler {
         }
 
         @Override
+        @SuppressWarnings("PMD.CompareObjectsWithEquals")
         public void userEventTriggered(@Nullable ChannelHandlerContext ctx, @Nullable Object evt) throws Exception {
             if (ctx == null) {
                 return;
@@ -698,6 +701,7 @@ public class IpCameraHandler extends BaseThingHandler {
      * open large amounts of channels. This may help to keep it under control and WARN the user every 8 seconds this is
      * still occurring.
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     private void cleanChannels() {
         for (Channel channel : openChannels) {
             boolean oldChannel = true;

@@ -104,9 +104,16 @@ public class CloudConnector {
     }
 
     public boolean isConnected() {
+        return isConnected(false);
+    }
+
+    public boolean isConnected(boolean force) {
         final MiCloudConnector cl = cloudConnector;
         if (cl != null && cl.hasLoginToken()) {
             return true;
+        }
+        if (force) {
+            logonCache.invalidateValue();
         }
         final @Nullable Boolean c = logonCache.getValue();
         if (c != null && c.booleanValue()) {
@@ -129,7 +136,7 @@ public class CloudConnector {
         if (cl == null || !isConnected()) {
             throw new MiCloudException("Cannot execute request. Cloud service not available");
         }
-        return cl.request(urlPart, country, parameters);
+        return cl.request(urlPart.startsWith("/") ? urlPart : "/" + urlPart, country, parameters);
     }
 
     public @Nullable RawType getMap(String mapId, String country) throws MiCloudException {
