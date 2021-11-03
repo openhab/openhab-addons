@@ -39,5 +39,5 @@ public class EVNotifyConfiguration {
     /**
      * Refresh interval
      */
-    public Integer refreshInterval = 5;
+    public Integer refreshInterval = 120;
 }
