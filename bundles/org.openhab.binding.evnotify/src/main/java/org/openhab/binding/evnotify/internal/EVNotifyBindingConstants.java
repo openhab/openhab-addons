@@ -40,6 +40,9 @@ public class EVNotifyBindingConstants {
     public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, THING_TYPE_VEHICLE_ID);
 
     // List of all Channel ids
+    public static final String STATE_OF_CHARGE_DISPLAY = "soc_display";
+    public static final String STATE_OF_CHARGE_BMS = "soc_bms";
+    public static final String LAST_STATE_OF_CHARGE = "last_soc";
     public static final String STATE_OF_HEALTH = "soh";
     public static final String CHARGING = "charging";
     public static final String RAPID_CHARING_PORT = "rapid_charge_port";
