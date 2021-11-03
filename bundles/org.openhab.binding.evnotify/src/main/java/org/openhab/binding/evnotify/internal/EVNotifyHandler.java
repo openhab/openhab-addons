@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.evnotify.api.ApiException;
 import org.openhab.binding.evnotify.api.ApiVersion;
 import org.openhab.binding.evnotify.api.ChargingData;
 import org.openhab.binding.evnotify.api.EVNotifyClient;
@@ -129,6 +130,22 @@ public class EVNotifyHandler extends BaseThingHandler {
 
     private State getValue(String channelId, ChargingData chargingData) {
         switch (channelId) {
+            case STATE_OF_CHARGE_DISPLAY:
+                if (chargingData.getStateOfHealth() == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(chargingData.getStateOfChargeDisplay(), Units.PERCENT);
+            case STATE_OF_CHARGE_BMS:
+                if (chargingData.getStateOfHealth() == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(chargingData.getStateOfChargeBms(), Units.PERCENT);
+            case LAST_STATE_OF_CHARGE:
+                if (chargingData.getLastExtended() == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new StringType(
+                        DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(chargingData.getLastStateOfCharge()));
             case STATE_OF_HEALTH:
                 if (chargingData.getStateOfHealth() == null) {
                     return UnDefType.UNDEF;
@@ -221,7 +238,7 @@ public class EVNotifyHandler extends BaseThingHandler {
                 updateChannelsAndStatus(chargingData, null);
             }
 
-        } catch (InterruptedException | IOException e) {
+        } catch (InterruptedException | IOException | ApiException e) {
             updateChannelsAndStatus(null, e.getMessage());
         }
     }
