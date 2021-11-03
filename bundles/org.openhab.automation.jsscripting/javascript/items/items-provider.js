@@ -3,7 +3,7 @@ const items = require('./managed');
 const utils = require('../utils');
 const { AbstractProvider } = require('../provider');
 
-const ITEM_PROVIDER_CLASS = "org.eclipse.smarthome.core.items.ItemProvider";
+const ITEM_PROVIDER_CLASS = "org.openhab.core.items.ItemProvider";
 
 
 class StaticItemProvider extends AbstractProvider {

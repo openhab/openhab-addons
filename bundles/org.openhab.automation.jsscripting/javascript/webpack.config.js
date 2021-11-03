@@ -3,6 +3,7 @@ const path = require('path');
 module.exports = {
   entry: './index.js',
   mode: 'development',
+  devtool: 'source-map',
   externals: [
     {
       ["@runtime"]: {

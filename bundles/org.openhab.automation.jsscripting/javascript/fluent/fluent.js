@@ -118,6 +118,15 @@ const fluentExports = {
     timeOfDay: s => new triggers.ItemTriggerConfig('vTimeOfDay').changed().to(s),
     
     /**
+     * Specifies a channel event as a source for the rule to fire.
+     * 
+     * @memberof fluent
+     * @param {String} channelName the name of the channel
+     * @returns {ItemTriggerConfig} the trigger config
+     */
+    channel: s => new triggers.ChannelTriggerConfig(s),
+
+    /**
      * Specifies a cron schedule for the rule to fire.
      * 
      * @memberof fluent
@@ -207,7 +216,16 @@ const fluentExports = {
      * @returns {ItemTriggerConfig} the trigger config
      */
     item: s => new triggers.ItemTriggerConfig(s),
-    
+
+    /**
+     * Specifies an group member as the source of changes to trigger a rule.
+     * 
+     * @memberof fluent
+     * @param {String} groupName the name of the group
+     * @returns {ItemTriggerConfig} the trigger config
+     */
+    memberOf: s => new triggers.ItemTriggerConfig(s, true),
+
     /**
      * Copies the state from one item to another. Can be used to proxy item state. State is updated, not
      * sent as a command.
@@ -233,7 +251,24 @@ const fluentExports = {
      * @param {String} itemName the name of the item to assess the state
      * @returns {ItemStateConditionConf} the operation config
      */
-    stateOfItem: s => new conditions.ItemStateConditionConf(s)
+    stateOfItem: s => new conditions.ItemStateConditionConf(s),
+
+    /**
+     * Specifies a Thing status event as a source for the rule to fire.
+     * 
+     * @memberof fluent
+     * @param {String} thingUID the UID of the Thing
+     * @returns {ItemTriggerConfig} the trigger config
+     */
+    thing: s => new triggers.ThingTriggerConfig(s),
+
+    /**
+     * Specifies a system event as a source for the rule to fire.
+     * 
+     * @memberof fluent
+     * @returns {ItemTriggerConfig} the trigger config
+     */
+    system: () => new triggers.SystemTriggerConfig()
 }
 
 module.exports = Object.assign({
