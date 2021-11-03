@@ -18,12 +18,14 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import org.openhab.binding.evnotify.api.ApiException;
 import org.openhab.binding.evnotify.api.ChargingData;
 import org.openhab.binding.evnotify.api.EVNotifyClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link EVNotifyClient} is responsible for retrieving
@@ -50,7 +52,7 @@ public class EVNotifyClientImpl implements EVNotifyClient {
     }
 
     @Override
-    public ChargingData getCarChargingData() throws IOException, InterruptedException {
+    public ChargingData getCarChargingData() throws IOException, InterruptedException, ApiException {
 
         // create the requests
         var basicRequest = HttpRequest.newBuilder(URI.create(String.format(BASIC_API_URL_PATTERN, aKey, token)))
@@ -62,17 +64,35 @@ public class EVNotifyClientImpl implements EVNotifyClient {
         try {
             // use the client to send the requests
             var basicResponse = client.send(basicRequest, HttpResponse.BodyHandlers.ofString());
+            validateResponse(basicResponse);
             BasicChargingDataDTO basicChargingDataDTO = new Gson().fromJson(basicResponse.body(),
                     BasicChargingDataDTO.class);
 
             var extendedResponse = client.send(extendedRequest, HttpResponse.BodyHandlers.ofString());
+            validateResponse(extendedResponse);
             ExtendedChargingDataDTO extendedChargingData = new Gson().fromJson(extendedResponse.body(),
                     ExtendedChargingDataDTO.class);
 
             return new ChargingDataDTO(basicChargingDataDTO, extendedChargingData);
+        } catch (JsonSyntaxException e) {
+            throw new ApiException("Request failed with invalid response body", e);
         } catch (Exception e) {
-            logger.error("Could not retrieve state of car", e);
             throw e;
+        }
+    }
+
+    private void validateResponse(HttpResponse<String> httpResponse) throws ApiException {
+        if (httpResponse != null) {
+
+            if (httpResponse.statusCode() >= 400) {
+                throw new ApiException(String.format("Request failed with status %d", httpResponse.statusCode()));
+            }
+
+            if (httpResponse.body() == null) {
+                throw new ApiException("Request failed with null response body");
+            }
+        } else {
+            throw new ApiException("Response was null.");
         }
     }
 }

@@ -26,5 +26,5 @@ public interface EVNotifyClient {
      *
      * @return state of a car
      */
-    ChargingData getCarChargingData() throws IOException, InterruptedException;
+    ChargingData getCarChargingData() throws IOException, InterruptedException, ApiException;
 }
