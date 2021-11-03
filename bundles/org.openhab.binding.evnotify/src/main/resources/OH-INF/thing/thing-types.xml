@@ -10,22 +10,25 @@
 		<description>The EVNotify vehicle (account) represents a connection to the EVNotify online service</description>
 
 		<channels>
-			<channel id="soh" typeId="soh"/>
-			<channel id="charging" typeId="cha"/>
-			<channel id="rapid_charge_port" typeId="rcp"/>
-			<channel id="normal_charge_port" typeId="ncp"/>
-			<channel id="slow_charge_port" typeId="scp"/>
-			<channel id="aux_battery_voltage" typeId="abv"/>
-			<channel id="dc_battery_voltage" typeId="dbv"/>
-			<channel id="dc_battery_current" typeId="dbc"/>
-			<channel id="dc_battery_power" typeId="dbp"/>
-			<channel id="cumulative_energy_charged" typeId="cec"/>
-			<channel id="cumulative_energy_discharged" typeId="ced"/>
-			<channel id="battery_min_temperature" typeId="bmit"/>
-			<channel id="battery_max_temperature" typeId="bmat"/>
-			<channel id="battery_inlet_temperature" typeId="bit"/>
-			<channel id="external_temperature" typeId="et"/>
-			<channel id="last_extended" typeId="le"/>
+			<channel id="soc_display" typeId="type_soc_display"/>
+			<channel id="soc_bms" typeId="type_soc_bms"/>
+			<channel id="last_soc" typeId="type_last_soc"/>
+			<channel id="soh" typeId="type_soh"/>
+			<channel id="charging" typeId="type_charging"/>
+			<channel id="rapid_charge_port" typeId="type_rapid_charge_port"/>
+			<channel id="normal_charge_port" typeId="type_normal_charge_port"/>
+			<channel id="slow_charge_port" typeId="type_slow_charge_port"/>
+			<channel id="aux_battery_voltage" typeId="type_aux_battery_voltage"/>
+			<channel id="dc_battery_voltage" typeId="type_dc_battery_voltage"/>
+			<channel id="dc_battery_current" typeId="type_dc_battery_current"/>
+			<channel id="dc_battery_power" typeId="type_dc_battery_power"/>
+			<channel id="cumulative_energy_charged" typeId="type_cumulative_energy_charged"/>
+			<channel id="cumulative_energy_discharged" typeId="type_cumulative_energy_discharged"/>
+			<channel id="battery_min_temperature" typeId="type_battery_min_temperature"/>
+			<channel id="battery_max_temperature" typeId="type_battery_max_temperature"/>
+			<channel id="battery_inlet_temperature" typeId="type_battery_inlet_temperature"/>
+			<channel id="external_temperature" typeId="type_external_temperature"/>
+			<channel id="last_extended" typeId="type_last_extended"/>
 		</channels>
 
 		<config-description>
@@ -49,103 +52,121 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="soh">
+	<channel-type id="type_soc_display">
+		<item-type>Number</item-type>
+		<label>State of Charge (Display)</label>
+		<description>State of Charge (Display)</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="type_soc_bms">
+		<item-type>Number</item-type>
+		<label>State of Charge (BMS)</label>
+		<description>State of Charge (BMS)</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="type_last_soc">
+		<item-type>String</item-type>
+		<label>Latest state of charge</label>
+		<description>Timestamp of the latest state of charge export</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="type_soh">
 		<item-type>Number</item-type>
 		<label>State of Health</label>
 		<description>State of Health</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="cha">
+	<channel-type id="type_charging">
 		<item-type>Switch</item-type>
 		<label>Charging</label>
 		<description>ON if charging</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="rcp">
+	<channel-type id="type_rapid_charge_port">
 		<item-type>Switch</item-type>
 		<label>Rapid Charging Port</label>
 		<description>ON if connected to a rapid charging port</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="ncp">
+	<channel-type id="type_normal_charge_port">
 		<item-type>Switch</item-type>
 		<label>Normal Charging Port</label>
 		<description>ON if connected to a normal charging port</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="scp">
+	<channel-type id="type_slow_charge_port">
 		<item-type>Switch</item-type>
 		<label>Slow Charging Port</label>
 		<description>ON if connected to a slow charging port</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="abv">
+	<channel-type id="type_aux_battery_voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>AUX Battery Voltage</label>
 		<description>Voltage of the aux battery</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="dbv">
+	<channel-type id="type_dc_battery_voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>DC Battery Voltage</label>
 		<description>Voltage of the DC battery</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="dbc">
+	<channel-type id="type_dc_battery_current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>DC Battery Current</label>
 		<description>Current of the DC battery</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="dbp">
+	<channel-type id="type_dc_battery_power">
 		<item-type>Number:Power</item-type>
 		<label>DC Battery Power</label>
 		<description>Power of the DC battery</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="cec">
+	<channel-type id="type_cumulative_energy_charged">
 		<item-type>Number:Energy</item-type>
 		<label>Cumulative Energy Charged</label>
 		<description>Amount of energy that has been charged</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="ced">
+	<channel-type id="type_cumulative_energy_discharged">
 		<item-type>Number:Energy</item-type>
 		<label>Cumulative Energy Discharged</label>
 		<description>Amount of energy that has been discharged</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="ced">
+	<channel-type id="type_cumulative_energy_discharged">
 		<item-type>Number:Temperature</item-type>
 		<label>External Temperature</label>
 		<description>External Temperature</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="bmit">
+	<channel-type id="type_battery_min_temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Battery Min Temperature</label>
 		<description>Battery Min Temperature</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="bmat">
+	<channel-type id="type_battery_max_temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Battery Max Temperature</label>
 		<description>Battery Max Temperature</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="bit">
+	<channel-type id="type_battery_inlet_temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Battery Inlet Temperature</label>
 		<description>Battery Inlet Temperature</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="et">
+	<channel-type id="typ_external_temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>External Temperature</label>
 		<description>External Temperature</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="le">
+	<channel-type id="type_last_extended">
 		<item-type>String</item-type>
 		<label>Latest export</label>
 		<description>Timestamp of the latest export</description>
