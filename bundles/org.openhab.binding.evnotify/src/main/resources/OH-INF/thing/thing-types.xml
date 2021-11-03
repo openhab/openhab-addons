@@ -7,7 +7,7 @@
 	<!-- EVNotify Vehicle -->
 	<thing-type id="vehicle">
 		<label>EVNotify Vehicle</label>
-		<description>The EVNotify vehicle (account) represents a connection to the EVNotify online service</description>
+		<description>The EVNotify vehicle represents a connection to the EVNotify online service (account)</description>
 
 		<channels>
 			<channel id="soc_display" typeId="type_soc_display"/>
@@ -136,34 +136,28 @@
 		<description>Amount of energy that has been discharged</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="type_cumulative_energy_discharged">
-		<item-type>Number:Temperature</item-type>
-		<label>External Temperature</label>
-		<description>External Temperature</description>
-		<state pattern="%d %unit%" readOnly="true"/>
-	</channel-type>
 	<channel-type id="type_battery_min_temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Battery Min Temperature</label>
-		<description>Battery Min Temperature</description>
+		<description>The minimum temperature of the battery</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="type_battery_max_temperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Battery Max Temperature</label>
-		<description>Battery Max Temperature</description>
+		<label>Battery ax Temperature</label>
+		<description>The maximum temperature of the battery</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="type_battery_inlet_temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Battery Inlet Temperature</label>
-		<description>Battery Inlet Temperature</description>
+		<description>The inlet temperature of the battery</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="typ_external_temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>External Temperature</label>
-		<description>External Temperature</description>
+		<description>External temperature</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="type_last_extended">
