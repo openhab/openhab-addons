@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Represents the extended data that is returned by evnotify v2 API.
- * 
+ *
  * e.g.
  *
  * {
