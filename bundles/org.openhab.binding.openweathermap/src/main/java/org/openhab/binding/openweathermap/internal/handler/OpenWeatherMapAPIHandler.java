@@ -14,6 +14,8 @@ package org.openhab.binding.openweathermap.internal.handler;
 
 import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingConstants.*;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -24,8 +26,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapAPIConfiguration;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
+import org.openhab.binding.openweathermap.internal.discovery.OpenWeatherMapDiscoveryService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -34,6 +39,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.util.ThingHandlerHelper;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -57,16 +63,38 @@ public class OpenWeatherMapAPIHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> refreshJob;
 
     private final HttpClient httpClient;
+    private final LocationProvider locationProvider;
     private final LocaleProvider localeProvider;
+    private final TranslationProvider i18nProvider;
     private @NonNullByDefault({}) OpenWeatherMapConnection connection;
 
     // keeps track of the parsed config
     private @NonNullByDefault({}) OpenWeatherMapAPIConfiguration config;
 
-    public OpenWeatherMapAPIHandler(Bridge bridge, HttpClient httpClient, LocaleProvider localeProvider) {
+    public OpenWeatherMapAPIHandler(Bridge bridge, HttpClient httpClient, LocationProvider locationProvider,
+            LocaleProvider localeProvider, TranslationProvider i18nProvider) {
         super(bridge);
         this.httpClient = httpClient;
+        this.locationProvider = locationProvider;
         this.localeProvider = localeProvider;
+        this.i18nProvider = i18nProvider;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(OpenWeatherMapDiscoveryService.class);
+    }
+
+    public LocationProvider getLocationProvider() {
+        return locationProvider;
+    }
+
+    public LocaleProvider getLocaleProvider() {
+        return localeProvider;
+    }
+
+    public TranslationProvider getTranslationProvider() {
+        return i18nProvider;
     }
 
     @Override

@@ -15,7 +15,6 @@ package org.openhab.binding.openweathermap.internal.discovery;
 import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingConstants.*;
 
 import java.util.Date;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -26,11 +25,11 @@ import org.openhab.binding.openweathermap.internal.handler.AbstractOpenWeatherMa
 import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAPIHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,39 +39,52 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Initial Contribution
  */
 @NonNullByDefault
-public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
+public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWeatherMapDiscoveryService.class);
 
     private static final int DISCOVERY_TIMEOUT_SECONDS = 2;
     private static final int DISCOVERY_INTERVAL_SECONDS = 60;
-    private @Nullable ScheduledFuture<?> discoveryJob;
-    private final LocationProvider locationProvider;
-    private @Nullable PointType previousLocation;
 
-    private final OpenWeatherMapAPIHandler bridgeHandler;
+    private @Nullable ScheduledFuture<?> discoveryJob;
+    private @Nullable LocationProvider locationProvider;
+    private @Nullable PointType previousLocation;
+    private @Nullable OpenWeatherMapAPIHandler bridgeHandler;
 
     /**
      * Creates an OpenWeatherMapLocationDiscoveryService.
      */
-    public OpenWeatherMapDiscoveryService(OpenWeatherMapAPIHandler bridgeHandler, LocationProvider locationProvider,
-            LocaleProvider localeProvider, TranslationProvider i18nProvider) {
+    public OpenWeatherMapDiscoveryService() {
         super(AbstractOpenWeatherMapHandler.SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT_SECONDS);
-        this.bridgeHandler = bridgeHandler;
-        this.locationProvider = locationProvider;
-        this.localeProvider = localeProvider;
-        this.i18nProvider = i18nProvider;
-        activate(null);
     }
 
     @Override
-    protected void activate(@Nullable Map<String, Object> configProperties) {
-        super.activate(configProperties);
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof OpenWeatherMapAPIHandler) {
+            OpenWeatherMapAPIHandler localHandler = (OpenWeatherMapAPIHandler) handler;
+            bridgeHandler = localHandler;
+            locationProvider = localHandler.getLocationProvider();
+            localeProvider = localHandler.getLocaleProvider();
+            i18nProvider = localHandler.getTranslationProvider();
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
+    }
+
+    @Override
+    public void activate() {
+        super.activate(null);
     }
 
     @Override
     public void deactivate() {
-        removeOlderResults(new Date().getTime(), bridgeHandler.getThing().getUID());
+        OpenWeatherMapAPIHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            removeOlderResults(new Date().getTime(), localBridgeHandler.getThing().getUID());
+        }
         super.deactivate();
     }
 
@@ -112,22 +124,27 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void scanForNewLocation(boolean updateOnlyIfNewLocation) {
-        PointType currentLocation = locationProvider.getLocation();
+        OpenWeatherMapAPIHandler localBridgeHandler = bridgeHandler;
+        LocationProvider localLocationProvider = locationProvider;
+        if (localBridgeHandler == null || localLocationProvider == null) {
+            return;
+        }
+        ThingUID bridgeUID = localBridgeHandler.getThing().getUID();
+        PointType currentLocation = localLocationProvider.getLocation();
         if (currentLocation == null) {
             logger.debug("Location is not set -> Will not provide any discovery results.");
         } else if (!Objects.equals(currentLocation, previousLocation)) {
             logger.debug("Location has been changed from {} to {} -> Creating new discovery results.", previousLocation,
                     currentLocation);
-            createResults(currentLocation);
+            createResults(currentLocation, bridgeUID);
             previousLocation = currentLocation;
         } else if (!updateOnlyIfNewLocation) {
-            createResults(currentLocation);
+            createResults(currentLocation, bridgeUID);
         }
     }
 
-    private void createResults(PointType location) {
+    private void createResults(PointType location, ThingUID bridgeUID) {
         String locationString = location.toFullString();
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         createWeatherAndForecastResult(locationString, bridgeUID);
         createAirPollutionResult(locationString, bridgeUID);
         createOneCallResult(locationString, bridgeUID);
