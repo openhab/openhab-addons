@@ -32,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
+import org.openhab.binding.evnotify.api.ApiException;
 import org.openhab.binding.evnotify.api.ChargingData;
 import org.openhab.binding.evnotify.api.EVNotifyClient;
 
@@ -45,9 +46,13 @@ class EVNotifyClientImplTest {
     @Mock
     HttpClient httpClient;
 
-    private URI basicUri = new URI("https://app.evnotify.de/soc");
+    private final URI basicUri = new URI("https://app.evnotify.de/soc");
 
-    private URI extendedUri = new URI("https://app.evnotify.de/extended");
+    private final URI extendedUri = new URI("https://app.evnotify.de/extended");
+
+    private final HttpRequestUriMatcher basicUriMatcher = new HttpRequestUriMatcher(basicUri);
+
+    private final HttpRequestUriMatcher extendedUriMatcher = new HttpRequestUriMatcher(extendedUri);
 
     EVNotifyClientImplTest() throws URISyntaxException {
     }
@@ -58,15 +63,14 @@ class EVNotifyClientImplTest {
     }
 
     @Test
-    void shouldGiveAValidCarChargingDataForValidResponse() throws IOException, InterruptedException {
+    void shouldGiveAValidChargingDataForValidResponse() throws IOException, InterruptedException, ApiException {
         // given
-        HttpResponse<String> basicResponse = getResponse(200, getBasicResponseBody());
-        when(httpClient.send(argThat(new HttpRequestUriMatcher(basicUri)), any(HttpResponse.BodyHandler.class)))
-                .thenReturn(basicResponse);
+        HttpResponse<String> basicResponse = getResponse(200, getValidBasicResponseBody());
+        mockResponse(basicUriMatcher, basicResponse);
 
-        HttpResponse<String> extendedResponse = getResponse(200, getExtendedResponseBody());
-        when(httpClient.send(argThat(new HttpRequestUriMatcher(extendedUri)), any(HttpResponse.BodyHandler.class)))
-                .thenReturn(extendedResponse);
+        HttpResponse<String> extendedResponse = getResponse(200, getValidExtendedResponseBody());
+        mockResponse(extendedUriMatcher, extendedResponse);
+
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
         // when
@@ -76,10 +80,10 @@ class EVNotifyClientImplTest {
         assertEquals(Float.valueOf(93.0f), chargingData.getStateOfChargeDisplay());
         assertEquals(Float.valueOf(88.5f), chargingData.getStateOfChargeBms());
         assertEquals(1631220014L, chargingData.getLastStateOfCharge().toInstant().toEpochMilli());
-        assertEquals(true, chargingData.isCharging());
-        assertEquals(false, chargingData.isRapidChargePort());
-        assertEquals(true, chargingData.isNormalChargePort());
-        assertEquals(false, chargingData.isSlowChargePort());
+        assertTrue(chargingData.isCharging());
+        assertFalse(chargingData.isRapidChargePort());
+        assertTrue(chargingData.isNormalChargePort());
+        assertFalse(chargingData.isSlowChargePort());
         assertEquals(Float.valueOf(100.0f), chargingData.getStateOfHealth());
         assertEquals(Float.valueOf(14.5f), chargingData.getAuxBatteryVoltage());
         assertEquals(Float.valueOf(362.1f), chargingData.getDcBatteryVoltage());
@@ -92,6 +96,176 @@ class EVNotifyClientImplTest {
         assertEquals(Float.valueOf(24f), chargingData.getBatteryInletTemperature());
         assertNull(chargingData.getExternalTemperature());
         assertEquals(1631220014L, chargingData.getLastExtended().toInstant().toEpochMilli());
+    }
+
+    @Test
+    void shouldGiveAEmptyChargingDataForEmptyResponse() throws IOException, InterruptedException, ApiException {
+        // given
+        HttpResponse<String> basicResponse = getResponse(200, getEmptyResponseBody());
+        mockResponse(basicUriMatcher, basicResponse);
+
+        HttpResponse<String> extendedResponse = getResponse(200, getEmptyResponseBody());
+        mockResponse(extendedUriMatcher, extendedResponse);
+
+        EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
+
+        // when
+        ChargingData chargingData = evNotifyClient.getCarChargingData();
+
+        // then
+        assertNull(chargingData.getStateOfChargeDisplay());
+        assertNull(chargingData.getStateOfChargeBms());
+        assertNull(chargingData.getLastStateOfCharge());
+        assertFalse(chargingData.isCharging());
+        assertFalse(chargingData.isRapidChargePort());
+        assertFalse(chargingData.isNormalChargePort());
+        assertFalse(chargingData.isSlowChargePort());
+        assertNull(chargingData.getStateOfHealth());
+        assertNull(chargingData.getAuxBatteryVoltage());
+        assertNull(chargingData.getDcBatteryVoltage());
+        assertNull(chargingData.getDcBatteryCurrent());
+        assertNull(chargingData.getDcBatteryPower());
+        assertNull(chargingData.getCumulativeEnergyCharged());
+        assertNull(chargingData.getCumulativeEnergyDischarged());
+        assertNull(chargingData.getBatteryMinTemperature());
+        assertNull(chargingData.getBatteryMaxTemperature());
+        assertNull(chargingData.getBatteryInletTemperature());
+        assertNull(chargingData.getExternalTemperature());
+        assertNull(chargingData.getLastExtended());
+    }
+
+    @Test
+    void shouldThrowApiExceptionForNullBasicResponse() throws IOException, InterruptedException {
+        // given
+        mockResponse(basicUriMatcher, null);
+
+        HttpResponse<String> extendedResponse = getResponse(200, getValidExtendedResponseBody());
+        mockResponse(extendedUriMatcher, extendedResponse);
+
+        EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
+
+        // when
+        assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+
+        // then
+    }
+
+    @Test
+    void shouldThrowApiExceptionForNullExtendedResponse() throws IOException, InterruptedException {
+        // given
+        HttpResponse<String> basicResponse = getResponse(200, getValidBasicResponseBody());
+        mockResponse(basicUriMatcher, basicResponse);
+
+        mockResponse(extendedUriMatcher, null);
+
+        EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
+
+        // when
+        assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+
+        // then
+    }
+
+    @Test
+    void shouldThrowApiExceptionForInvalidBasicResponseStatus() throws IOException, InterruptedException {
+        // given
+        HttpResponse<String> basicResponse = getResponse(400, getValidBasicResponseBody());
+        mockResponse(basicUriMatcher, basicResponse);
+
+        HttpResponse<String> extendedResponse = getResponse(200, getValidExtendedResponseBody());
+        mockResponse(extendedUriMatcher, extendedResponse);
+
+        EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
+
+        // when
+        assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+
+        // then
+    }
+
+    @Test
+    void shouldThrowApiExceptionForInvalidExtendedResponseStatus() throws IOException, InterruptedException {
+        // given
+        HttpResponse<String> basicResponse = getResponse(200, getValidBasicResponseBody());
+        mockResponse(basicUriMatcher, basicResponse);
+
+        HttpResponse<String> extendedResponse = getResponse(400, getValidExtendedResponseBody());
+        mockResponse(extendedUriMatcher, extendedResponse);
+
+        EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
+
+        // when
+        assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+
+        // then
+    }
+
+    @Test
+    void shouldThrowApiExceptionForNullBasicResponseBody() throws IOException, InterruptedException {
+        // given
+        HttpResponse<String> basicResponse = getResponse(200, null);
+        mockResponse(basicUriMatcher, basicResponse);
+
+        HttpResponse<String> extendedResponse = getResponse(200, getValidExtendedResponseBody());
+        mockResponse(extendedUriMatcher, extendedResponse);
+
+        EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
+
+        // when
+        assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+
+        // then
+    }
+
+    @Test
+    void shouldThrowApiExceptionForNullExtendedResponseBody() throws IOException, InterruptedException {
+        // given
+        HttpResponse<String> basicResponse = getResponse(200, getValidBasicResponseBody());
+        mockResponse(basicUriMatcher, basicResponse);
+
+        HttpResponse<String> extendedResponse = getResponse(200, null);
+        mockResponse(extendedUriMatcher, extendedResponse);
+
+        EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
+
+        // when
+        assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+
+        // then
+    }
+
+    @Test
+    void shouldThrowApiExceptionForInvalidBasicResponseBody() throws IOException, InterruptedException {
+        // given
+        HttpResponse<String> basicResponse = getResponse(200, getInvalidResponseBody());
+        mockResponse(basicUriMatcher, basicResponse);
+
+        HttpResponse<String> extendedResponse = getResponse(200, getValidExtendedResponseBody());
+        mockResponse(extendedUriMatcher, extendedResponse);
+
+        EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
+
+        // when
+        assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+
+        // then
+    }
+
+    @Test
+    void shouldThrowApiExceptionForInvalidExtendedResponseBody() throws IOException, InterruptedException {
+        // given
+        HttpResponse<String> basicResponse = getResponse(200, getValidBasicResponseBody());
+        mockResponse(basicUriMatcher, basicResponse);
+
+        HttpResponse<String> extendedResponse = getResponse(200, getInvalidResponseBody());
+        mockResponse(extendedUriMatcher, extendedResponse);
+
+        EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
+
+        // when
+        assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+
+        // then
     }
 
     private HttpResponse<String> getResponse(Integer statusCode, String body) {
@@ -138,11 +312,19 @@ class EVNotifyClientImplTest {
         };
     }
 
-    private String getBasicResponseBody() {
+    private String getValidBasicResponseBody() {
         return "{\"soc_display\": 93,\"soc_bms\": 88.5,\"last_soc\": 1631220014}";
     }
 
-    private String getExtendedResponseBody() {
+    private String getEmptyResponseBody() {
+        return "{}";
+    }
+
+    private String getInvalidResponseBody() {
+        return "{999}";
+    }
+
+    private String getValidExtendedResponseBody() {
         return "{\"soh\": 100,\"charging\": 1,\"rapid_charge_port\": 0,\"normal_charge_port\": 1,"
                 + "\"slow_charge_port\": null,\"aux_battery_voltage\": 14.5,\"dc_battery_voltage\": 362.1,"
                 + "\"dc_battery_current\": -8.7,\"dc_battery_power\": -3.15027,"
@@ -152,7 +334,12 @@ class EVNotifyClientImplTest {
                 + "\"last_extended\": 1631220014}";
     }
 
-    private class HttpRequestUriMatcher implements ArgumentMatcher<HttpRequest> {
+    private void mockResponse(HttpRequestUriMatcher httpRequestUriMatcher, HttpResponse<String> response)
+            throws IOException, InterruptedException {
+        when(httpClient.send(argThat(httpRequestUriMatcher), any(HttpResponse.BodyHandler.class))).thenReturn(response);
+    }
+
+    private static class HttpRequestUriMatcher implements ArgumentMatcher<HttpRequest> {
 
         private final URI uri;
 
