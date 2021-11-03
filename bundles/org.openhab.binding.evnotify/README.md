@@ -1,56 +1,98 @@
 # EVNotify Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding can be used to read data for a given electric vehicle from the EVNotify online service (account). Please see [EVNotify](https://evnotify.de/).
 
-_If possible, provide some resources like pictures, a video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+It allows you to monitor different data from your electric vehicle (e.g. state of charge, state of health, etc.).
+
+The binding was tested with a Hyundai Ioniq electric.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Thing Type | Description |
+| ---------- | ----------- |
+| `vehicle`  | The vehicle represents a connection to the [EVNotify](https://evnotify.de/) online service (account) |
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+There is no discovery implemented. You have to create your things manually and specify the `AKey` and the `Token` of your [EVNotify](https://evnotify.de/) online service (account).
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the EVNotify Binding
-#
-# Default secret key for the pairing of the EVNotify Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+The binding has no configuration options, all configuration is done at `vehicle` level.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+### Vehicle Thing Configuration
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Parameter         | Description | Required | Default |
+| ----------------- | ----------- | :------: | :-----: |
+| `AKey`            | AKey used for EVNotify API access | yes | - |
+| `Token`           | Token used for EVNotify API access. It is like a password. Do not share this with people you do not trust! | yes | - |
+| `refreshInterval` | Refresh interval for reading data from EVNotify online service (in seconds) | no | 120 |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+### Channels for Vehicle Thing
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+| Channel ID                     | Item Type | Description                                    |
+| ------------------------------ | --------- | ---------------------------------------------- |
+| `soc_display`                  | Number    | State of Charge (Display)                      |
+| `soc_bms`                      | Number    | State of Charge (BMS)                          |
+| `last_soc`                     | String    | Timestamp of the latest state of charge export |
+| `soh`                          | Number    | State of Health                                |
+| `charging`                     | Switch    | ON if charging                                 |
+| `rapid_charge_port`            | Switch    | ON if connected to a rapid charging port       |
+| `normal_charge_port`           | Switch    | ON if connected to a normal charging port      |
+| `slow_charge_port`             | Switch    | ON if connected to a slow charging port        |
+| `aux_battery_voltage`          | Number    | Voltage of the aux battery                     |
+| `dc_battery_voltage`           | Number    | Voltage of the DC battery                      |
+| `dc_battery_current`           | Number    | Current of the DC battery                      |
+| `dc_battery_power`             | Number    | Power of the DC battery                        |
+| `cumulative_energy_charged`    | Number    | Amount of energy that has been charged         |
+| `cumulative_energy_discharged` | Number    | Amount of energy that has been discharged      |
+| `battery_min_temperature`      | Number    | The minimum temperature of the battery         |
+| `battery_max_temperature`      | Number    | The maximum temperature of the battery         |
+| `battery_inlet_temperature`    | Number    | The inlet temperature of the battery           |
+| `external_temperature`         | Number    | External temperature                           |
+| `last_extended`                | String    | Timestamp of the latest export                 |                                                                                 |
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+### evnotify.things
 
-## Any custom content here!
+```properties
+# Thing evnotify:vehicle:YOUR_VEHICLE_ID "YOUR_VEHICLE_LABEL" @ "YOUR_VEHICLE_LOCATION" [akey="YOUR_AKEY",token="YOUR_TOKEN",refreshInterval=120]
+Thing evnotify:vehicle:ioniq "Ioniq" @ "Carport" [akey="YOUR_AKEY",token="YOUR_TOKEN",refreshInterval=120]
+```
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+### evnotify.items
+
+```properties
+// Equipment representing thing:
+// evnotify:vehicle:ioniq
+// (Ioniq)
+
+Group Ioniq "Ioniq" ["Car"]
+
+// Points:
+
+Number                   Ioniq_StateofChargeDisplay       "State of Charge (Display)"     (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:soc_display" }                  
+Number                   Ioniq_StateofChargeBMS           "State of Charge (BMS)"         (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:soc_bms" }                      
+String                   Ioniq_Lateststateofcharge        "Latest state of charge"        (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:last_soc" }                     
+Number                   Ioniq_StateofHealth              "State of Health"               (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:soh" }                          
+Switch                   Ioniq_Charging                   "Charging"                      (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:charging" }                     
+Switch                   Ioniq_RapidChargingPort          "Rapid Charging Port"           (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:rapid_charge_port" }            
+Switch                   Ioniq_NormalChargingPort         "Normal Charging Port"          (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:normal_charge_port" }           
+Switch                   Ioniq_SlowChargingPort           "Slow Charging Port"            (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:slow_charge_port" }             
+Number:ElectricPotential Ioniq_AUXBatteryVoltage          "AUX Battery Voltage"           (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:aux_battery_voltage" }          
+Number:ElectricPotential Ioniq_DCBatteryVoltage           "DC Battery Voltage"            (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:dc_battery_voltage" } 
+Number:ElectricCurrent   Ioniq_DCBatteryCurrent           "DC Battery Current"            (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:dc_battery_current" }                       
+Number:Power             Ioniq_DCBatteryPower             "DC Battery Power"              (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:dc_battery_power" }             
+Number:Energy            Ioniq_CumulativeEnergyCharged    "Cumulative Energy Charged"     (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:cumulative_energy_charged" }    
+Number:Energy            Ioniq_CumulativeEnergyDischarged "Cumulative Energy Discharged"  (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:cumulative_energy_discharged" } 
+Number:Temperature       Ioniq_BatteryMinTemperature      "Battery Min Temperature"       (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:battery_min_temperature" }      
+Number:Temperature       Ioniq_BatteryMaxTemperature      "Battery Max Temperature"       (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:battery_max_temperature" }      
+Number:Temperature       Ioniq_BatteryInletTemperature    "Battery Inlet Temperature"     (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:battery_inlet_temperature" }    
+Number:Temperature       Ioniq_ExternalTemperature        "External Temperature"          (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:external_temperature" }         
+String                   Ioniq_Latestexport               "Latest export"                 (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:last_extended" }       
+```
