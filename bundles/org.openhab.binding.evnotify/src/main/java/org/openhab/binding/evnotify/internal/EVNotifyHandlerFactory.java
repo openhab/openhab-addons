@@ -24,8 +24,6 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link EVNotifyHandlerFactory} is responsible for creating things and thing
@@ -36,8 +34,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.evnotify", service = ThingHandlerFactory.class)
 public class EVNotifyHandlerFactory extends BaseThingHandlerFactory {
-
-    private final Logger logger = LoggerFactory.getLogger(EVNotifyHandlerFactory.class);
 
     @Activate
     public EVNotifyHandlerFactory() {
