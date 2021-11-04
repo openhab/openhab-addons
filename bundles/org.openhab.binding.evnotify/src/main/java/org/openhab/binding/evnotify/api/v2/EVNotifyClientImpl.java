@@ -41,12 +41,12 @@ public class EVNotifyClientImpl implements EVNotifyClient {
     private final Logger logger = LoggerFactory.getLogger(EVNotifyClientImpl.class);
     private final HttpClient client;
 
-    private final String aKey;
+    private final String akey;
 
     private final String token;
 
-    public EVNotifyClientImpl(String aKey, String token, HttpClient client) {
-        this.aKey = aKey;
+    public EVNotifyClientImpl(String akey, String token, HttpClient client) {
+        this.akey = akey;
         this.token = token;
         this.client = client;
     }
@@ -55,10 +55,10 @@ public class EVNotifyClientImpl implements EVNotifyClient {
     public ChargingData getCarChargingData() throws IOException, InterruptedException, ApiException {
 
         // create the requests
-        var basicRequest = HttpRequest.newBuilder(URI.create(String.format(BASIC_API_URL_PATTERN, aKey, token)))
+        var basicRequest = HttpRequest.newBuilder(URI.create(String.format(BASIC_API_URL_PATTERN, akey, token)))
                 .header("accept", "application/json").build();
 
-        var extendedRequest = HttpRequest.newBuilder(URI.create(String.format(EXTENDED_API_URL_PATTERN, aKey, token)))
+        var extendedRequest = HttpRequest.newBuilder(URI.create(String.format(EXTENDED_API_URL_PATTERN, akey, token)))
                 .header("accept", "application/json").build();
 
         try {

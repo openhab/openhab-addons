@@ -100,7 +100,7 @@ public class EVNotifyHandler extends BaseThingHandler {
         ApiVersion apiVersion = ApiVersion.getApiVersion(config.version);
         switch (apiVersion) {
             case V2:
-                client = new EVNotifyClientImpl(config.aKey, config.token, HttpClient.newHttpClient());
+                client = new EVNotifyClientImpl(config.akey, config.token, HttpClient.newHttpClient());
             case V3:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         String.format("'%s' not implemented yet.", apiVersion.name()));

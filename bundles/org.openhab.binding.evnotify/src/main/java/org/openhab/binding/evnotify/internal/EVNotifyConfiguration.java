@@ -24,7 +24,7 @@ public class EVNotifyConfiguration {
     /**
      * AKey
      */
-    public @Nullable String aKey;
+    public @Nullable String akey;
 
     /**
      * Token
