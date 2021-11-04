@@ -83,15 +83,13 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
     }
 
     private void initCipher() {
-
         try {
-            this.cipher = new PhilipsAirCipher();
+            final PhilipsAirCipher cipher = new PhilipsAirCipher();
             if (StringUtils.isEmpty(config.getKey())) {
                 exchangeKeys();
             }
-
             cipher.initKey(config.getKey());
-
+            this.cipher = cipher;
         } catch (GeneralSecurityException | PhilipsAirAPIException | InterruptedException e) {
             logger.warn("An exception occured", e);
             this.cipher = null;
@@ -170,6 +168,7 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
             int httpStatus = contentResponse.getStatus();
             String finalcontent = contentResponse.getContentAsString();
             logger.trace("Philips Air Purifier device encrypted response: '{}'", finalcontent);
+
             if (decode) {
                 try {
                     finalcontent = this.cipher.decrypt(finalcontent);
@@ -214,39 +213,43 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
     }
 
     public @Nullable String exchangeKeys() throws PhilipsAirAPIException, InterruptedException {
-        if (this.cipher == null) {
+        final PhilipsAirCipher cipher = this.cipher;
+        if (cipher == null) {
             return null;
         }
 
         String url = buildURL(KEY_URL, config.getHost());
-        String data = "{\"diffie\":\"" + this.cipher.getApow() + "\"}";
+        String data = "{\"diffie\":\"" + cipher.getApow() + "\"}";
         String encodedContent = getResponse(url, PUT, data, false);
         JsonObject encodedJson = gson.fromJson(encodedContent, JsonObject.class);
         String key = encodedJson.get("key").getAsString();
         String hellman = encodedJson.get("hellman").getAsString();
         String aesKey;
         try {
-            aesKey = this.cipher.calculateKey(hellman, key);
+            aesKey = cipher.calculateKey(hellman, key);
         } catch (GeneralSecurityException | TimeoutException | ExecutionException e) {
             throw new PhilipsAirAPIException(e);
         }
 
         config.setKey(aesKey);
+        this.cipher = cipher;
         return aesKey;
     }
 
     @Override
     public @Nullable PhilipsAirPurifierDataDTO sendCommand(String parameter, PhilipsAirPurifierWritableDataDTO value)
             throws PhilipsAirAPIException {
-
+        final PhilipsAirCipher cipher = this.cipher;
+        if (cipher == null) {
+            return null;
+        }
         try {
             String commandValue = gson.toJson(value);
             logger.debug("{}", commandValue);
-            commandValue = this.cipher.encrypt(commandValue.toString());
+            commandValue = cipher.encrypt(commandValue.toString());
             if (commandValue == null || commandValue.isEmpty()) {
                 return null;
             }
-
             String response = getResponse(buildURL(STATUS_URL, config.getHost()), PUT, commandValue.toString(), true);
             logger.debug("{}", response);
             return gson.fromJson(response, PhilipsAirPurifierDataDTO.class);

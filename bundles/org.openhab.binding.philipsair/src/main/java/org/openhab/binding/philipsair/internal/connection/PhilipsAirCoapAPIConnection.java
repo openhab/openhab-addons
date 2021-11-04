@@ -22,6 +22,7 @@ import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.network.CoapEndpoint;
 import org.eclipse.californium.core.network.config.NetworkConfig;
 import org.eclipse.californium.elements.exception.ConnectorException;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.philipsair.internal.PhilipsAirConfiguration;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
@@ -48,6 +49,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Marcel Verpaalen - Initial contribution
  *
  */
+@NonNullByDefault
 public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirCoapAPIConnection.class);
     private static final String RESOURCE_PATH_STATUS = "/sys/dev/status";
@@ -174,7 +176,8 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             controlCounter++;
             logger.info("Sending command {}", commandValue);
             String encryped = PhilipsAirCoapCipher.encryptedMsg(commandValue, controlCounter, logger);
-            String response = post(client, host, COAP_PORT, RESOURCE_PATH_CONTROL, encryped);
+            String response = encryped == null ? "Encrypted message failed"
+                    : post(client, host, COAP_PORT, RESOURCE_PATH_CONTROL, encryped);
             if (response.contentEquals("{\"status\":\"success\"}")) {
                 // Sleep for a bit, otherwise we won't get the new value in the response
                 Thread.sleep(1000);
@@ -250,49 +253,4 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         }
         return "";
     }
-
-    /*
-     * private String observe(CoapClient client, String uri, Type type, boolean sendPing)
-     * throws ConnectorException, IOException {
-     * client.setURI(uri);
-     * logger.debug("OBSERVE {}", uri);
-     * client.setURI(uri);
-     *
-     * Request request = Request.newGet();
-     * request.setType(type);
-     * request.setObserve();
-     * CoapObserveRelation relation4 = client.observeAndWait(new CoapHandler() {
-     *
-     * @Override
-     * public void onLoad(CoapResponse response) {
-     * String content = response.getResponseText();
-     * logger.debug("-CO04----------");
-     * logger.debug("{}", content);
-     * String resp = PhilipsAirCoapCipher.decryptMsg(content.trim());
-     * logger.debug("Decryped response: {}", resp);
-     * logger.info("Response {}", resp);
-     * }
-     *
-     * @Override
-     * public void onError() {
-     * logger.debug("-Failed Observe--------");
-     * }
-     * });
-     *
-     * try {
-     * Thread.sleep(10000);
-     * } catch (InterruptedException e) {
-     * logger.debug("Stopped");
-     * }
-     * // dummy
-     * // logger.debug("response fro observe {}", relation4.getCurrent().getResponseText());
-     * relation4.reactiveCancel();
-     * // return PhilipsAirCoapCipher.decryptMsg(
-     * //
-     * "0000CCDE6BCB393105422EAEF552A739E2737A0114FF1C9B95426E0EB291907C5833E9C4377EE2329AB344954707A9401976006AD9A1EDBB4C4395492567C0BF92530941E81331E6FC25A4284F611CF6F4E22C01AC516A35575C317BB268438F48D97FE052A6C0B96E28BFED37A70767B0E08D723F5C807C083AA7FE2A97532DF81E19A670164608B22BAD113A7DF1B0330E67F67111AF3B1152F8562D3940ACDBAEB97A0A91125014BDB7104DFEE4A0BFADB780C125F7E3E02260030473C5814323240B89AB42A1380444FCA9DA4A2DD11177DF048F8C2F89EE146BED1A3423FC5B1167F5443E68ECF0E63E4DA19260186824765C64045F3012D8D8116454E0EBB276DA9C008819DF675E281F4D3AE542784C17A8B959013588DAAEBD18B958DEF941BD9B0799C121D0ECBBACEC0A058704DD4E59460EA02C491D14D660B5D6C8FC54244AC1013F7221232EA11A898515330F77FCF4F9AB3253925BB4854A2FEADDB7142CD7FDC11908D4DF08A8734CAF20B20A757A0C6FA712A65A30241C6E984D8FBD5A10116CE7E30898F0E61B5CF5D23326F7ADA89E147CDC44E29ED937C927D1DE19D8E54395F4F2E919DC638B2474EACA65626E3AB4259B4EDF3D16F4D6694117808D1331F04643E50AC8E1E32FFA6E558034B446A2F9ADE43745C66C8B03F94B7D9DA045A2361DA673BC8FC5F925C9BB6621C8E04497263E63D041C133E868FAB22389572B65814916531EAD89863E8642B5A16FE6F3C71AE1CA8D213FE4E3F534877F0040978EFAAA08B6A60BFDA252B91E962AFC1EAD4E760CB76551F8BAC8A32118BD587C641EFBEB648B2532D769"
-     * );
-     *
-     * return "";
-     * }
-     */
 }

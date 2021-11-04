@@ -14,7 +14,6 @@ package org.openhab.binding.philipsair.internal.discovery;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.net.URISyntaxException;
 
@@ -27,6 +26,7 @@ import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.model.meta.RemoteDeviceIdentity;
 import org.jupnp.model.types.UDN;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.ThingUID;
 
@@ -59,7 +59,7 @@ public class PhilipsAirUpnpDiscoveryParticipantTest extends JavaTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        initMocks(this);
+        MockitoAnnotations.initMocks(this);
     }
 
     @SuppressWarnings("deprecation")
