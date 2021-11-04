@@ -28,6 +28,11 @@ public class ChargingDataDTO implements ChargingData {
     private final ExtendedChargingDataDTO extendedChargingDataDTO;
 
     public ChargingDataDTO(BasicChargingDataDTO basicChargingDataDTO, ExtendedChargingDataDTO extendedChargingDataDTO) {
+
+        if (basicChargingDataDTO == null || extendedChargingDataDTO == null) {
+            throw new IllegalArgumentException("Given charging data must not be null");
+        }
+
         this.basicChargingDataDTO = basicChargingDataDTO;
         this.extendedChargingDataDTO = extendedChargingDataDTO;
     }
