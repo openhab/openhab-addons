@@ -135,10 +135,19 @@ public class ChromecastCommander {
     private void handleControl(final Command command) {
         try {
             if (command instanceof NextPreviousType) {
-                // I can't find a way to control next/previous from the API. The Google app doesn't seem to
-                // allow it either, so I suspect there isn't a way.
-                logger.info("{} command not yet implemented", command);
-                return;
+                // Next is implemented by seeking to the end of the current media
+                if (command == NextPreviousType.NEXT) {
+
+                    Double duration = statusUpdater.getLastDuration();
+                    if (duration != null) {
+                        chromeCast.seek(duration.doubleValue() - 5);
+                    } else {
+                        logger.info("{} command failed - unknown media duration", command);
+                    }
+                } else {
+                    logger.info("{} command not yet implemented", command);
+                    return;
+                }
             }
 
             Application app = chromeCast.getRunningApp();
