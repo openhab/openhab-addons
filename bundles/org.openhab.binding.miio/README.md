@@ -435,6 +435,9 @@ Currently the miio binding supports more than 300 different models.
 | Yeelight White Bulb v2       | miio:basic       | [yeelink.light.mono2](#yeelink-light-mono2) | Yes       |            |
 | Yeelight LED Bulb 1S（Dimmable） | miio:basic       | [yeelink.light.mono4](#yeelink-light-mono4) | Yes       |            |
 | Yeelight LED Filament Bulb   | miio:basic       | [yeelink.light.mono5](#yeelink-light-mono5) | Yes       |            |
+| Mi Smart LED Bulb            | miio:basic       | [yeelink.light.mono6](#yeelink-light-mono6) | Yes       |            |
+| Yeelight LED smart bulb W3(dimmable) | miio:basic       | [yeelink.light.monoa](#yeelink-light-monoa) | Yes       |            |
+| Yeelight GU10 Smart Bulb W1(dimmable) | miio:basic       | [yeelink.light.monob](#yeelink-light-monob) | Yes       |            |
 | Yeelight Whiteglow Panel Light | miio:basic       | [yeelink.light.panel1](#yeelink-light-panel1) | Yes       |            |
 | Yeelight Lightstrip          | miio:basic       | [yeelink.light.strip1](#yeelink-light-strip1) | Yes       |            |
 | Yeelight Lightstrip Plus     | miio:basic       | [yeelink.light.strip2](#yeelink-light-strip2) | Yes       |            |
@@ -964,6 +967,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | vacuumaction         | String               | Vacuum Action                            | Value mapping `["vacuum"="Vacuum","stop"="Stop","sweep"="Sweep","stopsweep"="Stop Sweep","dock"="Goto Dock"]` |
 | BatteryLevel         | Number               | Battery-Battery Level                    |            |
 | ChargingState        | Number               | Battery-Charging State                   | Value mapping `["1"="Charging","2"="Not Charging","4"="Charging","5"="Go Charging"]` |
+| water-mode           | Number               | Water Mode                               | Value mapping `["1"="Low","2"="Medium","4"="High"]` |
 | Fault                | Number               | Robot Cleaner-Device Fault               | Value mapping `["0"="No faults"]` |
 | Status               | Number               | Robot Cleaner-Status                     | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging"]` |
 | BrushLeftTime        | Number:Time          | Main Cleaning Brush-Brush Left Time      |            |
@@ -3657,6 +3661,39 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                 | String               | Name                                     |            |
 
+### Mi Smart LED Bulb (<a name="yeelink-light-mono6">yeelink.light.mono6</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| brightness           | Dimmer               | Brightness                               |            |
+| delayoff             | Number:Time          | Shutdown Timer                           |            |
+| colorTemperature     | Number               | Color Temperature                        |            |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| name                 | String               | Name                                     |            |
+
+### Yeelight LED smart bulb W3(dimmable) (<a name="yeelink-light-monoa">yeelink.light.monoa</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| brightness           | Dimmer               | Brightness                               |            |
+| delayoff             | Number:Time          | Shutdown Timer                           |            |
+| colorTemperature     | Number               | Color Temperature                        |            |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| name                 | String               | Name                                     |            |
+
+### Yeelight GU10 Smart Bulb W1(dimmable) (<a name="yeelink-light-monob">yeelink.light.monob</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| brightness           | Dimmer               | Brightness                               |            |
+| delayoff             | Number:Time          | Shutdown Timer                           |            |
+| colorTemperature     | Number               | Color Temperature                        |            |
+| colorMode            | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| name                 | String               | Name                                     |            |
+
 ### Yeelight Whiteglow Panel Light (<a name="yeelink-light-panel1">yeelink.light.panel1</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
@@ -5742,6 +5779,7 @@ Group G_vacuum "Mi Robot Vacuum Mop 1C STYTJ01ZHM" <status>
 String vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number BatteryLevel "Battery-Battery Level" (G_vacuum) {channel="miio:basic:vacuum:BatteryLevel"}
 Number ChargingState "Battery-Charging State" (G_vacuum) {channel="miio:basic:vacuum:ChargingState"}
+Number water_mode "Water Mode" (G_vacuum) {channel="miio:basic:vacuum:water-mode"}
 Number Fault "Robot Cleaner-Device Fault" (G_vacuum) {channel="miio:basic:vacuum:Fault"}
 Number Status "Robot Cleaner-Status" (G_vacuum) {channel="miio:basic:vacuum:Status"}
 Number:Time BrushLeftTime "Main Cleaning Brush-Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:BrushLeftTime"}
@@ -8950,6 +8988,48 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```
 Group G_light "Yeelight LED Filament Bulb" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Mi Smart LED Bulb (yeelink.light.mono6) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_light "Mi Smart LED Bulb" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight LED smart bulb W3(dimmable) (yeelink.light.monoa) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_light "Yeelight LED smart bulb W3(dimmable)" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
+Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
+Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
+String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight GU10 Smart Bulb W1(dimmable) (yeelink.light.monob) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_light "Yeelight GU10 Smart Bulb W1(dimmable)" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delayoff"}
