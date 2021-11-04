@@ -144,10 +144,8 @@ class EVNotifyClientImplTest {
 
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
-        // when
+        // when then
         assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
-
-        // then
     }
 
     @Test
@@ -160,10 +158,8 @@ class EVNotifyClientImplTest {
 
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
-        // when
+        // when then
         assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
-
-        // then
     }
 
     @Test
@@ -177,10 +173,8 @@ class EVNotifyClientImplTest {
 
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
-        // when
+        // when then
         assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
-
-        // then
     }
 
     @Test
@@ -194,10 +188,8 @@ class EVNotifyClientImplTest {
 
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
-        // when
+        // when then
         assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
-
-        // then
     }
 
     @Test
@@ -211,10 +203,8 @@ class EVNotifyClientImplTest {
 
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
-        // when
+        // when then
         assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
-
-        // then
     }
 
     @Test
@@ -228,10 +218,8 @@ class EVNotifyClientImplTest {
 
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
-        // when
+        // when then
         assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
-
-        // then
     }
 
     @Test
@@ -245,10 +233,8 @@ class EVNotifyClientImplTest {
 
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
-        // when
+        // when then
         assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
-
-        // then
     }
 
     @Test
@@ -262,10 +248,8 @@ class EVNotifyClientImplTest {
 
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
-        // when
+        // when then
         assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
-
-        // then
     }
 
     private HttpResponse<String> getResponse(Integer statusCode, String body) {
