@@ -24,7 +24,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
+        if: github.head_ref == ''
         uses: actions/checkout@v2
+
+      - name: Checkout merge
+        if: github.head_ref != ''
+        uses: actions/checkout@v2
+        with:
+          ref: refs/pull/${{github.event.pull_request.number}}/merge
 
       - name: Set up Cache
         uses: actions/cache@v2
@@ -47,10 +54,17 @@ jobs:
         with:
           maven-version: ${{ matrix.maven }}
 
+      - name: Get Changed Files
+        id: files
+        uses: Ana06/get-changed-files@v2.0.0
+        with:
+          format: 'csv'
+
       - name: Build
         id: build
         run: './.github/scripts/maven-build'
         env:
+          CHANGED_FILES: ${{ steps.files.outputs.all }}
           MAVEN_OPTS: >-
             -Xmx2g
             -Dmaven.wagon.http.retryHandler.count=5
