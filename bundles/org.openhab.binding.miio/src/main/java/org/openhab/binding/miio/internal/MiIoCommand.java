@@ -30,6 +30,8 @@ public enum MiIoCommand {
     // Basic device commands
     GET_PROPERTY("get_prop"),
     GET_PROPERTIES("get_properties"),
+    GET_DEVICE_PROPERTY_EXP("get_device_prop_exp"),
+    GET_DEVICE_PROPERTY("get_device_prop"),
     GET_VALUE("get_value"),
     SET_PROPERTIES("set_properties"),
     SET_MODE_BASIC("set_mode"),
