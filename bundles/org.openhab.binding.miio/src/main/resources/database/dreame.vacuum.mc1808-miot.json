@@ -200,7 +200,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"4\"\u003d\"High\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"4\"\u003d\"High\"]`"
 			},
 			{
 				"property": "fault",
