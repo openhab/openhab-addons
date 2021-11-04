@@ -76,8 +76,6 @@ public class EVNotifyClientImpl implements EVNotifyClient {
             return new ChargingDataDTO(basicChargingDataDTO, extendedChargingData);
         } catch (JsonSyntaxException e) {
             throw new ApiException("Request failed with invalid response body", e);
-        } catch (Exception e) {
-            throw e;
         }
     }
 
@@ -85,14 +83,31 @@ public class EVNotifyClientImpl implements EVNotifyClient {
         if (httpResponse != null) {
 
             if (httpResponse.statusCode() >= 400) {
-                throw new ApiException(String.format("Request failed with status %d", httpResponse.statusCode()));
+                throw new ApiException(getErrorMessage(httpResponse));
             }
 
             if (httpResponse.body() == null) {
                 throw new ApiException("Request failed with null response body");
             }
+
         } else {
-            throw new ApiException("Response was null.");
+            throw new ApiException("Response was null");
         }
+    }
+
+    private String getErrorMessage(HttpResponse<String> httpResponse) {
+        String errorMessage = String.format("Request failed with status %d", httpResponse.statusCode());
+
+        if (httpResponse.body() != null) {
+            try {
+                ErrorDTO errorDTO = new Gson().fromJson(httpResponse.body(), ErrorDTO.class);
+
+                errorMessage += String.format(" with error code %d and message '%s'", errorDTO.getCode(),
+                        errorDTO.getMessage());
+
+            } catch (Exception ignored) {
+            }
+        }
+        return errorMessage;
     }
 }
