@@ -10,6 +10,7 @@
 		<category>ColorLight</category>
 		<channels>
 			<channel id="masterControls" typeId="masterControls"/>
+			<channel id="segmentBrightness" typeId="segmentBrightness"/>
 			<channel id="primaryColor" typeId="primaryColor"/>
 			<channel id="primaryWhite" typeId="primaryWhite"/>
 			<channel id="secondaryColor" typeId="secondaryColor"/>
@@ -64,6 +65,13 @@
 			<tag>Control</tag>
 			<tag>Light</tag>
 		</tags>
+	</channel-type>
+
+	<channel-type id="segmentBrightness" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Segment Brightness</label>
+		<description>Changes the brightness of the whole segment</description>
+		<category>DimmableLight</category>
 	</channel-type>
 
 	<channel-type id="primaryColor" advanced="true">
@@ -159,7 +167,23 @@
 		<label>Transform Time</label>
 		<description>Time it takes to change/fade from one look to the next.</description>
 		<category>Time</category>
-		<state min="0" max="65" step="0.1" pattern="%.1f %unit%" readOnly="false"/>
+		<state>
+			<options>
+				<option value="0 s"/>
+				<option value="0.3 s"/>
+				<option value="0.7 s"/>
+				<option value="1 s"/>
+				<option value="2 s"/>
+				<option value="3 s"/>
+				<option value="4 s"/>
+				<option value="5 s"/>
+				<option value="6 s"/>
+				<option value="7 s"/>
+				<option value="8 s"/>
+				<option value="9 s"/>
+				<option value="10 s"/>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="speed" advanced="true">
@@ -174,18 +198,18 @@
 		<description>Change the intensity of the FX</description>
 	</channel-type>
 
-    <channel-type id="mirror" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Mirror Effect</label>
-        <description>Mirror the effect for this segment</description>
-    </channel-type>
-    
-        <channel-type id="reverse" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Reverse Direction</label>
-        <description>Reverse the direction of the current segment</description>
-    </channel-type>
-    
+	<channel-type id="mirror" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Mirror Effect</label>
+		<description>Mirror the effect for this segment</description>
+	</channel-type>
+
+	<channel-type id="reverse" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Reverse Direction</label>
+		<description>Reverse the direction of the current segment</description>
+	</channel-type>
+
 	<channel-type id="sleep" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Sleep Timer</label>
@@ -193,7 +217,7 @@
 		<category>Time</category>
 	</channel-type>
 
-	<channel-type id="presetCycle">
+	<channel-type id="presetCycle" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Preset Cycle</label>
 		<description>Cycle through the saved presets</description>

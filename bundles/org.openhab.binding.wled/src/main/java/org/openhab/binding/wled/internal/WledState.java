@@ -94,7 +94,6 @@ public class WledState {
 
     public class NightLightState {
         public boolean on = true;
-        public boolean fade = true;
         public int dur = 0;
         public int mode = 0;
         public int tbri = 0;

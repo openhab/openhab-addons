@@ -41,7 +41,10 @@ import org.openhab.binding.wled.internal.WledState.StateResponse;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
@@ -58,7 +61,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class WledApiV084 implements WledApi {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     protected final Gson gson = new Gson();
     protected final HttpClient httpClient;
     protected final WLedConfiguration config;
@@ -83,7 +86,25 @@ public class WledApiV084 implements WledApi {
         if (localLedInfo != null) {
             state.ledInfo = localLedInfo;
         }
+
         handler.hasWhite = state.ledInfo.rgbw;
+        ArrayList<Channel> removeChannels = new ArrayList<>();
+        if (!state.ledInfo.rgbw) {
+            logger.debug("WLED is not setup to use RGBW, so removing un-needed white channels");
+            Channel channel = handler.getThing().getChannel(CHANNEL_PRIMARY_WHITE);
+            if (channel != null) {
+                removeChannels.add(channel);
+            }
+            channel = handler.getThing().getChannel(CHANNEL_SECONDARY_WHITE);
+            if (channel != null) {
+                removeChannels.add(channel);
+            }
+            channel = handler.getThing().getChannel(CHANNEL_THIRD_WHITE);
+            if (channel != null) {
+                removeChannels.add(channel);
+            }
+        }
+        handler.removeChannels(removeChannels);
     }
 
     @Override
@@ -113,11 +134,11 @@ public class WledApiV084 implements WledApi {
         throw new ApiException(errorReason);
     }
 
-    protected void postState(String json) throws ApiException {
-        sendPostRequest("/json/state", json);
+    protected String postState(String json) throws ApiException {
+        return sendPostRequest("/json/state", json);
     }
 
-    protected void sendPostRequest(String url, String json) throws ApiException {
+    protected String sendPostRequest(String url, String json) throws ApiException {
         logger.debug("Sending WLED POST:{} Message:{}", url, json);
         Request request = httpClient.POST(config.address + url);
         request.timeout(3, TimeUnit.SECONDS);
@@ -125,8 +146,13 @@ public class WledApiV084 implements WledApi {
         request.content(new StringContentProvider(json), "application/json");
         String errorReason = "";
         try {
-            request.send();
-            return;
+            ContentResponse contentResponse = request.send();
+            if (contentResponse.getStatus() == 200) {
+                return contentResponse.getContentAsString();
+            } else {
+                errorReason = String.format("WLED request failed with %d: %s", contentResponse.getStatus(),
+                        contentResponse.getReason());
+            }
         } catch (InterruptedException e) {
             errorReason = String.format("InterruptedException: %s", e.getMessage());
         } catch (TimeoutException e) {
@@ -135,6 +161,20 @@ public class WledApiV084 implements WledApi {
             errorReason = String.format("ExecutionException: %s", e.getMessage());
         }
         throw new ApiException(errorReason);
+    }
+
+    protected void setState(String jsonState) {
+        try {
+            StateResponse response = gson.fromJson(jsonState, StateResponse.class);
+            if (response == null) {
+                throw new ApiException("Reply back from WLED when command was made is not valid JSON");
+            }
+            state.stateResponse = response;
+            state.unpackJsonObjects();
+            processState();
+        } catch (JsonSyntaxException | ApiException e) {
+            logger.debug("Reply back when a command was sent triggered an exception:{}", jsonState);
+        }
     }
 
     protected StateResponse getState() throws ApiException {
@@ -216,7 +256,11 @@ public class WledApiV084 implements WledApi {
         return version;
     }
 
-    protected void processState() {
+    protected void processState() throws ApiException {
+        if (state.stateResponse.seg.length <= handler.config.segmentIndex) {
+            throw new ApiException("Segment " + handler.config.segmentIndex
+                    + " is not currently setup correctly in the WLED firmware");
+        }
         HSBType tempHSB = WLedHelper
                 .parseToHSBType(state.stateResponse.seg[handler.config.segmentIndex].col[0].toString());
         handler.update(CHANNEL_MASTER_CONTROLS, tempHSB);
@@ -234,14 +278,13 @@ public class WledApiV084 implements WledApi {
                     .parseWhitePercent(state.stateResponse.seg[handler.config.segmentIndex].col[2].toString()));
         }
 
-        if (!state.stateResponse.on) {
-            // global ch needs adding
-        } else {
-            // global ch needs adding
-        }
-
         if (!state.stateResponse.seg[handler.config.segmentIndex].on) {
             handler.update(CHANNEL_MASTER_CONTROLS, OnOffType.OFF);
+            handler.update(CHANNEL_SEGMENT_BRIGHTNESS, OnOffType.OFF);
+        } else {
+            handler.update(CHANNEL_SEGMENT_BRIGHTNESS,
+                    new PercentType(new BigDecimal(state.stateResponse.seg[handler.config.segmentIndex].bri)
+                            .divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
         }
         if (state.nightLightState.on) {
             handler.update(CHANNEL_SLEEP, OnOffType.ON);
@@ -273,8 +316,8 @@ public class WledApiV084 implements WledApi {
         } else {
             handler.update(CHANNEL_REVERSE, OnOffType.OFF);
         }
-        handler.update(CHANNEL_TRANS_TIME, new PercentType(
-                new BigDecimal(state.stateResponse.transition).divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
+        handler.update(CHANNEL_TRANS_TIME, new QuantityType<>(
+                new BigDecimal(state.stateResponse.transition).divide(BigDecimal.TEN), Units.SECOND));
         handler.update(CHANNEL_PRESETS, new StringType("" + state.stateResponse.ps));
         handler.update(CHANNEL_FX, new StringType("" + state.stateResponse.seg[handler.config.segmentIndex].fx));
         handler.update(CHANNEL_PALETTES, new StringType("" + state.stateResponse.seg[handler.config.segmentIndex].pal));
@@ -291,7 +334,7 @@ public class WledApiV084 implements WledApi {
      */
     @Override
     public void setGlobalOn(boolean bool) throws ApiException {
-        postState("{\"on\":" + bool + "}");
+        setState(postState("{\"on\":" + bool + ",\"v\":true,\"tt\":2}"));
     }
 
     /**
@@ -299,7 +342,8 @@ public class WledApiV084 implements WledApi {
      */
     @Override
     public void setMasterOn(boolean bool) throws ApiException {
-        postState("{\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"on\":" + bool + "}]}");
+        setState(postState(
+                "{\"v\":true,\"tt\":2,\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"on\":" + bool + "}]}"));
     }
 
     /**
@@ -308,10 +352,11 @@ public class WledApiV084 implements WledApi {
     @Override
     public void setGlobalBrightness(PercentType percent) throws ApiException {
         if (percent.equals(PercentType.ZERO)) {
-            postState("{\"on\":false}");
+            setState(postState("{\"on\":false,\"v\":true}"));
             return;
         }
-        postState("{\"on\":true,\"bri\":" + percent.toBigDecimal().multiply(BIG_DECIMAL_2_55) + "}");
+        setState(postState("{\"on\":true,\"v\":true,\"tt\":2,\"bri\":"
+                + percent.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "}"));
     }
 
     /**
@@ -320,26 +365,26 @@ public class WledApiV084 implements WledApi {
     @Override
     public void setMasterBrightness(PercentType percent) throws ApiException {
         if (percent.equals(PercentType.ZERO)) {
-            postState("{\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"on\":false}]}");
+            setState(postState("{\"v\":true,\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"on\":false}]}"));
             return;
         }
-        postState("{\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"on\":true,\"bri\":"
-                + percent.toBigDecimal().multiply(BIG_DECIMAL_2_55) + "}]}");
+        setState(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"id\":" + handler.config.segmentIndex
+                + ",\"on\":true,\"bri\":" + percent.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "}]}"));
     }
 
     @Override
     public void setMasterHSB(HSBType hsbType) throws ApiException {
         if (hsbType.getBrightness().toBigDecimal().equals(BigDecimal.ZERO)) {
-            postState("{\"seg\":[{\"on\":false,\"id\":" + handler.config.segmentIndex + ",\"fx\":0,\"col\":[["
-                    + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
-                    + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
-                    + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}");
+            setState(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"on\":false,\"id\":" + handler.config.segmentIndex
+                    + ",\"fx\":0,\"col\":[[" + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue()
+                    + "," + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
+                    + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}"));
             return;
         }
-        postState("{\"seg\":[{\"on\":true,\"id\":" + handler.config.segmentIndex + ",\"fx\":0,\"col\":[["
-                + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
+        setState(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"on\":true,\"id\":" + handler.config.segmentIndex
+                + ",\"fx\":0,\"col\":[[" + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
-                + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}");
+                + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}"));
     }
 
     @Override
@@ -349,7 +394,8 @@ public class WledApiV084 implements WledApi {
 
     @Override
     public void setPreset(String string) throws ApiException {
-        postState("{\"ps\":" + string + "}");
+        setState(
+                postState("{\"ps\":" + string + ",\"v\":true,\"seg\":[{\"id\":" + handler.config.segmentIndex + "}]}"));
     }
 
     @Override
@@ -385,8 +431,8 @@ public class WledApiV084 implements WledApi {
     }
 
     @Override
-    public void setTransitionTime(int milliseconds) throws ApiException {
-        postState("{\"transition\":" + milliseconds + "}");
+    public void setTransitionTime(BigDecimal time) throws ApiException {
+        postState("{\"transition\":" + time + "}");
     }
 
     @Override

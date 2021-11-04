@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wled.internal.api;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
@@ -55,7 +57,7 @@ public interface WledApi {
 
     public abstract void setUdpRecieve(boolean bool) throws ApiException;
 
-    public abstract void setTransitionTime(int milliseconds) throws ApiException;
+    public abstract void setTransitionTime(BigDecimal time) throws ApiException;
 
     public abstract void setPresetCycle(boolean bool) throws ApiException;
 

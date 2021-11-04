@@ -43,6 +43,7 @@ public class WLedBindingConstants {
 
     // Channels
     public static final String CHANNEL_MASTER_CONTROLS = "masterControls";
+    public static final String CHANNEL_SEGMENT_BRIGHTNESS = "segmentBrightness";
     public static final String CHANNEL_PRIMARY_COLOR = "primaryColor";
     public static final String CHANNEL_SECONDARY_COLOR = "secondaryColor";
     public static final String CHANNEL_THIRD_COLOR = "tertiaryColor";

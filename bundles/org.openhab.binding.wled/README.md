@@ -31,22 +31,27 @@ For additional segments, you can add them manually and set the `segmentIndex` co
 
 | Channel | Type | Description |
 |-|-|-|
-| `masterControls` | Color | Gives you control over the WLED like it is any normal light. Tag this control for Alexa or Google/Nest to change the lights instantly to any colour, brightness or on/off state that you ask for regardless of what mode the light is in. |
+| `masterControls` | Color | Gives you control over the WLED segment like it is any normal light. Tag this control for Alexa or Google/Nest to change the lights instantly to any colour, brightness or on/off state that you ask for regardless of what mode the light is in. |
+| `segmentBrightness` | Dimmer | Allows you to Dim and turn the entire segment ON and OFF. |
 | `primaryColor` | Color | The primary colour used in FX. |
-| `primaryWhite` | Dimmer | The amount of white light used in the primary colour if you have RGBW LEDs. |
+| `primaryWhite` | Dimmer | The amount of white light used in the primary colour. Only available if you have RGBW LEDs. |
 | `secondaryColor` | Color | The secondary colour used in FX. |
-| `secondaryWhite` | Dimmer | The amount of white light used in the secondary colour if you have RGBW LEDs. |
+| `secondaryWhite` | Dimmer | The amount of white light used in the second colour. Only available if you have RGBW LEDs. |
+| `tertiaryColor` | Color | The third colour used in FX. |
+| `tertiaryWhite` | Dimmer | The amount of white light used in the third colour. Only available if you have RGBW LEDs. |
 | `palettes` | String | A list of colour palettes you can select from that are used in the FX. |
 | `fx` | String |  A list of Effects you can select from. |
 | `speed` | Dimmer | Changes the speed of the loaded effect. |
 | `intensity` | Dimmer | Changes the intensity of the loaded effect. |
 | `presets` | String |  A list of presets that you can select from.  |
-| `presetCycle` | Switch | Turns ON/OFF the automatic changing from one preset to the next. |
-| `presetDuration` | Number:Time | How long in seconds it will display a preset for, before it begins to change from one preset to the next with `presetCycle` turned ON. |
+| `presetCycle` | Switch | Turns ON/OFF the automatic changing from one preset to the next. Only in V0.12.0 and older firmwares. |
+| `presetDuration` | Number:Time | How long in seconds it will display a preset for, before it begins to change from one preset to the next with `presetCycle` turned ON. Only in V0.12.0 and older firmwares. |
 | `transformTime` | Number:Time | How long in seconds it takes to transform/morph from one look to the next. |
 | `sleep` | Switch | Turns on the sleep or 'night light' timer which can be configured to work in many different ways. Refer to WLED documentation for how this can be setup. The default action is the light will fade to OFF over the next 60 minutes. |
 | `syncSend` | Switch | Sends UDP packets that tell other WLED lights to follow this one. |
 | `syncReceive` | Switch | Allows UDP packets from other WLED lights to control this one. |
+| `mirror` | Switch | Mirror the effect for this segment. |
+| `reverse` | Switch | Reverse the effect for this segment. |
 
 ## Rule Actions
 
@@ -68,7 +73,7 @@ If you use the ADMIN>MODEL>`Create equipment from thing` feature you can use the
 ```
         Text label="XmasLights" icon="rgb"{
             Switch item=XmasTree_MasterControls
-            Slider item=XmasTree_MasterControls
+            Slider item=XmasTree_SegmentBrightness
             Colorpicker item=XmasTree_MasterControls
             Switch item=XmasTree_SleepTimer
             Colorpicker item=XmasTree_PrimaryColor
@@ -77,9 +82,7 @@ If you use the ADMIN>MODEL>`Create equipment from thing` feature you can use the
             Selection item=XmasTree_Palettes
             Selection item=XmasTree_Presets
             Default item=XmasTree_FXSpeed
-            Default item=XmasTree_FXIntensity
-            Default item=XmasTree_PresetCycle
-            Selection item=XmasTree_PresetDuration mappings=[2 ='2 seconds', 10='10 seconds', 30='30 seconds', 60='60 seconds']
+            Default item=XmasTree_FXIntensity            
             Selection item=XmasTree_TransformTime mappings=[0='0 seconds', 2 ='2 seconds', 10='10 seconds', 30='30 seconds', 60='60 seconds']
         }
         

@@ -15,6 +15,7 @@ package org.openhab.binding.wled.internal;
 import static org.openhab.binding.wled.internal.WLedBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.Future;
@@ -32,12 +33,14 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -85,6 +88,17 @@ public class WLedHandler extends BaseThingHandler {
         logger.debug("command {} sent to {}", command, channelUID.getId());
         try {
             switch (channelUID.getId()) {
+                case CHANNEL_SEGMENT_BRIGHTNESS:
+                    if (command instanceof OnOffType) {
+                        localApi.setMasterOn(OnOffType.ON.equals(command));
+                    } else if (command instanceof PercentType) {
+                        if (PercentType.ZERO.equals(command)) {
+                            localApi.setMasterOn(false);
+                            return;
+                        }
+                        localApi.setMasterBrightness((PercentType) command);
+                    }
+                    break;
                 case CHANNEL_MIRROR:
                     localApi.setMirror(OnOffType.ON.equals(command));
                     break;
@@ -189,7 +203,7 @@ public class WLedHandler extends BaseThingHandler {
                 case CHANNEL_PRESETS:
                     localApi.setPreset(command.toString());
                     break;
-                case CHANNEL_PRESET_DURATION:
+                case CHANNEL_PRESET_DURATION:// ch removed in firmware 0.13.0 and newer
                     if (command instanceof QuantityType) {
                         QuantityType<?> seconds = ((QuantityType<?>) command).toUnit(Units.SECOND);
                         if (seconds != null) {
@@ -202,12 +216,11 @@ public class WLedHandler extends BaseThingHandler {
                     if (command instanceof QuantityType) {
                         QuantityType<?> seconds = ((QuantityType<?>) command).toUnit(Units.SECOND);
                         if (seconds != null) {
-                            localApi.setTransitionTime(
-                                    new BigDecimal(seconds.intValue()).multiply(new BigDecimal(1000)).intValue());
+                            localApi.setTransitionTime(new BigDecimal(seconds.multiply(BigDecimal.TEN).intValue()));
                         }
                     }
                     break;
-                case CHANNEL_PRESET_CYCLE:
+                case CHANNEL_PRESET_CYCLE: // ch removed in firmware 0.13.0 and newer
                     if (command instanceof OnOffType) {
                         localApi.setPresetCycle(OnOffType.ON.equals(command));
                     }
@@ -229,6 +242,14 @@ public class WLedHandler extends BaseThingHandler {
             }
         } catch (ApiException e) {
             logger.warn("Preset failed to save due to:{}", e.getMessage());
+        }
+    }
+
+    public void removeChannels(ArrayList<Channel> removeChannels) {
+        if (!removeChannels.isEmpty()) {
+            ThingBuilder thingBuilder = editThing();
+            thingBuilder.withoutChannels(removeChannels);
+            updateThing(thingBuilder.build());
         }
     }
 
