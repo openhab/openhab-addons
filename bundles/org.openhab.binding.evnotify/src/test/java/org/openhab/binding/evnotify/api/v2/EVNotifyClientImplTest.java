@@ -79,7 +79,7 @@ class EVNotifyClientImplTest {
         // then
         assertEquals(Float.valueOf(93.0f), chargingData.getStateOfChargeDisplay());
         assertEquals(Float.valueOf(88.5f), chargingData.getStateOfChargeBms());
-        assertEquals(1631220014L, chargingData.getLastStateOfCharge().toInstant().toEpochMilli());
+        assertEquals(1631220014L, chargingData.getLastStateOfCharge().toEpochSecond());
         assertTrue(chargingData.isCharging());
         assertFalse(chargingData.isRapidChargePort());
         assertTrue(chargingData.isNormalChargePort());
@@ -95,7 +95,7 @@ class EVNotifyClientImplTest {
         assertEquals(Float.valueOf(26f), chargingData.getBatteryMaxTemperature());
         assertEquals(Float.valueOf(24f), chargingData.getBatteryInletTemperature());
         assertNull(chargingData.getExternalTemperature());
-        assertEquals(1631220014L, chargingData.getLastExtended().toInstant().toEpochMilli());
+        assertEquals(1631220014L, chargingData.getLastExtended().toEpochSecond());
     }
 
     @Test
@@ -145,7 +145,8 @@ class EVNotifyClientImplTest {
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
         // when then
-        assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+        ApiException exception = assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+        assertEquals("Response was null", exception.getMessage());
     }
 
     @Test
@@ -159,13 +160,14 @@ class EVNotifyClientImplTest {
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
         // when then
-        assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+        ApiException exception = assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+        assertEquals("Response was null", exception.getMessage());
     }
 
     @Test
     void shouldThrowApiExceptionForInvalidBasicResponseStatus() throws IOException, InterruptedException {
         // given
-        HttpResponse<String> basicResponse = getResponse(400, getValidBasicResponseBody());
+        HttpResponse<String> basicResponse = getResponse(401, getErrorResponseBody());
         mockResponse(basicUriMatcher, basicResponse);
 
         HttpResponse<String> extendedResponse = getResponse(200, getValidExtendedResponseBody());
@@ -174,7 +176,10 @@ class EVNotifyClientImplTest {
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
         // when then
-        assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+        ApiException exception = assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+        assertEquals(
+                "Request failed with status 401 with error code 1900 and message 'Provided token is invalid or no longer valid.'",
+                exception.getMessage());
     }
 
     @Test
@@ -183,13 +188,16 @@ class EVNotifyClientImplTest {
         HttpResponse<String> basicResponse = getResponse(200, getValidBasicResponseBody());
         mockResponse(basicUriMatcher, basicResponse);
 
-        HttpResponse<String> extendedResponse = getResponse(400, getValidExtendedResponseBody());
+        HttpResponse<String> extendedResponse = getResponse(401, getErrorResponseBody());
         mockResponse(extendedUriMatcher, extendedResponse);
 
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
         // when then
-        assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+        ApiException exception = assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+        assertEquals(
+                "Request failed with status 401 with error code 1900 and message 'Provided token is invalid or no longer valid.'",
+                exception.getMessage());
     }
 
     @Test
@@ -204,7 +212,8 @@ class EVNotifyClientImplTest {
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
         // when then
-        assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+        ApiException exception = assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+        assertEquals("Request failed with null response body", exception.getMessage());
     }
 
     @Test
@@ -219,7 +228,8 @@ class EVNotifyClientImplTest {
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
         // when then
-        assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+        ApiException exception = assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+        assertEquals("Request failed with null response body", exception.getMessage());
     }
 
     @Test
@@ -234,7 +244,8 @@ class EVNotifyClientImplTest {
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
         // when then
-        assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+        ApiException exception = assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+        assertEquals("Request failed with invalid response body", exception.getMessage());
     }
 
     @Test
@@ -249,7 +260,8 @@ class EVNotifyClientImplTest {
         EVNotifyClient evNotifyClient = new EVNotifyClientImpl("aKey", "token", httpClient);
 
         // when then
-        assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+        ApiException exception = assertThrows(ApiException.class, evNotifyClient::getCarChargingData);
+        assertEquals("Request failed with invalid response body", exception.getMessage());
     }
 
     private HttpResponse<String> getResponse(Integer statusCode, String body) {
@@ -300,6 +312,10 @@ class EVNotifyClientImplTest {
         return "{\"soc_display\": 93,\"soc_bms\": 88.5,\"last_soc\": 1631220014}";
     }
 
+    private String getErrorResponseBody() {
+        return "{\"error\":{\"code\":1900,\"message\":\"Provided token is invalid or no longer valid.\"}}";
+    }
+
     private String getEmptyResponseBody() {
         return "{}";
     }
@@ -318,6 +334,7 @@ class EVNotifyClientImplTest {
                 + "\"last_extended\": 1631220014}";
     }
 
+    @SuppressWarnings("unchecked")
     private void mockResponse(HttpRequestUriMatcher httpRequestUriMatcher, HttpResponse<String> response)
             throws IOException, InterruptedException {
         when(httpClient.send(argThat(httpRequestUriMatcher), any(HttpResponse.BodyHandler.class))).thenReturn(response);

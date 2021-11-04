@@ -38,7 +38,7 @@ class ChargingDataDTOTest {
         // then
         assertEquals(Float.valueOf(93.0f), chargingData.getStateOfChargeDisplay());
         assertEquals(Float.valueOf(88.5f), chargingData.getStateOfChargeBms());
-        assertEquals(1631220014L, chargingData.getLastStateOfCharge().toInstant().toEpochMilli());
+        assertEquals(1631220014L, chargingData.getLastStateOfCharge().toEpochSecond());
         assertTrue(chargingData.isCharging());
         assertFalse(chargingData.isRapidChargePort());
         assertTrue(chargingData.isNormalChargePort());
@@ -54,7 +54,7 @@ class ChargingDataDTOTest {
         assertEquals(Float.valueOf(26f), chargingData.getBatteryMaxTemperature());
         assertEquals(Float.valueOf(24f), chargingData.getBatteryInletTemperature());
         assertNull(chargingData.getExternalTemperature());
-        assertEquals(1631220014L, chargingData.getLastExtended().toInstant().toEpochMilli());
+        assertEquals(1631220014L, chargingData.getLastExtended().toEpochSecond());
     }
 
     private BasicChargingDataDTO getValidBasicChargingDataDTO() {

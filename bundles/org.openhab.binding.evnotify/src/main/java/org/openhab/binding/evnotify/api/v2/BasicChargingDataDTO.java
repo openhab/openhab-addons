@@ -52,6 +52,6 @@ public class BasicChargingDataDTO {
 
     public OffsetDateTime getLastStateOfCharge() {
         return lastStateOfCharge == null ? null
-                : OffsetDateTime.from(Instant.ofEpochMilli(lastStateOfCharge).atZone(ZoneId.of("Europe/Berlin")));
+                : OffsetDateTime.from(Instant.ofEpochSecond(lastStateOfCharge).atZone(ZoneId.of("Europe/Berlin")));
     }
 }
