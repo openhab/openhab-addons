@@ -47,10 +47,7 @@ public class WLedHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return true;
-        }
-        return false;
+        return SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
     @Override
