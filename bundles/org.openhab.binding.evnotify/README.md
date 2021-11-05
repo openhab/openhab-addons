@@ -65,6 +65,8 @@ The binding has no configuration options, all configuration is done at `vehicle`
 Thing evnotify:vehicle:ioniq "Ioniq" @ "Carport" [akey="YOUR_AKEY",token="YOUR_TOKEN",refreshInterval=120]
 ```
 
+![EV Notify Vehicle Things Example](doc/img/Things.png)
+
 ### evnotify.items
 
 ```properties
@@ -96,3 +98,5 @@ Number:Temperature       Ioniq_BatteryInletTemperature    "Battery Inlet Tempera
 Number:Temperature       Ioniq_ExternalTemperature        "External Temperature"          (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:external_temperature" }         
 String                   Ioniq_Latestexport               "Latest export"                 (Ioniq) ["Point"]  { channel="evnotify:vehicle:ioniq:last_extended" }       
 ```
+
+![EV Notify Vehicle Model Example](doc/img/Model.png)
