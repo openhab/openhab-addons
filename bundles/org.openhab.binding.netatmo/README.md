@@ -27,11 +27,11 @@ Here is the procedure:
 
 ### 1. Application Creation
 
-Create an application at https://dev.netatmo.com/dev/createapp
+Create an application at https://dev.netatmo.com/apps/createanapp
 
 The variables you will need to get to setup the binding are:
 
-* `<CLIENT_ID>` Your client ID taken from your App at https://dev.netatmo.com/dev/listapps
+* `<CLIENT_ID>` Your client ID taken from your App at https://dev.netatmo.com/apps
 * `<CLIENT_SECRET>` A token provided along with the `<CLIENT_ID>`.
 * `<USERNAME>` The username you use to connect to the Netatmo API (usually your mail address).
 * `<PASSWORD>` The password attached to the above username.

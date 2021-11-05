@@ -48,6 +48,7 @@
 		<channels>
 			<channel id="current_time" typeId="currentTime"/>
 			<channel id="mode" typeId="mode"/>
+			<channel id="manual_fan_step" typeId="manualFanStep"/>
 			<channel id="manual_fan_speed" typeId="manualFanSpeed"/>
 			<channel id="supply_fan_speed" typeId="supplyFanSpeed"/>
 			<channel id="extract_fan_speed" typeId="extractFanSpeed"/>
@@ -85,7 +86,7 @@
 		<label>Humidity</label>
 		<channels>
 			<channel id="humidity" typeId="humidity">
-				<description>Current relative humidity measured by the unit</description>
+				<description>Current relative humidity measured by the air unit</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -123,6 +124,7 @@
 				<label>Remaining Filter Life</label>
 				<description>Remaining life of filter until exchange is necessary</description>
 			</channel>
+			<channel id="filter_period" typeId="filterPeriod"/>
 		</channels>
 	</channel-group-type>
 
@@ -147,10 +149,17 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="manualFanSpeed">
+	<channel-type id="manualFanStep">
+		<item-type>Dimmer</item-type>
+		<label>Manual Fan Step</label>
+		<description>Controls 10-step setting of the fan when operation mode is manual</description>
+		<category>Fan</category>
+		<state step="10" min="0" max="100"/>
+	</channel-type>
+	<channel-type id="manualFanSpeed" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Manual Fan Speed</label>
-		<description>Controls 10-step setting of the fan when operation mode is manual</description>
+		<description>Deprecated, please use Manual Fan Step instead. This channel will be removed in a later version.</description>
 		<category>Fan</category>
 		<state step="10" min="0" max="100"/>
 	</channel-type>
@@ -182,6 +191,12 @@
 		<category>Fan</category>
 		<state step="10" min="0" max="100" readOnly="true"/>
 	</channel-type>
+	<channel-type id="filterPeriod" advanced="true">
+		<item-type>Number</item-type>
+		<label>Filter Period</label>
+		<description>Number of months between filter replacements</description>
+		<state pattern="%d" min="3" max="12"/>
+	</channel-type>
 	<channel-type id="percentage">
 		<item-type>Number</item-type>
 		<label>Percentage</label>
@@ -193,7 +208,8 @@
 		<label>Humidity</label>
 		<category>Humidity</category>
 		<tags>
-			<tag>CurrentHumidity</tag>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true" min="0" max="100">
 		</state>

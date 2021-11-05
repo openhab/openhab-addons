@@ -14,6 +14,7 @@ package org.openhab.persistence.jdbc.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,7 +141,7 @@ public class ItemVO implements Serializable {
         } else if (!value.equals(other.value)) {
             return false;
         }
-        return time == other.time;
+        return Objects.equals(time, other.time);
     }
 
     @Override

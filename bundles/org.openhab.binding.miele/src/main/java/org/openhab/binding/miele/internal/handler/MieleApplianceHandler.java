@@ -20,7 +20,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.miele.internal.DeviceUtil;
+import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceClassObject;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceProperty;
@@ -35,6 +37,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +55,7 @@ import com.google.gson.JsonParser;
  *
  * @author Karel Goderis - Initial contribution
  * @author Martin Lepsy - Added check for JsonNull result
+ * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
 public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannelSelector> extends BaseThingHandler
         implements ApplianceStatusListener {
@@ -65,7 +69,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     protected Gson gson = new Gson();
 
-    protected String uid;
+    protected String applianceId;
     protected MieleBridgeHandler bridgeHandler;
     private Class<E> selectorType;
     protected String modelID;
@@ -80,42 +84,50 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     public ApplianceChannelSelector getValueSelectorFromChannelID(String valueSelectorText)
             throws IllegalArgumentException {
-        for (ApplianceChannelSelector c : selectorType.getEnumConstants()) {
-            if (c.getChannelID() != null && c.getChannelID().equals(valueSelectorText)) {
+        E[] enumConstants = selectorType.getEnumConstants();
+        if (enumConstants == null) {
+            throw new IllegalArgumentException(
+                    String.format("Could not get enum constants for value selector: %s", valueSelectorText));
+        }
+        for (ApplianceChannelSelector c : enumConstants) {
+            if (c != null && c.getChannelID() != null && c.getChannelID().equals(valueSelectorText)) {
                 return c;
             }
         }
 
-        throw new IllegalArgumentException("Not valid value selector");
+        throw new IllegalArgumentException(String.format("Not valid value selector: %s", valueSelectorText));
     }
 
     public ApplianceChannelSelector getValueSelectorFromMieleID(String valueSelectorText)
             throws IllegalArgumentException {
-        for (ApplianceChannelSelector c : selectorType.getEnumConstants()) {
-            if (c.getMieleID() != null && c.getMieleID().equals(valueSelectorText)) {
+        E[] enumConstants = selectorType.getEnumConstants();
+        if (enumConstants == null) {
+            throw new IllegalArgumentException(
+                    String.format("Could not get enum constants for value selector: %s", valueSelectorText));
+        }
+        for (ApplianceChannelSelector c : enumConstants) {
+            if (c != null && c.getMieleID() != null && c.getMieleID().equals(valueSelectorText)) {
                 return c;
             }
         }
 
-        throw new IllegalArgumentException("Not valid value selector");
+        throw new IllegalArgumentException(String.format("Not valid value selector: %s", valueSelectorText));
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing Miele appliance handler.");
-        final String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
-        if (uid != null) {
-            this.uid = uid;
-            if (getMieleBridgeHandler() != null) {
-                ThingStatusInfo statusInfo = getBridge().getStatusInfo();
-                updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
-            }
+        final String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        if (applianceId != null) {
+            this.applianceId = applianceId;
+            this.onBridgeConnectionResumed();
         }
     }
 
     public void onBridgeConnectionResumed() {
-        if (getMieleBridgeHandler() != null) {
-            ThingStatusInfo statusInfo = getBridge().getStatusInfo();
+        Bridge bridge = getBridge();
+        if (bridge != null && getMieleBridgeHandler() != null) {
+            ThingStatusInfo statusInfo = bridge.getStatusInfo();
             updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
         }
     }
@@ -123,12 +135,12 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     @Override
     public void dispose() {
         logger.debug("Handler disposes. Unregistering listener.");
-        if (uid != null) {
+        if (applianceId != null) {
             MieleBridgeHandler bridgeHandler = getMieleBridgeHandler();
             if (bridgeHandler != null) {
                 getMieleBridgeHandler().unregisterApplianceStatusListener(this);
             }
-            uid = null;
+            applianceId = null;
         }
     }
 
@@ -142,106 +154,184 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     }
 
     @Override
-    public void onApplianceStateChanged(String UID, DeviceClassObject dco) {
-        String myUID = (getThing().getProperties().get(PROTOCOL_PROPERTY_NAME))
-                + (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
-        String modelID = StringUtils.right(dco.DeviceClass,
-                dco.DeviceClass.length() - new String("com.miele.xgw3000.gateway.hdm.deviceclasses.Miele").length());
+    public void onApplianceStateChanged(FullyQualifiedApplianceIdentifier applicationIdentifier,
+            DeviceClassObject dco) {
+        String myApplianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        if (myApplianceId == null || !myApplianceId.equals(applicationIdentifier.getApplianceId())) {
+            return;
+        }
 
-        if (myUID.equals(UID)) {
-            if (modelID.equals(this.modelID)) {
-                for (JsonElement prop : dco.Properties.getAsJsonArray()) {
-                    try {
-                        DeviceProperty dp = gson.fromJson(prop, DeviceProperty.class);
-                        dp.Value = StringUtils.trim(dp.Value);
-                        dp.Value = StringUtils.strip(dp.Value);
-
-                        onAppliancePropertyChanged(UID, dp);
-                    } catch (Exception p) {
-                        // Ignore - this is due to an unrecognized and not yet reverse-engineered array property
-                    }
+        for (JsonElement prop : dco.Properties.getAsJsonArray()) {
+            try {
+                DeviceProperty dp = gson.fromJson(prop, DeviceProperty.class);
+                if (dp == null) {
+                    continue;
                 }
+                if (!EXTENDED_DEVICE_STATE_PROPERTY_NAME.equals(dp.Name)) {
+                    dp.Value = dp.Value.trim();
+                    dp.Value = dp.Value.strip();
+                }
+                onAppliancePropertyChanged(applicationIdentifier, dp);
+            } catch (Exception p) {
+                // Ignore - this is due to an unrecognized and not yet reverse-engineered array property
             }
         }
     }
 
     @Override
-    public void onAppliancePropertyChanged(String UID, DeviceProperty dp) {
-        String myUID = (getThing().getProperties().get(PROTOCOL_PROPERTY_NAME))
-                + (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+    public void onAppliancePropertyChanged(FullyQualifiedApplianceIdentifier applicationIdentifier, DeviceProperty dp) {
+        String myApplianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
-        if (myUID.equals(UID)) {
-            try {
-                DeviceMetaData dmd = null;
-                if (dp.Metadata == null) {
-                    String metadata = metaDataCache.get(new StringBuilder().append(dp.Name).toString().trim());
-                    if (metadata != null) {
-                        JsonObject jsonMetaData = (JsonObject) JsonParser.parseString(metadata);
-                        dmd = gson.fromJson(jsonMetaData, DeviceMetaData.class);
-                        // only keep the enum, if any - that's all we care for events we receive via multicast
-                        // all other fields are nulled
+        if (myApplianceId == null || !myApplianceId.equals(applicationIdentifier.getApplianceId())) {
+            return;
+        }
+
+        this.onAppliancePropertyChanged(dp);
+    }
+
+    protected void onAppliancePropertyChanged(DeviceProperty dp) {
+        try {
+            DeviceMetaData dmd = null;
+            if (dp.Metadata == null) {
+                String metadata = metaDataCache.get(new StringBuilder().append(dp.Name).toString().trim());
+                if (metadata != null) {
+                    JsonObject jsonMetaData = (JsonObject) JsonParser.parseString(metadata);
+                    dmd = gson.fromJson(jsonMetaData, DeviceMetaData.class);
+                    // only keep the enum, if any - that's all we care for events we receive via multicast
+                    // all other fields are nulled
+                    if (dmd != null) {
                         dmd.LocalizedID = null;
                         dmd.LocalizedValue = null;
                         dmd.Filter = null;
                         dmd.description = null;
                     }
                 }
-                if (dp.Metadata != null) {
-                    String metadata = StringUtils.replace(dp.Metadata.toString(), "enum", "MieleEnum");
-                    JsonObject jsonMetaData = (JsonObject) JsonParser.parseString(metadata);
-                    dmd = gson.fromJson(jsonMetaData, DeviceMetaData.class);
-                    metaDataCache.put(new StringBuilder().append(dp.Name).toString().trim(), metadata);
-                }
+            }
+            if (dp.Metadata != null) {
+                String metadata = dp.Metadata.toString().replace("enum", "MieleEnum");
+                JsonObject jsonMetaData = (JsonObject) JsonParser.parseString(metadata);
+                dmd = gson.fromJson(jsonMetaData, DeviceMetaData.class);
+                metaDataCache.put(new StringBuilder().append(dp.Name).toString().trim(), metadata);
+            }
 
-                ApplianceChannelSelector selector = null;
-                try {
-                    selector = getValueSelectorFromMieleID(dp.Name);
-                } catch (Exception h) {
-                    logger.trace("{} is not a valid channel for a {}", dp.Name, modelID);
-                }
-
-                String dpValue = StringUtils.trim(StringUtils.strip(dp.Value));
-
-                if (selector != null) {
-                    if (!selector.isProperty()) {
-                        ChannelUID theChannelUID = new ChannelUID(getThing().getUID(), selector.getChannelID());
-
-                        if (dp.Value != null) {
-                            logger.trace("Update state of {} with getState '{}'", theChannelUID,
-                                    selector.getState(dpValue, dmd));
-                            updateState(theChannelUID, selector.getState(dpValue, dmd));
-                        } else {
-                            updateState(theChannelUID, UnDefType.UNDEF);
-                        }
-                    } else if (dpValue != null) {
-                        logger.debug("Updating the property '{}' of '{}' to '{}'", selector.getChannelID(),
-                                getThing().getUID(), selector.getState(dpValue, dmd).toString());
-                        Map<String, String> properties = editProperties();
-                        properties.put(selector.getChannelID(), selector.getState(dpValue, dmd).toString());
-                        updateProperties(properties);
+            if (dp.Name.equals(EXTENDED_DEVICE_STATE_PROPERTY_NAME)) {
+                if (!dp.Value.isEmpty()) {
+                    byte[] extendedStateBytes = DeviceUtil.stringToBytes(dp.Value);
+                    logger.trace("Extended device state for {}: {}", getThing().getUID(),
+                            DeviceUtil.bytesToHex(extendedStateBytes));
+                    if (this instanceof ExtendedDeviceStateListener) {
+                        ((ExtendedDeviceStateListener) this).onApplianceExtendedStateChanged(extendedStateBytes);
                     }
                 }
-            } catch (IllegalArgumentException e) {
-                logger.error("An exception occurred while processing a changed device property :'{}'", e.getMessage());
+                return;
             }
+
+            ApplianceChannelSelector selector = null;
+            try {
+                selector = getValueSelectorFromMieleID(dp.Name);
+            } catch (Exception h) {
+                logger.trace("{} is not a valid channel for a {}", dp.Name, modelID);
+            }
+
+            String dpValue = dp.Value.strip().trim();
+
+            if (selector != null) {
+                if (!selector.isProperty()) {
+                    ChannelUID theChannelUID = new ChannelUID(getThing().getUID(), selector.getChannelID());
+
+                    if (dp.Value != null) {
+                        State state = selector.getState(dpValue, dmd);
+                        logger.trace("Update state of {} with getState '{}'", theChannelUID, state);
+                        updateState(theChannelUID, state);
+                        updateRawChannel(dp.Name, dpValue);
+                    } else {
+                        updateState(theChannelUID, UnDefType.UNDEF);
+                    }
+                } else {
+                    logger.debug("Updating the property '{}' of '{}' to '{}'", selector.getChannelID(),
+                            getThing().getUID(), selector.getState(dpValue, dmd).toString());
+                    @NonNull
+                    Map<@NonNull String, @NonNull String> properties = editProperties();
+                    properties.put(selector.getChannelID(), selector.getState(dpValue, dmd).toString());
+                    updateProperties(properties);
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            logger.error("An exception occurred while processing a changed device property :'{}'", e.getMessage());
         }
+    }
+
+    protected void updateExtendedState(String channelId, State state) {
+        ChannelUID channelUid = new ChannelUID(getThing().getUID(), channelId);
+        logger.trace("Update state of {} with extended state '{}'", channelUid, state);
+        updateState(channelUid, state);
+    }
+
+    /**
+     * Update raw value channels for properties already mapped to text channels.
+     * Currently ApplianceChannelSelector only supports 1:1 mapping from property
+     * to channel.
+     */
+    private void updateRawChannel(String propertyName, String value) {
+        String channelId;
+        switch (propertyName) {
+            case STATE_PROPERTY_NAME:
+                channelId = STATE_CHANNEL_ID;
+                break;
+            case PROGRAM_ID_PROPERTY_NAME:
+                channelId = PROGRAM_CHANNEL_ID;
+                break;
+            default:
+                return;
+        }
+        ApplianceChannelSelector selector = null;
+        try {
+            selector = getValueSelectorFromChannelID(channelId);
+        } catch (IllegalArgumentException e) {
+            logger.trace("{} is not a valid channel for a {}", channelId, modelID);
+            return;
+        }
+        ChannelUID channelUid = new ChannelUID(getThing().getUID(), channelId);
+        State state = selector.getState(value);
+        logger.trace("Update state of {} with getState '{}'", channelUid, state);
+        updateState(channelUid, state);
     }
 
     @Override
     public void onApplianceRemoved(HomeDevice appliance) {
-        if (uid != null) {
-            if (uid.equals(appliance.UID)) {
-                updateStatus(ThingStatus.OFFLINE);
-            }
+        if (applianceId == null) {
+            return;
+        }
+
+        if (applianceId.equals(appliance.getApplianceIdentifier().getApplianceId())) {
+            updateStatus(ThingStatus.OFFLINE);
         }
     }
 
     @Override
     public void onApplianceAdded(HomeDevice appliance) {
-        if (uid != null) {
-            if (uid.equals(appliance.UID)) {
-                updateStatus(ThingStatus.ONLINE);
+        if (applianceId == null) {
+            return;
+        }
+
+        FullyQualifiedApplianceIdentifier applianceIdentifier = appliance.getApplianceIdentifier();
+
+        if (applianceId.equals(applianceIdentifier.getApplianceId())) {
+            @NonNull
+            Map<@NonNull String, @NonNull String> properties = editProperties();
+            properties.put(MODEL_PROPERTY_NAME, appliance.getApplianceModel());
+            String deviceClass = appliance.getDeviceClass();
+            if (deviceClass != null) {
+                properties.put(DEVICE_CLASS, deviceClass);
             }
+            properties.put(PROTOCOL_ADAPTER_PROPERTY_NAME, appliance.ProtocolAdapterName);
+            properties.put(SERIAL_NUMBER_PROPERTY_NAME, appliance.getSerialNumber());
+            String connectionType = appliance.getConnectionType();
+            if (connectionType != null) {
+                properties.put(CONNECTION_TYPE_PROPERTY_NAME, connectionType);
+            }
+            updateProperties(properties);
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -263,6 +353,9 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     }
 
     protected boolean isResultProcessable(JsonElement result) {
-        return result != null && !result.isJsonNull();
+        if (result == null) {
+            throw new IllegalArgumentException("Provided result is null");
+        }
+        return !result.isJsonNull();
     }
 }

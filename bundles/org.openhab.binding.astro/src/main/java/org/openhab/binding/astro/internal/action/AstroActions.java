@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public class AstroActions implements ThingActions {
 
     private final Logger logger = LoggerFactory.getLogger(AstroActions.class);
-    protected @Nullable AstroThingHandler handler;
+    private @Nullable AstroThingHandler handler;
 
     public AstroActions() {
         logger.debug("Astro actions service instanciated");

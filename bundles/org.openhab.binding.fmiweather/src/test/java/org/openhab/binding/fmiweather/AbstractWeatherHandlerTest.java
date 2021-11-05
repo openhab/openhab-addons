@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.fmiweather;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.InvocationTargetException;

@@ -12,9 +12,16 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.device;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.*;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_BRIGHTNESS;
+import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_COLOR;
+import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_COLOR_TEMPERATURE;
+import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_COLOR_TEMPERATURE_ABS;
+import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_ENERGY_POWER;
+import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_OTHER;
+import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_SWITCH;
 import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.LB130;
 
 import java.io.IOException;
@@ -40,8 +47,7 @@ public class BulbDeviceTest extends DeviceTestBase<BulbDevice> {
     private static final String DEVICE_OFF = "bulb_get_sysinfo_response_off";
 
     public BulbDeviceTest() throws IOException {
-        super(new BulbDevice(LB130.thingTypeUID(), COLOR_TEMPERATURE_2_MIN, COLOR_TEMPERATURE_2_MAX),
-                "bulb_get_sysinfo_response_on");
+        super(new BulbDevice(LB130), "bulb_get_sysinfo_response_on");
     }
 
     @BeforeEach

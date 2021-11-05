@@ -23,6 +23,7 @@
 			<channel id="emeter_actual_reactive_delivery" typeId="actualReactiveDeliveryType"/>
 			<channel id="emeter_actual_reactive_production" typeId="actualReactiveProductionType"/>
 			<channel id="emeter_active_threshold_smax" typeId="activeThresholdSmax"/>
+			<channel id="emeter_threshold_kw" typeId="actualTresholdkWType"/>
 			<channel id="emeter_switch_position" typeId="switchPositionType"/>
 			<channel id="emeter_power_failure_log_entries" typeId="powerFailureLogEntriesType"/>
 			<channel id="emeter_power_failure_log_timestamp0" typeId="powerFailureLogEndType"/>

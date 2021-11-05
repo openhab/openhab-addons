@@ -15,29 +15,39 @@
 
 		<channels>
 			<channel id="state" typeId="state"/>
+			<channel id="rawState" typeId="rawState"/>
 			<channel id="program" typeId="program"/>
+			<channel id="rawProgram" typeId="rawProgram"/>
 			<channel id="type" typeId="type"/>
 			<channel id="phase" typeId="phase"/>
+			<channel id="rawPhase" typeId="rawPhase"/>
 			<channel id="start" typeId="start"/>
 			<channel id="duration" typeId="duration"/>
 			<channel id="elapsed" typeId="elapsed"/>
 			<channel id="finish" typeId="finish"/>
-			<channel id="target" typeId="target"/>
-			<channel id="measured" typeId="measured"/>
-			<channel id="temp1" typeId="temp"/>
-			<channel id="temp2" typeId="temp"/>
+			<channel id="target" typeId="targetTemperature">
+				<description>Target temperature to be reached by the oven</description>
+			</channel>
+			<channel id="measured" typeId="currentTemperature">
+				<label>Measured Temperature</label>
+				<description>Actual measured temperature in the oven</description>
+			</channel>
+			<channel id="temp1" typeId="temperature">
+				<label>Program Temperature 1</label>
+				<description>Program temperature in the oven</description>
+			</channel>
+			<channel id="temp2" typeId="temperature">
+				<label>Program Temperature 2</label>
+				<description>Program temperature in the oven</description>
+			</channel>
 			<channel id="door" typeId="door"/>
 			<channel id="stop" typeId="stop"/>
 			<channel id="switch" typeId="switch"/>
 		</channels>
 
-		<config-description>
-			<parameter name="uid" type="text" required="true">
-				<label>ID</label>
-				<description>The identifier identifies one certain appliance on the ZigBee network.</description>
-			</parameter>
-		</config-description>
+		<representation-property>uid</representation-property>
 
+		<config-description-ref uri="thing-type:miele:appliance"/>
 	</thing-type>
 
 </thing:thing-descriptions>

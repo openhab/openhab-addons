@@ -104,6 +104,7 @@ public class RoamingBluetoothDevice extends DelegateBluetoothDevice {
         return getAdapter(currentDelegateRef.get());
     }
 
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     private class Listener implements BluetoothDeviceListener {
 
         private BluetoothDevice device;

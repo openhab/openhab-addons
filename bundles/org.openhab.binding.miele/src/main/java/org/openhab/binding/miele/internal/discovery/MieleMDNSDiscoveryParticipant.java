@@ -26,7 +26,6 @@ import org.openhab.binding.miele.internal.MieleBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
-import org.openhab.core.config.discovery.mdns.internal.MDNSDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -39,7 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Karel Goderis - Initial contribution
  * @author Martin Lepsy - Added check for Miele gateway for cleaner discovery
- *
+ * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
 @Component
 public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
@@ -83,8 +82,7 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 }
 
                 return DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withRepresentationProperty(MieleBindingConstants.HOST).withLabel("Miele XGW3000 Gateway")
-                        .build();
+                        .withRepresentationProperty(MieleBindingConstants.HOST).withLabel("Miele XGW3000").build();
             }
         }
         return null;

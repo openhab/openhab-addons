@@ -2541,6 +2541,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public boolean publicAddress(LineInType lineInType) {
         // check if sourcePlayer has a line-in connected
         if ((lineInType != LineInType.DIGITAL && isAnalogLineInConnected())

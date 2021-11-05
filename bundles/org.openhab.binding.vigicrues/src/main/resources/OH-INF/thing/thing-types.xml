@@ -22,7 +22,8 @@
 			<channel id="alert" typeId="alert-level"/>
 			<channel id="alert-icon" typeId="alert-icon"/>
 			<channel id="short-comment" typeId="comment">
-				<label>Short description</label>
+				<label>Short Description</label>
+				<description>Brief description of the situation.</description>
 			</channel>
 			<channel id="comment" typeId="comment"/>
 			<channel id="observation-time" typeId="observation-time"/>
@@ -46,6 +47,7 @@
 	<channel-type id="flow">
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Current Flow</label>
+		<description>Current river flow</description>
 		<category>flow</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -109,6 +111,7 @@
 	<channel-type id="comment">
 		<item-type>String</item-type>
 		<label>Comment</label>
+		<description>Detailed comment</description>
 		<category>text</category>
 		<tags>
 			<tag>Status</tag>

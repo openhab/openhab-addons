@@ -34,7 +34,7 @@
 				<context>password</context>
 				<default>0</default>
 			</parameter>
-			<parameter name="repeat" type="integer" required="false" min="0" max="5">
+			<parameter name="repeat" type="integer" required="false" min="1" max="5">
 				<label>Repeat Commands</label>
 				<description>Usually the bridge receives all commands albeit UDP is used. But the actual bulbs might be slightly out
 					of bridge radio range and it sometimes helps to send commands multiple times.
