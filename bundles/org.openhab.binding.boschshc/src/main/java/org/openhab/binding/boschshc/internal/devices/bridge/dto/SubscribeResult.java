@@ -30,4 +30,8 @@ public class SubscribeResult {
     public String getJsonrpc() {
         return this.jsonrpc;
     }
+
+    public static Boolean isValid(SubscribeResult obj) {
+        return obj != null && obj.result != null && obj.jsonrpc != null;
+    }
 }

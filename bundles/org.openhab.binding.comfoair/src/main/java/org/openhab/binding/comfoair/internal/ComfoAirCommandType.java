@@ -786,6 +786,7 @@ public enum ComfoAirCommandType {
      *            new state
      * @return initialized ComfoAirCommand
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public static @Nullable ComfoAirCommand getChangeCommand(String key, Command command) {
         ComfoAirCommandType commandType = getCommandTypeByKey(key);
         State value = UnDefType.NULL;
