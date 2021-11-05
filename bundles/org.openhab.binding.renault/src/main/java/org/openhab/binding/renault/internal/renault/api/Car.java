@@ -39,6 +39,7 @@ public class Car {
                     .get("batteryLevel").getAsDouble();
         } catch (Exception e) {
             logger.error("Error {} parsing Battery Status: {}", e, responseJson);
+            batteryLevel = null;
         }
     }
 
@@ -48,6 +49,7 @@ public class Car {
                     .get("hvacStatus").getAsString().equals("on");
         } catch (Exception e) {
             logger.error("Error {} parsing HVAC Status: {}", e, responseJson);
+            hvacstatus = null;
         }
     }
 
@@ -57,6 +59,7 @@ public class Car {
                     .get("totalMileage").getAsDouble();
         } catch (Exception e) {
             logger.error("Error {} parsing Cockpit: {}", e, responseJson);
+            odometer = null;
         }
     }
 
@@ -68,6 +71,8 @@ public class Car {
                     .get("gpsLongitude").getAsDouble();
         } catch (Exception e) {
             logger.error("Error {} parsing Cockpit: {}", e, responseJson);
+            gpsLatitude = null;
+            gpsLongitude = null;
         }
     }
 
@@ -87,6 +92,7 @@ public class Car {
             }
         } catch (Exception e) {
             logger.error("Error {} parsing Details: {}", e, responseJson);
+            imageURL = null;
         }
     }
 }

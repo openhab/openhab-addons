@@ -93,11 +93,21 @@ public class RenaultHandler extends BaseThingHandler {
     }
 
     private void updateState(Car car) {
-        updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(car.batteryLevel));
-        updateState(CHANNEL_HVAC_STATUS, (car.hvacstatus ? OnOffType.ON : OnOffType.OFF));
-        updateState(CHANNEL_IMAGE, new StringType(car.imageURL));
-        updateState(CHANNEL_LOCATION,
-                new PointType(new DecimalType(car.gpsLatitude), new DecimalType(car.gpsLongitude)));
-        updateState(CHANNEL_ODOMETER, new DecimalType(car.odometer));
+        if (car.batteryLevel != null) {
+            updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(car.batteryLevel));
+        }
+        if (car.hvacstatus != null) {
+            updateState(CHANNEL_HVAC_STATUS, (car.hvacstatus ? OnOffType.ON : OnOffType.OFF));
+        }
+        if (car.imageURL != null) {
+            updateState(CHANNEL_IMAGE, new StringType(car.imageURL));
+        }
+        if (car.gpsLatitude != null && car.gpsLongitude != null) {
+            updateState(CHANNEL_LOCATION,
+                    new PointType(new DecimalType(car.gpsLatitude), new DecimalType(car.gpsLongitude)));
+        }
+        if (car.odometer != null) {
+            updateState(CHANNEL_ODOMETER, new DecimalType(car.odometer));
+        }
     }
 }

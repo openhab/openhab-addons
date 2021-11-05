@@ -172,9 +172,8 @@ public class MyRenaultHttpSession {
             logger.debug("responseJson: {} ", responseJson.toString());
             car.setDetails(responseJson);
         } else {
-            logger.error("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
+            logger.warn("Vehicle Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
                     response.getContentAsString());
-            throw new Exception("Get Vehicle Error: " + response.getReason());
         }
     }
 
@@ -189,9 +188,8 @@ public class MyRenaultHttpSession {
             logger.debug("responseJson: {} ", responseJson.toString());
             car.setBatteryStatus(responseJson);
         } else {
-            logger.error("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
+            logger.warn("BatteryStatus Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
                     response.getContentAsString());
-            throw new Exception("Get Battery Status Error: " + response.getReason());
         }
     }
 
@@ -206,9 +204,8 @@ public class MyRenaultHttpSession {
             logger.debug("responseJson: {} ", responseJson.toString());
             car.setHVACStatus(responseJson);
         } else {
-            logger.error("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
+            logger.warn("HvacStatus Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
                     response.getContentAsString());
-            throw new Exception("Get HVAC Status Error: " + response.getReason());
         }
     }
 
@@ -223,9 +220,8 @@ public class MyRenaultHttpSession {
             logger.debug("responseJson: {} ", responseJson.toString());
             car.setCockpit(responseJson);
         } else {
-            logger.error("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
+            logger.warn("Cockpit Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
                     response.getContentAsString());
-            throw new Exception("Get Cockpit Error: " + response.getReason());
         }
     }
 
@@ -240,9 +236,8 @@ public class MyRenaultHttpSession {
             logger.debug("responseJson: {} ", responseJson.toString());
             car.setLocation(responseJson);
         } else {
-            logger.error("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
+            logger.warn("Location Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
                     response.getContentAsString());
-            throw new Exception("Get Cockpit Error: " + response.getReason());
         }
     }
 
