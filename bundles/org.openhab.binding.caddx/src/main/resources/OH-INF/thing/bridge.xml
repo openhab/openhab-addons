@@ -60,6 +60,11 @@
 				<default>16</default>
 			</parameter>
 
+			<parameter name="ignoreZoneStatusTransitions" type="boolean" required="true">
+				<label>Ignore Zone Status Transitions</label>
+				<description>Flag specifying if the Zone Status Transitions should be ignored</description>
+				<default>false</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
 

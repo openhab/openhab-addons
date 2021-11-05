@@ -287,7 +287,7 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
 
     protected void updateTask(PlugwiseDeviceTask task) {
         if (task.shouldBeScheduled()) {
-            if (!task.isScheduled() || task.getConfiguredInterval() != task.getInterval()) {
+            if (!task.isScheduled() || !task.getConfiguredInterval().equals(task.getInterval())) {
                 if (task.isScheduled()) {
                     task.stop();
                 }

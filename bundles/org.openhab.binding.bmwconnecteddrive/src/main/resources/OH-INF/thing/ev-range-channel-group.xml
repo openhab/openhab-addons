@@ -9,8 +9,11 @@
 		<channels>
 			<channel id="mileage" typeId="mileage-channel"/>
 			<channel id="electric" typeId="range-electric-channel"/>
-			<channel id="soc" typeId="soc-channel"/>
 			<channel id="radius-electric" typeId="range-radius-electric-channel"/>
+			<channel id="electric-max" typeId="range-electric-max-channel"/>
+			<channel id="radius-electric-max" typeId="range-radius-electric-max-channel"/>
+			<channel id="soc" typeId="soc-channel"/>
+			<channel id="soc-max" typeId="soc-max-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

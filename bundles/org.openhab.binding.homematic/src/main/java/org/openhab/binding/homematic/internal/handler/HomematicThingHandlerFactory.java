@@ -17,6 +17,7 @@ import static org.openhab.binding.homematic.internal.HomematicBindingConstants.*
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.homematic.internal.type.HomematicChannelTypeProvider;
 import org.openhab.binding.homematic.internal.type.HomematicTypeGenerator;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
@@ -40,13 +41,16 @@ import org.osgi.service.component.annotations.Reference;
 public class HomematicThingHandlerFactory extends BaseThingHandlerFactory {
 
     private final HomematicTypeGenerator typeGenerator;
+    private final HomematicChannelTypeProvider channelTypeProvider;
     private final NetworkAddressService networkAddressService;
     private final HttpClient httpClient;
 
     @Activate
     public HomematicThingHandlerFactory(@Reference HomematicTypeGenerator typeGenerator,
+            @Reference HomematicChannelTypeProvider channelTypeProvider,
             @Reference NetworkAddressService networkAddressService, @Reference HttpClientFactory httpClientFactory) {
         this.typeGenerator = typeGenerator;
+        this.channelTypeProvider = channelTypeProvider;
         this.networkAddressService = networkAddressService;
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
@@ -62,7 +66,7 @@ public class HomematicThingHandlerFactory extends BaseThingHandlerFactory {
             return new HomematicBridgeHandler((Bridge) thing, typeGenerator,
                     networkAddressService.getPrimaryIpv4HostAddress(), httpClient);
         } else {
-            return new HomematicThingHandler(thing);
+            return new HomematicThingHandler(thing, channelTypeProvider);
         }
     }
 }

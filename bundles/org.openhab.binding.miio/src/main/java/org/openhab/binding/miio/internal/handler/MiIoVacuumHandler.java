@@ -18,12 +18,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,6 +45,7 @@ import org.openhab.binding.miio.internal.cloud.MiCloudException;
 import org.openhab.binding.miio.internal.robot.ConsumablesType;
 import org.openhab.binding.miio.internal.robot.FanModeType;
 import org.openhab.binding.miio.internal.robot.RRMapDraw;
+import org.openhab.binding.miio.internal.robot.RRMapDrawOptions;
 import org.openhab.binding.miio.internal.robot.RobotCababilities;
 import org.openhab.binding.miio.internal.robot.StatusDTO;
 import org.openhab.binding.miio.internal.robot.StatusType;
@@ -88,8 +89,7 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoVacuumHandler.class);
-    private static final float MAP_SCALE = 2.0f;
-    private static final SimpleDateFormat DATEFORMATTER = new SimpleDateFormat("yyyyMMdd-HHmmss");
+    private static final DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
     private final ChannelUID mapChannelUid;
 
@@ -110,6 +110,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private boolean hasChannelStructure;
     private ConcurrentHashMap<RobotCababilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
+    private RRMapDrawOptions mapDrawOptions = new RRMapDrawOptions();
 
     public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
             CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry) {
@@ -171,7 +172,6 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
             return null;
         });
-        updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
     }
 
     @Override
@@ -490,6 +490,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     public void initialize() {
         super.initialize();
         hasChannelStructure = false;
+        this.mapDrawOptions = RRMapDrawOptions
+                .getOptionsFromFile(BINDING_USERDATA_PATH + File.separator + "mapConfig.json", logger);
+        updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
     }
 
     @Override
@@ -651,14 +654,15 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                 if (mapDl != null) {
                     byte[] mapData = mapDl.getBytes();
                     RRMapDraw rrMap = RRMapDraw.loadImage(new ByteArrayInputStream(mapData));
+                    rrMap.setDrawOptions(mapDrawOptions);
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     if (logger.isDebugEnabled()) {
                         final String mapPath = BINDING_USERDATA_PATH + File.separator + map
-                                + DATEFORMATTER.format(new Date()) + ".rrmap";
+                                + LocalDateTime.now().format(DATEFORMATTER) + ".rrmap";
                         CloudUtil.writeBytesToFileNio(mapData, mapPath);
                         logger.debug("Mapdata saved to {}", mapPath);
                     }
-                    ImageIO.write(rrMap.getImage(MAP_SCALE), "jpg", baos);
+                    ImageIO.write(rrMap.getImage(), "jpg", baos);
                     byte[] byteArray = baos.toByteArray();
                     if (byteArray != null && byteArray.length > 0) {
                         return new RawType(byteArray, "image/jpeg");

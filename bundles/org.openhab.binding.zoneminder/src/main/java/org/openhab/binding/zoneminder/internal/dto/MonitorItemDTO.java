@@ -32,4 +32,10 @@ public class MonitorItemDTO {
      */
     @SerializedName("Monitor_Status")
     public MonitorStatusDTO monitorStatus;
+
+    /**
+     * Event counts
+     */
+    @SerializedName("Event_Summary")
+    public EventSummaryDTO eventSummary;
 }

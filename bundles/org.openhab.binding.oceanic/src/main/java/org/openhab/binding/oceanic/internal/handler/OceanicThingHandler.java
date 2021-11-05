@@ -69,7 +69,7 @@ public abstract class OceanicThingHandler extends BaseThingHandler {
                         if (aChannel.getUID().equals(theChannelUID)
                                 && selector.getTypeValue() == OceanicChannelSelector.ValueSelectorType.GET) {
                             String response = requestResponse(selector.name());
-                            if (response != null && response != "") {
+                            if (response != null && !response.isEmpty()) {
                                 if (selector.isProperty()) {
                                     logger.debug("Updating the property '{}' with value '{}'", selector.toString(),
                                             selector.convertValue(response));

@@ -100,7 +100,8 @@
 		<description>Internal device temperature, helps to detect overheating due to installation issues</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>CurrentTemperature</tag>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>

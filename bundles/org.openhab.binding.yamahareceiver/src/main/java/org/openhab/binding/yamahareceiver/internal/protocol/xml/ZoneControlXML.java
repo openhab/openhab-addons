@@ -77,7 +77,15 @@ public class ZoneControlXML implements ZoneControl {
     protected CommandTemplate dialogueLevel = new CommandTemplate(
             "<Sound_Video><Dialogue_Adjust><Dialogue_Lvl>%d</Dialogue_Lvl></Dialogue_Adjust></Sound_Video>",
             "Sound_Video/Dialogue_Adjust/Dialogue_Lvl");
+    protected CommandTemplate hdmi1Out = new CommandTemplate(
+            "<System><Sound_Video><HDMI><Output><OUT_1>%s</OUT_1></Output></HDMI></Sound_Video></System>",
+            "Sound_Video/HDMI/Output/OUT_1");
+    protected CommandTemplate hdmi2Out = new CommandTemplate(
+            "<System><Sound_Video><HDMI><Output><OUT_2>%s</OUT_2></Output></HDMI></Sound_Video></System>",
+            "Sound_Video/HDMI/Output/OUT_2");
     protected boolean dialogueLevelSupported = false;
+    protected boolean hdmi1OutSupported = false;
+    protected boolean hdmi2OutSupported = false;
 
     public ZoneControlXML(AbstractConnection con, Zone zone, YamahaZoneConfig zoneSettings,
             ZoneControlStateListener observer, DeviceInformationState deviceInformationState,
@@ -118,6 +126,12 @@ public class ZoneControlXML implements ZoneControl {
             logger.debug("Zone {} - the {} channel is not supported on your model", getZone(), CHANNEL_DIALOGUE_LEVEL);
         }
 
+        hdmi1OutSupported = zoneDescriptor.hasCommandEnding("Sound_Video,HDMI,Output,OUT_1", () -> logger
+                .debug("Zone {} - the {} channel is not supported on your model", getZone(), CHANNEL_HDMI1OUT));
+
+        hdmi2OutSupported = zoneDescriptor.hasCommandEnding("Sound_Video,HDMI,Output,OUT_2", () -> logger
+                .debug("Zone {} - the {} channel is not supported on your model", getZone(), CHANNEL_HDMI2OUT));
+
         // Note: Detection for RX-V3900, which uses <Vol> instead of <Volume>
         if (zoneDescriptor.hasCommandEnding("Vol,Lvl")) {
             volume = volume.replace("Volume", "Vol");
@@ -151,6 +165,10 @@ public class ZoneControlXML implements ZoneControl {
 
     protected void sendCommand(String message) throws IOException {
         comReference.get().send(XMLUtils.wrZone(zone, message));
+    }
+
+    protected void sendCommandWithoutZone(String message) throws IOException {
+        comReference.get().send(message);
     }
 
     /**
@@ -254,6 +272,24 @@ public class ZoneControlXML implements ZoneControl {
     }
 
     @Override
+    public void setHDMI1Out(boolean on) throws IOException, ReceivedMessageParseException {
+        if (!hdmi1OutSupported) {
+            return;
+        }
+        sendCommandWithoutZone(hdmi1Out.apply(on ? ON : OFF));
+        update();
+    }
+
+    @Override
+    public void setHDMI2Out(boolean on) throws IOException, ReceivedMessageParseException {
+        if (!hdmi2OutSupported) {
+            return;
+        }
+        sendCommandWithoutZone(hdmi2Out.apply(on ? ON : OFF));
+        update();
+    }
+
+    @Override
     public void setScene(String scene) throws IOException, ReceivedMessageParseException {
         if (!sceneSelSupported) {
             return;
@@ -289,6 +325,12 @@ public class ZoneControlXML implements ZoneControl {
         if (state.inputID == null || state.inputID.isBlank()) {
             throw new ReceivedMessageParseException("Expected inputID. Failed to read Input/Input_Sel");
         }
+
+        value = getNodeContentOrEmpty(statusNode, hdmi1Out.getPath());
+        state.hdmi1Out = ON.equalsIgnoreCase(value);
+
+        value = getNodeContentOrEmpty(statusNode, hdmi1Out.getPath());
+        state.hdmi2Out = ON.equalsIgnoreCase(value);
 
         // Some receivers may use Src_Name instead?
         value = getNodeContentOrEmpty(statusNode, inputSelNamePath);

@@ -61,10 +61,6 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                 String thingSystemID = getThing().getUID().getId();
                 for (int i = 0; i < systemIDs.size(); i++) {
                     if (systemIDs.get(i).equals(thingSystemID)) {
-                        // Operating Mode
-                        data = bridgehandler.evaluateXPath("//Chlorinator/@operatingMode", xmlResponse);
-                        updateData(HaywardBindingConstants.CHANNEL_CHLORINATOR_OPERATINGMODE, data.get(i));
-
                         // Valve Position
                         data = bridgehandler.evaluateXPath("//Filter/@valvePosition", xmlResponse);
                         updateData(HaywardBindingConstants.CHANNEL_FILTER_VALVEPOSITION, data.get(i));

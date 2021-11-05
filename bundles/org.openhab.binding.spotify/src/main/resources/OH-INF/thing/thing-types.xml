@@ -48,6 +48,7 @@
 			<channel id="albumHref" typeId="currentlyPlayedAlbumHref"/>
 			<channel id="albumType" typeId="currentlyPlayedAlbumType"/>
 			<channel id="albumImage" typeId="currentlyPlayedAlbumImage"/>
+			<channel id="albumImageUrl" typeId="currentlyPlayedAlbumImage"/>
 			<channel id="albumName" typeId="currentlyPlayedAlbumName"/>
 
 			<channel id="artistId" typeId="currentlyPlayedArtistId"/>
@@ -78,10 +79,8 @@
 				<default>10</default>
 				<label>Connect Refresh Period (seconds)</label>
 				<description>This is the frequency of the polling requests to the Spotify Connect Web API. There are limits to the
-					number of requests
-					that can be sent to the Web API. The more often you poll, the better status updates - at the risk
-					of running out of
-					your request quota.</description>
+					number of requests that can be sent to the Web API. The more often you poll, the better status updates - at the
+					risk of running out of your request quota.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -159,6 +158,7 @@
 		<item-type>String</item-type>
 		<label>Playlists</label>
 		<description>List of the users playlists</description>
+		<config-description-ref uri="spotify:config:playlists"/>
 	</channel-type>
 
 	<channel-type id="playlistName">
@@ -293,6 +293,14 @@
 		<label>Album Image</label>
 		<description>The cover art for the album in widest size</description>
 		<state readOnly="true"/>
+		<config-description-ref uri="spotify:config:album-image"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedAlbumImageUrl">
+		<item-type>String</item-type>
+		<label>Album Image URL</label>
+		<description>The URL to the cover art for the album in widest size</description>
+		<state readOnly="true"/>
+		<config-description-ref uri="spotify:config:album-image"/>
 	</channel-type>
 
 	<channel-type id="currentlyPlayedArtistId" advanced="true">

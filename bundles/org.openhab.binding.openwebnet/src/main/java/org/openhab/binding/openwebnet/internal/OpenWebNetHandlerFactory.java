@@ -12,16 +12,17 @@
  */
 package org.openhab.binding.openwebnet.internal;
 
-import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.ALL_SUPPORTED_THING_TYPES;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.ALL_SUPPORTED_THING_TYPES;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openwebnet.handler.OpenWebNetAutomationHandler;
-import org.openhab.binding.openwebnet.handler.OpenWebNetBridgeHandler;
-import org.openhab.binding.openwebnet.handler.OpenWebNetEnergyHandler;
-import org.openhab.binding.openwebnet.handler.OpenWebNetGenericHandler;
-import org.openhab.binding.openwebnet.handler.OpenWebNetLightingHandler;
-import org.openhab.binding.openwebnet.handler.OpenWebNetThermoregulationHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetAutomationHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetBridgeHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetEnergyHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetGenericHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetLightingHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetScenarioHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetThermoregulationHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -70,6 +71,9 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
         } else if (OpenWebNetThermoregulationHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("creating NEW THERMO Handler");
             return new OpenWebNetThermoregulationHandler(thing);
+        } else if (OpenWebNetScenarioHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            logger.debug("creating NEW SCENARIO Handler");
+            return new OpenWebNetScenarioHandler(thing);
         }
         logger.warn("ThingType {} is not supported by this binding", thing.getThingTypeUID());
         return null;

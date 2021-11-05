@@ -82,13 +82,6 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
-				</description>
-			</parameter>
-
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
 				<label>IP Whitelist</label>
 				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
@@ -291,13 +284,6 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="serverPort" type="integer" required="true" min="1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique for each
-					camera.
-				</description>
-			</parameter>
-
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
 				<label>IP Whitelist</label>
 				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
@@ -327,6 +313,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -558,13 +545,6 @@
 				<default>0</default>
 			</parameter>
 
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
-				</description>
-			</parameter>
-
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
 				<label>IP Whitelist</label>
 				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
@@ -580,6 +560,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
@@ -772,13 +753,6 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
-				</description>
-			</parameter>
-
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
 				<label>IP Whitelist</label>
 				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
@@ -887,6 +861,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -1145,13 +1120,6 @@
 				</description>
 			</parameter>
 
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
-				</description>
-			</parameter>
-
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
 				<label>IP Whitelist</label>
 				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
@@ -1184,6 +1152,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -1344,13 +1313,6 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
-				</description>
-			</parameter>
-
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
 				<label>IP Whitelist</label>
 				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
@@ -1450,6 +1412,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -1615,13 +1578,6 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
-				</description>
-			</parameter>
-
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
 				<label>IP Whitelist</label>
 				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
@@ -1734,6 +1690,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -1911,13 +1868,6 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
-				</description>
-			</parameter>
-
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
 				<label>IP Whitelist</label>
 				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
@@ -2025,6 +1975,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -2194,13 +2145,6 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
-				</description>
-			</parameter>
-
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
 				<label>IP Whitelist</label>
 				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
@@ -2300,6 +2244,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>

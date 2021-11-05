@@ -18,7 +18,7 @@
 		</supported-bridge-type-refs>
 
 		<label>In-wall Switch</label>
-		<description>Bosch In-wall switch for light control</description>
+		<description>A simple light control.</description>
 
 		<channels>
 			<channel id="power-switch" typeId="system.power"/>
@@ -36,7 +36,7 @@
 		</supported-bridge-type-refs>
 
 		<label>TwinGuard</label>
-		<description>Bosch TwinGuard environmental sensor</description>
+		<description>The Twinguard smoke detector warns you in case of fire and constantly monitors the air.</description>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -58,8 +58,8 @@
 			<bridge-type-ref id="shc"/>
 		</supported-bridge-type-refs>
 
-		<label>Window/Door Contact</label>
-		<description>Bosch Contact for windows and doors</description>
+		<label>Door/Window Contact</label>
+		<description>Detects open windows and doors.</description>
 
 		<channels>
 			<channel id="contact" typeId="contact"/>
@@ -75,7 +75,8 @@
 		</supported-bridge-type-refs>
 
 		<label>Motion Detector</label>
-		<description>Bosch Motion Detector</description>
+		<description>Detects every movement through an intelligent combination of passive infra-red technology and an
+			additional temperature sensor.</description>
 
 		<channels>
 			<channel id="latest-motion" typeId="latest-motion"/>
@@ -91,7 +92,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Shutter Control</label>
-		<description>Bosch Shutter Control</description>
+		<description>Control of your shutter to take any position you desire.</description>
 
 		<channels>
 			<channel id="level" typeId="level"/>
@@ -107,11 +108,12 @@
 		</supported-bridge-type-refs>
 
 		<label>Thermostat</label>
-		<description>Bosch Thermostat</description>
+		<description>Radiator thermostat</description>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
+			<channel id="child-lock" typeId="child-lock"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -124,12 +126,29 @@
 		</supported-bridge-type-refs>
 
 		<label>Climate Control</label>
-		<description>Bosch Climate Control. This is a virtual device which is automatically created for all rooms that have
+		<description>This is a virtual device which is automatically created for all rooms that have
 			thermostats in it.</description>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="setpoint-temperature" typeId="setpoint-temperature"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
+	<thing-type id="wall-thermostat">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Wall Thermostat</label>
+		<description>Display of the current room temperature as well as the relative humidity in the room.</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -257,6 +276,12 @@
 		<label>Setpoint Temperature</label>
 		<description>Desired temperature.</description>
 		<state min="5" max="30" step="0.5" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="child-lock">
+		<item-type>Switch</item-type>
+		<label>Child Lock</label>
+		<description>Indicates if it is possible to set the desired temperature on the device.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

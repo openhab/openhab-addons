@@ -4,7 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="mqtt:homie_channel">
+	<config-description uri="channel-type:mqtt:homie-channel">
 		<parameter name="unit" type="text">
 			<label>Unit</label>
 			<description>The channels unit</description>

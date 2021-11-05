@@ -17,9 +17,12 @@ import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 import java.math.BigDecimal;
 import java.net.CookieStore;
 import java.net.HttpCookie;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -86,24 +89,30 @@ public class VerisureSession {
     private int apiServerInUseIndex = 0;
     private int numberOfEvents = 15;
     private static final String USER_NAME = "username";
-    private static final String PASSWORD_NAME = "vid";
+    private static final String VID = "vid";
+    private static final String VS_STEPUP = "vs-stepup";
+    private static final String VS_ACCESS = "vs-access";
     private String apiServerInUse = APISERVERLIST.get(apiServerInUseIndex);
     private String authstring = "";
     private @Nullable String csrf;
     private @Nullable String pinCode;
     private HttpClient httpClient;
-    private @Nullable String userName = "";
-    private @Nullable String password = "";
+    private String userName = "";
+    private String password = "";
+    private String vid = "";
+    private String vsAccess = "";
+    private String vsStepup = "";
 
     public VerisureSession(HttpClient httpClient) {
         this.httpClient = httpClient;
     }
 
-    public boolean initialize(@Nullable String authstring, @Nullable String pinCode, @Nullable String userName) {
+    public boolean initialize(@Nullable String authstring, @Nullable String pinCode, String userName, String password) {
         if (authstring != null) {
-            this.authstring = authstring.substring(0);
+            this.authstring = authstring;
             this.pinCode = pinCode;
             this.userName = userName;
+            this.password = password;
             // Try to login to Verisure
             if (logIn()) {
                 return getInstallations();
@@ -115,17 +124,12 @@ public class VerisureSession {
     }
 
     public boolean refresh() {
-        try {
-            if (logIn()) {
-                updateStatus();
+        if (logIn()) {
+            if (updateStatus()) {
                 return true;
-            } else {
-                return false;
             }
-        } catch (HttpResponseException e) {
-            logger.warn("Failed to do a refresh {}", e.getMessage());
-            return false;
         }
+        return false;
     }
 
     public int sendCommand(String url, String data, BigDecimal installationId) {
@@ -246,17 +250,30 @@ public class VerisureSession {
     }
 
     public @Nullable String getPinCode(BigDecimal installationId) {
-        return verisureInstallations.get(installationId).getPinCode();
+        VerisureInstallation inst = verisureInstallations.get(installationId);
+        if (inst != null) {
+            return inst.getPinCode();
+        } else {
+            logger.debug("Installation is null!");
+            return null;
+        }
     }
 
-    private void setPasswordFromCookie() {
+    private void analyzeCookies() {
         CookieStore c = httpClient.getCookieStore();
         List<HttpCookie> cookies = c.getCookies();
-        cookies.forEach(cookie -> {
+        final List<HttpCookie> unmodifiableList = List.of(cookies.toArray(new HttpCookie[] {}));
+        unmodifiableList.forEach(cookie -> {
             logger.trace("Response Cookie: {}", cookie);
-            if (cookie.getName().equals(PASSWORD_NAME)) {
-                password = cookie.getValue();
-                logger.debug("Fetching vid {} from cookie", password);
+            if (VID.equals(cookie.getName())) {
+                vid = cookie.getValue();
+                logger.debug("Fetching vid {} from cookie", vid);
+            } else if (VS_ACCESS.equals(cookie.getName())) {
+                vsAccess = cookie.getValue();
+                logger.debug("Fetching vs-access {} from cookie", vsAccess);
+            } else if (VS_STEPUP.equals(cookie.getName())) {
+                vsStepup = cookie.getValue();
+                logger.debug("Fetching vs-stepup {} from cookie", vsStepup);
             }
         });
     }
@@ -280,7 +297,6 @@ public class VerisureSession {
         switch (response.getStatus()) {
             case HttpStatus.OK_200:
                 if (content.contains("<link href=\"/newapp")) {
-                    setPasswordFromCookie();
                     return true;
                 } else {
                     logger.debug("We need to login again!");
@@ -303,9 +319,9 @@ public class VerisureSession {
 
     private <T> @Nullable T getJSONVerisureAPI(String url, Class<T> jsonClass)
             throws ExecutionException, InterruptedException, TimeoutException, JsonSyntaxException {
-        logger.debug("HTTP GET: {}", BASEURL + url);
+        logger.debug("HTTP GET: {}", BASE_URL + url);
 
-        ContentResponse response = httpClient.GET(BASEURL + url + "?_=" + System.currentTimeMillis());
+        ContentResponse response = httpClient.GET(BASE_URL + url + "?_=" + System.currentTimeMillis());
         String content = response.getContentAsString();
         logTraceWithPattern(response.getStatus(), content);
 
@@ -315,6 +331,7 @@ public class VerisureSession {
     private ContentResponse postVerisureAPI(String url, String data, boolean isJSON)
             throws ExecutionException, InterruptedException, TimeoutException {
         logger.debug("postVerisureAPI URL: {} Data:{}", url, data);
+
         Request request = httpClient.newRequest(url).method(HttpMethod.POST);
         if (isJSON) {
             request.header("content-type", "application/json");
@@ -324,14 +341,29 @@ public class VerisureSession {
             }
         }
         request.header("Accept", "application/json");
-        if (!data.equals("empty")) {
+
+        if (url.contains(AUTH_LOGIN)) {
+            request.header("APPLICATION_ID", "OpenHAB Verisure");
+            String basicAuhentication = Base64.getEncoder().encodeToString((userName + ":" + password).getBytes());
+            request.header("authorization", "Basic " + basicAuhentication);
+        } else {
+            if (!vid.isEmpty()) {
+                request.cookie(new HttpCookie(VID, vid));
+                logger.debug("Setting cookie with vid {}", vid);
+            }
+            if (!vsAccess.isEmpty()) {
+                request.cookie(new HttpCookie(VS_ACCESS, vsAccess));
+                logger.debug("Setting cookie with vs-access {}", vsAccess);
+            }
+            logger.debug("Setting cookie with username {}", userName);
+            request.cookie(new HttpCookie(USER_NAME, userName));
+        }
+
+        if (!"empty".equals(data)) {
             request.content(new BytesContentProvider(data.getBytes(StandardCharsets.UTF_8)),
                     "application/x-www-form-urlencoded; charset=UTF-8");
-        } else {
-            logger.debug("Setting cookie with username {} and vid {}", userName, password);
-            request.cookie(new HttpCookie(USER_NAME, userName));
-            request.cookie(new HttpCookie(PASSWORD_NAME, password));
         }
+
         logger.debug("HTTP POST Request {}.", request.toString());
         return request.send();
     }
@@ -347,6 +379,9 @@ public class VerisureSession {
                     // Maybe Verisure has switched API server in use?
                     logger.debug("Changed API server! Response: {}", content);
                     setApiServerInUse(getNextApiServer());
+                } else if (content.contains("\"message\":\"Request Failed")
+                        && content.contains("Invalid session cookie")) {
+                    throw new PostToAPIException("Invalid session cookie");
                 } else {
                     String contentChomped = content.trim();
                     logger.trace("Response body: {}", content);
@@ -387,6 +422,9 @@ public class VerisureSession {
                         logTraceWithPattern(httpStatus, content);
                         return httpStatus;
                     }
+                } else if (httpStatus == HttpStatus.BAD_REQUEST_400) {
+                    setApiServerInUse(getNextApiServer());
+                    url = apiServerInUse + urlString;
                 } else {
                     logger.debug("Failed to send POST, Http status code: {}", response.getStatus());
                 }
@@ -404,7 +442,11 @@ public class VerisureSession {
         logTraceWithPattern(response.getStatus(), response.getContentAsString());
 
         url = AUTH_LOGIN;
-        return postVerisureAPI(url, "empty");
+        int httpStatusCode = postVerisureAPI(url, "empty");
+        analyzeCookies();
+
+        // return response.getStatus();
+        return httpStatusCode;
     }
 
     private boolean getInstallations() {
@@ -475,10 +517,26 @@ public class VerisureSession {
     private synchronized boolean logIn() {
         try {
             if (!areWeLoggedIn()) {
-                logger.debug("Attempting to log in to mypages.verisure.com");
-                String url = LOGON_SUF;
+                vid = "";
+                vsAccess = "";
+                logger.debug("Attempting to log in to {}, remove all cookies to ensure a fresh session", BASE_URL);
+                URI authUri = new URI(BASE_URL);
+                CookieStore store = httpClient.getCookieStore();
+                store.get(authUri).forEach(cookie -> {
+                    store.remove(authUri, cookie);
+                });
+
+                String url = AUTH_LOGIN;
+                int httpStatusCode = postVerisureAPI(url, "empty");
+                analyzeCookies();
+                if (!vsStepup.isEmpty()) {
+                    logger.warn("MFA is activated on this user! Not supported by binding!");
+                    return false;
+                }
+
+                url = LOGON_SUF;
                 logger.debug("Login URL: {}", url);
-                int httpStatusCode = postVerisureAPI(url, authstring);
+                httpStatusCode = postVerisureAPI(url, authstring);
                 if (httpStatusCode != HttpStatus.OK_200) {
                     logger.debug("Failed to login, HTTP status code: {}", httpStatusCode);
                     return false;
@@ -487,7 +545,8 @@ public class VerisureSession {
             } else {
                 return true;
             }
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+        } catch (ExecutionException | InterruptedException | TimeoutException | URISyntaxException
+                | HttpResponseException e) {
             logger.warn("Failed to login {}", e.getMessage());
         }
         return false;
@@ -515,9 +574,10 @@ public class VerisureSession {
         }
     }
 
-    private void updateStatus() {
+    private boolean updateStatus() {
         logger.debug("Update status");
-        verisureInstallations.forEach((installationId, installation) -> {
+        for (Map.Entry<BigDecimal, VerisureInstallation> verisureInstallations : verisureInstallations.entrySet()) {
+            VerisureInstallation installation = verisureInstallations.getValue();
             try {
                 configureInstallationInstance(installation.getInstallationId());
                 int httpResultCode = setSessionCookieAuthLogin();
@@ -534,11 +594,14 @@ public class VerisureSession {
                     updateGatewayStatus(installation);
                 } else {
                     logger.debug("Failed to set session cookie and auth login, HTTP result code: {}", httpResultCode);
+                    return false;
                 }
-            } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            } catch (ExecutionException | InterruptedException | TimeoutException | PostToAPIException e) {
                 logger.debug("Failed to update status {}", e.getMessage());
+                return false;
             }
-        });
+        }
+        return true;
     }
 
     private String createOperationJSON(String operation, VariablesDTO variables, String query) {
@@ -549,7 +612,7 @@ public class VerisureSession {
         return gson.toJson(Collections.singletonList(operationJSON));
     }
 
-    private synchronized void updateAlarmStatus(VerisureInstallation installation) {
+    private synchronized void updateAlarmStatus(VerisureInstallation installation) throws PostToAPIException {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "ArmState";
@@ -567,8 +630,7 @@ public class VerisureSession {
             String deviceId = "alarm" + installationId;
             thing.setDeviceId(deviceId);
             notifyListenersIfChanged(thing, installation, deviceId);
-        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
-                | PostToAPIException e) {
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
             logger.warn("Failed to send a POST to the API {}", e.getMessage());
         }
     }
@@ -588,32 +650,34 @@ public class VerisureSession {
             VerisureSmartLocksDTO thing = postJSONVerisureAPI(url, queryQLSmartLock, VerisureSmartLocksDTO.class);
             logger.debug("REST Response ({})", thing);
             List<VerisureSmartLocksDTO.Doorlock> doorLockList = thing.getData().getInstallation().getDoorlocks();
-            doorLockList.forEach(doorLock -> {
-                VerisureSmartLocksDTO slThing = new VerisureSmartLocksDTO();
-                VerisureSmartLocksDTO.Installation inst = new VerisureSmartLocksDTO.Installation();
-                inst.setDoorlocks(Collections.singletonList(doorLock));
-                VerisureSmartLocksDTO.Data data = new VerisureSmartLocksDTO.Data();
-                data.setInstallation(inst);
-                slThing.setData(data);
-                // Set unique deviceID
-                String deviceId = doorLock.getDevice().getDeviceLabel();
-                if (deviceId != null) {
-                    // Set location
-                    slThing.setLocation(doorLock.getDevice().getArea());
-                    slThing.setDeviceId(deviceId);
-                    // Fetch more info from old endpoint
-                    try {
-                        VerisureSmartLockDTO smartLockThing = getJSONVerisureAPI(SMARTLOCK_PATH + slThing.getDeviceId(),
-                                VerisureSmartLockDTO.class);
-                        logger.debug("REST Response ({})", smartLockThing);
-                        slThing.setSmartLockJSON(smartLockThing);
-                        notifyListenersIfChanged(slThing, installation, deviceId);
-                    } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
-                        logger.warn("Failed to query for smartlock status: {}", e.getMessage());
-                    }
-                }
-            });
+            if (doorLockList != null) {
+                doorLockList.forEach(doorLock -> {
+                    VerisureSmartLocksDTO slThing = new VerisureSmartLocksDTO();
+                    VerisureSmartLocksDTO.Installation inst = new VerisureSmartLocksDTO.Installation();
+                    inst.setDoorlocks(Collections.singletonList(doorLock));
+                    VerisureSmartLocksDTO.Data data = new VerisureSmartLocksDTO.Data();
+                    data.setInstallation(inst);
+                    slThing.setData(data);
+                    // Set unique deviceID
+                    String deviceId = doorLock.getDevice().getDeviceLabel();
+                    if (deviceId != null) {
+                        // Set location
+                        slThing.setLocation(doorLock.getDevice().getArea());
+                        slThing.setDeviceId(deviceId);
 
+                        // Fetch more info from old endpoint
+                        try {
+                            VerisureSmartLockDTO smartLockThing = getJSONVerisureAPI(
+                                    SMARTLOCK_PATH + slThing.getDeviceId(), VerisureSmartLockDTO.class);
+                            logger.debug("REST Response ({})", smartLockThing);
+                            slThing.setSmartLockJSON(smartLockThing);
+                        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
+                            logger.warn("Failed to query for smartlock status: {}", e.getMessage());
+                        }
+                        notifyListenersIfChanged(slThing, installation, deviceId);
+                    }
+                });
+            }
         } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
                 | PostToAPIException e) {
             logger.warn("Failed to send a POST to the API {}", e.getMessage());
@@ -635,21 +699,23 @@ public class VerisureSession {
             VerisureSmartPlugsDTO thing = postJSONVerisureAPI(url, queryQLSmartPlug, VerisureSmartPlugsDTO.class);
             logger.debug("REST Response ({})", thing);
             List<VerisureSmartPlugsDTO.Smartplug> smartPlugList = thing.getData().getInstallation().getSmartplugs();
-            smartPlugList.forEach(smartPlug -> {
-                VerisureSmartPlugsDTO spThing = new VerisureSmartPlugsDTO();
-                VerisureSmartPlugsDTO.Installation inst = new VerisureSmartPlugsDTO.Installation();
-                inst.setSmartplugs(Collections.singletonList(smartPlug));
-                VerisureSmartPlugsDTO.Data data = new VerisureSmartPlugsDTO.Data();
-                data.setInstallation(inst);
-                spThing.setData(data);
-                // Set unique deviceID
-                String deviceId = smartPlug.getDevice().getDeviceLabel();
-                if (deviceId != null) {
-                    // Set location
-                    spThing.setLocation(smartPlug.getDevice().getArea());
-                    notifyListenersIfChanged(spThing, installation, deviceId);
-                }
-            });
+            if (smartPlugList != null) {
+                smartPlugList.forEach(smartPlug -> {
+                    VerisureSmartPlugsDTO spThing = new VerisureSmartPlugsDTO();
+                    VerisureSmartPlugsDTO.Installation inst = new VerisureSmartPlugsDTO.Installation();
+                    inst.setSmartplugs(Collections.singletonList(smartPlug));
+                    VerisureSmartPlugsDTO.Data data = new VerisureSmartPlugsDTO.Data();
+                    data.setInstallation(inst);
+                    spThing.setData(data);
+                    // Set unique deviceID
+                    String deviceId = smartPlug.getDevice().getDeviceLabel();
+                    if (deviceId != null) {
+                        // Set location
+                        spThing.setLocation(smartPlug.getDevice().getArea());
+                        notifyListenersIfChanged(spThing, installation, deviceId);
+                    }
+                });
+            }
         } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
                 | PostToAPIException e) {
             logger.warn("Failed to send a POST to the API {}", e.getMessage());
@@ -724,7 +790,7 @@ public class VerisureSession {
                                 cThing.setBatteryStatus(batteryStatus);
                             }
                         } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
-                            logger.warn("Failed to query for smartlock status: {}", e.getMessage());
+                            logger.debug("Failed to query for battery status: {}", e.getMessage());
                         }
                         // Set location
                         cThing.setLocation(climate.getDevice().getArea());
@@ -754,32 +820,35 @@ public class VerisureSession {
             VerisureDoorWindowsDTO thing = postJSONVerisureAPI(url, queryQLDoorWindow, VerisureDoorWindowsDTO.class);
             logger.debug("REST Response ({})", thing);
             List<VerisureDoorWindowsDTO.DoorWindow> doorWindowList = thing.getData().getInstallation().getDoorWindows();
-            doorWindowList.forEach(doorWindow -> {
-                VerisureDoorWindowsDTO dThing = new VerisureDoorWindowsDTO();
-                VerisureDoorWindowsDTO.Installation inst = new VerisureDoorWindowsDTO.Installation();
-                inst.setDoorWindows(Collections.singletonList(doorWindow));
-                VerisureDoorWindowsDTO.Data data = new VerisureDoorWindowsDTO.Data();
-                data.setInstallation(inst);
-                dThing.setData(data);
-                // Set unique deviceID
-                String deviceId = doorWindow.getDevice().getDeviceLabel();
-                if (deviceId != null) {
-                    try {
-                        VerisureBatteryStatusDTO[] batteryStatusThingArray = getJSONVerisureAPI(BATTERY_STATUS,
-                                VerisureBatteryStatusDTO[].class);
-                        VerisureBatteryStatusDTO batteryStatus = getBatteryStatus(deviceId, batteryStatusThingArray);
-                        if (batteryStatus != null) {
-                            logger.debug("REST Response ({})", batteryStatus);
-                            dThing.setBatteryStatus(batteryStatus);
+            if (doorWindowList != null) {
+                doorWindowList.forEach(doorWindow -> {
+                    VerisureDoorWindowsDTO dThing = new VerisureDoorWindowsDTO();
+                    VerisureDoorWindowsDTO.Installation inst = new VerisureDoorWindowsDTO.Installation();
+                    inst.setDoorWindows(Collections.singletonList(doorWindow));
+                    VerisureDoorWindowsDTO.Data data = new VerisureDoorWindowsDTO.Data();
+                    data.setInstallation(inst);
+                    dThing.setData(data);
+                    // Set unique deviceID
+                    String deviceId = doorWindow.getDevice().getDeviceLabel();
+                    if (deviceId != null) {
+                        try {
+                            VerisureBatteryStatusDTO[] batteryStatusThingArray = getJSONVerisureAPI(BATTERY_STATUS,
+                                    VerisureBatteryStatusDTO[].class);
+                            VerisureBatteryStatusDTO batteryStatus = getBatteryStatus(deviceId,
+                                    batteryStatusThingArray);
+                            if (batteryStatus != null) {
+                                logger.debug("REST Response ({})", batteryStatus);
+                                dThing.setBatteryStatus(batteryStatus);
+                            }
+                        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
+                            logger.warn("Failed to query for door&window status: {}", e.getMessage());
                         }
-                    } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
-                        logger.warn("Failed to query for smartlock status: {}", e.getMessage());
+                        // Set location
+                        dThing.setLocation(doorWindow.getDevice().getArea());
+                        notifyListenersIfChanged(dThing, installation, deviceId);
                     }
-                    // Set location
-                    dThing.setLocation(doorWindow.getDevice().getArea());
-                    notifyListenersIfChanged(dThing, installation, deviceId);
-                }
-            });
+                });
+            }
         } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
                 | PostToAPIException e) {
             logger.warn("Failed to send a POST to the API {}", e.getMessage());
@@ -829,20 +898,22 @@ public class VerisureSession {
             logger.debug("REST Response ({})", thing);
             List<VerisureUserPresencesDTO.UserTracking> userTrackingList = thing.getData().getInstallation()
                     .getUserTrackings();
-            userTrackingList.forEach(userTracking -> {
-                String localUserTrackingStatus = userTracking.getStatus();
-                if (localUserTrackingStatus != null && localUserTrackingStatus.equals("ACTIVE")) {
-                    VerisureUserPresencesDTO upThing = new VerisureUserPresencesDTO();
-                    VerisureUserPresencesDTO.Installation inst = new VerisureUserPresencesDTO.Installation();
-                    inst.setUserTrackings(Collections.singletonList(userTracking));
-                    VerisureUserPresencesDTO.Data data = new VerisureUserPresencesDTO.Data();
-                    data.setInstallation(inst);
-                    upThing.setData(data);
-                    // Set unique deviceID
-                    String deviceId = "up" + userTracking.getWebAccount() + installationId;
-                    notifyListenersIfChanged(upThing, installation, deviceId);
-                }
-            });
+            if (userTrackingList != null) {
+                userTrackingList.forEach(userTracking -> {
+                    String localUserTrackingStatus = userTracking.getStatus();
+                    if ("ACTIVE".equals(localUserTrackingStatus)) {
+                        VerisureUserPresencesDTO upThing = new VerisureUserPresencesDTO();
+                        VerisureUserPresencesDTO.Installation inst = new VerisureUserPresencesDTO.Installation();
+                        inst.setUserTrackings(Collections.singletonList(userTracking));
+                        VerisureUserPresencesDTO.Data data = new VerisureUserPresencesDTO.Data();
+                        data.setInstallation(inst);
+                        upThing.setData(data);
+                        // Set unique deviceID
+                        String deviceId = "up" + userTracking.getWebAccount() + installationId;
+                        notifyListenersIfChanged(upThing, installation, deviceId);
+                    }
+                });
+            }
         } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
                 | PostToAPIException e) {
             logger.warn("Failed to send a POST to the API {}", e.getMessage());
@@ -866,22 +937,24 @@ public class VerisureSession {
                     VerisureMiceDetectionDTO.class);
             logger.debug("REST Response ({})", thing);
             List<VerisureMiceDetectionDTO.Mouse> miceList = thing.getData().getInstallation().getMice();
-            miceList.forEach(mouse -> {
-                VerisureMiceDetectionDTO miceThing = new VerisureMiceDetectionDTO();
-                VerisureMiceDetectionDTO.Installation inst = new VerisureMiceDetectionDTO.Installation();
-                inst.setMice(Collections.singletonList(mouse));
-                VerisureMiceDetectionDTO.Data data = new VerisureMiceDetectionDTO.Data();
-                data.setInstallation(inst);
-                miceThing.setData(data);
-                // Set unique deviceID
-                String deviceId = mouse.getDevice().getDeviceLabel();
-                logger.debug("Mouse id: {} for thing: {}", deviceId, mouse);
-                if (deviceId != null) {
-                    // Set location
-                    miceThing.setLocation(mouse.getDevice().getArea());
-                    notifyListenersIfChanged(miceThing, installation, deviceId);
-                }
-            });
+            if (miceList != null) {
+                miceList.forEach(mouse -> {
+                    VerisureMiceDetectionDTO miceThing = new VerisureMiceDetectionDTO();
+                    VerisureMiceDetectionDTO.Installation inst = new VerisureMiceDetectionDTO.Installation();
+                    inst.setMice(Collections.singletonList(mouse));
+                    VerisureMiceDetectionDTO.Data data = new VerisureMiceDetectionDTO.Data();
+                    data.setInstallation(inst);
+                    miceThing.setData(data);
+                    // Set unique deviceID
+                    String deviceId = mouse.getDevice().getDeviceLabel();
+                    logger.debug("Mouse id: {} for thing: {}", deviceId, mouse);
+                    if (deviceId != null) {
+                        // Set location
+                        miceThing.setLocation(mouse.getDevice().getArea());
+                        notifyListenersIfChanged(miceThing, installation, deviceId);
+                    }
+                });
+            }
         } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
                 | PostToAPIException e) {
             logger.warn("Failed to send a POST to the API {}", e.getMessage());
@@ -939,10 +1012,12 @@ public class VerisureSession {
             logger.debug("REST Response ({})", thing);
             // Set unique deviceID
             List<CommunicationState> communicationStateList = thing.getData().getInstallation().getCommunicationState();
-            if (!communicationStateList.isEmpty()) {
-                String deviceId = communicationStateList.get(0).getDevice().getDeviceLabel();
-                if (deviceId != null) {
-                    notifyListenersIfChanged(thing, installation, deviceId);
+            if (communicationStateList != null) {
+                if (!communicationStateList.isEmpty()) {
+                    String deviceId = communicationStateList.get(0).getDevice().getDeviceLabel();
+                    if (deviceId != null) {
+                        notifyListenersIfChanged(thing, installation, deviceId);
+                    }
                 }
             }
         } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException

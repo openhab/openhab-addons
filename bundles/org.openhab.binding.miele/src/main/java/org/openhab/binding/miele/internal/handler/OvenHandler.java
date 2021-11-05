@@ -13,7 +13,7 @@
 package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
-import static org.openhab.binding.miele.internal.MieleBindingConstants.PROTOCOL_PROPERTY_NAME;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_OVEN;
 
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -32,13 +32,14 @@ import com.google.gson.JsonElement;
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - fixed handling of REFRESH commands
  * @author Martin Lepsy - fixed handling of empty JSON results
+ * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
 public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
 
     private final Logger logger = LoggerFactory.getLogger(OvenHandler.class);
 
     public OvenHandler(Thing thing) {
-        super(thing, OvenChannelSelector.class, "Oven");
+        super(thing, OvenChannelSelector.class, MIELE_DEVICE_CLASS_OVEN);
     }
 
     @Override
@@ -46,8 +47,7 @@ public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();
-        String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
-        String protocol = (String) getThing().getProperties().get(PROTOCOL_PROPERTY_NAME);
+        String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
         OvenChannelSelector selector = (OvenChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
@@ -57,15 +57,15 @@ public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
                 switch (selector) {
                     case SWITCH: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "switchOn", protocol);
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "switchOn");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "switchOff", protocol);
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "switchOff");
                         }
                         break;
                     }
                     case STOP: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stop", protocol);
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "stop");
                         }
                         break;
                     }
@@ -78,7 +78,7 @@ public class OvenHandler extends MieleApplianceHandler<OvenChannelSelector> {
                 }
             }
             // process result
-            if (isResultProcessable(result)) {
+            if (result != null && isResultProcessable(result)) {
                 logger.debug("Result of operation is {}", result.getAsString());
             }
         } catch (IllegalArgumentException e) {

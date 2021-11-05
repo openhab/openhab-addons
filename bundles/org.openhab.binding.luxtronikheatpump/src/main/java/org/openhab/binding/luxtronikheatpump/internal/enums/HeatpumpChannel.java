@@ -1204,10 +1204,10 @@ public enum HeatpumpChannel {
             HeatpumpVisibility.HEIZUNG),
 
     /**
-     * Hot water temperature
-     * (original: Warmwasser Soll Temperatur)
+     * Coverage Heat pump (Hot Water)
+     * (original: Deckung Wärmepumpe)
      */
-    CHANNEL_EINST_BWS_AKT(2, "temperatureHotWaterTarget", NumberItem.class, SIUnits.CELSIUS, true,
+    CHANNEL_EINST_BWS_AKT(2, "temperatureHotWaterCoverage", NumberItem.class, SIUnits.CELSIUS, true,
             HeatpumpVisibility.BRAUWASSER),
 
     /**
@@ -1272,6 +1272,13 @@ public enum HeatpumpChannel {
             HeatpumpVisibility.THERMDESINFEKT),
 
     /**
+     * Hot water target temperature
+     * (original: Warmwasser Soll Temperatur)
+     */
+    CHANNEL_SOLL_BWS_AKT(105, "temperatureHotWaterTarget", NumberItem.class, SIUnits.CELSIUS, true,
+            HeatpumpVisibility.BRAUWASSER),
+
+    /**
      * Comfort cooling mode
      * (original: Comfort Kühlung Betriebsart)
      */
@@ -1290,6 +1297,13 @@ public enum HeatpumpChannel {
      */
     CHANNEL_SOLLWERT_KUCFTL_AKT(132, "temperatureComfortCoolingATReleaseTarget", NumberItem.class, SIUnits.CELSIUS,
             true, HeatpumpVisibility.KUHLUNG),
+
+    /**
+     * Temperature heating limit
+     * (original: Temperatur Heizgrenze)
+     */
+    CHANNEL_EINST_HEIZGRENZE_TEMP(700, "temperatureHeatingLimit", NumberItem.class, SIUnits.CELSIUS, true,
+            HeatpumpVisibility.HEIZUNG),
 
     /**
      * AT Excess
