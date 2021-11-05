@@ -11,6 +11,7 @@
   </parent>
 
   <artifactId>org.openhab.addons.bom.runtime-index</artifactId>
+  <packaging>pom</packaging>
 
   <name>openHAB Add-ons :: BOM :: Runtime Index</name>
 

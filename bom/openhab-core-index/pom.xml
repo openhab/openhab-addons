@@ -11,6 +11,7 @@
   </parent>
 
   <artifactId>org.openhab.addons.bom.openhab-core-index</artifactId>
+  <packaging>pom</packaging>
 
   <name>openHAB Add-ons :: BOM :: openHAB Core Index</name>
 
