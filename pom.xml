@@ -159,9 +159,13 @@ Import-Package: \\
 -sources: false
 -contract: *
 -includeresource: ${bnd.includeresource}
--fixupmessages: ${bnd.fixupmessages}]]></bnd>
+-fixupmessages: \\
+  'Unused Import-Package instructions';is:=ignore,\\
+  'Unused Export-Package instructions';is:=ignore,\\
+  ${bnd.fixupmessages}]]></bnd>
             <!-- -dsannotations-options: norequirements -->
             <!-- Bundle-SymbolicName: ${project.groupId}.${project.artifactId} -->
+            <skipIfEmpty>true</skipIfEmpty>
           </configuration>
           <executions>
             <execution>
