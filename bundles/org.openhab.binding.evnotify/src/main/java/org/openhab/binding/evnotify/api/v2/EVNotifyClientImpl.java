@@ -38,7 +38,6 @@ public class EVNotifyClientImpl implements EVNotifyClient {
     public static String BASIC_API_URL_PATTERN = "https://app.evnotify.de/soc?akey=%s&token=%s";
     public static String EXTENDED_API_URL_PATTERN = "https://app.evnotify.de/extended?akey=%s&token=%s";
 
-    private final Logger logger = LoggerFactory.getLogger(EVNotifyClientImpl.class);
     private final HttpClient client;
 
     private final String akey;

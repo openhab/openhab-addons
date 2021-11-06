@@ -12,17 +12,21 @@
  */
 package org.openhab.binding.evnotify.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Represents version for the API of the evnotify online service.
  *
  * @author Michael Schmidt - Initial contribution
  */
+@NonNullByDefault
 public enum ApiVersion {
 
     V2,
     V3;
 
-    public static ApiVersion getApiVersion(String searchVersion) {
+    public static ApiVersion getApiVersion(@Nullable String searchVersion) {
 
         for (ApiVersion version : ApiVersion.values()) {
             if (version.name().equals(searchVersion)) {
