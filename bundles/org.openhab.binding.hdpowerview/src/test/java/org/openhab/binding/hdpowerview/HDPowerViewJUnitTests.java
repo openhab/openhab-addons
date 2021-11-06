@@ -289,93 +289,94 @@ public class HDPowerViewJUnitTests {
     }
 
     /**
-     * Run a series of OFFLINE tests on the JSON parsing machinery
+     * Test generic JSON shades response
      */
     @Test
-    public void testOfflineJsonParsing() {
+    public void shadeResponseIsParsedCorrectly() throws JsonParseException {
         final Gson gson = new Gson();
-
         @Nullable
         Shades shades;
-        // test generic JSON shades response
-        try {
-            @Nullable
-            String json = loadJson("shades");
-            assertNotNull(json);
-            assertNotEquals("", json);
-            shades = gson.fromJson(json, Shades.class);
-            assertNotNull(shades);
-        } catch (JsonParseException e) {
-            fail(e.getMessage());
-        }
+        @Nullable
+        String json = loadJson("shades");
+        assertNotNull(json);
+        assertNotEquals("", json);
+        shades = gson.fromJson(json, Shades.class);
+        assertNotNull(shades);
+    }
 
-        // test generic JSON scenes response
-        try {
-            @Nullable
-            String json = loadJson("scenes");
-            assertNotNull(json);
-            assertNotEquals("", json);
-            @Nullable
-            Scenes scenes = gson.fromJson(json, Scenes.class);
-            assertNotNull(scenes);
-        } catch (JsonParseException e) {
-            fail(e.getMessage());
-        }
+    /**
+     * Test generic JSON scene response
+     */
+    @Test
+    public void sceneResponseIsParsedCorrectly() throws JsonParseException {
+        final Gson gson = new Gson();
+        @Nullable
+        String json = loadJson("scenes");
+        assertNotNull(json);
+        assertNotEquals("", json);
+        @Nullable
+        Scenes scenes = gson.fromJson(json, Scenes.class);
+        assertNotNull(scenes);
+    }
 
-        // test generic JSON scenes response
-        try {
-            @Nullable
-            String json = loadJson("sceneCollections");
-            assertNotNull(json);
-            assertNotEquals("", json);
-            @Nullable
-            SceneCollections sceneCollections = gson.fromJson(json, SceneCollections.class);
-            assertNotNull(sceneCollections);
-        } catch (JsonParseException e) {
-            fail(e.getMessage());
-        }
+    /**
+     * Test generic JSON scene collection response
+     */
+    @Test
+    public void sceneCollectionResponseIsParsedCorrectly() throws JsonParseException {
+        final Gson gson = new Gson();
+        @Nullable
+        String json = loadJson("sceneCollections");
+        assertNotNull(json);
+        assertNotEquals("", json);
+        @Nullable
+        SceneCollections sceneCollections = gson.fromJson(json, SceneCollections.class);
+        assertNotNull(sceneCollections);
+    }
 
-        // test the JSON parsing for a duette top down bottom up shade
-        try {
-            @Nullable
-            ShadeData shadeData = null;
-            String json = loadJson("duette");
-            assertNotNull(json);
-            assertNotEquals("", json);
+    /**
+     * Test the JSON parsing for a duette top down bottom up shade
+     */
+    @Test
+    public void duetteTopDownBottomUpShadeIsParsedCorrectly() throws JsonParseException {
+        final Gson gson = new Gson();
+        @Nullable
+        ShadeData shadeData = null;
+        String json = loadJson("duette");
+        assertNotNull(json);
+        assertNotEquals("", json);
 
-            shades = gson.fromJson(json, Shades.class);
-            assertNotNull(shades);
-            @Nullable
-            List<ShadeData> shadesData = shades.shadeData;
-            assertNotNull(shadesData);
+        @Nullable
+        Shades shades = gson.fromJson(json, Shades.class);
+        assertNotNull(shades);
+        @Nullable
+        List<ShadeData> shadesData = shades.shadeData;
+        assertNotNull(shadesData);
 
-            assertEquals(1, shadesData.size());
-            shadeData = shadesData.get(0);
-            assertNotNull(shadeData);
+        assertEquals(1, shadesData.size());
+        shadeData = shadesData.get(0);
+        assertNotNull(shadeData);
 
-            assertEquals("Gardin 1", shadeData.getName());
-            assertEquals(63778, shadeData.id);
+        assertEquals("Gardin 1", shadeData.getName());
+        assertEquals(63778, shadeData.id);
 
-            ShadePosition shadePos = shadeData.positions;
-            assertNotNull(shadePos);
-            assertEquals(ZERO_IS_CLOSED, shadePos.getCoordinateSystem(PRIMARY_ACTUATOR));
+        ShadePosition shadePos = shadeData.positions;
+        assertNotNull(shadePos);
+        assertEquals(ZERO_IS_CLOSED, shadePos.getCoordinateSystem(PRIMARY_ACTUATOR));
 
-            State pos = shadePos.getState(PRIMARY_ACTUATOR, ZERO_IS_CLOSED);
-            assertEquals(PercentType.class, pos.getClass());
-            assertEquals(59, ((PercentType) pos).intValue());
+        State pos = shadePos.getState(PRIMARY_ACTUATOR, ZERO_IS_CLOSED);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(59, ((PercentType) pos).intValue());
 
-            pos = shadePos.getState(SECONDARY_ACTUATOR, ZERO_IS_OPEN);
-            assertEquals(PercentType.class, pos.getClass());
-            assertEquals(35, ((PercentType) pos).intValue());
+        pos = shadePos.getState(SECONDARY_ACTUATOR, ZERO_IS_OPEN);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(35, ((PercentType) pos).intValue());
 
-            pos = shadePos.getState(PRIMARY_ACTUATOR, VANE_COORDS);
-            assertEquals(UnDefType.class, pos.getClass());
+        pos = shadePos.getState(PRIMARY_ACTUATOR, VANE_COORDS);
+        assertEquals(UnDefType.class, pos.getClass());
 
-            assertEquals(3, shadeData.batteryStatus);
+        assertEquals(3, shadeData.batteryStatus);
 
-            assertEquals(4, shadeData.signalStrength);
-        } catch (JsonParseException e) {
-            fail(e.getMessage());
-        }
+        assertEquals(4, shadeData.signalStrength);
     }
 }
