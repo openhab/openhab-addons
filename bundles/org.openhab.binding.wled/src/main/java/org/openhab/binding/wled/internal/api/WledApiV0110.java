@@ -61,9 +61,10 @@ public class WledApiV0110 extends WledApiV084 {
         for (Entry<String, JsonElement> presetEntry : set) {
             logger.trace("Preset:{} json:{}", presetEntry.getKey(), presetEntry.getValue());
             PresetState preset = gson.fromJson(presetEntry.getValue(), PresetState.class);
-            if (preset != null) {
-                presetsOptions.add(new StateOption(Integer.toString(counter++), preset.n));
+            if (preset != null && counter > 0) {
+                presetsOptions.add(new StateOption(Integer.toString(counter), preset.n));
             }
+            counter++;
         }
         handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_PRESETS),
                 presetsOptions);
