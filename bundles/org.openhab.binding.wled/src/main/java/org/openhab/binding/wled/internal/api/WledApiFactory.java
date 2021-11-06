@@ -46,7 +46,9 @@ public class WledApiFactory {
         logger.debug("Treating firmware as int:{}", version);
         if (version >= 130) {
             return new WledApiV0130(wLedHandler, config, httpClient);
-        } else if (version > 100) {
+        } else if (version >= 110) {
+            return new WledApiV0110(wLedHandler, config, httpClient);
+        } else if (version >= 100) {
             return new WledApiV084(wLedHandler, config, httpClient);
         }
         logger.warn("Your WLED firmware is very old, upgrade to at least 0.10.0");

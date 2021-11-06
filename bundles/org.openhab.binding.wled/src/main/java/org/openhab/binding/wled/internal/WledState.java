@@ -35,6 +35,7 @@ public class WledState {
     public NightLightState nightLightState = new NightLightState();
     public UdpnState udpnState = new UdpnState();
     public SegmentState segmentState = new SegmentState();
+    public PresetState[] presetState = new PresetState[1];
 
     public class JsonResponse {
         public List<String> effects = new ArrayList<>();
@@ -108,5 +109,10 @@ public class WledState {
 
     public class LedInfo {
         public boolean rgbw = false;
+    }
+
+    public class PresetState {
+        public String n = "";// Name of preset
+        public int bri = 0;// brightness in 255
     }
 }

@@ -29,7 +29,7 @@ import org.openhab.core.thing.Channel;
  * @author Matthew Skinner - Initial contribution
  */
 @NonNullByDefault
-public class WledApiV0130 extends WledApiV084 {
+public class WledApiV0130 extends WledApiV0110 {
 
     public WledApiV0130(WLedHandler handler, WLedConfiguration config, HttpClient httpClient) {
         super(handler, config, httpClient);
