@@ -38,6 +38,7 @@
 
   <properties>
     <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>
+    <org.osgi.service.http.port>9090</org.osgi.service.http.port>
   </properties>
 
   <dependencies>
@@ -178,6 +179,24 @@
                 <bndrun>itest.bndrun</bndrun>
               </bndruns>
             </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>reserve-network-port</id>
+                <goals>
+                  <goal>reserve-network-port</goal>
+                </goals>
+                <phase>process-resources</phase>
+                <configuration>
+                  <portNames>
+                    <portName>org.osgi.service.http.port</portName>
+                  </portNames>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
