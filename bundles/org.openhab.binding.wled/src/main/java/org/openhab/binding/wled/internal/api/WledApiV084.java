@@ -483,4 +483,18 @@ public class WledApiV084 implements WledApi {
     public void setReverse(boolean bool) throws ApiException {
         postState("{\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"rev\":" + bool + "}]}");
     }
+
+    @Override
+    public void savePreset(int position, String presetName) throws ApiException {
+        // named presets not supported in older firmwares, and max of 16.
+        if (position > 16 || position < 1) {
+            logger.warn("Preset position {} is not supported in this firmware version", position);
+            return;
+        }
+        try {
+            sendGetRequest("/win&PS=" + position);
+        } catch (ApiException e) {
+            logger.warn("Preset failed to save:{}", e.getMessage());
+        }
+    }
 }

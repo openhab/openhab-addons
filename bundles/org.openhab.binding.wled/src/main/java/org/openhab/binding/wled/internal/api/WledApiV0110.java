@@ -69,4 +69,13 @@ public class WledApiV0110 extends WledApiV084 {
         handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_PRESETS),
                 presetsOptions);
     }
+
+    @Override
+    public void savePreset(int position, String presetName) throws ApiException {
+        if (position < 1) {
+            logger.warn("Preset position {} is not supported in this firmware version", position);
+            return;
+        }
+        postState("{\"psave\":" + position + ",\"n\":\"" + presetName + "\",\"ib\":true,\"sb\":true}");
+    }
 }

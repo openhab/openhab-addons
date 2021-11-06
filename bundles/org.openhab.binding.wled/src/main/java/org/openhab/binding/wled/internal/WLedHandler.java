@@ -231,17 +231,12 @@ public class WLedHandler extends BaseThingHandler {
         }
     }
 
-    public void savePreset(int presetIndex) {
-        if (presetIndex > 16) {
-            logger.warn("Presets above 16 do not exist, and the action sent {}", presetIndex);
-            return;
-        }
+    public void savePreset(int position, String presetName) {
         try {
             if (api != null) {
-                api.sendGetRequest("/win&PS=" + presetIndex);
+                api.savePreset(position, presetName);
             }
         } catch (ApiException e) {
-            logger.warn("Preset failed to save due to:{}", e.getMessage());
         }
     }
 

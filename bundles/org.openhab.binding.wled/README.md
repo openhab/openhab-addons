@@ -55,13 +55,12 @@ For additional segments, you can add them manually and set the `segmentIndex` co
 
 ## Rule Actions
 
-This binding has a rule Action `savePreset(int presetNumber)` which can save the current state of the WLED string into a preset slot that you can specify.
-Currently 1 to 16 are valid preset slots.
+This binding has two rule Actions `savePreset(int presetNumber)` and `savePreset(int presetNumber, String presetName)` which can save the current state of the WLED string into a preset slot that you can specify.
 
 In Xtend rules, you can use the Actions like this.
 
 ```
-getActions("wled", "wled:wled:XmasTree").savePreset(5)
+getActions("wled", "wled:wled:XmasTree").savePreset(5,"Flashy Preset")
 ```
 
 ## Sitemap Example

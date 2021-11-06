@@ -74,4 +74,6 @@ public interface WledApi {
     public abstract void setMirror(boolean bool) throws ApiException;
 
     public abstract void setReverse(boolean bool) throws ApiException;
+
+    public abstract void savePreset(int position, String presetName) throws ApiException;
 }
