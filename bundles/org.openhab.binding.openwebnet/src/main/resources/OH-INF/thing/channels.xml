@@ -422,34 +422,34 @@
 		</state>
 	</channel-type>
 
-    <channel-type id="alarmSystemBattery">
-        <item-type>String</item-type>
-        <label>Alarm System Battery</label>
-        <description>Alarm System Battery</description>
-        <state readOnly="true">
-            <options>
-                <option value="BATTERY_OK">OK</option>
-                <option value="BATTERY_FAULT">Fault</option>
-                <option value="BATTERY_UNLOADED">Unloaded</option>
-            </options>
-        </state>
-    </channel-type>
-    
-<channel-type id="zoneAlarm">
-        <item-type>String</item-type>
-        <label>Zone Alarm</label>
-        <description>Zone Alarm</description>
-        <state readOnly="true">
-            <options>
-                <option value="TECHNICAL">Technical</option>
-                <option value="TECHNICAL_RESET">Technical Reset</option>
-                <option value="INTRUSION">Intrusion</option>
-                <option value="TAMPERING">Tampering</option>
-               <option value="ANTI_PANIC">Anti Panic</option>
-                <option value="SILENT">Silent</option>
-            </options>
-        </state>
-    </channel-type>
-    
+	<channel-type id="alarmSystemBattery">
+		<item-type>String</item-type>
+		<label>Alarm System Battery</label>
+		<description>Alarm System Battery</description>
+		<state readOnly="true">
+			<options>
+				<option value="BATTERY_OK">OK</option>
+				<option value="BATTERY_FAULT">Fault</option>
+				<option value="BATTERY_UNLOADED">Unloaded</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="zoneAlarm">
+		<item-type>String</item-type>
+		<label>Zone Alarm</label>
+		<description>Zone Alarm</description>
+		<state readOnly="true">
+			<options>
+				<option value="TECHNICAL">Technical</option>
+				<option value="TECHNICAL_RESET">Technical Reset</option>
+				<option value="INTRUSION">Intrusion</option>
+				<option value="TAMPERING">Tampering</option>
+				<option value="ANTI_PANIC">Anti Panic</option>
+				<option value="SILENT">Silent</option>
+			</options>
+		</state>
+	</channel-type>
+
 
 </thing:thing-descriptions>

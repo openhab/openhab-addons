@@ -195,6 +195,12 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 deviceWho = Who.BURGLAR_ALARM;
                 break;
             }
+            case SCS_ALARM_ZONE: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_ALARM_ZONE;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_ALARM_ZONE;
+                deviceWho = Who.BURGLAR_ALARM;
+                break;
+            }
             default:
                 logger.warn("Device type {} is not supported, default to GENERIC device (WHERE={})", deviceType, where);
                 if (where instanceof WhereZigBee) {
