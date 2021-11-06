@@ -31,6 +31,7 @@ import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
@@ -47,6 +48,7 @@ import com.google.gson.JsonParseException;
  * Unit tests for HD PowerView binding
  *
  * @author Andrew Fiddian-Green - Initial contribution
+ * @author Jacob Laursen - Add support for scene collections
  */
 @NonNullByDefault
 public class HDPowerViewJUnitTests {
@@ -316,6 +318,19 @@ public class HDPowerViewJUnitTests {
             @Nullable
             Scenes scenes = gson.fromJson(json, Scenes.class);
             assertNotNull(scenes);
+        } catch (JsonParseException e) {
+            fail(e.getMessage());
+        }
+
+        // test generic JSON scenes response
+        try {
+            @Nullable
+            String json = loadJson("sceneCollections");
+            assertNotNull(json);
+            assertNotEquals("", json);
+            @Nullable
+            SceneCollections sceneCollections = gson.fromJson(json, SceneCollections.class);
+            assertNotNull(sceneCollections);
         } catch (JsonParseException e) {
             fail(e.getMessage());
         }
