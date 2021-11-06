@@ -16,11 +16,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.hdpowerview.internal.api.ActuatorClass.*;
 import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,6 +33,7 @@ import org.openhab.binding.hdpowerview.internal.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
+import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
@@ -60,14 +62,9 @@ public class HDPowerViewJUnitTests {
      * load a test JSON string from a file
      */
     private String loadJson(String fileName) {
-        try (FileReader file = new FileReader(String.format("src/test/resources/%s.json", fileName));
-                BufferedReader reader = new BufferedReader(file)) {
-            StringBuilder builder = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                builder.append(line).append("\n");
-            }
-            return builder.toString();
+        try {
+            return Files.readAllLines(Paths.get(String.format("src/test/resources/%s.json", fileName))).stream()
+                    .collect(Collectors.joining());
         } catch (IOException e) {
             fail(e.getMessage());
         }
@@ -314,9 +311,20 @@ public class HDPowerViewJUnitTests {
         String json = loadJson("scenes");
         assertNotNull(json);
         assertNotEquals("", json);
+
         @Nullable
         Scenes scenes = gson.fromJson(json, Scenes.class);
         assertNotNull(scenes);
+
+        @Nullable
+        List<Scene> sceneData = scenes.sceneData;
+        assertNotNull(sceneData);
+
+        assertEquals(4, sceneData.size());
+        @Nullable
+        Scene scene = sceneData.get(0);
+        assertEquals("Door Open", scene.getName());
+        assertEquals(18097, scene.id);
     }
 
     /**
@@ -329,9 +337,19 @@ public class HDPowerViewJUnitTests {
         String json = loadJson("sceneCollections");
         assertNotNull(json);
         assertNotEquals("", json);
+
         @Nullable
         SceneCollections sceneCollections = gson.fromJson(json, SceneCollections.class);
         assertNotNull(sceneCollections);
+        @Nullable
+        List<SceneCollection> sceneCollectionData = sceneCollections.sceneCollectionData;
+        assertNotNull(sceneCollectionData);
+
+        assertEquals(1, sceneCollectionData.size());
+        @Nullable
+        SceneCollection sceneCollection = sceneCollectionData.get(0);
+        assertEquals("Børn op", sceneCollection.getName());
+        assertEquals(27119, sceneCollection.id);
     }
 
     /**
@@ -340,8 +358,6 @@ public class HDPowerViewJUnitTests {
     @Test
     public void duetteTopDownBottomUpShadeIsParsedCorrectly() throws JsonParseException {
         final Gson gson = new Gson();
-        @Nullable
-        ShadeData shadeData = null;
         String json = loadJson("duette");
         assertNotNull(json);
         assertNotEquals("", json);
@@ -354,7 +370,8 @@ public class HDPowerViewJUnitTests {
         assertNotNull(shadesData);
 
         assertEquals(1, shadesData.size());
-        shadeData = shadesData.get(0);
+        @Nullable
+        ShadeData shadeData = shadesData.get(0);
         assertNotNull(shadeData);
 
         assertEquals("Gardin 1", shadeData.getName());
