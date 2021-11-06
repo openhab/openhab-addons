@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.evnotify.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -19,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Michael Schmidt - Initial contribution
  */
+@NonNullByDefault
 public class EVNotifyConfiguration {
 
     /**
