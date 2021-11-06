@@ -92,6 +92,12 @@
 		<description>Activates the scene</description>
 	</channel-type>
 
+	<channel-type id="scene-collection-activate">
+		<item-type>Switch</item-type>
+		<label>Activate</label>
+		<description>Activates the scene collection</description>
+	</channel-type>
+
 	<channel-type id="battery-voltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>

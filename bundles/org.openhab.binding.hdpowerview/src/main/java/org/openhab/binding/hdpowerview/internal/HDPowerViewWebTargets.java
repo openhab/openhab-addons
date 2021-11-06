@@ -28,6 +28,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMove;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeStop;
+import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
@@ -42,6 +43,7 @@ import com.google.gson.JsonParseException;
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
+ * @author Jacob Laursen - Add support for scene collections
  */
 @NonNullByDefault
 public class HDPowerViewWebTargets {
@@ -61,6 +63,8 @@ public class HDPowerViewWebTargets {
     private final String shades;
     private final String sceneActivate;
     private final String scenes;
+    private final String sceneCollectionActivate;
+    private final String sceneCollections;
 
     private final Gson gson = new Gson();
     private final HttpClient httpClient;
@@ -101,6 +105,8 @@ public class HDPowerViewWebTargets {
         shades = base + "shades/";
         sceneActivate = base + "scenes";
         scenes = base + "scenes/";
+        sceneCollectionActivate = base + "sceneCollections";
+        sceneCollections = base + "sceneCollections/";
         this.httpClient = httpClient;
     }
 
@@ -154,6 +160,33 @@ public class HDPowerViewWebTargets {
      */
     public void activateScene(int sceneId) throws HubProcessingException, HubMaintenanceException {
         invoke(HttpMethod.GET, sceneActivate, Query.of("sceneId", Integer.toString(sceneId)), null);
+    }
+
+    /**
+     * Fetches a JSON package that describes all scene collections in the hub, and wraps it in
+     * a SceneCollections class instance
+     *
+     * @return SceneCollections class instance
+     * @throws JsonParseException if there is a JSON parsing error
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public @Nullable SceneCollections getSceneCollections()
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, sceneCollections, null, null);
+        return gson.fromJson(json, SceneCollections.class);
+    }
+
+    /**
+     * Instructs the hub to execute a specific scene collection
+     *
+     * @param sceneCollectionId id of the scene collection to be executed
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public void activateSceneCollection(int sceneCollectionId) throws HubProcessingException, HubMaintenanceException {
+        invoke(HttpMethod.GET, sceneCollectionActivate,
+                Query.of("sceneCollectionId", Integer.toString(sceneCollectionId)), null);
     }
 
     /**
