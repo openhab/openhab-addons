@@ -22,7 +22,7 @@
       !jdk.internal.reflect.*,
       !jdk.vm.ci.services
     </bnd.importpackage>
-    <graal.version>20.1.0</graal.version>
+    <graal.version>21.3.0</graal.version>
     <asm.version>6.2.1</asm.version>
     <oh.version>${project.version}</oh.version>
   </properties>
@@ -81,7 +81,7 @@
     <dependency>
       <groupId>com.ibm.icu</groupId>
       <artifactId>icu4j</artifactId>
-      <version>62.1</version>
+      <version>69.1</version>
     </dependency>
 
     <!-- include as version required is older than OH provides -->
