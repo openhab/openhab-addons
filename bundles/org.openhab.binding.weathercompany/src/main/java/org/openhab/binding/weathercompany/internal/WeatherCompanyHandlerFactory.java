@@ -29,7 +29,6 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -59,19 +58,16 @@ public class WeatherCompanyHandlerFactory extends BaseThingHandlerFactory {
     private HttpClient httpClient;
     private LocationProvider locationProvider;
     private LocaleProvider localeProvider;
-    private TranslationProvider i18nProvider;
 
     @Activate
     public WeatherCompanyHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
             @Reference UnitProvider unitProvider, @Reference HttpClientFactory httpClientFactory,
-            @Reference LocationProvider locationProvider, @Reference LocaleProvider localeProvider,
-            @Reference TranslationProvider i18nProvider) {
+            @Reference LocationProvider locationProvider, @Reference LocaleProvider localeProvider) {
         this.timeZoneProvider = timeZoneProvider;
         this.unitProvider = unitProvider;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.locationProvider = locationProvider;
         this.localeProvider = localeProvider;
-        this.i18nProvider = i18nProvider;
     }
 
     @Override
@@ -107,7 +103,7 @@ public class WeatherCompanyHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void registerDeviceDiscoveryService(WeatherCompanyBridgeHandler bridgeHandler) {
         WeatherCompanyDiscoveryService discoveryService = new WeatherCompanyDiscoveryService(bridgeHandler,
-                locationProvider, localeProvider, i18nProvider);
+                locationProvider, localeProvider);
         discoveryService.activate(null);
         this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
                 bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));

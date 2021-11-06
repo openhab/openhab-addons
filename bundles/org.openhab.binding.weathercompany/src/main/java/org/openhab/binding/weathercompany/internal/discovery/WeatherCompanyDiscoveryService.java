@@ -27,7 +27,6 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -50,6 +49,7 @@ public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(WeatherCompanyDiscoveryService.class);
 
     private final LocationProvider locationProvider;
+    private final LocaleProvider localeProvider;
     private final WeatherCompanyBridgeHandler bridgeHandler;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
@@ -58,12 +58,11 @@ public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
      * Creates a WeatherCompanyDiscoveryService with discovery enabled
      */
     public WeatherCompanyDiscoveryService(WeatherCompanyBridgeHandler bridgeHandler, LocationProvider locationProvider,
-            LocaleProvider localeProvider, TranslationProvider i18nProvider) {
+            LocaleProvider localeProvider) {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, true);
         this.bridgeHandler = bridgeHandler;
         this.locationProvider = locationProvider;
         this.localeProvider = localeProvider;
-        this.i18nProvider = i18nProvider;
     }
 
     @Override
