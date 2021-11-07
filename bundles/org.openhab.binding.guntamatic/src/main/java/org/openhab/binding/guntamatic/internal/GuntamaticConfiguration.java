@@ -20,9 +20,10 @@ package org.openhab.binding.guntamatic.internal;
 public class GuntamaticConfiguration {
 
     /**
-     * Sample configuration parameters. Replace with your own.
+     * Configuration parameters
      */
     public String hostname;
-    public String password;
-    public int refreshInterval;
+    public String key;
+    public int refreshInterval = 60;
+    public String encoding = "windows-1252";
 }
