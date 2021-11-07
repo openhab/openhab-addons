@@ -144,8 +144,9 @@ ID	|	Channel	|	Unit	|	Type	|
 |	113	|	Zusatzwarmw2	|	°C	|	Number:Temperature	|
 |	114	|	Rost	|	%	|	Number:Dimensionless	|
 
-The binding logs the number of detected channels during the initialization.
-Channels provided by the actual Guntamatic Heating System variant, but not supported by the binding, are logged aswell. Please share your model variant as well as the logs in order to improve.
+The binding writes the number of channels that are detected during the initialization into the logs.
+Channels provided by the actual Guntamatic Heating System variant, but not supported by the binding, are logged aswell.
+Please share your Guntamatic Heating System variant, firmware version as well as the logs (supported and unsupported channels) in order to improve the binding.
 
 ## Full Example
 
