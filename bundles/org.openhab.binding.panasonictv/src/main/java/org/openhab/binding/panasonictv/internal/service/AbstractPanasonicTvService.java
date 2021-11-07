@@ -12,18 +12,6 @@
  */
 package org.openhab.binding.panasonictv.internal.service;
 
-import java.io.StringReader;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-
-import javax.xml.bind.*;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.panasonictv.internal.StatusEventDTO;
@@ -36,6 +24,19 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.StringReader;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * The {@link AbstractPanasonicTvService} is responsible for
@@ -194,6 +195,7 @@ public abstract class AbstractPanasonicTvService implements UpnpIOParticipant, P
         if (isRegistered()) {
             if (!eventsSubscribed) {
                 service.addSubscription(this, serviceId, 600);
+                listener.setThingAndPowerState(true);
             }
             polling();
         } else {

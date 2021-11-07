@@ -14,15 +14,18 @@ Source Name (read only) is updated when a Key Code to change the source is sent 
 
 Tested TV models:
 
-| Model     | State   | Notes                                                                                |
-|-----------|---------|--------------------------------------------------------------------------------------|
-| Viera E6  | OK      | Initial contribution is done by this model                                           |
+| Model         | State   | Notes                                                                                |
+|---------------|---------|--------------------------------------------------------------------------------------|
+| Viera E6      | OK      | Initial contribution is done by this model                                           |
+| TX-40CX680    | OK      | Initial contribution is done by this model                                           |
 
 
 
 ## Discovery
 
 The TV's are discovered through UPnP protocol in the local network and all devices are put in the Inbox.
+UPnP must be enabled in the TV settings via the "Network -> TV Remote App Settings -> TV Remote: ON". This may be different on other models.  
+Optional: "Network Standby: ON" and "Powered On by Apps: ON" can be set to enable power on via the binding. 
 
 ## Binding Configuration
 
@@ -30,14 +33,13 @@ The binding does not require any special configuration.
 
 ## Thing Configuration
 
-The Panasonic TV Thing requires the host name and port address as a configuration value in order for the binding to know how to access it. Panasonic TV publish several UPnP devices and hostname is used to recognize those UPnP devices.
-Port address is used for remote control emulation protocol.
+The Panasonic TV Thing requires the UPNP UDN of the RemoteController and MediaRenderer as a configuration value in order for the binding to know how to access it. Panasonic TV publish several UPnP devices and the manufacturer and service names are used to recognize those UPnP devices.
 Additionally, a refresh interval can be configured in milliseconds to specify how often TV resources are polled.
 
 E.g.
 
 ```
-Thing panasonictv:tv:livingroom [ hostName="192.168.1.10", port=55000, refreshInterval=1000 ]
+Thing panasonictv:tv:livingroom [ remoteControllerUdn="4D454930-0200-1000-8001-A813742A3472", mediaRendererUdn="4D454930-0100-1000-8001-A813742A3472", refreshInterval=1000 ]
 ```
 
 ## Channels

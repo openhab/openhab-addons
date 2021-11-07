@@ -40,4 +40,11 @@ public interface PanasonicEventListener {
      * @param e exception that might have occurred
      */
     void reportError(ThingStatusDetail statusDetail, String message, @Nullable Throwable e);
+
+    /**
+     * Report the power state to this event listener.
+     *
+     * @param powerState true, if the device is powered on, false otherwise
+     */
+    void setThingAndPowerState(boolean powerState);
 }
