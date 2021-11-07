@@ -111,8 +111,8 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
 
         TextValue value = new TextValue(possibleCommands.toArray(new String[0]));
         buildChannel(VACUUM_COMMAND_CHANNEL_ID, value, "Command", componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.commandTopic)
-                .commandTopic(channelConfiguration.commandTopic, false, 1).build();
+                .stateTopic(channelConfiguration.commandTopic).commandTopic(channelConfiguration.commandTopic, false, 1)
+                .build();
 
         List<String> vacuumStates = List.of("docked", "cleaning", "returning", "paused", "idle", "error");
         TextValue valueState = new TextValue(vacuumStates.toArray(new String[0]));
@@ -122,8 +122,9 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
         if (features.contains("battery")) {
             // build battery level channel (0-100)
             NumberValue batValue = new NumberValue(BigDecimal.ZERO, new BigDecimal(100), new BigDecimal(1), "%");
-            buildChannel(VACUUM_BATTERY_CHANNEL_ID, batValue, "Battery Level", componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.stateTopic, "{{value_json.battery_level}}").build();
+            buildChannel(VACUUM_BATTERY_CHANNEL_ID, batValue, "Battery Level",
+                    componentConfiguration.getUpdateListener())
+                            .stateTopic(channelConfiguration.stateTopic, "{{value_json.battery_level}}").build();
         }
 
         if (features.contains("fan_speed")) {
@@ -162,8 +163,7 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
             NumberValue cleaCountValue = new NumberValue(null, null, null, null);
             buildChannel(VACUUM_CLEAN_COUNT_CHANNEL_ID, cleaCountValue, "Cleaning Counter",
                     componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic, "{{value_json.cleanCount}}")
-                            .build();
+                            .stateTopic(channelConfiguration.jsonAttributesTopic, "{{value_json.cleanCount}}").build();
 
             DateTimeValue lastStartTime = new DateTimeValue();
             buildChannel(VACUUM_LAST_RUN_START_CHANNEL_ID, lastStartTime, "Last run start time",
@@ -189,8 +189,7 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
             NumberValue lastRunAreaValue = new NumberValue(null, null, null, null);
             buildChannel(VACUUM_LAST_RUN_AREA_CHANNEL_ID, lastRunAreaValue, "Last run area",
                     componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic,
-                                    "{{value_json.last_run_stats.area}}")
+                            .stateTopic(channelConfiguration.jsonAttributesTopic, "{{value_json.last_run_stats.area}}")
                             .build();
 
             NumberValue lastRunErrorCodeValue = new NumberValue(null, null, null, null);
