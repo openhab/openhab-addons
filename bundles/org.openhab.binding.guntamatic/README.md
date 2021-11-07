@@ -1,56 +1,156 @@
 # Guntamatic Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+The Guntamatic Binding can be used to monitor and control Guntamatic Heating Systems.
+The Binding is currently under development.
+Please give it a try and report issues in order to improve the usablity as well as the number of supported Guntamatic Heating Systems as well as channels.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The Guntamatic Binding was developed and tested using Guntamatic Biostar 15kW Pellets Heating System running Firmware 3.2d.
+It should work for other Guntamatic Heating Systems as well, that support the same web interface:
+- Powerchip ?
+- Powercorn ?
+- Biocom ?
+- Pro ?
+- Therm ?
+- Biostar
 
-## Discovery
+Right now the binding supports the monitoring of the pre-defined channels from below. It is planned to use dynamic generated channels, based on the info provided from the actual Guntamatic Heating Systems.
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Guntamatic Binding
-#
-# Default secret key for the pairing of the Guntamatic Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+Control of the Guntamatic Heating Systems is possbile but not yet implemented.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Parameter  | Description                  | Default |
+|------------|---------------------------------------|--|
+| Hostname    | Hostname or IP address of the Guntamatic Heating System  | |
+| Key         | Optional, but required to read protected parameters and to control the Guntamatic Heating System. The key needs to be reqested from Guntamatic e.g. via https://www.guntamatic.com/en/contact/ | |
+| Refresh Interval    | Interval the Guntamatic Heating System is polled in sec. | 60 |
+| Encoding    | Encoding of the Response from the Heating System  | windows-1252 |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+Right now all the following channels are supported:
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+ID	|	Channel	|	Unit	|	Type	|
+|---|-----------|-----------|-----------|
+|	0	|	Betrieb	|		|	String	|
+|	1	|	Aussentemperatur	|	°C	|	Number:Temperature	|
+|	2	|	Kesselsolltemp	|	°C	|	Number:Temperature	|
+|	3	|	Kesseltemperatur	|	°C	|	Number:Temperature	|
+|	4	|	Rauchgasauslastung	|	%	|	Number:Dimensionless	|
+|	5	|	Leistung	|	%	|	Number:Dimensionless	|
+|	6	|	Ruecklauftemp	|	°C	|	Number:Temperature	|
+|	7	|	CO2Soll	|	%	|	Number:Dimensionless	|
+|	8	|	CO2Gehalt	|	%	|	Number:Dimensionless	|
+|	9	|	RuecklauftempSoll	|	°C	|	Number:Temperature	|
+|	10	|	Betriebscode	|		|	String	|
+|	11	|	Wirkungsgrad	|	%	|	Number:Dimensionless	|
+|	12	|	Leistung	|	%	|	Number:Dimensionless	|
+|	13	|	Saugzuggeblaese	|	%	|	Number:Dimensionless	|
+|	14	|	Austragungsgeblaese	|		|	String	|
+|	15	|	Austragmotor	|	%	|	Number:Dimensionless	|
+|	16	|	G1soll	|	%	|	Number:Dimensionless	|
+|	17	|	Pufferoben	|	°C	|	Number:Temperature	|
+|	18	|	Puffermitte	|	°C	|	Number:Temperature	|
+|	19	|	Pufferunten	|	°C	|	Number:Temperature	|
+|	20	|	PumpeHP0	|		|	String	|
+|	21	|	Warmwasser0	|	°C	|	Number:Temperature	|
+|	22	|	PWarmwasser0	|		|	String	|
+|	23	|	Warmwasser1	|	°C	|	Number:Temperature	|
+|	24	|	PWarmwasser1	|		|	String	|
+|	25	|	Warmwasser2	|	°C	|	Number:Temperature	|
+|	26	|	PWarmwasser2	|		|	String	|
+|	27	|	RaumtempHK0	|	°C	|	Number:Temperature	|
+|	28	|	Heizkreis0	|		|	String	|
+|	29	|	RaumtempHK1	|	°C	|	Number:Temperature	|
+|	30	|	VorlaufSoll1	|	°C	|	Number:Temperature	|
+|	31	|	VorlaufIst1	|	°C	|	Number:Temperature	|
+|	32	|	Mischer1	|		|	String	|
+|	33	|	Heizkreis1	|		|	String	|
+|	34	|	RaumtempHK2	|	°C	|	Number:Temperature	|
+|	35	|	VorlaufSoll2	|	°C	|	Number:Temperature	|
+|	36	|	VorlaufIst2	|	°C	|	Number:Temperature	|
+|	37	|	Mischer2	|		|	String	|
+|	38	|	Heizkreis2	|		|	String	|
+|	39	|	RaumtempHK3	|	°C	|	Number:Temperature	|
+|	40	|	Heizkreis3	|		|	String	|
+|	41	|	RaumtempHK4	|	°C	|	Number:Temperature	|
+|	42	|	VorlaufSoll4	|	°C	|	Number:Temperature	|
+|	43	|	VorlaufIst4	|	°C	|	Number:Temperature	|
+|	44	|	Mischer4	|		|	String	|
+|	45	|	Heizkreis4	|		|	String	|
+|	46	|	RaumtempHK5	|	°C	|	Number:Temperature	|
+|	47	|	VorlaufSoll5	|	°C	|	Number:Temperature	|
+|	48	|	VorlaufIst5	|	°C	|	Number:Temperature	|
+|	49	|	Mischer5	|		|	String	|
+|	50	|	Heizkreis5	|		|	String	|
+|	51	|	RaumtempHK6	|	°C	|	Number:Temperature	|
+|	52	|	Heizkreis6	|		|	String	|
+|	53	|	RaumtempHK7	|	°C	|	Number:Temperature	|
+|	54	|	VorlaufSoll7	|	°C	|	Number:Temperature	|
+|	55	|	VorlaufIst7	|	°C	|	Number:Temperature	|
+|	56	|	Mischer7	|		|	String	|
+|	57	|	Heizkreis7	|		|	String	|
+|	58	|	RaumtempHK8	|	°C	|	Number:Temperature	|
+|	59	|	VorlaufSoll8	|	°C	|	Number:Temperature	|
+|	60	|	VorlaufIst8	|	°C	|	Number:Temperature	|
+|	61	|	Mischer8	|		|	String	|
+|	62	|	Heizkreis8	|		|	String	|
+|	65	|	Fuellstand	|		|	String	|
+|	66	|	STB	|		|	String	|
+|	67	|	TKS	|		|	String	|
+|	68	|	Kesselfreigabe	|		|	String	|
+|	69	|	Programm	|		|	String	|
+|	70	|	ProgammHK0	|		|	String	|
+|	71	|	ProgammHK1	|		|	String	|
+|	72	|	ProgammHK2	|		|	String	|
+|	73	|	ProgammHK3	|		|	String	|
+|	74	|	ProgammHK4	|		|	String	|
+|	75	|	ProgammHK5	|		|	String	|
+|	76	|	ProgammHK6	|		|	String	|
+|	77	|	ProgammHK7	|		|	String	|
+|	78	|	ProgammHK8	|		|	String	|
+|	79	|	Stoerung0	|		|	String	|
+|	80	|	Stoerung1	|		|	String	|
+|	81	|	Serial	|		|	String	|
+|	82	|	Version	|		|	String	|
+|	83	|	Betriebszeit	|	h	|	Number:Time	|
+|	84	|	Servicezeit	|	d	|	Number:Time	|
+|	85	|	Ascheleerenin	|	h	|	Number:Time	|
+|	86	|	VorlaufIst0	|	°C	|	Number:Temperature	|
+|	87	|	VorlaufIst3	|	°C	|	Number:Temperature	|
+|	88	|	VorlaufIst6	|	°C	|	Number:Temperature	|
+|	89	|	Brennstoffzaehler	|	m³	|	Number:Volume	|
+|	90	|	Pufferladung	|	%	|	Number:Dimensionless	|
+|	91	|	Pufferoben0	|	°C	|	Number:Temperature	|
+|	92	|	Pufferunten0	|	°C	|	Number:Temperature	|
+|	93	|	Pufferoben1	|	°C	|	Number:Temperature	|
+|	94	|	Pufferunten1	|	°C	|	Number:Temperature	|
+|	95	|	Pufferoben2	|	°C	|	Number:Temperature	|
+|	96	|	Pufferunten2	|	°C	|	Number:Temperature	|
+|	97	|	PZusatzwarmw0	|		|	String	|
+|	98	|	PZusatzwarmw1	|		|	String	|
+|	99	|	PZusatzwarmw2	|		|	String	|
+|	100	|	Fernpumpe0	|		|	String	|
+|	101	|	Fernpumpe1	|		|	String	|
+|	102	|	Fernpumpe2	|		|	String	|
+|	104	|	Kesselzustand-Nr	|		|	String	|
+|	108	|	PufferT5	|	°C	|	Number:Temperature	|
+|	109	|	PufferT6	|	°C	|	Number:Temperature	|
+|	110	|	PufferT7	|	°C	|	Number:Temperature	|
+|	111	|	Zusatzwarmw0	|	°C	|	Number:Temperature	|
+|	112	|	Zusatzwarmw1	|	°C	|	Number:Temperature	|
+|	113	|	Zusatzwarmw2	|	°C	|	Number:Temperature	|
+|	114	|	Rost	|	%	|	Number:Dimensionless	|
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+The binding logs the number of detected channels during the initialization.
+Channels provided by the actual Guntamatic Heating System variant, but not supported by the binding, are logged aswell. Please share your model variant as well as the logs in order to improve.
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+t.b.d.
 
 ## Any custom content here!
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+t.b.d.
