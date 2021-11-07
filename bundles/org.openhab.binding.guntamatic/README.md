@@ -21,16 +21,16 @@ Control of the Guntamatic Heating System is possbile but not yet implemented.
 
 ## Thing Configuration
 
-| Parameter  | Description                  | Default |
-|------------|---------------------------------------|--|
-| Hostname    | Hostname or IP address of the Guntamatic Heating System  | |
-| Key         | Optional, but required to read protected parameters and to control the Guntamatic Heating System. The key needs to be reqested from Guntamatic e.g. via https://www.guntamatic.com/en/contact/ | |
-| Refresh Interval    | Interval the Guntamatic Heating System is polled in sec. | 60 |
-| Encoding    | Encoding of the Response from the Heating System  | windows-1252 |
+| Parameter     | Description                                                               | Default       |
+|---------------|---------------------------------------------------------------------------|---------------|
+| Hostname      | Hostname or IP address of the Guntamatic Heating System                   |               |
+| Key           | Optional, but required to read protected parameters and to control the Guntamatic Heating System. The key needs to be reqested from Guntamatic support, e.g. via https://www.guntamatic.com/en/contact/                                    |               |
+| Refresh Interval    | Interval the Guntamatic Heating System is polled in seconds.        | 60            |
+| Encoding      | Code page used by the Guntamatic Heating System.                          | windows-1252  |
 
 ## Channels
 
-Right now all the following channels are supported:
+Right now the following channels are supported:
 
 ID	|	Channel	|	Unit	|	Type	|
 |---|-----------|-----------|-----------|
@@ -143,6 +143,8 @@ ID	|	Channel	|	Unit	|	Type	|
 |	112	|	Zusatzwarmw1	|	°C	|	Number:Temperature	|
 |	113	|	Zusatzwarmw2	|	°C	|	Number:Temperature	|
 |	114	|	Rost	|	%	|	Number:Dimensionless	|
+
+The names of the channels are derived from the data provided from the Guntamatic Heating System. Sorry for the German (Austrian ;-)).
 
 The binding writes the number of channels that are detected during the initialization into the logs.
 Channels provided by the actual Guntamatic Heating System variant, but not supported by the binding, are logged aswell.
