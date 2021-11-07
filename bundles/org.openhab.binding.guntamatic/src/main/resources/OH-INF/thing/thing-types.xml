@@ -4,43 +4,690 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="GuntamaticBridge" />
-			</supported-bridge-type-refs>
-		-->
+	<thing-type id="guntamatic">
 
-		<label>Guntamatic Binding Thing</label>
-		<description>Sample thing for Guntamatic Binding</description>
+		<label>Guntamatic</label>
+		<description>Guntamatic Heating System</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="Betrieb" typeId="Betrieb"/>
+			<channel id="Aussentemperatur" typeId="Aussentemperatur"/>
+			<channel id="Kesselsolltemp" typeId="Kesselsolltemp"/>
+			<channel id="Kesseltemperatur" typeId="Kesseltemperatur"/>
+			<channel id="Rauchgasauslastung" typeId="Rauchgasauslastung"/>
+			<channel id="Leistung" typeId="Leistung"/>
+			<channel id="Ruecklauftemp" typeId="Ruecklauftemp"/>
+			<channel id="CO2Soll" typeId="CO2Soll"/>
+			<channel id="CO2Gehalt" typeId="CO2Gehalt"/>
+			<channel id="RuecklauftempSoll" typeId="RuecklauftempSoll"/>
+			<channel id="Betriebscode" typeId="Betriebscode"/>
+			<channel id="Wirkungsgrad" typeId="Wirkungsgrad"/>
+			<channel id="Saugzuggeblaese" typeId="Saugzuggeblaese"/>
+			<channel id="Austragungsgeblaese" typeId="Austragungsgeblaese"/>
+			<channel id="Austragmotor" typeId="Austragmotor"/>
+			<channel id="G1soll" typeId="G1soll"/>
+			<channel id="Pufferoben" typeId="Pufferoben"/>
+			<channel id="Puffermitte" typeId="Puffermitte"/>
+			<channel id="Pufferunten" typeId="Pufferunten"/>
+			<channel id="PumpeHP0" typeId="PumpeHP0"/>
+			<channel id="Warmwasser0" typeId="Warmwasser0"/>
+			<channel id="PWarmwasser0" typeId="PWarmwasser0"/>
+			<channel id="Warmwasser1" typeId="Warmwasser1"/>
+			<channel id="PWarmwasser1" typeId="PWarmwasser1"/>
+			<channel id="Warmwasser2" typeId="Warmwasser2"/>
+			<channel id="PWarmwasser2" typeId="PWarmwasser2"/>
+			<channel id="RaumtempHK0" typeId="RaumtempHK0"/>
+			<channel id="Heizkreis0" typeId="Heizkreis0"/>
+			<channel id="RaumtempHK1" typeId="RaumtempHK1"/>
+			<channel id="VorlaufSoll1" typeId="VorlaufSoll1"/>
+			<channel id="VorlaufIst1" typeId="VorlaufIst1"/>
+			<channel id="Mischer1" typeId="Mischer1"/>
+			<channel id="Heizkreis1" typeId="Heizkreis1"/>
+			<channel id="RaumtempHK2" typeId="RaumtempHK2"/>
+			<channel id="VorlaufSoll2" typeId="VorlaufSoll2"/>
+			<channel id="VorlaufIst2" typeId="VorlaufIst2"/>
+			<channel id="Mischer2" typeId="Mischer2"/>
+			<channel id="Heizkreis2" typeId="Heizkreis2"/>
+			<channel id="RaumtempHK3" typeId="RaumtempHK3"/>
+			<channel id="Heizkreis3" typeId="Heizkreis3"/>
+			<channel id="RaumtempHK4" typeId="RaumtempHK4"/>
+			<channel id="VorlaufSoll4" typeId="VorlaufSoll4"/>
+			<channel id="VorlaufIst4" typeId="VorlaufIst4"/>
+			<channel id="Mischer4" typeId="Mischer4"/>
+			<channel id="Heizkreis4" typeId="Heizkreis4"/>
+			<channel id="RaumtempHK5" typeId="RaumtempHK5"/>
+			<channel id="VorlaufSoll5" typeId="VorlaufSoll5"/>
+			<channel id="VorlaufIst5" typeId="VorlaufIst5"/>
+			<channel id="Mischer5" typeId="Mischer5"/>
+			<channel id="Heizkreis5" typeId="Heizkreis5"/>
+			<channel id="RaumtempHK6" typeId="RaumtempHK6"/>
+			<channel id="Heizkreis6" typeId="Heizkreis6"/>
+			<channel id="RaumtempHK7" typeId="RaumtempHK7"/>
+			<channel id="VorlaufSoll7" typeId="VorlaufSoll7"/>
+			<channel id="VorlaufIst7" typeId="VorlaufIst7"/>
+			<channel id="Mischer7" typeId="Mischer7"/>
+			<channel id="Heizkreis7" typeId="Heizkreis7"/>
+			<channel id="RaumtempHK8" typeId="RaumtempHK8"/>
+			<channel id="VorlaufSoll8" typeId="VorlaufSoll8"/>
+			<channel id="VorlaufIst8" typeId="VorlaufIst8"/>
+			<channel id="Mischer8" typeId="Mischer8"/>
+			<channel id="Heizkreis8" typeId="Heizkreis8"/>
+			<channel id="Fuellstand" typeId="Fuellstand"/>
+			<channel id="STB" typeId="STB"/>
+			<channel id="TKS" typeId="TKS"/>
+			<channel id="Kesselfreigabe" typeId="Kesselfreigabe"/>
+			<channel id="Programm" typeId="Programm"/>
+			<channel id="ProgammHK0" typeId="ProgammHK0"/>
+			<channel id="ProgammHK1" typeId="ProgammHK1"/>
+			<channel id="ProgammHK2" typeId="ProgammHK2"/>
+			<channel id="ProgammHK3" typeId="ProgammHK3"/>
+			<channel id="ProgammHK4" typeId="ProgammHK4"/>
+			<channel id="ProgammHK5" typeId="ProgammHK5"/>
+			<channel id="ProgammHK6" typeId="ProgammHK6"/>
+			<channel id="ProgammHK7" typeId="ProgammHK7"/>
+			<channel id="ProgammHK8" typeId="ProgammHK8"/>
+			<channel id="Stoerung0" typeId="Stoerung0"/>
+			<channel id="Stoerung1" typeId="Stoerung1"/>
+			<channel id="Serial" typeId="Serial"/>
+			<channel id="Version" typeId="Version"/>
+			<channel id="Betriebszeit" typeId="Betriebszeit"/>
+			<channel id="Servicezeit" typeId="Servicezeit"/>
+			<channel id="Ascheleerenin" typeId="Ascheleerenin"/>
+			<channel id="VorlaufIst0" typeId="VorlaufIst0"/>
+			<channel id="VorlaufIst3" typeId="VorlaufIst3"/>
+			<channel id="VorlaufIst6" typeId="VorlaufIst6"/>
+			<channel id="Brennstoffzaehler" typeId="Brennstoffzaehler"/>
+			<channel id="Pufferladung" typeId="Pufferladung"/>
+			<channel id="Pufferoben0" typeId="Pufferoben0"/>
+			<channel id="Pufferunten0" typeId="Pufferunten0"/>
+			<channel id="Pufferoben1" typeId="Pufferoben1"/>
+			<channel id="Pufferunten1" typeId="Pufferunten1"/>
+			<channel id="Pufferoben2" typeId="Pufferoben2"/>
+			<channel id="Pufferunten2" typeId="Pufferunten2"/>
+			<channel id="PZusatzwarmw0" typeId="PZusatzwarmw0"/>
+			<channel id="PZusatzwarmw1" typeId="PZusatzwarmw1"/>
+			<channel id="PZusatzwarmw2" typeId="PZusatzwarmw2"/>
+			<channel id="Fernpumpe0" typeId="Fernpumpe0"/>
+			<channel id="Fernpumpe1" typeId="Fernpumpe1"/>
+			<channel id="Fernpumpe2" typeId="Fernpumpe2"/>
+			<channel id="KesselzustandNr" typeId="KesselzustandNr"/>
+			<channel id="PufferT5" typeId="PufferT5"/>
+			<channel id="PufferT6" typeId="PufferT6"/>
+			<channel id="PufferT7" typeId="PufferT7"/>
+			<channel id="Zusatzwarmw0" typeId="Zusatzwarmw0"/>
+			<channel id="Zusatzwarmw1" typeId="Zusatzwarmw1"/>
+			<channel id="Zusatzwarmw2" typeId="Zusatzwarmw2"/>
+			<channel id="Rost" typeId="Rost"/>
 		</channels>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
+				<description>Hostname or IP address of the Guntamatic Heating System</description>
 			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Passwort to access the device</description>
+			<parameter name="key" type="text" required="false">
+				<context>key</context>
+				<label>Key</label>
+				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System. The
+					key needs to be reqested from
+					Guntamatic</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
 				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
+				<description>Interval the Guntamatic Heating System is polled in sec. Default: 60s</description>
+			</parameter>
+			<parameter name="encoding" type="text" required="false">
+				<label>Encoding</label>
+				<description>Default: 'windows-1252'</description>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for Guntamatic Binding</description>
+	<channel-type id="Betrieb">
+		<item-type>String</item-type>
+		<label>Betrieb</label>
+		<description>Betrieb</description>
 	</channel-type>
+	<channel-type id="Aussentemperatur">
+		<item-type>Number:Temperature</item-type>
+		<label>Aussentemperatur</label>
+		<description>Aussentemperatur</description>
+	</channel-type>
+	<channel-type id="Kesselsolltemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Kesselsolltemp</label>
+		<description>Kesselsolltemp</description>
+	</channel-type>
+	<channel-type id="Kesseltemperatur">
+		<item-type>Number:Temperature</item-type>
+		<label>Kesseltemperatur</label>
+		<description>Kesseltemperatur</description>
+	</channel-type>
+	<channel-type id="Rauchgasauslastung">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Rauchgasauslastung</label>
+		<description>Rauchgasauslastung</description>
+	</channel-type>
+	<channel-type id="Leistung">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Leistung</label>
+		<description>Leistung</description>
+	</channel-type>
+	<channel-type id="Ruecklauftemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Ruecklauftemp</label>
+		<description>Ruecklauftemp</description>
+	</channel-type>
+	<channel-type id="CO2Soll">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CO2Soll</label>
+		<description>CO2Soll</description>
+	</channel-type>
+	<channel-type id="CO2Gehalt">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CO2Gehalt</label>
+		<description>CO2Gehalt</description>
+	</channel-type>
+	<channel-type id="RuecklauftempSoll">
+		<item-type>Number:Temperature</item-type>
+		<label>RuecklauftempSoll</label>
+		<description>RuecklauftempSoll</description>
+	</channel-type>
+	<channel-type id="Betriebscode">
+		<item-type>String</item-type>
+		<label>Betriebscode</label>
+		<description>Betriebscode</description>
+	</channel-type>
+	<channel-type id="Wirkungsgrad">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Wirkungsgrad</label>
+		<description>Wirkungsgrad</description>
+	</channel-type>
+	<channel-type id="Leistung">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Leistung</label>
+		<description>Leistung</description>
+	</channel-type>
+	<channel-type id="Saugzuggeblaese">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Saugzuggeblaese</label>
+		<description>Saugzuggeblaese</description>
+	</channel-type>
+	<channel-type id="Austragungsgeblaese">
+		<item-type>String</item-type>
+		<label>Austragungsgeblaese</label>
+		<description>Austragungsgeblaese</description>
+	</channel-type>
+	<channel-type id="Austragmotor">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Austragmotor</label>
+		<description>Austragmotor</description>
+	</channel-type>
+	<channel-type id="G1soll">
+		<item-type>Number:Dimensionless</item-type>
+		<label>G1soll</label>
+		<description>G1soll</description>
+	</channel-type>
+	<channel-type id="Pufferoben">
+		<item-type>Number:Temperature</item-type>
+		<label>Pufferoben</label>
+		<description>Pufferoben</description>
+	</channel-type>
+	<channel-type id="Puffermitte">
+		<item-type>Number:Temperature</item-type>
+		<label>Puffermitte</label>
+		<description>Puffermitte</description>
+	</channel-type>
+	<channel-type id="Pufferunten">
+		<item-type>Number:Temperature</item-type>
+		<label>Pufferunten</label>
+		<description>Pufferunten</description>
+	</channel-type>
+	<channel-type id="PumpeHP0">
+		<item-type>String</item-type>
+		<label>PumpeHP0</label>
+		<description>PumpeHP0</description>
+	</channel-type>
+	<channel-type id="Warmwasser0">
+		<item-type>Number:Temperature</item-type>
+		<label>Warmwasser0</label>
+		<description>Warmwasser0</description>
+	</channel-type>
+	<channel-type id="PWarmwasser0">
+		<item-type>String</item-type>
+		<label>PWarmwasser0</label>
+		<description>PWarmwasser0</description>
+	</channel-type>
+	<channel-type id="Warmwasser1">
+		<item-type>Number:Temperature</item-type>
+		<label>Warmwasser1</label>
+		<description>Warmwasser1</description>
+	</channel-type>
+	<channel-type id="PWarmwasser1">
+		<item-type>String</item-type>
+		<label>PWarmwasser1</label>
+		<description>PWarmwasser1</description>
+	</channel-type>
+	<channel-type id="Warmwasser2">
+		<item-type>Number:Temperature</item-type>
+		<label>Warmwasser2</label>
+		<description>Warmwasser2</description>
+	</channel-type>
+	<channel-type id="PWarmwasser2">
+		<item-type>String</item-type>
+		<label>PWarmwasser2</label>
+		<description>PWarmwasser2</description>
+	</channel-type>
+	<channel-type id="RaumtempHK0">
+		<item-type>Number:Temperature</item-type>
+		<label>RaumtempHK0</label>
+		<description>RaumtempHK0</description>
+	</channel-type>
+	<channel-type id="Heizkreis0">
+		<item-type>String</item-type>
+		<label>Heizkreis0</label>
+		<description>Heizkreis0</description>
+	</channel-type>
+	<channel-type id="RaumtempHK1">
+		<item-type>Number:Temperature</item-type>
+		<label>RaumtempHK1</label>
+		<description>RaumtempHK1</description>
+	</channel-type>
+	<channel-type id="VorlaufSoll1">
+		<item-type>Number:Temperature</item-type>
+		<label>VorlaufSoll1</label>
+		<description>VorlaufSoll1</description>
+	</channel-type>
+	<channel-type id="VorlaufIst1">
+		<item-type>Number:Temperature</item-type>
+		<label>VorlaufIst1</label>
+		<description>VorlaufIst1</description>
+	</channel-type>
+	<channel-type id="Mischer1">
+		<item-type>String</item-type>
+		<label>Mischer1</label>
+		<description>Mischer1</description>
+	</channel-type>
+	<channel-type id="Heizkreis1">
+		<item-type>String</item-type>
+		<label>Heizkreis1</label>
+		<description>Heizkreis1</description>
+	</channel-type>
+	<channel-type id="RaumtempHK2">
+		<item-type>Number:Temperature</item-type>
+		<label>RaumtempHK2</label>
+		<description>RaumtempHK2</description>
+	</channel-type>
+	<channel-type id="VorlaufSoll2">
+		<item-type>Number:Temperature</item-type>
+		<label>VorlaufSoll2</label>
+		<description>VorlaufSoll2</description>
+	</channel-type>
+	<channel-type id="VorlaufIst2">
+		<item-type>Number:Temperature</item-type>
+		<label>VorlaufIst2</label>
+		<description>VorlaufIst2</description>
+	</channel-type>
+	<channel-type id="Mischer2">
+		<item-type>String</item-type>
+		<label>Mischer2</label>
+		<description>Mischer2</description>
+	</channel-type>
+	<channel-type id="Heizkreis2">
+		<item-type>String</item-type>
+		<label>Heizkreis2</label>
+		<description>Heizkreis2</description>
+	</channel-type>
+	<channel-type id="RaumtempHK3">
+		<item-type>Number:Temperature</item-type>
+		<label>RaumtempHK3</label>
+		<description>RaumtempHK3</description>
+	</channel-type>
+	<channel-type id="Heizkreis3">
+		<item-type>String</item-type>
+		<label>Heizkreis3</label>
+		<description>Heizkreis3</description>
+	</channel-type>
+	<channel-type id="RaumtempHK4">
+		<item-type>Number:Temperature</item-type>
+		<label>RaumtempHK4</label>
+		<description>RaumtempHK4</description>
+	</channel-type>
+	<channel-type id="VorlaufSoll4">
+		<item-type>Number:Temperature</item-type>
+		<label>VorlaufSoll4</label>
+		<description>VorlaufSoll4</description>
+	</channel-type>
+	<channel-type id="VorlaufIst4">
+		<item-type>Number:Temperature</item-type>
+		<label>VorlaufIst4</label>
+		<description>VorlaufIst4</description>
+	</channel-type>
+	<channel-type id="Mischer4">
+		<item-type>String</item-type>
+		<label>Mischer4</label>
+		<description>Mischer4</description>
+	</channel-type>
+	<channel-type id="Heizkreis4">
+		<item-type>String</item-type>
+		<label>Heizkreis4</label>
+		<description>Heizkreis4</description>
+	</channel-type>
+	<channel-type id="RaumtempHK5">
+		<item-type>Number:Temperature</item-type>
+		<label>RaumtempHK5</label>
+		<description>RaumtempHK5</description>
+	</channel-type>
+	<channel-type id="VorlaufSoll5">
+		<item-type>Number:Temperature</item-type>
+		<label>VorlaufSoll5</label>
+		<description>VorlaufSoll5</description>
+	</channel-type>
+	<channel-type id="VorlaufIst5">
+		<item-type>Number:Temperature</item-type>
+		<label>VorlaufIst5</label>
+		<description>VorlaufIst5</description>
+	</channel-type>
+	<channel-type id="Mischer5">
+		<item-type>String</item-type>
+		<label>Mischer5</label>
+		<description>Mischer5</description>
+	</channel-type>
+	<channel-type id="Heizkreis5">
+		<item-type>String</item-type>
+		<label>Heizkreis5</label>
+		<description>Heizkreis5</description>
+	</channel-type>
+	<channel-type id="RaumtempHK6">
+		<item-type>Number:Temperature</item-type>
+		<label>RaumtempHK6</label>
+		<description>RaumtempHK6</description>
+	</channel-type>
+	<channel-type id="Heizkreis6">
+		<item-type>String</item-type>
+		<label>Heizkreis6</label>
+		<description>Heizkreis6</description>
+	</channel-type>
+	<channel-type id="RaumtempHK7">
+		<item-type>Number:Temperature</item-type>
+		<label>RaumtempHK7</label>
+		<description>RaumtempHK7</description>
+	</channel-type>
+	<channel-type id="VorlaufSoll7">
+		<item-type>Number:Temperature</item-type>
+		<label>VorlaufSoll7</label>
+		<description>VorlaufSoll7</description>
+	</channel-type>
+	<channel-type id="VorlaufIst7">
+		<item-type>Number:Temperature</item-type>
+		<label>VorlaufIst7</label>
+		<description>VorlaufIst7</description>
+	</channel-type>
+	<channel-type id="Mischer7">
+		<item-type>String</item-type>
+		<label>Mischer7</label>
+		<description>Mischer7</description>
+	</channel-type>
+	<channel-type id="Heizkreis7">
+		<item-type>String</item-type>
+		<label>Heizkreis7</label>
+		<description>Heizkreis7</description>
+	</channel-type>
+	<channel-type id="RaumtempHK8">
+		<item-type>Number:Temperature</item-type>
+		<label>RaumtempHK8</label>
+		<description>RaumtempHK8</description>
+	</channel-type>
+	<channel-type id="VorlaufSoll8">
+		<item-type>Number:Temperature</item-type>
+		<label>VorlaufSoll8</label>
+		<description>VorlaufSoll8</description>
+	</channel-type>
+	<channel-type id="VorlaufIst8">
+		<item-type>Number:Temperature</item-type>
+		<label>VorlaufIst8</label>
+		<description>VorlaufIst8</description>
+	</channel-type>
+	<channel-type id="Mischer8">
+		<item-type>String</item-type>
+		<label>Mischer8</label>
+		<description>Mischer8</description>
+	</channel-type>
+	<channel-type id="Heizkreis8">
+		<item-type>String</item-type>
+		<label>Heizkreis8</label>
+		<description>Heizkreis8</description>
+	</channel-type>
+	<channel-type id="Fuellstand">
+		<item-type>String</item-type>
+		<label>Fuellstand</label>
+		<description>Fuellstand</description>
+	</channel-type>
+	<channel-type id="STB">
+		<item-type>String</item-type>
+		<label>STB</label>
+		<description>STB</description>
+	</channel-type>
+	<channel-type id="TKS">
+		<item-type>String</item-type>
+		<label>TKS</label>
+		<description>TKS</description>
+	</channel-type>
+	<channel-type id="Kesselfreigabe">
+		<item-type>String</item-type>
+		<label>Kesselfreigabe</label>
+		<description>Kesselfreigabe</description>
+	</channel-type>
+	<channel-type id="Programm">
+		<item-type>String</item-type>
+		<label>Programm</label>
+		<description>Programm</description>
+	</channel-type>
+	<channel-type id="ProgammHK0">
+		<item-type>String</item-type>
+		<label>ProgammHK0</label>
+		<description>ProgammHK0</description>
+	</channel-type>
+	<channel-type id="ProgammHK1">
+		<item-type>String</item-type>
+		<label>ProgammHK1</label>
+		<description>ProgammHK1</description>
+	</channel-type>
+	<channel-type id="ProgammHK2">
+		<item-type>String</item-type>
+		<label>ProgammHK2</label>
+		<description>ProgammHK2</description>
+	</channel-type>
+	<channel-type id="ProgammHK3">
+		<item-type>String</item-type>
+		<label>ProgammHK3</label>
+		<description>ProgammHK3</description>
+	</channel-type>
+	<channel-type id="ProgammHK4">
+		<item-type>String</item-type>
+		<label>ProgammHK4</label>
+		<description>ProgammHK4</description>
+	</channel-type>
+	<channel-type id="ProgammHK5">
+		<item-type>String</item-type>
+		<label>ProgammHK5</label>
+		<description>ProgammHK5</description>
+	</channel-type>
+	<channel-type id="ProgammHK6">
+		<item-type>String</item-type>
+		<label>ProgammHK6</label>
+		<description>ProgammHK6</description>
+	</channel-type>
+	<channel-type id="ProgammHK7">
+		<item-type>String</item-type>
+		<label>ProgammHK7</label>
+		<description>ProgammHK7</description>
+	</channel-type>
+	<channel-type id="ProgammHK8">
+		<item-type>String</item-type>
+		<label>ProgammHK8</label>
+		<description>ProgammHK8</description>
+	</channel-type>
+	<channel-type id="Stoerung0">
+		<item-type>String</item-type>
+		<label>Stoerung0</label>
+		<description>Stoerung0</description>
+	</channel-type>
+	<channel-type id="Stoerung1">
+		<item-type>String</item-type>
+		<label>Stoerung1</label>
+		<description>Stoerung1</description>
+	</channel-type>
+	<channel-type id="Serial">
+		<item-type>String</item-type>
+		<label>Serial</label>
+		<description>Serial</description>
+	</channel-type>
+	<channel-type id="Version">
+		<item-type>String</item-type>
+		<label>Version</label>
+		<description>Version</description>
+	</channel-type>
+	<channel-type id="Betriebszeit">
+		<item-type>Number:Time</item-type>
+		<label>Betriebszeit</label>
+		<description>Betriebszeit</description>
+	</channel-type>
+	<channel-type id="Servicezeit">
+		<item-type>Number:Time</item-type>
+		<label>Servicezeit</label>
+		<description>Servicezeit</description>
+	</channel-type>
+	<channel-type id="Ascheleerenin">
+		<item-type>Number:Time</item-type>
+		<label>Ascheleerenin</label>
+		<description>Ascheleerenin</description>
+	</channel-type>
+	<channel-type id="VorlaufIst0">
+		<item-type>Number:Temperature</item-type>
+		<label>VorlaufIst0</label>
+		<description>VorlaufIst0</description>
+	</channel-type>
+	<channel-type id="VorlaufIst3">
+		<item-type>Number:Temperature</item-type>
+		<label>VorlaufIst3</label>
+		<description>VorlaufIst3</description>
+	</channel-type>
+	<channel-type id="VorlaufIst6">
+		<item-type>Number:Temperature</item-type>
+		<label>VorlaufIst6</label>
+		<description>VorlaufIst6</description>
+	</channel-type>
+	<channel-type id="Brennstoffzaehler">
+		<item-type>Number:Volume</item-type>
+		<label>Brennstoffzaehler</label>
+		<description>Brennstoffzaehler</description>
+	</channel-type>
+	<channel-type id="Pufferladung">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Pufferladung</label>
+		<description>Pufferladung</description>
+	</channel-type>
+	<channel-type id="Pufferoben0">
+		<item-type>Number:Temperature</item-type>
+		<label>Pufferoben0</label>
+		<description>Pufferoben0</description>
+	</channel-type>
+	<channel-type id="Pufferunten0">
+		<item-type>Number:Temperature</item-type>
+		<label>Pufferunten0</label>
+		<description>Pufferunten0</description>
+	</channel-type>
+	<channel-type id="Pufferoben1">
+		<item-type>Number:Temperature</item-type>
+		<label>Pufferoben1</label>
+		<description>Pufferoben1</description>
+	</channel-type>
+	<channel-type id="Pufferunten1">
+		<item-type>Number:Temperature</item-type>
+		<label>Pufferunten1</label>
+		<description>Pufferunten1</description>
+	</channel-type>
+	<channel-type id="Pufferoben2">
+		<item-type>Number:Temperature</item-type>
+		<label>Pufferoben2</label>
+		<description>Pufferoben2</description>
+	</channel-type>
+	<channel-type id="Pufferunten2">
+		<item-type>Number:Temperature</item-type>
+		<label>Pufferunten2</label>
+		<description>Pufferunten2</description>
+	</channel-type>
+	<channel-type id="PZusatzwarmw0">
+		<item-type>String</item-type>
+		<label>PZusatzwarmw0</label>
+		<description>PZusatzwarmw0</description>
+	</channel-type>
+	<channel-type id="PZusatzwarmw1">
+		<item-type>String</item-type>
+		<label>PZusatzwarmw1</label>
+		<description>PZusatzwarmw1</description>
+	</channel-type>
+	<channel-type id="PZusatzwarmw2">
+		<item-type>String</item-type>
+		<label>PZusatzwarmw2</label>
+		<description>PZusatzwarmw2</description>
+	</channel-type>
+	<channel-type id="Fernpumpe0">
+		<item-type>String</item-type>
+		<label>Fernpumpe0</label>
+		<description>Fernpumpe0</description>
+	</channel-type>
+	<channel-type id="Fernpumpe1">
+		<item-type>String</item-type>
+		<label>Fernpumpe1</label>
+		<description>Fernpumpe1</description>
+	</channel-type>
+	<channel-type id="Fernpumpe2">
+		<item-type>String</item-type>
+		<label>Fernpumpe2</label>
+		<description>Fernpumpe2</description>
+	</channel-type>
+	<channel-type id="KesselzustandNr">
+		<item-type>String</item-type>
+		<label>KesselzustandNr</label>
+		<description>KesselzustandNr</description>
+	</channel-type>
+	<channel-type id="PufferT5">
+		<item-type>Number:Temperature</item-type>
+		<label>PufferT5</label>
+		<description>PufferT5</description>
+	</channel-type>
+	<channel-type id="PufferT6">
+		<item-type>Number:Temperature</item-type>
+		<label>PufferT6</label>
+		<description>PufferT6</description>
+	</channel-type>
+	<channel-type id="PufferT7">
+		<item-type>Number:Temperature</item-type>
+		<label>PufferT7</label>
+		<description>PufferT7</description>
+	</channel-type>
+	<channel-type id="Zusatzwarmw0">
+		<item-type>Number:Temperature</item-type>
+		<label>Zusatzwarmw0</label>
+		<description>Zusatzwarmw0</description>
+	</channel-type>
+	<channel-type id="Zusatzwarmw1">
+		<item-type>Number:Temperature</item-type>
+		<label>Zusatzwarmw1</label>
+		<description>Zusatzwarmw1</description>
+	</channel-type>
+	<channel-type id="Zusatzwarmw2">
+		<item-type>Number:Temperature</item-type>
+		<label>Zusatzwarmw2</label>
+		<description>Zusatzwarmw2</description>
+	</channel-type>
+	<channel-type id="Rost">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Rost</label>
+		<description>Rost</description>
+	</channel-type>
+
 </thing:thing-descriptions>
