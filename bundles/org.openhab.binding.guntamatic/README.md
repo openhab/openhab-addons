@@ -15,9 +15,9 @@ It should work for other Guntamatic Heating Systems as well, that support the sa
 - Therm ?
 - Biostar
 
-Right now the binding supports the monitoring of the pre-defined channels from below. It is planned to use dynamic generated channels, based on the info provided from the actual Guntamatic Heating Systems.
+Right now the binding supports the monitoring of the pre-defined channels from below. It is planned to use dynamically generated channels, based on the info provided from the actual Guntamatic Heating System.
 
-Control of the Guntamatic Heating Systems is possbile but not yet implemented.
+Control of the Guntamatic Heating System is possbile but not yet implemented.
 
 ## Thing Configuration
 
