@@ -17,7 +17,7 @@
 			<channel-group id="producerLSMGroup" typeId="producerLSMGroupType"/>
 		</channel-groups>
 
-		<config-description-ref uri="binding:teleinfo:adco"/>
+		<config-description-ref uri="thing-type:teleinfo:adco"/>
 
 	</thing-type>
 

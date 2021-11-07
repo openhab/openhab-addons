@@ -18,7 +18,7 @@
 			<channel-group id="threePhasedLSMGroup" typeId="threePhasedLSMGroupType"/>
 		</channel-groups>
 
-		<config-description-ref uri="binding:teleinfo:adco"/>
+		<config-description-ref uri="thing-type:teleinfo:adco"/>
 
 	</thing-type>
 

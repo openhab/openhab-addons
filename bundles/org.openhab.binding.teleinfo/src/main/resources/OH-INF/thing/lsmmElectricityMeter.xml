@@ -16,7 +16,7 @@
 			<channel-group id="commonLSMGroup" typeId="commonLSMGroupType"/>
 		</channel-groups>
 
-		<config-description-ref uri="binding:teleinfo:adco"/>
+		<config-description-ref uri="thing-type:teleinfo:adco"/>
 
 	</thing-type>
 

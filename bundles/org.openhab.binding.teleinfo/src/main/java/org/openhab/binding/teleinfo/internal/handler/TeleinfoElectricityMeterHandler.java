@@ -153,7 +153,7 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
             }
             if (!label.getTimestampChannelName().equals(NOT_A_CHANNEL)) {
                 String timestamp = frame.getAsDateTime(label);
-                if (timestamp != "") {
+                if (!timestamp.isEmpty()) {
                     updateState(label.getTimestampChannelName(), DateTimeType.valueOf(timestamp));
                 }
             }
