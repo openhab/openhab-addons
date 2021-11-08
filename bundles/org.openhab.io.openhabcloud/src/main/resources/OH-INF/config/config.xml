@@ -21,7 +21,7 @@
 		</parameter>
 		<parameter name="baseURL" type="text" required="false">
 			<label>Base URL</label>
-			<description>Base URL for the openHAB Cloud server</description>
+			<description>Base URL for the openHAB Cloud server.</description>
 			<default>https://myopenhab.org/</default>
 		</parameter>
 	</config-description>
