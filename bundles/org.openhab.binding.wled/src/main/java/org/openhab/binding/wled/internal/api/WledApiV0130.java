@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.wled.internal.WLedConfiguration;
 import org.openhab.binding.wled.internal.WLedHandler;
 import org.openhab.core.thing.Channel;
 
@@ -31,8 +30,8 @@ import org.openhab.core.thing.Channel;
 @NonNullByDefault
 public class WledApiV0130 extends WledApiV0110 {
 
-    public WledApiV0130(WLedHandler handler, WLedConfiguration config, HttpClient httpClient) {
-        super(handler, config, httpClient);
+    public WledApiV0130(WLedHandler handler, HttpClient httpClient) {
+        super(handler, httpClient);
     }
 
     @Override

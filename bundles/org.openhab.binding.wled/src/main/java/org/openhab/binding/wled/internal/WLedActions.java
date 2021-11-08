@@ -47,12 +47,12 @@ public class WLedActions implements ThingActions {
     @RuleAction(label = "save state to preset", description = "Save a WLED state to a preset slot")
     public void savePreset(
             @ActionInput(name = "presetNumber", label = "Preset Slot", description = "Number for the preset slot you wish to use") int presetNumber) {
-        savePreset(presetNumber, "Preset " + presetNumber);
+        savePreset(presetNumber, "");
     }
 
     public static void savePreset(@Nullable ThingActions actions, int presetNumber) {
         if (actions instanceof WLedActions) {
-            ((WLedActions) actions).savePreset(presetNumber, "Preset " + presetNumber);
+            ((WLedActions) actions).savePreset(presetNumber, "");
         } else {
             throw new IllegalArgumentException("Instance is not a WLED class.");
         }

@@ -19,7 +19,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
 
 /**
- * The {@link WledApi} is the json Api methods for different firmware versions
+ * The {@link WledApi} is the JSON API methods that can be extended for different firmware versions.
  *
  * @author Matthew Skinner - Initial contribution
  */
@@ -31,25 +31,42 @@ public interface WledApi {
 
     public abstract int getFirmwareVersion() throws ApiException;
 
+    public abstract String sendGetRequest(String string) throws ApiException;
+
+    /**
+     * Turns on/off ALL segments
+     */
     public abstract void setGlobalOn(boolean bool) throws ApiException;
 
-    public abstract void setMasterOn(boolean bool) throws ApiException;
+    /**
+     * Turns on/off just THIS segment
+     */
+    public abstract void setMasterOn(boolean bool, int segmentIndex) throws ApiException;
 
+    /**
+     * Sets the brightness of ALL segments
+     */
     public abstract void setGlobalBrightness(PercentType percent) throws ApiException;
 
-    public abstract void setMasterBrightness(PercentType percent) throws ApiException;
+    /**
+     * Sets the brightness of just THIS segment
+     */
+    public abstract void setMasterBrightness(PercentType percent, int segmentIndex) throws ApiException;
 
-    public abstract void setMasterHSB(HSBType hsbType) throws ApiException;
+    /**
+     * Stops any running FX and instantly changes the segment to the desired colour
+     */
+    public abstract void setMasterHSB(HSBType hsbType, int segmentIndex) throws ApiException;
 
-    public abstract void setEffect(String string) throws ApiException;
+    public abstract void setEffect(String string, int segmentIndex) throws ApiException;
 
     public abstract void setPreset(String string) throws ApiException;
 
-    public abstract void setPalette(String string) throws ApiException;
+    public abstract void setPalette(String string, int segmentIndex) throws ApiException;
 
-    public abstract void setFxIntencity(PercentType percentType) throws ApiException;
+    public abstract void setFxIntencity(PercentType percentType, int segmentIndex) throws ApiException;
 
-    public abstract void setFxSpeed(PercentType percentType) throws ApiException;
+    public abstract void setFxSpeed(PercentType percentType, int segmentIndex) throws ApiException;
 
     public abstract void setSleep(boolean bool) throws ApiException;
 
@@ -61,19 +78,22 @@ public interface WledApi {
 
     public abstract void setPresetCycle(boolean bool) throws ApiException;
 
-    public abstract void setPrimaryColor(HSBType hsbType) throws ApiException;
+    public abstract void setPrimaryColor(HSBType hsbType, int segmentIndex) throws ApiException;
 
-    public abstract void setSecondaryColor(HSBType hsbType) throws ApiException;
+    public abstract void setSecondaryColor(HSBType hsbType, int segmentIndex) throws ApiException;
 
-    public abstract void setTertiaryColor(HSBType hsbType) throws ApiException;
+    public abstract void setTertiaryColor(HSBType hsbType, int segmentIndex) throws ApiException;
 
-    public abstract String sendGetRequest(String string) throws ApiException;
+    public abstract void setWhiteOnly(PercentType percentType, int segmentIndex) throws ApiException;
 
-    public abstract void setWhiteOnly(PercentType percentType) throws ApiException;
+    public abstract void setMirror(boolean bool, int segmentIndex) throws ApiException;
 
-    public abstract void setMirror(boolean bool) throws ApiException;
+    public abstract void setReverse(boolean bool, int segmentIndex) throws ApiException;
 
-    public abstract void setReverse(boolean bool) throws ApiException;
-
+    /**
+     * Saves a preset to the position number with the supplied name. If the supplied name is an empty String then the
+     * name 'Preset x' will be used by default using the position number given.
+     *
+     */
     public abstract void savePreset(int position, String presetName) throws ApiException;
 }

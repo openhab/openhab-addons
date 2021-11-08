@@ -14,7 +14,6 @@ package org.openhab.binding.wled.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.wled.internal.WLedConfiguration;
 import org.openhab.binding.wled.internal.WLedHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Activate;
@@ -24,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link WledApiFactory} is responsible for creating an instance of the API that will work with different
+ * The {@link WledApiFactory} is responsible for creating an instance of the API that is optimized for different
  * firmware versions.
  *
  * @author Matthew Skinner - Initial contribution
@@ -40,16 +39,16 @@ public class WledApiFactory {
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
-    public WledApi getApi(WLedHandler wLedHandler, WLedConfiguration config) throws ApiException {
-        WledApi lowestSupportedApi = new WledApiV084(wLedHandler, config, httpClient);
+    public WledApi getApi(WLedHandler handler) throws ApiException {
+        WledApi lowestSupportedApi = new WledApiV084(handler, httpClient);
         int version = lowestSupportedApi.getFirmwareVersion();
         logger.debug("Treating firmware as int:{}", version);
         if (version >= 130) {
-            return new WledApiV0130(wLedHandler, config, httpClient);
+            return new WledApiV0130(handler, httpClient);
         } else if (version >= 110) {
-            return new WledApiV0110(wLedHandler, config, httpClient);
+            return new WledApiV0110(handler, httpClient);
         } else if (version >= 100) {
-            return new WledApiV084(wLedHandler, config, httpClient);
+            return new WledApiV084(handler, httpClient);
         }
         logger.warn("Your WLED firmware is very old, upgrade to at least 0.10.0");
         return lowestSupportedApi;

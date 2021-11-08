@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.wled.internal.WLedConfiguration;
 import org.openhab.binding.wled.internal.WLedHandler;
 import org.openhab.binding.wled.internal.WledState.PresetState;
 import org.openhab.core.thing.ChannelUID;
@@ -40,8 +39,8 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class WledApiV0110 extends WledApiV084 {
 
-    public WledApiV0110(WLedHandler handler, WLedConfiguration config, HttpClient httpClient) {
-        super(handler, config, httpClient);
+    public WledApiV0110(WLedHandler handler, HttpClient httpClient) {
+        super(handler, httpClient);
     }
 
     @Override
@@ -76,6 +75,11 @@ public class WledApiV0110 extends WledApiV084 {
             logger.warn("Preset position {} is not supported in this firmware version", position);
             return;
         }
-        postState("{\"psave\":" + position + ",\"n\":\"" + presetName + "\",\"ib\":true,\"sb\":true}");
+
+        String name = presetName;
+        if (name.isEmpty()) {
+            name = "Preset " + position;
+        }
+        postState("{\"psave\":" + position + ",\"n\":\"" + name + "\",\"ib\":true,\"sb\":true}");
     }
 }

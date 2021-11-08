@@ -90,20 +90,20 @@ public class WLedHandler extends BaseThingHandler {
             switch (channelUID.getId()) {
                 case CHANNEL_SEGMENT_BRIGHTNESS:
                     if (command instanceof OnOffType) {
-                        localApi.setMasterOn(OnOffType.ON.equals(command));
+                        localApi.setMasterOn(OnOffType.ON.equals(command), config.segmentIndex);
                     } else if (command instanceof PercentType) {
                         if (PercentType.ZERO.equals(command)) {
-                            localApi.setMasterOn(false);
+                            localApi.setMasterOn(false, config.segmentIndex);
                             return;
                         }
-                        localApi.setMasterBrightness((PercentType) command);
+                        localApi.setMasterBrightness((PercentType) command, config.segmentIndex);
                     }
                     break;
                 case CHANNEL_MIRROR:
-                    localApi.setMirror(OnOffType.ON.equals(command));
+                    localApi.setMirror(OnOffType.ON.equals(command), config.segmentIndex);
                     break;
                 case CHANNEL_REVERSE:
-                    localApi.setReverse(OnOffType.ON.equals(command));
+                    localApi.setReverse(OnOffType.ON.equals(command), config.segmentIndex);
                     break;
                 case CHANNEL_SYNC_SEND:
                     localApi.setUdpSend(OnOffType.ON.equals(command));
@@ -125,7 +125,7 @@ public class WLedHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_MASTER_CONTROLS:
                     if (command instanceof OnOffType) {
-                        localApi.setMasterOn(OnOffType.ON.equals(command));
+                        localApi.setMasterOn(OnOffType.ON.equals(command), config.segmentIndex);
                     } else if (command instanceof IncreaseDecreaseType) {
                         if (IncreaseDecreaseType.INCREASE.equals(command)) {
                             if (masterBrightness255.intValue() < 240) {
@@ -142,20 +142,20 @@ public class WLedHandler extends BaseThingHandler {
                         }
                     } else if (command instanceof HSBType) {
                         if ((((HSBType) command).getBrightness()).equals(PercentType.ZERO)) {
-                            localApi.setMasterOn(false);
+                            localApi.setMasterOn(false, config.segmentIndex);
                             return;
                         }
                         primaryColor = (HSBType) command;
                         if (primaryColor.getSaturation().intValue() < config.saturationThreshold && hasWhite) {
-                            localApi.setWhiteOnly((PercentType) command);
+                            localApi.setWhiteOnly((PercentType) command, config.segmentIndex);
                         } else if (primaryColor.getSaturation().intValue() == 32
                                 && primaryColor.getHue().intValue() == 36 && hasWhite) {
-                            localApi.setWhiteOnly((PercentType) command);
+                            localApi.setWhiteOnly((PercentType) command, config.segmentIndex);
                         } else {
-                            localApi.setMasterHSB((HSBType) command);
+                            localApi.setMasterHSB((HSBType) command, config.segmentIndex);
                         }
                     } else if (command instanceof PercentType) {
-                        localApi.setMasterBrightness((PercentType) command);
+                        localApi.setMasterBrightness((PercentType) command, config.segmentIndex);
                     }
                     return;
                 case CHANNEL_PRIMARY_COLOR:
@@ -165,7 +165,7 @@ public class WLedHandler extends BaseThingHandler {
                         primaryColor = new HSBType(primaryColor.getHue(), primaryColor.getSaturation(),
                                 ((PercentType) command));
                     }
-                    localApi.setPrimaryColor(primaryColor);
+                    localApi.setPrimaryColor(primaryColor, config.segmentIndex);
                     return;
                 case CHANNEL_SECONDARY_COLOR:
                     if (command instanceof HSBType) {
@@ -174,7 +174,7 @@ public class WLedHandler extends BaseThingHandler {
                         secondaryColor = new HSBType(secondaryColor.getHue(), secondaryColor.getSaturation(),
                                 ((PercentType) command));
                     }
-                    localApi.setSecondaryColor(secondaryColor);
+                    localApi.setSecondaryColor(secondaryColor, config.segmentIndex);
                     return;
                 case CHANNEL_THIRD_COLOR:
                     if (command instanceof HSBType) {
@@ -183,19 +183,19 @@ public class WLedHandler extends BaseThingHandler {
                         thirdColor = new HSBType(thirdColor.getHue(), thirdColor.getSaturation(),
                                 ((PercentType) command));
                     }
-                    localApi.setTertiaryColor(thirdColor);
+                    localApi.setTertiaryColor(thirdColor, config.segmentIndex);
                     return;
                 case CHANNEL_PALETTES:
-                    localApi.setPalette(command.toString());
+                    localApi.setPalette(command.toString(), config.segmentIndex);
                     break;
                 case CHANNEL_FX:
-                    localApi.setEffect(command.toString());
+                    localApi.setEffect(command.toString(), config.segmentIndex);
                     break;
                 case CHANNEL_SPEED:
-                    localApi.setFxSpeed((PercentType) command);
+                    localApi.setFxSpeed((PercentType) command, config.segmentIndex);
                     break;
                 case CHANNEL_INTENSITY:
-                    localApi.setFxIntencity((PercentType) command);
+                    localApi.setFxIntencity((PercentType) command, config.segmentIndex);
                     break;
                 case CHANNEL_SLEEP:
                     localApi.setSleep(OnOffType.ON.equals(command));
@@ -256,7 +256,7 @@ public class WLedHandler extends BaseThingHandler {
         WledApi localApi = api;
         try {
             if (localApi == null) {
-                api = apiFactory.getApi(this, config);
+                api = apiFactory.getApi(this);
                 api.initialize();
             }
             if (localApi == null) {
@@ -265,7 +265,7 @@ public class WLedHandler extends BaseThingHandler {
             localApi.update();
             updateStatus(ThingStatus.ONLINE);
         } catch (ApiException e) {
-            api = null;// recheck the firmware was not just updated
+            api = null;// Firmware may be updated so need to check next connect
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

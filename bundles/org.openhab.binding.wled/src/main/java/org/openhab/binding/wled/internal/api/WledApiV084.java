@@ -30,7 +30,6 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.wled.internal.WLedConfiguration;
 import org.openhab.binding.wled.internal.WLedHandler;
 import org.openhab.binding.wled.internal.WLedHelper;
 import org.openhab.binding.wled.internal.WledState;
@@ -64,14 +63,14 @@ public class WledApiV084 implements WledApi {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     protected final Gson gson = new Gson();
     protected final HttpClient httpClient;
-    protected final WLedConfiguration config;
     protected final WLedHandler handler;
+    protected final String address;
     protected WledState state = new WledState();
     private int version = 0;
 
-    public WledApiV084(WLedHandler handler, WLedConfiguration config, HttpClient httpClient) {
+    public WledApiV084(WLedHandler handler, HttpClient httpClient) {
         this.handler = handler;
-        this.config = config;
+        this.address = handler.config.address;
         this.httpClient = httpClient;
     }
 
@@ -109,7 +108,7 @@ public class WledApiV084 implements WledApi {
 
     @Override
     public String sendGetRequest(String url) throws ApiException {
-        Request request = httpClient.newRequest(config.address + url);
+        Request request = httpClient.newRequest(address + url);
         request.timeout(3, TimeUnit.SECONDS);
         request.method(HttpMethod.GET);
         request.header(HttpHeader.ACCEPT_ENCODING, "gzip");
@@ -140,7 +139,7 @@ public class WledApiV084 implements WledApi {
 
     protected String sendPostRequest(String url, String json) throws ApiException {
         logger.debug("Sending WLED POST:{} Message:{}", url, json);
-        Request request = httpClient.POST(config.address + url);
+        Request request = httpClient.POST(address + url);
         request.timeout(3, TimeUnit.SECONDS);
         request.header(HttpHeader.CONTENT_TYPE, "application/json");
         request.content(new StringContentProvider(json), "application/json");
@@ -329,26 +328,16 @@ public class WledApiV084 implements WledApi {
                         .divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
     }
 
-    /**
-     * Turns on/off ALL segments at the SAME TIME
-     */
     @Override
     public void setGlobalOn(boolean bool) throws ApiException {
         setState(postState("{\"on\":" + bool + ",\"v\":true,\"tt\":2}"));
     }
 
-    /**
-     * Turns on/off just THIS segment
-     */
     @Override
-    public void setMasterOn(boolean bool) throws ApiException {
-        setState(postState(
-                "{\"v\":true,\"tt\":2,\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"on\":" + bool + "}]}"));
+    public void setMasterOn(boolean bool, int segmentIndex) throws ApiException {
+        setState(postState("{\"v\":true,\"tt\":2,\"seg\":[{\"id\":" + segmentIndex + ",\"on\":" + bool + "}]}"));
     }
 
-    /**
-     * Sets the brightness of ALL segments at the SAME TIME
-     */
     @Override
     public void setGlobalBrightness(PercentType percent) throws ApiException {
         if (percent.equals(PercentType.ZERO)) {
@@ -359,59 +348,55 @@ public class WledApiV084 implements WledApi {
                 + percent.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "}"));
     }
 
-    /**
-     * Sets the brightness of just THIS segment
-     */
     @Override
-    public void setMasterBrightness(PercentType percent) throws ApiException {
+    public void setMasterBrightness(PercentType percent, int segmentIndex) throws ApiException {
         if (percent.equals(PercentType.ZERO)) {
-            setState(postState("{\"v\":true,\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"on\":false}]}"));
+            setState(postState("{\"v\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"on\":false}]}"));
             return;
         }
-        setState(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"id\":" + handler.config.segmentIndex
-                + ",\"on\":true,\"bri\":" + percent.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "}]}"));
+        setState(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"on\":true,\"bri\":"
+                + percent.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "}]}"));
     }
 
     @Override
-    public void setMasterHSB(HSBType hsbType) throws ApiException {
+    public void setMasterHSB(HSBType hsbType, int segmentIndex) throws ApiException {
         if (hsbType.getBrightness().toBigDecimal().equals(BigDecimal.ZERO)) {
-            setState(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"on\":false,\"id\":" + handler.config.segmentIndex
+            setState(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"on\":false,\"id\":" + segmentIndex
                     + ",\"fx\":0,\"col\":[[" + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue()
                     + "," + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                     + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}"));
             return;
         }
-        setState(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"on\":true,\"id\":" + handler.config.segmentIndex
-                + ",\"fx\":0,\"col\":[[" + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
+        setState(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"on\":true,\"id\":" + segmentIndex + ",\"fx\":0,\"col\":[["
+                + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}"));
     }
 
     @Override
-    public void setEffect(String string) throws ApiException {
-        postState("{\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"fx\":" + string + "}]}");
+    public void setEffect(String string, int segmentIndex) throws ApiException {
+        postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"fx\":" + string + "}]}");
     }
 
     @Override
     public void setPreset(String string) throws ApiException {
-        setState(
-                postState("{\"ps\":" + string + ",\"v\":true,\"seg\":[{\"id\":" + handler.config.segmentIndex + "}]}"));
+        setState(postState("{\"ps\":" + string + "}"));
     }
 
     @Override
-    public void setPalette(String string) throws ApiException {
-        postState("{\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"pal\":" + string + "}]}");
+    public void setPalette(String string, int segmentIndex) throws ApiException {
+        postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"pal\":" + string + "}]}");
     }
 
     @Override
-    public void setFxIntencity(PercentType percentType) throws ApiException {
-        postState("{\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"ix\":"
+    public void setFxIntencity(PercentType percentType, int segmentIndex) throws ApiException {
+        postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"ix\":"
                 + percentType.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "}]}");
     }
 
     @Override
-    public void setFxSpeed(PercentType percentType) throws ApiException {
-        postState("{\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"sx\":"
+    public void setFxSpeed(PercentType percentType, int segmentIndex) throws ApiException {
+        postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"sx\":"
                 + percentType.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "}]}");
     }
 
@@ -445,43 +430,43 @@ public class WledApiV084 implements WledApi {
     }
 
     @Override
-    public void setPrimaryColor(HSBType hsbType) throws ApiException {
-        postState("{\"on\":true,\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"col\":[["
+    public void setPrimaryColor(HSBType hsbType, int segmentIndex) throws ApiException {
+        postState("{\"on\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"col\":[["
                 + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "],[],[]]}]}");
     }
 
     @Override
-    public void setSecondaryColor(HSBType hsbType) throws ApiException {
-        postState("{\"on\":true,\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"col\":[[],["
+    public void setSecondaryColor(HSBType hsbType, int segmentIndex) throws ApiException {
+        postState("{\"on\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"col\":[[],["
                 + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "],[]]}]}");
     }
 
     @Override
-    public void setTertiaryColor(HSBType hsbType) throws ApiException {
-        postState("{\"on\":true,\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"col\":[[],[],["
+    public void setTertiaryColor(HSBType hsbType, int segmentIndex) throws ApiException {
+        postState("{\"on\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"col\":[[],[],["
                 + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}");
     }
 
     @Override
-    public void setWhiteOnly(PercentType percentType) throws ApiException {
-        postState("{\"seg\":[{\"on\":true,\"id\":" + handler.config.segmentIndex + ",\"fx\":0,\"col\":[[0,0,0,"
+    public void setWhiteOnly(PercentType percentType, int segmentIndex) throws ApiException {
+        postState("{\"seg\":[{\"on\":true,\"id\":" + segmentIndex + ",\"fx\":0,\"col\":[[0,0,0,"
                 + percentType.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}");
     }
 
     @Override
-    public void setMirror(boolean bool) throws ApiException {
-        postState("{\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"mi\":" + bool + "}]}");
+    public void setMirror(boolean bool, int segmentIndex) throws ApiException {
+        postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"mi\":" + bool + "}]}");
     }
 
     @Override
-    public void setReverse(boolean bool) throws ApiException {
-        postState("{\"seg\":[{\"id\":" + handler.config.segmentIndex + ",\"rev\":" + bool + "}]}");
+    public void setReverse(boolean bool, int segmentIndex) throws ApiException {
+        postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"rev\":" + bool + "}]}");
     }
 
     @Override
