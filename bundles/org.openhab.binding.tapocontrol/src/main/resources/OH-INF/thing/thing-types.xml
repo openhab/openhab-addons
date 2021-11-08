@@ -15,7 +15,11 @@
 	<!-- ############################### DEVICES ############################### -->
 	<!-- P100 THING-TYPE (SOCKET) -->
 	<thing-type id="P100">
-		<label>P100 SmartPlug</label>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Tapo P100 SmartPlug</label>
 		<description>Tapo Plug device with relay</description>
 		<channel-groups>
 			<channel-group id="actuator" typeId="smartPlug"/>
@@ -28,7 +32,11 @@
 
 	<!-- L510E THING-TYPE (WHITE-LIGHT-BULB) -->
 	<thing-type id="L510_Series">
-		<label>L510 Series White-Light-Bulb</label>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Tapo L510 Series White-Light-Bulb</label>
 		<description>Tapo Smart White Light Bulb</description>
 		<channel-groups>
 			<channel-group id="actuator" typeId="lightBulb"/>
@@ -41,7 +49,11 @@
 
 	<!-- L530E THING-TYPE (COLOR-LIGHT-BULB) -->
 	<thing-type id="L530_Series">
-		<label>L530 Series Color-Light-Bulb</label>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Tapo L530 Series Color-Light-Bulb</label>
 		<description>Tapo Smart Multicolor Light Bulb</description>
 		<channel-groups>
 			<channel-group id="actuator" typeId="colorBulb"/>

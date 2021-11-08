@@ -93,7 +93,8 @@ public abstract class TapoDevice extends BaseThingHandler {
         } catch (Exception e) {
             logger.debug("({}) configuration error : {}", uid, e.getMessage());
         }
-        if (checkSettings()) {
+        TapoErrorHandler configError = checkSettings();
+        if (!configError.hasError()) {
             this.connector = new TapoDeviceConnector(this, credentials, httpClient);
 
             // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
@@ -103,7 +104,7 @@ public abstract class TapoDevice extends BaseThingHandler {
             scheduler.schedule(this::connect, 2000, TimeUnit.MILLISECONDS);
             startScheduler();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configError.getMessage());
         }
     }
 
@@ -124,30 +125,30 @@ public abstract class TapoDevice extends BaseThingHandler {
     /**
      * CHECK SETTINGS
      * 
-     * @return false if Config-Error
+     * @return TapoErrorHandler with configuration-errors
      */
-    protected Boolean checkSettings() {
+    protected TapoErrorHandler checkSettings() {
         TapoErrorHandler configErr = new TapoErrorHandler();
-        // check bridge
-        if (this.getBridge() == null) {
+        /* check bridge */
+        Bridge bridge = getBridge();
+        if (bridge == null || bridge.getHandler() == null || !(bridge.getHandler() instanceof TapoBridgeHandler)) {
             logger.error("({}) Device has no brigde", uid);
             configErr.raiseError(ERR_NO_BRIDGE);
+            return configErr;
         }
-        // check ip-address
+        /* check ip-address */
         if (!this.ipAddress.matches(IPV4_REGEX)) {
             logger.error("({}) IP-Address not matching : '{}'", uid, ipAddress);
             configErr.raiseError(ERR_CONF_IP);
+            return configErr;
         }
-        // check credentials
+        /* check credentials */
         if (this.credentials.getUsername().isEmpty() || this.credentials.getPassword().isEmpty()) {
             logger.error("({}) Password or Username not set (bridge)", uid);
             configErr.raiseError(ERR_CONF_CREDENTIALS);
+            return configErr;
         }
-
-        if (configErr.hasError()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configErr.getMessage());
-        }
-        return !configErr.hasError();
+        return configErr;
     }
 
     /**
@@ -239,13 +240,16 @@ public abstract class TapoDevice extends BaseThingHandler {
      */
     protected Boolean isExpectedThing(TapoDeviceInfo deviceInfo) {
         try {
-            ThingUID expectedThingUID = getThing().getUID();
-            ThingUID bridgeUid = getBridge().getUID();
-            ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, deviceInfo.getModel());
-            String devID = deviceInfo.getRepresentationProperty();
-            ThingUID receivedThingUID = new ThingUID(thingTypeUID, bridgeUid, devID);
-
-            return expectedThingUID.equals(receivedThingUID);
+            String expectedThingUID = getThing().getProperties().get(DEVICE_REPRASENTATION_PROPERTY);
+            String foundThingUID = deviceInfo.getRepresentationProperty();
+            String foundModel = deviceInfo.getModel();
+            if (expectedThingUID == null || expectedThingUID.isBlank()) {
+                return isThingModel(foundModel);
+            }
+            /* sometimes received mac was with and sometimes without "-" from device */
+            expectedThingUID = unformatMac(expectedThingUID);
+            foundThingUID = unformatMac(foundThingUID);
+            return expectedThingUID.equals(foundThingUID);
         } catch (Exception e) {
             logger.warn("({}) verify thing model throws : {}", uid, e.getMessage());
             return false;

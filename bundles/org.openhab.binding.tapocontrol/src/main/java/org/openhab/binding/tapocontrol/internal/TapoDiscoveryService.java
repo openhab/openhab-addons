@@ -13,6 +13,7 @@
 package org.openhab.binding.tapocontrol.internal;
 
 import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstants.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -129,6 +130,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService {
         try {
             String deviceModel = getDeviceModel(device);
             String label = getDeviceLabel(device);
+            String name = device.get(CLOUD_PROPERTY_NAME).getAsString();
             String deviceMAC = device.get(CLOUD_PROPERTY_MAC).getAsString();
             ThingUID bridgeUID = bridge.getThing().getUID();
             ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, deviceModel);
@@ -136,7 +138,8 @@ public class TapoDiscoveryService extends AbstractDiscoveryService {
 
             /* create properties */
             Map<String, Object> properties = new HashMap<>(1);
-            properties.put(Thing.PROPERTY_MAC_ADDRESS, deviceMAC);
+            properties.put(Thing.PROPERTY_VENDOR, DEVICE_VENDOR);
+            properties.put(Thing.PROPERTY_MAC_ADDRESS, formatMac(deviceMAC, MAC_DIVISION_CHAR));
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.get(CLOUD_PROPERTY_FW).getAsString());
             properties.put(Thing.PROPERTY_HARDWARE_VERSION, device.get(CLOUD_PROPERTY_HW).getAsString());
             properties.put(Thing.PROPERTY_MODEL_ID, deviceModel);
@@ -187,6 +190,9 @@ public class TapoDiscoveryService extends AbstractDiscoveryService {
     protected String getDeviceModel(JsonObject device) {
         try {
             String deviceModel = device.get(CLOUD_PROPERTY_MODEL).getAsString();
+            deviceModel = deviceModel.replaceAll("\\(.*\\)", ""); // replace (DE)
+            deviceModel = deviceModel.replace("Tapo", "");
+            deviceModel = deviceModel.trim();
             deviceModel = deviceModel.replace(" ", "_");
             return deviceModel;
         } catch (Exception e) {
@@ -203,7 +209,6 @@ public class TapoDiscoveryService extends AbstractDiscoveryService {
      */
     protected String getDeviceLabel(JsonObject device) {
         try {
-            String label = device.get(CLOUD_PROPERTY_NAME).getAsString();
             String deviceLabel = "";
             String deviceModel = getDeviceModel(device);
             ThingTypeUID deviceUID = new ThingTypeUID(BINDING_ID, deviceModel);
@@ -215,7 +220,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService {
             } else if (SUPPORTED_COLOR_BULB_UIDS.contains(deviceUID)) {
                 deviceLabel = DEVICE_DESCRIPTION_COLOR_BULB;
             }
-            return label + " " + deviceLabel;
+            return DEVICE_VENDOR + " " + deviceModel + " " + deviceLabel;
         } catch (Exception e) {
             logger.error("error getDeviceLabel", e);
             return "";

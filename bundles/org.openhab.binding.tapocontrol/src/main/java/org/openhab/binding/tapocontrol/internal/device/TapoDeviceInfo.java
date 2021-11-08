@@ -13,6 +13,7 @@
 package org.openhab.binding.tapocontrol.internal.device;
 
 import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstants.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
@@ -175,7 +176,7 @@ public class TapoDeviceInfo {
      ************************************/
 
     public String getMAC() {
-        return mac;
+        return formatMac(mac, MAC_DIVISION_CHAR);
     }
 
     public String getFirmwareVersion() {
@@ -203,7 +204,7 @@ public class TapoDeviceInfo {
     }
 
     public String getRepresentationProperty() {
-        return mac.replace("-", "");
+        return getMAC();
     }
 
     public Boolean isOverheated() {

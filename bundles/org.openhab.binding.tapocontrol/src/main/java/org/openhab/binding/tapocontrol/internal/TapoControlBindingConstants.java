@@ -29,13 +29,13 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class TapoControlBindingConstants {
     public static final String BINDING_ID = "tapocontrol";
+    public static final String DEVICE_VENDOR = "Tapo";
 
     // Lisst of all constant configurations
     public static final String HTTP_HEADER_AUTH = "Authorization";
     public static final String HTTP_AUTH_TYPE_BASIC = "Basic";
     public static final String HTTP_AUTH_TYPE_COOKIE = "cookie";
-    public static final String IPV4_REGEX = "(([0-1]?[0-9]{1,2}\\.)|(2[0-4][0-9]\\.)|(25[0-5]\\.)){3}(([0-1]?[0-9]{1,2})|(2[0-4][0-9])|(25[0-5]))";
-    public static final String CONTENT_CHARSET = "UTF-8"; // "utf-8";
+    public static final String CONTENT_CHARSET = "UTF-8";
     public static final String CONTENT_TYPE_JSON = "application/json";
     public static final String TAPO_CLOUD_URL = "https://eu-wap.tplinkcloud.com";
     public static final String TAPO_APP_TYPE = "Tapo_Ios";
@@ -49,6 +49,10 @@ public class TapoControlBindingConstants {
     public static final Integer TAPO_LOGIN_MIN_GAP_MS = 5000; // min gap between sending login request
     public static final Integer TAPO_LOGIN_MAX_GAP_M = 1440; // max minutes to relogin to device
     public static final Integer POLLING_MIN_INTERVAL_S = 10; // min polling interval (settings)
+
+    // FORMATING CONSTANTS
+    public static final String IPV4_REGEX = "(([0-1]?[0-9]{1,2}\\.)|(2[0-4][0-9]\\.)|(25[0-5]\\.)){3}(([0-1]?[0-9]{1,2})|(2[0-4][0-9])|(25[0-5]))";
+    public static final char MAC_DIVISION_CHAR = '-';
 
     // LIST OF SUPPORTED DEVICE NAMES
     public static final String DEVICE_BRIDGE = "bridge";
@@ -85,7 +89,7 @@ public class TapoControlBindingConstants {
 
     // DEVICE PROPERTY STRINGS (CLOUD)
     public static final String CLOUD_PROPERTY_ID = "deviceId";
-    public static final String CLOUD_PROPERTY_MODEL = "deviceModel";
+    public static final String CLOUD_PROPERTY_MODEL = "deviceName"; // use name cause modell returns different values
     public static final String CLOUD_PROPERTY_NAME = "deviceName";
     public static final String CLOUD_PROPERTY_ALIAS = "alias";
     public static final String CLOUD_PROPERTY_TYPE = "deviceType";

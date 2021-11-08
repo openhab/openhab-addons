@@ -52,6 +52,35 @@ public class TapoUtils {
     }
 
     /************************************
+     * FORMAT UTILS
+     ***********************************/
+    /**
+     * Format MAC-Address replacing old division chars and add new one
+     * 
+     * @param mac unformated mac-Address
+     * @param newDivisionChar new division char (e.g. ":","-" )
+     * @return new formated mac-Address
+     */
+    public static String formatMac(String mac, char newDivisionChar) {
+        String unformatedMac = unformatMac(mac);
+        String formatedMac = unformatedMac.replaceAll("(.{2})", "$1" + newDivisionChar).substring(0, 17);
+        return formatedMac;
+    }
+
+    /**
+     * unformat MAC-Address replace all division chars
+     * 
+     * @param mac
+     * @return
+     */
+    public static String unformatMac(String mac) {
+        mac = mac.replace("-", "");
+        mac = mac.replace(":", "");
+        mac = mac.replace(".", "");
+        return mac;
+    }
+
+    /************************************
      * TYPE UTILS
      ***********************************/
 
