@@ -34,22 +34,33 @@ The following Tapo-Devices are supported
 Before using Smart Plugs with openHAB the devices must be connected to the Wi-Fi network.
 This can be done using the Tapo provided mobile app.
 
-## Discovery
-
-Discovery is not supported at the moment. You need to know the IP-Adress of your device
-
 ## Binding Configuration
 
 Binding needs your Tapo eMail and password to connect to the Tapo-Cloud.
-This is only used to create the handshake (cookie) to act with your devices.
+This is used to create the handshake (cookie) to act with your devices and device discovering.
+To enter your cloud details add a "TapoControl Cloud-Login"-Thing
+In the configuration page of the bridge-thing, enter your eMail and password.
 
-To enter your cloud details go to the bindings page, click the TapoControl binding and than configure.
-In the configuration page, enter your eMail and password.
+## Discovery
 
+Discovery is done by connecting to the Tapo-Cloud Service. 
+All devices stored in your cloud account will be detected even if they are not in your network.
+You need to know the IP-Adress of your device. This must be set manually in the thing configuration
+
+## Bridge Configuration
+
+The bridge needs to be configured with by `username` and `password` (Tapo-Cloud login) .
+
+The thing has the following configuration parameters:
+
+| Parameter          | Description                                                          |
+|--------------------|----------------------------------------------------------------------|
+| Username           | Username (eMail) of your Tapo-Cloud                                  |
+| Password           | Password of your Tapo-Cloud                                          |
 
 ## Thing Configuration
 
-The thing can be only configured by `ipAddress`.
+The thing needs to be configured with `ipAddress`.
 
 The thing has the following configuration parameters:
 
@@ -82,13 +93,14 @@ When the thing receives a `RefreshType` command the thing will send a new refres
 ### tapocontrol.things:
 
 ```
-tapocontrol:P100:mySocket              "My-Socket"                 [ ipAddress="192.168.178.150", pollingInterval=30 ]
-tapocontrol:L510_Series:whiteBulb      "white-light"               [ ipAddress="192.168.178.151", pollingInterval=30 ]
-tapocontrol:L530_Series:colorBulb      "color-light"               [ ipAddress="192.168.178.152", pollingInterval=30 ]
+tapocontrol:bridge:myTapoBridge                     "Cloud-Login"               [ username="you@yourpovide.com", password="verysecret" ]
+tapocontrol:P100:myTapoBridge:mySocket              "My-Socket"                 [ ipAddress="192.168.178.150", pollingInterval=30 ]
+tapocontrol:L510_Series:myTapoBridge:whiteBulb      "white-light"               [ ipAddress="192.168.178.151", pollingInterval=30 ]
+tapocontrol:L530_Series:myTapoBridge:colorBulb      "color-light"               [ ipAddress="192.168.178.152", pollingInterval=30 ]
 ``` 
 
 ### tapocontrol.items:
 
 ```
-Switch       TAPO_SOCKET      "socket"                { channel="tapocontrol:P100:socket:mySocket:actuator#output" }
+Switch       TAPO_SOCKET      "socket"                { channel="tapocontrol:P100:myTapoBridge:mySocket:actuator#output" }
 ``` 

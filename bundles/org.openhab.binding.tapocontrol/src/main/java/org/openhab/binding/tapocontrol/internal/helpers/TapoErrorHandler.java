@@ -16,6 +16,7 @@ import static org.openhab.binding.tapocontrol.internal.helpers.TapoErrorConstant
 
 import java.lang.reflect.Field;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.Gson;
@@ -27,7 +28,7 @@ import com.google.gson.JsonObject;
  * @author Christian Wild - Initial contribution
  */
 @NonNullByDefault
-public class TapoErrorHandler {
+public class TapoErrorHandler extends Throwable {
     private Integer errorCode = 0;
     private String errorMessage = "";
     private String infoMessage = "";
@@ -53,17 +54,17 @@ public class TapoErrorHandler {
                         if (msg.length() > 2) {
                             return msg;
                         } else {
-                            return constName;
+                            return infoMessage + " (" + constName + ")";
                         }
                     } catch (Exception e) {
-                        return constName;
+                        return infoMessage + " (" + constName + ")";
                     }
                 }
             } catch (Exception e) {
                 // next loop
             }
         }
-        return errCode.toString();
+        return infoMessage + " (" + errCode.toString() + ")";
     }
 
     /**
@@ -133,8 +134,8 @@ public class TapoErrorHandler {
      */
     public void raiseError(Integer errorCode, String infoMessage) {
         this.errorCode = errorCode;
-        this.errorMessage = getErrorMessage(errorCode);
         this.infoMessage = infoMessage;
+        this.errorMessage = getErrorMessage(errorCode);
     }
 
     /**
@@ -154,8 +155,19 @@ public class TapoErrorHandler {
      */
     public void raiseError(Exception ex, String infoMessage) {
         this.errorCode = ex.hashCode();
-        this.errorMessage = getValueOrDefault(ex.getMessage(), ex.toString());
         this.infoMessage = infoMessage;
+        this.errorMessage = getValueOrDefault(ex.getMessage(), ex.toString());
+    }
+
+    /**
+     * Take over tapoError
+     * 
+     * @param tapoError
+     */
+    public void set(TapoErrorHandler tapoError) {
+        this.errorCode = tapoError.getNumber();
+        this.infoMessage = tapoError.getExtendedInfo();
+        this.errorMessage = getErrorMessage(this.errorCode);
     }
 
     /**
@@ -178,6 +190,8 @@ public class TapoErrorHandler {
      * 
      * @return error text
      */
+    @Override
+    @NonNull
     public String getMessage() {
         return this.errorMessage;
     }
@@ -190,6 +204,15 @@ public class TapoErrorHandler {
      */
     public String getMessage(Integer errorCode) {
         return getErrorMessage(errorCode);
+    }
+
+    /**
+     * Get Error Code
+     * 
+     * @return error code (integer)
+     */
+    public Integer getCode() {
+        return this.errorCode;
     }
 
     /**
@@ -208,6 +231,15 @@ public class TapoErrorHandler {
      */
     public Integer getNumber() {
         return this.errorCode;
+    }
+
+    /**
+     * Check if has Error
+     * 
+     * @return true if has error
+     */
+    public Boolean hasError() {
+        return this.errorCode != 0;
     }
 
     /**

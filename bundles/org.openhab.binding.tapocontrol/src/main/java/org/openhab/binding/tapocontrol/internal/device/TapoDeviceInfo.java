@@ -77,20 +77,20 @@ public class TapoDeviceInfo {
     }
 
     private void setData() {
-        this.mac = getString("mac");
-        this.fwVer = getString("fw_ver");
-        this.hwVer = getString("hw_ver");
-        this.ip = getString("ip");
-        this.model = getString("model");
-        this.deviceId = getString("device_id");
-        this.overheated = getBool("overheated");
-        this.deviceOn = getBool("device_on");
-        this.signalLevel = getInt("signal_level");
-        this.onTime = getInt("on_time");
-        this.brightness = getInt("brightness");
-        this.hue = getInt("hue");
-        this.saturation = getInt("saturation");
-        this.colorTemp = getInt("color_temp", BULB_MIN_COLORTEMP);
+        this.mac = getString(DEVICE_PROPERTY_MAC);
+        this.fwVer = getString(DEVICE_PROPERTY_FW);
+        this.hwVer = getString(DEVICE_PROPERTY_HW);
+        this.ip = getString(DEVICE_PROPERTY_IP);
+        this.model = getString(DEVICE_PROPERTY_MODEL);
+        this.deviceId = getString(DEVICE_PROPERTY_ID);
+        this.overheated = getBool(DEVICE_PROPERTY_OVERHEAT);
+        this.deviceOn = getBool(DEVICE_PROPERTY_ON);
+        this.signalLevel = getInt(DEVICE_PROPERTY_SIGNAL);
+        this.onTime = getInt(DEVICE_PROPERTY_ONTIME);
+        this.brightness = getInt(DEVICE_PROPERTY_BRIGHTNES);
+        this.hue = getInt(DEVICE_PROPERTY_HUE);
+        this.saturation = getInt(DEVICE_PROPERTY_SATURATION);
+        this.colorTemp = getInt(DEVICE_PROPERTY_COLORTEMP, BULB_MIN_COLORTEMP);
     }
 
     /***********************************
@@ -200,6 +200,10 @@ public class TapoDeviceInfo {
 
     public String getSerial() {
         return deviceId;
+    }
+
+    public String getRepresentationProperty() {
+        return mac.replace("-", "");
     }
 
     public Boolean isOverheated() {

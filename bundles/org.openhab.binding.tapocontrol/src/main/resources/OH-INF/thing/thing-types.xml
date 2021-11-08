@@ -4,7 +4,15 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- THINGS -->
+	<!-- ############################### BRIDGE ############################### -->
+	<bridge-type id="bridge">
+		<label>TapoControl Cloud-Login</label>
+		<description>TapoControl Cloud Connector</description>
+		<config-description-ref uri="bridge-type:tapo:bridge"/>
+	</bridge-type>
+
+
+	<!-- ############################### DEVICES ############################### -->
 	<!-- P100 THING-TYPE (SOCKET) -->
 	<thing-type id="P100">
 		<label>P100 SmartPlug</label>
@@ -45,8 +53,7 @@
 	</thing-type>
 
 
-
-
+	<!-- ############################### CHANNEL-GROUPS ############################### -->
 
 	<!-- CHANNEL GROUP TYPES -->
 	<!--Device-Statuss Channel Type -->
@@ -91,6 +98,8 @@
 		</channels>
 	</channel-group-type>
 
+
+	<!-- ############################### CHANNELS ############################### -->
 
 	<!-- ACTOR CHANNEL TYPES -->
 	<!-- OuputState Channel Type -->

@@ -16,4 +16,23 @@
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
+
+	<config-description uri="bridge-type:tapo:bridge">
+		<parameter name="username" type="text" required="true">
+			<context>email</context>
+			<label>Username</label>
+			<description>Tapo-Cloud Login User (e-Mail)</description>
+		</parameter>
+		<parameter name="password" type="text" required="true">
+			<context>password</context>
+			<label>Password</label>
+			<description>Tapo-Cloud Login Password</description>
+		</parameter>
+		<parameter name="cloudReconnect" type="integer" min="1" max="168" required="false">
+			<label>Cloud reconnect interval</label>
+			<description>Interval for reconnecting to the Tapo-Cloud. in hours</description>
+			<default>24</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
 </config-description:config-descriptions>

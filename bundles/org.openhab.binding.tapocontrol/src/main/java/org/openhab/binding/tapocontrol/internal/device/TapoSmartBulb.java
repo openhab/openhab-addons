@@ -18,7 +18,7 @@ import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -44,8 +44,8 @@ public class TapoSmartBulb extends TapoDevice {
      *
      * @param thing Thing object representing device
      */
-    public TapoSmartBulb(Thing thing, TapoCredentials credentials) {
-        super(thing, credentials);
+    public TapoSmartBulb(Thing thing, HttpClient httpClient) {
+        super(thing, httpClient);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class TapoSmartBulb extends TapoDevice {
         } else {
             switch (channel) {
                 case CHANNEL_OUTPUT:
-                    connector.setDeviceInfo("device_on", command == OnOffType.ON);
+                    connector.sendDeviceCommand("device_on", command == OnOffType.ON);
                     refreshInfo = true;
                     break;
                 case CHANNEL_BRIGHTNESS:
@@ -109,12 +109,12 @@ public class TapoSmartBulb extends TapoDevice {
     protected void setBrightness(Integer newBrightness) {
         /* switch off if 0 */
         if (newBrightness == 0) {
-            connector.setDeviceInfo("device_on", false);
+            connector.sendDeviceCommand("device_on", false);
         } else {
             HashMap<String, Object> newState = new HashMap<>();
             newState.put("device_on", true);
             newState.put("brightness", newBrightness);
-            connector.setDeviceInfos(newState);
+            connector.sendDeviceCommands(newState);
         }
     }
 
@@ -129,7 +129,7 @@ public class TapoSmartBulb extends TapoDevice {
         newState.put("hue", command.getHue());
         newState.put("saturation", command.getSaturation());
         newState.put("brightness", command.getBrightness());
-        connector.setDeviceInfos(newState);
+        connector.sendDeviceCommands(newState);
     }
 
     /**
@@ -142,7 +142,7 @@ public class TapoSmartBulb extends TapoDevice {
         colorTemp = limitVal(colorTemp, BULB_MIN_COLORTEMP, BULB_MAX_COLORTEMP);
         newState.put("device_on", true);
         newState.put("color_temp", colorTemp);
-        connector.setDeviceInfos(newState);
+        connector.sendDeviceCommands(newState);
     }
 
     /**

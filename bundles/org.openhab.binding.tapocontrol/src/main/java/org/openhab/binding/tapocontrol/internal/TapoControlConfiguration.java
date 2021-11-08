@@ -25,6 +25,8 @@ public final class TapoControlConfiguration {
     /**
      * thing configuration parameter.
      */
+    public String username = "";
+    public String password = "";
     public String ipAddress = "";
     public Integer pollingInterval = 30;
 }

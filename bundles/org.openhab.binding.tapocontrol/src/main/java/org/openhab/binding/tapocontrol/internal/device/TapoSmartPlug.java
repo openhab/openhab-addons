@@ -16,7 +16,7 @@ import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstan
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -39,8 +39,8 @@ public class TapoSmartPlug extends TapoDevice {
      *
      * @param thing Thing object representing device
      */
-    public TapoSmartPlug(Thing thing, TapoCredentials credentials) {
-        super(thing, credentials);
+    public TapoSmartPlug(Thing thing, HttpClient httpClient) {
+        super(thing, httpClient);
     }
 
     @Override
@@ -57,10 +57,10 @@ public class TapoSmartPlug extends TapoDevice {
         if (command instanceof RefreshType) {
             refreshInfo = true;
         } else if (command == OnOffType.ON) {
-            connector.setDeviceInfo("device_on", true);
+            connector.sendDeviceCommand("device_on", true);
             refreshInfo = true;
         } else if (command == OnOffType.OFF) {
-            connector.setDeviceInfo("device_on", false);
+            connector.sendDeviceCommand("device_on", false);
             refreshInfo = true;
         }
 
