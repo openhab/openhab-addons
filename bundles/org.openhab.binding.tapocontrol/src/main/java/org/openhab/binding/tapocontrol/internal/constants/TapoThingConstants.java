@@ -38,6 +38,7 @@ public class TapoThingConstants {
     public static final String DEVICE_P105 = "P105";
     public static final String DEVICE_L510E = "L510_Series";
     public static final String DEVICE_L530E = "L530_Series";
+    public static final String DEVICE_L900 = "L900";
     public static final String DEVICE_UNIVERSAL = "Test_Device";
 
     // LIST OF SUPPORTED DEVICE DESCRIPTIONS
@@ -45,6 +46,7 @@ public class TapoThingConstants {
     public static final String DEVICE_DESCRIPTION_SMART_PLUG = "SmartPlug";
     public static final String DEVICE_DESCRIPTION_WHITE_BULB = "White-Light-Bulb";
     public static final String DEVICE_DESCRIPTION_COLOR_BULB = "Color-Light-Bulb";
+    public static final String DEVICE_DESCRIPTION_LIGHTSTRIP = "LightStrip";
 
     // LIST OF SUPPORTED THING UIDS
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_BRIDGE);
@@ -52,6 +54,7 @@ public class TapoThingConstants {
     public static final ThingTypeUID P105_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P105);
     public static final ThingTypeUID L510E_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L510E);
     public static final ThingTypeUID L530E_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L530E);
+    public static final ThingTypeUID L900_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L900);
     public static final ThingTypeUID UNIVERSAL_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_UNIVERSAL);
 
     // SET OF SUPPORTED UIDS
@@ -59,14 +62,19 @@ public class TapoThingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_SMART_PLUG_UIDS = Set.of(P100_THING_TYPE, P105_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_WHITE_BULB_UIDS = Set.of(L510E_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_COLOR_BULB_UIDS = Set.of(L530E_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_SMART_PLUG_UIDS, SUPPORTED_WHITE_BULB_UIDS, SUPPORTED_COLOR_BULB_UIDS)
-            .flatMap(Set::stream).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_LIGHT_STRIP_UIDS = Set.of(L900_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream
+                    .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_SMART_PLUG_UIDS, SUPPORTED_WHITE_BULB_UIDS,
+                            SUPPORTED_COLOR_BULB_UIDS, SUPPORTED_LIGHT_STRIP_UIDS)
+                    .flatMap(Set::stream).collect(Collectors.toSet()));
 
     // THINGS WITH CHANNEL GROUPS
-    public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Collections.unmodifiableSet(Stream
-            .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_SMART_PLUG_UIDS, SUPPORTED_WHITE_BULB_UIDS, SUPPORTED_COLOR_BULB_UIDS)
-            .flatMap(Set::stream).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Collections
+            .unmodifiableSet(Stream
+                    .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_SMART_PLUG_UIDS, SUPPORTED_WHITE_BULB_UIDS,
+                            SUPPORTED_COLOR_BULB_UIDS, SUPPORTED_LIGHT_STRIP_UIDS)
+                    .flatMap(Set::stream).collect(Collectors.toSet()));
 
     // DEVICE PROPERTY STRINGS (CLOUD)
     public static final String CLOUD_PROPERTY_ID = "deviceId";
@@ -98,6 +106,14 @@ public class TapoThingConstants {
     public static final String DEVICE_PROPERTY_COLORTEMP = "color_temp";
     public static final String DEVICE_PROPERTY_REGION = "region";
     public static final String DEVICE_REPRASENTATION_PROPERTY = "macAddress";
+    public static final String DEVICE_PROPERTY_EFFECT = "lighting_effect";
+    public static final String PROPERTY_LIGHTNING_EFFECT_ENABLE = "enable";
+    public static final String PROPERTY_LIGHTNING_EFFECT_ID = "id";
+    public static final String PROPERTY_LIGHTNING_EFFECT_NAME = "name";
+    public static final String PROPERTY_LIGHTNING_EFFECT_CUSTOM = "custom";
+    public static final String PROPERTY_LIGHTNING_EFFECT_BRIGHNTESS = "brightness";
+    public static final String PROPERTY_LIGHTNING_EFFECT_COLORTEMPRANGE = "color_temp_range";
+    public static final String PROPERTY_LIGHTNING_EFFECT_DISPLAYCOLORS = "displayColors";
 
     // DEVICE SETTINGS
     public static final Integer BULB_MIN_COLORTEMP = 2500;
@@ -110,6 +126,12 @@ public class TapoThingConstants {
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_COLOR_TEMP = "colorTemperature";
     public static final String CHANNEL_COLOR = "color";
+    public static final String CHANNEL_GROUP_EFFECTS = "effect";
+    public static final String CHANNEL_FX_NAME = "name";
+    public static final String CHANNEL_FX_BRIGHTNESS = "brightness";
+    public static final String CHANNEL_FX_ENABLE = "enable";
+    public static final String CHANNEL_FX_CUSTOM = "custom";
+    public static final String CHANNEL_FX_COLORS = "displayColors";
     public static final String CHANNEL_GROUP_DEVICE = "device";
     public static final String CHANNEL_OVERHEAT = "overheated";
     public static final String CHANNEL_ONTIME = "onTime";

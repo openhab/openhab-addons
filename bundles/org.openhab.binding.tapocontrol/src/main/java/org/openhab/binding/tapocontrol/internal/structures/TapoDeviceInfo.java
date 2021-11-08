@@ -63,6 +63,7 @@ public class TapoDeviceInfo {
     private String region = "";
     private Integer timeDiff = 0;
     private String lang = "";
+    private TapoLightEffect lightEffect = new TapoLightEffect();
 
     private JsonObject jsonObject = new JsonObject();
 
@@ -73,126 +74,45 @@ public class TapoDeviceInfo {
         setData();
     }
 
+    /**
+     * Init DeviceInfo with new Data;
+     * 
+     * @param jso JsonObject new Data
+     */
     public TapoDeviceInfo(JsonObject jso) {
         jsonObject = jso;
         setData();
     }
 
+    /**
+     * Set Data (new JsonObject)
+     * 
+     * @param jso JsonObject new Data
+     */
+    public TapoDeviceInfo setData(JsonObject jso) {
+        this.jsonObject = jso;
+        setData();
+        return this;
+    }
+
     private void setData() {
-        this.mac = getString(DEVICE_PROPERTY_MAC);
-        this.fwVer = getString(DEVICE_PROPERTY_FW);
-        this.hwVer = getString(DEVICE_PROPERTY_HW);
-        this.ip = getString(DEVICE_PROPERTY_IP);
-        this.model = getString(DEVICE_PROPERTY_MODEL);
-        this.type = getString(DEVICE_PROPERTY_TYPE);
-        this.deviceId = getString(DEVICE_PROPERTY_ID);
-        this.overheated = getBool(DEVICE_PROPERTY_OVERHEAT);
-        this.deviceOn = getBool(DEVICE_PROPERTY_ON);
-        this.signalLevel = getInt(DEVICE_PROPERTY_SIGNAL);
-        this.onTime = getNumber(DEVICE_PROPERTY_ONTIME);
-        this.brightness = getInt(DEVICE_PROPERTY_BRIGHTNES);
-        this.hue = getInt(DEVICE_PROPERTY_HUE);
-        this.saturation = getInt(DEVICE_PROPERTY_SATURATION);
-        this.colorTemp = getInt(DEVICE_PROPERTY_COLORTEMP, BULB_MIN_COLORTEMP);
-        this.region = getString(DEVICE_PROPERTY_REGION);
-    }
-
-    /***********************************
-     *
-     * HELPERS
-     *
-     ************************************/
-
-    /**
-     * 
-     * @param name parameter name
-     * @param defVal - default value;
-     * @return string value
-     */
-    private String getString(String name, String defVal) {
-        if (jsonObject.has(name)) {
-            return jsonObject.get(name).getAsString();
-        } else {
-            return defVal;
-        }
-    }
-
-    /**
-     * 
-     * @param name parameter name
-     * @return string value
-     */
-    private String getString(String name) {
-        return getString(name, "");
-    }
-
-    /**
-     * 
-     * @param name parameter name
-     * @param defVal - default value;
-     * @return boolean value
-     */
-    private Boolean getBool(String name, Boolean defVal) {
-        if (jsonObject.has(name)) {
-            return jsonObject.get(name).getAsBoolean();
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * 
-     * @param name parameter name
-     * @return boolean value
-     */
-    private Boolean getBool(String name) {
-        return getBool(name, false);
-    }
-
-    /**
-     * 
-     * @param name parameter name
-     * @param defVal - default value;
-     * @return integer value
-     */
-    private Integer getInt(String name, Integer defVal) {
-        if (jsonObject.has(name)) {
-            return jsonObject.get(name).getAsInt();
-        } else {
-            return defVal;
-        }
-    }
-
-    /**
-     * 
-     * @param name parameter name
-     * @return integer value
-     */
-    private Integer getInt(String name) {
-        return getInt(name, 0);
-    }
-
-    /**
-     * 
-     * @param name parameter name
-     * @param defVal - default value;
-     * @return number value
-     */
-    private Number getNumber(String name, Number defVal) {
-        if (jsonObject.has(name)) {
-            return jsonObject.get(name).getAsNumber();
-        } else {
-            return defVal;
-        }
-    }
-
-    /**
-     * 
-     * @param name parameter name
-     * @return number value
-     */
-    private Number getNumber(String name) {
-        return getNumber(name, 0);
+        this.mac = jsonObjectToString(jsonObject, DEVICE_PROPERTY_MAC);
+        this.fwVer = jsonObjectToString(jsonObject, DEVICE_PROPERTY_FW);
+        this.hwVer = jsonObjectToString(jsonObject, DEVICE_PROPERTY_HW);
+        this.ip = jsonObjectToString(jsonObject, DEVICE_PROPERTY_IP);
+        this.model = jsonObjectToString(jsonObject, DEVICE_PROPERTY_MODEL);
+        this.type = jsonObjectToString(jsonObject, DEVICE_PROPERTY_TYPE);
+        this.deviceId = jsonObjectToString(jsonObject, DEVICE_PROPERTY_ID);
+        this.overheated = jsonObjectToBool(jsonObject, DEVICE_PROPERTY_OVERHEAT);
+        this.deviceOn = jsonObjectToBool(jsonObject, DEVICE_PROPERTY_ON);
+        this.signalLevel = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_SIGNAL);
+        this.onTime = jsonObjectToNumber(jsonObject, DEVICE_PROPERTY_ONTIME);
+        this.brightness = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_BRIGHTNES);
+        this.hue = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_HUE);
+        this.saturation = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_SATURATION);
+        this.colorTemp = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_COLORTEMP, BULB_MIN_COLORTEMP);
+        this.region = jsonObjectToString(jsonObject, DEVICE_PROPERTY_REGION);
+        this.lightEffect = lightEffect.setData(jsonObject);
     }
 
     /***********************************
@@ -270,6 +190,10 @@ public class TapoDeviceInfo {
         PercentType s = new PercentType(saturation);
         PercentType b = new PercentType(brightness);
         return new HSBType(h, s, b);
+    }
+
+    public TapoLightEffect getLightEffect() {
+        return lightEffect;
     }
 
     @Override

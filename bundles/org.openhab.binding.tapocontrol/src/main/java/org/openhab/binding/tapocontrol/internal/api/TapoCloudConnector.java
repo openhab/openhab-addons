@@ -35,7 +35,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
- * Handler class for TAPO Smart Home device cloud-connections.
+ * Handler class for TAPO-Cloud connections.
  *
  * @author Christian Wild - Initial contribution
  */
@@ -85,7 +85,7 @@ public class TapoCloudConnector {
     public Boolean login(String username, String password) {
         this.token = getToken(username, password, TAPO_TERMINAL_UUID);
         this.url = TAPO_CLOUD_URL + "?token=" + token;
-        return this.token != "";
+        return !this.token.isBlank();
     }
 
     /**
@@ -235,10 +235,4 @@ public class TapoCloudConnector {
         }
         return null;
     }
-
-    /***********************************
-     *
-     * GET RESULTS
-     *
-     ************************************/
 }

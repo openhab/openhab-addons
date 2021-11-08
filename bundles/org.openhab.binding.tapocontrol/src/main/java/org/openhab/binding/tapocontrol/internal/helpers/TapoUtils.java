@@ -24,6 +24,8 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 
+import com.google.gson.JsonObject;
+
 /**
  * {@link TapoUtils} TapoUtils -
  * Utility Helper Functions
@@ -141,6 +143,102 @@ public class TapoUtils {
         } catch (Exception e) {
             return defVal;
         }
+    }
+
+    /***********************************
+     * JSON-FORMATER
+     ************************************/
+
+    /**
+     * 
+     * @param name parameter name
+     * @param defVal - default value;
+     * @return string value
+     */
+    public static String jsonObjectToString(JsonObject jsonObject, String name, String defVal) {
+        if (jsonObject.has(name)) {
+            return jsonObject.get(name).getAsString();
+        } else {
+            return defVal;
+        }
+    }
+
+    /**
+     * 
+     * @param name parameter name
+     * @return string value
+     */
+    public static String jsonObjectToString(JsonObject jsonObject, String name) {
+        return jsonObjectToString(jsonObject, name, "");
+    }
+
+    /**
+     * 
+     * @param name parameter name
+     * @param defVal - default value;
+     * @return boolean value
+     */
+    public static Boolean jsonObjectToBool(JsonObject jsonObject, String name, Boolean defVal) {
+        if (jsonObject.has(name)) {
+            return jsonObject.get(name).getAsBoolean();
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 
+     * @param name parameter name
+     * @return boolean value
+     */
+    public static Boolean jsonObjectToBool(JsonObject jsonObject, String name) {
+        return jsonObjectToBool(jsonObject, name, false);
+    }
+
+    /**
+     * 
+     * @param name parameter name
+     * @param defVal - default value;
+     * @return integer value
+     */
+    public static Integer jsonObjectToInt(JsonObject jsonObject, String name, Integer defVal) {
+        if (jsonObject.has(name)) {
+            return jsonObject.get(name).getAsInt();
+        } else {
+            return defVal;
+        }
+    }
+
+    /**
+     * 
+     * @param name parameter name
+     * @return integer value
+     */
+    public static Integer jsonObjectToInt(JsonObject jsonObject, String name) {
+        return jsonObjectToInt(jsonObject, name, 0);
+    }
+
+    /**
+     * 
+     * @param name parameter name
+     * @param defVal - default value;
+     * @return number value
+     */
+    public static Number jsonObjectToNumber(JsonObject jsonObject, String name, Number defVal) {
+        if (jsonObject.has(name)) {
+            return jsonObject.get(name).getAsNumber();
+        } else {
+            return defVal;
+        }
+    }
+
+    /**
+     * 
+     * @param name parameter name
+     * @return number value
+     */
+    public static Number jsonObjectToNumber(JsonObject jsonObject, String name) {
+        return jsonObjectToNumber(jsonObject, name, 0);
     }
 
     /************************************

@@ -201,7 +201,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      */
     public boolean loginCloud() {
         bridgeError.reset(); // reset ErrorHandler
-        if (config.username != "" && config.password != "") {
+        if (!config.username.isBlank() && !config.password.isBlank()) {
             logger.debug("{} login with user {}", this.uid, config.username);
             if (cloudConnector.login(config.username, config.password)) {
                 updateStatus(ThingStatus.ONLINE);

@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.tapocontrol.internal.device.TapoBridgeHandler;
+import org.openhab.binding.tapocontrol.internal.device.TapoLightStrip;
 import org.openhab.binding.tapocontrol.internal.device.TapoSmartBulb;
 import org.openhab.binding.tapocontrol.internal.device.TapoSmartPlug;
 import org.openhab.binding.tapocontrol.internal.device.TapoUniversalDevice;
@@ -92,6 +93,8 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
             return new TapoSmartBulb(thing);
         } else if (SUPPORTED_COLOR_BULB_UIDS.contains(thingTypeUID)) {
             return new TapoSmartBulb(thing);
+        } else if (SUPPORTED_LIGHT_STRIP_UIDS.contains(thingTypeUID)) {
+            return new TapoLightStrip(thing);
         } else if (thingTypeUID.equals(UNIVERSAL_THING_TYPE)) {
             return new TapoUniversalDevice(thing);
         }

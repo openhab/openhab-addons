@@ -50,6 +50,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     protected final TapoErrorHandler deviceError = new TapoErrorHandler();
     protected final String uid;
     protected TapoDeviceConfiguration config;
+    protected TapoDeviceInfo deviceInfo;
     protected @Nullable ScheduledFuture<?> startupJob;
     protected @Nullable ScheduledFuture<?> pollingJob;
     protected @Nullable TapoDeviceConnector connector;
@@ -63,6 +64,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     public TapoDevice(Thing thing) {
         super(thing);
         this.config = new TapoDeviceConfiguration(thing);
+        this.deviceInfo = new TapoDeviceInfo();
         this.uid = getThing().getUID().getAsString();
     }
 
@@ -321,6 +323,7 @@ public abstract class TapoDevice extends BaseThingHandler {
      * @param deviceInfo
      */
     public void setDeviceInfo(TapoDeviceInfo deviceInfo) {
+        this.deviceInfo = deviceInfo;
         if (isExpectedThing(deviceInfo)) {
             devicePropertiesChanged(deviceInfo);
             handleConnectionState();
@@ -462,6 +465,7 @@ public abstract class TapoDevice extends BaseThingHandler {
         String channel = channelID.getIdWithoutGroup();
         channel = channel.replace(CHANNEL_GROUP_ACTUATOR + "#", "");
         channel = channel.replace(CHANNEL_GROUP_DEVICE + "#", "");
+        channel = channel.replace(CHANNEL_GROUP_EFFECTS + "#", "");
         return channel;
     }
 }

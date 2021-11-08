@@ -15,6 +15,7 @@
 		<channel-groups>
 			<channel-group id="actuator" typeId="colorBulb"/>
 			<channel-group id="device" typeId="deviceState"/>
+			<channel-group id="effect" typeId="lightEffect"/>
 			<channel-group id="debug" typeId="commandDebug"/>
 		</channel-groups>
 		<representation-property>macAddress</representation-property>
