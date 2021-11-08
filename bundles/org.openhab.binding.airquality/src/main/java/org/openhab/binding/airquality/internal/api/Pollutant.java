@@ -72,7 +72,7 @@ public enum Pollutant {
         ASTHMA;
     }
 
-    private final Set<SensitiveGroup> sensitiveGroups;
+    public final Set<SensitiveGroup> sensitiveGroups;
     private final Unit<?> unit;
     private final Set<ConcentrationRange> breakpoints;
     private final int scale;
@@ -82,10 +82,6 @@ public enum Pollutant {
         this.unit = unit;
         this.breakpoints = Set.of(concentrations);
         this.scale = scale;
-    }
-
-    public Set<SensitiveGroup> getSensitiveGroups() {
-        return sensitiveGroups;
     }
 
     public State toQuantity(double idx) {

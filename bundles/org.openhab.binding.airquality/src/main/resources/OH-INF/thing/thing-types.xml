@@ -4,10 +4,24 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<bridge-type id="api">
+		<label>Air Quality API</label>
+
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<context>password</context>
+				<label>API Key</label>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
 	<!-- Air Quality Thing -->
 	<thing-type id="station" extensible="sensitive-group">
-		<label>@text/aqiLabel</label>
-		<description>@text/aqiDescription</description>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Air Quality Station</label>
 
 		<channel-groups>
 			<channel-group id="aqi" typeId="aqi"/>
@@ -35,16 +49,13 @@
 		<config-description>
 			<parameter name="location" type="text" required="false"
 				pattern="^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)[,]\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$">
-				<label>@text/locationLabel</label>
-				<description>@text/locationDescription</description>
+				<label>Location</label>
 			</parameter>
 			<parameter name="stationId" type="integer" required="false">
-				<label>@text/stationIdLabel</label>
-				<description>@text/stationIdDescription</description>
+				<label>Station ID</label>
 			</parameter>
 			<parameter name="refresh" type="integer" min="30" required="false" unit="min">
-				<label>@text/refreshLabel</label>
-				<description>@text/refreshDescription</description>
+				<label>Refresh Interval</label>
 				<advanced>true</advanced>
 				<default>60</default>
 				<unitLabel>Minutes</unitLabel>

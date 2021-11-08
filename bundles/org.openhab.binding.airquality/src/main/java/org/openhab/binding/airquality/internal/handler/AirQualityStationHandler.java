@@ -49,12 +49,14 @@ import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
@@ -65,26 +67,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AirQualityHandler} is responsible for handling commands, which are
+ * The {@link AirQualityStationHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Kuba Wolanin - Initial contribution
  * @author Łukasz Dywicki - Initial contribution
  */
 @NonNullByDefault
-public class AirQualityHandler extends BaseThingHandler {
-    private final @NonNullByDefault({}) ClassLoader classLoader = AirQualityHandler.class.getClassLoader();
-    private final Logger logger = LoggerFactory.getLogger(AirQualityHandler.class);
+public class AirQualityStationHandler extends BaseThingHandler {
+    private final @NonNullByDefault({}) ClassLoader classLoader = AirQualityStationHandler.class.getClassLoader();
+    private final Logger logger = LoggerFactory.getLogger(AirQualityStationHandler.class);
     private final TimeZoneProvider timeZoneProvider;
     private final LocationProvider locationProvider;
 
     private @Nullable ScheduledFuture<?> refreshJob;
-    private final ApiBridge apiBridge;
 
-    public AirQualityHandler(Thing thing, ApiBridge apiBridge, TimeZoneProvider timeZoneProvider,
-            LocationProvider locationProvider) {
+    public AirQualityStationHandler(Thing thing, TimeZoneProvider timeZoneProvider, LocationProvider locationProvider) {
         super(thing);
-        this.apiBridge = apiBridge;
         this.timeZoneProvider = timeZoneProvider;
         this.locationProvider = locationProvider;
     }
@@ -186,15 +185,33 @@ public class AirQualityHandler extends BaseThingHandler {
      * @return an optional air quality data object mapping the JSON response
      */
     private Optional<AirQualityData> getAirQualityData() {
-        AirQualityConfiguration config = getConfigAs(AirQualityConfiguration.class);
         AirQualityData result = null;
-        try {
-            result = apiBridge.getData(config.stationId, config.location, 0);
-            updateStatus(ThingStatus.ONLINE);
-        } catch (AirQualityException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+        ApiBridge apiBridge = getApiBridge();
+        if (apiBridge != null) {
+            AirQualityConfiguration config = getConfigAs(AirQualityConfiguration.class);
+            try {
+                result = apiBridge.getData(config.stationId, config.location, 0);
+                updateStatus(ThingStatus.ONLINE);
+            } catch (AirQualityException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            }
         }
         return Optional.ofNullable(result);
+    }
+
+    private @Nullable ApiBridge getApiBridge() {
+        Bridge bridge = this.getBridge();
+        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+            BridgeHandler handler = bridge.getHandler();
+            if (handler instanceof AirQualityBridgeHandler) {
+                return ((AirQualityBridgeHandler) handler).getApiBridge();
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/incorrect-bridge");
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+        return null;
     }
 
     private State indexedValue(String channelId, double idx, @Nullable Pollutant pollutant) {
@@ -222,7 +239,7 @@ public class AirQualityHandler extends BaseThingHandler {
             int threshHold = Appreciation.UNHEALTHY_FSG.ordinal();
             for (Pollutant pollutant : Pollutant.values()) {
                 Index index = Index.find(data.getIaqiValue(pollutant));
-                if (index != null && pollutant.getSensitiveGroups().contains(sensitiveGroup)
+                if (index != null && pollutant.sensitiveGroups.contains(sensitiveGroup)
                         && index.getCategory().ordinal() >= threshHold) {
                     return OnOffType.ON;
                 }

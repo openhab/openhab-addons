@@ -4,14 +4,5 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Air Quality Binding</name>
-	<description>@text/bindingDescription</description>
-
-	<config-description>
-		<parameter name="apiKey" type="text" required="true">
-			<context>password</context>
-			<label>@text/apiKeyLabel</label>
-			<description>@text/apiKeyDescription</description>
-		</parameter>
-	</config-description>
 
 </binding:binding>

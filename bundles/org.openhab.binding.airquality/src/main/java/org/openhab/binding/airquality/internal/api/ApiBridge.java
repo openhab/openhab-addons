@@ -13,20 +13,14 @@
 package org.openhab.binding.airquality.internal.api;
 
 import java.io.IOException;
-import java.util.Dictionary;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airquality.internal.AirQualityException;
 import org.openhab.binding.airquality.internal.api.dto.AirQualityData;
 import org.openhab.binding.airquality.internal.api.dto.AirQualityResponse;
 import org.openhab.binding.airquality.internal.api.dto.AirQualityResponse.ResponseStatus;
 import org.openhab.core.io.net.http.HttpUtil;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,34 +34,16 @@ import com.google.gson.JsonSyntaxException;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ApiBridge.class, configurationPid = "binding.airquality")
 public class ApiBridge {
     private static final Gson GSON = new Gson();
     private static final String URL = "http://api.waqi.info/feed/%query%/?token=%apiKey%";
-    private static final String KEY_ERROR = "Null or empty API key";
     private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(30);
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridge.class);
-    private @Nullable String apiKey;
+    private final String apiKey;
 
-    @Activate
-    protected void activate(ComponentContext componentContext) {
-        activateOrModifyService(componentContext);
-    }
-
-    @Modified
-    protected void modified(ComponentContext componentContext) {
-        activateOrModifyService(componentContext);
-    }
-
-    private void activateOrModifyService(ComponentContext componentContext) {
-        Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
-        String apiKey = (String) properties.get("apiKey");
-        if (apiKey != null && apiKey.length() != 0) {
-            this.apiKey = apiKey;
-        } else {
-            logger.warn(KEY_ERROR);
-        }
+    public ApiBridge(String apiKey) {
+        this.apiKey = apiKey;
     }
 
     /**
@@ -91,12 +67,7 @@ public class ApiBridge {
      * @throws AirQualityException
      */
     public AirQualityData getData(int stationId, String location, int retryCounter) throws AirQualityException {
-        String localKey = apiKey;
-        if (localKey == null) {
-            throw new AirQualityException(KEY_ERROR);
-        }
-
-        String urlStr = buildRequestURL(localKey, stationId, location);
+        String urlStr = buildRequestURL(apiKey, stationId, location);
         logger.debug("URL = {}", urlStr);
 
         try {

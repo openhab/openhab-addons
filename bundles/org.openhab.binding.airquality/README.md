@@ -11,18 +11,20 @@ To use this binding, you first need to [register and get your API token](https:/
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents the air quality information for an observation location.
-It has the `aqi` id.
-Of course, you can add multiple Things, e.g. for measuring AQI for different locations.
+Bridge: The binding supports a bridge to connect to the [AQIcn.org service](https://aqicn.org). A bridge uses the thing ID "api".
+
+Station: Represents the air quality information for an observation location.
+
+Of course, you can add multiple Stations, e.g. for measuring AQI for different locations.
 
 ## Discovery
 
 Local Air Quality can be autodiscovered based on system location.
-You will have complete default configuration with your apiKey.
+You will created a Bridge with your apiKey.
 
-## Binding Configuration
+## Bridge Configuration
 
-The binding configuration only holds the api key : 
+The bridge configuration only holds the api key : 
 
 | Parameter | Description                                                             |
 |-----------|-------------------------------------------------------------------------|
@@ -31,7 +33,7 @@ The binding configuration only holds the api key :
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:
+The 'Station' thing has a few configuration parameters:
 
 | Parameter | Description                                                             |
 |-----------|-------------------------------------------------------------------------|
@@ -115,7 +117,9 @@ you will be provided with the following informations
 airquality.things:
 
 ```java
-airquality:station:local "AirQuality" @ "Krakow" [ location="50.06465,19.94498", refresh=60 ]
+Bridge airquality:api:main "Bridge" [apiKey="xxxyyyzzz"] {
+    station MyHouse "Krakow"[location="50.06465,19.94498", refresh=60]
+}
 ```
 
 airquality.items:

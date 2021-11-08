@@ -14,12 +14,15 @@ package org.openhab.binding.airquality.internal;
 
 import static org.openhab.binding.airquality.internal.AirQualityBindingConstants.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.airquality.internal.api.ApiBridge;
-import org.openhab.binding.airquality.internal.handler.AirQualityHandler;
+import org.openhab.binding.airquality.internal.handler.AirQualityBridgeHandler;
+import org.openhab.binding.airquality.internal.handler.AirQualityStationHandler;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -38,16 +41,16 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class)
 @NonNullByDefault
 public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(BRIDGE_TYPE_API, THING_TYPE_STATION);
+
     private final TimeZoneProvider timeZoneProvider;
     private final LocationProvider locationProvider;
-    private final ApiBridge apiBridge;
 
     @Activate
     public AirQualityHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider,
-            final @Reference LocationProvider locationProvider, final @Reference ApiBridge apiBridge) {
+            final @Reference LocationProvider locationProvider) {
         this.timeZoneProvider = timeZoneProvider;
         this.locationProvider = locationProvider;
-        this.apiBridge = apiBridge;
     }
 
     @Override
@@ -60,7 +63,8 @@ public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         return THING_TYPE_STATION.equals(thingTypeUID)
-                ? new AirQualityHandler(thing, apiBridge, timeZoneProvider, locationProvider)
-                : null;
+                ? new AirQualityStationHandler(thing, timeZoneProvider, locationProvider)
+                : BRIDGE_TYPE_API.equals(thingTypeUID) ? new AirQualityBridgeHandler((Bridge) thing, locationProvider)
+                        : null;
     }
 }
