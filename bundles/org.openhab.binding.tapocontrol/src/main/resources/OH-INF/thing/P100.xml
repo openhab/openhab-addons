@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tapocontrol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- P100 THING-TYPE (SOCKET) -->
+	<thing-type id="P100">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>P100 SmartPlug</label>
+		<description>Tapo Smart Wifi Plug</description>
+		<channel-groups>
+			<channel-group id="actuator" typeId="smartPlug"/>
+			<channel-group id="device" typeId="deviceState"/>
+		</channel-groups>
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:tapo:device"/>
+	</thing-type>
+</thing:thing-descriptions>

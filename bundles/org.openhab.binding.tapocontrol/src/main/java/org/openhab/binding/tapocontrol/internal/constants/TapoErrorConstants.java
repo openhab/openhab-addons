@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tapocontrol.internal.helpers;
+package org.openhab.binding.tapocontrol.internal.constants;
 
 import java.util.Set;
 

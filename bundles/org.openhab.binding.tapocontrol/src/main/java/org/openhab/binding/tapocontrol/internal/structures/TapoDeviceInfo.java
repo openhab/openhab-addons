@@ -10,9 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tapocontrol.internal.device;
+package org.openhab.binding.tapocontrol.internal.structures;
 
-import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstants.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,7 +41,7 @@ public class TapoDeviceInfo {
     private String oemId = "";
     private String specs = "";
     private Boolean deviceOn = false;
-    private Integer onTime = 0;
+    private Number onTime = 0;
     private Boolean overheated = false;
     private Integer brightness = 0;
     private Integer hue = 0;
@@ -49,9 +50,9 @@ public class TapoDeviceInfo {
     private String nickname = "";
     private String location = "";
     private String avatar = "";
-    private Integer timeUsageToday = 0;
-    private Integer timeUsagePast7 = 0;
-    private Integer timeUsagePast30 = 0;
+    private Number timeUsageToday = 0;
+    private Number timeUsagePast7 = 0;
+    private Number timeUsagePast30 = 0;
     private Integer longitude = 0;
     private Integer latitude = 0;
     private Boolean hasSetLocationInfo = false;
@@ -83,15 +84,17 @@ public class TapoDeviceInfo {
         this.hwVer = getString(DEVICE_PROPERTY_HW);
         this.ip = getString(DEVICE_PROPERTY_IP);
         this.model = getString(DEVICE_PROPERTY_MODEL);
+        this.type = getString(DEVICE_PROPERTY_TYPE);
         this.deviceId = getString(DEVICE_PROPERTY_ID);
         this.overheated = getBool(DEVICE_PROPERTY_OVERHEAT);
         this.deviceOn = getBool(DEVICE_PROPERTY_ON);
         this.signalLevel = getInt(DEVICE_PROPERTY_SIGNAL);
-        this.onTime = getInt(DEVICE_PROPERTY_ONTIME);
+        this.onTime = getNumber(DEVICE_PROPERTY_ONTIME);
         this.brightness = getInt(DEVICE_PROPERTY_BRIGHTNES);
         this.hue = getInt(DEVICE_PROPERTY_HUE);
         this.saturation = getInt(DEVICE_PROPERTY_SATURATION);
         this.colorTemp = getInt(DEVICE_PROPERTY_COLORTEMP, BULB_MIN_COLORTEMP);
+        this.region = getString(DEVICE_PROPERTY_REGION);
     }
 
     /***********************************
@@ -169,6 +172,29 @@ public class TapoDeviceInfo {
         return getInt(name, 0);
     }
 
+    /**
+     * 
+     * @param name parameter name
+     * @param defVal - default value;
+     * @return number value
+     */
+    private Number getNumber(String name, Number defVal) {
+        if (jsonObject.has(name)) {
+            return jsonObject.get(name).getAsNumber();
+        } else {
+            return defVal;
+        }
+    }
+
+    /**
+     * 
+     * @param name parameter name
+     * @return number value
+     */
+    private Number getNumber(String name) {
+        return getNumber(name, 0);
+    }
+
     /***********************************
      *
      * GET VALUES
@@ -219,7 +245,7 @@ public class TapoDeviceInfo {
         return !deviceOn;
     }
 
-    public Integer getOnTime() {
+    public Number getOnTime() {
         return onTime;
     }
 

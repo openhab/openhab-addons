@@ -28,11 +28,25 @@
 			<label>Password</label>
 			<description>Tapo-Cloud Login Password</description>
 		</parameter>
-		<parameter name="cloudReconnect" type="integer" min="1" max="168" required="false">
+		<parameter name="cloudDiscovery" type="boolean" required="false">
+			<label>Cloud Discovery</label>
+			<description>Use Cloud Discovery-Service</description>
+			<default>false</default>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="cloudReconnect" type="integer" min="0" max="10080" required="false">
 			<label>Cloud reconnect interval</label>
-			<description>Interval for reconnecting to the Tapo-Cloud. in hours</description>
-			<default>24</default>
+			<description>Interval for reconnecting to the Tapo-Cloud in minutes (default 1440 = 24h / 0 = disabled)</description>
+			<default>1440</default>
 			<advanced>true</advanced>
 		</parameter>
+		<!--
+			<parameter name="udpDiscovery" type="boolean" required="false">
+			<label>UDP Discovery</label>
+			<description>Use UDP Discovery-Service</description>
+			<default>false</default>
+			<advanced>true</advanced>
+			</parameter>
+		-->
 	</config-description>
 </config-description:config-descriptions>

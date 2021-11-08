@@ -12,12 +12,11 @@
  */
 package org.openhab.binding.tapocontrol.internal.helpers;
 
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoErrorConstants.*;
-
 import java.lang.reflect.Field;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.tapocontrol.internal.constants.TapoErrorConstants;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -100,6 +99,16 @@ public class TapoErrorHandler extends Throwable {
      */
     public TapoErrorHandler(Exception ex) {
         raiseError(ex);
+    }
+
+    /**
+     * Constructor
+     * 
+     * @param exception Exception
+     * @param infoMessage optional info-message
+     */
+    public TapoErrorHandler(Exception ex, String infoMessage) {
+        raiseError(ex, infoMessage);
     }
 
     /***********************************

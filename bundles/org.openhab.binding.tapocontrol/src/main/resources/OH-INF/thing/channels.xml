@@ -4,67 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- ############################### BRIDGE ############################### -->
-	<bridge-type id="bridge">
-		<label>TapoControl Cloud-Login</label>
-		<description>TapoControl Cloud Connector</description>
-		<config-description-ref uri="bridge-type:tapo:bridge"/>
-	</bridge-type>
-
-
-	<!-- ############################### DEVICES ############################### -->
-	<!-- P100 THING-TYPE (SOCKET) -->
-	<thing-type id="P100">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
-		</supported-bridge-type-refs>
-
-		<label>Tapo P100 SmartPlug</label>
-		<description>Tapo Plug device with relay</description>
-		<channel-groups>
-			<channel-group id="actuator" typeId="smartPlug"/>
-			<channel-group id="device" typeId="deviceState"/>
-		</channel-groups>
-		<representation-property>deviceName</representation-property>
-
-		<config-description-ref uri="thing-type:tapo:device"/>
-	</thing-type>
-
-	<!-- L510E THING-TYPE (WHITE-LIGHT-BULB) -->
-	<thing-type id="L510_Series">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
-		</supported-bridge-type-refs>
-
-		<label>Tapo L510 Series White-Light-Bulb</label>
-		<description>Tapo Smart White Light Bulb</description>
-		<channel-groups>
-			<channel-group id="actuator" typeId="lightBulb"/>
-			<channel-group id="device" typeId="deviceState"/>
-		</channel-groups>
-		<representation-property>deviceName</representation-property>
-
-		<config-description-ref uri="thing-type:tapo:device"/>
-	</thing-type>
-
-	<!-- L530E THING-TYPE (COLOR-LIGHT-BULB) -->
-	<thing-type id="L530_Series">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
-		</supported-bridge-type-refs>
-
-		<label>Tapo L530 Series Color-Light-Bulb</label>
-		<description>Tapo Smart Multicolor Light Bulb</description>
-		<channel-groups>
-			<channel-group id="actuator" typeId="colorBulb"/>
-			<channel-group id="device" typeId="deviceState"/>
-		</channel-groups>
-		<representation-property>deviceName</representation-property>
-
-		<config-description-ref uri="thing-type:tapo:device"/>
-	</thing-type>
-
-
 	<!-- ############################### CHANNEL-GROUPS ############################### -->
 
 	<!-- CHANNEL GROUP TYPES -->
@@ -75,6 +14,7 @@
 		<channels>
 			<channel id="wifiSignal" typeId="system.signal-strength"/>
 			<channel id="onTime" typeId="ontime"/>
+			<channel id="overheated" typeId="overheated"/>
 		</channels>
 	</channel-group-type>
 
@@ -166,17 +106,17 @@
 		<item-type>Number:Time</item-type>
 		<label>On-Time</label>
 		<description>Number of seconds since the device was powered on</description>
-		<state readOnly="true" pattern="%.0f s">
-		</state>
+		<category>Time</category>
+		<state readOnly="true" pattern="%s %unit%"/>
 	</channel-type>
 
 	<!-- overheated -->
 	<channel-type id="overheated" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Device Overheated</label>
-		<description>1 if device is overheated</description>
-		<state readOnly="true">
-		</state>
+		<description>ON if device is overheated</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
 	</channel-type>
 
 

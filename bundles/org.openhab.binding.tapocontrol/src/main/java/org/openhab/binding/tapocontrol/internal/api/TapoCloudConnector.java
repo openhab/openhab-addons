@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.tapocontrol.internal.api;
 
-import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstants.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoErrorConstants.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorConstants.*;
 
 import java.util.concurrent.TimeoutException;
 
@@ -24,9 +24,9 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.tapocontrol.internal.device.TapoBridgeHandler;
 import org.openhab.binding.tapocontrol.internal.helpers.PayloadBuilder;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
-import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,9 +42,10 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class TapoCloudConnector {
     private final Logger logger = LoggerFactory.getLogger(TapoCloudConnector.class);
-    private final TapoErrorHandler tapoError;
+    private final TapoBridgeHandler bridge;
     private final Gson gson = new Gson();
     private final HttpClient httpClient;
+
     private String token = "";
     private String url = TAPO_CLOUD_URL;
     private String uid;
@@ -53,23 +54,19 @@ public class TapoCloudConnector {
      * INIT CLASS
      * 
      */
-    public TapoCloudConnector(Thing thing, HttpClient httpClient) {
+    public TapoCloudConnector(TapoBridgeHandler bridge, HttpClient httpClient) {
+        this.bridge = bridge;
         this.httpClient = httpClient;
-        this.tapoError = new TapoErrorHandler();
-        this.uid = thing.getUID().getAsString();
+        this.uid = bridge.getUID().getAsString();
     }
 
     /**
-     * HANDLE ERROR
+     * handle error
      * 
-     * @param te TapoErrorHandler
+     * @param tapoError TapoErrorHandler
      */
-    protected void onFailure(TapoErrorHandler te) {
-        this.tapoError.set(te);
-    }
-
-    protected void onFailure(Exception ex) {
-        this.tapoError.raiseError(ex);
+    protected void handleError(TapoErrorHandler tapoError) {
+        this.bridge.setError(tapoError);
     }
 
     /***********************************
@@ -86,7 +83,6 @@ public class TapoCloudConnector {
      * @return true if login was successfull
      */
     public Boolean login(String username, String password) {
-        tapoError.reset(); // reset ErrorHandler
         this.token = getToken(username, password, TAPO_TERMINAL_UUID);
         this.url = TAPO_CLOUD_URL + "?token=" + token;
         return this.token != "";
@@ -138,15 +134,15 @@ public class TapoCloudConnector {
                 } else {
                     /* return errorcode from device */
                     String msg = jsonObject.get("msg").getAsString();
-                    tapoError.raiseError(errorCode, msg);
+                    handleError(new TapoErrorHandler(errorCode, msg));
                     logger.trace("cloud returns error: '{}'", rBody);
                 }
             } catch (Exception e) {
-                tapoError.raiseError(e, ERR_JSON_DECODE_FAIL_MSG);
+                handleError(new TapoErrorHandler(e, ERR_JSON_DECODE_FAIL_MSG));
                 logger.trace("unexpected json-response '{}'", rBody);
             }
         } else {
-            tapoError.raiseError(ERR_HTTP_RESPONSE, ERR_HTTP_RESPONSE_MSG);
+            handleError(new TapoErrorHandler(ERR_HTTP_RESPONSE, ERR_HTTP_RESPONSE_MSG));
             logger.warn("invalid response while login");
             token = "";
         }
@@ -189,7 +185,7 @@ public class TapoCloudConnector {
                     return result.getAsJsonArray("deviceList");
                 } else {
                     /* return errorcode from device */
-                    tapoError.raiseError(errorCode, "device answers with errorcode");
+                    handleError(new TapoErrorHandler(errorCode, "device answers with errorcode"));
                     logger.trace("cloud returns error: '{}'", rBody);
                 }
             } catch (Exception e) {
@@ -215,8 +211,6 @@ public class TapoCloudConnector {
      */
     @Nullable
     protected ContentResponse sendCloudRequest(String url, String payload) {
-        tapoError.reset();
-
         Request httpRequest = httpClient.newRequest(url).method(HttpMethod.POST.toString());
 
         /* set header */
@@ -231,13 +225,13 @@ public class TapoCloudConnector {
             return httpResponse;
         } catch (InterruptedException e) {
             logger.debug("({}) sending request interrupted: {}", uid, e.toString());
-            tapoError.raiseError(e);
+            handleError(new TapoErrorHandler(e));
         } catch (TimeoutException e) {
             logger.debug("({}) sending request timeout: {}", uid, e.toString());
-            tapoError.raiseError(ERR_CONNECT_TIMEOUT, e.toString());
+            handleError(new TapoErrorHandler(ERR_CONNECT_TIMEOUT, e.toString()));
         } catch (Exception e) {
             logger.debug("({}) sending request failed: {}", uid, e.toString());
-            tapoError.raiseError(e);
+            handleError(new TapoErrorHandler(e));
         }
         return null;
     }
@@ -247,13 +241,4 @@ public class TapoCloudConnector {
      * GET RESULTS
      *
      ************************************/
-
-    /**
-     * ErrorMessage
-     * 
-     * @return String Error text
-     */
-    public String errorMessage() {
-        return tapoError.getMessage();
-    }
 }

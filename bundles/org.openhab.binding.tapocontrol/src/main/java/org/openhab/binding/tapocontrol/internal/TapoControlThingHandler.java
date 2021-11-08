@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.tapocontrol.internal;
 
-import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstants.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,9 +24,11 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.tapocontrol.internal.device.TapoBridgeHandler;
 import org.openhab.binding.tapocontrol.internal.device.TapoSmartBulb;
 import org.openhab.binding.tapocontrol.internal.device.TapoSmartPlug;
+import org.openhab.binding.tapocontrol.internal.device.TapoUniversalDevice;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -56,13 +59,22 @@ public class TapoControlThingHandler extends BaseThingHandlerFactory {
     private final Set<TapoBridgeHandler> accountHandlers = new HashSet<>();
     private final HttpClient httpClient;
 
-    @Activate // @Reference TapoCredentials credentials,
-    // public TapoControlThingHandler(Map<String, Object> properties, @Reference final HttpClientFactory
-    // httpClientFactory) {
+    @Activate
     public TapoControlThingHandler(@Reference final HttpClientFactory httpClientFactory) {
         logger.debug("thinghandler created");
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+
+        // disabled and using new HttpClient due issues with common client
+        // httpClient = httpClientFactory.getCommonHttpClient();
+        logger.trace("creating new httpClient");
+        httpClient = new HttpClient(new SslContextFactory.Client());
         httpClient.setFollowRedirects(false);
+        httpClient.setMaxConnectionsPerDestination(HTTP_MAX_CONNECTIONS);
+        httpClient.setMaxRequestsQueuedPerDestination(HTTP_MAX_QUEUED_REQUESTS);
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            logger.error("cannot start httpClient");
+        }
     }
 
     /**
@@ -70,6 +82,9 @@ public class TapoControlThingHandler extends BaseThingHandlerFactory {
      */
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+        if (thingTypeUID.equals(UNIVERSAL_THING_TYPE)) {
+            return true;
+        }
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
@@ -88,13 +103,16 @@ public class TapoControlThingHandler extends BaseThingHandlerFactory {
             return bridgeHandler;
         } else if (SUPPORTED_SMART_PLUG_UIDS.contains(thingTypeUID)) {
             logger.trace("returns new TapoSmartPLUG '{}'", thingTypeUID.toString());
-            return new TapoSmartPlug(thing, httpClient);
+            return new TapoSmartPlug(thing);
         } else if (SUPPORTED_WHITE_BULB_UIDS.contains(thingTypeUID)) {
             logger.trace("returns new TapoSmartBULB '{}'", thingTypeUID.toString());
-            return new TapoSmartBulb(thing, httpClient);
+            return new TapoSmartBulb(thing);
         } else if (SUPPORTED_COLOR_BULB_UIDS.contains(thingTypeUID)) {
             logger.trace("returns new TapoSmartBULB '{}'", thingTypeUID.toString());
-            return new TapoSmartBulb(thing, httpClient);
+            return new TapoSmartBulb(thing);
+        } else if (thingTypeUID.equals(UNIVERSAL_THING_TYPE)) {
+            logger.trace("returns new TapoUniversalDevice '{}'", thingTypeUID.toString());
+            return new TapoUniversalDevice(thing);
         } else {
             logger.error("ThingHandler not found for {}", thingTypeUID.toString());
         }

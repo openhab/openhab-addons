@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.tapocontrol.internal.helpers;
 
-import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstants.*;
+import javax.measure.Unit;
+import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -20,6 +21,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 
 /**
@@ -78,6 +80,55 @@ public class TapoUtils {
         mac = mac.replace(":", "");
         mac = mac.replace(".", "");
         return mac;
+    }
+
+    /**
+     * HEX-STRING to byte convertion
+     */
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        try {
+            for (int i = 0; i < len; i += 2) {
+                data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
+            }
+        } catch (Exception e) {
+        }
+        return data;
+    }
+
+    /**
+     * Return Boolean from string
+     * 
+     * @param s - string to be converted
+     * @param defVal - Default Value
+     */
+    public Boolean stringToBool(@Nullable String s, boolean defVal) {
+        if (s == null) {
+            return defVal;
+        }
+        try {
+            return Boolean.parseBoolean(s);
+        } catch (Exception e) {
+            return defVal;
+        }
+    }
+
+    /**
+     * Return Integer from string
+     * 
+     * @param s - string to be converted
+     * @param defVal - Default Value
+     */
+    public Integer stringToInteger(@Nullable String s, Integer defVal) {
+        if (s == null) {
+            return defVal;
+        }
+        try {
+            return Integer.valueOf(s);
+        } catch (Exception e) {
+            return defVal;
+        }
     }
 
     /************************************
@@ -154,12 +205,23 @@ public class TapoUtils {
      * @param hue integer hue-color
      * @param saturation integer saturation
      * @param brightness integer brightness
-     * @returnvHSBType
+     * @return HSBType
      */
     public static HSBType getHSBType(Integer hue, Integer saturation, Integer brightness) {
         DecimalType h = new DecimalType(hue);
         PercentType s = new PercentType(saturation);
         PercentType b = new PercentType(brightness);
         return new HSBType(h, s, b);
+    }
+
+    /**
+     * Return QuantityType with Time
+     * 
+     * @param numVal Number with value
+     * @param unit TimeUnit (Unit<Time>)
+     * @return QuantityTime<Time>
+     */
+    public static QuantityType<Time> getQuantityType(@Nullable Number numVal, Unit<Time> unit) {
+        return new QuantityType<>((numVal != null ? numVal : 0), unit);
     }
 }

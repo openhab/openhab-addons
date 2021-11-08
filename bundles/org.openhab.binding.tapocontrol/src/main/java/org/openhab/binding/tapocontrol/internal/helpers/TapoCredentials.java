@@ -212,4 +212,13 @@ public class TapoCredentials {
             return new byte[0];
         }
     }
+
+    /**
+     * CHECK IF CREDENTIALS ARE SET
+     * 
+     * @return
+     */
+    public Boolean areSet() {
+        return !(this.username.isEmpty() || this.password.isEmpty());
+    }
 }

@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.tapocontrol.internal;
 
-import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstants.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import java.util.HashMap;
@@ -50,12 +51,12 @@ public class TapoDiscoveryService extends AbstractDiscoveryService {
     /**
      * INIT CLASS
      * 
-     * @param accountHandler
+     * @param bridgeHandler
      */
-    public TapoDiscoveryService(TapoBridgeHandler accountHandler) {
+    public TapoDiscoveryService(TapoBridgeHandler bridgeHandler) {
         super(SUPPORTED_THING_TYPES_UIDS, TAPO_DISCOVERY_TIMEOUT_MS, false);
         logger.debug("Initializing TapoDiscoveryService");
-        this.bridge = accountHandler;
+        this.bridge = bridgeHandler;
     }
 
     public void activate() {
@@ -130,7 +131,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService {
         try {
             String deviceModel = getDeviceModel(device);
             String label = getDeviceLabel(device);
-            String name = device.get(CLOUD_PROPERTY_NAME).getAsString();
+            // String name = device.get(CLOUD_PROPERTY_NAME).getAsString();
             String deviceMAC = device.get(CLOUD_PROPERTY_MAC).getAsString();
             ThingUID bridgeUID = bridge.getThing().getUID();
             ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, deviceModel);

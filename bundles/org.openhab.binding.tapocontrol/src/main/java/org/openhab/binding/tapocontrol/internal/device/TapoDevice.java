@@ -10,11 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.tapocontrol.internal.device;
 
-import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstants.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoErrorConstants.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorConstants.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import java.io.IOException;
@@ -24,12 +24,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.tapocontrol.internal.TapoControlConfiguration;
 import org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector;
-import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
-import org.openhab.core.thing.Bridge;
+import org.openhab.binding.tapocontrol.internal.structures.TapoDeviceConfiguration;
+import org.openhab.binding.tapocontrol.internal.structures.TapoDeviceInfo;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -49,25 +47,22 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class TapoDevice extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(TapoDevice.class);
-    private final HttpClient httpClient;
+    protected final TapoErrorHandler deviceError = new TapoErrorHandler();
     protected final String uid;
-    private String ipAddress = "";
-    // protected @NonNullByDefault({}) TapoDeviceConnector connector;
-    protected @NonNullByDefault({}) TapoControlConfiguration config;
+    protected TapoDeviceConfiguration config;
     protected @Nullable ScheduledFuture<?> pollingJob;
     protected @Nullable TapoDeviceConnector connector;
-    protected TapoCredentials credentials;
+    protected @Nullable TapoBridgeHandler bridge;
 
     /**
      * Constructor
      *
      * @param thing Thing object representing device
      */
-    public TapoDevice(Thing thing, HttpClient httpClient) {
+    public TapoDevice(Thing thing) {
         super(thing);
+        this.config = new TapoDeviceConfiguration(thing);
         this.uid = getThing().getUID().getAsString();
-        this.credentials = new TapoCredentials();
-        this.httpClient = httpClient;
     }
 
     /***********************************
@@ -82,27 +77,15 @@ public abstract class TapoDevice extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("initialize thing-device ({})", uid);
-        String username = "";
-        String password = "";
         try {
-            Bridge bridge = this.getBridge();
-            username = bridge.getConfiguration().get(CONFIG_EMAIL).toString();
-            password = bridge.getConfiguration().get(CONFIG_PASS).toString();
-            this.credentials.setCredectials(username, password);
-            this.ipAddress = getThing().getConfiguration().get(CONFIG_DEVICE_IP).toString();
+            this.bridge = (TapoBridgeHandler) getBridge().getHandler();
+            this.config.loadSettings();
         } catch (Exception e) {
             logger.debug("({}) configuration error : {}", uid, e.getMessage());
         }
         TapoErrorHandler configError = checkSettings();
         if (!configError.hasError()) {
-            this.connector = new TapoDeviceConnector(this, credentials, httpClient);
-
-            // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-            updateStatus(ThingStatus.UNKNOWN);
-
-            // background initialization (delay it a little bit):
-            scheduler.schedule(this::connect, 2000, TimeUnit.MILLISECONDS);
-            startScheduler();
+            activateDevice();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configError.getMessage());
         }
@@ -123,6 +106,20 @@ public abstract class TapoDevice extends BaseThingHandler {
     }
 
     /**
+     * ACTIVATE DEVICE
+     */
+    private void activateDevice() {
+        this.connector = new TapoDeviceConnector(this, bridge);
+
+        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
+        updateStatus(ThingStatus.UNKNOWN);
+
+        // background initialization (delay it a little bit):
+        scheduler.schedule(this::connect, 2000, TimeUnit.MILLISECONDS);
+        startScheduler();
+    }
+
+    /**
      * CHECK SETTINGS
      * 
      * @return TapoErrorHandler with configuration-errors
@@ -130,20 +127,19 @@ public abstract class TapoDevice extends BaseThingHandler {
     protected TapoErrorHandler checkSettings() {
         TapoErrorHandler configErr = new TapoErrorHandler();
         /* check bridge */
-        Bridge bridge = getBridge();
-        if (bridge == null || bridge.getHandler() == null || !(bridge.getHandler() instanceof TapoBridgeHandler)) {
+        if (bridge == null || !(bridge instanceof TapoBridgeHandler)) {
             logger.error("({}) Device has no brigde", uid);
             configErr.raiseError(ERR_NO_BRIDGE);
             return configErr;
         }
         /* check ip-address */
-        if (!this.ipAddress.matches(IPV4_REGEX)) {
-            logger.error("({}) IP-Address not matching : '{}'", uid, ipAddress);
+        if (!config.ipAddress.matches(IPV4_REGEX)) {
+            logger.error("({}) IP-Address not matching : '{}'", uid, config.ipAddress);
             configErr.raiseError(ERR_CONF_IP);
             return configErr;
         }
         /* check credentials */
-        if (this.credentials.getUsername().isEmpty() || this.credentials.getPassword().isEmpty()) {
+        if (!bridge.getCredentials().areSet()) {
             logger.error("({}) Password or Username not set (bridge)", uid);
             configErr.raiseError(ERR_CONF_CREDENTIALS);
             return configErr;
@@ -157,10 +153,10 @@ public abstract class TapoDevice extends BaseThingHandler {
      * @throws IOException if an error code was set in the response object
      */
     protected void checkErrors() throws IOException {
-        final Integer errorCode = connector.getError().getCode();
+        final Integer errorCode = deviceError.getCode();
 
         if (errorCode != 0) {
-            throw new IOException("Error (" + errorCode + "): " + connector.getError().getMessage());
+            throw new IOException("Error (" + errorCode + "): " + deviceError.getMessage());
         }
     }
 
@@ -174,8 +170,7 @@ public abstract class TapoDevice extends BaseThingHandler {
      * Start scheduler
      */
     protected void startScheduler() {
-        String interval = getThing().getConfiguration().get(CONFIG_UPDATE_INTERVAL).toString();
-        Integer pollingInterval = Integer.valueOf(interval);
+        Integer pollingInterval = this.config.pollingInterval;
 
         if (pollingInterval > 0) {
             if (pollingInterval < POLLING_MIN_INTERVAL_S) {
@@ -206,6 +201,30 @@ public abstract class TapoDevice extends BaseThingHandler {
     protected void schedulerAction() {
         logger.trace("({}) schedulerAction", uid);
         queryDeviceInfo();
+    }
+
+    /***********************************
+     *
+     * ERROR HANDLER
+     *
+     ************************************/
+    /**
+     * return device Error
+     * 
+     * @return
+     */
+    public TapoErrorHandler getError() {
+        return this.deviceError;
+    }
+
+    /**
+     * set device error
+     * 
+     * @param tapoError TapoErrorHandler-Object
+     */
+    public void setError(TapoErrorHandler tapoError) {
+        this.deviceError.set(tapoError);
+        handleConnectionState();
     }
 
     /***********************************
@@ -271,11 +290,20 @@ public abstract class TapoDevice extends BaseThingHandler {
 
     /**
      * query device Properties
-     * 
      */
     public void queryDeviceInfo() {
+        queryDeviceInfo(false);
+    }
+
+    /**
+     * query device Properties
+     * 
+     * @param ignoreGap ignore gap to last query. query anyway (force)
+     */
+    public void queryDeviceInfo(boolean ignoreGap) {
+        deviceError.reset();
         if (connector.loggedIn()) {
-            connector.queryInfo();
+            connector.queryInfo(ignoreGap);
         } else {
             logger.debug("({}) tried to query DeviceInfo but not loggedIn", uid);
             connect();
@@ -301,6 +329,14 @@ public abstract class TapoDevice extends BaseThingHandler {
     }
 
     /**
+     * Handle full responsebody received from connector
+     * 
+     * @param responseBody
+     */
+    public void responsePasstrough(String responseBody) {
+    }
+
+    /**
      * UPDATE PROPERTIES
      * 
      * If only one property must be changed, there is also a convenient method
@@ -316,7 +352,6 @@ public abstract class TapoDevice extends BaseThingHandler {
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, deviceInfo.getHardwareVersion());
         properties.put(Thing.PROPERTY_MODEL_ID, deviceInfo.getModel());
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, deviceInfo.getSerial());
-        // properties.put(PROPERTY_WIFI_LEVEL, deviceInfo.getSignalLevel().toString());
         updateProperties(properties);
     }
 
@@ -341,6 +376,7 @@ public abstract class TapoDevice extends BaseThingHandler {
      * 
      */
     public Boolean connect() {
+        deviceError.reset();
         Boolean loginSuccess = false;
 
         try {
@@ -348,8 +384,7 @@ public abstract class TapoDevice extends BaseThingHandler {
             if (loginSuccess) {
                 connector.queryInfo();
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        connector.getError().getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
             }
         } catch (Exception e) {
             updateStatus(ThingStatus.UNKNOWN);
@@ -369,7 +404,7 @@ public abstract class TapoDevice extends BaseThingHandler {
      */
     public void handleConnectionState() {
         ThingStatus deviceState = getThing().getStatus();
-        Integer errorCode = connector.getError().getCode();
+        Integer errorCode = deviceError.getCode();
 
         if (errorCode == 0) {
             if (deviceState != ThingStatus.ONLINE) {
@@ -378,12 +413,12 @@ public abstract class TapoDevice extends BaseThingHandler {
         } else if (LIST_REAUTH_ERRORS.contains(errorCode)) {
             connect();
         } else if (LIST_COMMUNICATION_ERRORS.contains(errorCode)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, connector.getError().getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
             disconnect();
         } else if (LIST_CONFIGURATION_ERRORS.contains(errorCode)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, connector.getError().getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, deviceError.getMessage());
         } else {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, connector.getError().getMessage());
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, deviceError.getMessage());
         }
     }
 
@@ -391,7 +426,7 @@ public abstract class TapoDevice extends BaseThingHandler {
      * Return IP-Address of device
      */
     public String getIpAddress() {
-        return this.ipAddress;
+        return this.config.ipAddress;
     }
 
     /***********************************

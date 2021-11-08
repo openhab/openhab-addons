@@ -6,7 +6,7 @@ This binding adds support to control Tapo (Copyright © TP-Link Corporation Limi
 
 The following Tapo-Devices are supported
 
-### P100 SmartPlug (WiFi)
+### P100/P105 SmartPlug (WiFi)
 
 * Power On/Off
 * Wi-Fi signal (SignalStrength)
@@ -26,20 +26,14 @@ The following Tapo-Devices are supported
 * Brightnes (Dimmer)  0-100 %
 * ColorTemperature (Number) 2500-6500 K
 * Color (Color)
-* Wi-Fi signal (SignalStrenght)
+* Wi-Fi signal (SignalStrength)
 * On-Time (Time in seconds device is switched on)
 
 ## Prerequisites
 
 Before using Smart Plugs with openHAB the devices must be connected to the Wi-Fi network.
 This can be done using the Tapo provided mobile app.
-
-## Binding Configuration
-
-Binding needs your Tapo eMail and password to connect to the Tapo-Cloud.
-This is used to create the handshake (cookie) to act with your devices and device discovering.
-To enter your cloud details add a "TapoControl Cloud-Login"-Thing
-In the configuration page of the bridge-thing, enter your eMail and password.
+You need to setup a bridge (Cloud-Login) to commiunicate with your devices.
 
 ## Discovery
 
@@ -50,6 +44,7 @@ You need to know the IP-Adress of your device. This must be set manually in the 
 ## Bridge Configuration
 
 The bridge needs to be configured with by `username` and `password` (Tapo-Cloud login) .
+This is used for device discovery and to create a handshake (cookie) to act with your devices over the local network.
 
 The thing has the following configuration parameters:
 
@@ -76,12 +71,12 @@ All devices support some of the following channels:
 
 | group     | channel          |type                    | description                  | things supporting this channel  |
 |-----------|----------------- |------------------------|------------------------------|---------------------------------|
-| actuator  | output           | Switch                 | Power device on or off       | P100                            |
+| actuator  | output           | Switch                 | Power device on or off       | P100, P105                      |
 |           | brightness       | Dimmer                 | Brightness 0-100%            | L510, L530                      |
 |           | colorTemperature | Number                 | White-Color-Temp 2500-6500K  | L510, L530                      |
 |           | color            | Color                  | Color                        | L530                            |
-| device    | wifiSignal       | system.signal-strength | WiFi-quality-level           | P100, L510, L530                |
-|           | onTime           | Number                 | seconds output is on         | P100, L510, L530                |
+| device    | wifiSignal       | system.signal-strength | WiFi-quality-level           | P100, P105, L510, L530          |
+|           | onTime           | QuantityType <Time>    | seconds output is on         | P100, P105, L510, L530          |
 
 ## Channel Refresh
 

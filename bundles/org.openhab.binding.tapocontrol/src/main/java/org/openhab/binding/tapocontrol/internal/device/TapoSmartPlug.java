@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.tapocontrol.internal.device;
 
-import static org.openhab.binding.tapocontrol.internal.TapoControlBindingConstants.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.tapocontrol.internal.structures.TapoDeviceInfo;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -39,8 +40,8 @@ public class TapoSmartPlug extends TapoDevice {
      *
      * @param thing Thing object representing device
      */
-    public TapoSmartPlug(Thing thing, HttpClient httpClient) {
-        super(thing, httpClient);
+    public TapoSmartPlug(Thing thing) {
+        super(thing);
     }
 
     @Override
@@ -57,16 +58,16 @@ public class TapoSmartPlug extends TapoDevice {
         if (command instanceof RefreshType) {
             refreshInfo = true;
         } else if (command == OnOffType.ON) {
-            connector.sendDeviceCommand("device_on", true);
+            connector.sendDeviceCommand(DEVICE_PROPERTY_ON, true);
             refreshInfo = true;
         } else if (command == OnOffType.OFF) {
-            connector.sendDeviceCommand("device_on", false);
+            connector.sendDeviceCommand(DEVICE_PROPERTY_ON, false);
             refreshInfo = true;
         }
 
         /* refreshInfo */
         if (refreshInfo) {
-            queryDeviceInfo();
+            queryDeviceInfo(true);
         }
     }
 
@@ -81,8 +82,8 @@ public class TapoSmartPlug extends TapoDevice {
         publishState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_OUTPUT), getOnOffType(deviceInfo.isOn()));
         publishState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_WIFI_STRENGTH),
                 getDecimalType(deviceInfo.getSignalLevel()));
-        publishState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_ONTIME), getDecimalType(deviceInfo.getOnTime()));
-        publishState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_OVERHEAT),
-                getDecimalType(deviceInfo.isOverheated() ? 1 : 0));
+        publishState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_ONTIME),
+                getQuantityType(deviceInfo.getOnTime(), Units.SECOND));
+        publishState(getChannelID(CHANNEL_GROUP_DEVICE, CHANNEL_OVERHEAT), getOnOffType(deviceInfo.isOverheated()));
     }
 }
