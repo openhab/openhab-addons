@@ -19,7 +19,6 @@ import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,6 +29,8 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,71 +44,88 @@ import com.google.gson.JsonObject;
  * @author Christian Wild - Initial contribution
  */
 @NonNullByDefault
-public class TapoDiscoveryService extends AbstractDiscoveryService {
+public class TapoDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(TapoDiscoveryService.class);
     protected @Nullable ScheduledFuture<?> scanJob;
-    protected final TapoBridgeHandler bridge;
+    protected @Nullable TapoBridgeHandler bridge;
+
+    /***********************************
+     *
+     * INITIALIZATION
+     *
+     ************************************/
 
     /**
      * INIT CLASS
      * 
      * @param bridgeHandler
      */
-    public TapoDiscoveryService(TapoBridgeHandler bridgeHandler) {
-        super(SUPPORTED_THING_TYPES_UIDS, TAPO_DISCOVERY_TIMEOUT_MS, false);
-        logger.debug("Initializing TapoDiscoveryService");
-        this.bridge = bridgeHandler;
+    public TapoDiscoveryService() {
+        super(SUPPORTED_THING_TYPES_UIDS, TAPO_DISCOVERY_TIMEOUT_S, false);
     }
 
+    /**
+     * activate
+     */
     public void activate() {
         activate(new HashMap<>());
     }
 
+    /**
+     * deactivate
+     */
     @Override
     public void deactivate() {
+        stopScheduler(this.scanJob);
         super.deactivate();
     }
 
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof TapoBridgeHandler) {
+            this.bridge = (TapoBridgeHandler) handler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return this.bridge;
+    }
+
+    /***********************************
+     *
+     * SCAN HANDLING
+     *
+     ************************************/
+
     /**
-     * START SCAN MANUALLY
+     * Start scan manually
      */
     @Override
     public void startScan() {
-        logger.debug("startScan");
         removeOlderResults(getTimestampOfLastScan());
         try {
             JsonArray jsonArray = bridge.getDeviceList();
             handleCloudDevices(jsonArray);
-            logger.debug("scan finished");
         } catch (Exception e) {
-            logger.error("Error scanning for devices", e);
+            logger.debug("Error scanning for devices", e);
         }
     }
 
     /**
-     * STOP SCAN
+     * Stop Scan
      */
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        logger.debug("stopScan");
     }
 
     /**
-     * ABORT SCAN
+     * Abort Scan
      */
     @Override
     public synchronized void abortScan() {
         super.abortScan();
-        logger.debug("abortScan");
-    }
-
-    /**
-     * START DEVICE SCAN DELAYED
-     */
-    public void startDelayedScan() {
-        Long delay = 2000L;
-        scanJob = scheduler.scheduleWithFixedDelay(this::startScanOnce, delay, delay, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -116,9 +134,26 @@ public class TapoDiscoveryService extends AbstractDiscoveryService {
      */
     protected void startScanOnce() {
         this.startScan();
-        scanJob.cancel(false);
-        scanJob = null;
+        stopScheduler(this.scanJob);
     }
+
+    /**
+     * Stop scheduler
+     * 
+     * @param scheduler ScheduledFeature<?> which schould be stopped
+     */
+    protected void stopScheduler(@Nullable ScheduledFuture<?> scheduler) {
+        if (scheduler != null) {
+            scheduler.cancel(true);
+            scheduler = null;
+        }
+    }
+
+    /***********************************
+     *
+     * handle Results
+     *
+     ************************************/
 
     /**
      * CREATE DISCOVERY RESULT
@@ -152,7 +187,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService {
                     .build();
             return discoveryResult;
         } catch (Exception e) {
-            logger.error("error creating discoveryResult", e);
+            logger.debug("error creating discoveryResult", e);
             return DiscoveryResultBuilder.create(new ThingUID(BINDING_ID, "")).build();
         }
     }
@@ -178,7 +213,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService {
                 }
             }
         } catch (Exception e) {
-            logger.error("error handlling CloudDevices", e);
+            logger.debug("error handlling CloudDevices", e);
         }
     }
 
@@ -197,7 +232,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService {
             deviceModel = deviceModel.replace(" ", "_");
             return deviceModel;
         } catch (Exception e) {
-            logger.error("error getDeviceModel", e);
+            logger.debug("error getDeviceModel", e);
             return "";
         }
     }
@@ -223,19 +258,8 @@ public class TapoDiscoveryService extends AbstractDiscoveryService {
             }
             return DEVICE_VENDOR + " " + deviceModel + " " + deviceLabel;
         } catch (Exception e) {
-            logger.error("error getDeviceLabel", e);
+            logger.debug("error getDeviceLabel", e);
             return "";
         }
     }
-
-    /*
-     * private static final String ARP_GET_IP_HW = "arp -a";
-     * 
-     * public String getARPTable(String cmd) throws IOException {
-     * Scanner s = new Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A");
-     * return s.hasNext() ? s.next() : "";
-     * }
-     * 
-     * System.out.println(getARPTable(ARP_GET_IP_HW ));
-     */
 }

@@ -12,29 +12,31 @@
  */
 package org.openhab.binding.tapocontrol.internal.helpers;
 
+import static java.util.Base64.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * MimeEncoder
  *
- * @author K4CZP3R - Initial contribution
+ * @author Christian Wild - Initial contribution
  */
 @NonNullByDefault
 public class MimeEncode {
 
     public byte[] encode(byte[] src) {
-        return java.util.Base64.getMimeEncoder().encode(src);
+        return getMimeEncoder().encode(src);
     }
 
     public String encodeToString(byte[] src) {
-        return java.util.Base64.getMimeEncoder().encodeToString(src);
+        return getMimeEncoder().encodeToString(src);
     }
 
     public byte[] decode(byte[] src) {
-        return java.util.Base64.getMimeDecoder().decode(src);
+        return getMimeDecoder().decode(src);
     }
 
     public byte[] decode(String src) {
-        return java.util.Base64.getMimeDecoder().decode(src);
+        return getMimeDecoder().decode(src);
     }
 }

@@ -68,7 +68,7 @@ public final class TapoBridgeConfiguration {
             udpDiscoveryEnabled = Boolean.parseBoolean(config.get(CONFIG_DISCOVERY_UDP).toString());
             cloudReconnectInterval = Integer.valueOf(config.get(CONFIG_CLOUD_UPDATE_INTERVAL).toString());
         } catch (Exception e) {
-            logger.error("{} error reading configuration: '{}'", bridge.getUID().toString(), e.getMessage());
+            logger.warn("{} error reading configuration: '{}'", bridge.getUID().toString(), e.getMessage());
         }
     }
 }

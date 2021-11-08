@@ -57,7 +57,7 @@ public final class TapoDeviceConfiguration {
             this.ipAddress = config.get(CONFIG_DEVICE_IP).toString();
             this.pollingInterval = Integer.valueOf(config.get(CONFIG_UPDATE_INTERVAL).toString());
         } catch (Exception e) {
-            logger.error("{} error reading device-configuration: '{}'", device.getUID().toString(), e.getMessage());
+            logger.warn("{} error reading device-configuration: '{}'", device.getUID().toString(), e.getMessage());
         }
     }
 }

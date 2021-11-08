@@ -44,9 +44,9 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
     private final TapoDevice device;
     private TapoDeviceInfo deviceInfo;
     private Gson gson;
-    private Long lastQuery = 0L;
-    private Long lastSent = 0L;
-    private Long lastLogin = 0L;
+    private long lastQuery = 0L;
+    private long lastSent = 0L;
+    private long lastLogin = 0L;
 
     /**
      * INIT CLASS
@@ -73,9 +73,9 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
      */
     public boolean login() {
         if (this.pingDevice()) {
-            logger.debug("({}) sending login to url '{}'", uid, deviceURL);
+            logger.trace("({}) sending login to url '{}'", uid, deviceURL);
 
-            Long now = System.currentTimeMillis();
+            long now = System.currentTimeMillis();
             if (now > this.lastLogin + TAPO_LOGIN_MIN_GAP_MS) {
                 this.lastLogin = now;
                 unsetToken();
@@ -123,7 +123,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
      * @param plBuilder Payloadbuilder with unencrypted payload
      */
     public void sendCustomPayload(PayloadBuilder plBuilder) {
-        Long now = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
         if (now > this.lastSent + TAPO_SEND_MIN_GAP_MS) {
             String payload = plBuilder.getPayload();
             sendSecurePasstrhroug(payload, DEVICE_CMD_CUSTOM);
@@ -139,7 +139,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
      * @param value Value to send to control
      */
     public void sendDeviceCommand(String name, Object value) {
-        Long now = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
         if (now > this.lastSent + TAPO_SEND_MIN_GAP_MS) {
             this.lastSent = now;
 
@@ -161,7 +161,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
      * @param map HashMap<String, Object> (name, value of parameter)
      */
     public void sendDeviceCommands(HashMap<String, Object> map) {
-        Long now = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
         if (now > this.lastSent + TAPO_SEND_MIN_GAP_MS) {
             this.lastSent = now;
 
@@ -193,7 +193,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
      */
     public void queryInfo(boolean ignoreGap) {
         logger.trace("({}) DeviceConnetor_queryInfo from '{}'", uid, deviceURL);
-        Long now = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
         if (ignoreGap || now > this.lastQuery + TAPO_SEND_MIN_GAP_MS) {
             this.lastQuery = now;
 
@@ -236,6 +236,8 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
 
     /**
      * Handle SuccessResponse (setDeviceInfo)
+     * 
+     * @param responseBody String with responseBody from device
      */
     @Override
     protected void handleSuccessResponse(String responseBody) {
@@ -254,6 +256,8 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
 
     /**
      * handle JsonResponse (getDeviceInfo)
+     * 
+     * @param responseBody String with responseBody from device
      */
     @Override
     protected void handleDeviceResult(String responseBody) {
@@ -270,6 +274,8 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
 
     /**
      * handle custom response
+     * 
+     * @param responseBody String with responseBody from device
      */
     @Override
     protected void handleCustomResponse(String responseBody) {

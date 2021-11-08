@@ -42,21 +42,21 @@ public class TapoSmartBulb extends TapoDevice {
 
     /**
      * Constructor
-     *
+     * 
      * @param thing Thing object representing device
      */
     public TapoSmartBulb(Thing thing) {
         super(thing);
     }
 
-    @Override
-    public void initialize() {
-        super.initialize();
-    }
-
+    /**
+     * handle command sent to device
+     * 
+     * @param channelUID channelUID command is sent to
+     * @param command command to be sent
+     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("({}) handleCommand '{}' for channelUID {}", uid, command.toString(), channelUID.getId());
         Boolean refreshInfo = false;
 
         String channel = channelUID.getIdWithoutGroup();

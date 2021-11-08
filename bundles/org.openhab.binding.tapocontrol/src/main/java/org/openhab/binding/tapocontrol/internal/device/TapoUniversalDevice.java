@@ -56,11 +56,6 @@ public class TapoUniversalDevice extends TapoDevice {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("({}) handleCommand '{}' for channelUID {}", uid, command.toString(), channelUID.getId());
         Boolean refreshInfo = false;

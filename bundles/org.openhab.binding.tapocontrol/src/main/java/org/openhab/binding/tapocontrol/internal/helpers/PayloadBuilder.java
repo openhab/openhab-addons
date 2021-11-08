@@ -29,13 +29,6 @@ public class PayloadBuilder {
     private JsonObject parameters = new JsonObject();
 
     /**
-     * Init Class
-     *
-     */
-    public PayloadBuilder() {
-    }
-
-    /**
      * Set Command
      *
      * @param command command (method) to send
@@ -78,7 +71,7 @@ public class PayloadBuilder {
      */
     public JsonObject getJsonPayload() {
         JsonObject payload = new JsonObject();
-        Long timeMils = System.currentTimeMillis();// * 1000;
+        long timeMils = System.currentTimeMillis();// * 1000;
 
         payload.addProperty("method", this.method);
         payload.add("params", this.parameters);
@@ -89,7 +82,7 @@ public class PayloadBuilder {
 
     /**
      * Flush Parameters
-     * delete
+     * remove all parameters
      */
     public void flushParameters(String command) {
         this.parameters = new JsonObject();

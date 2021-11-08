@@ -35,7 +35,7 @@
 			<advanced>false</advanced>
 		</parameter>
 		<parameter name="cloudReconnect" type="integer" min="0" max="10080" required="false">
-			<label>Cloud reconnect interval</label>
+			<label>Cloud Reconnect Interval</label>
 			<description>Interval for reconnecting to the Tapo-Cloud in minutes (default 1440 = 24h / 0 = disabled)</description>
 			<default>1440</default>
 			<advanced>true</advanced>

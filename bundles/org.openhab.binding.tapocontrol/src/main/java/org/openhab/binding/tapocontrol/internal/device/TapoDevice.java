@@ -50,6 +50,7 @@ public abstract class TapoDevice extends BaseThingHandler {
     protected final TapoErrorHandler deviceError = new TapoErrorHandler();
     protected final String uid;
     protected TapoDeviceConfiguration config;
+    protected @Nullable ScheduledFuture<?> startupJob;
     protected @Nullable ScheduledFuture<?> pollingJob;
     protected @Nullable TapoDeviceConnector connector;
     protected @Nullable TapoBridgeHandler bridge;
@@ -76,7 +77,6 @@ public abstract class TapoDevice extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        logger.debug("initialize thing-device ({})", uid);
         try {
             this.bridge = (TapoBridgeHandler) getBridge().getHandler();
             this.config.loadSettings();
@@ -97,7 +97,8 @@ public abstract class TapoDevice extends BaseThingHandler {
     @Override
     public void dispose() {
         try {
-            stopScheduler();
+            stopScheduler(this.startupJob);
+            stopScheduler(this.pollingJob);
             connector.logout();
         } catch (Exception e) {
             // handle exception
@@ -115,7 +116,7 @@ public abstract class TapoDevice extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         // background initialization (delay it a little bit):
-        scheduler.schedule(this::connect, 2000, TimeUnit.MILLISECONDS);
+        this.startupJob = scheduler.schedule(this::delayedStartUp, 2000, TimeUnit.MILLISECONDS);
         startScheduler();
     }
 
@@ -128,19 +129,16 @@ public abstract class TapoDevice extends BaseThingHandler {
         TapoErrorHandler configErr = new TapoErrorHandler();
         /* check bridge */
         if (bridge == null || !(bridge instanceof TapoBridgeHandler)) {
-            logger.error("({}) Device has no brigde", uid);
             configErr.raiseError(ERR_NO_BRIDGE);
             return configErr;
         }
         /* check ip-address */
         if (!config.ipAddress.matches(IPV4_REGEX)) {
-            logger.error("({}) IP-Address not matching : '{}'", uid, config.ipAddress);
             configErr.raiseError(ERR_CONF_IP);
             return configErr;
         }
         /* check credentials */
         if (!bridge.getCredentials().areSet()) {
-            logger.error("({}) Password or Username not set (bridge)", uid);
             configErr.raiseError(ERR_CONF_CREDENTIALS);
             return configErr;
         }
@@ -165,6 +163,12 @@ public abstract class TapoDevice extends BaseThingHandler {
      * SCHEDULER
      *
      ************************************/
+    /**
+     * delayed OneTime StartupJob
+     */
+    private void delayedStartUp() {
+        connect();
+    }
 
     /**
      * Start scheduler
@@ -180,18 +184,19 @@ public abstract class TapoDevice extends BaseThingHandler {
             this.pollingJob = scheduler.scheduleWithFixedDelay(this::schedulerAction, pollingInterval, pollingInterval,
                     TimeUnit.SECONDS);
         } else {
-            stopScheduler();
+            stopScheduler(this.pollingJob);
         }
     }
 
     /**
      * Stop scheduler
+     * 
+     * @param scheduler ScheduledFeature<?> which schould be stopped
      */
-    protected void stopScheduler() {
-        if (this.pollingJob != null) {
-            logger.trace("({}) stopScheduler", uid);
-            pollingJob.cancel(true);
-            pollingJob = null;
+    protected void stopScheduler(@Nullable ScheduledFuture<?> scheduler) {
+        if (scheduler != null) {
+            scheduler.cancel(true);
+            scheduler = null;
         }
     }
 
@@ -320,8 +325,6 @@ public abstract class TapoDevice extends BaseThingHandler {
             devicePropertiesChanged(deviceInfo);
             handleConnectionState();
         } else {
-            logger.warn("({}) wrong device found - found: {} with mac:{}", uid, deviceInfo.getModel(),
-                    deviceInfo.getRepresentationProperty());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "found type:'" + deviceInfo.getModel() + "' with mac:'" + deviceInfo.getRepresentationProperty()
                             + "'. Check IP-Address");

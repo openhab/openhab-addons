@@ -73,18 +73,38 @@ public class TapoDeviceHttpApi {
     /***********************************
      *
      * DELEGATING FUNCTIONS
-     * will normaly be delegated to child classes
+     * will normaly be delegated to extension-classes(TapoDeviceConnector)
      *
      ************************************/
+    /**
+     * handle SuccessResponse (setDeviceInfo)
+     * 
+     * @param responseBody String with responseBody from device
+     */
     protected void handleSuccessResponse(String responseBody) {
     }
 
+    /**
+     * handle JsonResponse (getDeviceInfo)
+     * 
+     * @param responseBody String with responseBody from device
+     */
     protected void handleDeviceResult(String responseBody) {
     }
 
+    /**
+     * handle custom response
+     * 
+     * @param responseBody String with responseBody from device
+     */
     protected void handleCustomResponse(String responseBody) {
     }
 
+    /**
+     * handle error
+     * 
+     * @param te TapoErrorHandler
+     */
     protected void handleError(TapoErrorHandler tapoError) {
     }
 

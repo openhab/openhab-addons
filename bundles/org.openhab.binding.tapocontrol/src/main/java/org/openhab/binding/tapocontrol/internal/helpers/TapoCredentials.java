@@ -106,10 +106,8 @@ public class TapoCredentials {
         instance.initialize(1024, new SecureRandom());
         KeyPair generateKeyPair = instance.generateKeyPair();
 
-        this.publicKey = new String(
-                java.util.Base64.getMimeEncoder().encode(((RSAPublicKey) generateKeyPair.getPublic()).getEncoded()));
-        this.privateKey = new String(
-                java.util.Base64.getMimeEncoder().encode(((RSAPrivateKey) generateKeyPair.getPrivate()).getEncoded()));
+        this.publicKey = new String(mimeEncoder.encode(((RSAPublicKey) generateKeyPair.getPublic()).getEncoded()));
+        this.privateKey = new String(mimeEncoder.encode(((RSAPrivateKey) generateKeyPair.getPrivate()).getEncoded()));
         logger.trace("new privateKey: '{}'", this.privateKey);
         logger.trace("new ublicKey: '{}'", this.publicKey);
     }
@@ -173,7 +171,6 @@ public class TapoCredentials {
      * @return String -----BEGIN PRIVATE KEY-----\n%s\n-----END PRIVATE KEY-----
      */
     public String getPrivateKey() {
-        // "-----BEGIN PRIVATE KEY-----%n%s%n-----END PRIVATE KEY-----%n"
         return String.format("-----BEGIN PRIVATE KEY-----%n%s%n-----END PRIVATE KEY-----%n", privateKey);
     }
 
@@ -183,7 +180,6 @@ public class TapoCredentials {
      * @return String -----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----
      */
     public String getPublicKey() {
-        // "-----BEGIN PUBLIC KEY-----%n%s%n-----END PUBLIC KEY-----%n"
         return String.format("-----BEGIN PUBLIC KEY-----%n%s%n-----END PUBLIC KEY-----%n", publicKey);
     }
 

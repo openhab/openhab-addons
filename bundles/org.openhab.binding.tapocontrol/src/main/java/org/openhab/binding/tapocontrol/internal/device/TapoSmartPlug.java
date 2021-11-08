@@ -37,21 +37,21 @@ public class TapoSmartPlug extends TapoDevice {
 
     /**
      * Constructor
-     *
+     * 
      * @param thing Thing object representing device
      */
     public TapoSmartPlug(Thing thing) {
         super(thing);
     }
 
-    @Override
-    public void initialize() {
-        super.initialize();
-    }
-
+    /**
+     * handle command sent to device
+     * 
+     * @param channelUID channelUID command is sent to
+     * @param command command to be sent
+     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("({}) handleCommand '{}' for channelUID {}", uid, command.toString(), channelUID.getId());
         Boolean refreshInfo = false;
 
         /* perform actions */
@@ -63,6 +63,9 @@ public class TapoSmartPlug extends TapoDevice {
         } else if (command == OnOffType.OFF) {
             connector.sendDeviceCommand(DEVICE_PROPERTY_ON, false);
             refreshInfo = true;
+        } else {
+            logger.warn("({}) command type '{}' not supported for channel '{}'", uid, command.toString(),
+                    channelUID.getId());
         }
 
         /* refreshInfo */

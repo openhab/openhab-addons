@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tapocontrol.internal.helpers;
 
+import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
+
 import java.lang.reflect.Field;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -27,44 +29,11 @@ import com.google.gson.JsonObject;
  * @author Christian Wild - Initial contribution
  */
 @NonNullByDefault
-public class TapoErrorHandler extends Throwable {
+public class TapoErrorHandler extends Exception {
     private Integer errorCode = 0;
     private String errorMessage = "";
     private String infoMessage = "";
     private Gson gson = new Gson();
-
-    /**
-     * GET ERROR-MESSAGE
-     * 
-     * @param errCode error Number (or constant ERR_CODE )
-     * @return error-message if set constant ERR_CODE_MSG. if not name of ERR_CODE is returned
-     */
-    private String getErrorMessage(Integer errCode) {
-        Field[] fields = TapoErrorConstants.class.getDeclaredFields();
-        /* loop ErrorConstants and search for code in value */
-        for (Field f : fields) {
-            String constName = f.getName();
-            try {
-                Integer val = (Integer) f.get(this);
-                if (val.equals(errCode)) {
-                    /* get constan named by errorcode and _MSG (ERR_CODE_MSG) */
-                    try {
-                        String msg = TapoErrorConstants.class.getDeclaredField(constName + "_MSG").get(null).toString();
-                        if (msg.length() > 2) {
-                            return msg;
-                        } else {
-                            return infoMessage + " (" + constName + ")";
-                        }
-                    } catch (Exception e) {
-                        return infoMessage + " (" + constName + ")";
-                    }
-                }
-            } catch (Exception e) {
-                // next loop
-            }
-        }
-        return infoMessage + " (" + errCode.toString() + ")";
-    }
 
     /**
      * Constructor
@@ -116,8 +85,38 @@ public class TapoErrorHandler extends Throwable {
      * Private Functions
      *
      ************************************/
-    private static <T> T getValueOrDefault(T value, T defaultValue) {
-        return value == null ? defaultValue : value;
+
+    /**
+     * GET ERROR-MESSAGE
+     * 
+     * @param errCode error Number (or constant ERR_CODE )
+     * @return error-message if set constant ERR_CODE_MSG. if not name of ERR_CODE is returned
+     */
+    private String getErrorMessage(Integer errCode) {
+        Field[] fields = TapoErrorConstants.class.getDeclaredFields();
+        /* loop ErrorConstants and search for code in value */
+        for (Field f : fields) {
+            String constName = f.getName();
+            try {
+                Integer val = (Integer) f.get(this);
+                if (val.equals(errCode)) {
+                    /* get constan named by errorcode and _MSG (ERR_CODE_MSG) */
+                    try {
+                        String msg = TapoErrorConstants.class.getDeclaredField(constName + "_MSG").get(null).toString();
+                        if (msg.length() > 2) {
+                            return msg;
+                        } else {
+                            return infoMessage + " (" + constName + ")";
+                        }
+                    } catch (Exception e) {
+                        return infoMessage + " (" + constName + ")";
+                    }
+                }
+            } catch (Exception e) {
+                // next loop
+            }
+        }
+        return infoMessage + " (" + errCode.toString() + ")";
     }
 
     /***********************************

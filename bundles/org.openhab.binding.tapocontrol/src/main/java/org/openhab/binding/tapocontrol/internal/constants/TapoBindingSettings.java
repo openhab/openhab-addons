@@ -38,11 +38,11 @@ public class TapoBindingSettings {
     public static final Integer HTTP_MAX_QUEUED_REQUESTS = 10; // setMaxRequestsQueuedPerDestination for HTTP-Client
     public static final Integer TAPO_HTTP_TIMEOUT_MS = 5000; // http request timeout
     public static final Integer TAPO_PING_TIMEOUT_MS = 2000; // ping timeout
-    public static final Integer TAPO_DISCOVERY_TIMEOUT_MS = 6000; // timout device discovery
     public static final Integer TAPO_REFRESH_MIN_GAP_MS = 5000; // min gap between sending refresh request
     public static final Integer TAPO_SEND_MIN_GAP_MS = 1000; // min gap between sending command request
     public static final Integer TAPO_LOGIN_MIN_GAP_MS = 5000; // min gap between sending login request
     public static final Integer TAPO_LOGIN_MAX_GAP_M = 1440; // max minutes to relogin to device
+    public static final Integer TAPO_DISCOVERY_TIMEOUT_S = 6; // timout device discovery in seconds
     public static final Integer POLLING_MIN_INTERVAL_S = 10; // min polling interval (settings)
 
     // FORMATING CONSTANTS

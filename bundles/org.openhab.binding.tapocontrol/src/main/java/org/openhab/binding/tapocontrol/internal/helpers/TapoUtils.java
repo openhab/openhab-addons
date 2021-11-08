@@ -57,6 +57,18 @@ public class TapoUtils {
      * FORMAT UTILS
      ***********************************/
     /**
+     * return value or default val if it's null
+     * 
+     * @param <T> Type of value
+     * @param value value
+     * @param defaultValue defaut value
+     * @return
+     */
+    public static <T> T getValueOrDefault(T value, T defaultValue) {
+        return value == null ? defaultValue : value;
+    }
+
+    /**
      * Format MAC-Address replacing old division chars and add new one
      * 
      * @param mac unformated mac-Address
