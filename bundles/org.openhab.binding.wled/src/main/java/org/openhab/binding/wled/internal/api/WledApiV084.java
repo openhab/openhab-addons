@@ -162,7 +162,7 @@ public class WledApiV084 implements WledApi {
         throw new ApiException(errorReason);
     }
 
-    protected void setState(String jsonState) {
+    protected void updateStateFromReply(String jsonState) {
         try {
             StateResponse response = gson.fromJson(jsonState, StateResponse.class);
             if (response == null) {
@@ -330,45 +330,46 @@ public class WledApiV084 implements WledApi {
 
     @Override
     public void setGlobalOn(boolean bool) throws ApiException {
-        setState(postState("{\"on\":" + bool + ",\"v\":true,\"tt\":2}"));
+        updateStateFromReply(postState("{\"on\":" + bool + ",\"v\":true,\"tt\":2}"));
     }
 
     @Override
     public void setMasterOn(boolean bool, int segmentIndex) throws ApiException {
-        setState(postState("{\"v\":true,\"tt\":2,\"seg\":[{\"id\":" + segmentIndex + ",\"on\":" + bool + "}]}"));
+        updateStateFromReply(
+                postState("{\"v\":true,\"tt\":2,\"seg\":[{\"id\":" + segmentIndex + ",\"on\":" + bool + "}]}"));
     }
 
     @Override
     public void setGlobalBrightness(PercentType percent) throws ApiException {
         if (percent.equals(PercentType.ZERO)) {
-            setState(postState("{\"on\":false,\"v\":true}"));
+            updateStateFromReply(postState("{\"on\":false,\"v\":true}"));
             return;
         }
-        setState(postState("{\"on\":true,\"v\":true,\"tt\":2,\"bri\":"
+        updateStateFromReply(postState("{\"on\":true,\"v\":true,\"tt\":2,\"bri\":"
                 + percent.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "}"));
     }
 
     @Override
     public void setMasterBrightness(PercentType percent, int segmentIndex) throws ApiException {
         if (percent.equals(PercentType.ZERO)) {
-            setState(postState("{\"v\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"on\":false}]}"));
+            updateStateFromReply(postState("{\"v\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"on\":false}]}"));
             return;
         }
-        setState(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"on\":true,\"bri\":"
+        updateStateFromReply(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"id\":" + segmentIndex + ",\"on\":true,\"bri\":"
                 + percent.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "}]}"));
     }
 
     @Override
     public void setMasterHSB(HSBType hsbType, int segmentIndex) throws ApiException {
         if (hsbType.getBrightness().toBigDecimal().equals(BigDecimal.ZERO)) {
-            setState(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"on\":false,\"id\":" + segmentIndex
+            updateStateFromReply(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"on\":false,\"id\":" + segmentIndex
                     + ",\"fx\":0,\"col\":[[" + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue()
                     + "," + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                     + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}"));
             return;
         }
-        setState(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"on\":true,\"id\":" + segmentIndex + ",\"fx\":0,\"col\":[["
-                + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
+        updateStateFromReply(postState("{\"tt\":2,\"v\":true,\"seg\":[{\"on\":true,\"id\":" + segmentIndex
+                + ",\"fx\":0,\"col\":[[" + hsbType.getRed().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getGreen().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + ","
                 + hsbType.getBlue().toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "]]}]}"));
     }
@@ -380,7 +381,7 @@ public class WledApiV084 implements WledApi {
 
     @Override
     public void setPreset(String string) throws ApiException {
-        setState(postState("{\"ps\":" + string + "}"));
+        updateStateFromReply(postState("{\"ps\":" + string + ",\"v\":true}"));
     }
 
     @Override
