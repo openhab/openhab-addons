@@ -17,7 +17,7 @@ The following Tapo-Devices are supported
 * Light On/Off
 * Brightnes (Dimmer)  0-100 %
 * ColorTemperature (Number) 2500-6500 K
-* Wi-Fi signal (SignalStrenght)
+* Wi-Fi signal (SignalStrength)
 * On-Time (Time in seconds device is switched on)
 
 ### L530_Series MultiColor SmartBulb (WiFi)
@@ -55,8 +55,8 @@ The thing has the following configuration parameters:
 
 | Parameter          | Description                                                          |
 |--------------------|----------------------------------------------------------------------|
-| Username           | Username (eMail) of your Tapo-Cloud                                  |
-| Password           | Password of your Tapo-Cloud                                          |
+| username           | Username (eMail) of your Tapo-Cloud                                  |
+| password           | Password of your Tapo-Cloud                                          |
 
 ## Thing Configuration
 
