@@ -38,7 +38,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.airquality")
 @NonNullByDefault
 public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(BRIDGE_TYPE_API, THING_TYPE_STATION);

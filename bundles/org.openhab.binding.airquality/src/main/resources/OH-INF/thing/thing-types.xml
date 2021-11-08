@@ -212,7 +212,7 @@
 
 	<channel-type id="sensitive-group">
 		<item-type>Switch</item-type>
-		<label>Sensitive group</label>
+		<label>Sensitive Group</label>
 		<description>Checked if sensitive group is exposed to pollutant.</description>
 		<state readOnly="true"/>
 		<config-description>
