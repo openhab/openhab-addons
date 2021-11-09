@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.wled.internal.api;
 
-import static org.openhab.binding.wled.internal.WLedBindingConstants.CHANNEL_PRESETS;
+import static org.openhab.binding.wled.internal.WLedBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,22 +51,31 @@ public class WledApiV0110 extends WledApiV084 {
 
     protected void getPresets() throws JsonSyntaxException, ApiException {
         List<StateOption> presetsOptions = new ArrayList<>();
+        List<StateOption> playlistsOptions = new ArrayList<>();
         JsonObject obj = gson.fromJson(sendGetRequest("/presets.json"), JsonObject.class);
         if (obj == null) {
             return;
         }
         Set<Entry<String, JsonElement>> set = obj.entrySet();
+        // presetsOptions.add(new StateOption("-1", "None"));
+        // playlistsOptions.add(new StateOption("-1", "None"));
         int counter = 0;
         for (Entry<String, JsonElement> presetEntry : set) {
             logger.trace("Preset:{} json:{}", presetEntry.getKey(), presetEntry.getValue());
             PresetState preset = gson.fromJson(presetEntry.getValue(), PresetState.class);
             if (preset != null && counter > 0) {
-                presetsOptions.add(new StateOption(Integer.toString(counter), preset.n));
+                if (preset.bri == 0) {
+                    playlistsOptions.add(new StateOption(Integer.toString(counter), preset.n));
+                } else {
+                    presetsOptions.add(new StateOption(Integer.toString(counter), preset.n));
+                }
             }
             counter++;
         }
         handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_PRESETS),
                 presetsOptions);
+        handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_PLAYLISTS),
+                playlistsOptions);
     }
 
     @Override

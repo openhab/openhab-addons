@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.wled.internal.WLedHandler;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 
 /**
@@ -48,5 +49,11 @@ public class WledApiV0130 extends WledApiV0110 {
             removeChannels.add(channel);
         }
         handler.removeChannels(removeChannels);
+    }
+
+    @Override
+    protected void processState() throws ApiException {
+        super.processState();
+        handler.update(CHANNEL_PLAYLISTS, new StringType("" + state.stateResponse.pl));
     }
 }

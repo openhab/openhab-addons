@@ -18,6 +18,7 @@
 			<channel id="tertiaryColor" typeId="tertiaryColor"/>
 			<channel id="tertiaryWhite" typeId="tertiaryWhite"/>
 			<channel id="presets" typeId="presets"/>
+			<channel id="playlists" typeId="playlists"/>
 			<channel id="presetDuration" typeId="presetDuration"/>
 			<channel id="transformTime" typeId="transformTime"/>
 			<channel id="presetCycle" typeId="presetCycle"/>
@@ -26,7 +27,9 @@
 			<channel id="speed" typeId="speed"/>
 			<channel id="intensity" typeId="intensity"/>
 			<channel id="mirror" typeId="mirror"/>
-			<channel id="reverse" typeId="reverse"/>
+			<channel id="grouping" typeId="grouping"/>
+			<channel id="spacing" typeId="spacing"/>
+			<channel id="liveOverride" typeId="liveOverride"/>
 			<channel id="sleep" typeId="sleep"/>
 			<channel id="syncSend" typeId="syncSend"/>
 			<channel id="syncReceive" typeId="syncReceive"/>
@@ -154,12 +157,45 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="playlists">
+		<item-type>String</item-type>
+		<label>Playlists</label>
+		<description>The currently playing play list</description>
+	</channel-type>
+
 	<channel-type id="presetDuration" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Preset Duration</label>
 		<description>Time for how long to show each preset for before moving to the next</description>
 		<category>Time</category>
 		<state min="0.1" max="65" step="0.1" pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="grouping" advanced="true">
+		<item-type>Number</item-type>
+		<label>Grouping</label>
+		<description>How many consecutive LEDs of the same segment will be grouped to the same color</description>
+		<state min="1" max="255" step="1" pattern="%.0f" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="spacing" advanced="true">
+		<item-type>Number</item-type>
+		<label>Spacing</label>
+		<description>How many LEDs are turned off and skipped between each group</description>
+		<state min="0" max="255" step="1" pattern="%.0f" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="liveOverride" advanced="true">
+		<item-type>String</item-type>
+		<label>Live Override</label>
+		<description>Live data override. 0 is off, 1 is override until live data ends, 2 is override until ESP reboot</description>
+		<state min="0" max="2" step="1" pattern="%.0f" readOnly="false">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Override Live</option>
+				<option value="2">Until Reboot</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="transformTime" advanced="true">

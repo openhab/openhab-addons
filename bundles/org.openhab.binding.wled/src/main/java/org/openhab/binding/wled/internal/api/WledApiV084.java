@@ -37,6 +37,7 @@ import org.openhab.binding.wled.internal.WledState.InfoResponse;
 import org.openhab.binding.wled.internal.WledState.JsonResponse;
 import org.openhab.binding.wled.internal.WledState.LedInfo;
 import org.openhab.binding.wled.internal.WledState.StateResponse;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -326,6 +327,9 @@ public class WledApiV084 implements WledApi {
         handler.update(CHANNEL_INTENSITY,
                 new PercentType(new BigDecimal(state.stateResponse.seg[handler.config.segmentIndex].ix)
                         .divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
+        handler.update(CHANNEL_LIVE_OVERRIDE, new StringType("" + state.stateResponse.lor));
+        handler.update(CHANNEL_GROUPING, new DecimalType(state.stateResponse.seg[handler.config.segmentIndex].grp));
+        handler.update(CHANNEL_SPACING, new DecimalType(state.stateResponse.seg[handler.config.segmentIndex].spc));
     }
 
     @Override
@@ -482,5 +486,20 @@ public class WledApiV084 implements WledApi {
         } catch (ApiException e) {
             logger.warn("Preset failed to save:{}", e.getMessage());
         }
+    }
+
+    @Override
+    public void setLiveOverride(String value) throws ApiException {
+        postState("{\"lor\":" + value + "}");
+    }
+
+    @Override
+    public void setGrouping(int value, int segmentIndex) throws ApiException {
+        postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"grp\":" + value + "}]}");
+    }
+
+    @Override
+    public void setSpacing(int value, int segmentIndex) throws ApiException {
+        postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"spc\":" + value + "}]}");
     }
 }

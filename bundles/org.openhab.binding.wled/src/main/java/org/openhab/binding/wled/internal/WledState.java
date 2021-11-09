@@ -113,6 +113,6 @@ public class WledState {
 
     public class PresetState {
         public String n = "";// Name of preset
-        public int bri = 0;// brightness in 255
+        public int bri = 0;// brightness in 255, 0 means it is a playlist as bri was not defined
     }
 }

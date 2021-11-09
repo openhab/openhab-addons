@@ -52,6 +52,7 @@ public class WLedBindingConstants {
     public static final String CHANNEL_THIRD_WHITE = "tertiaryWhite";
     public static final String CHANNEL_PALETTES = "palettes";
     public static final String CHANNEL_PRESETS = "presets";
+    public static final String CHANNEL_PLAYLISTS = "playlists";
     public static final String CHANNEL_PRESET_DURATION = "presetDuration";
     public static final String CHANNEL_TRANS_TIME = "transformTime";
     public static final String CHANNEL_PRESET_CYCLE = "presetCycle";
@@ -60,6 +61,9 @@ public class WLedBindingConstants {
     public static final String CHANNEL_INTENSITY = "intensity";
     public static final String CHANNEL_MIRROR = "mirror";
     public static final String CHANNEL_REVERSE = "reverse";
+    public static final String CHANNEL_GROUPING = "grouping";
+    public static final String CHANNEL_SPACING = "spacing";
+    public static final String CHANNEL_LIVE_OVERRIDE = "liveOverride";
     public static final String CHANNEL_SLEEP = "sleep";
     public static final String CHANNEL_SYNC_SEND = "syncSend";
     public static final String CHANNEL_SYNC_RECEIVE = "syncReceive";

@@ -90,6 +90,12 @@ public interface WledApi {
 
     public abstract void setReverse(boolean bool, int segmentIndex) throws ApiException;
 
+    public abstract void setLiveOverride(String value) throws ApiException;
+
+    public abstract void setGrouping(int value, int segmentIndex) throws ApiException;
+
+    public abstract void setSpacing(int value, int segmentIndex) throws ApiException;
+
     /**
      * Saves a preset to the position number with the supplied name. If the supplied name is an empty String then the
      * name 'Preset x' will be used by default using the position number given.
