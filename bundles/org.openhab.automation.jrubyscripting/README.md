@@ -22,7 +22,7 @@ This automation add-on will install user specified gems and make them available 
 Gem versions may be specified using the standard ruby gem_name=version format.
 The version number follows the [pessimistic version constraint](https://guides.rubygems.org/patterns/#pessimistic-version-constraint) syntax. 
 
-For example this configuration will install version 4 or higher of the [OpenHAB JRuby Scripting Libray](https://boc-tothefuture.github.io/openhab-jruby/).
+For example this configuration will install version 4 or higher of the [openHAB JRuby Scripting Library](https://boc-tothefuture.github.io/openhab-jruby/).
 
 ```text
 org.openhab.automation.jrubyscripting:gems=openhab-scripting=~>4.0
