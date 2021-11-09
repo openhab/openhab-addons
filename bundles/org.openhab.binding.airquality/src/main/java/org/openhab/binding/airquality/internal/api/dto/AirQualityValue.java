@@ -10,24 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airquality.internal;
+package org.openhab.binding.airquality.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link AirQualityConfiguration} is the class used to match the
- * thing configuration.
+ * Wrapper type around values reported by aqicn index values.
  *
- * @author Kuba Wolanin - Initial contribution
+ * @author Łukasz Dywicki - Initial contribution
  */
 @NonNullByDefault
-public class AirQualityConfiguration {
+class AirQualityValue {
+    private double v;
 
-    public static final String LOCATION = "location";
-
-    public String apikey = "";
-    public String location = "";
-    public @Nullable Integer stationId;
-    public int refresh = 60;
+    public double getValue() {
+        return v;
+    }
 }

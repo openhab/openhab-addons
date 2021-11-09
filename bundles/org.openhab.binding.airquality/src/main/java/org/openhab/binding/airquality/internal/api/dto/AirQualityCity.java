@@ -10,9 +10,8 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airquality.internal.json;
+package org.openhab.binding.airquality.internal.api.dto;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,17 +19,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link AirQualityJsonCity} is responsible for storing
+ * The {@link AirQualityCity} is responsible for storing
  * the "city" node from the waqi.org JSON response
  *
  * @author Kuba Wolanin - Initial contribution
  */
 @NonNullByDefault
-public class AirQualityJsonCity {
-
+public class AirQualityCity {
     private String name = "";
     private @Nullable String url;
-    private List<Double> geo = new ArrayList<>();
+    private List<Double> geo = List.of();
 
     public String getName() {
         return name;
