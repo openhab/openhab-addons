@@ -30,6 +30,24 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class TapoDeviceInfo {
+    /**
+     * AVAILABLE BUT UNUSED FIELDS
+     * remove before push to real version
+     * 
+     * private Boolean hasSetLocationInfo = false;
+     * private Integer latitude = 0;
+     * private Integer longitude = 0;
+     * private Integer timeDiff = 0;
+     * private String avatar = "";
+     * private String fwId = "";
+     * private String hwId = "";
+     * private String specs = "";
+     * private String ssid = "";
+     * private String oemId = "";
+     * private String lang = "";
+     * private String location = "";
+     */
+
     private Boolean deviceOn = false;
     private Boolean overheated = false;
     private Integer brightness = 0;
@@ -39,8 +57,8 @@ public class TapoDeviceInfo {
     private Integer saturation = 100;
     private Integer signalLevel = 0;
     private Number onTime = 0;
-    private Number timeUsagePast7 = 0;
     private Number timeUsagePast30 = 0;
+    private Number timeUsagePast7 = 0;
     private Number timeUsageToday = 0;
     private String deviceId = "";
     private String fwVer = "";

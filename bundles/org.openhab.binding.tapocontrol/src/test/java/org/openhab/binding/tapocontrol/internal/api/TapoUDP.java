@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tapocontrol.internal.test;
+package org.openhab.binding.tapocontrol.internal.api;
 
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
@@ -105,13 +105,13 @@ public class TapoUDP {
                 gotDeviceAdress(addressBC);
             }
         } catch (Exception e) {
-            // TODO: handle exception
+            // handle exception
         }
         return new JsonArray();
     }
 
     private void gotDeviceAdress(String ipAddress) {
-        // TODO: handle exception
+        // handle exception
     }
 
     private String generateOwnRSAKey() {
@@ -131,7 +131,7 @@ public class TapoUDP {
             return String.format("-----BEGIN PUBLIC KEY-----%n%s%n-----END PUBLIC KEY-----%n", publicKey);
 
         } catch (Exception e) {
-            // TODO: handle exception
+            // couldn't generate own rsa key
             return "";
         }
     }

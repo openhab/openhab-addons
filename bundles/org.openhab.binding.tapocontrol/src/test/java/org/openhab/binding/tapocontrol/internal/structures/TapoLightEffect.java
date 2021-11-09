@@ -76,6 +76,8 @@ public class TapoLightEffect {
         this.name = jsonObjectToString(jsonObject, PROPERTY_LIGHTNING_EFFECT_NAME);
         this.custom = jsonObjectToInt(jsonObject, PROPERTY_LIGHTNING_EFFECT_CUSTOM); // jsonObjectToBool
         this.brightness = jsonObjectToInt(jsonObject, PROPERTY_LIGHTNING_EFFECT_BRIGHNTESS);
+        // this.color_temp_range = { 9000, 9000 }; PROPERTY_LIGHNTING_ //:[9000,9000]
+        // this.displayColors[] PROPERTY_LIGHNTING_;
     }
 
     /***********************************
@@ -98,6 +100,12 @@ public class TapoLightEffect {
 
     public void setBrightness(Integer value) {
         this.brightness = value;
+    }
+
+    public void setColorTempRange() {
+    }
+
+    public void setDisplayColors() {
     }
 
     /***********************************

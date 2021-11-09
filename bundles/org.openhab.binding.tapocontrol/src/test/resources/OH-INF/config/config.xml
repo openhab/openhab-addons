@@ -34,11 +34,25 @@
 			<default>false</default>
 			<advanced>false</advanced>
 		</parameter>
-		<parameter name="discoveryInterval" type="integer" min="1" max="10080" required="false">
+		<parameter name="cloudReconnect" type="integer" min="0" max="10080" required="false">
+			<label>Cloud Reconnect Interval</label>
+			<description>Interval for reconnecting to the Tapo-Cloud in minutes (default 1440 = 24h / 0 = disabled)</description>
+			<default>1440</default>
+			<advanced>true</advanced>
+		</parameter>
+		<!--
+		<parameter name="discoveryInterval" type="integer" min="0" max="10080" required="false">
 			<label>Background Discovery Interval</label>
-			<description>Interval background discovery in minutes (default 60)</description>
+			<description>Interval background discovery in minutes (default 60 / 0 = disabled)</description>
 			<default>60</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="udpDiscovery" type="boolean" required="false">
+			<label>UDP Discovery</label>
+			<description>Use UDP Discovery-Service</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		-->
 	</config-description>
 </config-description:config-descriptions>

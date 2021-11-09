@@ -174,7 +174,7 @@ public class TapoUniversalDevice extends TapoDevice {
      * @param responseBody
      */
     public void responsePasstrough(String responseBody) {
-        logger.debug("({}) received response {}", uid, responseBody);
+        logger.info("({}) received response {}", uid, responseBody);
         publishState(getChannelID(CHANNEL_GROUP_DEBUG, CHANNEL_RESPONSE), getStringType(responseBody));
     }
 

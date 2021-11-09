@@ -18,11 +18,11 @@ import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tapocontrol.internal.device.TapoBridgeHandler;
+import org.openhab.binding.tapocontrol.internal.structures.TapoBridgeConfiguration;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -46,7 +46,6 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class TapoDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(TapoDiscoveryService.class);
-    protected @Nullable ScheduledFuture<?> scanJob;
     protected @Nullable TapoBridgeHandler bridge;
 
     /***********************************
@@ -65,10 +64,14 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
     }
 
     /**
-     * activate
+     * deactivate
      */
+    @Override
     public void activate() {
-        activate(new HashMap<>());
+        TapoBridgeConfiguration config = bridge.getBridgeConfig();
+        if (config.cloudDiscoveryEnabled || config.udpDiscoveryEnabled) {
+            startBackgroundDiscovery();
+        }
     }
 
     /**
@@ -76,7 +79,6 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
      */
     @Override
     public void deactivate() {
-        stopScheduler(this.scanJob);
         super.deactivate();
     }
 
@@ -84,6 +86,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof TapoBridgeHandler) {
             this.bridge = (TapoBridgeHandler) handler;
+            bridge.setDiscoveryService(this);
         }
     }
 
@@ -112,43 +115,6 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         }
     }
 
-    /**
-     * Stop Scan
-     */
-    @Override
-    protected synchronized void stopScan() {
-        super.stopScan();
-    }
-
-    /**
-     * Abort Scan
-     */
-    @Override
-    public synchronized void abortScan() {
-        super.abortScan();
-    }
-
-    /**
-     * SCAN ONCE
-     * scan an disable scheduler
-     */
-    protected void startScanOnce() {
-        this.startScan();
-        stopScheduler(this.scanJob);
-    }
-
-    /**
-     * Stop scheduler
-     * 
-     * @param scheduler ScheduledFeature<?> which schould be stopped
-     */
-    protected void stopScheduler(@Nullable ScheduledFuture<?> scheduler) {
-        if (scheduler != null) {
-            scheduler.cancel(true);
-            scheduler = null;
-        }
-    }
-
     /***********************************
      *
      * handle Results
@@ -163,33 +129,26 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
      * @return DiscoveryResult-Object
      */
     public DiscoveryResult createResult(JsonObject device) {
-        try {
-            String deviceModel = getDeviceModel(device);
-            String label = getDeviceLabel(device);
-            // String name = device.get(CLOUD_PROPERTY_NAME).getAsString();
-            String deviceMAC = device.get(CLOUD_PROPERTY_MAC).getAsString();
-            ThingUID bridgeUID = bridge.getThing().getUID();
-            ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, deviceModel);
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, deviceMAC);
+        String deviceModel = getDeviceModel(device);
+        String label = getDeviceLabel(device);
+        String deviceMAC = device.get(CLOUD_PROPERTY_MAC).getAsString();
+        ThingUID bridgeUID = bridge.getThing().getUID();
+        ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, deviceModel);
+        ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, deviceMAC);
 
-            /* create properties */
-            Map<String, Object> properties = new HashMap<>(1);
-            properties.put(Thing.PROPERTY_VENDOR, DEVICE_VENDOR);
-            properties.put(Thing.PROPERTY_MAC_ADDRESS, formatMac(deviceMAC, MAC_DIVISION_CHAR));
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.get(CLOUD_PROPERTY_FW).getAsString());
-            properties.put(Thing.PROPERTY_HARDWARE_VERSION, device.get(CLOUD_PROPERTY_HW).getAsString());
-            properties.put(Thing.PROPERTY_MODEL_ID, deviceModel);
-            properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.get(CLOUD_PROPERTY_ID).getAsString());
+        /* create properties */
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(Thing.PROPERTY_VENDOR, DEVICE_VENDOR);
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, formatMac(deviceMAC, MAC_DIVISION_CHAR));
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.get(CLOUD_PROPERTY_FW).getAsString());
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, device.get(CLOUD_PROPERTY_HW).getAsString());
+        properties.put(Thing.PROPERTY_MODEL_ID, deviceModel);
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.get(CLOUD_PROPERTY_ID).getAsString());
 
-            logger.debug("device {} discovered", deviceModel);
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(DEVICE_REPRASENTATION_PROPERTY).withBridge(bridgeUID).withLabel(label)
-                    .build();
-            return discoveryResult;
-        } catch (Exception e) {
-            logger.debug("error creating discoveryResult", e);
-            return DiscoveryResultBuilder.create(new ThingUID(BINDING_ID, "")).build();
-        }
+        logger.debug("device {} discovered", deviceModel);
+        return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                .withRepresentationProperty(DEVICE_REPRASENTATION_PROPERTY).withBridge(bridgeUID).withLabel(label)
+                .build();
     }
 
     /**

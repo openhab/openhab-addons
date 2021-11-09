@@ -33,8 +33,10 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +64,17 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
             httpClient.start();
         } catch (Exception e) {
             logger.error("cannot start httpClient");
+        }
+    }
+
+    @Deactivate
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        super.deactivate(componentContext);
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            logger.debug("unable to stop httpClient");
         }
     }
 

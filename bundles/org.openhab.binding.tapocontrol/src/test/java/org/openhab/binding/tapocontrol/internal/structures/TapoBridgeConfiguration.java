@@ -33,18 +33,17 @@ public final class TapoBridgeConfiguration {
     public static final String CONFIG_PASS = "password";
     public static final String CONFIG_DEVICE_IP = "ipAddress";
     public static final String CONFIG_UPDATE_INTERVAL = "pollingInterval";
+    public static final String CONFIG_CLOUD_UPDATE_INTERVAL = "cloudReconnect";
     public static final String CONFIG_DISCOVERY_CLOUD = "cloudDiscovery";
+    public static final String CONFIG_DISCOVERY_UDP = "udpDiscovery";
     public static final String CONFIG_DISCOVERY_INTERVAL = "discoveryInterval";
-
-    /* DEFAULT & FIXED CONFIGURATIONS */
-    public static final Integer CONFIG_CLOUD_FIXED_INTERVAL = 1440;
 
     /* thing configuration parameter. */
     public String username = "";
     public String password = "";
     public Boolean cloudDiscoveryEnabled = false;
     public Boolean udpDiscoveryEnabled = false;
-    public Integer cloudReconnectIntervalM = CONFIG_CLOUD_FIXED_INTERVAL;
+    public Integer cloudReconnectIntervalM = 1440;
     public Integer discoveryIntervalM = 30;
 
     private Thing bridge;
@@ -68,6 +67,8 @@ public final class TapoBridgeConfiguration {
             username = config.get(CONFIG_EMAIL).toString();
             password = config.get(CONFIG_PASS).toString();
             cloudDiscoveryEnabled = Boolean.parseBoolean(config.get(CONFIG_DISCOVERY_CLOUD).toString());
+            udpDiscoveryEnabled = Boolean.parseBoolean(config.get(CONFIG_DISCOVERY_UDP).toString());
+            cloudReconnectIntervalM = Integer.valueOf(config.get(CONFIG_CLOUD_UPDATE_INTERVAL).toString());
             discoveryIntervalM = Integer.valueOf(config.get(CONFIG_DISCOVERY_INTERVAL).toString());
         } catch (Exception e) {
             logger.warn("{} error reading configuration: '{}'", bridge.getUID(), e.getMessage());

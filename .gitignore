@@ -25,4 +25,3 @@ features/**/src/main/feature
 .factorypath
 pom.xml.versionsBackup
 .openapi-generator
-bundles/org.openhab.binding.tapocontrol/src/main/resources/OH-INF/thing/testdevice.xml

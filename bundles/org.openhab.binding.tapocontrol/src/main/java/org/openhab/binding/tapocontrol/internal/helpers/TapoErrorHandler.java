@@ -16,8 +16,8 @@ import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import java.lang.reflect.Field;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tapocontrol.internal.constants.TapoErrorConstants;
 
 import com.google.gson.Gson;
@@ -199,7 +199,7 @@ public class TapoErrorHandler extends Exception {
      * @return error text
      */
     @Override
-    @NonNull
+    @Nullable
     public String getMessage() {
         return this.errorMessage;
     }
