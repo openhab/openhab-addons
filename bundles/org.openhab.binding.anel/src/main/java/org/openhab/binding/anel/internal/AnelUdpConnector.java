@@ -18,11 +18,13 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.common.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,16 +53,16 @@ public class AnelUdpConnector {
     /** Service to spawn new threads for handling status updates. */
     private final ExecutorService executorService;
 
+    /** Thread factory for UDP listening thread. */
+    private final NamedThreadFactory listeningThreadFactory = new NamedThreadFactory(IAnelConstants.BINDING_ID, true);
+
     /** Socket for receiving UDP packages. */
-    @Nullable
-    private DatagramSocket receivingSocket = null;
+    private @Nullable DatagramSocket receivingSocket = null;
     /** Socket for sending UDP packages. */
-    @Nullable
-    private DatagramSocket sendingSocket = null;
+    private @Nullable DatagramSocket sendingSocket = null;
 
     /** The listener that gets notified upon newly received messages. */
-    @Nullable
-    private Consumer<String> listener;
+    private @Nullable Consumer<String> listener;
 
     private int receiveFailures = 0;
     private boolean listenerActive = false;
@@ -95,9 +97,11 @@ public class AnelUdpConnector {
     /**
      * Initialize socket connection to the UDP receive port for the given listener.
      *
-     * @throws SocketException
+     * @throws SocketException Is only thrown if <code>logNotTHrowException = false</code>.
+     * @throws InterruptedException Typically happens during shutdown.
      */
-    public void connect(Consumer<String> listener, boolean logNotThrowExcpetion) throws SocketException {
+    public void connect(Consumer<String> listener, boolean logNotThrowExcpetion)
+            throws SocketException, InterruptedException {
         if (receivingSocket == null) {
             try {
                 receivingSocket = new DatagramSocket(receivePort);
@@ -106,19 +110,16 @@ public class AnelUdpConnector {
 
                 /*-
                  * Due to the issue with 4 concurrently listening threads [1], we should follow Kais suggestion [2]
-                 * to create our own listening thread.
+                 * to create our own listening daemonized thread.
                  *
                  * [1] https://community.openhab.org/t/anel-net-pwrctrl-binding-for-oh3/123378
                  * [2] https://www.eclipse.org/forums/index.php/m/1775932/?#msg_1775429
                  */
-                new Thread(this::listen).start();
+                listeningThreadFactory.newThread(this::listen).start();
 
                 // wait for the listening thread to be active
-                try {
-                    for (int i = 0; i < 20 && !listenerActive; i++) {
-                        Thread.sleep(100); // wait at most 20 * 100ms = 2sec for the listener to be active
-                    }
-                } catch (InterruptedException e) {
+                for (int i = 0; i < 20 && !listenerActive; i++) {
+                    Thread.sleep(100); // wait at most 20 * 100ms = 2sec for the listener to be active
                 }
                 if (!listenerActive) {
                     logger.warn(
@@ -138,12 +139,20 @@ public class AnelUdpConnector {
                     throw e;
                 }
             }
-        } else if (this.listener != listener) {
+        } else if (!Objects.equals(this.listener, listener)) {
             throw new IllegalStateException("A listening thread is already running");
         }
     }
 
     private void listen() {
+        try {
+            listenUnhandledInterruption();
+        } catch (InterruptedException e) {
+            // OH shutdown - don't log anything, just quit
+        }
+    }
+
+    private void listenUnhandledInterruption() throws InterruptedException {
         logger.info("Anel NET-PwrCtrl listener started for: '{}:{}'", host, receivePort);
 
         final Consumer<String> listener2 = listener;
@@ -194,12 +203,8 @@ public class AnelUdpConnector {
                         logger.debug(
                                 "Unexpected error while listening on port {}; waiting 10sec before the next attempt to listen on that port.",
                                 receivePort, e);
-                        try {
-                            for (int i = 0; i < 50 && receivingSocket != null; i++) {
-                                Thread.sleep(200); // 50 * 200ms = 10sec
-                            }
-                        } catch (InterruptedException ie) {
-                            // abort waiting on interrupted exception
+                        for (int i = 0; i < 50 && receivingSocket != null; i++) {
+                            Thread.sleep(200); // 50 * 200ms = 10sec
                         }
                     } else {
 
@@ -212,7 +217,7 @@ public class AnelUdpConnector {
 
     /** Close the socket connection. */
     public void disconnect() {
-        logger.info("Anel NET-PwrCtrl listener stopped for: '{}:{}'", host, receivePort);
+        logger.debug("Anel NET-PwrCtrl listener stopped for: '{}:{}'", host, receivePort);
         listener = null;
         final DatagramSocket receivingSocket2 = receivingSocket;
         if (receivingSocket2 != null) {
@@ -224,7 +229,7 @@ public class AnelUdpConnector {
         final DatagramSocket sendingSocket2 = sendingSocket;
         if (sendingSocket2 != null) {
             synchronized (this) {
-                if (sendingSocket == sendingSocket2) {
+                if (Objects.equals(sendingSocket, sendingSocket2)) {
                     sendingSocket = null;
                     if (!sendingSocket2.isClosed()) {
                         sendingSocket2.close();

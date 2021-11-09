@@ -41,30 +41,30 @@ public class AnelAuthenticationTest {
 
     @Test
     public void authenticationMethod() {
-        assertThat(AuthMethod.of(""), is(AuthMethod.plain));
-        assertThat(AuthMethod.of(" \n"), is(AuthMethod.plain));
-        assertThat(AuthMethod.of(STATUS_HUT_V4), is(AuthMethod.plain));
-        assertThat(AuthMethod.of(STATUS_HUT_V5), is(AuthMethod.plain));
-        assertThat(AuthMethod.of(STATUS_HOME_V4_6), is(AuthMethod.xorBase64));
-        assertThat(AuthMethod.of(STATUS_UDP_SPEC_EXAMPLE_V7), is(AuthMethod.xorBase64));
-        assertThat(AuthMethod.of(STATUS_PRO_EXAMPLE_V4_5), is(AuthMethod.xorBase64));
-        assertThat(AuthMethod.of(STATUS_IO_EXAMPLE_V6_5), is(AuthMethod.xorBase64));
-        assertThat(AuthMethod.of(STATUS_EXAMPLE_V6_0), is(AuthMethod.base64));
+        assertThat(AuthMethod.of(""), is(AuthMethod.PLAIN));
+        assertThat(AuthMethod.of(" \n"), is(AuthMethod.PLAIN));
+        assertThat(AuthMethod.of(STATUS_HUT_V4), is(AuthMethod.PLAIN));
+        assertThat(AuthMethod.of(STATUS_HUT_V5), is(AuthMethod.PLAIN));
+        assertThat(AuthMethod.of(STATUS_HOME_V4_6), is(AuthMethod.XORBASE64));
+        assertThat(AuthMethod.of(STATUS_UDP_SPEC_EXAMPLE_V7), is(AuthMethod.XORBASE64));
+        assertThat(AuthMethod.of(STATUS_PRO_EXAMPLE_V4_5), is(AuthMethod.XORBASE64));
+        assertThat(AuthMethod.of(STATUS_IO_EXAMPLE_V6_5), is(AuthMethod.XORBASE64));
+        assertThat(AuthMethod.of(STATUS_EXAMPLE_V6_0), is(AuthMethod.BASE64));
     }
 
     @Test
     public void encodeUserPasswordPlain() {
-        encodeUserPassword(AuthMethod.plain, (u, p) -> u + p);
+        encodeUserPassword(AuthMethod.PLAIN, (u, p) -> u + p);
     }
 
     @Test
     public void encodeUserPasswordBase64() {
-        encodeUserPassword(AuthMethod.base64, (u, p) -> base64(u + p));
+        encodeUserPassword(AuthMethod.BASE64, (u, p) -> base64(u + p));
     }
 
     @Test
     public void encodeUserPasswordXorBase64() {
-        encodeUserPassword(AuthMethod.xorBase64, (u, p) -> base64(xor(u + p, p)));
+        encodeUserPassword(AuthMethod.XORBASE64, (u, p) -> base64(xor(u + p, p)));
     }
 
     private void encodeUserPassword(AuthMethod authMethod, BiFunction<String, String, String> expectedEncoding) {

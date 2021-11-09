@@ -45,14 +45,11 @@ public class AnelState {
     public final String status;
 
     /** Device IP address; read-only. */
-    @Nullable
-    public final String ip;
+    public final @Nullable String ip;
     /** Device name; read-only. */
-    @Nullable
-    public final String name;
+    public final @Nullable String name;
     /** Device mac address; read-only. */
-    @Nullable
-    public final String mac;
+    public final @Nullable String mac;
 
     /** Device relay names; read-only. */
     public final String[] relayName = new String[8];
@@ -69,40 +66,14 @@ public class AnelState {
     public final Boolean[] ioIsInput = new Boolean[8];
 
     /** Device temperature (optional); read-only. */
-    @Nullable
-    public final String temperature;
-
-    /** Power voltage, e.g. "226.2" (optional); read-only. */
-    @Nullable
-    public final String powerVoltageRMS;
-    /** Power current, e.g. "0.0004" (optional); read-only. */
-    @Nullable
-    public final String powerCurrentRMS;
-    /** Power line frequency, e.g. "50.044" (optional); read-only. */
-    @Nullable
-    public final String powerLineFrequency;
-    /** Active power, e.g. "0.03" (optional); read-only. */
-    @Nullable
-    public final String powerActivePower;
-    /** Apparent power, e.g. "0.00" (optional); read-only. */
-    @Nullable
-    public final String powerApparentPower;
-    /** Reactive power, e.g. "0.05" (optional); read-only. */
-    @Nullable
-    public final String powerReactivePower;
-    /** Power factor, e.g. "1.0000" (optional); read-only. */
-    @Nullable
-    public final String powerPowerFactor;
+    public final @Nullable String temperature;
 
     /** Sensor temperature, e.g. "20.61" (optional); read-only. */
-    @Nullable
-    public final String sensorTemperature;
+    public final @Nullable String sensorTemperature;
     /** Sensor Humidity, e.g. "40.7" (optional); read-only. */
-    @Nullable
-    public final String sensorHumidity;
+    public final @Nullable String sensorHumidity;
     /** Sensor Brightness, e.g. "7.0" (optional); read-only. */
-    @Nullable
-    public final String sensorBrightness;
+    public final @Nullable String sensorBrightness;
 
     private static final AnelState INVALID_STATE = new AnelState();
 
@@ -119,13 +90,6 @@ public class AnelState {
         name = null;
         mac = null;
         temperature = null;
-        powerVoltageRMS = null;
-        powerCurrentRMS = null;
-        powerLineFrequency = null;
-        powerActivePower = null;
-        powerApparentPower = null;
-        powerReactivePower = null;
-        powerPowerFactor = null;
         sensorTemperature = null;
         sensorHumidity = null;
         sensorBrightness = null;
@@ -192,15 +156,6 @@ public class AnelState {
 
         if (segments.length > 34 && "p".equals(segments[27])) {
 
-            // optional power measurement (if device supports it and firmware >= 6.0)
-            powerVoltageRMS = segments[28];
-            powerCurrentRMS = segments[29];
-            powerLineFrequency = segments[30];
-            powerActivePower = segments[31];
-            powerApparentPower = segments[32];
-            powerReactivePower = segments[33];
-            powerPowerFactor = segments[34];
-
             // optional sensor (if device supports it and firmware >= 6.1) after power management
             if (segments.length > 38 && "s".equals(segments[35])) {
                 sensorTemperature = segments[36];
@@ -214,15 +169,6 @@ public class AnelState {
 
         } else if (segments.length > 31 && "n".equals(segments[27]) && "s".equals(segments[28])) {
 
-            // no power measurement
-            powerVoltageRMS = null;
-            powerCurrentRMS = null;
-            powerLineFrequency = null;
-            powerActivePower = null;
-            powerApparentPower = null;
-            powerReactivePower = null;
-            powerPowerFactor = null;
-
             // but sensor! (if device supports it and firmware >= 6.1)
             sensorTemperature = segments[29];
             sensorHumidity = segments[30];
@@ -230,13 +176,6 @@ public class AnelState {
 
         } else {
             // firmware <= 6.0 or unknown format; skip rest
-            powerVoltageRMS = null;
-            powerCurrentRMS = null;
-            powerLineFrequency = null;
-            powerActivePower = null;
-            powerApparentPower = null;
-            powerReactivePower = null;
-            powerPowerFactor = null;
             sensorTemperature = null;
             sensorBrightness = null;
             sensorHumidity = null;
@@ -281,13 +220,6 @@ public class AnelState {
         result = prime * result + Arrays.hashCode(relayName);
         result = prime * result + Arrays.hashCode(relayState);
         result = prime * result + ((temperature == null) ? 0 : temperature.hashCode());
-        result = prime * result + ((powerActivePower == null) ? 0 : powerActivePower.hashCode());
-        result = prime * result + ((powerApparentPower == null) ? 0 : powerApparentPower.hashCode());
-        result = prime * result + ((powerCurrentRMS == null) ? 0 : powerCurrentRMS.hashCode());
-        result = prime * result + ((powerLineFrequency == null) ? 0 : powerLineFrequency.hashCode());
-        result = prime * result + ((powerPowerFactor == null) ? 0 : powerPowerFactor.hashCode());
-        result = prime * result + ((powerReactivePower == null) ? 0 : powerReactivePower.hashCode());
-        result = prime * result + ((powerVoltageRMS == null) ? 0 : powerVoltageRMS.hashCode());
         result = prime * result + ((sensorBrightness == null) ? 0 : sensorBrightness.hashCode());
         result = prime * result + ((sensorHumidity == null) ? 0 : sensorHumidity.hashCode());
         result = prime * result + ((sensorTemperature == null) ? 0 : sensorTemperature.hashCode());
@@ -336,55 +268,6 @@ public class AnelState {
                 return false;
             }
         } else if (!name.equals(other.name)) {
-            return false;
-        }
-        if (powerActivePower == null) {
-            if (other.powerActivePower != null) {
-                return false;
-            }
-        } else if (!powerActivePower.equals(other.powerActivePower)) {
-            return false;
-        }
-        if (powerApparentPower == null) {
-            if (other.powerApparentPower != null) {
-                return false;
-            }
-        } else if (!powerApparentPower.equals(other.powerApparentPower)) {
-            return false;
-        }
-        if (powerCurrentRMS == null) {
-            if (other.powerCurrentRMS != null) {
-                return false;
-            }
-        } else if (!powerCurrentRMS.equals(other.powerCurrentRMS)) {
-            return false;
-        }
-        if (powerLineFrequency == null) {
-            if (other.powerLineFrequency != null) {
-                return false;
-            }
-        } else if (!powerLineFrequency.equals(other.powerLineFrequency)) {
-            return false;
-        }
-        if (powerPowerFactor == null) {
-            if (other.powerPowerFactor != null) {
-                return false;
-            }
-        } else if (!powerPowerFactor.equals(other.powerPowerFactor)) {
-            return false;
-        }
-        if (powerReactivePower == null) {
-            if (other.powerReactivePower != null) {
-                return false;
-            }
-        } else if (!powerReactivePower.equals(other.powerReactivePower)) {
-            return false;
-        }
-        if (powerVoltageRMS == null) {
-            if (other.powerVoltageRMS != null) {
-                return false;
-            }
-        } else if (!powerVoltageRMS.equals(other.powerVoltageRMS)) {
             return false;
         }
         if (sensorBrightness == null) {

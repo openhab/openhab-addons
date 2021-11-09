@@ -23,6 +23,14 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class AnelConfiguration {
 
+    public @Nullable String hostname;
+    public @Nullable String user;
+    public @Nullable String password;
+    /** Port to send data from openhab to device. */
+    public int udpSendPort = IAnelConstants.DEFAULT_SEND_PORT;
+    /** Openhab receives messages via this port from device. */
+    public int udpReceivePort = IAnelConstants.DEFAULT_RECEIVE_PORT;
+
     public AnelConfiguration() {
     }
 
@@ -34,17 +42,6 @@ public class AnelConfiguration {
         this.udpSendPort = sendPort;
         this.udpReceivePort = receivePort;
     }
-
-    @Nullable
-    public String hostname;
-    @Nullable
-    public String user;
-    @Nullable
-    public String password;
-    /** Port to send data from openhab to device. */
-    public int udpSendPort = IAnelConstants.DEFAULT_SEND_PORT;
-    /** Openhab receives messages via this port from device. */
-    public int udpReceivePort = IAnelConstants.DEFAULT_RECEIVE_PORT;
 
     @Override
     public String toString() {

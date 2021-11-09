@@ -22,8 +22,6 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AnelHandlerFactory} is responsible for creating things and thing
@@ -35,11 +33,8 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.anel", service = ThingHandlerFactory.class)
 public class AnelHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Logger logger = LoggerFactory.getLogger(AnelHandlerFactory.class);
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        logger.debug("asking to support '{}': {}", thingTypeUID, SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID));
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 

@@ -19,11 +19,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.anel.internal.state.AnelState;
 import org.openhab.binding.anel.internal.state.AnelStateUpdater;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 
@@ -33,7 +35,7 @@ import org.openhab.core.types.State;
  * @author Patrick Koenemann - Initial contribution
  */
 @NonNullByDefault
-public class AnelStateUpdaterTest implements IAnelTestStatus {
+public class AnelStateUpdaterTest implements IAnelTestStatus, IAnelConstants {
 
     private final AnelStateUpdater stateUpdater = new AnelStateUpdater();
 
@@ -56,11 +58,11 @@ public class AnelStateUpdaterTest implements IAnelTestStatus {
         Map<String, State> updates = stateUpdater.getChannelUpdates(null, newState);
         // then
         final Map<String, State> expected = new HashMap<>();
-        expected.put(IAnelConstants.CHANNEL_NAME, new StringType("NET-CONTROL"));
+        expected.put(CHANNEL_NAME, new StringType("NET-CONTROL"));
         for (int i = 1; i <= 8; i++) {
-            expected.put(IAnelConstants.CHANNEL_RELAY_NAME.get(i - 1), new StringType("Nr. " + i));
-            expected.put(IAnelConstants.CHANNEL_RELAY_STATE.get(i - 1), OnOffType.from(i % 2 == 1));
-            expected.put(IAnelConstants.CHANNEL_RELAY_LOCKED.get(i - 1), OnOffType.from(i > 3));
+            expected.put(CHANNEL_RELAY_NAME.get(i - 1), new StringType("Nr. " + i));
+            expected.put(CHANNEL_RELAY_STATE.get(i - 1), OnOffType.from(i % 2 == 1));
+            expected.put(CHANNEL_RELAY_LOCKED.get(i - 1), OnOffType.from(i > 3));
         }
         assertThat(updates, equalTo(expected));
     }
@@ -72,30 +74,24 @@ public class AnelStateUpdaterTest implements IAnelTestStatus {
         // when
         Map<String, State> updates = stateUpdater.getChannelUpdates(null, newState);
         // then
-        final Map<String, State> expected = new HashMap<>();
-        expected.put(IAnelConstants.CHANNEL_NAME, new StringType("NET-CONTROL"));
-        expected.put(IAnelConstants.CHANNEL_TEMPERATURE, new DecimalType("27.7"));
+        assertThat(updates.size(), is(5 + 8 * 6));
+        assertThat(updates.get(CHANNEL_NAME), equalTo(new StringType("NET-CONTROL")));
+        assertTemperature(updates.get(CHANNEL_TEMPERATURE), 27.7);
+
+        assertThat(updates.get(CHANNEL_SENSOR_BRIGHTNESS), equalTo(new DecimalType("7")));
+        assertThat(updates.get(CHANNEL_SENSOR_HUMIDITY), equalTo(new DecimalType("40.7")));
+        assertTemperature(updates.get(CHANNEL_SENSOR_TEMPERATURE), 20.61);
+
         for (int i = 1; i <= 8; i++) {
-            expected.put(IAnelConstants.CHANNEL_RELAY_NAME.get(i - 1), new StringType("Nr. " + i));
-            expected.put(IAnelConstants.CHANNEL_RELAY_STATE.get(i - 1), OnOffType.from(i <= 3 || i >= 7));
-            expected.put(IAnelConstants.CHANNEL_RELAY_LOCKED.get(i - 1), OnOffType.OFF);
+            assertThat(updates.get(CHANNEL_RELAY_NAME.get(i - 1)), equalTo(new StringType("Nr. " + i)));
+            assertThat(updates.get(CHANNEL_RELAY_STATE.get(i - 1)), equalTo(OnOffType.from(i <= 3 || i >= 7)));
+            assertThat(updates.get(CHANNEL_RELAY_LOCKED.get(i - 1)), equalTo(OnOffType.OFF));
         }
         for (int i = 1; i <= 8; i++) {
-            expected.put(IAnelConstants.CHANNEL_IO_NAME.get(i - 1), new StringType("IO-" + i));
-            expected.put(IAnelConstants.CHANNEL_IO_STATE.get(i - 1), OnOffType.OFF);
-            expected.put(IAnelConstants.CHANNEL_IO_MODE.get(i - 1), OnOffType.OFF);
+            assertThat(updates.get(CHANNEL_IO_NAME.get(i - 1)), equalTo(new StringType("IO-" + i)));
+            assertThat(updates.get(CHANNEL_IO_STATE.get(i - 1)), equalTo(OnOffType.OFF));
+            assertThat(updates.get(CHANNEL_IO_MODE.get(i - 1)), equalTo(OnOffType.OFF));
         }
-        expected.put(IAnelConstants.CHANNEL_POWER_VOLTAGE_RMS, new DecimalType("225.9"));
-        expected.put(IAnelConstants.CHANNEL_POWER_CURRENT_RMS, new DecimalType("0.0004"));
-        expected.put(IAnelConstants.CHANNEL_POWER_LINE_FREQUENCY, new DecimalType("50.056"));
-        expected.put(IAnelConstants.CHANNEL_POWER_ACTIVE_POWER, new DecimalType("0.04"));
-        expected.put(IAnelConstants.CHANNEL_POWER_APPARENT_POWER, new DecimalType("0"));
-        expected.put(IAnelConstants.CHANNEL_POWER_REACTIVE_POWER, new DecimalType("0"));
-        expected.put(IAnelConstants.CHANNEL_POWER_POWER_FACTOR, new DecimalType("1"));
-        expected.put(IAnelConstants.CHANNEL_SENSOR_TEMPERATURE, new DecimalType("20.61"));
-        expected.put(IAnelConstants.CHANNEL_SENSOR_HUMIDITY, new DecimalType("40.7"));
-        expected.put(IAnelConstants.CHANNEL_SENSOR_BRIGHTNESS, new DecimalType("7"));
-        assertThat(updates, equalTo(expected));
     }
 
     @Test
@@ -107,7 +103,7 @@ public class AnelStateUpdaterTest implements IAnelTestStatus {
         Map<String, State> updates = stateUpdater.getChannelUpdates(oldState, newState);
         // then
         final Map<String, State> expected = new HashMap<>();
-        expected.put(IAnelConstants.CHANNEL_RELAY_STATE.get(3), OnOffType.ON);
+        expected.put(CHANNEL_RELAY_STATE.get(3), OnOffType.ON);
         assertThat(updates, equalTo(expected));
     }
 
@@ -119,9 +115,8 @@ public class AnelStateUpdaterTest implements IAnelTestStatus {
         // when
         Map<String, State> updates = stateUpdater.getChannelUpdates(oldState, newState);
         // then
-        final Map<String, State> expected = new HashMap<>();
-        expected.put(IAnelConstants.CHANNEL_TEMPERATURE, new DecimalType("27.1"));
-        assertThat(updates, equalTo(expected));
+        assertThat(updates.size(), is(1));
+        assertTemperature(updates.get(CHANNEL_TEMPERATURE), 27.1);
     }
 
     @Test
@@ -132,10 +127,16 @@ public class AnelStateUpdaterTest implements IAnelTestStatus {
         // when
         Map<String, State> updates = stateUpdater.getChannelUpdates(oldState, newState);
         // then
-        final Map<String, State> expected = new HashMap<>();
-        expected.put(IAnelConstants.CHANNEL_SENSOR_TEMPERATURE, new DecimalType("20.6"));
-        expected.put(IAnelConstants.CHANNEL_SENSOR_HUMIDITY, new DecimalType("40"));
-        expected.put(IAnelConstants.CHANNEL_SENSOR_BRIGHTNESS, new DecimalType("7.1"));
-        assertThat(updates, equalTo(expected));
+        assertThat(updates.size(), is(3));
+        assertThat(updates.get(CHANNEL_SENSOR_BRIGHTNESS), equalTo(new DecimalType("7.1")));
+        assertThat(updates.get(CHANNEL_SENSOR_HUMIDITY), equalTo(new DecimalType("40")));
+        assertTemperature(updates.get(CHANNEL_SENSOR_TEMPERATURE), 20.6);
+    }
+
+    private void assertTemperature(@Nullable State state, double value) {
+        assertThat(state, isA(QuantityType.class));
+        if (state instanceof QuantityType<?>) {
+            assertThat(((QuantityType<?>) state).doubleValue(), closeTo(value, 0.0001d));
+        }
     }
 }

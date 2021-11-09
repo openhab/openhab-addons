@@ -22,9 +22,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.anel.internal.IAnelConstants;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+
+import tech.units.indriya.unit.Units;
 
 /**
  * Get updates for {@link AnelState}s.
@@ -32,7 +35,7 @@ import org.openhab.core.types.UnDefType;
  * @author Patrick Koenemann - Initial contribution
  */
 @NonNullByDefault
-public class AnelStateUpdater implements IAnelConstants {
+public class AnelStateUpdater {
 
     public @Nullable State getChannelUpdate(String channelId, @Nullable AnelState state) {
         if (state == null) {
@@ -66,39 +69,17 @@ public class AnelStateUpdater implements IAnelConstants {
                 return getStringState(state.name);
             }
             if (IAnelConstants.CHANNEL_TEMPERATURE.equals(channelId)) {
-                return getDecimalState(state.temperature);
+                return getTemperatureState(state.temperature);
             }
 
             if (IAnelConstants.CHANNEL_SENSOR_TEMPERATURE.equals(channelId)) {
-                return getDecimalState(state.sensorTemperature);
+                return getTemperatureState(state.sensorTemperature);
             }
             if (IAnelConstants.CHANNEL_SENSOR_HUMIDITY.equals(channelId)) {
                 return getDecimalState(state.sensorHumidity);
             }
             if (IAnelConstants.CHANNEL_SENSOR_BRIGHTNESS.equals(channelId)) {
                 return getDecimalState(state.sensorBrightness);
-            }
-
-            if (IAnelConstants.CHANNEL_POWER_VOLTAGE_RMS.equals(channelId)) {
-                return getDecimalState(state.powerVoltageRMS);
-            }
-            if (IAnelConstants.CHANNEL_POWER_CURRENT_RMS.equals(channelId)) {
-                return getDecimalState(state.powerCurrentRMS);
-            }
-            if (IAnelConstants.CHANNEL_POWER_LINE_FREQUENCY.equals(channelId)) {
-                return getDecimalState(state.powerLineFrequency);
-            }
-            if (IAnelConstants.CHANNEL_POWER_ACTIVE_POWER.equals(channelId)) {
-                return getDecimalState(state.powerActivePower);
-            }
-            if (IAnelConstants.CHANNEL_POWER_APPARENT_POWER.equals(channelId)) {
-                return getDecimalState(state.powerApparentPower);
-            }
-            if (IAnelConstants.CHANNEL_POWER_REACTIVE_POWER.equals(channelId)) {
-                return getDecimalState(state.powerReactivePower);
-            }
-            if (IAnelConstants.CHANNEL_POWER_POWER_FACTOR.equals(channelId)) {
-                return getDecimalState(state.powerPowerFactor);
             }
         }
         return null;
@@ -114,12 +95,12 @@ public class AnelStateUpdater implements IAnelConstants {
         // name and device temperature
         final State newName = getNewStringState(oldState == null ? null : oldState.name, newState.name);
         if (newName != null) {
-            updates.put(CHANNEL_NAME, newName);
+            updates.put(IAnelConstants.CHANNEL_NAME, newName);
         }
-        final State newTemperature = getNewDecimalState(oldState == null ? null : oldState.temperature,
+        final State newTemperature = getNewTemperatureState(oldState == null ? null : oldState.temperature,
                 newState.temperature);
         if (newTemperature != null) {
-            updates.put(CHANNEL_TEMPERATURE, newTemperature);
+            updates.put(IAnelConstants.CHANNEL_TEMPERATURE, newTemperature);
         }
 
         // relay properties
@@ -127,19 +108,19 @@ public class AnelStateUpdater implements IAnelConstants {
             final State newRelayName = getNewStringState(oldState == null ? null : oldState.relayName[i],
                     newState.relayName[i]);
             if (newRelayName != null) {
-                updates.put(CHANNEL_RELAY_NAME.get(i), newRelayName);
+                updates.put(IAnelConstants.CHANNEL_RELAY_NAME.get(i), newRelayName);
             }
 
             final State newRelayState = getNewSwitchState(oldState == null ? null : oldState.relayState[i],
                     newState.relayState[i]);
             if (newRelayState != null) {
-                updates.put(CHANNEL_RELAY_STATE.get(i), newRelayState);
+                updates.put(IAnelConstants.CHANNEL_RELAY_STATE.get(i), newRelayState);
             }
 
             final State newRelayLocked = getNewSwitchState(oldState == null ? null : oldState.relayLocked[i],
                     newState.relayLocked[i]);
             if (newRelayLocked != null) {
-                updates.put(CHANNEL_RELAY_LOCKED.get(i), newRelayLocked);
+                updates.put(IAnelConstants.CHANNEL_RELAY_LOCKED.get(i), newRelayLocked);
             }
         }
 
@@ -147,74 +128,37 @@ public class AnelStateUpdater implements IAnelConstants {
         for (int i = 0; i < 8; i++) {
             final State newIOName = getNewStringState(oldState == null ? null : oldState.ioName[i], newState.ioName[i]);
             if (newIOName != null) {
-                updates.put(CHANNEL_IO_NAME.get(i), newIOName);
+                updates.put(IAnelConstants.CHANNEL_IO_NAME.get(i), newIOName);
             }
 
             final State newIOIsInput = getNewSwitchState(oldState == null ? null : oldState.ioIsInput[i],
                     newState.ioIsInput[i]);
             if (newIOIsInput != null) {
-                updates.put(CHANNEL_IO_MODE.get(i), newIOIsInput);
+                updates.put(IAnelConstants.CHANNEL_IO_MODE.get(i), newIOIsInput);
             }
 
             final State newIOState = getNewSwitchState(oldState == null ? null : oldState.ioState[i],
                     newState.ioState[i]);
             if (newIOState != null) {
-                updates.put(CHANNEL_IO_STATE.get(i), newIOState);
+                updates.put(IAnelConstants.CHANNEL_IO_STATE.get(i), newIOState);
             }
         }
 
         // sensor values
-        final State newSensorTemperature = getNewDecimalState(oldState == null ? null : oldState.sensorTemperature,
+        final State newSensorTemperature = getNewTemperatureState(oldState == null ? null : oldState.sensorTemperature,
                 newState.sensorTemperature);
         if (newSensorTemperature != null) {
-            updates.put(CHANNEL_SENSOR_TEMPERATURE, newSensorTemperature);
+            updates.put(IAnelConstants.CHANNEL_SENSOR_TEMPERATURE, newSensorTemperature);
         }
         final State newSensorHumidity = getNewDecimalState(oldState == null ? null : oldState.sensorHumidity,
                 newState.sensorHumidity);
         if (newSensorHumidity != null) {
-            updates.put(CHANNEL_SENSOR_HUMIDITY, newSensorHumidity);
+            updates.put(IAnelConstants.CHANNEL_SENSOR_HUMIDITY, newSensorHumidity);
         }
         final State newSensorBrightness = getNewDecimalState(oldState == null ? null : oldState.sensorBrightness,
                 newState.sensorBrightness);
         if (newSensorBrightness != null) {
-            updates.put(CHANNEL_SENSOR_BRIGHTNESS, newSensorBrightness);
-        }
-
-        // power measurement
-        final State newPowerVoltageRMS = getNewDecimalState(oldState == null ? null : oldState.powerVoltageRMS,
-                newState.powerVoltageRMS);
-        if (newPowerVoltageRMS != null) {
-            updates.put(CHANNEL_POWER_VOLTAGE_RMS, newPowerVoltageRMS);
-        }
-        final State newPowerCurrentRMS = getNewDecimalState(oldState == null ? null : oldState.powerCurrentRMS,
-                newState.powerCurrentRMS);
-        if (newPowerCurrentRMS != null) {
-            updates.put(CHANNEL_POWER_CURRENT_RMS, newPowerCurrentRMS);
-        }
-        final State newPowerLineFrequency = getNewDecimalState(oldState == null ? null : oldState.powerLineFrequency,
-                newState.powerLineFrequency);
-        if (newPowerLineFrequency != null) {
-            updates.put(CHANNEL_POWER_LINE_FREQUENCY, newPowerLineFrequency);
-        }
-        final State newPowerActivePower = getNewDecimalState(oldState == null ? null : oldState.powerActivePower,
-                newState.powerActivePower);
-        if (newPowerActivePower != null) {
-            updates.put(CHANNEL_POWER_ACTIVE_POWER, newPowerActivePower);
-        }
-        final State newPowerApparentPower = getNewDecimalState(oldState == null ? null : oldState.powerApparentPower,
-                newState.powerApparentPower);
-        if (newPowerApparentPower != null) {
-            updates.put(CHANNEL_POWER_APPARENT_POWER, newPowerApparentPower);
-        }
-        final State newPowerReactivePower = getNewDecimalState(oldState == null ? null : oldState.powerReactivePower,
-                newState.powerReactivePower);
-        if (newPowerReactivePower != null) {
-            updates.put(CHANNEL_POWER_REACTIVE_POWER, newPowerReactivePower);
-        }
-        final State newPowerPowerFactor = getNewDecimalState(oldState == null ? null : oldState.powerPowerFactor,
-                newState.powerPowerFactor);
-        if (newPowerPowerFactor != null) {
-            updates.put(CHANNEL_POWER_POWER_FACTOR, newPowerPowerFactor);
+            updates.put(IAnelConstants.CHANNEL_SENSOR_BRIGHTNESS, newSensorBrightness);
         }
 
         return updates;
@@ -228,16 +172,28 @@ public class AnelStateUpdater implements IAnelConstants {
         return value == null ? null : new DecimalType(value);
     }
 
+    private @Nullable State getTemperatureState(@Nullable String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        final float floatValue = Float.parseFloat(value);
+        return QuantityType.valueOf(floatValue, Units.CELSIUS);
+    }
+
     private @Nullable State getSwitchState(@Nullable Boolean value) {
         return value == null ? null : OnOffType.from(value.booleanValue());
     }
 
     private @Nullable State getNewStringState(@Nullable String oldValue, @Nullable String newValue) {
-        return getNewState(oldValue, newValue, value -> new StringType(value));
+        return getNewState(oldValue, newValue, StringType::new);
     }
 
     private @Nullable State getNewDecimalState(@Nullable String oldValue, @Nullable String newValue) {
-        return getNewState(oldValue, newValue, value -> new DecimalType(value));
+        return getNewState(oldValue, newValue, DecimalType::new);
+    }
+
+    private @Nullable State getNewTemperatureState(@Nullable String oldValue, @Nullable String newValue) {
+        return getNewState(oldValue, newValue, value -> QuantityType.valueOf(Float.parseFloat(value), Units.CELSIUS));
     }
 
     private @Nullable State getNewSwitchState(@Nullable Boolean oldValue, @Nullable Boolean newValue) {

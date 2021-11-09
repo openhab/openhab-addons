@@ -123,6 +123,11 @@ public class AnelHandler extends BaseThingHandler {
             periodicRefreshTask = scheduler.scheduleWithFixedDelay(this::periodicRefresh, //
                     0, IAnelConstants.REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
 
+        } catch (InterruptedException e) {
+
+            // OH shutdown - don't log anything, just clean up
+            dispose();
+
         } catch (Exception e) {
 
             logger.debug("Connection to '{}' failed", config, e);
@@ -173,18 +178,17 @@ public class AnelHandler extends BaseThingHandler {
         if (udpConnector2 == null || !udpConnector2.isConnected() || getThing().getStatus() != ThingStatus.ONLINE) {
 
             // don't log initial refresh commands because they may occur before thing is online
-            if (!(command instanceof RefreshType) && getThing().getStatus() != ThingStatus.ONLINE) {
-                logger.info("Cannot handle command '{}' for channel '{}' because thing ({}) is not (yet) connected: {}", //
+            if (!(command instanceof RefreshType)) {
+                logger.debug("Cannot handle command '{}' for channel '{}' because thing ({}) is not connected: {}", //
                         command, channelUID.getId(), getThing().getStatus(), config);
             }
             return;
         }
 
-        @Nullable
         String anelCommand = null;
         if (command instanceof RefreshType) {
 
-            final @Nullable State update = stateUpdater.getChannelUpdate(channelUID.getId(), state);
+            final State update = stateUpdater.getChannelUpdate(channelUID.getId(), state);
             if (update != null) {
 
                 updateState(channelUID, update);
@@ -203,7 +207,7 @@ public class AnelHandler extends BaseThingHandler {
             }
         } else if (command instanceof OnOffType) {
 
-            final @Nullable State lockedState;
+            final State lockedState;
             synchronized (this) { // lock needed to update the state if needed
 
                 lockedState = commandHandler.getLockedState(state, channelUID.getId());

@@ -14,6 +14,7 @@ package org.openhab.binding.anel.internal.discovery;
 
 import java.io.IOException;
 import java.net.BindException;
+import java.nio.channels.ClosedByInterruptException;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -22,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.anel.internal.AnelUdpConnector;
 import org.openhab.binding.anel.internal.IAnelConstants;
 import org.openhab.core.common.AbstractUID;
+import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -55,7 +57,7 @@ public class AnelDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(AnelDiscoveryService.class);
 
-    private boolean scanRunning = false;
+    private @Nullable Thread scanningThread = null;
 
     public AnelDiscoveryService() throws IllegalArgumentException {
         super(IAnelConstants.SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS);
@@ -71,109 +73,106 @@ public class AnelDiscoveryService extends AbstractDiscoveryService {
          * Do not use the scheduler, otherwise further threads (for handling discovered things) are not started
          * immediately but only after the scan is complete.
          */
-        new Thread(this::doScan).start();
+        final Thread thread = new NamedThreadFactory(IAnelConstants.BINDING_ID, true).newThread(this::doScan);
+        thread.start();
+        scanningThread = thread;
     }
 
     private void doScan() {
         logger.debug("Starting scan of Anel devices via UDP broadcast messages...");
 
-        if (!scanRunning) {
-            scanRunning = true;
+        try {
+            for (final String broadcastAddress : BROADCAST_ADDRESSES) {
 
-            try {
-                for (final String broadcastAddress : BROADCAST_ADDRESSES) {
+                // for each available broadcast network address try factory default ports first
+                scan(broadcastAddress, IAnelConstants.DEFAULT_SEND_PORT, IAnelConstants.DEFAULT_RECEIVE_PORT);
 
-                    // for each available broadcast network address try factory default ports first
-                    scan(broadcastAddress, IAnelConstants.DEFAULT_SEND_PORT, IAnelConstants.DEFAULT_RECEIVE_PORT);
+                // try reasonable ports...
+                for (int[] ports : DISCOVERY_PORTS) {
+                    int sendPort = ports[0];
+                    int receivePort = ports[1];
 
-                    // try reasonable ports...
-                    for (int[] ports : DISCOVERY_PORTS) {
-                        int sendPort = ports[0];
-                        int receivePort = ports[1];
-
-                        // ...and continue if a device was found, maybe there is yet another device on the next port
-                        while (scan(broadcastAddress, sendPort, receivePort) || sendPort == ports[0]) {
-                            sendPort++;
-                            receivePort++;
-                        }
+                    // ...and continue if a device was found, maybe there is yet another device on the next port
+                    while (scan(broadcastAddress, sendPort, receivePort) || sendPort == ports[0]) {
+                        sendPort++;
+                        receivePort++;
                     }
                 }
-            } catch (Exception e) {
-
-                logger.warn("Unexpected exception during anel device scan", e);
-
-            } finally {
-
-                scanRunning = false;
             }
+        } catch (InterruptedException | ClosedByInterruptException e) {
+
+            return; // OH shutdown or scan was aborted
+
+        } catch (Exception e) {
+
+            logger.warn("Unexpected exception during anel device scan", e);
+
+        } finally {
+
+            scanningThread = null;
         }
         logger.debug("Scan finished.");
     }
 
     /* @return Whether or not a device was found for the given broadcast address and port. */
-    private boolean scan(String broadcastAddress, int sendPort, int receivePort) throws IOException {
-        if (scanRunning) {
-            logger.debug("Scanning {}:{}...", broadcastAddress, sendPort);
-            final AnelUdpConnector udpConnector = new AnelUdpConnector(broadcastAddress, receivePort, sendPort,
-                    scheduler);
+    private boolean scan(String broadcastAddress, int sendPort, int receivePort)
+            throws IOException, InterruptedException {
+        logger.debug("Scanning {}:{}...", broadcastAddress, sendPort);
+        final AnelUdpConnector udpConnector = new AnelUdpConnector(broadcastAddress, receivePort, sendPort, scheduler);
 
-            try {
-                final boolean[] deviceDiscovered = new boolean[] { false };
-                udpConnector.connect(status -> {
-                    // avoid the same device to be discovered multiple times for multiple responses
-                    if (!deviceDiscovered[0]) {
-                        boolean discoverDevice = true;
-                        synchronized (this) {
-                            if (deviceDiscovered[0]) {
-                                discoverDevice = false; // already discovered by another thread
-                            } else {
-                                deviceDiscovered[0] = true; // we discover the device!
-                            }
-                        }
-                        if (discoverDevice) {
-                            // discover device outside synchronized-block
-                            deviceDiscovered(status, sendPort, receivePort);
+        try {
+            final boolean[] deviceDiscovered = new boolean[] { false };
+            udpConnector.connect(status -> {
+                // avoid the same device to be discovered multiple times for multiple responses
+                if (!deviceDiscovered[0]) {
+                    boolean discoverDevice = true;
+                    synchronized (this) {
+                        if (deviceDiscovered[0]) {
+                            discoverDevice = false; // already discovered by another thread
+                        } else {
+                            deviceDiscovered[0] = true; // we discover the device!
                         }
                     }
-                }, false);
-
-                udpConnector.send(IAnelConstants.BROADCAST_DISCOVERY_MSG);
-
-                // answer expected within 50-600ms on a regular network; wait up to 2sec just to make sure
-                for (int delay = 0; delay < 10 && !deviceDiscovered[0]; delay++) {
-                    Thread.sleep(100 * DISCOVER_DEVICE_TIMEOUT_SECONDS); // wait 10 x 200ms = 2sec
+                    if (discoverDevice) {
+                        // discover device outside synchronized-block
+                        deviceDiscovered(status, sendPort, receivePort);
+                    }
                 }
+            }, false);
 
-                return deviceDiscovered[0];
+            udpConnector.send(IAnelConstants.BROADCAST_DISCOVERY_MSG);
 
-            } catch (BindException e) {
-
-                // most likely socket is already in use, ignore this exception.
-                logger.debug(
-                        "Invalid address {} or one of the ports {} or {} is already in use. Skipping scan of these ports.",
-                        broadcastAddress, sendPort, receivePort);
-
-            } catch (InterruptedException e) {
-
-                // interrupted...
-
-            } finally {
-
-                udpConnector.disconnect();
+            // answer expected within 50-600ms on a regular network; wait up to 2sec just to make sure
+            for (int delay = 0; delay < 10 && !deviceDiscovered[0]; delay++) {
+                Thread.sleep(100 * DISCOVER_DEVICE_TIMEOUT_SECONDS); // wait 10 x 200ms = 2sec
             }
+
+            return deviceDiscovered[0];
+
+        } catch (BindException e) {
+
+            // most likely socket is already in use, ignore this exception.
+            logger.debug(
+                    "Invalid address {} or one of the ports {} or {} is already in use. Skipping scan of these ports.",
+                    broadcastAddress, sendPort, receivePort);
+
+        } finally {
+
+            udpConnector.disconnect();
         }
         return false;
     }
 
     @Override
     protected synchronized void stopScan() {
-        scanRunning = false;
+        final Thread thread = scanningThread;
+        if (thread != null) {
+            thread.interrupt();
+        }
         super.stopScan();
     }
 
     private void deviceDiscovered(String status, int sendPort, int receivePort) {
-        logger.debug("Discovery result: {}", status);
-
         final String[] segments = status.split(":");
         if (segments.length >= 16) {
 

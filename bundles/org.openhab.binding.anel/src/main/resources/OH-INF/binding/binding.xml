@@ -5,6 +5,5 @@
 
 	<name>Anel NET-PwrCtrl Binding</name>
 	<description>This is the binding for Anel NET-PwrCtrl devices.</description>
-	<author>Patrick Koenemann</author>
 
 </binding:binding>

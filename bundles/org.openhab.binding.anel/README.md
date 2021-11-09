@@ -10,13 +10,15 @@ Some NET-PwrCtrl devices also have 8 I/O ports which can either be used to direc
 
 There are three kinds of devices ([overview on manufacturer's homepage](https://en.anel.eu/?src=/produkte/produkte.htm)):
 
-| [Anel NET-PwrCtrl HUT](https://en.anel.eu/?src=/produkte/hut_2/hut_2.htm) | [Anel NET-PwrCtrl IO](https://en.anel.eu/?src=/produkte/io/io.htm) | [Anel NET-PwrCtrl HOME](https://de.anel.eu/?src=produkte/home/home.htm) (only German version) |
+| [Anel NET-PwrCtrl HUT](https://en.anel.eu/?src=/produkte/hut_2/hut_2.htm) <br/> <sub>( _advanced-firmware_ )</sub>  | [Anel NET-PwrCtrl IO](https://en.anel.eu/?src=/produkte/io/io.htm) <br/> <sub>( _advanced-firmware_ )</sub> | [Anel NET-PwrCtrl HOME](https://de.anel.eu/?src=produkte/home/home.htm) <br/> <sub>( _home_ )</sub> <br/> (only German version) |
 | --- | --- | --- |
-| [![Anel NET-PwrCtrl HUT 2](https://de.anel.eu/image/leisten/HUT2LV-P_500.jpg)](https://de.anel.eu/?src=produkte/hut_2/hut_2.htm) | [![Anel NET-PwrCtrl IO](https://de.anel.eu/image/leisten/IO-Stecker.png)](https://de.anel.eu/?src=produkte/io/io.htm) | [![Anel NET-PwrCtrl HOME](https://de.anel.eu/image/leisten/HOME-DE-500.gif)](https://de.anel.eu/?src=produkte/home/home.htm)
+| [![Anel NET-PwrCtrl HUT 2](https://de.anel.eu/image/leisten/HUT2LV-P_500.jpg)](https://de.anel.eu/?src=produkte/hut_2/hut_2.htm) | [![Anel NET-PwrCtrl IO](https://de.anel.eu/image/leisten/IO-Stecker.png)](https://de.anel.eu/?src=produkte/io/io.htm) | [![Anel NET-PwrCtrl HOME](https://de.anel.eu/image/leisten/HOME-DE-500.gif)](https://de.anel.eu/?src=produkte/home/home.htm) |
 
-* The smallest device, the _HOME_, is the only one with only three power sockets and only available in Germany.
-* The _PRO_ and _REDUNDANT_ have eight power sockets and a similar (simplified) firmware as the _HOME_.
-* All others (_ADV_, _IO_, and the different _HUT_ variants) have eight power sockets / relays, eight IO ports, and an advanced firmware.
+Thing type IDs:
+
+* *home*: The smallest device, the _HOME_, is the only one with only three power sockets and only available in Germany.
+* *simple-firmware*: The _PRO_ and _REDUNDANT_ have eight power sockets and a similar (simplified) firmware as the _HOME_.
+* *advanced-firmware*: All others (_ADV_, _IO_, and the different _HUT_ variants) have eight power sockets / relays, eight IO ports, and an advanced firmware.
 
 An [additional sensor](https://en.anel.eu/?src=/produkte/sensor_1/sensor_1.htm) may be used for monitoring temperature, humidity, and brightness.
 The sensor can be attached to a _HUT_ device via an Ethernet cable (max length is 50m).

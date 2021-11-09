@@ -28,9 +28,9 @@ import org.eclipse.jdt.annotation.Nullable;
 public class AnelAuthentication {
 
     public enum AuthMethod {
-        plain,
-        base64,
-        xorBase64;
+        PLAIN,
+        BASE64,
+        XORBASE64;
 
         private static final Pattern NAME_AND_FIRMWARE_PATTERN = Pattern.compile(":NET-PWRCTRL_0?(\\d+\\.\\d)");
         private static final Pattern LAST_SEGMENT_FIRMWARE_PATTERN = Pattern.compile(":(\\d+\\.\\d)$");
@@ -40,22 +40,22 @@ public class AnelAuthentication {
 
         public static AuthMethod of(String status) {
             if (status.isEmpty()) {
-                return plain; // fallback
+                return PLAIN; // fallback
             }
             if (status.trim().endsWith(":xor") || status.contains(":xor:")) {
-                return xorBase64;
+                return XORBASE64;
             }
             final String firmwareVersion = getFirmwareVersion(status);
             if (firmwareVersion == null) {
-                return plain;
+                return PLAIN;
             }
             if (firmwareVersion.compareTo(MIN_FIRMWARE_XOR_BASE64) >= 0) {
-                return xorBase64; // >= 6.1
+                return XORBASE64; // >= 6.1
             }
             if (firmwareVersion.compareTo(MIN_FIRMWARE_BASE64) >= 0) {
-                return base64; // exactly 6.0
+                return BASE64; // exactly 6.0
             }
-            return plain; // fallback
+            return PLAIN; // fallback
         }
 
         private static @Nullable String getFirmwareVersion(String fullStatusStringOrFirmwareVersion) {
@@ -74,15 +74,15 @@ public class AnelAuthentication {
     public static String getUserPasswordString(@Nullable String user, @Nullable String password,
             @Nullable AuthMethod authMethod) {
         final String userPassword = (user == null ? "" : user) + (password == null ? "" : password);
-        if (authMethod == null || authMethod == AuthMethod.plain) {
+        if (authMethod == null || authMethod == AuthMethod.PLAIN) {
             return userPassword;
         }
 
-        if (authMethod == AuthMethod.base64 || password == null || password.isEmpty()) {
+        if (authMethod == AuthMethod.BASE64 || password == null || password.isEmpty()) {
             return Base64.getEncoder().encodeToString(userPassword.getBytes());
         }
 
-        if (authMethod == AuthMethod.xorBase64) {
+        if (authMethod == AuthMethod.XORBASE64) {
             final StringBuilder result = new StringBuilder();
 
             // XOR

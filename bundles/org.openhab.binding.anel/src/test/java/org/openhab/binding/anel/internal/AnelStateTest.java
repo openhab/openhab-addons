@@ -45,13 +45,6 @@ public class AnelStateTest implements IAnelTestStatus {
             assertNull(state.ioState[i - 1]);
             assertNull(state.ioIsInput[i - 1]);
         }
-        assertNull(state.powerVoltageRMS);
-        assertNull(state.powerCurrentRMS);
-        assertNull(state.powerLineFrequency);
-        assertNull(state.powerActivePower);
-        assertNull(state.powerApparentPower);
-        assertNull(state.powerReactivePower);
-        assertNull(state.powerPowerFactor);
         assertNull(state.sensorTemperature);
         assertNull(state.sensorBrightness);
         assertNull(state.sensorHumidity);
@@ -87,13 +80,6 @@ public class AnelStateTest implements IAnelTestStatus {
             assertThat(state.ioState[i - 1], is(false));
             assertThat(state.ioIsInput[i - 1], is(i >= 5));
         }
-        assertNull(state.powerVoltageRMS);
-        assertNull(state.powerCurrentRMS);
-        assertNull(state.powerLineFrequency);
-        assertNull(state.powerActivePower);
-        assertNull(state.powerApparentPower);
-        assertNull(state.powerReactivePower);
-        assertNull(state.powerPowerFactor);
         assertNull(state.sensorTemperature);
         assertNull(state.sensorBrightness);
         assertNull(state.sensorHumidity);
@@ -116,20 +102,13 @@ public class AnelStateTest implements IAnelTestStatus {
             assertThat(state.ioState[i - 1], is(true));
             assertThat(state.ioIsInput[i - 1], is(true));
         }
-        assertNull(state.powerVoltageRMS);
-        assertNull(state.powerCurrentRMS);
-        assertNull(state.powerLineFrequency);
-        assertNull(state.powerActivePower);
-        assertNull(state.powerApparentPower);
-        assertNull(state.powerReactivePower);
-        assertNull(state.powerPowerFactor);
         assertNull(state.sensorTemperature);
         assertNull(state.sensorBrightness);
         assertNull(state.sensorHumidity);
     }
 
     @Test
-    public void parseHutV61StatusWithPowerAndSensor() {
+    public void parseHutV61StatusAndSensor() {
         final AnelState state = AnelState.of(STATUS_HUT_V61_POW_SENSOR);
         assertThat(state.name, equalTo("NET-CONTROL"));
         assertThat(state.ip, equalTo("192.168.178.148"));
@@ -145,20 +124,13 @@ public class AnelStateTest implements IAnelTestStatus {
             assertThat(state.ioState[i - 1], is(false));
             assertThat(state.ioIsInput[i - 1], is(false));
         }
-        assertThat(state.powerVoltageRMS, equalTo("225.9"));
-        assertThat(state.powerCurrentRMS, equalTo("0.0004"));
-        assertThat(state.powerLineFrequency, equalTo("50.056"));
-        assertThat(state.powerActivePower, equalTo("0.04"));
-        assertThat(state.powerApparentPower, equalTo("0.00"));
-        assertThat(state.powerReactivePower, equalTo("0.0"));
-        assertThat(state.powerPowerFactor, equalTo("1.0000"));
         assertThat(state.sensorTemperature, equalTo("20.61"));
         assertThat(state.sensorHumidity, equalTo("40.7"));
         assertThat(state.sensorBrightness, equalTo("7.0"));
     }
 
     @Test
-    public void parseHutV61StatusWithoutPowerWithSensor() {
+    public void parseHutV61StatusWithSensor() {
         final AnelState state = AnelState.of(STATUS_HUT_V61_SENSOR);
         assertThat(state.name, equalTo("NET-CONTROL"));
         assertThat(state.ip, equalTo("192.168.178.148"));
@@ -174,20 +146,13 @@ public class AnelStateTest implements IAnelTestStatus {
             assertThat(state.ioState[i - 1], is(false));
             assertThat(state.ioIsInput[i - 1], is(false));
         }
-        assertNull(state.powerVoltageRMS);
-        assertNull(state.powerCurrentRMS);
-        assertNull(state.powerLineFrequency);
-        assertNull(state.powerActivePower);
-        assertNull(state.powerApparentPower);
-        assertNull(state.powerReactivePower);
-        assertNull(state.powerPowerFactor);
         assertThat(state.sensorTemperature, equalTo("20.61"));
         assertThat(state.sensorHumidity, equalTo("40.7"));
         assertThat(state.sensorBrightness, equalTo("7.0"));
     }
 
     @Test
-    public void parseHutV61StatusWithPowerWithoutSensor() {
+    public void parseHutV61StatusWithoutSensor() {
         final AnelState state = AnelState.of(STATUS_HUT_V61_POW);
         assertThat(state.name, equalTo("NET-CONTROL"));
         assertThat(state.ip, equalTo("192.168.178.148"));
@@ -203,13 +168,6 @@ public class AnelStateTest implements IAnelTestStatus {
             assertThat(state.ioState[i - 1], is(false));
             assertThat(state.ioIsInput[i - 1], is(false));
         }
-        assertThat(state.powerVoltageRMS, equalTo("225.9"));
-        assertThat(state.powerCurrentRMS, equalTo("0.0004"));
-        assertThat(state.powerLineFrequency, equalTo("50.056"));
-        assertThat(state.powerActivePower, equalTo("0.04"));
-        assertThat(state.powerApparentPower, equalTo("0.00"));
-        assertThat(state.powerReactivePower, equalTo("0.0"));
-        assertThat(state.powerPowerFactor, equalTo("1.0000"));
         assertNull(state.sensorTemperature);
         assertNull(state.sensorBrightness);
         assertNull(state.sensorHumidity);

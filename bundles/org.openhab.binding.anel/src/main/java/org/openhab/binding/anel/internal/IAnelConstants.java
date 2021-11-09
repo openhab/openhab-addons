@@ -15,8 +15,6 @@ package org.openhab.binding.anel.internal;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -84,37 +82,29 @@ public interface IAnelConstants {
     String CHANNEL_NAME = "prop#name";
     String CHANNEL_TEMPERATURE = "prop#temperature";
 
-    @SuppressWarnings("null")
-    List<String> CHANNEL_RELAY_NAME = Stream
-            .of("r1#name", "r2#name", "r3#name", "r4#name", "r5#name", "r6#name", "r7#name", "r8#name")
-            .collect(Collectors.toUnmodifiableList());
+    List<String> CHANNEL_RELAY_NAME = List.of("r1#name", "r2#name", "r3#name", "r4#name", "r5#name", "r6#name",
+            "r7#name", "r8#name");
 
-    @SuppressWarnings("null")
-    List<String> CHANNEL_RELAY_STATE = Stream
-            // second character must be the index b/c it is parsed in AnelCommandHandler!
-            .of("r1#state", "r2#state", "r3#state", "r4#state", "r5#state", "r6#state", "r7#state", "r8#state")
-            .collect(Collectors.toUnmodifiableList());
+    // second character must be the index b/c it is parsed in AnelCommandHandler!
+    List<String> CHANNEL_RELAY_STATE = List.of("r1#state", "r2#state", "r3#state", "r4#state", "r5#state", "r6#state",
+            "r7#state", "r8#state");
 
-    @SuppressWarnings("null")
-    List<String> CHANNEL_RELAY_LOCKED = Stream
-            .of("r1#locked", "r2#locked", "r3#locked", "r4#locked", "r5#locked", "r6#locked", "r7#locked", "r8#locked")
-            .collect(Collectors.toUnmodifiableList());
+    List<String> CHANNEL_RELAY_LOCKED = List.of("r1#locked", "r2#locked", "r3#locked", "r4#locked", "r5#locked",
+            "r6#locked", "r7#locked", "r8#locked");
 
-    @SuppressWarnings("null")
-    List<String> CHANNEL_IO_NAME = Stream
-            .of("io1#name", "io2#name", "io3#name", "io4#name", "io5#name", "io6#name", "io7#name", "io8#name")
-            .collect(Collectors.toUnmodifiableList());
+    List<String> CHANNEL_IO_NAME = List.of("io1#name", "io2#name", "io3#name", "io4#name", "io5#name", "io6#name",
+            "io7#name", "io8#name");
 
-    @SuppressWarnings("null")
-    List<String> CHANNEL_IO_MODE = Stream
-            .of("io1#mode", "io2#mode", "io3#mode", "io4#mode", "io5#mode", "io6#mode", "io7#mode", "io8#mode")
-            .collect(Collectors.toUnmodifiableList());
+    List<String> CHANNEL_IO_MODE = List.of("io1#mode", "io2#mode", "io3#mode", "io4#mode", "io5#mode", "io6#mode",
+            "io7#mode", "io8#mode");
 
-    @SuppressWarnings("null")
-    List<String> CHANNEL_IO_STATE = Stream
-            // third character must be the index b/c it is parsed in AnelCommandHandler!
-            .of("io1#state", "io2#state", "io3#state", "io4#state", "io5#state", "io6#state", "io7#state", "io8#state")
-            .collect(Collectors.toUnmodifiableList());
+    // third character must be the index b/c it is parsed in AnelCommandHandler!
+    List<String> CHANNEL_IO_STATE = List.of("io1#state", "io2#state", "io3#state", "io4#state", "io5#state",
+            "io6#state", "io7#state", "io8#state");
+
+    String CHANNEL_SENSOR_TEMPERATURE = "sensor#temperature";
+    String CHANNEL_SENSOR_HUMIDITY = "sensor#humidity";
+    String CHANNEL_SENSOR_BRIGHTNESS = "sensor#brightness";
 
     /**
      * @param channelId A channel ID.
@@ -130,16 +120,4 @@ public interface IAnelConstants {
         }
         return -1; // not a relay or io channel
     }
-
-    String CHANNEL_SENSOR_TEMPERATURE = "sensor#temperature";
-    String CHANNEL_SENSOR_HUMIDITY = "sensor#humidity";
-    String CHANNEL_SENSOR_BRIGHTNESS = "sensor#brightness";
-
-    String CHANNEL_POWER_VOLTAGE_RMS = "power#voltageRMS";
-    String CHANNEL_POWER_CURRENT_RMS = "power#currentRMS";
-    String CHANNEL_POWER_LINE_FREQUENCY = "power#lineFrequency";
-    String CHANNEL_POWER_ACTIVE_POWER = "power#activePower";
-    String CHANNEL_POWER_APPARENT_POWER = "power#apparentPower";
-    String CHANNEL_POWER_REACTIVE_POWER = "power#reactivePower";
-    String CHANNEL_POWER_POWER_FACTOR = "power#powerFactor";
 }
