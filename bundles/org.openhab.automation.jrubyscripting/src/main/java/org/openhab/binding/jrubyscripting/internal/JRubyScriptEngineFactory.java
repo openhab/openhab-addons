@@ -51,7 +51,6 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
 
     private final javax.script.ScriptEngineFactory factory = new org.jruby.embed.jsr223.JRubyEngineFactory();
 
-    // formatter turned off because it does not appropriately format chained streams
     private final List<String> scriptTypes = Stream
             .concat(factory.getExtensions().stream(), factory.getMimeTypes().stream())
             .collect(Collectors.toUnmodifiableList());
