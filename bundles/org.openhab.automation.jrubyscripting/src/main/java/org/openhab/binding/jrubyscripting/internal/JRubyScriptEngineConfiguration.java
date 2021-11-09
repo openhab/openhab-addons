@@ -75,7 +75,7 @@ public class JRubyScriptEngineConfiguration {
     /**
      * Update configuration
      * 
-     * @param config Configuration parameters to apply to ScripEngine
+     * @param config Configuration parameters to apply to ScriptEngine
      * @param factory ScriptEngineFactory to configure
      */
     void update(Map<String, Object> config, ScriptEngineFactory factory) {
