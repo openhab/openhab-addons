@@ -19,6 +19,6 @@
 
 		<representation-property>uniqueId</representation-property>
 
-		<config-description-ref uri="thing-type:hue:geofencesensor"/>
+		<config-description-ref uri="thing-type:hue:sensor"/>
 	</thing-type>
 </thing:thing-descriptions>
