@@ -131,17 +131,17 @@ public class EVNotifyHandler extends BaseThingHandler {
     private State getValue(String channelId, ChargingData chargingData) {
         switch (channelId) {
             case STATE_OF_CHARGE_DISPLAY:
-                if (chargingData.getStateOfHealth() == null) {
+                if (chargingData.getStateOfChargeDisplay() == null) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(chargingData.getStateOfChargeDisplay(), Units.PERCENT);
             case STATE_OF_CHARGE_BMS:
-                if (chargingData.getStateOfHealth() == null) {
+                if (chargingData.getStateOfChargeBms() == null) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(chargingData.getStateOfChargeBms(), Units.PERCENT);
             case LAST_STATE_OF_CHARGE:
-                if (chargingData.getLastExtended() == null) {
+                if (chargingData.getLastStateOfCharge() == null) {
                     return UnDefType.UNDEF;
                 }
                 return new StringType(
@@ -233,6 +233,7 @@ public class EVNotifyHandler extends BaseThingHandler {
     private void refresh() {
         // Request new EVNotify data
         try {
+            logger.debug("Refresh data");
             if (client != null) {
                 ChargingData chargingData = client.getCarChargingData();
                 updateChannelsAndStatus(chargingData, null);
