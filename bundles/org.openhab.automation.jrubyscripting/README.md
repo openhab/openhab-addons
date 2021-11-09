@@ -18,7 +18,7 @@ JRuby configuration parameters may be set by creating a jruby.cfg file in $OPENH
 
 ## Ruby Gems
 
-This binding will install user specified gems and make them available on the library search path.
+This automation add-on will install user specified gems and make them available on the library search path.
 Gem versions may be specified using the standard ruby gem_name=version format.
 The version number follows the [pessimistic version constraint](https://guides.rubygems.org/patterns/#pessimistic-version-constraint) syntax. 
 
