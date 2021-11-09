@@ -92,7 +92,6 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
 
     @Override
     public void scopeValues(ScriptEngine scriptEngine, Map<String, Object> scopeValues) {
-
         // Empty comments prevent the formatter from breaking up the correct streams chaining
         Map<String, Object> filteredScopeValues = //
                 scopeValues //
