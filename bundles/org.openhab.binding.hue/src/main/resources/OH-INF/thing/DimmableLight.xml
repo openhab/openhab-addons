@@ -19,16 +19,6 @@
 
 		<representation-property>uniqueId</representation-property>
 
-		<config-description>
-			<parameter name="lightId" type="text" required="true">
-				<label>Light ID</label>
-				<description>The light identifier identifies one certain hue light.</description>
-			</parameter>
-			<parameter name="fadetime" type="integer" min="0" step="100" unit="ms">
-				<label>Fade Time</label>
-				<description>Fade time in milliseconds for changing values</description>
-				<default>400</default>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:hue:light"/>
 	</thing-type>
 </thing:thing-descriptions>
