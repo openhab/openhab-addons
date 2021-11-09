@@ -10,32 +10,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airquality.internal.json;
+package org.openhab.binding.airquality.internal.api.dto;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.airquality.internal.api.Pollutant;
 
 /**
- * The {@link AirQualityJsonData} is responsible for storing
+ * The {@link AirQualityData} is responsible for storing
  * the "data" node from the waqi.org JSON response
  *
  * @author Kuba Wolanin - Initial contribution
  */
 @NonNullByDefault
-public class AirQualityJsonData {
-
+public class AirQualityData {
     private int aqi;
     private int idx;
 
-    private @NonNullByDefault({}) AirQualityJsonTime time;
-    private @NonNullByDefault({}) AirQualityJsonCity city;
-    private List<Attribute> attributions = new ArrayList<>();
-    private Map<String, AirQualityValue> iaqi = new HashMap<>();
+    private @NonNullByDefault({}) AirQualityTime time;
+    private @NonNullByDefault({}) AirQualityCity city;
+    private List<Attribution> attributions = List.of();
+    private Map<String, AirQualityValue> iaqi = Map.of();
     private String dominentpol = "";
 
     /**
@@ -61,7 +59,7 @@ public class AirQualityJsonData {
      *
      * @return {AirQualityJsonTime}
      */
-    public AirQualityJsonTime getTime() {
+    public AirQualityTime getTime() {
         return time;
     }
 
@@ -70,20 +68,18 @@ public class AirQualityJsonData {
      *
      * @return {AirQualityJsonCity}
      */
-    public AirQualityJsonCity getCity() {
+    public AirQualityCity getCity() {
         return city;
     }
 
     /**
      * Collects a list of attributions (vendors making data available)
      * and transforms it into readable string.
-     * Currently displayed in Thing Status description when ONLINE
      *
      * @return {String}
      */
     public String getAttributions() {
-        String attributionsString = attributions.stream().map(Attribute::getName).collect(Collectors.joining(", "));
-        return "Attributions : " + attributionsString;
+        return attributions.stream().map(Attribution::getName).collect(Collectors.joining(", "));
     }
 
     public String getDominentPol() {
@@ -92,9 +88,10 @@ public class AirQualityJsonData {
 
     public double getIaqiValue(String key) {
         AirQualityValue result = iaqi.get(key);
-        if (result != null) {
-            return result.getValue();
-        }
-        return -1;
+        return result != null ? result.getValue() : -1;
+    }
+
+    public double getIaqiValue(Pollutant pollutant) {
+        return getIaqiValue(pollutant.name().toLowerCase());
     }
 }
