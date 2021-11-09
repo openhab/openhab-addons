@@ -10,20 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airquality.internal.json;
+package org.openhab.binding.airquality.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link AirQualityJsonResponse} is the Java class used to map the JSON
+ * The {@link AirQualityResponse} is the Java class used to map the JSON
  * response to the aqicn.org request.
  *
  * @author Kuba Wolanin - Initial contribution
  */
 @NonNullByDefault
-public class AirQualityJsonResponse {
+public class AirQualityResponse {
 
     public static enum ResponseStatus {
         NONE,
@@ -34,15 +34,13 @@ public class AirQualityJsonResponse {
     }
 
     private ResponseStatus status = ResponseStatus.NONE;
-
-    @SerializedName("data")
-    private @NonNullByDefault({}) AirQualityJsonData data;
+    private @NonNullByDefault({}) AirQualityData data;
 
     public ResponseStatus getStatus() {
         return status;
     }
 
-    public AirQualityJsonData getData() {
+    public AirQualityData getData() {
         return data;
     }
 }

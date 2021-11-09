@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airquality.internal.json;
+package org.openhab.binding.airquality.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,8 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Łukasz Dywicki - Initial contribution
  */
 @NonNullByDefault
-public class Attribute {
-
+class Attribution {
     private @NonNullByDefault({}) String name;
     private @Nullable String url;
     private @Nullable String logo;
