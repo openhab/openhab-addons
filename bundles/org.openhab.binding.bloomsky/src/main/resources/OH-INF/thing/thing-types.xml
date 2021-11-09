@@ -40,7 +40,7 @@
 	</thing-type>
 
 	<channel-group-type id="sky-device-information">
-		<label>Sky Device Details</label>
+		<label>Sky Device Detail</label>
 		<description>This is the Sky 1/2 device detail</description>
 		<channels>
 			<channel typeId="utc" id="utc"></channel>
