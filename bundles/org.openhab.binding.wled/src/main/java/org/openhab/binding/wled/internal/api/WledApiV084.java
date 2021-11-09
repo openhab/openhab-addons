@@ -318,16 +318,18 @@ public class WledApiV084 implements WledApi {
         }
         handler.update(CHANNEL_TRANS_TIME, new QuantityType<>(
                 new BigDecimal(state.stateResponse.transition).divide(BigDecimal.TEN), Units.SECOND));
-        handler.update(CHANNEL_PRESETS, new StringType("" + state.stateResponse.ps));
-        handler.update(CHANNEL_FX, new StringType("" + state.stateResponse.seg[handler.config.segmentIndex].fx));
-        handler.update(CHANNEL_PALETTES, new StringType("" + state.stateResponse.seg[handler.config.segmentIndex].pal));
+        handler.update(CHANNEL_PRESETS, new StringType(Integer.toString(state.stateResponse.ps)));
+        handler.update(CHANNEL_FX,
+                new StringType(Integer.toString(state.stateResponse.seg[handler.config.segmentIndex].fx)));
+        handler.update(CHANNEL_PALETTES,
+                new StringType(Integer.toString(state.stateResponse.seg[handler.config.segmentIndex].pal)));
         handler.update(CHANNEL_SPEED,
                 new PercentType(new BigDecimal(state.stateResponse.seg[handler.config.segmentIndex].sx)
                         .divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
         handler.update(CHANNEL_INTENSITY,
                 new PercentType(new BigDecimal(state.stateResponse.seg[handler.config.segmentIndex].ix)
                         .divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
-        handler.update(CHANNEL_LIVE_OVERRIDE, new StringType("" + state.stateResponse.lor));
+        handler.update(CHANNEL_LIVE_OVERRIDE, new StringType(Integer.toString(state.stateResponse.lor)));
         handler.update(CHANNEL_GROUPING, new DecimalType(state.stateResponse.seg[handler.config.segmentIndex].grp));
         handler.update(CHANNEL_SPACING, new DecimalType(state.stateResponse.seg[handler.config.segmentIndex].spc));
     }

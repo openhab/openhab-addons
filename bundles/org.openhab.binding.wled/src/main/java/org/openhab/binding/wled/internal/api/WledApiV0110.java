@@ -57,8 +57,6 @@ public class WledApiV0110 extends WledApiV084 {
             return;
         }
         Set<Entry<String, JsonElement>> set = obj.entrySet();
-        // presetsOptions.add(new StateOption("-1", "None"));
-        // playlistsOptions.add(new StateOption("-1", "None"));
         int counter = 0;
         for (Entry<String, JsonElement> presetEntry : set) {
             logger.trace("Preset:{} json:{}", presetEntry.getKey(), presetEntry.getValue());

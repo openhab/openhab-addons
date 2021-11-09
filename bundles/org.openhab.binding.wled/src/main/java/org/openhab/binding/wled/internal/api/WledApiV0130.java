@@ -54,6 +54,6 @@ public class WledApiV0130 extends WledApiV0110 {
     @Override
     protected void processState() throws ApiException {
         super.processState();
-        handler.update(CHANNEL_PLAYLISTS, new StringType("" + state.stateResponse.pl));
+        handler.update(CHANNEL_PLAYLISTS, new StringType(Integer.toString(state.stateResponse.pl)));
     }
 }
