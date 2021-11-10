@@ -205,7 +205,7 @@
 		<label>Next Setpoint Change</label>
 		<description>Next change of Setpoint Temperature.</description>
 		<category>Time</category>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="next_temp" advanced="true">
@@ -229,7 +229,7 @@
 		<label>Last Change</label>
 		<description>States the last time the button was pressed.</description>
 		<category>Time</category>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="rollershutter">

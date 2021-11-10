@@ -67,8 +67,10 @@ import org.slf4j.LoggerFactory;
 @Component(service = { CloudService.class, EventSubscriber.class,
         ActionService.class }, configurationPid = "org.openhab.openhabcloud", property = Constants.SERVICE_PID
                 + "=org.openhab.openhabcloud")
-@ConfigurableService(category = "io", label = "openHAB Cloud", description_uri = "io:openhabcloud")
+@ConfigurableService(category = "io", label = "openHAB Cloud", description_uri = CloudService.CONFIG_URI)
 public class CloudService implements ActionService, CloudClientListener, EventSubscriber {
+
+    protected static final String CONFIG_URI = "io:openhabcloud";
 
     private static final String CFG_EXPOSE = "expose";
     private static final String CFG_BASE_URL = "baseURL";

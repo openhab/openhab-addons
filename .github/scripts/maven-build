@@ -87,7 +87,9 @@ function build_addon() {
     echo "+ $mvn_command"
     echo
 
+    set -o pipefail # exit build with error when pipes fail
     $mvn_command 2>&1 | tee "$BUILD_LOG"
+    exit $?
 }
 
 function build_based_on_changes() {

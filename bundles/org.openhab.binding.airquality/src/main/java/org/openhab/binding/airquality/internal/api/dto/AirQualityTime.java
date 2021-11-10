@@ -10,32 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airquality.internal.json;
+package org.openhab.binding.airquality.internal.api.dto;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
- * The {@link AirQualityJsonTime} is responsible for storing
+ * The {@link AirQualityTime} is responsible for storing
  * the "time" node from the waqi.org JSON response
  *
- * @author Kuba Wolanin - Initial contribution
- * @author Gaël L'hopital - Use ZonedDateTime instead of Calendar
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class AirQualityJsonTime {
-
-    @SerializedName("s")
-    private String dateString = "";
-
-    @SerializedName("tz")
-    private String timeZone = "";
-
-    private String iso = "";
+public class AirQualityTime {
+    private String iso = ""; // ISO representation of the timestamp, including TZ
 
     /**
      * Get observation time
