@@ -102,12 +102,15 @@ public class WLedHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_MIRROR:
                     localApi.setMirror(OnOffType.ON.equals(command), config.segmentIndex);
+                    break;
                 case CHANNEL_LIVE_OVERRIDE:
                     localApi.setLiveOverride(command.toString());
+                    break;
                 case CHANNEL_SPACING:
                     if (command instanceof DecimalType) {
                         localApi.setSpacing(((DecimalType) command).intValue(), config.segmentIndex);
                     }
+                    break;
                 case CHANNEL_GROUPING:
                     if (command instanceof DecimalType) {
                         localApi.setGrouping(((DecimalType) command).intValue(), config.segmentIndex);

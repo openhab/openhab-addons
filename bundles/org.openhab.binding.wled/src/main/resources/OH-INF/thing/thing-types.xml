@@ -27,6 +27,7 @@
 			<channel id="speed" typeId="speed"/>
 			<channel id="intensity" typeId="intensity"/>
 			<channel id="mirror" typeId="mirror"/>
+			<channel id="reverse" typeId="reverse"/>
 			<channel id="grouping" typeId="grouping"/>
 			<channel id="spacing" typeId="spacing"/>
 			<channel id="liveOverride" typeId="liveOverride"/>

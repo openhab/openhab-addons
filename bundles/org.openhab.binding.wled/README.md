@@ -43,7 +43,8 @@ For additional segments, you can add them manually and set the `segmentIndex` co
 | `fx` | String |  A list of Effects you can select from. |
 | `speed` | Dimmer | Changes the speed of the loaded effect. |
 | `intensity` | Dimmer | Changes the intensity of the loaded effect. |
-| `presets` | String |  A list of presets that you can select from.  |
+| `presets` | String |  A list of presets that you can select from and will display -1 when no presets are running.  |
+| `playlists` | String | A list of playlists that you can select from and will display -1 when none are running. |
 | `presetCycle` | Switch | Turns ON/OFF the automatic changing from one preset to the next. Only in V0.12.0 and older firmwares. |
 | `presetDuration` | Number:Time | How long in seconds it will display a preset for, before it begins to change from one preset to the next with `presetCycle` turned ON. Only in V0.12.0 and older firmwares. |
 | `transformTime` | Number:Time | How long in seconds it takes to transform/morph from one look to the next. |
@@ -52,6 +53,9 @@ For additional segments, you can add them manually and set the `segmentIndex` co
 | `syncReceive` | Switch | Allows UDP packets from other WLED lights to control this one. |
 | `mirror` | Switch | Mirror the effect for this segment. |
 | `reverse` | Switch | Reverse the effect for this segment. |
+| `liveOverride` | String | A value of "0" turns off, "1" will override live data to display what you want, and "2" overrides until you reboot the ESP device. |
+| `grouping` | Number | The number of LEDs that are grouped together to display as one pixel in FX. Use metadata to display a list widget slider. |
+| `spacing` | Number | The number of LEDs that will not light up in between FX pixels. Use metadata to display a list widget slider. |
 
 ## Rule Actions
 

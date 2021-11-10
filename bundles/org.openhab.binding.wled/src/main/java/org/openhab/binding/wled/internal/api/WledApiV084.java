@@ -184,6 +184,7 @@ public class WledApiV084 implements WledApi {
             if (response == null) {
                 throw new ApiException("Could not GET:/json/state");
             }
+            logger.trace("json/state:{}", returnContent);
             return response;
         } catch (JsonSyntaxException e) {
             throw new ApiException("JsonSyntaxException:{}", e);
