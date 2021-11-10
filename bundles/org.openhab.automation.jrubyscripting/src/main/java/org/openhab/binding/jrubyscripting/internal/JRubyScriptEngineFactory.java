@@ -31,7 +31,6 @@ import org.osgi.service.component.annotations.Modified;
 
 /**
  * This is an implementation of a {@link ScriptEngineFactory} for Ruby.
- * handlers.
  *
  * @author Brian O'Connell - Initial contribution
  */
