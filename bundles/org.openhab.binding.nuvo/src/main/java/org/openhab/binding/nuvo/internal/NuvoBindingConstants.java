@@ -83,4 +83,7 @@ public class NuvoBindingConstants {
     public static final String NAME_QUOTE = "NAME\"";
     public static final String MUTE = "MUTE";
     public static final String VOL = "VOL";
+
+    // MPS4
+    public static final String TYPE_PING = "PING";
 }
