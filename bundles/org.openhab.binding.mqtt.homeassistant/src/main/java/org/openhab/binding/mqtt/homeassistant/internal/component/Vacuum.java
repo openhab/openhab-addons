@@ -24,6 +24,8 @@ import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A MQTT vacuum, following the https://www.home-assistant.io/components/vacuum.mqtt/ specification.
  *
@@ -69,16 +71,24 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
             super("MQTT Vacuum");
         }
 
+        @SerializedName("command_topic")
         protected @Nullable String commandTopic;
+        @SerializedName("state_topic")
         protected String stateTopic = "";
+        @SerializedName("send_command_topic")
         protected @Nullable String sendCommandTopic; // for custom_command
 
         // [start, pause, stop, return_home, battery, status, locate, clean_spot, fan_speed, send_command]
+        @SerializedName("supported_features")
         protected String[] supportedFeatures = new String[] {};
+        @SerializedName("set_fan_speed_topic")
         protected @Nullable String setFanSpeedTopic;
+        @SerializedName("fan_speed_list")
         protected String[] fanSpeedList = new String[] {};
 
+        @SerializedName("json_attributes_topic")
         protected @Nullable String jsonAttributesTopic;
+        @SerializedName("json_attributes_template")
         protected @Nullable String jsonAttributesTemplate;
     }
 
