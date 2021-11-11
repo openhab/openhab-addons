@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.panasonictv.internal.handler;
 
+import static org.openhab.binding.panasonictv.internal.PanasonicTvBindingConstants.POWER;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.panasonictv.internal.api.PanasonicEventListener;
@@ -30,11 +35,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import static org.openhab.binding.panasonictv.internal.PanasonicTvBindingConstants.POWER;
 
 /**
  * The {@link PanasonicTvHandler} is responsible for handling commands, which are
