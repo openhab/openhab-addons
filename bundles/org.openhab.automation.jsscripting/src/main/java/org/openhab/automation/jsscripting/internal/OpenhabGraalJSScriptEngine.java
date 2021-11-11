@@ -33,8 +33,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javax.script.ScriptContext;
+import javax.script.ScriptException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.openhab.automation.jsscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChannel;
@@ -62,21 +64,24 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
     // final CommonJS search path for our library
     private static final Path OH_NODE_PATH = Paths.get("/node_modules/@oh.js");
     // resource path of our oh js library
-    private static final Path OH_FILE_PATH = Paths.get("/oh.js");
+    private static final Path OH_FILE_PATH = Paths.get("/@oh.js");
     // these fields start as null because they are populated on first use
     private @NonNullByDefault({}) String engineIdentifier;
     private @NonNullByDefault({}) Consumer<String> scriptDependencyListener;
 
     private boolean initialized = false;
+    private @Nullable String injectionCode;
 
     /**
      * Creates an implementation of ScriptEngine (& Invocable), wrapping the contained engine, that tracks the script
      * lifecycle and provides hooks for scripts to do so too.
      */
-    public OpenhabGraalJSScriptEngine() {
+    public OpenhabGraalJSScriptEngine(String injectionCode) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
+        this.injectionCode = injectionCode;
         delegate = GraalJSScriptEngine.create(null,
                 Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true)
+
                         .option("js.commonjs-require-cwd", MODULE_DIR).option("js.nashorn-compat", "true") // to
                                                                                                            // ease
                                                                                                            // migration
@@ -173,5 +178,13 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
         delegate.put("require", wrapRequireFn.apply((Function<Object[], Object>) delegate.get("require")));
 
         initialized = true;
+
+        if (injectionCode != null) {
+            try {
+                eval(injectionCode);
+            } catch (ScriptException e) {
+                LOGGER.error("Could not inject code", e);
+            }
+        }
     }
 }
