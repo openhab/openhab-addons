@@ -67,6 +67,7 @@ import org.slf4j.LoggerFactory;
  * @author Denis Dudnik - switched to internally integrated source of Jue library
  * @author Christoph Weitkamp - Added support for bulbs using CIE XY colormode only
  * @author Jochen Leopold - Added support for custom fade times
+ * @author Jacob Laursen - Add workaround for LK Wiser products
  */
 @NonNullByDefault
 public class HueLightHandler extends BaseThingHandler implements HueLightActionsHandler, LightStatusListener {
@@ -76,6 +77,7 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
             THING_TYPE_ON_OFF_LIGHT, THING_TYPE_ON_OFF_PLUG, THING_TYPE_DIMMABLE_PLUG);
 
     public static final String OSRAM_PAR16_50_TW_MODEL_ID = "PAR16_50_TW";
+    public static final String LK_WISER_MODEL_ID = "LK_Dimmer";
 
     private final Logger logger = LoggerFactory.getLogger(HueLightHandler.class);
 
@@ -89,8 +91,14 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
     private @Nullable Integer lastSentColorTemp;
     private @Nullable Integer lastSentBrightness;
 
-    // Flag to indicate whether the bulb is of type Osram par16 50 TW or not
+    /**
+     * Flag to indicate whether the bulb is of type Osram par16 50 TW
+     */
     private boolean isOsramPar16 = false;
+    /**
+     * Flag to indicate whether the dimmer/relay is of type LK Wiser by Schneider Electric
+     */
+    private boolean isLkWiser = false;
 
     private boolean propertiesInitializedSuccessfully = false;
     private boolean capabilitiesInitializedSuccessfully = false;
@@ -159,6 +167,15 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
             String modelId = fullLight.getNormalizedModelID();
             if (modelId != null) {
                 properties.put(PROPERTY_MODEL_ID, modelId);
+
+                switch (modelId) {
+                    case OSRAM_PAR16_50_TW_MODEL_ID:
+                        isOsramPar16 = true;
+                        break;
+                    case LK_WISER_MODEL_ID:
+                        isLkWiser = true;
+                        break;
+                }
             }
             properties.put(PROPERTY_VENDOR, fullLight.getManufacturerName());
             properties.put(PRODUCT_NAME, fullLight.getProductName());
@@ -167,7 +184,6 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
                 properties.put(UNIQUE_ID, uniqueID);
             }
             updateProperties(properties);
-            isOsramPar16 = OSRAM_PAR16_50_TW_MODEL_ID.equals(modelId);
             propertiesInitializedSuccessfully = true;
         }
     }
@@ -265,6 +281,8 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
                     newState = LightStateConverter.toOnOffLightState((OnOffType) command);
                     if (isOsramPar16) {
                         newState = addOsramSpecificCommands(newState, (OnOffType) command);
+                    } else if (isLkWiser) {
+                        newState = addLkWiserSpecificCommands(newState, (OnOffType) command);
                     }
                 } else if (command instanceof IncreaseDecreaseType) {
                     newState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, light);
@@ -285,6 +303,8 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
                     newState = LightStateConverter.toOnOffLightState((OnOffType) command);
                     if (isOsramPar16) {
                         newState = addOsramSpecificCommands(newState, (OnOffType) command);
+                    } else if (isLkWiser) {
+                        newState = addLkWiserSpecificCommands(newState, (OnOffType) command);
                     }
                 }
                 lastColorTemp = lastSentColorTemp;
@@ -353,7 +373,7 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
         }
     }
 
-    /*
+    /**
      * Applies additional {@link StateUpdate} commands as a workaround for Osram
      * Lightify PAR16 TW firmware bug. Also see
      * http://www.everyhue.com/vanilla/discussion/1756/solved-lightify-turning-off
@@ -362,6 +382,18 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
         if (actionType.equals(OnOffType.ON)) {
             lightState.setBrightness(254);
         } else {
+            lightState.setTransitionTime(0);
+        }
+        return lightState;
+    }
+
+    /**
+     * Applies additional {@link StateUpdate} commands as a workaround for LK Wiser
+     * Dimmer/Relay firmware bug. Additional details here:
+     * https://techblog.vindvejr.dk/?p=455
+     */
+    private StateUpdate addLkWiserSpecificCommands(StateUpdate lightState, OnOffType actionType) {
+        if (actionType.equals(OnOffType.OFF)) {
             lightState.setTransitionTime(0);
         }
         return lightState;
