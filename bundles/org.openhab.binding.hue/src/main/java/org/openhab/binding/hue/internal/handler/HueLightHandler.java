@@ -168,8 +168,14 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
             if (modelId != null) {
                 properties.put(PROPERTY_MODEL_ID, modelId);
 
-                isOsramPar16 = OSRAM_PAR16_50_TW_MODEL_ID.equals(modelId);
-                isLkWiser = LK_WISER_MODEL_ID.equals(modelId);
+                switch (modelId) {
+                    case OSRAM_PAR16_50_TW_MODEL_ID:
+                        isOsramPar16 = true;
+                        break;
+                    case LK_WISER_MODEL_ID:
+                        isLkWiser = true;
+                        break;
+                }
             }
             properties.put(PROPERTY_VENDOR, fullLight.getManufacturerName());
             properties.put(PRODUCT_NAME, fullLight.getProductName());
