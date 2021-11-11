@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,7 +115,7 @@ public abstract class AbstractPanasonicTvService implements UpnpIOParticipant, P
                 StatusEventDTO statusEvent = (StatusEventDTO) eventUnmarshaller.unmarshal(new StringReader(value));
                 logger.debug("Extracted: {}", statusEvent);
             } catch (JAXBException e) {
-                // TODO: ignore for now while we are still testing
+                logger.error("Error during value received: {}", e.getMessage());
             }
         }
 
