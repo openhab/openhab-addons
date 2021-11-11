@@ -3,7 +3,7 @@
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 	<name>Xiaomi Mi IO Binding</name>
-	<description>Binding for Xiaomi Mi IO devices like Mi Robot Vacuum</description>
+	<description>Binding for Xiaomi Mi IO (Wifi) devices like Mi Robot Vacuum, Yeelights, Humidifiers, Fans etc.</description>
 
 	<config-description>
 		<parameter name="username" type="text" required="false">
