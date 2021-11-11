@@ -9,7 +9,6 @@
 				"property": "",
 				"friendlyName": "Power",
 				"channel": "power",
-				"channelType": "power",
 				"type": "Switch",
 				"refresh": false,
 				"actions": [

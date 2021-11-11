@@ -20,8 +20,11 @@
 				"property": "pm25",
 				"friendlyName": "PM2.5",
 				"channel": "pm25",
-				"channelType": "pm25",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.1f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": []
@@ -30,7 +33,7 @@
 				"property": "co2",
 				"friendlyName": "CO2",
 				"channel": "co2",
-				"channelType": "co2",
+				"description": "Carbon Dioxide",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -45,7 +48,7 @@
 				"property": "tvoc",
 				"friendlyName": "tVOC",
 				"channel": "tvoc",
-				"channelType": "tvoc",
+				"description": "Total Volatile Organic Compounds",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",

@@ -9,7 +9,6 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
-				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -27,8 +26,10 @@
 				"property": "power_consume_rate",
 				"friendlyName": "Power Consumption",
 				"channel": "powerUsage",
-				"channelType": "powerUsage",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0fW"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -40,7 +41,6 @@
 				"property": "wifi_led",
 				"friendlyName": "wifi LED",
 				"channel": "led",
-				"channelType": "led",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -67,8 +67,10 @@
 				"property": "current",
 				"friendlyName": "Current",
 				"channel": "current",
-				"channelType": "current",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.2fA"
+				},
 				"refresh": true,
 				"actions": []
 			},
