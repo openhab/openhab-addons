@@ -150,12 +150,12 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         this.configuration = configuration;
         if (configuration.host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "IP address required. Configure IP address");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-ip");
             return;
         }
         if (!tokenCheckPass(configuration.token)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.config-error-token");
             return;
         }
         this.cloudServer = configuration.cloudServer;
@@ -395,7 +395,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
         if (deviceId.isBlank() && !getCloudServer().isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Cloud communication requires defined deviceId in the config");
+                    "@text/offline.config-error-cloud");
             return null;
         }
         if (deviceId.length() == 8 && deviceId.matches("^.*[a-zA-Z]+.*$")) {
