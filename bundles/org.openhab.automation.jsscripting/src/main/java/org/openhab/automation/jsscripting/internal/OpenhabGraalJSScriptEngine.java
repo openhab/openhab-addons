@@ -64,7 +64,7 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
     // final CommonJS search path for our library
     private static final Path OH_NODE_PATH = Paths.get("/node_modules/@oh.js");
     // resource path of our oh js library
-    private static final Path OH_FILE_PATH = Paths.get("/@oh.js");
+    private static final Path OH_FILE_PATH = Paths.get("/oh.js");
     // these fields start as null because they are populated on first use
     private @NonNullByDefault({}) String engineIdentifier;
     private @NonNullByDefault({}) Consumer<String> scriptDependencyListener;
