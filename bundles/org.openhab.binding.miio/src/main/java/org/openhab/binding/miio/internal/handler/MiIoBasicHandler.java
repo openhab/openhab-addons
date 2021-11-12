@@ -175,6 +175,26 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             command = new DecimalType(((QuantityType<?>) command).toBigDecimal());
                         }
                     }
+                    if (paramType == CommandParameterType.OPENCLOSENUMBER) {
+                        if (command instanceof OpenClosedType) {
+                            value = new JsonPrimitive(command == OnOffType.ON ? 1 : 0);
+                        } else {
+                            value = new JsonPrimitive(
+                                    ("ON".contentEquals(command.toString()) || "1".contentEquals(command.toString()))
+                                            ? 1
+                                            : 0);
+                        }
+                    }
+                    if (paramType == CommandParameterType.OPENCLOSE) {
+                        if (command instanceof OpenClosedType) {
+                            value = new JsonPrimitive(command == OnOffType.ON ? "on" : "off");
+                        } else {
+                            value = new JsonPrimitive(
+                                    ("ON".contentEquals(command.toString()) || "1".contentEquals(command.toString()))
+                                            ? "on"
+                                            : "off");
+                        }
+                    }
                     if (paramType == CommandParameterType.COLOR) {
                         if (command instanceof HSBType) {
                             HSBType hsb = (HSBType) command;
@@ -706,6 +726,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             switch (response.getCommand()) {
                 case MIIO_INFO:
                     break;
+                case GET_DEVICE_PROPERTY_EXP:
                 case GET_VALUE:
                 case GET_PROPERTIES:
                 case GET_PROPERTY:
