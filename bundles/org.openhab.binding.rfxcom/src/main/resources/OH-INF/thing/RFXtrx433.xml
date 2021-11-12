@@ -10,150 +10,146 @@
 
 		<config-description>
 			<parameter name="bridgeId" type="text" required="true">
-				<label>Serial Number</label>
-				<description>Serial number of the RFXCOM (FTDI) device</description>
+				<label>@text/config.bridgeId.label</label>
+				<description>@text/config.bridgeId.description</description>
 			</parameter>
 			<parameter name="disableDiscovery" type="boolean" required="true">
-				<label>Disable Discovery of Unknown Devices</label>
-				<description>These RF protocols are prone to noise. If you find a lot of unknown devices showing up in your inbox
-					enabling this will stop devices being added to your inbox.</description>
+				<label>@text/config.disableDiscovery.label</label>
+				<description>@text/config.disableDiscovery.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="ignoreConfig" type="boolean">
-				<label>Skip Transceiver Configuration</label>
-				<description>Fully skip and ignore RFXCOM transceiver configuration. Binding assume that RFXCOM transceiver is
-					preconfigured e.g. via RFXcom Manager. When this is enabled, both set mode command and individual message
-					configurations are ignored.</description>
+				<label>@text/config.ignoreConfig.label</label>
+				<description>@text/config.ignoreConfig.description</description>
 				<default>true</default>
 			</parameter>
 			<parameter name="setMode" type="text">
-				<label>RFXCOM Transceiver Mode</label>
-				<description>RFXCOM transceiver set mode command. Command should be in hexadecimal string format and 28 characters
-					(14 bytes) long. If set mode command is given, individual message configurations are ignored.</description>
+				<label>@text/config.setMode.label</label>
+				<description>@text/config.setMode.description</description>
 			</parameter>
 			<parameter name="transmitPower" type="integer" min="-18" max="10">
-				<label>Transmit Power</label>
-				<description>Transmit power in dBm, between -18dBm and +10dBm.</description>
+				<label>@text/config.transmitPower.label</label>
+				<description>@text/config.transmitPower.description</description>
 				<default>-18</default>
 			</parameter>
 			<parameter name="enableUndecoded" type="boolean">
-				<label>Undecoded Messages</label>
-				<description>Enable display of unencoded messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableUndecoded.label</label>
+				<description>@text/config.enableUndecoded.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableImagintronixOpus" type="boolean">
-				<label>Imagintronix/Opus Messages</label>
-				<description>Enable Imagintronix/Opus messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableImagintronixOpus.label</label>
+				<description>@text/config.enableImagintronixOpus.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableByronSX" type="boolean">
-				<label>Byron SX Messages</label>
-				<description>Enable Byron SX messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableByronSX.label</label>
+				<description>@text/config.enableByronSX.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableRSL" type="boolean">
-				<label>RSL Messages</label>
-				<description>Enable RSL messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableRSL.label</label>
+				<description>@text/config.enableRSL.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableLighting4" type="boolean">
-				<label>Lighting4 Messages</label>
-				<description>Enable Lighting4 messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableLighting4.label</label>
+				<description>@text/config.enableLighting4.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableFineOffsetViking" type="boolean">
-				<label>FineOffset/Viking Messages</label>
-				<description>Enable FineOffset/Viking messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableFineOffsetViking.label</label>
+				<description>@text/config.enableFineOffsetViking.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableRubicson" type="boolean">
-				<label>Rubicson Messages</label>
-				<description>Enable Rubicson messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableRubicson.label</label>
+				<description>@text/config.enableRubicson.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableAEBlyss" type="boolean">
-				<label>AE Blyss Messages</label>
-				<description>Enable AE Blyss messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableAEBlyss.label</label>
+				<description>@text/config.enableAEBlyss.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableBlindsT1T2T3T4" type="boolean">
-				<label>BlindsT1/T2/T3/T4 Messages</label>
-				<description>Enable BlindsT1/T2/T3/T4 messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableBlindsT1T2T3T4.label</label>
+				<description>@text/config.enableBlindsT1T2T3T4.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableBlindsT0" type="boolean">
-				<label>BlindsT0 Messages</label>
-				<description>Enable BlindsT0 messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableBlindsT0.label</label>
+				<description>@text/config.enableBlindsT0.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableFS20" type="boolean">
-				<label>FS20/Legrand CAD Messages</label>
-				<description>Enable FS20/Legrand CAD messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableFS20.label</label>
+				<description>@text/config.enableFS20.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableLaCrosse" type="boolean">
-				<label>La Crosse Messages</label>
-				<description>Enable La Crosse messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableLaCrosse.label</label>
+				<description>@text/config.enableLaCrosse.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableHidekiUPM" type="boolean">
-				<label>Hideki/UPM Messages</label>
-				<description>Enable Hideki/UPM messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableHidekiUPM.label</label>
+				<description>@text/config.enableHidekiUPM.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableADLightwaveRF" type="boolean">
-				<label>AD LightwaveRF Messages</label>
-				<description>Enable AD LightwaveRF messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableADLightwaveRF.label</label>
+				<description>@text/config.enableADLightwaveRF.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableMertik" type="boolean">
-				<label>Mertik Messages</label>
-				<description>Enable Mertik messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableMertik.label</label>
+				<description>@text/config.enableMertik.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableATI" type="boolean">
-				<label>ATI Messages</label>
-				<description>Enable ATI messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableATI.label</label>
+				<description>@text/config.enableATI.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableOregonScientific" type="boolean">
-				<label>Oregon Scientific Messages</label>
-				<description>Enable Oregon Scientific messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableOregonScientific.label</label>
+				<description>@text/config.enableOregonScientific.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableMeiantech" type="boolean">
-				<label>Meiantech Messages</label>
-				<description>Enable Meiantech messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableMeiantech.label</label>
+				<description>@text/config.enableMeiantech.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableHomeEasyEU" type="boolean">
-				<label>HomeEasy EU Messages</label>
-				<description>Enable HomeEasy EU messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableHomeEasyEU.label</label>
+				<description>@text/config.enableHomeEasyEU.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableAC" type="boolean">
-				<label>AC Messages</label>
-				<description>Enable AC messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableAC.label</label>
+				<description>@text/config.enableAC.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableARC" type="boolean">
-				<label>ARC Messages</label>
-				<description>Enable ARC messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableARC.label</label>
+				<description>@text/config.enableARC.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableX10" type="boolean">
-				<label>X10 Messages</label>
-				<description>Enable X10 messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableX10.label</label>
+				<description>@text/config.enableX10.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableHomeConfort" type="boolean">
-				<label>HomeConfort Messages</label>
-				<description>Enable HomeConfort messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableHomeConfort.label</label>
+				<description>@text/config.enableHomeConfort.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableKEELOQ" type="boolean">
-				<label>KEELOQ Messages</label>
-				<description>Enable KEELOQ messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableKEELOQ.label</label>
+				<description>@text/config.enableKEELOQ.description</description>
 				<default>false</default>
 			</parameter>
 
