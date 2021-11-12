@@ -152,10 +152,6 @@ Security Access Levels:
 - 🔐 W1 ... End Customer Key
 - 🔒 W2 ... Service Partner
 
-# The binding writes the number of channels that are detected during the initialization into the logs.
-# Channels provided by the actual Guntamatic Heating System variant, but not supported by the binding, are logged aswell.
-# Please share your Guntamatic Heating System variant, firmware version as well as the logs (supported and unsupported channels) in order to improve the binding.
-
 ## Full Example
 
 t.b.d.
