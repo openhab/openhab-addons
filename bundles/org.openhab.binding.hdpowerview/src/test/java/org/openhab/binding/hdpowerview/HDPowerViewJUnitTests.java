@@ -351,7 +351,7 @@ public class HDPowerViewJUnitTests {
 
             pos = shadePos.getState(SECONDARY_ACTUATOR, ZERO_IS_OPEN);
             assertEquals(PercentType.class, pos.getClass());
-            assertEquals(65, ((PercentType) pos).intValue());
+            assertEquals(35, ((PercentType) pos).intValue());
 
             pos = shadePos.getState(PRIMARY_ACTUATOR, VANE_COORDS);
             assertEquals(UnDefType.class, pos.getClass());
