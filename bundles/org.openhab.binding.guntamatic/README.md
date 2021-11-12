@@ -1,8 +1,6 @@
 # Guntamatic Binding
 
 The Guntamatic Binding can be used to monitor and control Guntamatic Heating Systems.
-The Binding is currently under development.
-Please give it a try and report issues in order to improve the usablity as well as the number of supported Guntamatic Heating Systems.
 
 ## Supported Things
 
@@ -15,8 +13,6 @@ It should work for all other Guntamatic Heating Systems as well, that support th
 - Biocom (untested)
 - Pro (untested)
 - Therm (untested)
-
-All the different languages that can be configured in the Guntamatic Heating System are supported.
 
 Control of the Guntamatic Heating System is technical possible but not yet implemented.
 
@@ -33,10 +29,10 @@ Control of the Guntamatic Heating System is technical possible but not yet imple
 
 The Binding dynamically generates Channels, derived from the data provided from the actual Guntamatic Heating System.
 
-Example list of Channels using a Guntamatic Biostar 15kW Pellets Heating System running firmware 3.2d and language configured to English:
+Example list of Channels using a Guntamatic Biostar 15kW Pellets Heating System running firmware 3.2d and Guntamatic System Language configured to English:
 
 |	ID	|	Channel	|	Type	|	Unit	|	Security Access Level	|
-|-----------------------		|--------------------		|-------------------------------		|-------------		|------------------------------		|
+|-------|-----------|-----------|-----------|---------------------------|
 |	0	|	running	|	String	|		|	🔓 W0	|
 |	1	|	outsidetemp	|	Number:Temperature	|	°C	|	🔓 W0	|
 |	2	|	blrtargettemp	|	Number:Temperature	|	°C	|	🔐 W1	|
@@ -159,4 +155,4 @@ t.b.d.
 ## TODOs
 
 - Control of the Guntamatic Heating System
-- Testing with / Support of other Guntamatic Heating Systems except from Biostar running firmware 3.2d
+- Testing with / Support of other Guntamatic Heating Systems except from Biostar running firmware 3.2d: please provide feedback
