@@ -80,7 +80,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE,
-                            "Air unit connection not initialized.");
+                            "@text/offline.connection-not-initialized");
                     return;
                 }
             } catch (IllegalArgumentException e) {
@@ -114,7 +114,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
             });
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Unknown host: " + config.host);
+                    "@text/offline.communication-error.unknown-host [\"" + config.host + "\"]");
             return;
         }
     }
