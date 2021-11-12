@@ -69,8 +69,6 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,9 +92,6 @@ import com.google.gson.JsonSyntaxException;
 public class MiIoBasicHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoBasicHandler.class);
     private boolean hasChannelStructure;
-    private final Bundle bundle;
-    private final TranslationProvider i18nProvider;
-    private final LocaleProvider localeProvider;
 
     private final ExpiringCache<Boolean> updateDataCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
         miIoScheduler.schedule(this::updateData, 0, TimeUnit.SECONDS);
@@ -115,12 +110,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry,
             BasicChannelTypeProvider basicChannelTypeProvider, TranslationProvider i18nProvider,
             LocaleProvider localeProvider) {
-        super(thing, miIoDatabaseWatchService, cloudConnector);
+        super(thing, miIoDatabaseWatchService, cloudConnector, i18nProvider, localeProvider);
         this.channelTypeRegistry = channelTypeRegistry;
         this.basicChannelTypeProvider = basicChannelTypeProvider;
-        this.i18nProvider = i18nProvider;
-        this.localeProvider = localeProvider;
-        this.bundle = FrameworkUtil.getBundle(this.getClass());
     }
 
     @Override
@@ -491,15 +483,6 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             logger.warn("Error creating channel structure", e);
         }
         return false;
-    }
-
-    private String getLocalText(String key, String defaultText) {
-        try {
-            String text = i18nProvider.getText(bundle, key, defaultText, localeProvider.getLocale());
-            return text != null ? text : defaultText;
-        } catch (IllegalArgumentException e) {
-            return defaultText;
-        }
     }
 
     private @Nullable ChannelUID addChannel(ThingBuilder thingBuilder, MiIoBasicChannel miChannel, String model,
